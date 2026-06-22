@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Camada_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 641.42 585.77">
+  <!-- Generator: Adobe Illustrator 30.5.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 3)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #e94e1b;
+      }
+
+      .st1 {
+        fill: #d63c00;
+        stroke: #e94e1b;
+        stroke-miterlimit: 10;
+      }
+
+      .st2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <rect class="st1" x=".5" y=".5" width="640.42" height="584.77"/>
+  <g>
+    <ellipse class="st2" cx="297.55" cy="367.76" rx="95.83" ry="159.32" transform="translate(-126.12 578.22) rotate(-77.44)"/>
+    <ellipse class="st2" cx="283.19" cy="221.96" rx="41.55" ry="117.36" transform="translate(-73.07 171.54) rotate(-30.03)"/>
+    <ellipse class="st2" cx="408.22" cy="242.7" rx="117.36" ry="41.55" transform="translate(-58.91 328.35) rotate(-41.12)"/>
+    <circle class="st0" cx="232.26" cy="354.75" r="17.96"/>
+    <circle class="st0" cx="362.03" cy="381.2" r="14.29"/>
+    <path class="st0" d="M295.55,402.9h0c5.7-6.21,2.54-16.26-5.69-18.1h0c-8.23-1.83-15.36,5.93-12.83,13.97h0c2.53,8.04,12.81,10.33,18.52,4.13Z"/>
+  </g>
+</svg>

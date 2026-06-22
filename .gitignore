@@ -1,0 +1,44 @@
+# Local agent and Codex runtime state
+.agents/
+.codex/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies and package managers
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+
+# Astro and web build output
+.astro/
+dist/
+
+# Dart and Flutter build output
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+coverage/
+
+# Python caches used by local tools
+__pycache__/
+*.py[cod]
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
