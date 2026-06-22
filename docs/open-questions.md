@@ -18,7 +18,7 @@ Este arquivo registra conflitos, lacunas e decisoes que nao devem ser resolvidas
 | OQ-006 | MFA | Obrigatoriedade, perfis exigidos e fluxo de recuperacao de MFA seguem abertos. | PRD Auth e Seguranca. | Definir politica por papel e risco. |
 | OQ-007 | Username infantil | Prova para pesquisa de username infantil e edicao de username infantil seguem abertas. | PRD App/Auth. | Definir regra de seguranca e UX. |
 | OQ-008 | Push | Provider de push ainda nao definido. | Modulos de notificacao. | Avaliar provider em spec tecnica. |
-| OQ-009 | Midia | Limites de midia, transformacoes, expurgo e limpeza de orfaos precisam de spec. | R2 e PRD LGPD/Midia. | Fechar limites operacionais e custos. |
+| OQ-009 | Midia | Limites de midia, transformacoes, expurgo e limpeza de orfaos precisam de spec. | R2, PRD LGPD/Midia e spike aprovado em `specs/009-media-r2-spike.md`. | Fechar limites operacionais e custos a partir do spike. |
 | OQ-010 | Reacoes | Escopo de reacoes simples em posts/mensagens precisa de definicao. | PRD App e comunicacao. | Definir MVP e moderacao. |
 | OQ-011 | Moments | Navegacao de Moments precisa de especificacao de UX. | PRD App. | Criar spec de UX antes da implementacao. |
 | OQ-012 | Chat/Admin | Politica de acesso do Admin a chats precisa de regra explicita. | PRD Admin, App e LGPD. | Definir acesso, auditoria e limites. |
