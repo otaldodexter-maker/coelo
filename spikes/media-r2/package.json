@@ -1,0 +1,13 @@
+{
+  "name": "coelo-media-r2-spike",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/r2-presign-smoke.mjs",
+    "smoke": "node src/r2-presign-smoke.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0"
+  }
+}

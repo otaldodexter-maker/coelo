@@ -5,10 +5,14 @@
 *.yml text eol=lf
 *.yaml text eol=lf
 *.toml text eol=lf
+*.mjs text eol=lf
 *.sh text eol=lf
 *.ps1 text eol=lf
 *.svg text eol=lf
 *.txt text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.env.example text eol=lf
 
 *.png binary
 *.jpg binary
