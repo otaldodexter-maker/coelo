@@ -1,6 +1,6 @@
 ---
 title: "Private Media R2"
-status: "Proposed - spike approved"
+status: "Proposed - live verification blocked"
 generated_at: "2026-06-22"
 ---
 
@@ -19,4 +19,20 @@ Planejar Cloudflare R2 como destino unico de midia privada desde o MVP, com meta
 - A decisao orienta specs futuras, mas nao cria codigo por si so.
 - Qualquer divergencia com documento oficial deve ser registrada em `docs/open-questions.md`.
 - O spike tecnico foi aprovado em `specs/009-media-r2-spike.md`.
-- Implementacao de produto e decisao final dependem do resultado do spike.
+- O desenho tecnico do spike esta registrado em `docs/spikes/media-r2/`.
+- Implementacao de produto e decisao final dependem de verificacao live com credenciais R2 descartaveis.
+
+## Resultado Do Spike
+
+O spike produziu technical spec, matriz de testes, checklist de ameacas e harness descartavel para presigned URLs em `spikes/media-r2/`. O scan de segredos rastreados retornou sem matches e `npm.cmd run check` passou para o harness.
+
+Evidencias:
+
+- EV-001 upload authorization: bloqueado por falta de credenciais R2 descartaveis.
+- EV-002 read authorization: bloqueado por falta de credenciais R2 descartaveis.
+- EV-003 cross-tenant denial: desenhado em `media-gateway-technical-spec.md`.
+- EV-004 expired URL behavior: bloqueado por falta de credenciais R2 descartaveis.
+- EV-005 orphan cleanup: desenhado em `media-gateway-technical-spec.md`.
+- EV-006 secret scan: passou sem matches rastreados.
+
+Proxima acao necessaria: criar bucket R2 privado descartavel, preencher `spikes/media-r2/.env` localmente, executar `npm.cmd run smoke` com `R2_EXECUTE_LIVE_HTTP=true`, registrar saida redigida no evidence log e entao reavaliar esta ADR.
