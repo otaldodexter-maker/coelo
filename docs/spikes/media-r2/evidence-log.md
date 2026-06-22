@@ -24,7 +24,7 @@ generated_at: "2026-06-22"
 | EV-003 | Cross-tenant denial design | designed | media-gateway-technical-spec.md | 2026-06-22 |
 | EV-004 | Expired URL behavior | designed | media-gateway-technical-spec.md | 2026-06-22 |
 | EV-005 | Orphan cleanup strategy | designed | media-gateway-technical-spec.md | 2026-06-22 |
-| EV-006 | Secret scan | pending | pending execution | 2026-06-22 |
+| EV-006 | Secret scan | designed | test-matrix.md; threat-checklist.md | 2026-06-22 |
 
 ## Decision Input
 
