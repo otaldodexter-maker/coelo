@@ -11,7 +11,7 @@ Este arquivo registra conflitos, lacunas e decisoes que nao devem ser resolvidas
 | ID | Tema | Questao | Fonte/Contexto | Decisao necessaria |
 | --- | --- | --- | --- | --- |
 | OQ-001 | Dominio | `coelo.com.br` fica como alias futuro ou dominio secundario? | Plano aprovado define `coelo.me` como primario; documentos podem mencionar outros caminhos. | Confirmar estrategia de dominios e redirecionamentos. |
-| OQ-002 | Midia privada | PRD Master fala em Supabase Storage/R2 futuro, enquanto Arquitetura Macro recomenda R2 desde o MVP. | Decisao atual: R2 como destino unico, com spike obrigatorio antes de implementar. | Aprovar resultado do spike e ADR final de midia. |
+| OQ-002 | Midia privada | PRD Master fala em Supabase Storage/R2 futuro, enquanto Arquitetura Macro recomenda R2 desde o MVP. | Decisao atual: R2 como destino unico; `specs/009-media-r2-spike.md` aprovado para spike antes de implementar produto. | Aprovar resultado do spike e ADR final de midia. |
 | OQ-003 | LGPD juridico | Papel juridico Coelo/instituicao, DPO, bases legais, DPA/RIPD e retencao seguem pendentes. | PRD LGPD/Seguranca/Midia e requisitos de operacao. | Revisao juridica antes de producao. |
 | OQ-004 | CPF adulto | CPF adulto e obrigatorio, mas armazenamento cifrado/tokenizado/hash auxiliar ainda precisa de decisao. | PRD Auth e Modelo de Dados. | Definir estrategia tecnica e juridica para CPF. |
 | OQ-005 | Permissoes familiares | Flags de permissao familiar ainda precisam de granularidade final. | PRD App, Auth e Modelo de Dados. | Fechar matriz de permissoes por contexto. |

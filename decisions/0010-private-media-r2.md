@@ -1,6 +1,6 @@
 ---
 title: "Private Media R2"
-status: "Proposed - spike required"
+status: "Proposed - spike approved"
 generated_at: "2026-06-22"
 ---
 
@@ -18,4 +18,5 @@ Planejar Cloudflare R2 como destino unico de midia privada desde o MVP, com meta
 
 - A decisao orienta specs futuras, mas nao cria codigo por si so.
 - Qualquer divergencia com documento oficial deve ser registrada em `docs/open-questions.md`.
-- Implementacao depende de spec aprovada.
+- O spike tecnico foi aprovado em `specs/009-media-r2-spike.md`.
+- Implementacao de produto e decisao final dependem do resultado do spike.
