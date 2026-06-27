@@ -19,10 +19,10 @@ Manter coerencia entre entidades, relacoes, eventos, auditoria, midia, notificac
 
 ## Entidades iniciais
 
-`people`, `auth.users`, `user_profiles`, `usernames`, `institutions`, `units`, `groups`, `memberships`, `child_contexts`, `guardian_links`, `guardian_context_permissions`, `social_profiles`, `follows`, `flow_posts`, `now_items`, `moments`, `media_assets`, `conversations`, `messages`, `agenda_events`, `routine_entries`, `notifications`, `audit_logs`, `analytics_events`, `plans`, `entitlements`, `import_jobs`.
+`people`, `auth.users`, `user_profiles`, `usernames`, `institutions`, `units`, `groups`, `memberships`, `child_contexts`, `guardian_links`, `guardian_context_permissions`, `social_profiles`, `follows`, `flow_posts`, `now_items`, `moments`, `media_assets`, `conversations`, `messages`, `agenda_events`, `routine_entries`, `notifications`, `audit.audit_logs`, `analytics.analytics_events`, `plans`, `entitlements`, `import_jobs`.
 
 ## Regras
 
 - Modelo conceitual antes de migration.
 - Separar ownership, visibilidade e auditoria.
-- Definir schema fisico em spec tecnica antes da primeira migration.
+- Schemas iniciais: `public` para dominio operacional, `app_private` para logica privilegiada, `audit` para evidencias e `analytics` para eventos/contadores/snapshots.

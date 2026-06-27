@@ -608,8 +608,8 @@ Modelo conceitual inicial. A modelagem física deve virar sub-PRD técnico + mig
 | routine_templates | Templates de diário. | institution/unit/group, schema de itens. |
 | routine_entries | Registro de rotina. | child_id, group_id, date, author, status, audit. |
 | notifications | Fila/estado de notificações. | recipient, type, object_id, status. |
-| audit_logs | Ações sensíveis. | actor, action, object, before/after summary, ip/device. |
-| analytics_events | Eventos de produto. | event_name, actor/context, timestamp, properties minimizadas. |
+| audit.audit_logs | Ações sensíveis. | actor, action, object, before/after summary, ip/device. |
+| analytics.analytics_events | Eventos de produto. | event_name, actor/context, timestamp, properties minimizadas. |
 
 - Todas as tabelas com dados de tenant devem ter institution_id direto ou derivável por FK segura.
 
@@ -795,7 +795,7 @@ A arquitetura inicial deve privilegiar velocidade, segurança e aprendizado, sem
 | Edge Functions | Operações sensíveis: convites, notificações, webhooks, ações service_role e validações server-side. |
 | Borda | Cloudflare para DNS, TLS, WAF, rate limiting, Turnstile e proteção de formulários. |
 | Automação | n8n apenas para fluxos não críticos ou orquestrações administrativas. |
-| Dados/BI | analytics_events + audit_logs no MVP; pipeline Python/warehouse futuro. |
+| Dados/BI | `analytics.analytics_events` + `audit.audit_logs` no MVP; pipeline Python/warehouse futuro. |
 
 | Ordem de construção recomendada<br>A ordem Superadmin → Admin → App → Site faz sentido, mas antes dela crie a Fundação: modelagem, Auth, RLS, design system e seed de dados. Sem isso, os painéis ficam bonitos e perigosos. |
 | --- |

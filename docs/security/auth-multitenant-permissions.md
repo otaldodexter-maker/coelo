@@ -290,6 +290,17 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | Service role/secret | Somente servidor/Edge Function e com escopo mínimo. |
 | Testes | Seeds de ao menos dois tenants, múltiplos papéis e tentativas cruzadas. |
 
+## 17.1 Schemas e superficie de acesso
+
+A decisao tecnica inicial separa o banco em quatro schemas:
+
+- `public`: dados operacionais acessiveis por apps somente com grants e RLS.
+- `app_private`: funcoes, RPCs e helpers privilegiados; nao exposto.
+- `audit`: logs e evidencias sensiveis; sem grants diretos para `anon` ou `authenticated`.
+- `analytics`: eventos minimizados, contadores e snapshots; sem grants diretos para `anon` ou `authenticated`.
+
+Admin institucional e App principal nao devem consultar `audit` ou `analytics` diretamente. Superadmin deve acessar esses dados por permissao interna (`audit.read` ou `analytics.read`) e, quando houver UI, preferencialmente por RPC/backend auditado.
+
 # 18. Eventos e auditoria
 
 | Evento | Uso |
@@ -303,6 +314,8 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | guardian_context_permission_changed | Acesso familiar. |
 | permission_changed | Auditoria. |
 | privileged_access_used | Acesso interno sensível. |
+
+Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado e suporte ficam em `audit`. Nenhum dos dois schemas substitui dados transacionais de `public`.
 
 # 19. Segurança
 
@@ -403,6 +416,14 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 - Threat model de username infantil e deduplicação.
 
 - Test Plan de dois tenants, multi-papel e vínculos familiares.
+
+# 26. Aditivo 2026-06-23 - MFA do Owner Coelo
+
+Este aditivo registra uma decisao especifica do Superadmin Completo v1: MFA e obrigatoria para o Owner Coelo no login e em acoes sensiveis. A criacao de novos Owners deve ocorrer por convite aceito + MFA configurada.
+
+A obrigatoriedade de MFA para Operations, Support, Content, Auditor, Admin institucional, direcao e outros perfis privilegiados permanece em aberto e deve ser definida por papel e risco em Technical Spec propria.
+
+Esta decisao atualiza parcialmente a pergunta aberta de MFA sem encerrar a politica geral de autenticacao reforcada.
 
 # Fontes e referências
 

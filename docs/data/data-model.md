@@ -126,10 +126,10 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 
 | Domínio | Entidades principais |
 | --- | --- |
-| Identidade | people, auth.users, user_profiles, usernames, contacts/identities. |
+| Identidade | people, person_profile_details, person_professional_details, person_education_details, person_addresses, auth.users, user_profiles, usernames, contacts/identities, schema_tables, schema_columns. |
 | Tenancy | institutions, units, groups, memberships, child_contexts. |
 | Família | guardian_links, guardian_context_permissions. |
-| Superadmin | platform_memberships, plans, institution_subscriptions, platform_notices, support_sessions. |
+| Superadmin | platform_memberships, plans, institution_subscriptions, platform_notices, support_sessions, import_jobs. |
 | Social | social_profiles, follows, posts, post_audiences, reactions, read_receipts, stories/now, moments. |
 | Mídia | media_assets, media_variants, media_consents/access policies. |
 | Chat | conversations, conversation_members, messages, message_receipts. |
@@ -137,25 +137,32 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | Rotina | routine_templates, routine_entries, routine_items, occurrences. |
 | Notificações | notifications, notification_preferences, device_tokens. |
 | Importação | import_jobs, import_files, import_rows/errors. |
-| Dados | audit_logs, analytics_events, usage_counters. |
+| Dados | audit.audit_logs, audit.support_session_actions, analytics.analytics_events, analytics.notice_events, analytics.usage_counters, analytics.usage_snapshots. |
 
 # 7. Identidade e Auth
 
 | Entidade | Responsabilidade | Chaves/observações |
 | --- | --- | --- |
-| people | Pessoa global. | id; tipo; nome; nascimento opcional; status; dedupe_hash. |
+| people | Pessoa global. | id; tipo; primeiro nome; sobrenome; nome público; nome legal; data de nascimento opcional; status; soft delete; referência de dedupe. |
+| person_profile_details | Dados pessoais complementares. | preferred_name, middle_name, gender, marital_status, nationality, naturality, parents, locale, timezone. |
+| person_professional_details | Vida profissional. | employment_type, job_title, company_name, industry. |
+| person_education_details | Escolaridade. | education_level, education_status, institution_name, course_name, field_of_study, start_year, end_year. |
+| person_addresses | Endereço residencial. | geografia básica, número, complemento, CEP, referência e status. |
 | auth.users | Credencial Supabase. | Vínculo 1:1 opcional com people. |
-| user_profiles | Configuração de conta. | person_id/user_id; avatar; preferências. |
+| person_auth_links | Vínculo pessoa-auth. | person_id, auth_user_id, status, linked_at, revoked_at. |
+| user_profiles | Configuração de conta. | person_id/user_id; avatar; preferências; exibido separado da identidade global. |
 | usernames | @username global. | Único; owner_person_id ou owner_context; tipo e status. |
 | person_contacts | E-mail/celular verificados ou de contato. | Não duplicar segredos; separar verificação. |
 | adult_identifiers | CPF de adultos. | Armazenamento protegido; hash/normalização conforme Technical Spec. |
 | invitations | Convites. | Target, contexto, papel, token hash, status e expiração. |
+| schema_tables | Catálogo de tabelas. | Nome, rótulo, domínio, versão e status. |
+| schema_columns | Catálogo de colunas. | Nome canonico, nome exibido, descrição, tipo, imports e localidades. |
 
 # 8. Multi-tenant e vínculos
 
 | Entidade | Responsabilidade | Campos/relacionamentos |
 | --- | --- | --- |
-| institutions | Tenant. | id, status, settings, plan reference. |
+| institutions | Tenant. | id, status, settings, plan reference, branding, document_ref. |
 | units | Unidade. | institution_id. |
 | groups | Grupo/turma/equipe. | institution_id, unit_id, type. |
 | memberships | Pessoa–contexto–papel. | person_id, institution_id, unit_id/group_id opcionais, role, status, dates. |
@@ -170,13 +177,19 @@ Interpretação oficial de D1: a criança é uma pessoa global. Cada instituiç�
 
 | Entidade | Uso |
 | --- | --- |
-| platform_memberships | Usuários internos Coelo e cargos. |
+| platform_roles | Perfis do Superadmin. |
+| platform_permissions | Permissões por módulo, tela e ação. |
+| platform_role_permissions | Permissões liberadas por perfil. |
+| platform_memberships | Pessoas vinculadas a perfis internos Coelo. |
+| platform_member_permission_overrides | Exceções de permissão por usuário. |
+| institution_memberships | Perfis contextuais do Admin institucional. |
 | plans | Catálogo de planos e limites preparados para futuro. |
 | institution_subscriptions | Plano/status/datas por instituição; operação manual no MVP. |
-| usage_limits/usage_counters | Limites e consumo, inicialmente informativos. |
+| usage_limits/analytics.usage_counters | Limites e consumo, inicialmente informativos. |
 | platform_notices | Avisos globais/segmentados. |
 | notice_audiences/receipts | Audiência e leitura. |
-| support_sessions | Acesso interno privado conforme cargo. |
+| support_sessions | Canal de atendimento Coelo aberto por instituição ou unidade. |
+| support_messages | Mensagens do atendimento Coelo. |
 
 - Registrar estrutura para adicional após dois responsáveis por criança/contexto, sem calcular cobrança no MVP.
 
@@ -213,12 +226,12 @@ Prazos de retenção de mídia não estão definidos. O modelo deve possuir camp
 
 | Entidade | Uso |
 | --- | --- |
-| conversations | Contexto, tipo, status e política. |
-| conversation_members | Membros autorizados, papel e permissões. |
-| messages | Autor, conteúdo, status, soft delete e mídia. |
+| conversations | Chat por instituição, unidade ou grupo/turma. |
+| conversation_members | Membros autorizados e papel no canal. |
+| messages | Autor, conteúdo, status, soft delete e futura mídia. |
 | message_receipts | Entrega/leitura. |
 | message_edits | Histórico de edição quando habilitado. |
-| channel_policies | Horários, respostas e acesso a histórico. |
+| channel_policies | Regras por instituição, unidade ou grupo: horários, anexos, respostas e histórico. |
 
 - Professor–responsável depende de vínculo válido com criança/grupo.
 
@@ -278,9 +291,9 @@ Prazos de retenção de mídia não estão definidos. O modelo deve possuir camp
 
 | Entidade | Finalidade | Conteúdo |
 | --- | --- | --- |
-| audit_logs | Evidência de ação sensível. | Ator, contexto, ação, objeto, timestamp e resumo before/after minimizado. |
-| analytics_events | Uso do produto. | event_name, ator pseudonimizado/contexto, timestamp, properties mínimas. |
-| usage_counters | Leitura rápida futura. | Agregados por instituição e período. |
+| audit.audit_logs | Evidência de ação sensível. | Ator, contexto, ação, objeto, timestamp e resumo before/after minimizado. |
+| analytics.analytics_events | Uso do produto. | event_name, ator pseudonimizado/contexto, timestamp, properties mínimas. |
+| analytics.usage_counters | Leitura rápida futura. | Agregados por instituição e período. |
 | error_logs | Saúde técnica. | Código, contexto técnico e correlação, sem conteúdo sensível desnecessário. |
 
 # 18. Relacionamentos críticos
@@ -329,6 +342,17 @@ Prazos de retenção de mídia não estão definidos. O modelo deve possuir camp
 - Service role somente no backend/Edge Functions.
 
 - Seeds de teste incluem dois tenants, responsável multi-instituição, professor/responsável e coordenador multi-unidade.
+
+## Aditivo 2026-06-23 - Schemas Postgres
+
+A decisao tecnica inicial de schemas para o Coelo e:
+
+- `public`: schema base do dominio operacional, com tabelas acessadas pelas aplicacoes via RLS e grants explicitos.
+- `app_private`: funcoes auxiliares, RPCs e logica privilegiada; nao deve ser exposto ao cliente.
+- `audit`: logs, evidencias e acoes sensiveis de suporte/acesso; sem grants diretos para `anon` ou `authenticated`.
+- `analytics`: eventos minimizados, contadores e snapshots para dashboard futuro; sem grants diretos para `anon` ou `authenticated`.
+
+`schema_tables` e `schema_columns` continuam em `public` como catalogo tecnico do produto, mas passam a registrar tambem tabelas de `audit` e `analytics` por `schema_name`.
 
 # 21. Retenção e exclusão
 
@@ -409,7 +433,7 @@ Prazos de retenção de mídia não estão definidos. O modelo deve possuir camp
 
 # 26. Perguntas em aberto
 
-- Quais nomes físicos e schemas Postgres serão usados?
+- Resolvido em 2026-06-23: `public`, `app_private`, `audit` e `analytics` sao os schemas iniciais. Novos schemas exigem spec ou ADR.
 
 - CPF será armazenado cifrado, tokenizado ou com hash auxiliar para busca?
 

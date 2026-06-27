@@ -141,7 +141,7 @@ Figura 1 — Diagrama C4 de contexto do sistema Coelo.
 | Família/responsável | App mobile/web | Somente crianças, instituições, grupos e conteúdos autorizados. |
 | Professor/equipe | App mobile/web | Somente unidades, grupos e participantes vinculados ao papel ativo. |
 | Direção/Admin | Admin web + App | Tenant e escopos delegados; permissões administrativas explícitas. |
-| Equipe Coelo | Superadmin | Cargo interno, motivo de suporte, escopo e auditoria obrigatória. |
+| Equipe Coelo | Superadmin | Cargo interno, motivo de suporte, escopo e auditoria obrigatória; Owner Coelo e excecao privilegiada com MFA obrigatoria. |
 | Visitante | coelo.me | Conteúdo público de marketing; nenhum dado autenticado ou infantil. |
 
 | Regra de fronteira<br>App, Admin e Superadmin não são sistemas de dados independentes. São superfícies de experiência que consomem os mesmos contratos de domínio e as mesmas regras server-side. Nenhuma interface pode ampliar permissão por conta própria. |
@@ -160,7 +160,7 @@ Figura 2 — Diagrama C4 de containers e integrações principais.
 | Site institucional | Astro + Cloudflare Pages | SEO, páginas institucionais, blog, captação e documentação pública. |
 | App Coelo | Flutter iOS/Android/Web | Experiência diária: Flow, Now, Moments, Rotina, Chat, Agenda e Perfil. |
 | Admin | Flutter Web | Onboarding, estrutura, pessoas, vínculos, permissões, importação e operação. |
-| Superadmin | Flutter Web | Tenants, planos manuais, usuários internos, suporte, avisos e auditoria. |
+| Superadmin | Flutter Web | Primeira fatia operacional: tenants, planos manuais, usuarios internos, avisos/popups segmentados, suporte, auditoria e base para dashboard futuro. |
 | Supabase Auth | Serviço gerenciado | Credenciais, sessões, recuperação, OTP/senha e identidade autenticada. |
 | Postgres | Supabase Postgres | Fonte oficial de pessoas, contextos, conteúdo, vínculos, eventos e auditoria. |
 | Edge Functions | Supabase Functions | Comandos sensíveis, webhooks, convites, media gateway e tarefas server-side. |
@@ -178,6 +178,8 @@ O coelo.me é uma superfície de conteúdo e aquisição, não um painel autenti
 ## 4.1 Flutter: camadas e responsabilidades
 
 App, Admin e Superadmin seguirão separação de responsabilidades inspirada na arquitetura recomendada pelo Flutter: UI com Views/ViewModels, camada de domínio para casos de uso complexos e camada de dados com repositories e services. O código será organizado por feature/bounded context, não por uma pasta global de “telas” e outra de “APIs”.
+
+Para o Superadmin Completo v1, a ordem oficial de trabalho e banco primeiro, wireframe depois e Flutter por ultimo. A modelagem deve prever ativacao de instituicao, usuarios internos, avisos/popups segmentados, suporte auditado, auditoria e dados agregaveis para dashboard futuro antes da implementacao visual.
 
 | Camada | Responsabilidade | Exemplos |
 | --- | --- | --- |
@@ -259,6 +261,8 @@ Decisões com impacto duradouro serão registradas como ADRs curtos: contexto, d
 ## 6.1 Postgres multi-tenant
 
 O Coelo usará banco Postgres compartilhado entre tenants. Tabelas de negócio devem possuir institution_id direto ou um caminho determinístico e seguro até a instituição. Pessoas são globais; dados contextuais, memberships, permissões familiares e audiência determinam a visibilidade. RLS é a barreira obrigatória para dados expostos às aplicações.
+
+A organizacao fisica inicial usa `public` como schema base do dominio operacional, `app_private` para funcoes/RPCs privilegiados, `audit` para evidencias e acoes sensiveis, e `analytics` para eventos minimizados, contadores e snapshots. `audit` e `analytics` nao recebem grants diretos para `anon` ou `authenticated`; acesso de interface deve passar por permissoes internas e caminhos server-side.
 
 | Controle | Decisão |
 | --- | --- |
@@ -393,7 +397,7 @@ O Coelo combina dados infantis, rotina, imagens, comunicação e múltiplos tena
 | --- | --- |
 | Cliente | Secure storage para tokens, limpeza no logout, certificate/TLS padrão, sem secrets e sem service_role. |
 | Borda | TLS, WAF, rate limiting, Turnstile, proteção de formulários e regras contra abuso. |
-| Auth | Recuperação sem enumeration, reautenticação para ações sensíveis e MFA recomendado a privilegiados. |
+| Auth | Recuperação sem enumeration, reautenticação para ações sensíveis, MFA obrigatoria para Owner Coelo e MFA recomendado aos demais privilegiados. |
 | Banco | RLS deny-by-default, FKs, funções seguras, testes de tenant leakage e migrations revisadas. |
 | Mídia | R2 privado, URLs temporárias, consentimento, classificação e logs mínimos. |
 | Suporte | Sessão identificada, motivo, tenant, escopo, início/fim e ações sensíveis auditadas. |
@@ -473,7 +477,7 @@ Figura 5 — Fluxo de código, ambientes e promoção até produção.
 | coelo.me | Astro em Cloudflare Pages | Público, SEO e marketing. |
 | app.coelo.me | Flutter Web em Cloudflare Pages | Complemento web do App; apps nativos nas lojas. |
 | admin.coelo.me | Flutter Web em Cloudflare Pages | Acesso autenticado da instituição. |
-| superadmin.coelo.me | Flutter Web em Cloudflare Pages | Acesso interno com privilégios e MFA recomendado. |
+| superadmin.coelo.me | Flutter Web em Cloudflare Pages | Acesso interno com privilegios; MFA obrigatoria para Owner Coelo e recomendada para demais perfis privilegiados. |
 | api/serviços | Supabase + Edge Functions | Endpoints gerenciados e funções server-side. |
 | mídia | R2 privado | Sem domínio público direto para objetos infantis. |
 
@@ -509,7 +513,7 @@ Figura 5 — Fluxo de código, ambientes e promoção até produção.
 
 ## 11.4 BI futuro
 
-analytics_events e usage_counters nascem no Postgres operacional com esquema mínimo e governado. Quando volume e perguntas analíticas justificarem, um pipeline incremental em Python poderá levar dados pseudonimizados a uma camada analítica/warehouse. O produto não fará consultas pesadas de BI diretamente no banco transacional.
+`analytics.analytics_events`, `analytics.notice_events`, `analytics.usage_counters` e `analytics.usage_snapshots` nascem no Postgres operacional com esquema mínimo e governado. Quando volume e perguntas analíticas justificarem, um pipeline incremental em Python poderá levar dados pseudonimizados a uma camada analítica/warehouse. O produto não fará consultas pesadas de BI diretamente no banco transacional.
 
 # 12. Dimensionamento do piloto e evolução
 
@@ -639,6 +643,8 @@ O cenário oficial é um piloto com 1 a 5 instituições e até 2.000 usuários 
 
 1. Technical Spec de Supabase: schemas/tabelas, migrations, RLS, funções, Realtime e outbox.
 
+1. Technical Spec do Superadmin Completo v1: ativacao de instituicao, Owner/MFA, usuarios internos, avisos/popups, suporte, auditoria, eventos, contadores e snapshots.
+
 1. Technical Spec do Media Gateway R2: chaves, CORS, URLs, finalização, variantes e limpeza.
 
 1. Technical Spec de Auth e contexto ativo: sessão, recovery, MFA, convites e cache.
@@ -661,7 +667,7 @@ O cenário oficial é um piloto com 1 a 5 instituições e até 2.000 usuários 
 | Realtime Chat | Canal autorizado, paginação, reconexão e recibos. |
 | CI migrations | Validar migration backward-compatible e rollback operacional. |
 
-| Próxima entrega recomendada<br>Criar primeiro a Fundação Técnica: monorepo, ambientes, Supabase local/Dev/Stage/Prod, Auth/RLS mínimo, Design System e Media Gateway spike. Depois: Superadmin mínimo → Admin → App. A arquitetura não deve ser “documento bonito que assiste o código pegar fogo”. |
+| Próxima entrega recomendada<br>Criar primeiro a fundacao de dados do Superadmin Completo v1: schema, RLS, Owner/MFA, ativacao de instituicao, auditoria, avisos/popups segmentados e eventos/contadores/snapshots. Depois: wireframe Figma em desktop/tablet/mobile -> componentes Flutter compartilhaveis -> telas do fluxo de ativacao -> demais fluxos do Superadmin. |
 | --- |
 
 # 16. Fontes e referências

@@ -102,7 +102,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Fora do MVP | Motivo | Preparação |
 | --- | --- | --- |
 | Cobrança e assinatura automáticas | Aumenta integração financeira e operação. | Modelar plano, limites, datas, status e eventos de mudança. |
-| Dashboard executivo completo | Os dados ainda serão validados no piloto. | Registrar analytics_events e contadores desde o início. |
+| Dashboard executivo completo | Os dados ainda serão validados no piloto. | Registrar `analytics.analytics_events` e contadores desde o início. |
 | Impersonation invisível | Risco elevado de privacidade. | Qualquer suporte deve usar acesso identificado e auditado. |
 | White label forte | Complexidade de lojas e builds. | Manter branding leve e campos de configuração. |
 | Edição rotineira de dados escolares | Responsabilidade do Admin da instituição. | Superadmin atua somente por suporte ou governança. |
@@ -220,8 +220,8 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Planos | plans, institution_subscriptions, usage_limits | Operação manual no MVP; nomes físicos finais no Modelo de Dados Master. |
 | Equipe Coelo | people, auth.users, platform_memberships | Pessoa global com vínculo interno contextual. |
 | Avisos | platform_notices, notice_audiences, notice_receipts | Segmentação e vigência. |
-| Suporte | support_sessions, audit_logs | Motivo, ator, tenant, escopo e ações. |
-| Analytics | analytics_events, usage_counters | Dados brutos para dashboards futuros. |
+| Suporte | support_sessions, audit.audit_logs | Motivo, ator, tenant, escopo e ações. |
+| Analytics | analytics.analytics_events, analytics.usage_counters | Dados brutos para dashboards futuros. |
 
 # 12. Eventos e auditoria
 
@@ -324,6 +324,75 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 - Technical Spec: RLS e funções administrativas.
 
 - Test Plan: isolamento entre tenants e cargos internos.
+
+# 20. Aditivo 2026-06-23 - Superadmin Completo v1
+
+## Status do aditivo
+
+Este aditivo registra decisoes de produto aprovadas apos a versao original do PRD Superadmin. Ele orienta specs, SDD, wireframes e technical specs futuras, sem autorizar migrations ou codigo de produto sem revisao tecnica.
+
+## Decisoes aprovadas
+
+| Tema | Decisao |
+| --- | --- |
+| Primeira fatia do produto | Superadmin Completo v1 sera a primeira fatia operacional do Coelo. |
+| Ordem de trabalho | Banco primeiro, wireframe depois, Flutter por ultimo. |
+| Primeiro fluxo | Ativacao de instituicao: criar instituicao, definir plano/status, vincular owner institucional, emitir convite e registrar auditoria. |
+| Escopo v1 | Instituicoes, planos/status, usuarios internos, avisos/popups, suporte auditado, logs e base para dashboard futuro. |
+| Dados futuros | O banco deve nascer preparado para crescimento, evitando alteracoes estruturais previsiveis logo depois do MVP. |
+| Avisos/popups | Usar segmentacao avancada por regras, com suporte a filtros hierarquicos por instituicao, unidade, grupo/turma, papel, contexto e filtros futuros. |
+| Popup com midia | Popups podem prever imagem/anexo com formato, tamanho, vigencia, audiencia e auditoria definidos na Technical Spec. |
+| Importacao | CSV/XLSX com colunas em portugues e mapeamento para colunas internas em ingles, com suporte a qualquer tabela permitida pelo sistema. |
+| Analytics/dashboard futuro | Registrar eventos, contadores e snapshots desde o MVP; a UI de dashboard completo permanece fora desta primeira entrega. |
+| Figma | Usar apenas wireframe de baixa fidelidade, cobrindo desktop, tablet e mobile. |
+
+## Governanca interna
+
+O Superadmin v1 mantem cinco papeis internos: Owner, Operations, Support, Content e Auditor.
+
+| Papel | Diretriz v1 |
+| --- | --- |
+| Owner Coelo | Comeca como conta unica do fundador. Pode criar outros Owners por convite + MFA. Possui poder total e pode liberar permissoes para os demais papeis. |
+| Operations | Opera instituicoes, status, planos manuais e fluxos de ativacao conforme permissoes liberadas. |
+| Support | Acessa dados privados apenas conforme permissao e contexto de suporte, sempre com motivo e trilha de auditoria. |
+| Content | Opera avisos, popups e perfis oficiais sem acesso desnecessario a dados infantis. |
+| Auditor | Consulta logs, evidencias e historicos, sem editar dados operacionais. |
+
+## Excecao de seguranca do Owner
+
+O Owner Coelo e uma excecao explicita ao principio de menor privilegio. Essa decisao deve ser documentada nas specs tecnicas e validada antes de producao. O minimo obrigatorio para essa excecao e:
+
+- MFA obrigatoria para login e acoes sensiveis.
+- Delegacao de novo Owner somente por convite + MFA.
+- Audit log completo para mudancas de permissao, acesso privilegiado, publicacao global, suspensao e alteracao de plano/status.
+- Justificativa obrigatoria para acoes sensiveis.
+- Revisao periodica de Owners ativos.
+
+## Dados preparados desde o inicio
+
+A Technical Spec deve prever, sem obrigar toda UI no MVP:
+
+- Instituicao com dados operacionais, legais, contato principal, slug/dominio, timezone, status, plano, limites, contrato, branding leve e configuracoes.
+- Instituicao com `document_ref` para CNPJ/documento principal, `trade_name` para nome fantasia e `legal_name` para razao social.
+- Planos e limites manuais preparados para assinatura, cobranca futura, storage, modulos, responsaveis adicionais e excecoes comerciais.
+- Branding com cor primaria, secundaria, texto e superficie; unidade pode herdar ou sobrescrever com permissao do admin macro gestor.
+- Avisos/popups com regras de audiencia versionadas, vigencia, prioridade, tipo, midia opcional, recibos e eventos de entrega/leitura.
+- Importacao com padrao de colunas em portugues, mapeamento para colunas internas em ingles e previsao para outros idiomas.
+- Suporte com sessoes auditadas, motivo, escopo, inicio/fim, acoes sensiveis e objetos consultados.
+- Analytics com eventos brutos, contadores por periodo e snapshots agregados para futuro dashboard.
+
+## Schemas de banco aprovados para a fundacao
+
+O Superadmin Completo v1 usa `public` como schema base do dominio operacional, `app_private` para funcoes/RPCs privilegiados, `audit` para logs/evidencias/acessos sensiveis e `analytics` para eventos, contadores e snapshots de dashboard futuro.
+
+Admin institucional e App principal nao devem acessar `audit` ou `analytics` diretamente. O Superadmin pode consultar esses dados apenas por permissoes internas como `audit.read` e `analytics.read`, preferencialmente via RPC/backend auditado.
+
+## Perguntas resolvidas por este aditivo
+
+- Campos minimos de instituicao: usar modelo preparado, nao apenas essencial.
+- Cargos internos: manter Owner, Operations, Support, Content e Auditor.
+- Contadores do MVP: armazenar eventos, contadores e snapshots; dashboard visual fica fora.
+- Figma: wireframe simples, com desktop, tablet e mobile.
 
 # Fontes e referências
 

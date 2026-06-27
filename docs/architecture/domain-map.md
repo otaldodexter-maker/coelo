@@ -416,7 +416,7 @@ D18 · Auditoria e Evidências de Segurança Supporting · MVP
 | --- | --- |
 | Fonte oficial | Audit log imutável, sessão de suporte, motivo, ator, escopo, objeto e ação sensível. |
 | Não controla | Evento analítico de produto, conteúdo sensível completo ou regra de negócio do módulo origem. |
-| Entidades principais | audit_logs, support_sessions, sensitive_access_logs, security_events, incident_records. |
+| Entidades principais | audit.audit_logs, support_sessions, audit.support_session_actions, sensitive_access_logs, security_events, incident_records. |
 | Dependências | Recebe eventos/commands de todos os domínios; acesso restrito à equipe autorizada. |
 | Eventos publicados | audit_recorded, support_session_opened, support_session_closed, security_incident_opened. |
 
@@ -426,7 +426,7 @@ D19 · Analytics e Uso do Produto Supporting · MVP dados / UI futura
 | --- | --- |
 | Fonte oficial | Evento analítico, esquema/versionamento, contador de uso e projeção de métricas. |
 | Não controla | Audit log, dado financeiro definitivo ou conteúdo pessoal desnecessário. |
-| Entidades principais | analytics_events, event_schemas, usage_counters, metric_projections. |
+| Entidades principais | analytics.analytics_events, event_schemas, analytics.usage_counters, analytics.usage_snapshots, metric_projections. |
 | Dependências | Consome eventos publicados; fornece dados a Planos/Entitlements e BI/Relatórios. |
 | Eventos publicados | analytics_event_ingested, usage_counter_updated, metric_projection_refreshed. |
 
