@@ -24,6 +24,8 @@ Este documento transforma a identidade do Coelo em regras práticas para telas, 
 | Decisão | Padrão oficial v1 | Por quê |
 | --- | --- | --- |
 | Marca primária | #D63C00 — Coelo Orange | É vivo, memorável e alcança 4,66:1 com branco em botões e blocos sólidos. |
+| Secundária (Coelo Peach) | #FFE0D5 | Traz respiro visual para containers, chips e superfícies tonais sem saturar a interface. |
+| Terciária (Coelo Forest) | #2D8A4E | Cor de apoio para features especiais, sucesso contextual e destaques do ecossistema. |
 | Neutro de marca | #3F4549 — Coelo Graphite | Traz confiança e reduz o aspecto “carnaval” quando combinado ao laranja. |
 | Tipografia | Nunito Sans em todo o ecossistema | Uma família só reduz complexidade e combina legibilidade com personalidade acolhedora. |
 | Tema | Light como padrão + Dark completo | O app pode respeitar o sistema do dispositivo e oferecer escolha manual. |
@@ -132,7 +134,39 @@ O Coelo usa uma arquitetura de cores por papéis semânticos. A paleta física (
 | ■ | neutral.900 | #1C2022 | Texto primário no Light. | #FFFFFF | 16.42:1 |
 | ■ | neutral.950 | #111416 | Background base no Dark. | #F5F7F8 | 17.21:1 |
 
+## 4.3 Paleta de apoio Coelo Peach
+
+| Cor | Token / nome | HEX | Uso principal | Texto sobre a cor | Contraste |
+| --- | --- | --- | --- | --- | --- |
+| ■ | peach.50 | #FFF8F5 | Fundo muito suave para estados discretos e ilustrações leves. | #742100 | 10.43:1 |
+| ■ | peach.100 | #FFE0D5 | Containers, chips, seleções suaves e elementos de apoio. | #742100 | 8.61:1 |
+| ■ | peach.200 | #FFC8B8 | Destaques tonais, cards leves e micro-sinais visuais. | #581900 | 7.46:1 |
+| ■ | peach.300 | #FFB59B | Apoio visual no Dark Mode e superfícies quentes de segundo plano. | #351000 | 10.07:1 |
+
+| Regra de uso da peach<br>Use #FFE0D5 para containers, chips e superfícies secundárias. Ela é a principal alternativa quando o laranja puro ficar saturado demais em blocos maiores. |
+| --- |
+
+## 4.4 Paleta de apoio Coelo Forest
+
+| Cor | Token / nome | HEX | Uso principal | Texto sobre a cor | Contraste |
+| --- | --- | --- | --- | --- | --- |
+| ■ | forest.50 | #F0F9F3 | Fundo muito suave para sucesso contextual e estados positivos discretos. | #0D5C32 | 10.18:1 |
+| ■ | forest.100 | #D7F0E0 | Containers suaves, badges positivos e apoio visual leve. | #0D5C32 | 7.64:1 |
+| ■ | forest.300 | #5DBB78 | Destaques de sucesso e variação visual em superfícies claras. | #062A18 | 7.23:1 |
+| ■ | forest.500 | #2D8A4E | Terciária principal, features especiais e sucesso relacionado ao ecossistema. | #FFFFFF | 4.86:1 |
+| ■ | forest.700 | #1F6A3B | Hover, texto de destaque e apoio mais profundo no Light Mode. | #FFFFFF | 7.33:1 |
+| ■ | forest.900 | #0D5C32 | Texto e destaque sobre fundos muito claros. | #FFFFFF | 8.99:1 |
+
+| Regra de uso da forest<br>Use a terciária com parcimônia. Ela deve apoiar, orientar e diferenciar features, nunca competir com a marca primária laranja. |
+| --- |
+
 # 5. Temas Light e Dark
+
+- Em Light Mode, `peach.100` sustenta containers e chips secundários, enquanto `forest.500` entra como acento de sucesso ou variação visual pontual.
+
+- Em Dark Mode, a peach deve migrar para tons mais profundos ou quentes de apoio, e a forest deve continuar legível com fundos escuros sem virar cor de interface dominante.
+
+- O objetivo é manter a primária laranja como assinatura, a peach como respiro e a forest como diferenciação controlada.
 
 O tema Light é o padrão inicial. O tema Dark deve respeitar a preferência do sistema e também poder ser escolhido nas configurações. As duas versões usam os mesmos nomes semânticos; apenas os valores mudam.
 

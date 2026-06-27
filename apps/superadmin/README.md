@@ -16,6 +16,28 @@ auditado, logs e governanca da plataforma.
 - `lib/core`: configuracoes, guards e infraestrutura local do app.
 - `lib/features`: modulos de produto do Superadmin.
 
+## Componentizacao
+
+As telas do Superadmin devem nascer componentizadas por feature. A tela completa
+fica em `apps/superadmin/lib/features/<feature>/presentation/screens`, e os
+widgets locais daquela tela ficam em
+`apps/superadmin/lib/features/<feature>/presentation/widgets`.
+
+Use esta regra pratica:
+
+- `presentation/screens`: telas completas e roteaveis.
+- `presentation/widgets`: componentes locais da feature, como filtros,
+  formularios, cards, linhas de tabela e blocos de detalhe.
+- `presentation/view_models`: estado de tela, comandos e carregamento.
+- `domain`: entidades e regras especificas da feature.
+- `data`: repositories, DTOs, mocks e adapters.
+
+Quando um componente for reutilizavel por mais de uma feature do Superadmin, ou
+tambem fizer sentido para o Admin institucional, ele deve sair da feature e ir
+para `packages/coelo_ui_admin`. Componentes sem dominio, como botoes, campos,
+feedback, navegacao base e acessibilidade, pertencem a `packages/coelo_ui_core`.
+Tokens de cor, tipografia, espacamento e temas pertencem a `packages/coelo_tokens`.
+
 ## Contextos iniciais
 
 - `institutions`: ativacao e gestao de instituicoes.
