@@ -79,6 +79,6 @@ abstract final class CoeloTypography {
         height: 16 / 12,
         fontWeight: FontWeight.w700,
       ),
-    );
+    ).apply(fontFamily: fontFamily);
   }
 }
