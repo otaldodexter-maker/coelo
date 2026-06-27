@@ -14,7 +14,7 @@ O nucleo inclui instituicoes, planos/status, usuarios internos, avisos/popups, s
 
 ## Status
 
-Escopo aprovado para Technical Spec/SDD. A foundation inicial de banco/RLS foi detalhada em `specs/011-superadmin-database-rls.md` e gerou a migration `packages/coelo_database/migrations/20260623191021_superadmin_foundation_v1.sql`.
+Escopo aprovado para Technical Spec/SDD. A foundation inicial de banco/RLS continua detalhada em `specs/011-superadmin-database-rls.md`, e a spec executiva consolidada do MVP esta em `specs/012-superadmin-mvp.md`.
 
 Este documento ainda nao autoriza codigo de produto Flutter, deploy ou novas migrations fora da foundation ja registrada sem spec tecnica revisada.
 
