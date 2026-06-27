@@ -9,7 +9,7 @@ generated_at: "2026-06-27"
 
 ## Objetivo
 
-Definir a primeira versao operavel do Superadmin do Coelo. O foco e entrar numa instituicao, editar o que for autorizado, gerir planos, perfis e usuarios internos, importar dados e salvar eventos no Supabase para consulta futura.
+Definir a primeira versao operavel do Superadmin do Coelo. O foco e entrar numa instituicao, editar o que for autorizado, gerir planos, perfis e usuarios internos, emitir convites seguros, publicar avisos/popups simples, importar dados e salvar eventos no Supabase para consulta futura.
 
 Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que faz sentido para o MVP.
 
@@ -24,8 +24,9 @@ Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que
 | Gestao da instituicao | Organiza unidades, grupos, perfis e ajustes estruturais permitidos. |
 | Configuracoes basicas | Nome, dominio, contato, timezone, locale e branding simples da instituicao. |
 | Planos | Lista, cria, edita e vincula planos, com suporte a modulos liberados e historico de alteracoes. |
-| Usuarios internos | Lista, convida, revoga e troca o perfil das pessoas internas do Superadmin. |
+| Usuarios internos | Lista, envia convites seguros, revoga e troca o perfil das pessoas internas do Superadmin. |
 | Perfis | Cria, edita, desativa ou exclui perfis padrao e customizados, com permissoes granulares por bloco e acao. |
+| Avisos/popups | Cria e publica avisos simples da plataforma, com audiencia limitada e periodo de exibicao. |
 | Importacao CSV/XLSX | Importa usuarios, unidades, grupos, turmas e outros cadastros por modelo padrao com previa antes de confirmar. |
 | Eventos salvos | Persiste eventos importantes no banco para consulta futura, sem tela de eventos no MVP. |
 
@@ -33,7 +34,7 @@ Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que
 
 - Tela de auditoria.
 - Mecanica de suporte como produto proprio.
-- Avisos e popups.
+- Avisos/popups avancados, campanhas e segmentacao complexa.
 - Dashboard executivo.
 - Cobranca automatica.
 - Integracao obrigatoria com Stripe ou Asaas.
@@ -49,6 +50,8 @@ Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que
 - No MVP, cada pessoa pode operar com um perfil ativo principal.
 - Perfis padrao podem nascer prontos, mas podem ser customizados, desativados e excluidos com seguranca.
 - A exclusao de um perfil deve ser bloqueada ou exigir realocacao quando houver pessoas vinculadas.
+- Convites usam link ou token unico, expiram, podem ser reenviados e revogados.
+- Avisos/popups do MVP podem ser simples: globais ou por instituicao, com periodo de exibicao e sem campanha avancada.
 - Planos podem guardar campos opcionais para precificacao e provider futuro, mas o MVP nao executa pagamento.
 - Eventos de mudanca e uso ficam salvos no banco para futura auditoria ou dashboard.
 - `service_role` e segredos nunca entram no cliente.
@@ -68,6 +71,8 @@ Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que
 - O usuario abre uma instituicao, edita seus dados e entra no modo de apoio.
 - O usuario ajusta somente o que seu perfil autoriza dentro da instituicao.
 - O usuario cria, edita e vincula planos, perfis e usuarios internos.
+- O usuario emite, reenvia e revoga convites seguros.
+- O usuario cria e publica avisos/popups simples para a audiencia certa.
 - O usuario importa dados por CSV/XLSX com previa antes de confirmar.
 - Mudancas importantes ficam persistidas no banco.
 - Nao existe tela de auditoria ou suporte no MVP.
@@ -81,12 +86,12 @@ Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que
 - Troca de contexto de apoio.
 - Permissoes por perfil.
 - Cadastro e revogacao de usuarios internos.
+- Emissao, reenvio e revogacao de convites seguros.
 - Criacao, edicao e exclusao de perfis.
+- Criacao e publicacao de avisos/popups simples.
 - Importacao com previa, validacao e rejeicao de arquivo invalido.
 - Persistencia de eventos no banco.
 
 ## Perguntas em aberto
 
 - Quais templates de importacao entram primeiro: usuarios, unidades, grupos ou turmas?
-- A tela de planos mostra apenas nome, status e modulos, ou tambem preco e referencia futura de cobranca?
-- Perfis padrao podem ser excluidos diretamente quando vinculados a pessoas, ou o sistema deve exigir realocacao antes?

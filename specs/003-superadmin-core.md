@@ -10,7 +10,7 @@ generated_at: "2026-06-23"
 
 Definir o Superadmin MVP como primeira fatia operacional do Coelo, com banco primeiro, wireframe depois e Flutter por ultimo.
 
-O nucleo inclui instituicoes, planos/status, usuarios internos, avisos/popups, suporte auditado, logs e base de dados preparada para dashboards futuros.
+O nucleo inclui instituicoes, planos/status, usuarios internos, convites seguros, avisos/popups simples, suporte auditado, logs e base de dados preparada para dashboards futuros.
 
 ## Status
 
@@ -35,9 +35,9 @@ Este documento ainda nao autoriza codigo de produto Flutter, deploy ou novas mig
 
 ## Escopo Inicial
 
-- Ativacao de instituicao como primeiro fluxo implementavel: criar instituicao, definir status/plano, vincular owner da instituicao, emitir convite e registrar auditoria.
+- Ativacao de instituicao como primeiro fluxo implementavel: criar instituicao, definir status/plano, vincular owner da instituicao, emitir convite seguro e registrar auditoria.
 - Modelo de dados preparado para crescimento: campos ampliados de instituicao, planos, limites, contrato, branding leve, configuracoes e metadados.
-- Avisos/popups com segmentacao avancada por regras, incluindo instituicao, unidade, grupo/turma, papel, contexto e filtros futuros.
+- Avisos/popups simples no MVP, com visibilidade global ou por instituicao e possibilidade de evoluir segmentacao depois.
 - Governanca interna com 5 papeis: Owner, Operations, Support, Content e Auditor.
 - Owner Coelo inicial unico, com poder total, MFA obrigatoria e delegacao de novos Owners por convite + MFA.
 - Eventos, contadores e snapshots suficientes para dashboard futuro, sem construir a tela de dashboard agora.
@@ -64,7 +64,7 @@ O Owner Coelo e uma excecao explicita ao principio de menor privilegio: pode lib
 
 Quando houver UI, declarar estados de carregamento, vazio, erro, sem permissao, sucesso, desktop, tablet, mobile e acessibilidade.
 
-O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao. Avisos/popups, usuarios internos, suporte e auditoria seguem como fluxos posteriores dentro do mesmo Superadmin MVP.
+O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao e o convite seguro. Avisos/popups, usuarios internos, suporte e auditoria seguem como fluxos posteriores dentro do mesmo Superadmin MVP.
 
 ## Criterios De Aceite
 
@@ -74,8 +74,8 @@ O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao. Avisos/popu
 - Nenhum segredo ou `service_role` no cliente.
 - Testes definidos antes da implementacao.
 - Banco desenhado antes das telas e sem depender do wireframe para regras de autorizacao.
-- Ativacao de instituicao gera tenant, plano/status, owner institucional, convite e audit log.
-- Segmentacao avancada de avisos/popups esta prevista em schema, mesmo que a UI completa venha depois.
+- Ativacao de instituicao gera tenant, plano/status, owner institucional, convite seguro e audit log.
+- Avisos/popups simples estao previstos no escopo, mesmo que a UI completa venha depois.
 - Eventos, contadores e snapshots futuros estao especificados sem obrigar dashboard visual no MVP.
 
 ## Testes Requeridos
@@ -85,7 +85,7 @@ O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao. Avisos/popu
 - Testes de import boundaries quando tocar pacotes.
 - Testes de acessibilidade/golden quando tocar UI.
 - Testes de Owner com MFA obrigatoria e delegacao por convite + MFA.
-- Testes cross-tenant para instituicoes, avisos/popups, suporte, auditoria, eventos e contadores.
+- Testes cross-tenant para instituicoes, convites, avisos/popups, suporte, auditoria, eventos e contadores.
 - Testes responsivos dos wireframes/telas para desktop, tablet e mobile.
 
 ## Perguntas Abertas
