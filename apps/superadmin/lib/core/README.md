@@ -11,3 +11,7 @@ constantes tecnicas e adaptadores que nao pertencem a uma feature unica.
 
 Use com parcimonia. Se algo pertence a um fluxo de produto, coloque em
 `features`.
+
+`isolates` guarda helpers para computacao pesada fora da thread de UI. Use para
+parsing grande, validacoes em massa, filtros custosos e preparacao de
+exportacoes/metadados.

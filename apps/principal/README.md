@@ -18,6 +18,21 @@ pacote, spec ou contexto.
 - `lib/core`: configuracoes, guards e infraestrutura local.
 - `lib/features`: modulos de experiencia diaria.
 
+## Padroes Flutter obrigatorios
+
+- Usar `MaterialApp.router` com `go_router` quando o app ganhar codigo
+  executavel.
+- Manter rotas em `lib/app/router`, incluindo deep links que respeitem contexto
+  ativo sem conceder permissao por conta propria.
+- Manter `lib/core/isolates` para parsing grande, filtros de feed, preparacao de
+  midia/metadados e computacoes fora da UI.
+- Componentizar telas por feature: `presentation/screens`,
+  `presentation/widgets` e `presentation/view_models`.
+- Usar `const`, builders/slivers para listas grandes e layout por constraints.
+- Flow, Now e Moments devem carregar thumbnails/variantes adequadas, com
+  dimensoes explicitas, placeholder/erro e cache definido pela spec de midia.
+- Animacoes devem ser curtas, discretas e respeitar reduced motion.
+
 ## Contextos iniciais
 
 - `context`: instituicao/papel/crianca ou grupo ativo.

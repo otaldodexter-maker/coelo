@@ -16,6 +16,19 @@ conteudo, rotina, agenda e canais.
 - `lib/core`: configuracoes, guards e infraestrutura local.
 - `lib/features`: modulos de produto do Admin.
 
+## Padroes Flutter obrigatorios
+
+- Usar `MaterialApp.router` com `go_router` quando o app ganhar codigo
+  executavel.
+- Manter rotas em `lib/app/router` e guards em `lib/core/guards`.
+- Manter `lib/core/isolates` para parsing grande, importacoes, validacoes em
+  massa, filtros custosos, exportacoes e outras computacoes fora da UI.
+- Componentizar telas por feature: `presentation/screens`,
+  `presentation/widgets` e `presentation/view_models`.
+- Usar `const`, builders/slivers para listas grandes e layout por constraints.
+- Nao carregar imagens grandes sem variante apropriada, placeholder/erro e
+  regra de cache.
+
 ## Contextos iniciais
 
 - `onboarding`: checklist de ativacao institucional.

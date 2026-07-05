@@ -16,6 +16,13 @@ auditado, logs e governanca da plataforma.
 - `lib/core`: configuracoes, guards e infraestrutura local do app.
 - `lib/features`: modulos de produto do Superadmin.
 
+## Base implementada
+
+- O app usa `MaterialApp.router` com `go_router`.
+- O router fica em `lib/app/router`.
+- Computacoes pesadas devem passar por `lib/core/isolates`.
+- O shell atual ja decide layout por constraints e breakpoints Coelo.
+
 ## Componentizacao
 
 As telas do Superadmin devem nascer componentizadas por feature. A tela completa
@@ -37,6 +44,20 @@ tambem fizer sentido para o Admin institucional, ele deve sair da feature e ir
 para `packages/coelo_ui_admin`. Componentes sem dominio, como botoes, campos,
 feedback, navegacao base e acessibilidade, pertencem a `packages/coelo_ui_core`.
 Tokens de cor, tipografia, espacamento e temas pertencem a `packages/coelo_tokens`.
+
+## Performance obrigatoria
+
+- Use `const` em widgets e valores imutaveis sempre que possivel.
+- Evite arquivos de tela grandes: extraia blocos repetidos ou complexos para
+  widgets locais.
+- ViewModels carregam dados com `Future`/`async`/`await` e expoem estados
+  claros de loading, empty, erro, offline e permissao negada.
+- Use builders/slivers para listas, tabelas longas e resultados paginados.
+- Nao processe CSV, JSON grande, exportacao, filtros pesados ou metadados de
+  midia no build da tela; use `core/isolates`.
+- Midia remota deve usar variante adequada, tamanho conhecido e cache com regra
+  de seguranca. Introduza dependencias como `cached_network_image` somente na
+  spec da feature que precisar de midia remota.
 
 ## Contextos iniciais
 
