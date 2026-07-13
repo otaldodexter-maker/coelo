@@ -1,0 +1,205 @@
+import 'dart:async';
+
+import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
+import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
+import 'package:coelo_superadmin/features/auth/presentation/screens/superadmin_login_screen.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  Future<void> pumpLogin(
+    WidgetTester tester, {
+    required SuperadminSession session,
+    required LoginAction login,
+    TextScaler textScaler = TextScaler.noScaling,
+    ThemeData? theme,
+  }) {
+    return tester.pumpWidget(
+      MaterialApp(
+        theme: theme ?? CoeloTheme.light,
+        home: MediaQuery(
+          data: MediaQueryData(textScaler: textScaler),
+          child: SuperadminLoginScreen(session: session, login: login),
+        ),
+      ),
+    );
+  }
+
+  Future<void> enterValidCredentials(WidgetTester tester) async {
+    await tester.enterText(find.byKey(const ValueKey('superadmin-login-email')), 'owner@coelo.me');
+    await tester.enterText(
+      find.byKey(const ValueKey('superadmin-login-password')),
+      'not-a-real-password',
+    );
+  }
+
+  testWidgets('renders the private access context and form', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    expect(find.text('Superadmin'), findsOneWidget);
+    final logo = tester.widget<Image>(find.byType(Image));
+    expect(logo.semanticLabel, 'Coelo');
+    expect(find.text('Acesse sua conta'), findsOneWidget);
+    expect(find.text('Ambiente interno da operação Coelo.'), findsOneWidget);
+    expect(find.text('E-mail'), findsOneWidget);
+    expect(find.text('Senha'), findsOneWidget);
+    expect(find.text('Manter sessão aberta'), findsOneWidget);
+    expect(find.text('Entrar'), findsOneWidget);
+    expect(find.text('Esqueci minha senha'), findsOneWidget);
+    expect(
+      find.text('Acesso restrito à equipe autorizada. Ações sensíveis podem ser auditadas.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('validates empty fields and malformed email', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final submitButton = find.widgetWithText(FilledButton, 'Entrar');
+    await tester.ensureVisible(submitButton);
+    await tester.tap(submitButton);
+    await tester.pump();
+
+    expect(find.text('Informe seu e-mail.'), findsOneWidget);
+    expect(find.text('Informe sua senha.'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const ValueKey('superadmin-login-email')), 'email-invalido');
+    await tester.ensureVisible(submitButton);
+    await tester.tap(submitButton);
+    await tester.pump();
+
+    expect(find.text('Informe um e-mail válido.'), findsOneWidget);
+  });
+
+  testWidgets('toggles password visibility and session preference', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    EditableText passwordField() => tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const ValueKey('superadmin-login-password')),
+        matching: find.byType(EditableText),
+      ),
+    );
+
+    expect(passwordField().obscureText, isTrue);
+    await tester.tap(find.byTooltip('Mostrar senha'));
+    await tester.pump();
+    expect(passwordField().obscureText, isFalse);
+    expect(find.byTooltip('Ocultar senha'), findsOneWidget);
+
+    var checkbox = tester.widget<CheckboxListTile>(find.byType(CheckboxListTile));
+    expect(checkbox.value, isFalse);
+    await tester.tap(find.text('Manter sessão aberta'));
+    await tester.pump();
+    checkbox = tester.widget<CheckboxListTile>(find.byType(CheckboxListTile));
+    expect(checkbox.value, isTrue);
+  });
+
+  testWidgets('shows loading and safe authentication feedback', (tester) async {
+    final session = SuperadminSession();
+    final completer = Completer<LoginResult>();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: (_) => completer.future);
+    await enterValidCredentials(tester);
+    await tester.tap(find.widgetWithText(FilledButton, 'Entrar'));
+    await tester.pump();
+
+    expect(find.text('Entrando...'), findsOneWidget);
+    expect(
+      tester.widget<TextFormField>(find.byKey(const ValueKey('superadmin-login-email'))).enabled,
+      isFalse,
+    );
+
+    completer.complete(
+      const LoginResult.failure('Credenciais inválidas. Verifique e tente novamente.'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Credenciais inválidas. Verifique e tente novamente.'), findsOneWidget);
+    expect(session.isAuthenticated, isFalse);
+  });
+
+  testWidgets('forwards form values and signs in after success', (tester) async {
+    final session = SuperadminSession();
+    LoginRequest? receivedRequest;
+    addTearDown(session.dispose);
+
+    await pumpLogin(
+      tester,
+      session: session,
+      login: (request) async {
+        receivedRequest = request;
+        return const LoginResult.success();
+      },
+    );
+    await enterValidCredentials(tester);
+    await tester.tap(find.text('Manter sessão aberta'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Entrar'));
+    await tester.pumpAndSettle();
+
+    expect(receivedRequest?.email, 'owner@coelo.me');
+    expect(receivedRequest?.password, 'not-a-real-password');
+    expect(receivedRequest?.keepSessionOpen, isTrue);
+    expect(session.isAuthenticated, isTrue);
+  });
+
+  testWidgets('keeps password recovery neutral and local', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+    final forgotPassword = find.text('Esqueci minha senha');
+    await tester.ensureVisible(forgotPassword);
+    await tester.tap(forgotPassword);
+    await tester.pump();
+
+    expect(find.text('Recuperação de senha ainda não está disponível.'), findsOneWidget);
+  });
+
+  testWidgets('does not overflow on a compact window with enlarged text', (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(
+      tester,
+      session: session,
+      login: unavailableSuperadminLogin,
+      textScaler: const TextScaler.linear(2),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+  });
+
+  testWidgets('renders from the Coelo dark theme', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(
+      tester,
+      session: session,
+      login: unavailableSuperadminLogin,
+      theme: CoeloTheme.dark,
+    );
+
+    final scaffoldContext = tester.element(find.byType(Scaffold));
+    expect(Theme.of(scaffoldContext).brightness, Brightness.dark);
+    expect(find.byType(Image), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+}
