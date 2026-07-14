@@ -2,7 +2,9 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../view_models/login_view_model.dart';
+import 'login_forgot_password_button.dart';
 import 'login_submit_button.dart';
+import 'login_text_field.dart';
 
 class SuperadminLoginForm extends StatelessWidget {
   const SuperadminLoginForm({
@@ -38,49 +40,43 @@ class SuperadminLoginForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('E-mail', style: theme.textTheme.labelLarge),
-          const SizedBox(height: CoeloSpacing.space2),
-          TextFormField(
-            key: const ValueKey('superadmin-login-email'),
+          LoginTextField(
+            fieldKey: const ValueKey('superadmin-login-email'),
             controller: emailController,
             focusNode: emailFocusNode,
             enabled: isEnabled,
+            labelText: 'E-mail',
+            hintText: 'seu.email@coelo.me',
+            prefixIcon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.username, AutofillHints.email],
             autocorrect: false,
-            decoration: const InputDecoration(
-              hintText: 'nome@coelo.me',
-              prefixIcon: Icon(Icons.email_outlined),
-            ),
             validator: validateSuperadminEmail,
             onFieldSubmitted: (_) => passwordFocusNode.requestFocus(),
           ),
           const SizedBox(height: CoeloSpacing.space4),
-          Text('Senha', style: theme.textTheme.labelLarge),
-          const SizedBox(height: CoeloSpacing.space2),
-          TextFormField(
-            key: const ValueKey('superadmin-login-password'),
+          LoginTextField(
+            fieldKey: const ValueKey('superadmin-login-password'),
             controller: passwordController,
             focusNode: passwordFocusNode,
             enabled: isEnabled,
+            labelText: 'Senha',
+            hintText: 'Digite sua senha',
+            prefixIcon: Icons.lock_outline,
             obscureText: !viewModel.isPasswordVisible,
             keyboardType: TextInputType.visiblePassword,
             textInputAction: TextInputAction.done,
             autofillHints: const [AutofillHints.password],
             enableSuggestions: false,
             autocorrect: false,
-            decoration: InputDecoration(
-              hintText: 'Digite sua senha',
-              prefixIcon: const Icon(Icons.lock_outline),
-              suffixIcon: IconButton(
-                tooltip: visibilityLabel,
-                onPressed: isEnabled ? viewModel.togglePasswordVisibility : null,
-                icon: Icon(
-                  viewModel.isPasswordVisible
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                ),
+            suffixIcon: IconButton(
+              tooltip: visibilityLabel,
+              onPressed: isEnabled ? viewModel.togglePasswordVisibility : null,
+              icon: Icon(
+                viewModel.isPasswordVisible
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
               ),
             ),
             validator: validateSuperadminPassword,
@@ -106,10 +102,7 @@ class SuperadminLoginForm extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space3),
           LoginSubmitButton(isLoading: viewModel.isLoading, onPressed: onSubmit),
           const SizedBox(height: CoeloSpacing.space2),
-          TextButton(
-            onPressed: isEnabled ? onForgotPassword : null,
-            child: const Text('Esqueci minha senha'),
-          ),
+          LoginForgotPasswordButton(onPressed: isEnabled ? onForgotPassword : null),
         ],
       ),
     );

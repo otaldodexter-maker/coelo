@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
@@ -54,6 +55,71 @@ void main() {
       find.text('Acesso restrito à equipe autorizada. Ações sensíveis podem ser auditadas.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('matches the approved light login anatomy and semantic colors', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final context = tester.element(find.byType(SuperadminLoginScreen));
+    final colors = Theme.of(context).colorScheme;
+    final logo = tester.widget<Image>(find.byType(Image));
+    final card = tester.widget<Card>(find.byType(Card));
+    final email = tester.widget<TextField>(
+      find.descendant(
+        of: find.byKey(const ValueKey('superadmin-login-email')),
+        matching: find.byType(TextField),
+      ),
+    );
+
+    expect(logo.width, CoeloSpacing.space20);
+    expect(logo.height, CoeloSpacing.space20);
+    expect(find.byKey(const ValueKey('superadmin-login-header-divider')), findsOneWidget);
+    expect(card.color, colors.surface);
+    expect(card.surfaceTintColor, colors.surface);
+    expect(email.decoration?.labelText, 'E-mail');
+    expect(email.decoration?.hintText, 'seu.email@coelo.me');
+    expect(email.decoration?.fillColor, colors.secondaryContainer);
+  });
+
+  testWidgets('underlines password recovery on hover without a background overlay', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final context = tester.element(find.byType(SuperadminLoginScreen));
+    final colors = Theme.of(context).colorScheme;
+    final button = tester.widget<TextButton>(
+      find.widgetWithText(TextButton, 'Esqueci minha senha'),
+    );
+    final hovered = <WidgetState>{WidgetState.hovered};
+
+    expect(button.style?.overlayColor?.resolve(hovered), colors.surface.withValues(alpha: 0));
+    expect(button.style?.textStyle?.resolve(hovered)?.decoration, TextDecoration.underline);
+  });
+
+  testWidgets('uses the semantic Peach hover state on light login fields', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final field = find.byKey(const ValueKey('superadmin-login-email'));
+    final context = tester.element(field);
+    final colors = Theme.of(context).colorScheme;
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer(location: Offset.zero);
+    await mouse.moveTo(tester.getCenter(field));
+    await tester.pump();
+
+    final textField = tester.widget<TextField>(
+      find.descendant(of: field, matching: find.byType(TextField)),
+    );
+    expect(textField.decoration?.fillColor, colors.secondary);
   });
 
   testWidgets('validates empty fields and malformed email', (tester) async {

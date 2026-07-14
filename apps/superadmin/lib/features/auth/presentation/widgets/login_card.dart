@@ -9,7 +9,12 @@ class LoginCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Card(
+      color: colors.surface,
+      surfaceTintColor: theme.brightness == Brightness.light ? colors.surface : null,
       elevation: CoeloElevation.level1,
       child: Padding(
         padding: EdgeInsets.all(isCompact ? CoeloSpacing.space6 : CoeloSpacing.space8),

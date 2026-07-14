@@ -13,10 +13,10 @@ class LoginHeader extends StatelessWidget {
       children: [
         Image.asset(
           'assets/brand/logo-coelo-orange.png',
-          width: CoeloSize.avatarLg,
-          height: CoeloSize.avatarLg,
-          cacheWidth: 96,
-          cacheHeight: 96,
+          width: CoeloSize.brandMarkLg,
+          height: CoeloSize.brandMarkLg,
+          cacheWidth: 128,
+          cacheHeight: 128,
           fit: BoxFit.contain,
           semanticLabel: 'Coelo',
         ),
@@ -45,6 +45,8 @@ class LoginHeader extends StatelessWidget {
           style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
+        const SizedBox(height: CoeloSpacing.space6),
+        const Divider(key: ValueKey('superadmin-login-header-divider'), height: 1),
       ],
     );
   }

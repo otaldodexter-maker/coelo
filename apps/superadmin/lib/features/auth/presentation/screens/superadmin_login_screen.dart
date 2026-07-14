@@ -109,7 +109,7 @@ class _SuperadminLoginScreenState extends State<SuperadminLoginScreen> {
                                   const SizedBox(height: CoeloSpacing.space5),
                                   LoginFeedback(message: message),
                                 ],
-                                const SizedBox(height: CoeloSpacing.space8),
+                                const SizedBox(height: CoeloSpacing.space6),
                                 SuperadminLoginForm(
                                   formKey: _formKey,
                                   emailController: _emailController,
