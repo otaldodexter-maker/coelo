@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tutor Coelo"
+  short_description: "Aprenda o Coelo do zero, passo a passo"
+  default_prompt: "Use $coelo-tutor para continuar minha aula do ponto em que paramos."
