@@ -3,6 +3,7 @@ title: "Superadmin Login Design"
 source: "User-approved design; docs/design/design-system.md; docs/contexts/superadmin-context.md; docs/product/prd-superadmin.md; docs/security/auth-multitenant-permissions.md; docs/security/lgpd-security-media.md; decisions/0011-flutter-routing-performance.md"
 status: "approved-design"
 generated_at: "2026-07-13"
+updated_at: "2026-07-14"
 ---
 
 # Superadmin Login Design
@@ -122,6 +123,22 @@ estrutura local, mas nao e tratado como autorizacao real.
   de hover; estados de mouse, teclado, foco e disabled permanecem coerentes com
   o tema.
 
+### Refinamento aprovado em 2026-07-14
+
+- O botao primario usa um token semantico explicito para hover, sem
+  transparencia sobre a superficie. No tema claro, o estado corresponde ao
+  `orange.600`, definido pelo Design System como hover do primario; no tema
+  escuro, usa o tom de marca imediatamente mais escuro que o primario do tema.
+- O estado de hover nao altera tamanho, geometria ou posicao do botao.
+- O cabecalho preserva a assinatura completa oficial, mas reduz a altura
+  ocupada por meio dos tokens de espacamento menores entre logo, chip, titulo,
+  subtitulo e divisor.
+- A distancia entre cabecalho e formulario tambem e reduzida. O ajuste varia
+  somente quando as constraints compactas exigirem e nao remove nenhum alvo de
+  toque, label ou descricao semantica.
+- O resultado deve ser verificado em light e dark e em larguras de 375, 768,
+  1024 e 1440 px, sem overflow horizontal.
+
 ## Acessibilidade
 
 - alvos interativos minimos de 48 dp;
@@ -192,3 +209,7 @@ deve falhar pela ausencia daquele comportamento.
 - light/dark e layout compacto funcionam por tokens e constraints;
 - a tela esta componentizada sem criar dependencias desnecessarias;
 - analise estatica e testes do app concluem sem diagnosticos.
+- o botao `Entrar` fica visualmente mais escuro no hover em light e dark;
+- o hover do botao e coberto por teste de widget usando o token semantico;
+- o bloco da logo ate o divisor fica mais compacto sem reduzir legibilidade,
+  hierarquia ou responsividade.
