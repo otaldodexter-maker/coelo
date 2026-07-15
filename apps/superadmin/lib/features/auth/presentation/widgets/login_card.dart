@@ -11,11 +11,16 @@ class LoginCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isLight = theme.brightness == Brightness.light;
 
     return Card(
       color: colors.surface,
-      surfaceTintColor: theme.brightness == Brightness.light ? colors.surface : null,
+      surfaceTintColor: isLight ? colors.surface : null,
       elevation: CoeloElevation.level1,
+      shadowColor: isLight ? colors.shadow.withValues(alpha: 0.08) : null,
+      shape: isLight
+          ? RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg))
+          : null,
       child: Padding(
         padding: EdgeInsets.all(isCompact ? CoeloSpacing.space6 : CoeloSpacing.space8),
         child: child,

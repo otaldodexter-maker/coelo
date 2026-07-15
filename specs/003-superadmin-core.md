@@ -8,13 +8,13 @@ generated_at: "2026-06-23"
 
 ## Objetivo
 
-Definir o Superadmin MVP como primeira fatia operacional do Coelo, com banco primeiro, wireframe depois e Flutter por ultimo.
+Definir o Superadmin MVP como primeira fatia operacional do Coelo, com banco primeiro e Flutter por ultimo, usando componentização e tecnicas corretas para construção de app web e mobile responsivo em FLutter/Dart.
 
-O nucleo inclui instituicoes, planos/status, usuarios internos, convites seguros, avisos/popups simples, suporte auditado, logs e base de dados preparada para dashboards futuros.
+O nucleo inclui instituicoes, planos/status, usuarios internos, avisos/popups, suporte auditado, logs e base de dados preparada para dashboards futuros.
 
 ## Status
 
-Escopo aprovado para Technical Spec/SDD. A foundation inicial de banco/RLS continua detalhada em `specs/011-superadmin-database-rls.md`, e a spec executiva consolidada do MVP esta em `specs/012-superadmin-mvp.md`.
+Escopo aprovado para Technical Spec/SDD. A foundation inicial de banco/RLS foi detalhada em `specs/011-superadmin-database-rls.md` e gerou a migration `packages/coelo_database/migrations/20260623191021_superadmin_foundation_v1.sql`.
 
 Este documento ainda nao autoriza codigo de produto Flutter, deploy ou novas migrations fora da foundation ja registrada sem spec tecnica revisada.
 
@@ -31,13 +31,13 @@ Este documento ainda nao autoriza codigo de produto Flutter, deploy ou novas mig
 - `auth-multitenant-permissions`
 - `lgpd-security-media`
 - `data-model`
-- Decisoes de produto registradas em 2026-06-23 na conversa de planejamento do Superadmin MVP
+- Decisoes de produto registradas em 2026-06-23 na conversa de planejamento do Superadmin Completo v1
 
 ## Escopo Inicial
 
-- Ativacao de instituicao como primeiro fluxo implementavel: criar instituicao, definir status/plano, vincular owner da instituicao, emitir convite seguro e registrar auditoria.
+- Ativacao de instituicao como primeiro fluxo implementavel: criar instituicao, definir status/plano, vincular owner da instituicao, emitir convite e registrar auditoria.
 - Modelo de dados preparado para crescimento: campos ampliados de instituicao, planos, limites, contrato, branding leve, configuracoes e metadados.
-- Avisos/popups simples no MVP, com visibilidade global ou por instituicao e possibilidade de evoluir segmentacao depois.
+- Avisos/popups com segmentacao avancada por regras, incluindo instituicao, unidade, grupo/turma, papel, contexto e filtros futuros.
 - Governanca interna com 5 papeis: Owner, Operations, Support, Content e Auditor.
 - Owner Coelo inicial unico, com poder total, MFA obrigatoria e delegacao de novos Owners por convite + MFA.
 - Eventos, contadores e snapshots suficientes para dashboard futuro, sem construir a tela de dashboard agora.
@@ -64,7 +64,7 @@ O Owner Coelo e uma excecao explicita ao principio de menor privilegio: pode lib
 
 Quando houver UI, declarar estados de carregamento, vazio, erro, sem permissao, sucesso, desktop, tablet, mobile e acessibilidade.
 
-O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao e o convite seguro. Avisos/popups, usuarios internos, suporte e auditoria seguem como fluxos posteriores dentro do mesmo Superadmin MVP.
+O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao. Avisos/popups, usuarios internos, suporte e auditoria seguem como fluxos posteriores dentro do mesmo Superadmin v1.
 
 ## Criterios De Aceite
 
@@ -74,8 +74,8 @@ O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao e o convite 
 - Nenhum segredo ou `service_role` no cliente.
 - Testes definidos antes da implementacao.
 - Banco desenhado antes das telas e sem depender do wireframe para regras de autorizacao.
-- Ativacao de instituicao gera tenant, plano/status, owner institucional, convite seguro e audit log.
-- Avisos/popups simples estao previstos no escopo, mesmo que a UI completa venha depois.
+- Ativacao de instituicao gera tenant, plano/status, owner institucional, convite e audit log.
+- Segmentacao avancada de avisos/popups esta prevista em schema, mesmo que a UI completa venha depois.
 - Eventos, contadores e snapshots futuros estao especificados sem obrigar dashboard visual no MVP.
 
 ## Testes Requeridos
@@ -84,8 +84,8 @@ O primeiro wireframe deve cobrir o fluxo de ativacao de instituicao e o convite 
 - Testes de permissao/RLS quando tocar banco.
 - Testes de import boundaries quando tocar pacotes.
 - Testes de acessibilidade/golden quando tocar UI.
-- Testes de Owner com MFA obrigatoria e delegacao por convite + MFA.
-- Testes cross-tenant para instituicoes, convites, avisos/popups, suporte, auditoria, eventos e contadores.
+- Testes de Owner com MFA obrigatoria e delegacao por convite + MFA (Apenas na V1, não no MVP).
+- Testes cross-tenant para instituicoes, avisos/popups, suporte, auditoria, eventos e contadores.
 - Testes responsivos dos wireframes/telas para desktop, tablet e mobile.
 
 ## Perguntas Abertas

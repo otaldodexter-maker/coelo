@@ -9,11 +9,36 @@ class LoginSubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final primaryHover = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
+
     return SizedBox(
       width: double.infinity,
       height: CoeloSize.touchMin,
       child: FilledButton(
         onPressed: isLoading ? null : onPressed,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colors.surfaceContainer;
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return primaryHover;
+            }
+            return colors.primary;
+          }),
+          foregroundColor: WidgetStatePropertyAll(colors.onPrimary),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered)) {
+              return colors.onPrimary.withValues(alpha: 0);
+            }
+            if (states.contains(WidgetState.focused)) {
+              return colors.onPrimary.withValues(alpha: 0.08);
+            }
+            return null;
+          }),
+        ),
         child: isLoading
             ? const Row(
                 mainAxisSize: MainAxisSize.min,

@@ -8,19 +8,23 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Column(
       children: [
         Image.asset(
-          'assets/brand/logo-coelo-orange.png',
-          width: CoeloSize.brandMarkLg,
-          height: CoeloSize.brandMarkLg,
-          cacheWidth: 128,
-          cacheHeight: 128,
+          'assets/brand/logo-coelo-orange-complete.png',
+          width: CoeloSize.brandSignatureMd,
+          cacheWidth: 360,
           fit: BoxFit.contain,
+          color: isDark ? colors.onSurface : null,
+          colorBlendMode: isDark ? BlendMode.srcIn : null,
           semanticLabel: 'Coelo',
         ),
-        const SizedBox(height: CoeloSpacing.space4),
+        const SizedBox(
+          key: ValueKey('superadmin-login-gap-logo-chip'),
+          height: CoeloSpacing.space1,
+        ),
         DecoratedBox(
           decoration: BoxDecoration(
             color: colors.primaryContainer,
@@ -37,16 +41,29 @@ class LoginHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: CoeloSpacing.space5),
+        const SizedBox(
+          key: ValueKey('superadmin-login-gap-chip-title'),
+          height: CoeloSpacing.space2,
+        ),
         Text('Acesse sua conta', style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
-        const SizedBox(height: CoeloSpacing.space2),
+        const SizedBox(
+          key: ValueKey('superadmin-login-gap-title-subtitle'),
+          height: CoeloSpacing.space1,
+        ),
         Text(
           'Ambiente interno da operação Coelo.',
           style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: CoeloSpacing.space6),
-        const Divider(key: ValueKey('superadmin-login-header-divider'), height: 1),
+        const SizedBox(
+          key: ValueKey('superadmin-login-gap-subtitle-divider'),
+          height: CoeloSpacing.space3,
+        ),
+        Divider(
+          key: const ValueKey('superadmin-login-header-divider'),
+          height: 1,
+          color: colors.outlineVariant,
+        ),
       ],
     );
   }

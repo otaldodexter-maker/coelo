@@ -46,6 +46,8 @@ abstract final class CoeloSize {
   static const double iconMd = 24;
   static const double iconLg = 32;
   static const double brandMarkLg = 80;
+  static const double brandSignatureMd = 200;
+  static const double brandSignatureLg = 240;
   static const double avatarSm = 32;
   static const double avatarMd = 40;
   static const double avatarLg = 48;

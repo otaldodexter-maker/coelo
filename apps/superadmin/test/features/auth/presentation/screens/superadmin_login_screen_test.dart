@@ -74,14 +74,44 @@ void main() {
       ),
     );
 
-    expect(logo.width, CoeloSpacing.space20);
-    expect(logo.height, CoeloSpacing.space20);
+    final logoProvider = (logo.image as ResizeImage).imageProvider as AssetImage;
+    final divider = tester.widget<Divider>(
+      find.byKey(const ValueKey('superadmin-login-header-divider')),
+    );
+
+    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange-complete.png');
+    expect(logo.width, CoeloSize.brandSignatureMd);
+    expect(logo.height, isNull);
+    expect(logo.color, isNull);
     expect(find.byKey(const ValueKey('superadmin-login-header-divider')), findsOneWidget);
     expect(card.color, colors.surface);
     expect(card.surfaceTintColor, colors.surface);
+    expect(card.shape, isA<RoundedRectangleBorder>());
+    final cardShape = card.shape! as RoundedRectangleBorder;
+    expect(cardShape.side, BorderSide.none);
+    expect(card.elevation, CoeloElevation.level1);
+    expect(card.shadowColor, colors.shadow.withValues(alpha: 0.08));
+    expect(divider.color, colors.outlineVariant);
     expect(email.decoration?.labelText, 'E-mail');
     expect(email.decoration?.hintText, 'seu.email@coelo.me');
     expect(email.decoration?.fillColor, colors.secondaryContainer);
+  });
+
+  testWidgets('keeps the login header compact with semantic spacing tokens', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    double gap(String key) {
+      return tester.widget<SizedBox>(find.byKey(ValueKey<String>(key))).height!;
+    }
+
+    expect(gap('superadmin-login-gap-logo-chip'), CoeloSpacing.space1);
+    expect(gap('superadmin-login-gap-chip-title'), CoeloSpacing.space2);
+    expect(gap('superadmin-login-gap-title-subtitle'), CoeloSpacing.space1);
+    expect(gap('superadmin-login-gap-subtitle-divider'), CoeloSpacing.space3);
+    expect(gap('superadmin-login-gap-header-form'), CoeloSpacing.space4);
   });
 
   testWidgets('underlines password recovery on hover without a background overlay', (tester) async {
@@ -99,6 +129,26 @@ void main() {
 
     expect(button.style?.overlayColor?.resolve(hovered), colors.surface.withValues(alpha: 0));
     expect(button.style?.textStyle?.resolve(hovered)?.decoration, TextDecoration.underline);
+  });
+
+  testWidgets('uses a darker semantic primary hover in light and dark themes', (tester) async {
+    for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+      final session = SuperadminSession();
+      addTearDown(session.dispose);
+
+      await pumpLogin(tester, session: session, login: unavailableSuperadminLogin, theme: theme);
+
+      final context = tester.element(find.byType(SuperadminLoginScreen));
+      final colors = Theme.of(context).colorScheme;
+      final actionColors = Theme.of(context).extension<CoeloActionColors>()!;
+      final button = tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Entrar'));
+      final hoveredBackground = button.style?.backgroundColor?.resolve(<WidgetState>{
+        WidgetState.hovered,
+      });
+
+      expect(hoveredBackground, actionColors.primaryHover);
+      expect(hoveredBackground!.computeLuminance(), lessThan(colors.primary.computeLuminance()));
+    }
   });
 
   testWidgets('uses the semantic Peach hover state on light login fields', (tester) async {
@@ -265,7 +315,11 @@ void main() {
 
     final scaffoldContext = tester.element(find.byType(Scaffold));
     expect(Theme.of(scaffoldContext).brightness, Brightness.dark);
-    expect(find.byType(Image), findsOneWidget);
+    final logo = tester.widget<Image>(find.byType(Image));
+    final logoProvider = (logo.image as ResizeImage).imageProvider as AssetImage;
+    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange-complete.png');
+    expect(logo.color, Theme.of(scaffoldContext).colorScheme.onSurface);
+    expect(logo.colorBlendMode, BlendMode.srcIn);
     expect(tester.takeException(), isNull);
   });
 }
