@@ -32,7 +32,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: SuperadminLoginScreen(session: session, login: unavailableSuperadminLogin),
+        home: SuperadminLoginScreen(
+          session: session,
+          login: unavailableSuperadminLogin,
+          onThemeModeChanged: (_) {},
+        ),
       ),
     );
     await tester.runAsync(() async {

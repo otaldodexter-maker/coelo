@@ -50,8 +50,8 @@ class _LoginTextFieldState extends State<LoginTextField> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final fillColor = switch ((theme.brightness, _isHovered)) {
-      (Brightness.light, false) => colors.secondaryContainer,
-      (Brightness.light, true) => colors.secondary,
+      (Brightness.light, false) => colors.surfaceContainerLowest,
+      (Brightness.light, true) => colors.surfaceContainerLow,
       (Brightness.dark, false) => colors.surfaceContainer,
       (Brightness.dark, true) => colors.surfaceContainerHigh,
     };

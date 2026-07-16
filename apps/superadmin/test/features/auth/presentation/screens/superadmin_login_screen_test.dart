@@ -21,7 +21,7 @@ void main() {
         theme: theme ?? CoeloTheme.light,
         home: MediaQuery(
           data: MediaQueryData(textScaler: textScaler),
-          child: SuperadminLoginScreen(session: session, login: login),
+          child: SuperadminLoginScreen(session: session, login: login, onThemeModeChanged: (_) {}),
         ),
       ),
     );
@@ -79,8 +79,8 @@ void main() {
       find.byKey(const ValueKey('superadmin-login-header-divider')),
     );
 
-    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange-complete.png');
-    expect(logo.width, CoeloSize.brandSignatureMd);
+    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange.png');
+    expect(logo.width, CoeloSize.brandMarkLg);
     expect(logo.height, isNull);
     expect(logo.color, isNull);
     expect(find.byKey(const ValueKey('superadmin-login-header-divider')), findsOneWidget);
@@ -94,7 +94,7 @@ void main() {
     expect(divider.color, colors.outlineVariant);
     expect(email.decoration?.labelText, 'E-mail');
     expect(email.decoration?.hintText, 'seu.email@coelo.me');
-    expect(email.decoration?.fillColor, colors.secondaryContainer);
+    expect(email.decoration?.fillColor, colors.surfaceContainerLowest);
   });
 
   testWidgets('keeps the login header compact with semantic spacing tokens', (tester) async {
@@ -169,7 +169,7 @@ void main() {
     final textField = tester.widget<TextField>(
       find.descendant(of: field, matching: find.byType(TextField)),
     );
-    expect(textField.decoration?.fillColor, colors.secondary);
+    expect(textField.decoration?.fillColor, colors.surfaceContainerLow);
   });
 
   testWidgets('validates empty fields and malformed email', (tester) async {
@@ -317,9 +317,42 @@ void main() {
     expect(Theme.of(scaffoldContext).brightness, Brightness.dark);
     final logo = tester.widget<Image>(find.byType(Image));
     final logoProvider = (logo.image as ResizeImage).imageProvider as AssetImage;
-    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange-complete.png');
+    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange.png');
     expect(logo.color, Theme.of(scaffoldContext).colorScheme.onSurface);
     expect(logo.colorBlendMode, BlendMode.srcIn);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('switches the app theme from the login screen', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    ThemeMode? selectedMode;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        darkTheme: CoeloTheme.dark,
+        home: MediaQuery(
+          data: const MediaQueryData(),
+          child: SuperadminLoginScreen(
+            session: session,
+            login: unavailableSuperadminLogin,
+            onThemeModeChanged: (mode) => selectedMode = mode,
+          ),
+        ),
+      ),
+    );
+
+    final themeToggle = find.byKey(const ValueKey('superadmin-login-theme-toggle'));
+    expect(themeToggle, findsOneWidget);
+    final toggleButton = tester.widget<IconButton>(themeToggle);
+    expect(
+      toggleButton.style?.minimumSize?.resolve(<WidgetState>{}),
+      const Size.square(CoeloSize.touchMin),
+    );
+    await tester.tap(themeToggle);
+    await tester.pump();
+
+    expect(selectedMode, ThemeMode.dark);
   });
 }

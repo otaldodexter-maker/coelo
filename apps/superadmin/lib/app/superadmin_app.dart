@@ -5,13 +5,20 @@ import 'package:go_router/go_router.dart';
 import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/auth/domain/login_request.dart';
+import '../features/auth/domain/logout_action.dart';
 import 'router/superadmin_router.dart';
 
 class SuperadminApp extends StatefulWidget {
-  const SuperadminApp({this.session, this.login = unavailableSuperadminLogin, super.key});
+  const SuperadminApp({
+    this.session,
+    this.login = unavailableSuperadminLogin,
+    this.logout = unavailableSuperadminLogout,
+    super.key,
+  });
 
   final SuperadminSession? session;
   final LoginAction login;
+  final LogoutAction logout;
 
   @override
   State<SuperadminApp> createState() => _SuperadminAppState();
@@ -21,13 +28,28 @@ class _SuperadminAppState extends State<SuperadminApp> {
   late final SuperadminSession _session;
   late final GoRouter _router;
   late final bool _ownsSession;
+  ThemeMode _themeMode = ThemeMode.system;
 
   @override
   void initState() {
     super.initState();
     _ownsSession = widget.session == null;
     _session = widget.session ?? SuperadminSession();
-    _router = createSuperadminRouter(session: _session, login: widget.login);
+    _router = createSuperadminRouter(
+      session: _session,
+      login: widget.login,
+      logout: widget.logout,
+      onThemeModeChanged: _setThemeMode,
+    );
+  }
+
+  void _setThemeMode(ThemeMode mode) {
+    if (_themeMode == mode) {
+      return;
+    }
+    setState(() {
+      _themeMode = mode;
+    });
   }
 
   @override
@@ -46,7 +68,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       debugShowCheckedModeBanner: false,
       theme: CoeloTheme.light,
       darkTheme: CoeloTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: _themeMode,
       routerConfig: _router,
     );
   }

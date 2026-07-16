@@ -65,20 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
-  coelo_auth:
-    dependency: "direct main"
-    description:
-      path: "../../packages/coelo_auth"
-      relative: true
-    source: path
-    version: "0.1.0"
-  coelo_tokens:
-    dependency: "direct main"
-    description:
-      path: "../../packages/coelo_tokens"
-      relative: true
-    source: path
-    version: "0.1.0"
   collection:
     dependency: transitive
     description:
@@ -154,7 +140,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_web_plugins:
-    dependency: "direct main"
+    dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -166,14 +152,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.4"
-  go_router:
-    dependency: "direct main"
-    description:
-      name: go_router
-      sha256: d8f590a69729f719177ea68eb1e598295e8dbc41bbc247fed78b2c8a25660d7c
-      url: "https://pub.dev"
-    source: hosted
-    version: "16.3.0"
   gotrue:
     dependency: transitive
     description:

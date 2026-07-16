@@ -2,9 +2,22 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/superadmin_app_config.dart';
+import '../../features/auth/domain/logout_action.dart';
 
 class SuperadminShell extends StatelessWidget {
-  const SuperadminShell({super.key});
+  const SuperadminShell({required this.logout, super.key});
+
+  final LogoutAction logout;
+
+  Future<void> _handleLogout(BuildContext context) async {
+    final result = await logout();
+    if (!context.mounted || result.isSuccess) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(result.message ?? LogoutResult.genericFailureMessage)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,15 +26,18 @@ class SuperadminShell extends StatelessWidget {
         final showRail = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
 
         if (!showRail) {
-          return const Scaffold(appBar: _CompactAppBar(), body: _BootstrapContent());
+          return Scaffold(
+            appBar: _CompactAppBar(onLogout: () => _handleLogout(context)),
+            body: const _BootstrapContent(),
+          );
         }
 
-        return const Scaffold(
+        return Scaffold(
           body: Row(
             children: [
-              _SuperadminNavigationRail(),
-              VerticalDivider(width: 1),
-              Expanded(child: _BootstrapContent()),
+              _SuperadminNavigationRail(onLogout: () => _handleLogout(context)),
+              const VerticalDivider(width: 1),
+              const Expanded(child: _BootstrapContent()),
             ],
           ),
         );
@@ -31,19 +47,27 @@ class SuperadminShell extends StatelessWidget {
 }
 
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _CompactAppBar();
+  const _CompactAppBar({required this.onLogout});
+
+  final VoidCallback onLogout;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(title: const Text('Superadmin'), centerTitle: false);
+    return AppBar(
+      title: const Text('Superadmin'),
+      centerTitle: false,
+      actions: [_LogoutButton(onPressed: onLogout)],
+    );
   }
 }
 
 class _SuperadminNavigationRail extends StatelessWidget {
-  const _SuperadminNavigationRail();
+  const _SuperadminNavigationRail({required this.onLogout});
+
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +77,7 @@ class _SuperadminNavigationRail extends StatelessWidget {
       selectedIndex: 0,
       minWidth: 88,
       backgroundColor: colors.surface,
+      trailing: _LogoutButton(onPressed: onLogout),
       destinations: const [
         NavigationRailDestination(
           icon: Icon(Icons.space_dashboard_outlined),
@@ -61,6 +86,17 @@ class _SuperadminNavigationRail extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _LogoutButton extends StatelessWidget {
+  const _LogoutButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(tooltip: 'Sair', onPressed: onPressed, icon: const Icon(Icons.logout));
   }
 }
 

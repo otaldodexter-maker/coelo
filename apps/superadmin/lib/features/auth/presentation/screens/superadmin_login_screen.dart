@@ -11,13 +11,20 @@ import '../widgets/login_card.dart';
 import '../widgets/login_feedback.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_security_notice.dart';
+import '../widgets/login_theme_toggle_button.dart';
 import '../widgets/superadmin_login_form.dart';
 
 class SuperadminLoginScreen extends StatefulWidget {
-  const SuperadminLoginScreen({required this.session, required this.login, super.key});
+  const SuperadminLoginScreen({
+    required this.session,
+    required this.login,
+    required this.onThemeModeChanged,
+    super.key,
+  });
 
   final SuperadminSession session;
   final LoginAction login;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
   State<SuperadminLoginScreen> createState() => _SuperadminLoginScreenState();
@@ -100,31 +107,42 @@ class _SuperadminLoginScreenState extends State<SuperadminLoginScreen> {
                         listenable: _viewModel,
                         builder: (context, child) {
                           return AutofillGroup(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                            child: Stack(
                               children: [
-                                const LoginHeader(),
-                                if (_viewModel.errorMessage case final message?) ...[
-                                  const SizedBox(height: CoeloSpacing.space5),
-                                  LoginFeedback(message: message),
-                                ],
-                                const SizedBox(
-                                  key: ValueKey('superadmin-login-gap-header-form'),
-                                  height: CoeloSpacing.space4,
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    const LoginHeader(),
+                                    if (_viewModel.errorMessage case final message?) ...[
+                                      const SizedBox(height: CoeloSpacing.space5),
+                                      LoginFeedback(message: message),
+                                    ],
+                                    const SizedBox(
+                                      key: ValueKey('superadmin-login-gap-header-form'),
+                                      height: CoeloSpacing.space4,
+                                    ),
+                                    SuperadminLoginForm(
+                                      formKey: _formKey,
+                                      emailController: _emailController,
+                                      passwordController: _passwordController,
+                                      emailFocusNode: _emailFocusNode,
+                                      passwordFocusNode: _passwordFocusNode,
+                                      viewModel: _viewModel,
+                                      onSubmit: _submit,
+                                      onForgotPassword: _showPasswordRecoveryFeedback,
+                                    ),
+                                    const SizedBox(height: CoeloSpacing.space6),
+                                    const LoginSecurityNotice(),
+                                  ],
                                 ),
-                                SuperadminLoginForm(
-                                  formKey: _formKey,
-                                  emailController: _emailController,
-                                  passwordController: _passwordController,
-                                  emailFocusNode: _emailFocusNode,
-                                  passwordFocusNode: _passwordFocusNode,
-                                  viewModel: _viewModel,
-                                  onSubmit: _submit,
-                                  onForgotPassword: _showPasswordRecoveryFeedback,
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: LoginThemeToggleButton(
+                                    onThemeModeChanged: widget.onThemeModeChanged,
+                                  ),
                                 ),
-                                const SizedBox(height: CoeloSpacing.space6),
-                                const LoginSecurityNotice(),
                               ],
                             ),
                           );

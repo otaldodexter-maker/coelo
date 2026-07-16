@@ -13,8 +13,8 @@ class LoginHeader extends StatelessWidget {
     return Column(
       children: [
         Image.asset(
-          'assets/brand/logo-coelo-orange-complete.png',
-          width: CoeloSize.brandSignatureMd,
+          'assets/brand/logo-coelo-orange.png',
+          width: CoeloSize.brandMarkLg,
           cacheWidth: 360,
           fit: BoxFit.contain,
           color: isDark ? colors.onSurface : null,
