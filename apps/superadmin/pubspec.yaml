@@ -14,6 +14,7 @@ dependencies:
     path: ../../packages/coelo_tokens
   flutter:
     sdk: flutter
+  flutter_svg: 2.2.3
   flutter_web_plugins:
     sdk: flutter
   go_router: ^16.0.0
@@ -27,6 +28,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/brand/logo-coelo-white.svg
+    - assets/brand/logo-coelo-orange.svg
     - assets/brand/logo-coelo-orange.png
     - assets/brand/logo-coelo-orange-complete.png
   fonts:

@@ -70,6 +70,64 @@ void main() {
     expect(find.byKey(const Key('institution-district-filter')), findsOneWidget);
   });
 
+  testWidgets('searches geographic filters ignoring case and Portuguese accents', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-state-filter')));
+    await tester.pumpAndSettle();
+    final stateSearch = find.byKey(const Key('institution-state-filter-search'));
+    expect(stateSearch, findsOneWidget);
+    await tester.enterText(stateSearch, 'sao');
+    await tester.pump();
+    expect(find.text('SP — São Paulo'), findsOneWidget);
+    expect(find.text('AC — Acre'), findsNothing);
+    await tester.tap(find.text('SP — São Paulo'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-city-filter')));
+    await tester.pumpAndSettle();
+    final citySearch = find.byKey(const Key('institution-city-filter-search'));
+    expect(citySearch, findsOneWidget);
+    await tester.enterText(citySearch, 'CAMP');
+    await tester.pump();
+    expect(find.text('Campinas'), findsOneWidget);
+    expect(find.text('São Paulo'), findsNothing);
+    await tester.tap(find.text('Campinas'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-district-filter')));
+    await tester.pumpAndSettle();
+    final districtSearch = find.byKey(const Key('institution-district-filter-search'));
+    expect(districtSearch, findsOneWidget);
+    await tester.enterText(districtSearch, 'cambui');
+    await tester.pump();
+    expect(find.text('Cambuí'), findsOneWidget);
+    expect(find.text('Jardins'), findsNothing);
+  });
+
+  testWidgets('clears a geographic menu search when the menu reopens', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-state-filter')));
+    await tester.pumpAndSettle();
+    final stateSearch = find.byKey(const Key('institution-state-filter-search'));
+    await tester.enterText(stateSearch, 'sao');
+    await tester.pump();
+    await tester.tap(find.text('SP — São Paulo'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-state-filter')));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(stateSearch).controller!.text, isEmpty);
+    expect(find.text('AC — Acre'), findsOneWidget);
+  });
+
   testWidgets('uses rounded anchored menus below their filter trigger', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));

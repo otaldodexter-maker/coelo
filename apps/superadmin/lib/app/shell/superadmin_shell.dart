@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../features/auth/domain/logout_action.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
@@ -201,6 +202,7 @@ class _BrandHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDark = colors.brightness == Brightness.dark;
     return SizedBox(
       height: _headerHeight,
       child: Padding(
@@ -216,13 +218,13 @@ class _BrandHeader extends StatelessWidget {
               height: CoeloSize.touchMin,
               padding: const EdgeInsets.all(CoeloSpacing.space2),
               decoration: BoxDecoration(
-                color: colors.onSurface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                color: isDark ? CoeloPalette.neutral0 : colors.primary,
+                shape: BoxShape.circle,
               ),
-              child: _OfficialCoeloMark(
-                key: const Key('superadmin-brand-symbol'),
-                foregroundColor: colors.surface,
-                detailColor: colors.primary,
+              child: SvgPicture.asset(
+                isDark ? 'assets/brand/logo-coelo-orange.svg' : 'assets/brand/logo-coelo-white.svg',
+                key: Key(isDark ? 'superadmin-brand-logo-dark' : 'superadmin-brand-logo-light'),
+                semanticsLabel: 'Coelo',
               ),
             ),
             if (!collapsed) ...[
@@ -237,7 +239,7 @@ class _BrandHeader extends StatelessWidget {
 }
 
 class _OfficialCoeloMark extends StatelessWidget {
-  const _OfficialCoeloMark({required this.foregroundColor, required this.detailColor, super.key});
+  const _OfficialCoeloMark({required this.foregroundColor, required this.detailColor});
 
   final Color foregroundColor;
   final Color detailColor;
@@ -1013,25 +1015,45 @@ class _ProfileSummary extends StatelessWidget {
     final colors = theme.colorScheme;
     final standardItemStyle =
         MenuItemButton.styleFrom(
-          foregroundColor: colors.onSurfaceVariant,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
         ).copyWith(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed);
+            return highlighted ? colors.primary : colors.onSurfaceVariant;
+          }),
+          iconColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed);
+            return highlighted ? colors.primary : colors.onSurfaceVariant;
+          }),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
-            return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+            return states.contains(WidgetState.hovered) ||
+                    states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)
                 ? colors.primaryContainer
                 : Colors.transparent;
           }),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         );
     final logoutStyle =
         MenuItemButton.styleFrom(
-          foregroundColor: colors.error,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
         ).copyWith(
+          foregroundColor: WidgetStatePropertyAll(colors.error),
+          iconColor: WidgetStatePropertyAll(colors.error),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
-            return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+            return states.contains(WidgetState.hovered) ||
+                    states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)
                 ? colors.errorContainer
                 : Colors.transparent;
           }),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         );
     return MenuAnchor(
       alignmentOffset: const Offset(0, CoeloSpacing.space2),

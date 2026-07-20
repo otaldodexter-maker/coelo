@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Camada_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 360.15 349.32">
+  <ellipse fill="#d63c00" cx="156.91" cy="249.54" rx="95.83" ry="159.32" transform="translate(-120.77 348.43) rotate(-77.44)"/>
+  <ellipse fill="#d63c00" cx="142.55" cy="103.73" rx="41.55" ry="117.36" transform="translate(-32.78 85.27) rotate(-30.03)"/>
+  <ellipse fill="#d63c00" cx="267.59" cy="124.48" rx="117.36" ry="41.55" transform="translate(-15.85 206.7) rotate(-41.12)"/>
+  <circle fill="#fff" cx="91.62" cy="236.52" r="17.96"/>
+  <circle fill="#fff" cx="221.39" cy="262.97" r="14.29"/>
+  <path fill="#fff" d="M154.92,284.67h0c5.7-6.21,2.54-16.26-5.69-18.1h0c-8.23-1.83-15.36,5.93-12.83,13.97h0c2.53,8.04,12.81,10.33,18.52,4.13Z"/>
+</svg>

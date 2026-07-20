@@ -104,7 +104,7 @@ void main() {
       const Size(24, 24),
     );
     expect(tester.getSize(find.byKey(const Key('superadmin-brand-mark'))), const Size(48, 48));
-    expect(find.byKey(const Key('superadmin-brand-symbol')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-brand-logo-light')), findsOneWidget);
 
     final activeDecoration =
         tester
@@ -213,11 +213,34 @@ void main() {
     await tester.tap(trigger);
     await tester.pumpAndSettle();
     final logout = tester.widget<MenuItemButton>(find.byKey(const Key('superadmin-logout-action')));
+    final profile = tester.widget<MenuItemButton>(
+      find.byKey(const Key('superadmin-profile-action')),
+    );
+    final settings = tester.widget<MenuItemButton>(
+      find.byKey(const Key('superadmin-settings-action')),
+    );
     expect(logout.style?.foregroundColor?.resolve({}), CoeloTheme.light.colorScheme.error);
+    expect(logout.style?.iconColor?.resolve({}), CoeloTheme.light.colorScheme.error);
     expect(
       logout.style?.backgroundColor?.resolve({WidgetState.hovered}),
       CoeloTheme.light.colorScheme.errorContainer,
     );
+    expect(logout.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    for (final action in [profile, settings]) {
+      expect(
+        action.style?.foregroundColor?.resolve({WidgetState.hovered}),
+        CoeloTheme.light.colorScheme.primary,
+      );
+      expect(
+        action.style?.iconColor?.resolve({WidgetState.hovered}),
+        CoeloTheme.light.colorScheme.primary,
+      );
+      expect(
+        action.style?.backgroundColor?.resolve({WidgetState.hovered}),
+        CoeloTheme.light.colorScheme.primaryContainer,
+      );
+      expect(action.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    }
     expect(
       tester.getTopLeft(find.byKey(const Key('superadmin-profile-action'))).dy,
       greaterThanOrEqualTo(tester.getBottomLeft(trigger).dy),
@@ -235,6 +258,30 @@ void main() {
         CoeloTheme.light.extension<CoeloActionColors>()!.primaryHover,
       );
     }
+  });
+
+  testWidgets('uses the official circular brand treatment for light and dark themes', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp());
+    final lightMark = tester.widget<Container>(find.byKey(const Key('superadmin-brand-mark')));
+    final lightDecoration = lightMark.decoration! as BoxDecoration;
+    expect(lightDecoration.shape, BoxShape.circle);
+    expect(lightDecoration.color, CoeloTheme.light.colorScheme.primary);
+    expect(find.byKey(const Key('superadmin-brand-logo-light')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-brand-logo-dark')), findsNothing);
+
+    await tester.pumpWidget(_shellApp(brightness: Brightness.dark));
+    await tester.pumpAndSettle();
+    final darkMark = tester.widget<Container>(find.byKey(const Key('superadmin-brand-mark')));
+    final darkDecoration = darkMark.decoration! as BoxDecoration;
+    expect(darkDecoration.shape, BoxShape.circle);
+    expect(darkDecoration.color, CoeloPalette.neutral0);
+    expect(find.byKey(const Key('superadmin-brand-logo-dark')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-brand-logo-light')), findsNothing);
   });
 
   testWidgets('shows safe feedback when logout fails', (tester) async {
@@ -351,9 +398,11 @@ class _ThemeShellHarnessState extends State<_ThemeShellHarness> {
   }
 }
 
-Widget _shellApp() {
+Widget _shellApp({Brightness brightness = Brightness.light}) {
   return MaterialApp(
     theme: CoeloTheme.light,
+    darkTheme: CoeloTheme.dark,
+    themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
     home: SuperadminShell(
       logout: () async => const LogoutResult.success(),
       child: const SizedBox.expand(),

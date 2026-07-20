@@ -205,6 +205,9 @@ class _DirectoryToolbar extends StatelessWidget {
               child: _DirectoryFilterMenu<String>(
                 triggerKey: const Key('institution-state-filter'),
                 anchorKey: const Key('institution-state-filter-anchor'),
+                searchFieldKey: const Key('institution-state-filter-search'),
+                searchHintText: 'Buscar UF',
+                searchable: true,
                 value: viewModel.query.state,
                 allLabel: 'Todas as UFs',
                 items: _brazilStatesForMenu
@@ -224,6 +227,9 @@ class _DirectoryToolbar extends StatelessWidget {
                 child: _DirectoryFilterMenu<String>(
                   triggerKey: const Key('institution-city-filter'),
                   anchorKey: const Key('institution-city-filter-anchor'),
+                  searchFieldKey: const Key('institution-city-filter-search'),
+                  searchHintText: 'Buscar município',
+                  searchable: true,
                   value: viewModel.query.city,
                   allLabel: 'Todos os municípios',
                   items: viewModel.filterOptions.cities
@@ -238,6 +244,9 @@ class _DirectoryToolbar extends StatelessWidget {
                 child: _DirectoryFilterMenu<String>(
                   triggerKey: const Key('institution-district-filter'),
                   anchorKey: const Key('institution-district-filter-anchor'),
+                  searchFieldKey: const Key('institution-district-filter-search'),
+                  searchHintText: 'Buscar bairro',
+                  searchable: true,
                   value: viewModel.query.district,
                   allLabel: 'Todos os bairros',
                   items: viewModel.filterOptions.districts
@@ -283,7 +292,7 @@ class _FilterMenuOption<T> {
   final String label;
 }
 
-class _DirectoryFilterMenu<T> extends StatelessWidget {
+class _DirectoryFilterMenu<T> extends StatefulWidget {
   const _DirectoryFilterMenu({
     required this.triggerKey,
     required this.anchorKey,
@@ -291,8 +300,12 @@ class _DirectoryFilterMenu<T> extends StatelessWidget {
     required this.allLabel,
     required this.items,
     required this.onChanged,
+    this.searchable = false,
+    this.searchFieldKey,
+    this.searchHintText,
     super.key,
-  });
+  }) : assert(!searchable || searchFieldKey != null),
+       assert(!searchable || searchHintText != null);
 
   final Key triggerKey;
   final Key anchorKey;
@@ -300,14 +313,62 @@ class _DirectoryFilterMenu<T> extends StatelessWidget {
   final String allLabel;
   final List<_FilterMenuOption<T>> items;
   final ValueChanged<T?>? onChanged;
+  final bool searchable;
+  final Key? searchFieldKey;
+  final String? searchHintText;
+
+  @override
+  State<_DirectoryFilterMenu<T>> createState() => _DirectoryFilterMenuState<T>();
+}
+
+class _DirectoryFilterMenuState<T> extends State<_DirectoryFilterMenu<T>> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void didUpdateWidget(covariant _DirectoryFilterMenu<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.items != widget.items && _searchQuery.isNotEmpty) {
+      _clearSearch();
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    if (_searchQuery.isEmpty || !mounted) {
+      return;
+    }
+    setState(() => _searchQuery = '');
+  }
+
+  void _select(T? value) {
+    _clearSearch();
+    widget.onChanged?.call(value);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final selectedLabel = items.where((item) => item.value == value).firstOrNull?.label ?? allLabel;
+    final selectedLabel =
+        widget.items.where((item) => item.value == widget.value).firstOrNull?.label ??
+        widget.allLabel;
+    final normalizedQuery = _normalizeFilterSearch(_searchQuery);
+    final visibleItems = normalizedQuery.isEmpty
+        ? widget.items
+        : widget.items
+              .where((item) => _normalizeFilterSearch(item.label).contains(normalizedQuery))
+              .toList(growable: false);
     return MenuAnchor(
-      key: anchorKey,
+      key: widget.anchorKey,
+      onOpen: _clearSearch,
+      onClose: _clearSearch,
       alignmentOffset: const Offset(0, CoeloSpacing.space1),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
@@ -321,23 +382,54 @@ class _DirectoryFilterMenu<T> extends StatelessWidget {
         maximumSize: const WidgetStatePropertyAll(Size(320, 360)),
       ),
       menuChildren: [
+        if (widget.searchable)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CoeloSpacing.space2,
+              CoeloSpacing.space2,
+              CoeloSpacing.space2,
+              CoeloSpacing.space1,
+            ),
+            child: SizedBox(
+              width: 280,
+              child: TextField(
+                key: widget.searchFieldKey,
+                controller: _searchController,
+                autofocus: true,
+                textInputAction: TextInputAction.search,
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: _pillInputDecoration(
+                  context,
+                  hintText: widget.searchHintText,
+                  prefixIcon: const Icon(Icons.search_rounded),
+                ),
+              ),
+            ),
+          ),
         MenuItemButton(
-          onPressed: onChanged == null ? null : () => onChanged!(null),
+          onPressed: widget.onChanged == null ? null : () => _select(null),
           style: _filterMenuItemStyle(colors),
-          child: Text(allLabel),
+          child: Text(widget.allLabel),
         ),
-        ...items.map(
+        ...visibleItems.map(
           (item) => MenuItemButton(
-            onPressed: onChanged == null ? null : () => onChanged!(item.value),
+            onPressed: widget.onChanged == null ? null : () => _select(item.value),
             style: _filterMenuItemStyle(colors),
-            trailingIcon: item.value == value ? Icon(Icons.check, color: colors.primary) : null,
+            trailingIcon: item.value == widget.value
+                ? Icon(Icons.check, color: colors.primary)
+                : null,
             child: Text(item.label),
           ),
         ),
+        if (widget.searchable && visibleItems.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Text('Nenhuma opção encontrada.', style: theme.textTheme.bodyMedium),
+          ),
       ],
       builder: (context, controller, child) => OutlinedButton(
-        key: triggerKey,
-        onPressed: onChanged == null
+        key: widget.triggerKey,
+        onPressed: widget.onChanged == null
             ? null
             : () => controller.isOpen ? controller.close() : controller.open(),
         style:
@@ -372,14 +464,54 @@ class _DirectoryFilterMenu<T> extends StatelessWidget {
   }
 }
 
+String _normalizeFilterSearch(String value) {
+  var normalized = value.toLowerCase().trim();
+  const replacements = <String, String>{
+    'á': 'a',
+    'à': 'a',
+    'â': 'a',
+    'ã': 'a',
+    'ä': 'a',
+    'é': 'e',
+    'è': 'e',
+    'ê': 'e',
+    'ë': 'e',
+    'í': 'i',
+    'ì': 'i',
+    'î': 'i',
+    'ï': 'i',
+    'ó': 'o',
+    'ò': 'o',
+    'ô': 'o',
+    'õ': 'o',
+    'ö': 'o',
+    'ú': 'u',
+    'ù': 'u',
+    'û': 'u',
+    'ü': 'u',
+    'ç': 'c',
+  };
+  for (final replacement in replacements.entries) {
+    normalized = normalized.replaceAll(replacement.key, replacement.value);
+  }
+  return normalized;
+}
+
 ButtonStyle _filterMenuItemStyle(ColorScheme colors) {
   return MenuItemButton.styleFrom(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
   ).copyWith(
     foregroundColor: WidgetStateProperty.resolveWith((states) {
-      return states.contains(WidgetState.hovered) ? colors.primary : colors.onSurface;
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primary : colors.onSurface;
     }),
-    overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primaryContainer : Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
   );
 }
 
