@@ -58,6 +58,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('SP — São Paulo'));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-city-filter')), findsNothing);
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-city-filter')), findsOneWidget);
     expect(find.byKey(const Key('institution-district-filter')), findsNothing);
@@ -65,6 +68,8 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-city-filter')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Campinas').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-district-filter')), findsOneWidget);
@@ -86,6 +91,8 @@ void main() {
     expect(find.text('AC — Acre'), findsNothing);
     await tester.tap(find.text('SP — São Paulo'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('institution-city-filter')));
     await tester.pumpAndSettle();
@@ -96,6 +103,8 @@ void main() {
     expect(find.text('Campinas'), findsOneWidget);
     expect(find.text('São Paulo'), findsNothing);
     await tester.tap(find.text('Campinas'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('institution-district-filter')));
@@ -121,11 +130,101 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('SP — São Paulo'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('institution-state-filter')));
     await tester.pumpAndSettle();
     expect(tester.widget<TextField>(stateSearch).controller!.text, isEmpty);
     expect(find.text('AC — Acre'), findsOneWidget);
+  });
+
+  testWidgets('keeps multiselect draft open and applies it in one action', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ativa'));
+    await tester.pumpAndSettle();
+    expect(find.text('Aplicar'), findsOneWidget);
+    await tester.tap(find.text('Em implantação'));
+    await tester.pump();
+    expect(find.text('Aplicar'), findsOneWidget);
+
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 selecionados'), findsOneWidget);
+    expect(find.text('Limpar filtros'), findsOneWidget);
+    expect(find.text('Instituto Aurora'), findsOneWidget);
+    expect(find.text('Centro Horizonte'), findsOneWidget);
+  });
+
+  testWidgets('discards unapplied selections and supports local clear', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final trigger = find.byKey(const Key('institution-status-filter'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ativa'));
+    await tester.pumpAndSettle();
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    expect(find.text('Todos os status'), findsOneWidget);
+
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    final activeOption = find.ancestor(
+      of: find.text('Ativa'),
+      matching: find.byType(MenuItemButton),
+    );
+    expect(
+      tester
+          .widget<Checkbox>(find.descendant(of: activeOption, matching: find.byType(Checkbox)))
+          .value,
+      isFalse,
+    );
+    await tester.tap(find.text('Ativa'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Limpar'));
+    await tester.pump();
+    expect(
+      tester
+          .widget<Checkbox>(find.descendant(of: activeOption, matching: find.byType(Checkbox)))
+          .value,
+      isFalse,
+    );
+  });
+
+  testWidgets('uses distinct semantic backgrounds for hover and selected options', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ativa'));
+    await tester.pumpAndSettle();
+
+    final option = tester.widget<MenuItemButton>(
+      find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
+    );
+    final colors = CoeloTheme.light.colorScheme;
+    expect(option.style?.backgroundColor?.resolve({}), colors.primary.withValues(alpha: 0.14));
+    expect(
+      option.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      colors.primary.withValues(alpha: 0.20),
+    );
+    expect(option.style?.foregroundColor?.resolve({}), colors.primary);
+    expect(option.style?.iconColor?.resolve({}), colors.primary);
+    expect(option.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
   });
 
   testWidgets('uses rounded anchored menus below their filter trigger', (tester) async {

@@ -32,7 +32,10 @@ final class InstitutionDirectoryFilterOptions {
 abstract interface class InstitutionDirectoryRepository {
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query);
 
-  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({String? state, String? city});
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  });
 }
 
 final class InstitutionDirectoryUnauthorizedException implements Exception {

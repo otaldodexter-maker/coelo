@@ -7,41 +7,42 @@ void main() {
   test('searches public, trade, and legal names but never the domain', () async {
     final repository = FakeInstitutionDirectoryRepository(items: _items);
 
-    final nameResult = await repository.fetchPage(
-      const InstitutionDirectoryQuery(search: 'aurora'),
-    );
+    final nameResult = await repository.fetchPage(InstitutionDirectoryQuery(search: 'aurora'));
     final domainResult = await repository.fetchPage(
-      const InstitutionDirectoryQuery(search: 'dominio-secreto'),
+      InstitutionDirectoryQuery(search: 'dominio-secreto'),
     );
 
     expect(nameResult.items.map((item) => item.id), ['institution-1']);
     expect(domainResult.items, isEmpty);
   });
 
-  test('combines type, status, UF, municipality, and district filters', () async {
+  test('uses OR inside filters and AND between multiselect filters', () async {
     final repository = FakeInstitutionDirectoryRepository(items: _items);
 
     final result = await repository.fetchPage(
-      const InstitutionDirectoryQuery(
-        status: InstitutionStatus.active,
-        state: 'SP',
-        city: 'Campinas',
-        district: 'Cambuí',
-        typeId: 'type-school',
+      InstitutionDirectoryQuery(
+        statuses: {InstitutionStatus.active, InstitutionStatus.onboarding},
+        states: {'SP', 'RJ'},
+        cities: {'Campinas', 'Niterói'},
+        districts: {'Cambuí', 'Icaraí'},
+        typeIds: {'type-school', 'type-therapy'},
       ),
     );
 
-    expect(result.items.map((item) => item.id), ['institution-1']);
+    expect(result.items.map((item) => item.id), ['institution-2', 'institution-1']);
   });
 
   test('returns dependent municipality and district options', () async {
     final repository = FakeInstitutionDirectoryRepository(items: _items);
 
-    final stateOptions = await repository.fetchFilterOptions(state: 'SP');
-    final cityOptions = await repository.fetchFilterOptions(state: 'SP', city: 'Campinas');
+    final stateOptions = await repository.fetchFilterOptions(states: {'SP', 'RJ'});
+    final cityOptions = await repository.fetchFilterOptions(
+      states: {'SP', 'RJ'},
+      cities: {'Campinas', 'Niterói'},
+    );
 
-    expect(stateOptions.cities.map((option) => option.label), ['Campinas']);
-    expect(cityOptions.districts.map((option) => option.label), ['Cambuí']);
+    expect(stateOptions.cities.map((option) => option.label), ['Campinas', 'Niterói']);
+    expect(cityOptions.districts.map((option) => option.label), ['Cambuí', 'Icaraí']);
   });
 
   test('paginates twenty institutions and reports the server total', () async {
@@ -51,7 +52,7 @@ void main() {
     );
     final repository = FakeInstitutionDirectoryRepository(items: items);
 
-    final result = await repository.fetchPage(const InstitutionDirectoryQuery(page: 1));
+    final result = await repository.fetchPage(InstitutionDirectoryQuery(page: 1));
 
     expect(result.items, hasLength(5));
     expect(result.totalCount, 25);

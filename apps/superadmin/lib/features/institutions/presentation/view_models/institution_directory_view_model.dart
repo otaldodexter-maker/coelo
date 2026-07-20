@@ -29,7 +29,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   final InstitutionDirectoryRepository _repository;
   final Duration searchDebounce;
 
-  InstitutionDirectoryQuery _query = const InstitutionDirectoryQuery();
+  InstitutionDirectoryQuery _query = InstitutionDirectoryQuery();
   InstitutionDirectoryPage _page = const InstitutionDirectoryPage(
     items: [],
     totalCount: 0,
@@ -54,123 +54,66 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
 
   Future<void> retry() => _load(_query);
 
-  Future<void> clearFilters() => _replaceAndLoad(const InstitutionDirectoryQuery());
+  Future<void> clearFilters() => _replaceAndLoad(InstitutionDirectoryQuery());
 
   void setSearch(String value) {
-    _query = InstitutionDirectoryQuery(
-      search: value,
-      status: _query.status,
-      planId: _query.planId,
-      state: _query.state,
-      city: _query.city,
-      district: _query.district,
-      typeId: _query.typeId,
-    );
+    _query = _queryWith(search: value);
     _requestVersion += 1;
     _searchTimer?.cancel();
     _searchTimer = Timer(searchDebounce, () => _load(_query));
     _notifyIfActive();
   }
 
-  Future<void> setStatus(InstitutionStatus? value) {
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: value,
-        planId: _query.planId,
-        state: _query.state,
-        city: _query.city,
-        district: _query.district,
-        typeId: _query.typeId,
-      ),
-    );
+  Future<void> setStatuses(Set<InstitutionStatus> values) {
+    return _replaceAndLoad(_queryWith(statuses: values));
   }
 
   Future<void> setPlan(String? value) {
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: _query.status,
-        planId: value,
-        state: _query.state,
-        city: _query.city,
-        district: _query.district,
-        typeId: _query.typeId,
-      ),
-    );
+    return _replaceAndLoad(_queryWith(planId: value));
   }
 
-  Future<void> setState(String? value) {
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: _query.status,
-        planId: _query.planId,
-        state: value,
-        city: null,
-        district: null,
-        typeId: _query.typeId,
-      ),
-    );
+  Future<void> setStates(Set<String> values) {
+    return _replaceAndLoad(_queryWith(states: values, cities: const {}, districts: const {}));
   }
 
-  Future<void> setCity(String? value) {
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: _query.status,
-        planId: _query.planId,
-        state: _query.state,
-        city: value,
-        district: null,
-        typeId: _query.typeId,
-      ),
-    );
+  Future<void> setCities(Set<String> values) {
+    return _replaceAndLoad(_queryWith(cities: values, districts: const {}));
   }
 
-  Future<void> setDistrict(String? value) {
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: _query.status,
-        planId: _query.planId,
-        state: _query.state,
-        city: _query.city,
-        district: value,
-        typeId: _query.typeId,
-      ),
-    );
+  Future<void> setDistricts(Set<String> values) {
+    return _replaceAndLoad(_queryWith(districts: values));
   }
 
-  Future<void> setType(String? value) {
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: _query.status,
-        planId: _query.planId,
-        state: _query.state,
-        city: _query.city,
-        district: _query.district,
-        typeId: value,
-      ),
-    );
+  Future<void> setTypes(Set<String> values) {
+    return _replaceAndLoad(_queryWith(typeIds: values));
   }
 
   Future<void> goToPage(int value) {
     if (value < 0) {
       return Future<void>.value();
     }
-    return _replaceAndLoad(
-      InstitutionDirectoryQuery(
-        search: _query.search,
-        status: _query.status,
-        planId: _query.planId,
-        state: _query.state,
-        city: _query.city,
-        district: _query.district,
-        typeId: _query.typeId,
-        page: value,
-      ),
+    return _replaceAndLoad(_queryWith(page: value));
+  }
+
+  InstitutionDirectoryQuery _queryWith({
+    String? search,
+    Set<InstitutionStatus>? statuses,
+    Object? planId = _unchangedQueryValue,
+    Set<String>? states,
+    Set<String>? cities,
+    Set<String>? districts,
+    Set<String>? typeIds,
+    int page = 0,
+  }) {
+    return InstitutionDirectoryQuery(
+      search: search ?? _query.search,
+      statuses: statuses ?? _query.statuses,
+      planId: identical(planId, _unchangedQueryValue) ? _query.planId : planId as String?,
+      states: states ?? _query.states,
+      cities: cities ?? _query.cities,
+      districts: districts ?? _query.districts,
+      typeIds: typeIds ?? _query.typeIds,
+      page: page,
     );
   }
 
@@ -190,7 +133,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     try {
       final results = await Future.wait<Object>([
         _repository.fetchPage(value),
-        _repository.fetchFilterOptions(state: value.state, city: value.city),
+        _repository.fetchFilterOptions(states: value.states, cities: value.cities),
       ]);
       if (requestVersion != _requestVersion) {
         return;
@@ -236,3 +179,5 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     super.dispose();
   }
 }
+
+const _unchangedQueryValue = Object();

@@ -16,7 +16,7 @@ void main() {
     expect(viewModel.isLoading, isTrue);
     await loading;
 
-    expect(repository.queries, [const InstitutionDirectoryQuery()]);
+    expect(repository.queries, [InstitutionDirectoryQuery()]);
     expect(viewModel.state, InstitutionDirectoryLoadState.success);
     expect(viewModel.page.items, hasLength(1));
     expect(viewModel.filterOptions.plans.single.label, 'Essencial');
@@ -44,15 +44,20 @@ void main() {
     expect(repository.queries.last.page, 0);
   });
 
-  test('changes a filter immediately and restarts pagination', () async {
+  test('applies multiple statuses in one load and restarts pagination', () async {
     final repository = _StubRepository();
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
     addTearDown(viewModel.dispose);
 
     await viewModel.goToPage(1);
-    await viewModel.setStatus(InstitutionStatus.active);
+    final requestsBeforeApply = repository.queries.length;
+    await viewModel.setStatuses({InstitutionStatus.active, InstitutionStatus.onboarding});
 
-    expect(repository.queries.last.status, InstitutionStatus.active);
+    expect(repository.queries, hasLength(requestsBeforeApply + 1));
+    expect(repository.queries.last.statuses, {
+      InstitutionStatus.active,
+      InstitutionStatus.onboarding,
+    });
     expect(repository.queries.last.page, 0);
   });
 
@@ -61,21 +66,34 @@ void main() {
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
     addTearDown(viewModel.dispose);
 
-    await viewModel.setState('SP');
-    await viewModel.setCity('Campinas');
-    await viewModel.setDistrict('Cambuí');
+    await viewModel.setStates({'SP', 'PR'});
+    await viewModel.setCities({'Campinas', 'Curitiba'});
+    await viewModel.setDistricts({'Cambuí', 'Batel'});
 
-    expect(viewModel.query.state, 'SP');
-    expect(viewModel.query.city, 'Campinas');
-    expect(viewModel.query.district, 'Cambuí');
-    expect(repository.filterRequests.last, ('SP', 'Campinas'));
+    expect(viewModel.query.states, {'SP', 'PR'});
+    expect(viewModel.query.cities, {'Campinas', 'Curitiba'});
+    expect(viewModel.query.districts, {'Cambuí', 'Batel'});
+    expect(repository.filterRequests.last.$1, {'SP', 'PR'});
+    expect(repository.filterRequests.last.$2, {'Campinas', 'Curitiba'});
 
-    await viewModel.setCity('São Paulo');
-    expect(viewModel.query.district, isNull);
+    await viewModel.setCities({'São Paulo'});
+    expect(viewModel.query.districts, isEmpty);
 
-    await viewModel.setState('RJ');
-    expect(viewModel.query.city, isNull);
-    expect(viewModel.query.district, isNull);
+    await viewModel.setStates({'RJ'});
+    expect(viewModel.query.cities, isEmpty);
+    expect(viewModel.query.districts, isEmpty);
+  });
+
+  test('preserves unrelated multiselect filters when one filter is applied', () async {
+    final repository = _StubRepository();
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.setTypes({'school', 'therapy'});
+    await viewModel.setStatuses({InstitutionStatus.active});
+
+    expect(viewModel.query.typeIds, {'school', 'therapy'});
+    expect(viewModel.query.statuses, {InstitutionStatus.active});
   });
 
   test('clears all filters and restarts pagination', () async {
@@ -83,11 +101,11 @@ void main() {
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
     addTearDown(viewModel.dispose);
 
-    await viewModel.setState('SP');
+    await viewModel.setStates({'SP'});
     await viewModel.goToPage(1);
     await viewModel.clearFilters();
 
-    expect(repository.queries.last, const InstitutionDirectoryQuery());
+    expect(repository.queries.last, InstitutionDirectoryQuery());
   });
 
   test('shows a safe error and retries the same query', () async {
@@ -151,14 +169,14 @@ final class _StubRepository implements InstitutionDirectoryRepository {
 
   final Future<InstitutionDirectoryPage> Function(InstitutionDirectoryQuery query)? onFetch;
   final queries = <InstitutionDirectoryQuery>[];
-  final filterRequests = <(String?, String?)>[];
+  final filterRequests = <(Set<String>, Set<String>)>[];
 
   @override
   Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
-    String? state,
-    String? city,
+    Set<String> states = const {},
+    Set<String> cities = const {},
   }) async {
-    filterRequests.add((state, city));
+    filterRequests.add((Set.of(states), Set.of(cities)));
     return const InstitutionDirectoryFilterOptions(
       plans: [InstitutionDirectoryFilterOption(id: 'plan-1', label: 'Essencial')],
       types: [],

@@ -177,14 +177,14 @@ class _DirectoryToolbar extends StatelessWidget {
               child: _DirectoryFilterMenu<String>(
                 triggerKey: const Key('institution-type-filter'),
                 anchorKey: const Key('institution-type-filter-anchor'),
-                value: viewModel.query.typeId,
+                values: viewModel.query.typeIds,
                 allLabel: viewModel.filterOptions.types.isEmpty
                     ? 'Sem tipos cadastrados'
                     : 'Todos os tipos',
                 items: viewModel.filterOptions.types
                     .map((option) => _FilterMenuOption(value: option.id, label: option.label))
                     .toList(growable: false),
-                onChanged: viewModel.filterOptions.types.isEmpty ? null : viewModel.setType,
+                onApply: viewModel.filterOptions.types.isEmpty ? null : viewModel.setTypes,
               ),
             ),
             SizedBox(
@@ -192,12 +192,12 @@ class _DirectoryToolbar extends StatelessWidget {
               child: _DirectoryFilterMenu<InstitutionStatus>(
                 triggerKey: const Key('institution-status-filter'),
                 anchorKey: const Key('institution-status-filter-anchor'),
-                value: viewModel.query.status,
+                values: viewModel.query.statuses,
                 allLabel: 'Todos os status',
                 items: InstitutionStatus.values
                     .map((status) => _FilterMenuOption(value: status, label: status.label))
                     .toList(growable: false),
-                onChanged: viewModel.setStatus,
+                onApply: viewModel.setStatuses,
               ),
             ),
             SizedBox(
@@ -208,8 +208,9 @@ class _DirectoryToolbar extends StatelessWidget {
                 searchFieldKey: const Key('institution-state-filter-search'),
                 searchHintText: 'Buscar UF',
                 searchable: true,
-                value: viewModel.query.state,
+                values: viewModel.query.states,
                 allLabel: 'Todas as UFs',
+                selectedCountLabel: 'selecionadas',
                 items: _brazilStatesForMenu
                     .map(
                       (state) => _FilterMenuOption(
@@ -218,10 +219,10 @@ class _DirectoryToolbar extends StatelessWidget {
                       ),
                     )
                     .toList(growable: false),
-                onChanged: viewModel.setState,
+                onApply: viewModel.setStates,
               ),
             ),
-            if (viewModel.query.state != null)
+            if (viewModel.query.states.isNotEmpty)
               SizedBox(
                 width: filterWidth,
                 child: _DirectoryFilterMenu<String>(
@@ -230,15 +231,15 @@ class _DirectoryToolbar extends StatelessWidget {
                   searchFieldKey: const Key('institution-city-filter-search'),
                   searchHintText: 'Buscar município',
                   searchable: true,
-                  value: viewModel.query.city,
+                  values: viewModel.query.cities,
                   allLabel: 'Todos os municípios',
                   items: viewModel.filterOptions.cities
                       .map((option) => _FilterMenuOption(value: option.id, label: option.label))
                       .toList(growable: false),
-                  onChanged: viewModel.setCity,
+                  onApply: viewModel.setCities,
                 ),
               ),
-            if (viewModel.query.city != null)
+            if (viewModel.query.cities.isNotEmpty)
               SizedBox(
                 width: filterWidth,
                 child: _DirectoryFilterMenu<String>(
@@ -247,12 +248,12 @@ class _DirectoryToolbar extends StatelessWidget {
                   searchFieldKey: const Key('institution-district-filter-search'),
                   searchHintText: 'Buscar bairro',
                   searchable: true,
-                  value: viewModel.query.district,
+                  values: viewModel.query.districts,
                   allLabel: 'Todos os bairros',
                   items: viewModel.filterOptions.districts
                       .map((option) => _FilterMenuOption(value: option.id, label: option.label))
                       .toList(growable: false),
-                  onChanged: viewModel.setDistrict,
+                  onApply: viewModel.setDistricts,
                 ),
               ),
             SegmentedButton<_DirectoryDisplay>(
@@ -296,38 +297,46 @@ class _DirectoryFilterMenu<T> extends StatefulWidget {
   const _DirectoryFilterMenu({
     required this.triggerKey,
     required this.anchorKey,
-    required this.value,
+    required this.values,
     required this.allLabel,
     required this.items,
-    required this.onChanged,
+    required this.onApply,
     this.searchable = false,
     this.searchFieldKey,
     this.searchHintText,
+    this.selectedCountLabel = 'selecionados',
     super.key,
   }) : assert(!searchable || searchFieldKey != null),
        assert(!searchable || searchHintText != null);
 
   final Key triggerKey;
   final Key anchorKey;
-  final T? value;
+  final Set<T> values;
   final String allLabel;
   final List<_FilterMenuOption<T>> items;
-  final ValueChanged<T?>? onChanged;
+  final ValueChanged<Set<T>>? onApply;
   final bool searchable;
   final Key? searchFieldKey;
   final String? searchHintText;
+  final String selectedCountLabel;
 
   @override
   State<_DirectoryFilterMenu<T>> createState() => _DirectoryFilterMenuState<T>();
 }
 
 class _DirectoryFilterMenuState<T> extends State<_DirectoryFilterMenu<T>> {
+  final MenuController _menuController = MenuController();
   final TextEditingController _searchController = TextEditingController();
+  late Set<T> _draftValues = Set.of(widget.values);
   String _searchQuery = '';
+  bool _appliedWhileOpen = false;
 
   @override
   void didUpdateWidget(covariant _DirectoryFilterMenu<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!_menuController.isOpen && !_setsEqual(oldWidget.values, widget.values)) {
+      _draftValues = Set.of(widget.values);
+    }
     if (oldWidget.items != widget.items && _searchQuery.isNotEmpty) {
       _clearSearch();
     }
@@ -347,28 +356,76 @@ class _DirectoryFilterMenuState<T> extends State<_DirectoryFilterMenu<T>> {
     setState(() => _searchQuery = '');
   }
 
-  void _select(T? value) {
+  void _open() {
+    _appliedWhileOpen = false;
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+      _draftValues = Set.of(widget.values);
+    });
+  }
+
+  void _close() {
     _clearSearch();
-    widget.onChanged?.call(value);
+    if (_appliedWhileOpen) {
+      _appliedWhileOpen = false;
+      return;
+    }
+    if (!_setsEqual(_draftValues, widget.values)) {
+      setState(() => _draftValues = Set.of(widget.values));
+    }
+  }
+
+  void _toggle(T value) {
+    setState(() {
+      _draftValues = Set.of(_draftValues);
+      if (!_draftValues.add(value)) {
+        _draftValues.remove(value);
+      }
+    });
+  }
+
+  void _clearDraft() {
+    if (_draftValues.isNotEmpty) {
+      setState(() => _draftValues = {});
+    }
+  }
+
+  void _apply() {
+    final values = Set<T>.unmodifiable(_draftValues);
+    _appliedWhileOpen = true;
+    _menuController.close();
+    widget.onApply?.call(values);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final selectedLabel =
-        widget.items.where((item) => item.value == widget.value).firstOrNull?.label ??
-        widget.allLabel;
+    final selectedLabel = switch (widget.values.length) {
+      0 => widget.allLabel,
+      1 =>
+        widget.items.where((item) => widget.values.contains(item.value)).firstOrNull?.label ??
+            widget.allLabel,
+      _ => '${widget.values.length} ${widget.selectedCountLabel}',
+    };
     final normalizedQuery = _normalizeFilterSearch(_searchQuery);
     final visibleItems = normalizedQuery.isEmpty
         ? widget.items
         : widget.items
               .where((item) => _normalizeFilterSearch(item.label).contains(normalizedQuery))
               .toList(growable: false);
+    final menuHeight = math.min(
+      360.0,
+      (widget.searchable ? 64.0 : 0.0) +
+          math.max(CoeloSize.touchMin, visibleItems.length * CoeloSize.touchMin) +
+          64.0,
+    );
     return MenuAnchor(
       key: widget.anchorKey,
-      onOpen: _clearSearch,
-      onClose: _clearSearch,
+      controller: _menuController,
+      onOpen: _open,
+      onClose: _close,
       alignmentOffset: const Offset(0, CoeloSpacing.space1),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
@@ -379,57 +436,109 @@ class _DirectoryFilterMenuState<T> extends State<_DirectoryFilterMenu<T>> {
             side: BorderSide(color: colors.outlineVariant),
           ),
         ),
+        padding: const WidgetStatePropertyAll(EdgeInsets.zero),
         maximumSize: const WidgetStatePropertyAll(Size(320, 360)),
       ),
       menuChildren: [
-        if (widget.searchable)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CoeloSpacing.space2,
-              CoeloSpacing.space2,
-              CoeloSpacing.space2,
-              CoeloSpacing.space1,
-            ),
-            child: SizedBox(
-              width: 280,
-              child: TextField(
-                key: widget.searchFieldKey,
-                controller: _searchController,
-                autofocus: true,
-                textInputAction: TextInputAction.search,
-                onChanged: (value) => setState(() => _searchQuery = value),
-                decoration: _pillInputDecoration(
-                  context,
-                  hintText: widget.searchHintText,
-                  prefixIcon: const Icon(Icons.search_rounded),
+        SizedBox(
+          width: 300,
+          height: menuHeight,
+          child: Column(
+            children: [
+              if (widget.searchable)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space1,
+                  ),
+                  child: TextField(
+                    key: widget.searchFieldKey,
+                    controller: _searchController,
+                    autofocus: true,
+                    textInputAction: TextInputAction.search,
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    decoration: _pillInputDecoration(
+                      context,
+                      hintText: widget.searchHintText,
+                      prefixIcon: const Icon(Icons.search_rounded),
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: visibleItems.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(CoeloSpacing.space4),
+                          child: Text(
+                            'Nenhuma opção encontrada.',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      )
+                    : ListView(
+                        primary: false,
+                        padding: EdgeInsets.zero,
+                        children: visibleItems
+                            .map((item) {
+                              final selected = _draftValues.contains(item.value);
+                              return MenuItemButton(
+                                closeOnActivate: false,
+                                onPressed: widget.onApply == null
+                                    ? null
+                                    : () => _toggle(item.value),
+                                style: _filterMenuItemStyle(colors, selected: selected),
+                                leadingIcon: Checkbox(
+                                  value: selected,
+                                  onChanged: widget.onApply == null
+                                      ? null
+                                      : (_) => _toggle(item.value),
+                                ),
+                                child: Text(item.label),
+                              );
+                            })
+                            .toList(growable: false),
+                      ),
+              ),
+              const Divider(height: 1),
+              Padding(
+                padding: const EdgeInsets.all(CoeloSpacing.space2),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: widget.onApply == null || _draftValues.isEmpty
+                            ? null
+                            : _clearDraft,
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size.fromHeight(CoeloSize.touchMin),
+                        ),
+                        child: const Text('Limpar'),
+                      ),
+                    ),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: widget.onApply == null || _setsEqual(_draftValues, widget.values)
+                            ? null
+                            : _apply,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(CoeloSize.touchMin),
+                        ),
+                        child: const Text('Aplicar'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-        MenuItemButton(
-          onPressed: widget.onChanged == null ? null : () => _select(null),
-          style: _filterMenuItemStyle(colors),
-          child: Text(widget.allLabel),
-        ),
-        ...visibleItems.map(
-          (item) => MenuItemButton(
-            onPressed: widget.onChanged == null ? null : () => _select(item.value),
-            style: _filterMenuItemStyle(colors),
-            trailingIcon: item.value == widget.value
-                ? Icon(Icons.check, color: colors.primary)
-                : null,
-            child: Text(item.label),
+            ],
           ),
         ),
-        if (widget.searchable && visibleItems.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space4),
-            child: Text('Nenhuma opção encontrada.', style: theme.textTheme.bodyMedium),
-          ),
       ],
       builder: (context, controller, child) => OutlinedButton(
         key: widget.triggerKey,
-        onPressed: widget.onChanged == null
+        onPressed: widget.onApply == null
             ? null
             : () => controller.isOpen ? controller.close() : controller.open(),
         style:
@@ -462,6 +571,10 @@ class _DirectoryFilterMenuState<T> extends State<_DirectoryFilterMenu<T>> {
       ),
     );
   }
+}
+
+bool _setsEqual<T>(Set<T> first, Set<T> second) {
+  return first.length == second.length && first.containsAll(second);
 }
 
 String _normalizeFilterSearch(String value) {
@@ -497,18 +610,28 @@ String _normalizeFilterSearch(String value) {
   return normalized;
 }
 
-ButtonStyle _filterMenuItemStyle(ColorScheme colors) {
+ButtonStyle _filterMenuItemStyle(ColorScheme colors, {required bool selected}) {
+  final isDark = colors.brightness == Brightness.dark;
   return MenuItemButton.styleFrom(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
   ).copyWith(
     foregroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      return highlighted ? colors.primary : colors.onSurface;
+      return selected || highlighted ? colors.primary : colors.onSurface;
+    }),
+    iconColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return selected || highlighted ? colors.primary : colors.onSurfaceVariant;
     }),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      if (selected) {
+        final opacity = highlighted ? (isDark ? 0.30 : 0.20) : (isDark ? 0.22 : 0.14);
+        return colors.primary.withValues(alpha: opacity);
+      }
       return highlighted ? colors.primaryContainer : Colors.transparent;
     }),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),

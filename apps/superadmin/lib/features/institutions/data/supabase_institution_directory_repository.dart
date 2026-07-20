@@ -18,23 +18,26 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       if (search.isNotEmpty) {
         request = request.ilike('search_name', '%${_escapeLike(search)}%');
       }
-      if (query.status != null) {
-        request = request.eq('status', query.status!.databaseValue);
+      if (query.statuses.isNotEmpty) {
+        request = request.inFilter(
+          'status',
+          query.statuses.map((status) => status.databaseValue).toList(growable: false),
+        );
       }
       if (query.planId != null) {
         request = request.eq('plan_id', query.planId!);
       }
-      if (query.state != null) {
-        request = request.eq('state', query.state!);
+      if (query.states.isNotEmpty) {
+        request = request.inFilter('state', query.states.toList(growable: false));
       }
-      if (query.city != null) {
-        request = request.eq('city', query.city!);
+      if (query.cities.isNotEmpty) {
+        request = request.inFilter('city', query.cities.toList(growable: false));
       }
-      if (query.district != null) {
-        request = request.eq('district', query.district!);
+      if (query.districts.isNotEmpty) {
+        request = request.inFilter('district', query.districts.toList(growable: false));
       }
-      if (query.typeId != null) {
-        request = request.eq('institution_type_id', query.typeId!);
+      if (query.typeIds.isNotEmpty) {
+        request = request.inFilter('institution_type_id', query.typeIds.toList(growable: false));
       }
 
       final response = await request
@@ -57,18 +60,18 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
 
   @override
   Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
-    String? state,
-    String? city,
+    Set<String> states = const {},
+    Set<String> cities = const {},
   }) async {
     try {
       var locationsRequest = _client
           .from('institution_directory_locations')
           .select('state, city, district');
-      if (state != null) {
-        locationsRequest = locationsRequest.eq('state', state);
+      if (states.isNotEmpty) {
+        locationsRequest = locationsRequest.inFilter('state', states.toList(growable: false));
       }
-      if (city != null) {
-        locationsRequest = locationsRequest.eq('city', city);
+      if (cities.isNotEmpty) {
+        locationsRequest = locationsRequest.inFilter('city', cities.toList(growable: false));
       }
       final results = await Future.wait<List<dynamic>>([
         _client.from('plans').select('id, name').eq('status', 'active').order('name'),
@@ -78,8 +81,8 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       return InstitutionDirectoryFilterOptions(
         plans: _optionsFromRows(results[0]),
         types: _optionsFromRows(results[1]),
-        cities: state == null ? const [] : _locationOptionsFromRows(results[2], 'city'),
-        districts: city == null ? const [] : _locationOptionsFromRows(results[2], 'district'),
+        cities: states.isEmpty ? const [] : _locationOptionsFromRows(results[2], 'city'),
+        districts: cities.isEmpty ? const [] : _locationOptionsFromRows(results[2], 'district'),
       );
     } on PostgrestException catch (error) {
       if (error.code == '42501' || error.code == 'PGRST301') {
@@ -99,7 +102,10 @@ final class UnavailableInstitutionDirectoryRepository implements InstitutionDire
   }
 
   @override
-  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({String? state, String? city}) {
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) {
     return Future<InstitutionDirectoryFilterOptions>.error(
       const InstitutionDirectoryUnavailableException(),
     );

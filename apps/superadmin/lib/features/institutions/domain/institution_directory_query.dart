@@ -1,52 +1,70 @@
 import 'institution_directory_item.dart';
 
 final class InstitutionDirectoryQuery {
-  const InstitutionDirectoryQuery({
+  InstitutionDirectoryQuery({
     this.search = '',
-    this.status,
+    Set<InstitutionStatus> statuses = const {},
     this.planId,
-    this.state,
-    this.city,
-    this.district,
-    this.typeId,
+    Set<String> states = const {},
+    Set<String> cities = const {},
+    Set<String> districts = const {},
+    Set<String> typeIds = const {},
     this.page = 0,
-  }) : assert(page >= 0);
+  }) : assert(page >= 0),
+       statuses = Set.unmodifiable(statuses),
+       states = Set.unmodifiable(states),
+       cities = Set.unmodifiable(cities),
+       districts = Set.unmodifiable(districts),
+       typeIds = Set.unmodifiable(typeIds);
 
   static const pageSize = 20;
 
   final String search;
-  final InstitutionStatus? status;
+  final Set<InstitutionStatus> statuses;
   final String? planId;
-  final String? state;
-  final String? city;
-  final String? district;
-  final String? typeId;
+  final Set<String> states;
+  final Set<String> cities;
+  final Set<String> districts;
+  final Set<String> typeIds;
   final int page;
 
   int get offset => page * pageSize;
 
   bool get hasActiveFilters =>
       search.trim().isNotEmpty ||
-      status != null ||
+      statuses.isNotEmpty ||
       planId != null ||
-      state != null ||
-      city != null ||
-      district != null ||
-      typeId != null;
+      states.isNotEmpty ||
+      cities.isNotEmpty ||
+      districts.isNotEmpty ||
+      typeIds.isNotEmpty;
 
   @override
   bool operator ==(Object other) {
     return other is InstitutionDirectoryQuery &&
         other.search == search &&
-        other.status == status &&
+        _setsEqual(other.statuses, statuses) &&
         other.planId == planId &&
-        other.state == state &&
-        other.city == city &&
-        other.district == district &&
-        other.typeId == typeId &&
+        _setsEqual(other.states, states) &&
+        _setsEqual(other.cities, cities) &&
+        _setsEqual(other.districts, districts) &&
+        _setsEqual(other.typeIds, typeIds) &&
         other.page == page;
   }
 
   @override
-  int get hashCode => Object.hash(search, status, planId, state, city, district, typeId, page);
+  int get hashCode => Object.hash(
+    search,
+    Object.hashAllUnordered(statuses),
+    planId,
+    Object.hashAllUnordered(states),
+    Object.hashAllUnordered(cities),
+    Object.hashAllUnordered(districts),
+    Object.hashAllUnordered(typeIds),
+    page,
+  );
+}
+
+bool _setsEqual<T>(Set<T> first, Set<T> second) {
+  return first.length == second.length && first.containsAll(second);
 }

@@ -20,12 +20,12 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
             item.legalName,
           ].whereType<String>().any((name) => name.toLowerCase().contains(search));
       return matchesSearch &&
-          (query.status == null || item.status == query.status) &&
+          (query.statuses.isEmpty || query.statuses.contains(item.status)) &&
           (query.planId == null || item.planId == query.planId) &&
-          (query.state == null || item.state == query.state) &&
-          (query.city == null || item.city == query.city) &&
-          (query.district == null || item.district == query.district) &&
-          (query.typeId == null || item.typeId == query.typeId);
+          (query.states.isEmpty || query.states.contains(item.state)) &&
+          (query.cities.isEmpty || query.cities.contains(item.city)) &&
+          (query.districts.isEmpty || query.districts.contains(item.district)) &&
+          (query.typeIds.isEmpty || query.typeIds.contains(item.typeId));
     }).toList()..sort((first, second) => first.publicName.compareTo(second.publicName));
 
     final start = query.offset.clamp(0, filtered.length);
@@ -39,13 +39,13 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
 
   @override
   Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
-    String? state,
-    String? city,
+    Set<String> states = const {},
+    Set<String> cities = const {},
   }) async {
     final plans = <String, String>{};
     final types = <String, String>{};
-    final cities = <String, String>{};
-    final districts = <String, String>{};
+    final cityOptions = <String, String>{};
+    final districtOptions = <String, String>{};
     for (final item in items) {
       final planId = item.planId;
       final planName = item.planName;
@@ -57,13 +57,16 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
       if (typeId != null && typeName != null) {
         types[typeId] = typeName;
       }
-      if (state != null && item.state == state && item.city != null) {
-        cities[item.city!] = item.city!;
+      if (states.isNotEmpty && states.contains(item.state) && item.city != null) {
+        cityOptions[item.city!] = item.city!;
       }
-      if (state != null && city != null && item.state == state && item.city == city) {
+      if (states.isNotEmpty &&
+          cities.isNotEmpty &&
+          states.contains(item.state) &&
+          cities.contains(item.city)) {
         final district = item.district;
         if (district != null) {
-          districts[district] = district;
+          districtOptions[district] = district;
         }
       }
     }
@@ -78,8 +81,8 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
     return InstitutionDirectoryFilterOptions(
       plans: options(plans),
       types: options(types),
-      cities: options(cities),
-      districts: options(districts),
+      cities: options(cityOptions),
+      districts: options(districtOptions),
     );
   }
 }
