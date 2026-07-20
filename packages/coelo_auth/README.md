@@ -15,13 +15,14 @@ Escopo atual:
 - stream de mudanças de autenticação para sincronizar sessão local do app;
 - persistência condicional de sessão por meio de `LocalStorage` injetável;
 - logout pelo contrato compartilhado;
+- solicitação neutra de recuperação de senha por `resetPasswordForEmail`;
 - fallback seguro quando o ambiente não está configurado.
 
 Fora de escopo nesta etapa:
 
 - contexto ativo e troca de papel;
 - memberships, roles e permissões familiares;
-- MFA, recuperação de senha e convites;
+- MFA, definição da nova senha, deep link de recuperação e convites;
 - autorização contextual e auditoria server-side.
 
 Esses pontos continuam dependentes de spec aprovada e das lacunas registradas em `docs/open-questions.md`.

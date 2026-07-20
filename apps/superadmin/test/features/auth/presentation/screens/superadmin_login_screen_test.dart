@@ -13,6 +13,7 @@ void main() {
     WidgetTester tester, {
     required SuperadminSession session,
     required LoginAction login,
+    VoidCallback? onForgotPassword,
     TextScaler textScaler = TextScaler.noScaling,
     ThemeData? theme,
   }) {
@@ -21,7 +22,12 @@ void main() {
         theme: theme ?? CoeloTheme.light,
         home: MediaQuery(
           data: MediaQueryData(textScaler: textScaler),
-          child: SuperadminLoginScreen(session: session, login: login, onThemeModeChanged: (_) {}),
+          child: SuperadminLoginScreen(
+            session: session,
+            login: login,
+            onForgotPassword: onForgotPassword ?? () {},
+            onThemeModeChanged: (_) {},
+          ),
         ),
       ),
     );
@@ -270,17 +276,21 @@ void main() {
     expect(session.isAuthenticated, isTrue);
   });
 
-  testWidgets('keeps password recovery neutral and local', (tester) async {
+  testWidgets('delegates password recovery navigation', (tester) async {
     final session = SuperadminSession();
+    var recoveryCalls = 0;
     addTearDown(session.dispose);
 
-    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+    await pumpLogin(
+      tester,
+      session: session,
+      login: unavailableSuperadminLogin,
+      onForgotPassword: () => recoveryCalls += 1,
+    );
     final forgotPassword = find.text('Esqueci minha senha');
     await tester.ensureVisible(forgotPassword);
     await tester.tap(forgotPassword);
-    await tester.pump();
-
-    expect(find.text('Recuperação de senha ainda não está disponível.'), findsOneWidget);
+    expect(recoveryCalls, 1);
   });
 
   testWidgets('does not overflow on a compact window with enlarged text', (tester) async {
@@ -337,6 +347,7 @@ void main() {
           child: SuperadminLoginScreen(
             session: session,
             login: unavailableSuperadminLogin,
+            onForgotPassword: () {},
             onThemeModeChanged: (mode) => selectedMode = mode,
           ),
         ),

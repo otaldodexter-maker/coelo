@@ -1,4 +1,5 @@
 import 'package:coelo_superadmin/app/superadmin_app.dart';
+import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,14 @@ void main() {
     );
     expect(app.theme?.colorScheme.primary, CoeloPalette.orange500);
     expect(app.darkTheme?.colorScheme.primary, CoeloPalette.orange300);
+    expect(
+      app.theme?.dataTableTheme.dataRowColor?.resolve(<WidgetState>{WidgetState.hovered}),
+      app.theme?.colorScheme.primaryContainer,
+    );
     expect(app.themeMode, ThemeMode.system);
+    expect(
+      tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
+      ThemeMode.system,
+    );
   });
 }

@@ -10,6 +10,12 @@ Future<void> main() async {
 
   final authScope = await createSuperadminAuthScope();
   runApp(
-    SuperadminApp(session: authScope.session, login: authScope.login, logout: authScope.logout),
+    SuperadminApp(
+      session: authScope.session,
+      login: authScope.login,
+      logout: authScope.logout,
+      requestPasswordRecovery: authScope.requestPasswordRecovery,
+      institutionDirectoryRepository: authScope.institutionDirectoryRepository,
+    ),
   );
 }

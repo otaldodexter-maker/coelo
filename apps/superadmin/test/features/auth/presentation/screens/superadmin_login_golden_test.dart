@@ -35,6 +35,7 @@ void main() {
         home: SuperadminLoginScreen(
           session: session,
           login: unavailableSuperadminLogin,
+          onForgotPassword: () {},
           onThemeModeChanged: (_) {},
         ),
       ),

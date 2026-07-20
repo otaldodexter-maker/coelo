@@ -1,0 +1,136 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../domain/institution_directory_item.dart';
+import '../domain/institution_directory_page.dart';
+import '../domain/institution_directory_query.dart';
+import '../domain/institution_directory_repository.dart';
+
+final class SupabaseInstitutionDirectoryRepository implements InstitutionDirectoryRepository {
+  const SupabaseInstitutionDirectoryRepository(this._client);
+
+  final SupabaseClient _client;
+
+  @override
+  Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
+    try {
+      var request = _client.from('institution_directory').select();
+      final search = query.search.trim();
+      if (search.isNotEmpty) {
+        request = request.ilike('search_name', '%${_escapeLike(search)}%');
+      }
+      if (query.status != null) {
+        request = request.eq('status', query.status!.databaseValue);
+      }
+      if (query.planId != null) {
+        request = request.eq('plan_id', query.planId!);
+      }
+      if (query.state != null) {
+        request = request.eq('state', query.state!);
+      }
+      if (query.city != null) {
+        request = request.eq('city', query.city!);
+      }
+      if (query.district != null) {
+        request = request.eq('district', query.district!);
+      }
+      if (query.typeId != null) {
+        request = request.eq('institution_type_id', query.typeId!);
+      }
+
+      final response = await request
+          .order('public_name')
+          .range(query.offset, query.offset + InstitutionDirectoryQuery.pageSize - 1)
+          .count(CountOption.exact);
+      final rows = response.data;
+      final items = rows
+          .map((row) => InstitutionDirectoryItem.fromJson(Map<String, dynamic>.from(row)))
+          .toList(growable: false);
+
+      return InstitutionDirectoryPage(items: items, totalCount: response.count, page: query.page);
+    } on PostgrestException catch (error) {
+      if (error.code == '42501' || error.code == 'PGRST301') {
+        throw const InstitutionDirectoryUnauthorizedException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    String? state,
+    String? city,
+  }) async {
+    try {
+      var locationsRequest = _client
+          .from('institution_directory_locations')
+          .select('state, city, district');
+      if (state != null) {
+        locationsRequest = locationsRequest.eq('state', state);
+      }
+      if (city != null) {
+        locationsRequest = locationsRequest.eq('city', city);
+      }
+      final results = await Future.wait<List<dynamic>>([
+        _client.from('plans').select('id, name').eq('status', 'active').order('name'),
+        _client.from('institution_types').select('id, name').eq('status', 'active').order('name'),
+        locationsRequest.order('city').order('district'),
+      ]);
+      return InstitutionDirectoryFilterOptions(
+        plans: _optionsFromRows(results[0]),
+        types: _optionsFromRows(results[1]),
+        cities: state == null ? const [] : _locationOptionsFromRows(results[2], 'city'),
+        districts: city == null ? const [] : _locationOptionsFromRows(results[2], 'district'),
+      );
+    } on PostgrestException catch (error) {
+      if (error.code == '42501' || error.code == 'PGRST301') {
+        throw const InstitutionDirectoryUnauthorizedException();
+      }
+      rethrow;
+    }
+  }
+}
+
+final class UnavailableInstitutionDirectoryRepository implements InstitutionDirectoryRepository {
+  const UnavailableInstitutionDirectoryRepository();
+
+  @override
+  Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) {
+    return Future<InstitutionDirectoryPage>.error(const InstitutionDirectoryUnavailableException());
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({String? state, String? city}) {
+    return Future<InstitutionDirectoryFilterOptions>.error(
+      const InstitutionDirectoryUnavailableException(),
+    );
+  }
+}
+
+List<InstitutionDirectoryFilterOption> _locationOptionsFromRows(List<dynamic> rows, String key) {
+  final values = <String>{};
+  for (final rawRow in rows) {
+    final row = Map<String, dynamic>.from(rawRow as Map);
+    final value = row[key];
+    if (value is String && value.trim().isNotEmpty) {
+      values.add(value);
+    }
+  }
+  final sorted = values.toList()..sort();
+  return sorted
+      .map((value) => InstitutionDirectoryFilterOption(id: value, label: value))
+      .toList(growable: false);
+}
+
+List<InstitutionDirectoryFilterOption> _optionsFromRows(List<dynamic> rows) {
+  return rows
+      .map((row) => Map<String, dynamic>.from(row as Map))
+      .map(
+        (row) =>
+            InstitutionDirectoryFilterOption(id: row['id'] as String, label: row['name'] as String),
+      )
+      .toList(growable: false);
+}
+
+String _escapeLike(String value) {
+  return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
+}

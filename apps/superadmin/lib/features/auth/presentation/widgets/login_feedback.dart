@@ -2,9 +2,14 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 class LoginFeedback extends StatelessWidget {
-  const LoginFeedback({required this.message, super.key});
+  const LoginFeedback({
+    required this.message,
+    this.semanticLabelPrefix = 'Erro de autenticação',
+    super.key,
+  });
 
   final String message;
+  final String semanticLabelPrefix;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,7 @@ class LoginFeedback extends StatelessWidget {
       container: true,
       liveRegion: true,
       excludeSemantics: true,
-      label: 'Erro de autenticação: $message',
+      label: '$semanticLabelPrefix: $message',
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.errorContainer,

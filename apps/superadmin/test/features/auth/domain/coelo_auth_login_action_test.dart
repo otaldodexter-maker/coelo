@@ -75,6 +75,11 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
   bool get isAuthenticated => false;
 
   @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({required String email}) async {
+    return const CoeloAuthPasswordRecoveryResult.success();
+  }
+
+  @override
   Future<CoeloAuthSignInResult> signInWithPassword({
     required String email,
     required String password,

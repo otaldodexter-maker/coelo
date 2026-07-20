@@ -1,10 +1,108 @@
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
+import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('offers a logout button and invokes the injected action', (tester) async {
+  testWidgets('uses aligned compact headers and collapses the desktop sidebar', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp());
+
+    expect(find.text('Coelo'), findsNothing);
+    expect(find.text('Instituições'), findsWidgets);
+    expect(find.text('Owner Coelo'), findsOneWidget);
+    expect(find.text('Sair'), findsNothing);
+    expect(find.byKey(const Key('superadmin-notifications')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-report-bug')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
+    expect(find.text('Perfis'), findsNothing);
+    for (final label in [
+      'Planos',
+      'Usuários internos',
+      'Avisos',
+      'Importação',
+      'Suporte',
+      'Auditoria',
+    ]) {
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(find.text('Configurações'), findsNothing);
+    expect(find.text('Menu Dev'), findsNothing);
+    expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 260);
+    expect(
+      tester.getSize(find.byKey(const Key('superadmin-sidebar-collapse'))),
+      const Size(24, 24),
+    );
+    expect(tester.getSize(find.byKey(const Key('superadmin-brand-mark'))), const Size(48, 48));
+    expect(find.byKey(const Key('superadmin-brand-symbol')), findsOneWidget);
+
+    final activeDecoration =
+        tester
+                .widget<AnimatedContainer>(
+                  find.byKey(const Key('superadmin-navigation-institutions')),
+                )
+                .decoration!
+            as BoxDecoration;
+    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary);
+
+    final brandDivider = find.byKey(const Key('superadmin-brand-divider'));
+    final pageDivider = find.byKey(const Key('superadmin-page-divider'));
+    expect(tester.getTopLeft(brandDivider).dy, 88);
+    expect(tester.getTopLeft(brandDivider).dy, tester.getTopLeft(pageDivider).dy);
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 88);
+    expect(find.text('Owner Coelo'), findsOneWidget);
+    expect(find.text('Configurações'), findsNothing);
+  });
+
+  testWidgets('uses the Coelo orange hover state on inactive navigation items', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final notices = find.byKey(const Key('superadmin-navigation-notices'));
+    expect(notices, findsOneWidget);
+    final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await gesture.addPointer(location: Offset.zero);
+    await gesture.moveTo(tester.getCenter(notices));
+    await tester.pumpAndSettle();
+
+    final decoration = tester.widget<AnimatedContainer>(notices).decoration! as BoxDecoration;
+    expect(decoration.color, CoeloTheme.light.colorScheme.primaryContainer);
+
+    await gesture.removePointer();
+  });
+
+  testWidgets('uses a drawer navigation without putting the profile inside it', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp());
+
+    expect(tester.getSize(find.byType(AppBar)).height, 48);
+    expect(find.text('Coelo'), findsNothing);
+    await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Planos'), findsOneWidget);
+    expect(find.text('Configurações'), findsNothing);
+    expect(find.text('Menu Dev'), findsNothing);
+    expect(find.text('Owner Coelo'), findsNothing);
+
+    await tester.tap(find.text('Planos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Planos será implementado em breve.'), findsOneWidget);
+  });
+
+  testWidgets('opens profile actions and invokes logout only from its menu', (tester) async {
     var logoutCount = 0;
 
     await tester.pumpWidget(
@@ -18,13 +116,42 @@ void main() {
       ),
     );
 
-    final logoutButton = find.byTooltip('Sair');
+    expect(find.byTooltip('Sair'), findsNothing);
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-settings-action')), findsOneWidget);
+    final logoutButton = find.byKey(const Key('superadmin-logout-action'));
     expect(logoutButton, findsOneWidget);
 
     await tester.tap(logoutButton);
     await tester.pumpAndSettle();
 
     expect(logoutCount, 1);
+  });
+
+  testWidgets('opens the rounded profile menu below its trigger', (tester) async {
+    await tester.pumpWidget(_shellApp());
+
+    final menu = tester.widget<PopupMenuButton<dynamic>>(
+      find.byKey(const Key('superadmin-profile-menu')),
+    );
+    expect(menu.position, PopupMenuPosition.under);
+    expect(menu.borderRadius, BorderRadius.circular(CoeloRadius.full));
+
+    for (final key in ['superadmin-report-bug', 'superadmin-notifications']) {
+      final button = tester.widget<IconButton>(find.byKey(Key(key)));
+      expect(button.style?.shape?.resolve({}), const CircleBorder());
+      expect(
+        button.style?.overlayColor?.resolve({WidgetState.hovered}),
+        CoeloTheme.light.colorScheme.primaryContainer,
+      );
+      expect(
+        button.style?.foregroundColor?.resolve({WidgetState.hovered}),
+        CoeloTheme.light.extension<CoeloActionColors>()!.primaryHover,
+      );
+    }
   });
 
   testWidgets('shows safe feedback when logout fails', (tester) async {
@@ -36,9 +163,100 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip('Sair'));
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-logout-action')));
     await tester.pumpAndSettle();
 
     expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
   });
+
+  testWidgets('shows safe feedback for header utility actions', (tester) async {
+    await tester.pumpWidget(_shellApp());
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pump();
+    expect(find.text('As notificações serão implementadas em breve.'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-report-bug')));
+    await tester.pump();
+    expect(find.text('O reporte de bugs será implementado em breve.'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-settings-action')));
+    await tester.pump();
+    expect(find.text('Configurações será implementado em breve.'), findsOneWidget);
+  });
+
+  testWidgets('uses a horizontal and vertical binary theme toggle', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeShellHarness());
+
+    final control = find.byKey(const Key('superadmin-theme-mode-control'));
+    expect(control, findsOneWidget);
+    expect(find.text('Seguir o sistema'), findsNothing);
+    expect(tester.getSize(control).width, greaterThan(tester.getSize(control).height));
+    expect(find.byIcon(Icons.light_mode_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
+
+    await tester.tap(control);
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.byKey(const Key('superadmin-sidebar')))).brightness,
+      Brightness.dark,
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-theme-mode-control')), findsOneWidget);
+    expect(tester.getSize(control).height, greaterThan(tester.getSize(control).width));
+
+    await tester.tap(control);
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.byKey(const Key('superadmin-sidebar')))).brightness,
+      Brightness.light,
+    );
+  });
+}
+
+class _ThemeShellHarness extends StatefulWidget {
+  const _ThemeShellHarness();
+
+  @override
+  State<_ThemeShellHarness> createState() => _ThemeShellHarnessState();
+}
+
+class _ThemeShellHarnessState extends State<_ThemeShellHarness> {
+  ThemeMode _mode = ThemeMode.system;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: CoeloTheme.light,
+      darkTheme: CoeloTheme.dark,
+      themeMode: _mode,
+      builder: (context, child) => SuperadminThemeModeScope(
+        mode: _mode,
+        onChanged: (mode) => setState(() => _mode = mode),
+        child: child!,
+      ),
+      home: SuperadminShell(
+        logout: () async => const LogoutResult.success(),
+        child: const SizedBox.expand(),
+      ),
+    );
+  }
+}
+
+Widget _shellApp() {
+  return MaterialApp(
+    theme: CoeloTheme.light,
+    home: SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      child: const SizedBox.expand(),
+    ),
+  );
 }

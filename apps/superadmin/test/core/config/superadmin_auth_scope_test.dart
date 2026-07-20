@@ -28,11 +28,14 @@ void main() {
         keepSessionOpen: false,
       ),
     );
+    final recoveryResult = await scope.requestPasswordRecovery('owner@coelo.me');
 
     expect(didInitialize, isFalse);
     expect(scope.session.isAuthenticated, isFalse);
     expect(result.isSuccess, isFalse);
     expect(result.message, UnavailableCoeloAuthGateway.defaultMessage);
+    expect(recoveryResult.isSuccess, isFalse);
+    expect(recoveryResult.message, UnavailableCoeloAuthGateway.defaultMessage);
   });
 
   test('initializes Supabase with public config and conditional local storage', () async {
@@ -81,6 +84,28 @@ void main() {
     expect(scope.session.isAuthenticated, isFalse);
   });
 
+  test('exposes password recovery through the configured auth gateway', () async {
+    final auth = _FakeCoeloAuthGateway(
+      isAuthenticated: false,
+      authStateChanges: const Stream<bool>.empty(),
+    );
+
+    final scope = await createSuperadminAuthScope(
+      supabaseUrl: 'https://project.supabase.co',
+      supabasePublishableKey: 'sb_publishable_test',
+      initializeSupabase: ({required localStorage, required publishableKey, required url}) async {
+        return SupabaseClient(url, publishableKey);
+      },
+      createAuthGateway: ({required client, required sessionPersistence}) => auth,
+    );
+    addTearDown(scope.session.dispose);
+
+    final result = await scope.requestPasswordRecovery('owner@coelo.me');
+
+    expect(result.isSuccess, isTrue);
+    expect(auth.lastRecoveryEmail, 'owner@coelo.me');
+  });
+
   test('falls back safely when Supabase initialization fails', () async {
     final previousErrorHandler = FlutterError.onError;
     final reportedErrors = <FlutterErrorDetails>[];
@@ -118,6 +143,13 @@ final class _FakeCoeloAuthGateway implements CoeloAuthGateway {
 
   @override
   final Stream<bool> authStateChanges;
+  String? lastRecoveryEmail;
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({required String email}) async {
+    lastRecoveryEmail = email;
+    return const CoeloAuthPasswordRecoveryResult.success();
+  }
 
   @override
   Future<CoeloAuthSignInResult> signInWithPassword({

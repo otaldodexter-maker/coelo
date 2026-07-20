@@ -80,6 +80,20 @@ abstract final class CoeloTheme {
         ),
         margin: EdgeInsets.zero,
       ),
+      dataTableTheme: DataTableThemeData(
+        headingRowColor: WidgetStatePropertyAll(colorScheme.surfaceContainer),
+        dataRowColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.hovered)) {
+            return colorScheme.primaryContainer;
+          }
+          return null;
+        }),
+        dividerThickness: 1,
+        headingTextStyle: CoeloTypography.textTheme(
+          primaryText: colorScheme.onSurface,
+          secondaryText: secondaryText,
+        ).labelLarge,
+      ),
       chipTheme: ChipThemeData(
         backgroundColor: colorScheme.primaryContainer,
         selectedColor: colorScheme.primaryContainer,

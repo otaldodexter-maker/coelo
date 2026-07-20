@@ -5,6 +5,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/domain/coelo_auth_login_action.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
+import '../../features/auth/domain/password_recovery.dart';
+import '../../features/institutions/data/supabase_institution_directory_repository.dart';
+import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../guards/superadmin_session.dart';
 import 'superadmin_app_config.dart';
 
@@ -22,11 +25,19 @@ typedef CoeloAuthGatewayFactory =
     });
 
 final class SuperadminAuthScope {
-  const SuperadminAuthScope({required this.session, required this.login, required this.logout});
+  const SuperadminAuthScope({
+    required this.session,
+    required this.login,
+    required this.logout,
+    required this.requestPasswordRecovery,
+    required this.institutionDirectoryRepository,
+  });
 
   final SuperadminSession session;
   final LoginAction login;
   final LogoutAction logout;
+  final PasswordRecoveryAction requestPasswordRecovery;
+  final InstitutionDirectoryRepository institutionDirectoryRepository;
 }
 
 Future<SuperadminAuthScope> createSuperadminAuthScope({
@@ -57,6 +68,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       session: session,
       login: createCoeloAuthLoginAction(auth: auth, session: session),
       logout: createCoeloAuthLogoutAction(auth: auth, session: session),
+      requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
+      institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
     );
   } on Exception catch (error, stackTrace) {
     FlutterError.reportError(
@@ -81,6 +94,8 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     session: session,
     login: createCoeloAuthLoginAction(auth: auth, session: session),
     logout: createCoeloAuthLogoutAction(auth: auth, session: session),
+    requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
+    institutionDirectoryRepository: const UnavailableInstitutionDirectoryRepository(),
   );
 }
 

@@ -2,10 +2,18 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 class LoginSubmitButton extends StatelessWidget {
-  const LoginSubmitButton({required this.isLoading, required this.onPressed, super.key});
+  const LoginSubmitButton({
+    required this.isLoading,
+    required this.onPressed,
+    this.label = 'Entrar',
+    this.loadingLabel = 'Entrando...',
+    super.key,
+  });
 
   final bool isLoading;
   final VoidCallback? onPressed;
+  final String label;
+  final String loadingLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -40,18 +48,18 @@ class LoginSubmitButton extends StatelessWidget {
           }),
         ),
         child: isLoading
-            ? const Row(
+            ? Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox.square(
+                  const SizedBox.square(
                     dimension: CoeloSize.iconSm,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  SizedBox(width: CoeloSpacing.space2),
-                  Text('Entrando...'),
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Text(loadingLabel),
                 ],
               )
-            : const Text('Entrar'),
+            : Text(label),
       ),
     );
   }

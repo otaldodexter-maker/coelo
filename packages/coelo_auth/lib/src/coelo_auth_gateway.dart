@@ -8,6 +8,10 @@ abstract interface class CoeloAuthGateway {
     required bool persistSession,
   });
 
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+  });
+
   Future<void> signOut();
 }
 
@@ -21,6 +25,24 @@ final class CoeloAuthSignInResult {
 
   static const genericFailureMessage =
       'Não foi possível entrar. Verifique os dados e tente novamente.';
+
+  final bool isSuccess;
+  final String? message;
+}
+
+final class CoeloAuthPasswordRecoveryResult {
+  const CoeloAuthPasswordRecoveryResult._({
+    required this.isSuccess,
+    this.message,
+  });
+
+  const CoeloAuthPasswordRecoveryResult.success() : this._(isSuccess: true);
+
+  const CoeloAuthPasswordRecoveryResult.failure(String message)
+    : this._(isSuccess: false, message: message);
+
+  static const genericFailureMessage =
+      'Não foi possível enviar o e-mail de recuperação. Tente novamente.';
 
   final bool isSuccess;
   final String? message;
@@ -47,6 +69,13 @@ final class UnavailableCoeloAuthGateway implements CoeloAuthGateway {
     required bool persistSession,
   }) {
     return Future.value(CoeloAuthSignInResult.failure(message));
+  }
+
+  @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+  }) {
+    return Future.value(CoeloAuthPasswordRecoveryResult.failure(message));
   }
 
   @override

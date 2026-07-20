@@ -2,7 +2,14 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 class LoginHeader extends StatelessWidget {
-  const LoginHeader({super.key});
+  const LoginHeader({
+    this.title = 'Acesse sua conta',
+    this.subtitle = 'Ambiente interno da operação Coelo.',
+    super.key,
+  });
+
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +52,13 @@ class LoginHeader extends StatelessWidget {
           key: ValueKey('superadmin-login-gap-chip-title'),
           height: CoeloSpacing.space2,
         ),
-        Text('Acesse sua conta', style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+        Text(title, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
         const SizedBox(
           key: ValueKey('superadmin-login-gap-title-subtitle'),
           height: CoeloSpacing.space1,
         ),
         Text(
-          'Ambiente interno da operação Coelo.',
+          subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),

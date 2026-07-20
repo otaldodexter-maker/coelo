@@ -136,6 +136,54 @@ void main() {
 
     expect(api.didSignOut, isTrue);
   });
+
+  test('requests password recovery without exposing account state', () async {
+    final api = _FakeSupabaseAuthApi(isAuthenticated: false);
+    final gateway = SupabaseCoeloAuthGateway.test(
+      api,
+      sessionPersistence: _FakeSessionPersistence(),
+    );
+
+    final result = await gateway.requestPasswordRecovery(
+      email: 'owner@coelo.me',
+    );
+
+    expect(result.isSuccess, isTrue);
+    expect(result.message, isNull);
+    expect(api.lastRecoveryEmail, 'owner@coelo.me');
+  });
+
+  test('maps password recovery failures to a safe generic message', () async {
+    final gateway = SupabaseCoeloAuthGateway.test(
+      _FakeSupabaseAuthApi(
+        isAuthenticated: false,
+        passwordRecoveryException: Exception('sensitive provider detail'),
+      ),
+      sessionPersistence: _FakeSessionPersistence(),
+    );
+
+    final result = await gateway.requestPasswordRecovery(
+      email: 'owner@coelo.me',
+    );
+
+    expect(result.isSuccess, isFalse);
+    expect(
+      result.message,
+      CoeloAuthPasswordRecoveryResult.genericFailureMessage,
+    );
+    expect(result.message, isNot(contains('sensitive provider detail')));
+  });
+
+  test('keeps password recovery unavailable without Supabase config', () async {
+    const gateway = UnavailableCoeloAuthGateway();
+
+    final result = await gateway.requestPasswordRecovery(
+      email: 'owner@coelo.me',
+    );
+
+    expect(result.isSuccess, isFalse);
+    expect(result.message, UnavailableCoeloAuthGateway.defaultMessage);
+  });
 }
 
 final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
@@ -143,6 +191,7 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
     required this.isAuthenticated,
     this.signInSucceeds = false,
     this.signInException,
+    this.passwordRecoveryException,
     Stream<bool>? authStateChanges,
     this.events,
   }) : authStateChanges = authStateChanges ?? const Stream<bool>.empty();
@@ -155,8 +204,18 @@ final class _FakeSupabaseAuthApi implements CoeloSupabaseAuthApi {
 
   final bool signInSucceeds;
   final Exception? signInException;
+  final Exception? passwordRecoveryException;
   final List<String>? events;
   bool didSignOut = false;
+  String? lastRecoveryEmail;
+
+  @override
+  Future<void> requestPasswordRecovery({required String email}) async {
+    lastRecoveryEmail = email;
+    if (passwordRecoveryException case final exception?) {
+      throw exception;
+    }
+  }
 
   @override
   Future<bool> signInWithPassword({

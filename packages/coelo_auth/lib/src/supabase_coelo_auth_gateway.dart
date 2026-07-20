@@ -13,6 +13,8 @@ abstract interface class CoeloSupabaseAuthApi {
     required String password,
   });
 
+  Future<void> requestPasswordRecovery({required String email});
+
   Future<void> signOut();
 }
 
@@ -70,6 +72,24 @@ final class SupabaseCoeloAuthGateway implements CoeloAuthGateway {
   }
 
   @override
+  Future<CoeloAuthPasswordRecoveryResult> requestPasswordRecovery({
+    required String email,
+  }) async {
+    try {
+      await _api.requestPasswordRecovery(email: email);
+      return const CoeloAuthPasswordRecoveryResult.success();
+    } on AuthException {
+      return const CoeloAuthPasswordRecoveryResult.failure(
+        CoeloAuthPasswordRecoveryResult.genericFailureMessage,
+      );
+    } on Exception {
+      return const CoeloAuthPasswordRecoveryResult.failure(
+        CoeloAuthPasswordRecoveryResult.genericFailureMessage,
+      );
+    }
+  }
+
+  @override
   Future<void> signOut() {
     return _api.signOut();
   }
@@ -97,6 +117,11 @@ final class _SupabaseAuthApi implements CoeloSupabaseAuthApi {
       password: password,
     );
     return response.session != null && response.user != null;
+  }
+
+  @override
+  Future<void> requestPasswordRecovery({required String email}) {
+    return _client.auth.resetPasswordForEmail(email);
   }
 
   @override

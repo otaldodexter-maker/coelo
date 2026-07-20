@@ -6,19 +6,30 @@ import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
+import '../features/auth/domain/password_recovery.dart';
+import '../features/auth/domain/reset_password_action.dart';
+import '../features/institutions/data/supabase_institution_directory_repository.dart';
+import '../features/institutions/domain/institution_directory_repository.dart';
 import 'router/superadmin_router.dart';
+import 'theme/superadmin_theme_mode_scope.dart';
 
 class SuperadminApp extends StatefulWidget {
   const SuperadminApp({
     this.session,
     this.login = unavailableSuperadminLogin,
     this.logout = unavailableSuperadminLogout,
+    this.requestPasswordRecovery = unavailableSuperadminPasswordRecovery,
+    this.resetPassword = unavailableResetPassword,
+    this.institutionDirectoryRepository = const UnavailableInstitutionDirectoryRepository(),
     super.key,
   });
 
   final SuperadminSession? session;
   final LoginAction login;
   final LogoutAction logout;
+  final PasswordRecoveryAction requestPasswordRecovery;
+  final ResetPasswordAction resetPassword;
+  final InstitutionDirectoryRepository institutionDirectoryRepository;
 
   @override
   State<SuperadminApp> createState() => _SuperadminAppState();
@@ -39,6 +50,9 @@ class _SuperadminAppState extends State<SuperadminApp> {
       session: _session,
       login: widget.login,
       logout: widget.logout,
+      requestPasswordRecovery: widget.requestPasswordRecovery,
+      resetPassword: widget.resetPassword,
+      institutionDirectoryRepository: widget.institutionDirectoryRepository,
       onThemeModeChanged: _setThemeMode,
     );
   }
@@ -69,6 +83,11 @@ class _SuperadminAppState extends State<SuperadminApp> {
       theme: CoeloTheme.light,
       darkTheme: CoeloTheme.dark,
       themeMode: _themeMode,
+      builder: (context, child) => SuperadminThemeModeScope(
+        mode: _themeMode,
+        onChanged: _setThemeMode,
+        child: child ?? const SizedBox.shrink(),
+      ),
       routerConfig: _router,
     );
   }

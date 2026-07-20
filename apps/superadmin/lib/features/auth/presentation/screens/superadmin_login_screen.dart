@@ -18,12 +18,14 @@ class SuperadminLoginScreen extends StatefulWidget {
   const SuperadminLoginScreen({
     required this.session,
     required this.login,
+    required this.onForgotPassword,
     required this.onThemeModeChanged,
     super.key,
   });
 
   final SuperadminSession session;
   final LoginAction login;
+  final VoidCallback onForgotPassword;
   final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
@@ -72,12 +74,6 @@ class _SuperadminLoginScreenState extends State<SuperadminLoginScreen> {
 
     TextInput.finishAutofillContext();
     widget.session.signIn();
-  }
-
-  void _showPasswordRecoveryFeedback() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recuperação de senha ainda não está disponível.')),
-    );
   }
 
   @override
@@ -130,7 +126,7 @@ class _SuperadminLoginScreenState extends State<SuperadminLoginScreen> {
                                       passwordFocusNode: _passwordFocusNode,
                                       viewModel: _viewModel,
                                       onSubmit: _submit,
-                                      onForgotPassword: _showPasswordRecoveryFeedback,
+                                      onForgotPassword: widget.onForgotPassword,
                                     ),
                                     const SizedBox(height: CoeloSpacing.space6),
                                     const LoginSecurityNotice(),

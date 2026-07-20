@@ -1,6 +1,20 @@
 abstract final class SuperadminRoutes {
   static const home = '/';
   static const homeName = 'home';
+  static const institutions = '/institutions';
+  static const institutionsName = 'institutions';
   static const login = '/login';
   static const loginName = 'login';
+  static const forgotPassword = '/forgot-password';
+  static const forgotPasswordName = 'forgot-password';
+  static const resetPassword = '/reset-password';
+  static const resetPasswordName = 'reset-password';
+  static const devLogin = '/dev/login';
+  static const devLoginName = 'dev-login';
+  static const devForgotPassword = '/dev/forgot-password';
+  static const devForgotPasswordName = 'dev-forgot-password';
+  static const devResetPassword = '/dev/reset-password';
+  static const devResetPasswordName = 'dev-reset-password';
+  static const devInstitutions = '/dev/institutions';
+  static const devInstitutionsName = 'dev-institutions';
 }

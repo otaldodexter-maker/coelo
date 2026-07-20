@@ -17,9 +17,9 @@ updated_at: "2026-07-15"
 
 ## Ponto atual
 
-- Fase: 1 — Mapa do projeto.
-- Assunto: como o Superadmin comeca — `lib` e `main.dart`.
-- Estado: Aula 00 apresentada; aguardando checagem do usuario.
+- Fase: 1 - Mapa do projeto.
+- Assunto: como o Superadmin comeca - `lib` e `main.dart`.
+- Estado: Aula 02 avancada em Dart e Flutter; estudo em andamento.
 
 ## Apresentados
 
@@ -29,15 +29,38 @@ updated_at: "2026-07-15"
 - Arquivo como documento individual dentro de uma pasta.
 - `main.dart` como ponto inicial da execucao do aplicativo.
 - Caminho inicial: repositorio -> `apps/superadmin` -> `lib` -> `main.dart`.
+- `import` como a instrucao que traz bibliotecas e arquivos para uso.
+- `main()` como a funcao que inicia a execucao do app.
+- `usePathUrlStrategy()` como ajuste para usar URLs com caminho no web.
+- `runApp()` como a chamada que entrega o widget raiz para o Flutter.
+- `SuperadminApp` como o widget raiz para a interface do Superadmin.
+- `StatefulWidget` como um widget que pode guardar estado.
+- `build()` como o metodo que descreve o que aparece na tela.
+- `MaterialApp.router` como a base do app com navegacao por rotas.
+- `theme`, `darkTheme` e `themeMode` como as regras visuais principais.
+- `routerConfig` como a ligacao do app com o roteador.
+- Dart como a linguagem do codigo.
+- Flutter como o framework que monta a interface.
+- Widget como a peca visual que o Flutter desenha.
+- `class` como a forma de definir um tipo novo em Dart.
+- `State` como a memoria viva de um widget.
 
 ## Compreendidos com evidencia
 
-- Nenhum conceito confirmado ainda.
+- `lib` e a pasta onde fica o codigo Dart/Flutter do Superadmin.
+- O arquivo que inicia o Superadmin e `apps/superadmin/lib/main.dart`.
+- `main.dart` e o ponto que faz o app comecar a executar.
+- `build()` e o metodo que descreve a interface que aparece na tela.
+- `class` e uma construcao de Dart.
+- `StatefulWidget` e um widget do Flutter.
 
 ## Evidencias pendentes
 
-- Explicar com palavras proprias o que e `lib` e identificar o caminho do
-  arquivo que inicia o Superadmin.
+- Explicar com palavras proprias o que `main()` faz em `apps/superadmin/lib/main.dart`.
+- Explicar para que `runApp()` serve nesse arquivo.
+- Explicar por que `SuperadminApp` e um `StatefulWidget` neste projeto.
+- Distinguir melhor a casca web de entrada do app e o que o Flutter monta de fato.
+- Distinguir com clareza Dart, Flutter, widget e classe no `SuperadminApp`.
 
 ## Retomar
 
@@ -48,8 +71,7 @@ updated_at: "2026-07-15"
 - `apps/superadmin/lib/main.dart`.
 - `apps/superadmin/lib/README.md`.
 - `apps/superadmin/pubspec.yaml` (somente para confirmar a identidade do app).
-- `apps/superadmin/lib/app/superadmin_app.dart` (somente para confirmar para
-  onde `main.dart` entrega a montagem do app).
+- `apps/superadmin/lib/app/superadmin_app.dart` (somente para confirmar para onde `main.dart` entrega a montagem do app).
 
 ## Exercicios
 
@@ -58,17 +80,19 @@ updated_at: "2026-07-15"
 ## Ultima interacao
 
 - Aula 00 apresentou o mapa minimo do Superadmin e seu ponto de entrada real.
-- Aguardando resposta da primeira checagem; nenhuma compreensao foi presumida.
+- O usuario confirmou `lib` como pasta do codigo Dart/Flutter e apontou `main.dart` como o arquivo de entrada.
+- Aula de hoje avancou para Dart e Flutter usando `SuperadminApp` como exemplo real.
+- O usuario confirmou que `class` e Dart e `StatefulWidget` e Flutter.
 
 ## Proximo passo
 
-- Se a checagem demonstrar compreensao, seguir o caminho dentro de `main.dart`:
-  import, funcao `main` e a entrega para `SuperadminApp`.
-- Motivo: depois de localizar o inicio, o proximo passo e entender o que ele
-  manda o aplicativo fazer, antes de estudar widgets em profundidade.
+- Quando voltar, seguir `SuperadminApp` ate o `build()` e entender como ele monta o `MaterialApp.router`.
+- Motivo: depois de achar o ponto de entrada, o proximo passo e entender a primeira tela/base visual do app.
 
 ## Historico
 
-- 2026-07-15 — Aula 00 apresentada: repositorio, pastas, arquivo, `lib`,
-  `main.dart` e caminho inicial do Superadmin. Checagem pendente.
-- 2026-07-14 — Memoria inicial criada. Nenhuma compreensao foi presumida.
+- 2026-07-15 - Aula de hoje avancou em `main.dart`: `import`, `main()`, `usePathUrlStrategy()`, `runApp()` e `SuperadminApp`. Estudo pausado por agora.
+- 2026-07-15 - O usuario pediu para incluir Git e GitHub na trilha do tutor.
+- 2026-07-15 - Aula 00 apresentada: repositorio, pastas, arquivo, `lib`, `main.dart` e caminho inicial do Superadmin. Checagem pendente.
+- 2026-07-15 - Aula 00 checada: `lib` confirmado como pasta do codigo Dart/Flutter e `main.dart` confirmado como arquivo de entrada.
+- 2026-07-14 - Memoria inicial criada. Nenhuma compreensao foi presumida.
