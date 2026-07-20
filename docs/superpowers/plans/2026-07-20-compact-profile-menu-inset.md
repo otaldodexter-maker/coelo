@@ -1,7 +1,7 @@
 ---
 title: "Compact Profile Menu Safe Inset Implementation Plan"
 source: "docs/superpowers/specs/2026-07-20-compact-profile-menu-inset-design.md"
-status: "in-progress"
+status: "completed"
 generated_at: "2026-07-20"
 ---
 
@@ -57,3 +57,10 @@ Expected: todos os testes do shell passam.
 - [ ] **Step 5: Validar e commit**
 
 Executar `flutter analyze`, `flutter test` e `flutter build web --dart-define=COELO_DEV_MFA=true`; atualizar o preview, confirmar HTTP 200 e criar commit isolado.
+
+## Resultado da execução
+
+- Implementação concluída em 2026-07-20 com ciclo RED/GREEN em 375 e 768 px.
+- `flutter analyze`: sem problemas.
+- `flutter test`: 146 testes aprovados.
+- `flutter build web --dart-define=COELO_DEV_MFA=true`: concluído.

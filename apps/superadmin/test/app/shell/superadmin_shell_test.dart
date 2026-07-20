@@ -295,6 +295,29 @@ void main() {
     expect(logoutCount, 1);
   });
 
+  testWidgets('keeps a safe right inset around the compact profile menu', (tester) async {
+    for (final width in [375.0, 768.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 800));
+      await tester.pumpWidget(_shellApp());
+      await tester.pumpAndSettle();
+
+      final trigger = find.byKey(const Key('superadmin-profile-menu'));
+      await tester.tap(trigger);
+      await tester.pumpAndSettle();
+
+      final profileActionRect = tester.getRect(find.byKey(const Key('superadmin-profile-action')));
+      expect(
+        profileActionRect.right,
+        lessThanOrEqualTo(width - CoeloSpacing.space6),
+        reason: 'viewport $width, trigger ${tester.getRect(trigger)}, action $profileActionRect',
+      );
+
+      await tester.tap(trigger);
+      await tester.pumpAndSettle();
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
   testWidgets('opens the rounded profile menu below its trigger', (tester) async {
     await tester.pumpWidget(_shellApp());
 
