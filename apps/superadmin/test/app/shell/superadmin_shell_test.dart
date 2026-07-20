@@ -295,7 +295,7 @@ void main() {
     expect(logoutCount, 1);
   });
 
-  testWidgets('keeps a safe right inset around the compact profile menu', (tester) async {
+  testWidgets('keeps the compact profile menu close to the right edge', (tester) async {
     for (final width in [375.0, 768.0]) {
       await tester.binding.setSurfaceSize(Size(width, 800));
       await tester.pumpWidget(_shellApp());
@@ -308,7 +308,7 @@ void main() {
       final profileActionRect = tester.getRect(find.byKey(const Key('superadmin-profile-action')));
       expect(
         profileActionRect.right,
-        lessThanOrEqualTo(width - CoeloSpacing.space6),
+        inInclusiveRange(width - CoeloSpacing.space4, width - CoeloSpacing.space2),
         reason: 'viewport $width, trigger ${tester.getRect(trigger)}, action $profileActionRect',
       );
 

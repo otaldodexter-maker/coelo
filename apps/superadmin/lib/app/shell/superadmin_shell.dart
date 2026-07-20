@@ -11,7 +11,6 @@ const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
-const _compactProfileMenuWidth = CoeloSpacing.space24 * 2 + CoeloSpacing.space16;
 
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
@@ -1098,21 +1097,13 @@ class _ProfileSummary extends StatelessWidget {
           }),
           overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         );
-    final horizontalOffset = compact
-        ? CoeloSize.touchMin - _compactProfileMenuWidth - CoeloSpacing.space2
-        : 0.0;
     return MenuAnchor(
-      alignmentOffset: Offset(horizontalOffset, CoeloSpacing.space2),
+      alignmentOffset: const Offset(0, CoeloSpacing.space2),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
         elevation: const WidgetStatePropertyAll(4),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-        minimumSize: compact
-            ? const WidgetStatePropertyAll(Size(_compactProfileMenuWidth, 0))
-            : null,
-        maximumSize: compact
-            ? const WidgetStatePropertyAll(Size(_compactProfileMenuWidth, double.infinity))
-            : null,
+        alignment: compact ? AlignmentDirectional.bottomEnd : null,
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CoeloRadius.lg),
