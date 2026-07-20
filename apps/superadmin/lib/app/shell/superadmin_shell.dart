@@ -835,8 +835,11 @@ class _NavigationItemState extends State<_NavigationItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final activeBackgroundOpacity = colors.brightness == Brightness.dark
+        ? (_highlighted ? 0.24 : 0.18)
+        : (_highlighted ? 0.16 : 0.10);
     final background = widget.isActive
-        ? Colors.transparent
+        ? colors.primary.withValues(alpha: activeBackgroundOpacity)
         : _highlighted
         ? colors.primaryContainer
         : Colors.transparent;

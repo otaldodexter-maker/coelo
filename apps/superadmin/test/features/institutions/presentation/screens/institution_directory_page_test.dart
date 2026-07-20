@@ -217,14 +217,22 @@ void main() {
       find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
     );
     final colors = CoeloTheme.light.colorScheme;
-    expect(option.style?.backgroundColor?.resolve({}), colors.primary.withValues(alpha: 0.14));
-    expect(
-      option.style?.backgroundColor?.resolve({WidgetState.hovered}),
-      colors.primary.withValues(alpha: 0.20),
-    );
+    expect(option.style?.backgroundColor?.resolve({}), Colors.transparent);
+    expect(option.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
     expect(option.style?.foregroundColor?.resolve({}), colors.primary);
     expect(option.style?.iconColor?.resolve({}), colors.primary);
     expect(option.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(
+      tester
+          .widget<Checkbox>(
+            find.descendant(
+              of: find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
+              matching: find.byType(Checkbox),
+            ),
+          )
+          .value,
+      isTrue,
+    );
   });
 
   testWidgets('uses rounded anchored menus below their filter trigger', (tester) async {

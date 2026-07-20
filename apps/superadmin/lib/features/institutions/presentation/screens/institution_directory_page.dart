@@ -611,7 +611,6 @@ String _normalizeFilterSearch(String value) {
 }
 
 ButtonStyle _filterMenuItemStyle(ColorScheme colors, {required bool selected}) {
-  final isDark = colors.brightness == Brightness.dark;
   return MenuItemButton.styleFrom(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
   ).copyWith(
@@ -628,10 +627,6 @@ ButtonStyle _filterMenuItemStyle(ColorScheme colors, {required bool selected}) {
     backgroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      if (selected) {
-        final opacity = highlighted ? (isDark ? 0.30 : 0.20) : (isDark ? 0.22 : 0.14);
-        return colors.primary.withValues(alpha: opacity);
-      }
       return highlighted ? colors.primaryContainer : Colors.transparent;
     }),
     overlayColor: const WidgetStatePropertyAll(Colors.transparent),

@@ -113,7 +113,7 @@ void main() {
                 )
                 .decoration!
             as BoxDecoration;
-    expect(activeDecoration.color, Colors.transparent);
+    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary.withValues(alpha: 0.10));
     final activeSectionDecoration =
         tester
                 .widget<AnimatedContainer>(
