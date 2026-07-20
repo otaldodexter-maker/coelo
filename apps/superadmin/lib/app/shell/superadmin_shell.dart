@@ -58,7 +58,15 @@ class _SuperadminShellState extends State<SuperadminShell> {
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
               ),
-              child: SafeArea(child: _NavigationContent(collapsed: false)),
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    const _BrandHeader(collapsed: false),
+                    const _InsetDivider(key: Key('superadmin-brand-divider')),
+                    const Expanded(child: _NavigationContent(collapsed: false)),
+                  ],
+                ),
+              ),
             ),
             body: Column(
               children: [
@@ -534,7 +542,7 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
         ? colors.primary
         : _highlighted
         ? colors.primaryContainer
-        : Colors.transparent;
+        : colors.primaryContainer.withValues(alpha: 0);
     final foreground = active
         ? colors.onPrimary
         : _highlighted
@@ -599,12 +607,15 @@ class _CollapsedNavigationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final hoverColor = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
     return Padding(
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
       child: MenuAnchor(
         alignmentOffset: const Offset(CoeloSpacing.space2, 0),
         style: MenuStyle(
+          alignment: AlignmentDirectional.topEnd,
           backgroundColor: WidgetStatePropertyAll(colors.surface),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
@@ -633,7 +644,7 @@ class _CollapsedNavigationSection extends StatelessWidget {
                 for (final destination in section.destinations)
                   MenuItemButton(
                     key: Key('superadmin-navigation-${destination.id}'),
-                    style: _navigationMenuItemStyle(colors),
+                    style: _navigationMenuItemStyle(colors, active: destination.active),
                     leadingIcon: Icon(destination.icon),
                     onPressed: () => _handleDestinationTap(context, destination),
                     child: Text(destination.label),
@@ -649,12 +660,35 @@ class _CollapsedNavigationSection extends StatelessWidget {
             child: IconButton(
               key: Key('superadmin-navigation-section-${section.id}'),
               onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-              style: IconButton.styleFrom(
-                minimumSize: const Size.square(CoeloSize.touchMin),
-                foregroundColor: active ? colors.onPrimary : colors.onSurfaceVariant,
-                backgroundColor: active ? colors.primary : Colors.transparent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-              ).copyWith(overlayColor: WidgetStatePropertyAll(colors.primaryContainer)),
+              style:
+                  IconButton.styleFrom(
+                    minimumSize: const Size.square(CoeloSize.touchMin),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(CoeloRadius.md),
+                    ),
+                  ).copyWith(
+                    foregroundColor: WidgetStateProperty.resolveWith((states) {
+                      final highlighted =
+                          states.contains(WidgetState.hovered) ||
+                          states.contains(WidgetState.focused);
+                      if (active) {
+                        return colors.onPrimary;
+                      }
+                      return highlighted ? colors.primary : colors.onSurfaceVariant;
+                    }),
+                    backgroundColor: WidgetStateProperty.resolveWith((states) {
+                      final highlighted =
+                          states.contains(WidgetState.hovered) ||
+                          states.contains(WidgetState.focused);
+                      if (active) {
+                        return highlighted ? hoverColor : colors.primary;
+                      }
+                      return highlighted
+                          ? colors.primaryContainer
+                          : colors.primaryContainer.withValues(alpha: 0);
+                    }),
+                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  ),
               icon: Icon(section.icon),
             ),
           );
@@ -664,21 +698,26 @@ class _CollapsedNavigationSection extends StatelessWidget {
   }
 }
 
-ButtonStyle _navigationMenuItemStyle(ColorScheme colors) {
+ButtonStyle _navigationMenuItemStyle(ColorScheme colors, {required bool active}) {
+  final activeOpacity = colors.brightness == Brightness.dark ? 0.18 : 0.10;
+  final activeHoverOpacity = colors.brightness == Brightness.dark ? 0.24 : 0.16;
   return MenuItemButton.styleFrom(
-    foregroundColor: colors.onSurfaceVariant,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
   ).copyWith(
     foregroundColor: WidgetStateProperty.resolveWith((states) {
-      return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-          ? colors.primary
-          : colors.onSurfaceVariant;
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return active || highlighted ? colors.primary : colors.onSurfaceVariant;
     }),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
-      return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-          ? colors.primaryContainer
-          : Colors.transparent;
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      if (active) {
+        return colors.primary.withValues(alpha: highlighted ? activeHoverOpacity : activeOpacity);
+      }
+      return highlighted ? colors.primaryContainer : colors.primaryContainer.withValues(alpha: 0);
     }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
   );
 }
 
@@ -842,7 +881,7 @@ class _NavigationItemState extends State<_NavigationItem> {
         ? colors.primary.withValues(alpha: activeBackgroundOpacity)
         : _highlighted
         ? colors.primaryContainer
-        : Colors.transparent;
+        : colors.primaryContainer.withValues(alpha: 0);
     final foreground = widget.isActive
         ? colors.primary
         : _highlighted
