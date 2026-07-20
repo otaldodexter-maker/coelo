@@ -9,6 +9,7 @@ import '../theme/superadmin_theme_mode_scope.dart';
 const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
+const _shellGutter = CoeloSpacing.space3;
 
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
@@ -52,7 +53,12 @@ class _SuperadminShellState extends State<SuperadminShell> {
         if (!isDesktop) {
           return Scaffold(
             appBar: _CompactAppBar(onLogout: _handleLogout),
-            drawer: const Drawer(child: SafeArea(child: _NavigationContent(collapsed: false))),
+            drawer: Drawer(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+              ),
+              child: SafeArea(child: _NavigationContent(collapsed: false)),
+            ),
             body: Column(
               children: [
                 _PageHeader(
@@ -62,7 +68,7 @@ class _SuperadminShellState extends State<SuperadminShell> {
                   onLogout: _handleLogout,
                   compact: true,
                 ),
-                const Divider(key: Key('superadmin-page-divider'), height: 1),
+                const _InsetDivider(key: Key('superadmin-page-divider')),
                 Expanded(child: pageBody),
               ],
             ),
@@ -70,35 +76,45 @@ class _SuperadminShellState extends State<SuperadminShell> {
         }
 
         return Scaffold(
-          body: Row(
-            children: [
-              AnimatedContainer(
-                key: const Key('superadmin-sidebar'),
-                width: _sidebarCollapsed ? _collapsedSidebarWidth : _expandedSidebarWidth,
-                duration: CoeloMotion.short,
-                curve: Curves.easeOut,
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-                child: _Sidebar(
-                  collapsed: _sidebarCollapsed,
-                  onToggle: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
-                ),
-              ),
-              const VerticalDivider(width: 1),
-              Expanded(
-                child: Column(
-                  children: [
-                    _PageHeader(
-                      title: widget.title,
-                      subtitle: widget.subtitle,
-                      actions: widget.actions,
-                      onLogout: _handleLogout,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+          body: Padding(
+            padding: const EdgeInsets.all(_shellGutter),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  key: const Key('superadmin-sidebar'),
+                  width: _sidebarCollapsed ? _collapsedSidebarWidth : _expandedSidebarWidth,
+                  duration: CoeloMotion.short,
+                  curve: Curves.easeOut,
+                  child: _FloatingSurface(
+                    key: const Key('superadmin-floating-sidebar'),
+                    child: _Sidebar(
+                      collapsed: _sidebarCollapsed,
+                      onToggle: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
                     ),
-                    const Divider(key: Key('superadmin-page-divider'), height: 1),
-                    Expanded(child: pageBody),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: _shellGutter),
+                Expanded(
+                  child: _FloatingSurface(
+                    key: const Key('superadmin-floating-content'),
+                    clip: true,
+                    child: Column(
+                      children: [
+                        _PageHeader(
+                          title: widget.title,
+                          subtitle: widget.subtitle,
+                          actions: widget.actions,
+                          onLogout: _handleLogout,
+                        ),
+                        const _InsetDivider(key: Key('superadmin-page-divider')),
+                        Expanded(child: pageBody),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -120,7 +136,7 @@ class _Sidebar extends StatelessWidget {
         Column(
           children: [
             _BrandHeader(collapsed: collapsed),
-            const Divider(key: Key('superadmin-brand-divider'), height: 1),
+            const _InsetDivider(key: Key('superadmin-brand-divider')),
             Expanded(child: _NavigationContent(collapsed: collapsed)),
           ],
         ),
@@ -130,6 +146,48 @@ class _Sidebar extends StatelessWidget {
           child: _SidebarToggle(collapsed: collapsed, onPressed: onToggle),
         ),
       ],
+    );
+  }
+}
+
+class _FloatingSurface extends StatelessWidget {
+  const _FloatingSurface({required this.child, this.clip = false, super.key});
+
+  final Widget child;
+  final bool clip;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final decoration = BoxDecoration(
+      color: colors.surface,
+      borderRadius: BorderRadius.circular(CoeloRadius.xl),
+      border: Border.all(color: colors.outlineVariant),
+      boxShadow: [
+        BoxShadow(
+          color: colors.shadow.withValues(alpha: 0.06),
+          blurRadius: CoeloSpacing.space3,
+          offset: const Offset(0, CoeloSpacing.space1),
+        ),
+      ],
+    );
+    return DecoratedBox(
+      decoration: decoration,
+      child: clip
+          ? ClipRRect(borderRadius: BorderRadius.circular(CoeloRadius.xl), child: child)
+          : child,
+    );
+  }
+}
+
+class _InsetDivider extends StatelessWidget {
+  const _InsetDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
+      child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
     );
   }
 }
@@ -290,10 +348,71 @@ class _SidebarToggle extends StatelessWidget {
   }
 }
 
-class _NavigationContent extends StatelessWidget {
+class _NavigationDestinationData {
+  const _NavigationDestinationData(this.id, this.label, this.icon, {this.active = false});
+
+  final String id;
+  final String label;
+  final IconData icon;
+  final bool active;
+}
+
+class _NavigationSectionData {
+  const _NavigationSectionData(this.id, this.label, this.icon, this.destinations);
+
+  final String id;
+  final String label;
+  final IconData icon;
+  final List<_NavigationDestinationData> destinations;
+
+  bool get hasActiveDestination => destinations.any((destination) => destination.active);
+}
+
+const _navigationSections = <_NavigationSectionData>[
+  _NavigationSectionData('structure', 'Estrutura', Icons.account_balance_outlined, [
+    _NavigationDestinationData(
+      'institutions',
+      'Instituições',
+      Icons.account_balance_outlined,
+      active: true,
+    ),
+    _NavigationDestinationData('units', 'Unidades', Icons.apartment_outlined),
+    _NavigationDestinationData('groups', 'Grupos', Icons.groups_outlined),
+  ]),
+  _NavigationSectionData('access', 'Acessos', Icons.manage_accounts_outlined, [
+    _NavigationDestinationData('people', 'Pessoas', Icons.people_outline),
+    _NavigationDestinationData('internal-users', 'Usuários internos', Icons.badge_outlined),
+    _NavigationDestinationData(
+      'profiles',
+      'Perfis e permissões',
+      Icons.admin_panel_settings_outlined,
+    ),
+  ]),
+  _NavigationSectionData('operations', 'Operação', Icons.tune_outlined, [
+    _NavigationDestinationData('plans', 'Planos', Icons.loyalty_outlined),
+    _NavigationDestinationData('import', 'Importações', Icons.upload_file_outlined),
+  ]),
+  _NavigationSectionData('communication', 'Comunicação', Icons.forum_outlined, [
+    _NavigationDestinationData('invites', 'Convites', Icons.mail_outline),
+    _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined),
+  ]),
+  _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
+    _NavigationDestinationData('support', 'Suporte', Icons.support_agent_outlined),
+    _NavigationDestinationData('audit', 'Auditoria', Icons.security_outlined),
+  ]),
+];
+
+class _NavigationContent extends StatefulWidget {
   const _NavigationContent({required this.collapsed});
 
   final bool collapsed;
+
+  @override
+  State<_NavigationContent> createState() => _NavigationContentState();
+}
+
+class _NavigationContentState extends State<_NavigationContent> {
+  final Set<String> _expandedSections = {'structure'};
 
   @override
   Widget build(BuildContext context) {
@@ -306,64 +425,268 @@ class _NavigationContent extends StatelessWidget {
               vertical: CoeloSpacing.space3,
             ),
             children: [
-              _NavigationItem(
-                id: 'institutions',
-                icon: Icons.account_balance_outlined,
-                selectedIcon: Icons.account_balance,
-                label: 'Instituições',
-                isActive: true,
-                collapsed: collapsed,
-              ),
-              _NavigationItem(
-                id: 'plans',
-                icon: Icons.loyalty_outlined,
-                label: 'Planos',
-                collapsed: collapsed,
-              ),
-              _NavigationItem(
-                id: 'internal-users',
-                icon: Icons.badge_outlined,
-                label: 'Usuários internos',
-                collapsed: collapsed,
-              ),
-              _NavigationItem(
-                id: 'notices',
-                icon: Icons.campaign_outlined,
-                label: 'Avisos',
-                collapsed: collapsed,
-              ),
-              _NavigationItem(
-                id: 'import',
-                icon: Icons.upload_file_outlined,
-                label: 'Importação',
-                collapsed: collapsed,
-              ),
-              _NavigationItem(
-                id: 'support',
-                icon: Icons.support_agent_outlined,
-                label: 'Suporte',
-                collapsed: collapsed,
-              ),
-              _NavigationItem(
-                id: 'audit',
-                icon: Icons.security_outlined,
-                label: 'Auditoria',
-                collapsed: collapsed,
-              ),
+              for (final section in _navigationSections)
+                if (widget.collapsed)
+                  _CollapsedNavigationSection(section: section)
+                else
+                  _ExpandedNavigationSection(
+                    section: section,
+                    expanded: _expandedSections.contains(section.id),
+                    onToggle: () => setState(() {
+                      if (!_expandedSections.add(section.id)) {
+                        _expandedSections.remove(section.id);
+                      }
+                    }),
+                  ),
             ],
           ),
         ),
+        const _InsetDivider(),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             CoeloSpacing.space2,
-            CoeloSpacing.space1,
+            CoeloSpacing.space2,
             CoeloSpacing.space2,
             CoeloSpacing.space3,
           ),
-          child: _ThemeModeControl(collapsed: collapsed),
+          child: _ThemeModeControl(collapsed: widget.collapsed),
         ),
       ],
     );
+  }
+}
+
+class _ExpandedNavigationSection extends StatelessWidget {
+  const _ExpandedNavigationSection({
+    required this.section,
+    required this.expanded,
+    required this.onToggle,
+  });
+
+  final _NavigationSectionData section;
+  final bool expanded;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
+      child: Column(
+        children: [
+          _NavigationSectionHeader(section: section, expanded: expanded, onTap: onToggle),
+          AnimatedSize(
+            duration: CoeloMotion.short,
+            curve: Curves.easeOut,
+            alignment: Alignment.topCenter,
+            child: expanded
+                ? Padding(
+                    padding: const EdgeInsets.only(
+                      left: CoeloSpacing.space3,
+                      top: CoeloSpacing.space1,
+                    ),
+                    child: Column(
+                      children: [
+                        for (final destination in section.destinations)
+                          _NavigationItem(
+                            id: destination.id,
+                            icon: destination.icon,
+                            label: destination.label,
+                            isActive: destination.active,
+                            collapsed: false,
+                          ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavigationSectionHeader extends StatefulWidget {
+  const _NavigationSectionHeader({
+    required this.section,
+    required this.expanded,
+    required this.onTap,
+  });
+
+  final _NavigationSectionData section;
+  final bool expanded;
+  final VoidCallback onTap;
+
+  @override
+  State<_NavigationSectionHeader> createState() => _NavigationSectionHeaderState();
+}
+
+class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
+  bool _highlighted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final active = widget.section.hasActiveDestination;
+    final background = active
+        ? colors.primary
+        : _highlighted
+        ? colors.primaryContainer
+        : Colors.transparent;
+    final foreground = active
+        ? colors.onPrimary
+        : _highlighted
+        ? colors.primary
+        : colors.onSurfaceVariant;
+    final content = AnimatedContainer(
+      key: Key('superadmin-navigation-section-${widget.section.id}'),
+      duration: CoeloMotion.short,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space3,
+        vertical: CoeloSpacing.space3,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+      ),
+      child: Row(
+        children: [
+          Icon(widget.section.icon, color: foreground, size: CoeloSize.iconMd),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(
+            child: Text(
+              widget.section.label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          Icon(
+            widget.expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+            color: foreground,
+            size: CoeloSize.iconSm,
+          ),
+        ],
+      ),
+    );
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _highlighted = true),
+      onExit: (_) => setState(() => _highlighted = false),
+      child: FocusableActionDetector(
+        onShowFocusHighlight: (value) => setState(() => _highlighted = value),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            child: content,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CollapsedNavigationSection extends StatelessWidget {
+  const _CollapsedNavigationSection({required this.section});
+
+  final _NavigationSectionData section;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
+      child: MenuAnchor(
+        alignmentOffset: const Offset(CoeloSpacing.space2, 0),
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(colors.surface),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              side: BorderSide(color: colors.outlineVariant),
+            ),
+          ),
+        ),
+        menuChildren: [
+          SizedBox(
+            key: Key('superadmin-navigation-flyout-${section.id}'),
+            width: 220,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CoeloSpacing.space4,
+                    CoeloSpacing.space3,
+                    CoeloSpacing.space4,
+                    CoeloSpacing.space2,
+                  ),
+                  child: Text(section.label, style: Theme.of(context).textTheme.labelLarge),
+                ),
+                for (final destination in section.destinations)
+                  MenuItemButton(
+                    key: Key('superadmin-navigation-${destination.id}'),
+                    style: _navigationMenuItemStyle(colors),
+                    leadingIcon: Icon(destination.icon),
+                    onPressed: () => _handleDestinationTap(context, destination),
+                    child: Text(destination.label),
+                  ),
+              ],
+            ),
+          ),
+        ],
+        builder: (context, controller, child) {
+          final active = section.hasActiveDestination;
+          return Tooltip(
+            message: section.label,
+            child: IconButton(
+              key: Key('superadmin-navigation-section-${section.id}'),
+              onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+              style: IconButton.styleFrom(
+                minimumSize: const Size.square(CoeloSize.touchMin),
+                foregroundColor: active ? colors.onPrimary : colors.onSurfaceVariant,
+                backgroundColor: active ? colors.primary : Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+              ).copyWith(overlayColor: WidgetStatePropertyAll(colors.primaryContainer)),
+              icon: Icon(section.icon),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+ButtonStyle _navigationMenuItemStyle(ColorScheme colors) {
+  return MenuItemButton.styleFrom(
+    foregroundColor: colors.onSurfaceVariant,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+  ).copyWith(
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+          ? colors.primary
+          : colors.onSurfaceVariant;
+    }),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+          ? colors.primaryContainer
+          : Colors.transparent;
+    }),
+  );
+}
+
+void _handleDestinationTap(BuildContext context, _NavigationDestinationData destination) {
+  if (!destination.active) {
+    _showMessage(context, '${destination.label} será implementado em breve.');
+  }
+  final scaffold = Scaffold.maybeOf(context);
+  if (scaffold?.isDrawerOpen ?? false) {
+    Navigator.of(context).pop();
   }
 }
 
@@ -380,7 +703,7 @@ class _ThemeModeControl extends StatelessWidget {
     final colors = theme.colorScheme;
     final isDark =
         mode == ThemeMode.dark || (mode == ThemeMode.system && theme.brightness == Brightness.dark);
-    final size = collapsed ? const Size(48, 96) : const Size(176, 48);
+    final size = collapsed ? const Size(40, 80) : const Size(160, 40);
 
     void toggle() => scope?.onChanged(isDark ? ThemeMode.light : ThemeMode.dark);
 
@@ -443,16 +766,16 @@ class _ThemeModeControl extends StatelessWidget {
                         ? (isDark ? Alignment.bottomCenter : Alignment.topCenter)
                         : (isDark ? Alignment.centerRight : Alignment.centerLeft),
                     child: Container(
-                      width: 40,
-                      height: 40,
-                      padding: const EdgeInsets.all(CoeloSpacing.space2),
+                      width: 32,
+                      height: 32,
+                      padding: const EdgeInsets.all(CoeloSpacing.space1),
                       decoration: BoxDecoration(
                         color: colors.primary,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.25),
-                            blurRadius: CoeloSpacing.space2,
+                            color: colors.primary.withValues(alpha: 0.12),
+                            blurRadius: CoeloSpacing.space1,
                           ),
                         ],
                       ),
@@ -478,13 +801,11 @@ class _NavigationItem extends StatefulWidget {
     required this.icon,
     required this.label,
     required this.collapsed,
-    this.selectedIcon,
     this.isActive = false,
   });
 
   final String id;
   final IconData icon;
-  final IconData? selectedIcon;
   final String label;
   final bool collapsed;
   final bool isActive;
@@ -513,12 +834,12 @@ class _NavigationItemState extends State<_NavigationItem> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final background = widget.isActive
-        ? colors.primary
+        ? Colors.transparent
         : _highlighted
         ? colors.primaryContainer
         : Colors.transparent;
     final foreground = widget.isActive
-        ? colors.onPrimary
+        ? colors.primary
         : _highlighted
         ? colors.primary
         : colors.onSurfaceVariant;
@@ -538,11 +859,7 @@ class _NavigationItemState extends State<_NavigationItem> {
       child: Row(
         mainAxisAlignment: widget.collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
         children: [
-          Icon(
-            widget.isActive ? widget.selectedIcon ?? widget.icon : widget.icon,
-            color: foreground,
-            size: CoeloSize.iconMd,
-          ),
+          Icon(widget.icon, color: foreground, size: CoeloSize.iconMd),
           if (!widget.collapsed) ...[
             const SizedBox(width: CoeloSpacing.space3),
             Expanded(
@@ -694,88 +1011,107 @@ class _ProfileSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return PopupMenuButton<_ProfileAction>(
-      key: const Key('superadmin-profile-menu'),
-      tooltip: 'Abrir menu do usuário',
-      position: PopupMenuPosition.under,
-      borderRadius: BorderRadius.circular(CoeloRadius.full),
-      offset: const Offset(0, CoeloSpacing.space2),
-      color: colors.surface,
-      elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        side: BorderSide(color: colors.outlineVariant),
+    final standardItemStyle =
+        MenuItemButton.styleFrom(
+          foregroundColor: colors.onSurfaceVariant,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+        ).copyWith(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                ? colors.primaryContainer
+                : Colors.transparent;
+          }),
+        );
+    final logoutStyle =
+        MenuItemButton.styleFrom(
+          foregroundColor: colors.error,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+        ).copyWith(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                ? colors.errorContainer
+                : Colors.transparent;
+          }),
+        );
+    return MenuAnchor(
+      alignmentOffset: const Offset(0, CoeloSpacing.space2),
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(colors.surface),
+        elevation: const WidgetStatePropertyAll(4),
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            side: BorderSide(color: colors.outlineVariant),
+          ),
+        ),
       ),
-      onSelected: (action) {
-        switch (action) {
-          case _ProfileAction.profile:
-            _showMessage(context, 'O perfil será implementado em breve.');
-          case _ProfileAction.settings:
-            _showMessage(context, 'Configurações será implementado em breve.');
-          case _ProfileAction.logout:
-            onLogout();
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          key: Key('superadmin-profile-action'),
-          value: _ProfileAction.profile,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.person_outline),
-            title: Text('Perfil'),
-          ),
+      menuChildren: [
+        MenuItemButton(
+          key: const Key('superadmin-profile-action'),
+          style: standardItemStyle,
+          leadingIcon: const Icon(Icons.person_outline),
+          onPressed: () => _showMessage(context, 'O perfil será implementado em breve.'),
+          child: const Text('Perfil'),
         ),
-        const PopupMenuItem(
-          key: Key('superadmin-settings-action'),
-          value: _ProfileAction.settings,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.settings_outlined),
-            title: Text('Configurações'),
-          ),
+        MenuItemButton(
+          key: const Key('superadmin-settings-action'),
+          style: standardItemStyle,
+          leadingIcon: const Icon(Icons.settings_outlined),
+          onPressed: () => _showMessage(context, 'Configurações será implementado em breve.'),
+          child: const Text('Configurações'),
         ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(
-          key: Key('superadmin-logout-action'),
-          value: _ProfileAction.logout,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.logout),
-            title: Text('Sair'),
-          ),
+        const _InsetDivider(),
+        MenuItemButton(
+          key: const Key('superadmin-logout-action'),
+          style: logoutStyle,
+          leadingIcon: const Icon(Icons.logout),
+          onPressed: onLogout,
+          child: const Text('Sair'),
         ),
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CoeloSpacing.space2,
-          vertical: CoeloSpacing.space1,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircleAvatar(radius: 18, child: Text('OC')),
-            if (!compact) ...[
-              const SizedBox(width: CoeloSpacing.space2),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Owner Coelo', style: theme.textTheme.labelLarge),
-                  Text('Superadmin', style: theme.textTheme.bodySmall),
-                ],
+      builder: (context, controller, child) {
+        return Tooltip(
+          message: 'Abrir menu do usuário',
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              key: const Key('superadmin-profile-menu'),
+              onTap: () => controller.isOpen ? controller.close() : controller.open(),
+              borderRadius: BorderRadius.circular(CoeloRadius.full),
+              overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoeloSpacing.space2,
+                  vertical: CoeloSpacing.space1,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircleAvatar(radius: 18, child: Text('OC')),
+                    if (!compact) ...[
+                      const SizedBox(width: CoeloSpacing.space2),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Owner Coelo', style: theme.textTheme.labelLarge),
+                          Text('Superadmin', style: theme.textTheme.bodySmall),
+                        ],
+                      ),
+                      const SizedBox(width: CoeloSpacing.space1),
+                      const Icon(Icons.arrow_drop_down_rounded),
+                    ],
+                  ],
+                ),
               ),
-              const SizedBox(width: CoeloSpacing.space1),
-              const Icon(Icons.arrow_drop_down_rounded),
-            ],
-          ],
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
-
-enum _ProfileAction { profile, settings, logout }
 
 class _HeaderUtilityActions extends StatelessWidget {
   const _HeaderUtilityActions();

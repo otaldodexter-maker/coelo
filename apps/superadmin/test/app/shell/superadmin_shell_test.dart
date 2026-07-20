@@ -7,6 +7,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('shows the approved floating hierarchical navigation', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp());
+
+    expect(find.byKey(const Key('superadmin-floating-sidebar')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
+
+    for (final label in ['Estrutura', 'Acessos', 'Operação', 'Comunicação', 'Governança']) {
+      expect(find.text(label), findsOneWidget);
+    }
+    for (final label in ['Unidades', 'Grupos']) {
+      expect(find.text(label), findsOneWidget);
+    }
+
+    for (final entry in {
+      'access': ['Pessoas', 'Usuários internos', 'Perfis e permissões'],
+      'operations': ['Planos', 'Importações'],
+      'communication': ['Convites', 'Avisos'],
+      'governance': ['Suporte', 'Auditoria'],
+    }.entries) {
+      await tester.tap(find.byKey(Key('superadmin-navigation-section-${entry.key}')));
+      await tester.pumpAndSettle();
+      for (final label in entry.value) {
+        expect(find.text(label), findsOneWidget);
+      }
+      await tester.tap(find.byKey(Key('superadmin-navigation-section-${entry.key}')));
+      await tester.pumpAndSettle();
+    }
+
+    expect(
+      tester
+          .getSize(
+            find.descendant(
+              of: find.byKey(const Key('superadmin-brand-divider')),
+              matching: find.byType(Divider),
+            ),
+          )
+          .width,
+      lessThan(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width),
+    );
+  });
+
+  testWidgets('collapses to an icon rail and opens a section flyout', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 88);
+    expect(find.text('Estrutura'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-navigation-flyout-structure')), findsOneWidget);
+    expect(find.text('Unidades'), findsOneWidget);
+    expect(find.text('Grupos'), findsOneWidget);
+    final units = tester.widget<MenuItemButton>(
+      find.byKey(const Key('superadmin-navigation-units')),
+    );
+    expect(
+      units.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      CoeloTheme.light.colorScheme.primaryContainer,
+    );
+    expect(
+      units.style?.foregroundColor?.resolve({WidgetState.hovered}),
+      CoeloTheme.light.colorScheme.primary,
+    );
+  });
+
   testWidgets('uses aligned compact headers and collapses the desktop sidebar', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -21,14 +93,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-report-bug')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
     expect(find.text('Perfis'), findsNothing);
-    for (final label in [
-      'Planos',
-      'Usuários internos',
-      'Avisos',
-      'Importação',
-      'Suporte',
-      'Auditoria',
-    ]) {
+    for (final label in ['Estrutura', 'Acessos', 'Operação', 'Comunicação', 'Governança']) {
       expect(find.text(label), findsOneWidget);
     }
     expect(find.text('Configurações'), findsNothing);
@@ -48,11 +113,19 @@ void main() {
                 )
                 .decoration!
             as BoxDecoration;
-    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary);
+    expect(activeDecoration.color, Colors.transparent);
+    final activeSectionDecoration =
+        tester
+                .widget<AnimatedContainer>(
+                  find.byKey(const Key('superadmin-navigation-section-structure')),
+                )
+                .decoration!
+            as BoxDecoration;
+    expect(activeSectionDecoration.color, CoeloTheme.light.colorScheme.primary);
 
     final brandDivider = find.byKey(const Key('superadmin-brand-divider'));
     final pageDivider = find.byKey(const Key('superadmin-page-divider'));
-    expect(tester.getTopLeft(brandDivider).dy, 88);
+    expect(tester.getTopLeft(brandDivider).dy, 100);
     expect(tester.getTopLeft(brandDivider).dy, tester.getTopLeft(pageDivider).dy);
 
     await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
@@ -68,14 +141,14 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_shellApp());
 
-    final notices = find.byKey(const Key('superadmin-navigation-notices'));
-    expect(notices, findsOneWidget);
+    final access = find.byKey(const Key('superadmin-navigation-section-access'));
+    expect(access, findsOneWidget);
     final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await gesture.addPointer(location: Offset.zero);
-    await gesture.moveTo(tester.getCenter(notices));
+    await gesture.moveTo(tester.getCenter(access));
     await tester.pumpAndSettle();
 
-    final decoration = tester.widget<AnimatedContainer>(notices).decoration! as BoxDecoration;
+    final decoration = tester.widget<AnimatedContainer>(access).decoration! as BoxDecoration;
     expect(decoration.color, CoeloTheme.light.colorScheme.primaryContainer);
 
     await gesture.removePointer();
@@ -92,6 +165,8 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-operations')));
+    await tester.pumpAndSettle();
     expect(find.text('Planos'), findsOneWidget);
     expect(find.text('Configurações'), findsNothing);
     expect(find.text('Menu Dev'), findsNothing);
@@ -134,11 +209,19 @@ void main() {
   testWidgets('opens the rounded profile menu below its trigger', (tester) async {
     await tester.pumpWidget(_shellApp());
 
-    final menu = tester.widget<PopupMenuButton<dynamic>>(
-      find.byKey(const Key('superadmin-profile-menu')),
+    final trigger = find.byKey(const Key('superadmin-profile-menu'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    final logout = tester.widget<MenuItemButton>(find.byKey(const Key('superadmin-logout-action')));
+    expect(logout.style?.foregroundColor?.resolve({}), CoeloTheme.light.colorScheme.error);
+    expect(
+      logout.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      CoeloTheme.light.colorScheme.errorContainer,
     );
-    expect(menu.position, PopupMenuPosition.under);
-    expect(menu.borderRadius, BorderRadius.circular(CoeloRadius.full));
+    expect(
+      tester.getTopLeft(find.byKey(const Key('superadmin-profile-action'))).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(trigger).dy),
+    );
 
     for (final key in ['superadmin-report-bug', 'superadmin-notifications']) {
       final button = tester.widget<IconButton>(find.byKey(Key(key)));
@@ -185,7 +268,7 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-settings-action')));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('Configurações será implementado em breve.'), findsOneWidget);
   });
 
@@ -197,7 +280,7 @@ void main() {
     final control = find.byKey(const Key('superadmin-theme-mode-control'));
     expect(control, findsOneWidget);
     expect(find.text('Seguir o sistema'), findsNothing);
-    expect(tester.getSize(control).width, greaterThan(tester.getSize(control).height));
+    expect(tester.getSize(control), const Size(160, 40));
     expect(find.byIcon(Icons.light_mode_outlined), findsOneWidget);
     expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
 
@@ -211,7 +294,7 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-theme-mode-control')), findsOneWidget);
-    expect(tester.getSize(control).height, greaterThan(tester.getSize(control).width));
+    expect(tester.getSize(control), const Size(40, 80));
 
     await tester.tap(control);
     await tester.pumpAndSettle();
@@ -219,6 +302,23 @@ void main() {
       Theme.of(tester.element(find.byKey(const Key('superadmin-sidebar')))).brightness,
       Brightness.light,
     );
+  });
+
+  testWidgets('stays responsive at the supported viewport widths', (tester) async {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 800));
+      await tester.pumpWidget(_shellApp());
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull, reason: 'viewport $width');
+      if (width >= CoeloBreakpoints.expanded.minWidth) {
+        expect(find.byKey(const Key('superadmin-floating-sidebar')), findsOneWidget);
+        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
+      } else {
+        expect(find.byKey(const Key('superadmin-mobile-menu')), findsOneWidget);
+      }
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 }
 
