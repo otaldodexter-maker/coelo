@@ -5,6 +5,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('renders file toolbar previews in both themes and layouts', (tester) async {
+    for (final preview in [
+      institutionFileActionsPreview,
+      institutionFileActionsDarkPreview,
+      institutionFileActionsCompactLightPreview,
+      institutionFileActionsCompactDarkPreview,
+    ]) {
+      await tester.pumpWidget(preview());
+
+      expect(find.byKey(const Key('institution-files-action')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('renders both import steps in light and dark previews', (tester) async {
+    for (final preview in [
+      institutionImportSelectPreview,
+      institutionImportSelectDarkPreview,
+      institutionImportReviewLightPreview,
+      institutionImportReviewDarkPreview,
+    ]) {
+      await tester.pumpWidget(preview());
+
+      expect(find.text('Importar instituições'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets('shows one Arquivos menu with import and export options on desktop', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);

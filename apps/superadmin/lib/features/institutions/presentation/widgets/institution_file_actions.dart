@@ -40,7 +40,7 @@ class InstitutionFileActions extends StatelessWidget {
         ),
       ],
       builder: (context, controller, child) {
-        final onPressed = () => controller.isOpen ? controller.close() : controller.open();
+        void onPressed() => controller.isOpen ? controller.close() : controller.open();
         if (compact) {
           return IconButton(
             key: const Key('institution-files-action'),
@@ -263,22 +263,54 @@ class _ImportSummaryRow extends StatelessWidget {
 
 final _fileActionsPreviewController = SuperadminActivityController();
 
-@Preview(name: 'Ações de arquivo · desktop', size: Size(320, 64))
+@Preview(name: 'Ações de arquivo · desktop · light', size: Size(320, 64))
 Widget institutionFileActionsPreview() {
+  return _fileActionsPreview(compact: false, theme: CoeloTheme.light);
+}
+
+@Preview(name: 'Ações de arquivo · desktop · dark', size: Size(320, 64))
+Widget institutionFileActionsDarkPreview() {
+  return _fileActionsPreview(compact: false, theme: CoeloTheme.dark);
+}
+
+@Preview(name: 'Ações de arquivo · compacta · light', size: Size(96, 96))
+Widget institutionFileActionsCompactLightPreview() {
+  return _fileActionsPreview(compact: true, theme: CoeloTheme.light);
+}
+
+@Preview(name: 'Ações de arquivo · compacta · dark', size: Size(96, 96))
+Widget institutionFileActionsCompactDarkPreview() {
+  return _fileActionsPreview(compact: true, theme: CoeloTheme.dark);
+}
+
+Widget _fileActionsPreview({required bool compact, required ThemeData theme}) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: CoeloTheme.light,
+    theme: theme,
     home: Scaffold(
       body: Center(
-        child: InstitutionFileActions(activityController: _fileActionsPreviewController),
+        child: InstitutionFileActions(
+          activityController: _fileActionsPreviewController,
+          compact: compact,
+        ),
       ),
     ),
   );
 }
 
-@Preview(name: 'Importação · selecionar arquivo', size: Size(600, 420))
+@Preview(name: 'Importação · selecionar arquivo · light', size: Size(600, 420))
 Widget institutionImportSelectPreview() {
   return _importDialogPreview(reviewing: false, theme: CoeloTheme.light);
+}
+
+@Preview(name: 'Importação · selecionar arquivo · dark', size: Size(600, 420))
+Widget institutionImportSelectDarkPreview() {
+  return _importDialogPreview(reviewing: false, theme: CoeloTheme.dark);
+}
+
+@Preview(name: 'Importação · revisão · light', size: Size(600, 460))
+Widget institutionImportReviewLightPreview() {
+  return _importDialogPreview(reviewing: true, theme: CoeloTheme.light);
 }
 
 @Preview(name: 'Importação · revisão · dark', size: Size(600, 460))

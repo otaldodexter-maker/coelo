@@ -442,7 +442,7 @@ final _activityStatesPreviewController = SuperadminActivityController.seeded([
     status: SuperadminActivityStatus.inProgress,
     subject: 'Instituições',
     summary: 'Importando instituições',
-    createdAt: DateTime(2026, 7, 21, 10, 30),
+    createdAt: DateTime(2026, 7, 21, 14, 35),
     fileName: 'instituicoes-julho.xlsx',
     progress: 55,
     isRead: true,
@@ -453,7 +453,7 @@ final _activityStatesPreviewController = SuperadminActivityController.seeded([
     status: SuperadminActivityStatus.succeeded,
     subject: 'Instituições',
     summary: 'Arquivo preparado',
-    createdAt: DateTime(2026, 7, 21, 10),
+    createdAt: DateTime(2026, 7, 21, 14, 35),
     fileName: 'instituicoes.csv',
     progress: 100,
   ),
@@ -463,7 +463,7 @@ final _activityStatesPreviewController = SuperadminActivityController.seeded([
     status: SuperadminActivityStatus.partial,
     subject: 'Unidades',
     summary: '24 importadas, 2 rejeitadas',
-    createdAt: DateTime(2026, 7, 21, 9, 30),
+    createdAt: DateTime(2026, 7, 21, 14, 35),
     fileName: 'unidades.xlsx',
     progress: 100,
   ),
@@ -473,7 +473,7 @@ final _activityStatesPreviewController = SuperadminActivityController.seeded([
     status: SuperadminActivityStatus.failed,
     subject: 'Grupos',
     summary: 'O arquivo não usa o modelo esperado',
-    createdAt: DateTime(2026, 7, 21, 9),
+    createdAt: DateTime(2026, 7, 21, 14, 35),
     fileName: 'grupos.xlsx',
     progress: 100,
   ),
@@ -481,7 +481,7 @@ final _activityStatesPreviewController = SuperadminActivityController.seeded([
     id: 'preview-announcement',
     subject: 'Novidade no Superadmin',
     summary: 'Agora você pode acompanhar atividades pelo sininho.',
-    createdAt: DateTime(2026, 7, 21, 8, 30),
+    createdAt: DateTime(2026, 7, 21, 14, 35),
   ),
 ]);
 
@@ -497,15 +497,21 @@ Widget superadminActivityStatesDarkPreview() {
   return _activityPanelPreview(_activityStatesPreviewController, CoeloTheme.dark);
 }
 
-@Preview(name: 'Notificações · vazio', size: Size(400, 176))
-Widget superadminActivityEmptyPreview() {
+@Preview(name: 'Notificações · vazio · light', size: Size(400, 176))
+Widget superadminActivityEmptyLightPreview() {
   return _activityPanelPreview(_emptyActivityPreviewController, CoeloTheme.light);
 }
 
+@Preview(name: 'Notificações · vazio · dark', size: Size(400, 176))
+Widget superadminActivityEmptyDarkPreview() {
+  return _activityPanelPreview(_emptyActivityPreviewController, CoeloTheme.dark);
+}
+
 Widget _activityPanelPreview(SuperadminActivityController controller, ThemeData theme) {
-  return Theme(
-    data: theme,
-    child: Material(
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: theme,
+    home: Material(
       color: theme.colorScheme.surface,
       child: _ActivityPanel(controller: controller, onCloseRequested: () {}),
     ),

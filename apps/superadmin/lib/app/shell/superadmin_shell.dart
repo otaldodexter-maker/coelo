@@ -1854,17 +1854,36 @@ Widget superadminExpandedFooterDarkPreview() {
   return _shellFooterPreview(collapsed: false, themeMode: ThemeMode.dark);
 }
 
-@Preview(name: 'Rodapé da navegação · recolhido', size: Size(88, 220))
-Widget superadminCollapsedFooterPreview() {
+@Preview(name: 'Rodapé da navegação · recolhido · light', size: Size(88, 220))
+Widget superadminCollapsedFooterLightPreview() {
   return _shellFooterPreview(collapsed: true, themeMode: ThemeMode.light);
+}
+
+@Preview(name: 'Rodapé da navegação · recolhido · dark', size: Size(88, 220))
+Widget superadminCollapsedFooterDarkPreview() {
+  return _shellFooterPreview(collapsed: true, themeMode: ThemeMode.dark);
+}
+
+@Preview(name: 'Tours · submenu · light', size: Size(260, 196))
+Widget superadminTourSubmenuLightPreview() {
+  return _tourSubmenuPreview(ThemeMode.light);
+}
+
+@Preview(name: 'Tours · submenu · dark', size: Size(260, 196))
+Widget superadminTourSubmenuDarkPreview() {
+  return _tourSubmenuPreview(ThemeMode.dark);
 }
 
 Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMode}) {
   return MaterialApp(
+    key: ValueKey((collapsed, themeMode)),
     debugShowCheckedModeBanner: false,
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
     themeMode: themeMode,
+    themeAnimationStyle: AnimationStyle.noAnimation,
+    builder: (context, child) =>
+        MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!),
     home: SuperadminThemeModeScope(
       mode: themeMode,
       onChanged: _ignoreThemeMode,
@@ -1872,6 +1891,7 @@ Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMod
         body: Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
+            key: const Key('superadmin-footer-preview'),
             width: collapsed ? _collapsedSidebarWidth : _expandedSidebarWidth,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1899,4 +1919,69 @@ Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMod
   );
 }
 
+Widget _tourSubmenuPreview(ThemeMode themeMode) {
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: CoeloTheme.light,
+    darkTheme: CoeloTheme.dark,
+    themeMode: themeMode,
+    home: Scaffold(
+      body: Builder(
+        builder: (context) {
+          final colors = Theme.of(context).colorScheme;
+          final itemStyle =
+              MenuItemButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+              ).copyWith(
+                foregroundColor: WidgetStatePropertyAll(colors.onSurfaceVariant),
+                iconColor: WidgetStatePropertyAll(colors.onSurfaceVariant),
+                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+              );
+          return Center(
+            child: Material(
+              color: colors.surface,
+              elevation: CoeloElevation.level2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                side: BorderSide(color: colors.outlineVariant),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(CoeloSpacing.space2),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _TourMenuItem(
+                      menuItemKey: const Key('superadmin-tour-screen'),
+                      style: itemStyle,
+                      leadingIcon: const Icon(Icons.web_asset_outlined),
+                      onSelected: _ignoreTourSelection,
+                      label: 'Tour desta tela',
+                    ),
+                    _TourMenuItem(
+                      menuItemKey: const Key('superadmin-tour-menu'),
+                      style: itemStyle,
+                      leadingIcon: const Icon(Icons.menu_open_rounded),
+                      onSelected: _ignoreTourSelection,
+                      label: 'Tour do menu',
+                    ),
+                    _TourMenuItem(
+                      menuItemKey: const Key('superadmin-tour-complete'),
+                      style: itemStyle,
+                      leadingIcon: const Icon(Icons.play_circle_outline_rounded),
+                      onSelected: _ignoreTourSelection,
+                      label: 'Tour completo',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+  );
+}
+
 void _ignoreThemeMode(ThemeMode mode) {}
+
+void _ignoreTourSelection() {}

@@ -7,6 +7,38 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('renders deterministic light and dark activity previews', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final preview in [
+      superadminActivityStatesLightPreview,
+      superadminActivityStatesDarkPreview,
+    ]) {
+      await tester.pumpWidget(preview());
+
+      expect(find.text('21/07/2026 · 14:35'), findsNWidgets(5));
+      expect(find.text('55%'), findsOneWidget);
+      expect(find.text('Arquivo preparado'), findsOneWidget);
+      expect(find.text('24 importadas, 2 rejeitadas'), findsOneWidget);
+      expect(find.text('O arquivo não usa o modelo esperado'), findsOneWidget);
+      expect(find.text('Agora você pode acompanhar atividades pelo sininho.'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('renders the empty activity preview in light and dark', (tester) async {
+    for (final preview in [
+      superadminActivityEmptyLightPreview,
+      superadminActivityEmptyDarkPreview,
+    ]) {
+      await tester.pumpWidget(preview());
+
+      expect(find.text('Nenhuma notificação por enquanto.'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets('opens an empty responsive notification center', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
@@ -5,9 +7,64 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUpAll(_loadGoldenFonts);
+
+  testWidgets('renders appearance previews in light and dark, expanded and collapsed', (
+    tester,
+  ) async {
+    for (final configuration in [
+      (preview: superadminExpandedFooterLightPreview, brightness: Brightness.light),
+      (preview: superadminExpandedFooterDarkPreview, brightness: Brightness.dark),
+      (preview: superadminCollapsedFooterLightPreview, brightness: Brightness.light),
+      (preview: superadminCollapsedFooterDarkPreview, brightness: Brightness.dark),
+    ]) {
+      await tester.pumpWidget(configuration.preview());
+
+      expect(find.byKey(const Key('superadmin-onboarding-egg')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-theme-carrot')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-theme-mode-control')), findsOneWidget);
+      expect(
+        Theme.of(tester.element(find.byKey(const Key('superadmin-theme-mode-control')))).brightness,
+        configuration.brightness,
+      );
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('renders the tour submenu preview in light and dark', (tester) async {
+    for (final preview in [superadminTourSubmenuLightPreview, superadminTourSubmenuDarkPreview]) {
+      await tester.pumpWidget(preview());
+
+      expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('matches the light and dark egg and carrot goldens', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(260, 180);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final configuration in [
+      (name: 'light', preview: superadminExpandedFooterLightPreview),
+      (name: 'dark', preview: superadminExpandedFooterDarkPreview),
+    ]) {
+      await tester.pumpWidget(configuration.preview());
+
+      await expectLater(
+        find.byKey(const Key('superadmin-footer-preview')),
+        matchesGoldenFile('goldens/superadmin_footer_illustrations_${configuration.name}.png'),
+      );
+    }
+  });
+
   testWidgets('shows the approved floating hierarchical navigation', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -744,18 +801,28 @@ void main() {
     expect(tester.widget<Transform>(motion).transform, reducedInitial);
   });
 
-  testWidgets('stays responsive at the supported viewport widths', (tester) async {
+  testWidgets('supports the final responsive, theme, text scaling and motion matrix', (
+    tester,
+  ) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
-      await tester.binding.setSurfaceSize(Size(width, 800));
-      await tester.pumpWidget(_shellApp());
-      await tester.pumpAndSettle();
+      for (final brightness in [Brightness.light, Brightness.dark]) {
+        await tester.binding.setSurfaceSize(Size(width, 900));
+        await tester.pumpWidget(
+          _shellApp(
+            brightness: brightness,
+            disableAnimations: true,
+            textScaler: const TextScaler.linear(1.5),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(tester.takeException(), isNull, reason: 'viewport $width');
-      if (width >= CoeloBreakpoints.expanded.minWidth) {
-        expect(find.byKey(const Key('superadmin-floating-sidebar')), findsOneWidget);
-        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
-      } else {
-        expect(find.byKey(const Key('superadmin-mobile-menu')), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: 'viewport $width / $brightness');
+        if (width >= CoeloBreakpoints.expanded.minWidth) {
+          expect(find.byKey(const Key('superadmin-floating-sidebar')), findsOneWidget);
+          expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
+        } else {
+          expect(find.byKey(const Key('superadmin-mobile-menu')), findsOneWidget);
+        }
       }
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -803,6 +870,7 @@ Widget _shellApp({
   Brightness brightness = Brightness.light,
   SuperadminActivityController? activities,
   bool disableAnimations = false,
+  TextScaler textScaler = TextScaler.noScaling,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -810,7 +878,9 @@ Widget _shellApp({
     themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
     home: Builder(
       builder: (context) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(disableAnimations: disableAnimations),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(disableAnimations: disableAnimations, textScaler: textScaler),
         child: SuperadminShell(
           logout: () async => const LogoutResult.success(),
           activityController: activities,
@@ -826,4 +896,18 @@ BoxDecoration _themeControlDecoration(WidgetTester tester) {
           .widget<Container>(find.byKey(const Key('superadmin-theme-mode-surface')))
           .decoration!
       as BoxDecoration;
+}
+
+Future<void> _loadGoldenFonts() async {
+  final fontLoader = FontLoader('Nunito Sans')
+    ..addFont(rootBundle.load('assets/brand/NunitoSans-VariableFont.ttf'));
+  await fontLoader.load();
+
+  final flutterArtifacts = File(Platform.resolvedExecutable).parent.parent.parent;
+  final materialIcons = File(
+    '${flutterArtifacts.path}/material_fonts/MaterialIcons-Regular.otf',
+  ).readAsBytesSync();
+  final materialIconsLoader = FontLoader('MaterialIcons')
+    ..addFont(Future.value(ByteData.sublistView(materialIcons)));
+  await materialIconsLoader.load();
 }
