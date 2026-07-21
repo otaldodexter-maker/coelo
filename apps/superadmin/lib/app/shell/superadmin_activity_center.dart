@@ -105,10 +105,23 @@ MenuStyle _activityMenuStyle(BuildContext context, double width) {
   );
 }
 
-class _ActivityPanel extends StatelessWidget {
+class _ActivityPanel extends StatefulWidget {
   const _ActivityPanel({required this.controller});
 
   final SuperadminActivityController controller;
+
+  @override
+  State<_ActivityPanel> createState() => _ActivityPanelState();
+}
+
+class _ActivityPanelState extends State<_ActivityPanel> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,17 +158,27 @@ class _ActivityPanel extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: theme.colorScheme.outlineVariant),
-          if (controller.activities.isEmpty)
+          if (widget.controller.activities.isEmpty)
             const Expanded(child: Center(child: Text('Nenhuma notificação por enquanto.')))
           else
             Expanded(
-              child: ListView.separated(
-                primary: false,
-                padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
-                itemCount: controller.activities.length,
-                separatorBuilder: (context, index) => const SizedBox(height: CoeloSpacing.space1),
-                itemBuilder: (context, index) =>
-                    _ActivityTile(activity: controller.activities[index]),
+              child: Scrollbar(
+                key: const Key('superadmin-activity-scrollbar'),
+                controller: _scrollController,
+                thumbVisibility: widget.controller.activities.length > 3,
+                child: ListView.separated(
+                  controller: _scrollController,
+                  primary: false,
+                  padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+                  itemCount: widget.controller.activities.length,
+                  separatorBuilder: (context, index) => Padding(
+                    key: Key('superadmin-activity-divider-$index'),
+                    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space5),
+                    child: const Divider(height: 1),
+                  ),
+                  itemBuilder: (context, index) =>
+                      _ActivityTile(activity: widget.controller.activities[index]),
+                ),
               ),
             ),
         ],
@@ -173,81 +196,111 @@ class _ActivityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CoeloSpacing.space4,
-        vertical: CoeloSpacing.space2,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: CoeloSize.touchMin,
-            height: CoeloSize.touchMin,
-            decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(CoeloRadius.md),
-            ),
-            child: Icon(_activityIcon(activity.kind), color: colors.primary),
+    final canDownload = activity.kind != SuperadminActivityKind.announcement;
+    return Material(
+      key: Key('superadmin-activity-${activity.id}'),
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(CoeloRadius.md),
+      child: InkWell(
+        hoverColor: colors.primaryContainer,
+        focusColor: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+        onTap: canDownload
+            ? () {
+                final fileName = activity.fileName;
+                if (fileName == null) {
+                  return;
+                }
+                final messenger = ScaffoldMessenger.of(context);
+                messenger
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(content: Text('Download demonstrativo de $fileName preparado.')),
+                  );
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CoeloSpacing.space4,
+            vertical: CoeloSpacing.space2,
           ),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: CoeloSize.touchMin,
+                height: CoeloSize.touchMin,
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer,
+                  borderRadius: BorderRadius.circular(CoeloRadius.md),
+                ),
+                child: Icon(_activityIcon(activity.kind), color: colors.primary),
+              ),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        '${_activityKindLabel(activity.kind)} · ${activity.subject}',
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${_activityKindLabel(activity.kind)} · ${activity.subject}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelLarge,
+                          ),
+                        ),
+                        const SizedBox(width: CoeloSpacing.space2),
+                        SuperadminActivityStatusIndicator(
+                          key: Key('superadmin-activity-status-${activity.id}'),
+                          status: activity.status,
+                        ),
+                      ],
+                    ),
+                    if (activity.fileName case final fileName?) ...[
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        fileName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelLarge,
+                        style: theme.textTheme.bodyMedium,
                       ),
+                    ],
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(
+                      activity.summary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                     ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    SuperadminActivityStatusIndicator(
-                      key: Key('superadmin-activity-status-${activity.id}'),
-                      status: activity.status,
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(
+                      _formatActivityTimestamp(activity.createdAt),
+                      style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
                     ),
+                    if (activity.progress case final progress?) ...[
+                      const SizedBox(height: CoeloSpacing.space2),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: LinearProgressIndicator(
+                              value: progress / 100,
+                              minHeight: CoeloSpacing.space1,
+                              borderRadius: BorderRadius.circular(CoeloRadius.xs),
+                            ),
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                          Text('$progress%', style: theme.textTheme.labelMedium),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
-                if (activity.fileName case final fileName?) ...[
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(
-                    fileName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ],
-                const SizedBox(height: CoeloSpacing.space1),
-                Text(
-                  activity.summary,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                ),
-                if (activity.progress case final progress?) ...[
-                  const SizedBox(height: CoeloSpacing.space2),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LinearProgressIndicator(
-                          value: progress / 100,
-                          minHeight: CoeloSpacing.space1,
-                          borderRadius: BorderRadius.circular(CoeloRadius.xs),
-                        ),
-                      ),
-                      const SizedBox(width: CoeloSpacing.space2),
-                      Text('$progress%', style: theme.textTheme.labelMedium),
-                    ],
-                  ),
-                ],
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -270,6 +323,7 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final expanded = _hovered || _focused || _tapped;
     final (background, foreground) = _activityStatusColors(context, widget.status);
     final label = _activityStatusLabel(widget.status);
@@ -299,28 +353,12 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
                     vertical: CoeloSpacing.space1,
                   ),
                   decoration: BoxDecoration(
-                    color: background,
+                    color: expanded ? background : foreground,
                     borderRadius: BorderRadius.circular(CoeloRadius.full),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: CoeloSpacing.space2,
-                        height: CoeloSpacing.space2,
-                        decoration: BoxDecoration(color: foreground, shape: BoxShape.circle),
-                      ),
-                      if (expanded) ...[
-                        const SizedBox(width: CoeloSpacing.space1),
-                        Text(
-                          label,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelSmall?.copyWith(color: foreground),
-                        ),
-                      ],
-                    ],
-                  ),
+                  child: expanded
+                      ? Text(label, style: theme.textTheme.labelSmall?.copyWith(color: foreground))
+                      : const SizedBox.square(dimension: CoeloSpacing.space2),
                 ),
               ),
             ),
@@ -329,6 +367,12 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
       ),
     );
   }
+}
+
+String _formatActivityTimestamp(DateTime value) {
+  String twoDigits(int part) => part.toString().padLeft(2, '0');
+  return '${twoDigits(value.day)}/${twoDigits(value.month)}/${value.year}'
+      ' · ${twoDigits(value.hour)}:${twoDigits(value.minute)}';
 }
 
 String _activityKindLabel(SuperadminActivityKind kind) => switch (kind) {

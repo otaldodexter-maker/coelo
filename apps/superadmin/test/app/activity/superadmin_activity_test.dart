@@ -61,6 +61,26 @@ void main() {
     expect(activity.subject, 'Instituições');
   });
 
+  test('uses the injected clock for completed exports', () {
+    final now = DateTime(2026, 7, 21, 14, 35);
+    final controller = SuperadminActivityController(now: () => now);
+    addTearDown(controller.dispose);
+
+    controller.completeDemoExport(SuperadminExportFormat.xlsx);
+
+    expect(controller.activities.single.createdAt, now);
+  });
+
+  test('uses the injected clock for started imports', () {
+    final now = DateTime(2026, 7, 21, 14, 35);
+    final controller = SuperadminActivityController(now: () => now);
+    addTearDown(controller.dispose);
+
+    controller.startDemoImport();
+
+    expect(controller.activities.single.createdAt, now);
+  });
+
   test('exposes activities as an unmodifiable list', () {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
@@ -89,5 +109,15 @@ void main() {
 
     expect(controller.activities.single.kind, SuperadminActivityKind.announcement);
     expect(controller.unreadCount, 1);
+  });
+
+  test('keeps an injectable clock available on seeded controllers', () {
+    final now = DateTime(2026, 7, 21, 14, 35);
+    final controller = SuperadminActivityController.seeded([], now: () => now);
+    addTearDown(controller.dispose);
+
+    controller.completeDemoExport(SuperadminExportFormat.csv);
+
+    expect(controller.activities.single.createdAt, now);
   });
 }

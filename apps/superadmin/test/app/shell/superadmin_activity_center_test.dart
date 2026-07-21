@@ -44,6 +44,54 @@ void main() {
     expect(semanticsLabels, contains('Status: Concluída'));
   });
 
+  testWidgets('shows a deterministic timestamp under an activity', (tester) async {
+    final now = DateTime(2026, 7, 21, 14, 35);
+    final controller = SuperadminActivityController(now: () => now);
+    addTearDown(controller.dispose);
+    controller.completeDemoExport(SuperadminExportFormat.xlsx);
+    await tester.pumpWidget(_app(controller));
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('21/07/2026 · 14:35'), findsOneWidget);
+  });
+
+  testWidgets('makes a long activity list scrollable with inset dividers', (tester) async {
+    final controller = SuperadminActivityController.seeded(_fourActivities());
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-activity-scrollbar')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-activity-divider-0')), findsOneWidget);
+    final scrollbar = tester.widget<Scrollbar>(
+      find.byKey(const Key('superadmin-activity-scrollbar')),
+    );
+    expect(scrollbar.thumbVisibility, isTrue);
+  });
+
+  testWidgets('highlights and prepares a demonstrative activity download', (tester) async {
+    final controller = SuperadminActivityController.seeded(_fourActivities());
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    final exportTile = find.byKey(const Key('superadmin-activity-demo-export'));
+    final tileInk = tester.widget<InkWell>(
+      find.descendant(of: exportTile, matching: find.byType(InkWell)),
+    );
+    expect(tileInk.hoverColor, CoeloTheme.light.colorScheme.primaryContainer);
+
+    await tester.tap(exportTile);
+    await tester.pump();
+
+    expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsOneWidget);
+  });
+
   testWidgets('expands an activity status with mouse and touch', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
@@ -55,11 +103,19 @@ void main() {
     final status = find.byKey(const Key('superadmin-activity-status-demo-export-0'));
     expect(tester.getSize(status).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(tester.getSize(status).width, greaterThanOrEqualTo(CoeloSize.touchMin));
+    var animatedStatus = tester.widget<AnimatedContainer>(
+      find.descendant(of: status, matching: find.byType(AnimatedContainer)),
+    );
+    expect(animatedStatus.child, isA<SizedBox>());
     final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await gesture.addPointer(location: Offset.zero);
     await gesture.moveTo(tester.getCenter(status));
     await tester.pumpAndSettle();
     expect(find.text('Concluída'), findsOneWidget);
+    animatedStatus = tester.widget<AnimatedContainer>(
+      find.descendant(of: status, matching: find.byType(AnimatedContainer)),
+    );
+    expect(animatedStatus.child, isA<Text>());
 
     await gesture.moveTo(Offset.zero);
     await tester.pumpAndSettle();
@@ -86,6 +142,41 @@ void main() {
     expect(Focus.of(tester.element(trigger)).hasFocus, isTrue);
   });
 }
+
+List<SuperadminActivity> _fourActivities() => [
+  SuperadminActivity(
+    id: 'demo-export',
+    kind: SuperadminActivityKind.export,
+    status: SuperadminActivityStatus.succeeded,
+    subject: 'Instituições',
+    summary: 'Arquivo preparado',
+    createdAt: DateTime(2026, 7, 21, 14, 35),
+    fileName: 'instituicoes.xlsx',
+    progress: 100,
+  ),
+  SuperadminActivity(
+    id: 'demo-import',
+    kind: SuperadminActivityKind.import,
+    status: SuperadminActivityStatus.partial,
+    subject: 'Instituições',
+    summary: '24 importadas, 2 rejeitadas',
+    createdAt: DateTime(2026, 7, 21, 14),
+    fileName: 'instituicoes-julho.xlsx',
+    progress: 100,
+  ),
+  SuperadminActivity.announcement(
+    id: 'announcement-1',
+    subject: 'Novidade no Superadmin',
+    summary: 'Uma nova função está disponível.',
+    createdAt: DateTime(2026, 7, 21, 13, 30),
+  ),
+  SuperadminActivity.announcement(
+    id: 'announcement-2',
+    subject: 'Manutenção concluída',
+    summary: 'Todos os serviços estão disponíveis.',
+    createdAt: DateTime(2026, 7, 21, 13),
+  ),
+];
 
 Widget _app(SuperadminActivityController controller, {Size size = const Size(800, 600)}) {
   return MaterialApp(

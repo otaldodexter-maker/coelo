@@ -74,16 +74,21 @@ class SuperadminActivity {
 }
 
 class SuperadminActivityController extends ChangeNotifier {
-  SuperadminActivityController({this.tickInterval = const Duration(milliseconds: 600)});
+  SuperadminActivityController({
+    this.tickInterval = const Duration(milliseconds: 600),
+    DateTime Function()? now,
+  }) : _now = now ?? DateTime.now;
 
   SuperadminActivityController.seeded(
     Iterable<SuperadminActivity> activities, {
     this.tickInterval = const Duration(milliseconds: 600),
-  }) {
+    DateTime Function()? now,
+  }) : _now = now ?? DateTime.now {
     _activities.addAll(activities);
   }
 
   final Duration tickInterval;
+  final DateTime Function() _now;
   final List<SuperadminActivity> _activities = [];
   final List<Timer> _timers = [];
   var _nextId = 0;
@@ -105,7 +110,7 @@ class SuperadminActivityController extends ChangeNotifier {
         status: SuperadminActivityStatus.inProgress,
         subject: 'Instituições',
         summary: 'Preparando importação',
-        createdAt: DateTime.now(),
+        createdAt: _now(),
         fileName: 'instituicoes-julho.xlsx',
         progress: 0,
         isRead: true,
@@ -152,7 +157,7 @@ class SuperadminActivityController extends ChangeNotifier {
         status: SuperadminActivityStatus.succeeded,
         subject: 'Instituições',
         summary: 'Exportação preparada para demonstração',
-        createdAt: DateTime.now(),
+        createdAt: _now(),
         fileName: 'instituicoes.${format.name}',
         progress: 100,
         isRead: _centerOpen,
