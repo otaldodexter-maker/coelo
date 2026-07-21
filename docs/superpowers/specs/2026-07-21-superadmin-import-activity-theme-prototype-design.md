@@ -36,6 +36,7 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 ## Composição visual
 
 - O menu `Arquivos`, o submenu de tours e as atividades do sininho seguem o padrão OC: superfície neutra, raio e elevação existentes, hover/foco em `primaryContainer`, conteúdo em `primary` e overlay transparente.
+- Nos submenus dos filtros, o hover/foco pertence exclusivamente à linha completa. O checkbox não cria círculo cinza, preenchimento próprio, splash arredondado ou uma segunda camada visual ao receber o ponteiro.
 - O modal de importação preserva o overlay preto translúcido, mas troca a superfície laranja por uma superfície neutra clara no light e semântica escura no dark.
 - `Exportar modelo XLSX` aparece como ação secundária junto à etapa de seleção do arquivo.
 - A cenoura usa corpo laranja inclinado, três folhas verdes e detalhes internos claros, inspirada na referência anexada e redesenhada com os tokens Coelo.
@@ -56,6 +57,7 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 - A troca de tema usa uma única transição coordenada de 220 ms com curva cúbica `(0.2, 0, 0, 1)`, interpolando superfícies, bordas, texto, ícones e marcador sem saltos ou animações concorrentes; reduced motion torna a mudança instantânea.
 - O ovo executa um ciclo de aproximadamente 900 ms com balanço direita/esquerda progressivamente menor e brilho sincronizado, repousa aproximadamente 3,5 segundos e repete; reduced motion o mantém estático.
 - Hover nunca é a única indicação de uma ação: menus e atividades continuam acionáveis por toque e teclado.
+- Checkbox e linha de filtro formam um único alvo interativo: clicar ou tocar em qualquer ponto alterna a seleção, enquanto o foco visível permanece representado pela linha e pelo contorno semântico do checkbox.
 
 ## Critérios de aceite
 
@@ -74,6 +76,7 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 ## Testes exigidos
 
 - Widget tests do menu `Arquivos`, submenu de tours, ação `Exportar modelo XLSX` e feedbacks demonstrativos.
+- Widget tests dos filtros assegurando um único hover na linha, sem overlay ou splash independente no checkbox.
 - Widget tests do modal light/dark e da manutenção do overlay preto translúcido.
 - Widget tests de data/hora, hover, separadores, scrollbar, clique em atividade e indicador de status centralizado.
 - Regressão de foco reproduzindo a sequência sininho → OC e sininho → Bug antes da correção.
