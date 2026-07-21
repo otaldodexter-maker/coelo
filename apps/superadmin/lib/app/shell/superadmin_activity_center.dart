@@ -89,6 +89,9 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
             ),
           ],
           builder: (context, controller, child) {
+            void toggleNotifications() =>
+                controller.isOpen ? _closeAndRestoreFocus() : controller.open();
+
             final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
             final notificationLabel = controller.isOpen
                 ? 'Fechar notificações'
@@ -102,10 +105,11 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
                 button: true,
                 excludeSemantics: true,
                 label: notificationLabel,
+                onTap: toggleNotifications,
                 child: IconButton(
                   key: const Key('superadmin-notifications'),
                   focusNode: _triggerFocusNode,
-                  onPressed: () => controller.isOpen ? _closeAndRestoreFocus() : controller.open(),
+                  onPressed: toggleNotifications,
                   style: widget.buttonStyle,
                   icon: Badge(
                     key: const Key('superadmin-notification-badge'),
@@ -448,9 +452,11 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
                       vertical: CoeloSpacing.space1,
                     ),
                     child: expanded
-                        ? Text(
-                            label,
-                            style: theme.textTheme.labelSmall?.copyWith(color: foreground),
+                        ? ExcludeSemantics(
+                            child: Text(
+                              label,
+                              style: theme.textTheme.labelSmall?.copyWith(color: foreground),
+                            ),
                           )
                         : const SizedBox.square(dimension: CoeloSpacing.space2),
                   ),

@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsAction;
+
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_activity_center.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -115,6 +117,39 @@ void main() {
 
     expect(find.bySemanticsLabel('Fechar notificações'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Abrir notificações')), findsNothing);
+    semantics.dispose();
+  });
+
+  testWidgets('opens and closes notifications from the semantic tap action', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    final openAction = find.bySemanticsLabel('Abrir notificações');
+    var data = tester.getSemantics(openAction).getSemanticsData();
+    expect(data.flagsCollection.isButton, isTrue);
+    expect(data.hasAction(SemanticsAction.tap), isTrue);
+
+    tester.semantics.performAction(
+      find.semantics.byLabel('Abrir notificações'),
+      SemanticsAction.tap,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-activity-panel')), findsOneWidget);
+    final closeAction = find.bySemanticsLabel('Fechar notificações');
+    data = tester.getSemantics(closeAction).getSemanticsData();
+    expect(data.flagsCollection.isButton, isTrue);
+    expect(data.hasAction(SemanticsAction.tap), isTrue);
+
+    tester.semantics.performAction(
+      find.semantics.byLabel('Fechar notificações'),
+      SemanticsAction.tap,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-activity-panel')), findsNothing);
     semantics.dispose();
   });
 
@@ -378,6 +413,46 @@ void main() {
     }
 
     expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsNothing);
+  });
+
+  testWidgets('keeps one exact status label and semantic tap action while expanded', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    controller.completeDemoExport(SuperadminExportFormat.xlsx);
+    await tester.pumpWidget(_app(controller));
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    final status = find.byKey(const Key('superadmin-activity-status-demo-export-0'));
+    Finder statusSemantics() => find.bySemanticsLabel(RegExp('^Status: Concluída'));
+    var data = tester.getSemantics(statusSemantics()).getSemanticsData();
+    expect(data.label, 'Status: Concluída');
+    expect(data.flagsCollection.isButton, isTrue);
+    expect(data.hasAction(SemanticsAction.tap), isTrue);
+
+    tester.semantics.performAction(
+      find.semantics.byLabel('Status: Concluída'),
+      SemanticsAction.tap,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.descendant(of: status, matching: find.text('Concluída')), findsOneWidget);
+    data = tester.getSemantics(statusSemantics()).getSemanticsData();
+    expect(data.label, 'Status: Concluída');
+    expect(data.flagsCollection.isButton, isTrue);
+    expect(data.hasAction(SemanticsAction.tap), isTrue);
+
+    tester.semantics.performAction(
+      find.semantics.byLabel('Status: Concluída'),
+      SemanticsAction.tap,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.descendant(of: status, matching: find.text('Concluída')), findsNothing);
+    semantics.dispose();
   });
 
   testWidgets('closes with Escape and returns focus to the notification trigger', (tester) async {
