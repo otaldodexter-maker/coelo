@@ -741,30 +741,37 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   late final AnimationController _animationController;
   late final Animation<double> _rotation;
   late final Animation<double> _glow;
-  Timer? _initialTimer;
-  Timer? _periodicTimer;
+  Timer? _restTimer;
   bool? _reduceMotion;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: CoeloMotion.emphasized);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
     _rotation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: -4 * math.pi / 180), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 0, end: 4 * math.pi / 180), weight: 20),
       TweenSequenceItem(
-        tween: Tween(begin: -4 * math.pi / 180, end: 4 * math.pi / 180),
-        weight: 2,
+        tween: Tween(begin: 4 * math.pi / 180, end: -4 * math.pi / 180),
+        weight: 25,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: 4 * math.pi / 180, end: -3 * math.pi / 180),
-        weight: 2,
+        tween: Tween(begin: -4 * math.pi / 180, end: 2 * math.pi / 180),
+        weight: 20,
       ),
-      TweenSequenceItem(tween: Tween(begin: -3 * math.pi / 180, end: 0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _animationController, curve: _coeloMotionCurve));
+      TweenSequenceItem(
+        tween: Tween(begin: 2 * math.pi / 180, end: -2 * math.pi / 180),
+        weight: 20,
+      ),
+      TweenSequenceItem(tween: Tween(begin: -2 * math.pi / 180, end: 0), weight: 15),
+    ]).animate(_animationController);
     _glow = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0, end: 1), weight: 1),
       TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 1),
     ]).animate(_animationController);
+    _animationController.addStatusListener(_handleAnimationStatus);
   }
 
   @override
@@ -775,33 +782,41 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
       return;
     }
     _reduceMotion = reduceMotion;
-    _cancelTimers();
+    _cancelTimer();
+    _animationController.stop();
     _animationController.reset();
     if (!reduceMotion) {
-      _initialTimer = Timer(const Duration(seconds: 4), () {
-        if (!mounted) {
-          return;
-        }
-        _animationController.forward(from: 0);
-        _periodicTimer = Timer.periodic(const Duration(seconds: 8), (_) {
-          if (mounted) {
-            _animationController.forward(from: 0);
-          }
-        });
-      });
+      _scheduleNextCycle();
     }
   }
 
-  void _cancelTimers() {
-    _initialTimer?.cancel();
-    _periodicTimer?.cancel();
-    _initialTimer = null;
-    _periodicTimer = null;
+  void _handleAnimationStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _scheduleNextCycle();
+    }
+  }
+
+  void _scheduleNextCycle() {
+    _cancelTimer();
+    if (_reduceMotion == true) {
+      return;
+    }
+    _restTimer = Timer(const Duration(milliseconds: 3500), () {
+      _restTimer = null;
+      if (mounted && _reduceMotion != true) {
+        _animationController.forward(from: 0);
+      }
+    });
+  }
+
+  void _cancelTimer() {
+    _restTimer?.cancel();
+    _restTimer = null;
   }
 
   @override
   void dispose() {
-    _cancelTimers();
+    _cancelTimer();
     _animationController.dispose();
     super.dispose();
   }
@@ -810,73 +825,210 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final content = Material(
-      color: Colors.transparent,
-      child: InkWell(
-        key: const Key('superadmin-onboarding-tour'),
-        onTap: () => _showMessage(context, 'O onboarding guiado será implementado em breve.'),
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-        overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-        child: SizedBox(
-          width: widget.collapsed ? CoeloSize.touchMin : double.infinity,
-          height: CoeloSize.touchMin,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final useCompactLayout = widget.collapsed || constraints.maxWidth < 180;
-              return Row(
-                mainAxisAlignment: useCompactLayout
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.start,
-                children: [
-                  if (!useCompactLayout) const SizedBox(width: CoeloSpacing.space3),
-                  AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      return Transform.rotate(
-                        key: const Key('superadmin-onboarding-egg-motion'),
-                        angle: _rotation.value,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors.primary.withValues(alpha: 0.16 * _glow.value),
-                                blurRadius: CoeloSpacing.space3 * _glow.value,
-                                spreadRadius: CoeloSpacing.spaceHalf * _glow.value,
-                              ),
-                            ],
-                          ),
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: const SizedBox.square(
-                      dimension: CoeloSize.iconMd,
-                      child: CustomPaint(
-                        key: Key('superadmin-onboarding-egg'),
-                        painter: _FlatEggPainter(),
-                      ),
-                    ),
-                  ),
-                  if (!useCompactLayout) ...[
-                    const SizedBox(width: CoeloSpacing.space3),
-                    Expanded(child: Text('Fazer tour', style: theme.textTheme.labelLarge)),
-                    Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
-                    const SizedBox(width: CoeloSpacing.space2),
-                  ],
-                ],
-              );
-            },
+    final itemStyle =
+        MenuItemButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+        ).copyWith(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed);
+            return highlighted ? colors.primary : colors.onSurfaceVariant;
+          }),
+          iconColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed);
+            return highlighted ? colors.primary : colors.onSurfaceVariant;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.hovered) ||
+                    states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)
+                ? colors.primaryContainer
+                : Colors.transparent;
+          }),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+        );
+    return MenuAnchor(
+      alignmentOffset: const Offset(0, CoeloSpacing.space2),
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(colors.surface),
+        elevation: const WidgetStatePropertyAll(4),
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            side: BorderSide(color: colors.outlineVariant),
           ),
         ),
       ),
+      menuChildren: [
+        _TourMenuItem(
+          menuItemKey: const Key('superadmin-tour-screen'),
+          style: itemStyle,
+          leadingIcon: const Icon(Icons.web_asset_outlined),
+          onSelected: () =>
+              _showMessage(context, 'O tour desta tela será implementado na etapa final.'),
+          label: 'Tour desta tela',
+        ),
+        _TourMenuItem(
+          menuItemKey: const Key('superadmin-tour-menu'),
+          style: itemStyle,
+          leadingIcon: const Icon(Icons.menu_open_rounded),
+          onSelected: () =>
+              _showMessage(context, 'O tour do menu será implementado na etapa final.'),
+          label: 'Tour do menu',
+        ),
+        _TourMenuItem(
+          menuItemKey: const Key('superadmin-tour-complete'),
+          style: itemStyle,
+          leadingIcon: const Icon(Icons.play_circle_outline_rounded),
+          onSelected: () =>
+              _showMessage(context, 'O tour completo será implementado na etapa final.'),
+          label: 'Tour completo',
+        ),
+      ],
+      builder: (context, controller, child) {
+        final content = Material(
+          color: Colors.transparent,
+          child: InkWell(
+            key: const Key('superadmin-onboarding-tour'),
+            onTap: () => controller.isOpen ? controller.close() : controller.open(),
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+            child: SizedBox(
+              width: widget.collapsed ? CoeloSize.touchMin : double.infinity,
+              height: CoeloSize.touchMin,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final useCompactLayout = widget.collapsed || constraints.maxWidth < 180;
+                  return Row(
+                    mainAxisAlignment: useCompactLayout
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.start,
+                    children: [
+                      if (!useCompactLayout) const SizedBox(width: CoeloSpacing.space3),
+                      AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) {
+                          return Transform.rotate(
+                            key: const Key('superadmin-onboarding-egg-motion'),
+                            angle: _rotation.value,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colors.primary.withValues(alpha: 0.16 * _glow.value),
+                                    blurRadius: CoeloSpacing.space3 * _glow.value,
+                                    spreadRadius: CoeloSpacing.spaceHalf * _glow.value,
+                                  ),
+                                ],
+                              ),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: SizedBox.square(
+                          dimension: CoeloSize.iconMd,
+                          child: CustomPaint(
+                            key: const Key('superadmin-onboarding-egg'),
+                            painter: _FlatEggPainter(
+                              baseColor: colors.primaryContainer,
+                              firstStripeColor: colors.tertiaryContainer,
+                              secondStripeColor: colors.secondaryContainer,
+                              dotColor: colors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (!useCompactLayout) ...[
+                        const SizedBox(width: CoeloSpacing.space3),
+                        Expanded(child: Text('Fazer tour', style: theme.textTheme.labelLarge)),
+                        Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
+                        const SizedBox(width: CoeloSpacing.space2),
+                      ],
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+        return Tooltip(message: 'Iniciar onboarding', child: content);
+      },
     );
-    return Tooltip(message: 'Iniciar onboarding', child: content);
+  }
+}
+
+class _TourMenuItem extends StatefulWidget {
+  const _TourMenuItem({
+    required this.menuItemKey,
+    required this.style,
+    required this.leadingIcon,
+    required this.onSelected,
+    required this.label,
+  });
+
+  final Key menuItemKey;
+  final ButtonStyle style;
+  final Widget leadingIcon;
+  final VoidCallback onSelected;
+  final String label;
+
+  @override
+  State<_TourMenuItem> createState() => _TourMenuItemState();
+}
+
+class _TourMenuItemState extends State<_TourMenuItem> {
+  bool _handledPointerSelection = false;
+
+  void _handlePointerUp(PointerUpEvent event) {
+    _handledPointerSelection = true;
+    widget.onSelected();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handledPointerSelection = false;
+    });
+  }
+
+  void _handlePressed() {
+    if (_handledPointerSelection) {
+      _handledPointerSelection = false;
+      return;
+    }
+    widget.onSelected();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerUp: _handlePointerUp,
+      child: MenuItemButton(
+        key: widget.menuItemKey,
+        style: widget.style,
+        leadingIcon: widget.leadingIcon,
+        onPressed: _handlePressed,
+        child: Text(widget.label),
+      ),
+    );
   }
 }
 
 class _FlatEggPainter extends CustomPainter {
-  const _FlatEggPainter();
+  const _FlatEggPainter({
+    required this.baseColor,
+    required this.firstStripeColor,
+    required this.secondStripeColor,
+    required this.dotColor,
+  });
+
+  final Color baseColor;
+  final Color firstStripeColor;
+  final Color secondStripeColor;
+  final Color dotColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -900,16 +1052,65 @@ class _FlatEggPainter extends CustomPainter {
       )
       ..cubicTo(0, size.height * 0.5, size.width * 0.22, size.height * 0.08, size.width * 0.5, 0)
       ..close();
-    canvas.drawPath(egg, Paint()..color = const Color(0xFFFFE0D5));
-    canvas.drawCircle(
-      Offset(size.width * 0.58, size.height * 0.58),
-      size.width * 0.13,
-      Paint()..color = const Color(0xFFD63C00),
-    );
+    canvas.drawPath(egg, Paint()..color = baseColor);
+    canvas
+      ..save()
+      ..clipPath(egg);
+    final firstStripe = Path()
+      ..moveTo(-size.width * 0.08, size.height * 0.38)
+      ..cubicTo(
+        size.width * 0.22,
+        size.height * 0.26,
+        size.width * 0.68,
+        size.height * 0.48,
+        size.width * 1.08,
+        size.height * 0.3,
+      );
+    final secondStripe = Path()
+      ..moveTo(-size.width * 0.08, size.height * 0.67)
+      ..cubicTo(
+        size.width * 0.3,
+        size.height * 0.5,
+        size.width * 0.7,
+        size.height * 0.78,
+        size.width * 1.08,
+        size.height * 0.58,
+      );
+    canvas
+      ..drawPath(
+        firstStripe,
+        Paint()
+          ..color = firstStripeColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(2, size.height * 0.14)
+          ..strokeCap = StrokeCap.round,
+      )
+      ..drawPath(
+        secondStripe,
+        Paint()
+          ..color = secondStripeColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(2, size.height * 0.14)
+          ..strokeCap = StrokeCap.round,
+      )
+      ..restore();
+    final dots = Paint()..color = dotColor;
+    for (final center in [
+      Offset(size.width * 0.38, size.height * 0.23),
+      Offset(size.width * 0.64, size.height * 0.56),
+      Offset(size.width * 0.4, size.height * 0.82),
+    ]) {
+      canvas.drawCircle(center, size.width * 0.055, dots);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _FlatEggPainter oldDelegate) {
+    return baseColor != oldDelegate.baseColor ||
+        firstStripeColor != oldDelegate.firstStripeColor ||
+        secondStripeColor != oldDelegate.secondStripeColor ||
+        dotColor != oldDelegate.dotColor;
+  }
 }
 
 class _ThemeModeControl extends StatelessWidget {
@@ -948,7 +1149,7 @@ class _ThemeModeControl extends StatelessWidget {
                   key: const Key('superadmin-theme-mode-control'),
                   onTap: toggle,
                   borderRadius: BorderRadius.circular(
-                    useCompactLayout ? CoeloRadius.full : CoeloRadius.md,
+                    useCompactLayout ? CoeloRadius.full : CoeloRadius.lg,
                   ),
                   overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
                   child: AnimatedContainer(
@@ -961,7 +1162,7 @@ class _ThemeModeControl extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: colors.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(
-                        useCompactLayout ? CoeloRadius.full : CoeloRadius.md,
+                        useCompactLayout ? CoeloRadius.full : CoeloRadius.lg,
                       ),
                       border: Border.all(color: colors.outlineVariant),
                     ),
@@ -1078,6 +1279,10 @@ class _CarrotThumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     return Container(
       width: size,
       height: size,
@@ -1089,40 +1294,152 @@ class _CarrotThumb extends StatelessWidget {
           BoxShadow(color: colors.primary.withValues(alpha: 0.12), blurRadius: CoeloSpacing.space1),
         ],
       ),
-      child: const CustomPaint(key: Key('superadmin-theme-carrot'), painter: _FlatCarrotPainter()),
+      child: CustomPaint(
+        key: const Key('superadmin-theme-carrot'),
+        painter: _FlatCarrotPainter(
+          bodyColor: colors.primary,
+          markColor: colors.onPrimary,
+          leafColor: statusColors.successContainer,
+          leafAccentColor: statusColors.onSuccessContainer,
+        ),
+      ),
     );
   }
 }
 
 class _FlatCarrotPainter extends CustomPainter {
-  const _FlatCarrotPainter();
+  const _FlatCarrotPainter({
+    required this.bodyColor,
+    required this.markColor,
+    required this.leafColor,
+    required this.leafAccentColor,
+  });
+
+  final Color bodyColor;
+  final Color markColor;
+  final Color leafColor;
+  final Color leafAccentColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final carrot = Path()
-      ..moveTo(size.width * 0.28, size.height * 0.3)
-      ..quadraticBezierTo(size.width * 0.76, size.height * 0.3, size.width * 0.5, size.height)
-      ..quadraticBezierTo(
-        size.width * 0.2,
-        size.height * 0.52,
+      ..moveTo(size.width * 0.28, size.height * 0.31)
+      ..cubicTo(
+        size.width * 0.46,
+        size.height * 0.24,
+        size.width * 0.68,
+        size.height * 0.27,
+        size.width * 0.73,
+        size.height * 0.38,
+      )
+      ..cubicTo(
+        size.width * 0.65,
+        size.height * 0.6,
+        size.width * 0.48,
+        size.height * 0.85,
+        size.width * 0.35,
+        size.height * 0.97,
+      )
+      ..cubicTo(
+        size.width * 0.27,
+        size.height * 0.72,
+        size.width * 0.16,
+        size.height * 0.43,
         size.width * 0.28,
+        size.height * 0.31,
+      )
+      ..close();
+    canvas.drawPath(carrot, Paint()..color = bodyColor);
+    final leftLeaf = Path()
+      ..moveTo(size.width * 0.39, size.height * 0.31)
+      ..cubicTo(
+        size.width * 0.3,
+        size.height * 0.2,
+        size.width * 0.1,
+        size.height * 0.2,
+        size.width * 0.12,
+        size.height * 0.03,
+      )
+      ..cubicTo(
+        size.width * 0.32,
+        size.height * 0.06,
+        size.width * 0.43,
+        size.height * 0.19,
+        size.width * 0.39,
+        size.height * 0.31,
+      )
+      ..close();
+    final middleLeaf = Path()
+      ..moveTo(size.width * 0.41, size.height * 0.3)
+      ..cubicTo(
+        size.width * 0.34,
+        size.height * 0.16,
+        size.width * 0.35,
+        size.height * 0.05,
+        size.width * 0.49,
+        0,
+      )
+      ..cubicTo(
+        size.width * 0.57,
+        size.height * 0.14,
+        size.width * 0.53,
+        size.height * 0.25,
+        size.width * 0.41,
         size.height * 0.3,
       )
       ..close();
-    canvas.drawPath(carrot, Paint()..color = const Color(0xFFD63C00));
-    final leaves = Paint()
-      ..color = const Color(0xFF2D8A4E)
-      ..strokeWidth = math.max(1.5, size.width * 0.1)
-      ..strokeCap = StrokeCap.round;
-    final root = Offset(size.width * 0.4, size.height * 0.3);
+    final rightLeaf = Path()
+      ..moveTo(size.width * 0.43, size.height * 0.31)
+      ..cubicTo(
+        size.width * 0.5,
+        size.height * 0.18,
+        size.width * 0.64,
+        size.height * 0.08,
+        size.width * 0.79,
+        size.height * 0.12,
+      )
+      ..cubicTo(
+        size.width * 0.73,
+        size.height * 0.29,
+        size.width * 0.57,
+        size.height * 0.36,
+        size.width * 0.43,
+        size.height * 0.31,
+      )
+      ..close();
     canvas
-      ..drawLine(root, Offset(size.width * 0.24, 0), leaves)
-      ..drawLine(root, Offset(size.width * 0.5, 0), leaves)
-      ..drawLine(root, Offset(size.width * 0.7, size.height * 0.08), leaves);
+      ..drawPath(leftLeaf, Paint()..color = leafColor)
+      ..drawPath(middleLeaf, Paint()..color = leafAccentColor)
+      ..drawPath(rightLeaf, Paint()..color = leafColor);
+    final marks = Paint()
+      ..color = markColor
+      ..strokeWidth = math.max(1, size.width * 0.055)
+      ..strokeCap = StrokeCap.round;
+    canvas
+      ..drawLine(
+        Offset(size.width * 0.38, size.height * 0.44),
+        Offset(size.width * 0.58, size.height * 0.41),
+        marks,
+      )
+      ..drawLine(
+        Offset(size.width * 0.34, size.height * 0.58),
+        Offset(size.width * 0.5, size.height * 0.55),
+        marks,
+      )
+      ..drawLine(
+        Offset(size.width * 0.34, size.height * 0.72),
+        Offset(size.width * 0.43, size.height * 0.7),
+        marks,
+      );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _FlatCarrotPainter oldDelegate) {
+    return bodyColor != oldDelegate.bodyColor ||
+        markColor != oldDelegate.markColor ||
+        leafColor != oldDelegate.leafColor ||
+        leafAccentColor != oldDelegate.leafAccentColor;
+  }
 }
 
 class _NavigationItem extends StatefulWidget {

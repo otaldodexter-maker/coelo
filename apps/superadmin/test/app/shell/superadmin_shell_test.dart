@@ -562,6 +562,10 @@ void main() {
     expect(tester.getSize(control), const Size(244, 48));
     expect(find.text('Aparência'), findsOneWidget);
     expect(find.byKey(const Key('superadmin-theme-carrot')), findsOneWidget);
+    expect(tester.widget<InkWell>(control).borderRadius, BorderRadius.circular(CoeloRadius.lg));
+    final lightCarrotPainter = tester
+        .widget<CustomPaint>(find.byKey(const Key('superadmin-theme-carrot')))
+        .painter!;
 
     await tester.tap(control);
     await tester.pumpAndSettle();
@@ -569,11 +573,16 @@ void main() {
       Theme.of(tester.element(find.byKey(const Key('superadmin-sidebar')))).brightness,
       Brightness.dark,
     );
+    final darkCarrotPainter = tester
+        .widget<CustomPaint>(find.byKey(const Key('superadmin-theme-carrot')))
+        .painter!;
+    expect(darkCarrotPainter.shouldRepaint(lightCarrotPainter), isTrue);
 
     await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-theme-mode-control')), findsOneWidget);
     expect(tester.getSize(control), const Size(40, 80));
+    expect(tester.widget<InkWell>(control).borderRadius, BorderRadius.circular(CoeloRadius.full));
 
     await tester.tap(control);
     await tester.pumpAndSettle();
@@ -583,9 +592,7 @@ void main() {
     );
   });
 
-  testWidgets('shows the onboarding egg and keeps its action as a safe placeholder', (
-    tester,
-  ) async {
+  testWidgets('opens the three demonstration tour options', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_shellApp());
@@ -594,24 +601,58 @@ void main() {
     expect(find.byKey(const Key('superadmin-onboarding-egg')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
-    await tester.pump();
-    expect(find.text('O onboarding guiado será implementado em breve.'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+
+    for (final option in {
+      'superadmin-tour-screen': 'O tour desta tela será implementado na etapa final.',
+      'superadmin-tour-menu': 'O tour do menu será implementado na etapa final.',
+      'superadmin-tour-complete': 'O tour completo será implementado na etapa final.',
+    }.entries) {
+      await tester.tap(find.byKey(Key(option.key)));
+      await tester.pump();
+      expect(find.text(option.value), findsOneWidget);
+      await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
+      await tester.pumpAndSettle();
+    }
   });
 
-  testWidgets('periodically nudges the onboarding egg unless motion is reduced', (tester) async {
+  testWidgets('repaints the onboarding egg when semantic colors change', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final lightEggPainter = tester
+        .widget<CustomPaint>(find.byKey(const Key('superadmin-onboarding-egg')))
+        .painter!;
+
+    await tester.pumpWidget(_shellApp(brightness: Brightness.dark));
+    await tester.pumpAndSettle();
+
+    final darkEggPainter = tester
+        .widget<CustomPaint>(find.byKey(const Key('superadmin-onboarding-egg')))
+        .painter!;
+    expect(darkEggPainter.shouldRepaint(lightEggPainter), isTrue);
+  });
+
+  testWidgets('swings and rests the onboarding egg', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_shellApp());
 
     final motion = find.byKey(const Key('superadmin-onboarding-egg-motion'));
-    final initialTransform = tester.widget<Transform>(motion).transform.clone();
-    await tester.pump(const Duration(seconds: 4));
-    await tester.pump(const Duration(milliseconds: 90));
-    expect(tester.widget<Transform>(motion).transform, isNot(initialTransform));
+    final resting = tester.widget<Transform>(motion).transform.clone();
+    await tester.pump(const Duration(milliseconds: 3500));
+    await tester.pump(const Duration(milliseconds: 180));
+    expect(tester.widget<Transform>(motion).transform, isNot(resting));
+    await tester.pump(const Duration(milliseconds: 900));
+    expect(tester.widget<Transform>(motion).transform, resting);
 
     await tester.pumpWidget(_shellApp(disableAnimations: true));
     final reducedInitial = tester.widget<Transform>(motion).transform.clone();
-    await tester.pump(const Duration(seconds: 5));
+    await tester.pump(const Duration(seconds: 6));
     expect(tester.widget<Transform>(motion).transform, reducedInitial);
   });
 
