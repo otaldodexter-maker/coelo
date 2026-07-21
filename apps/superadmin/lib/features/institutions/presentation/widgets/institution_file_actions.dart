@@ -273,18 +273,19 @@ Widget institutionFileActionsDarkPreview() {
   return _fileActionsPreview(compact: false, theme: CoeloTheme.dark);
 }
 
-@Preview(name: 'Ações de arquivo · compacta · light', size: Size(96, 96))
+@Preview(name: 'Ações de arquivo · compacta · light', size: Size(72, 64))
 Widget institutionFileActionsCompactLightPreview() {
   return _fileActionsPreview(compact: true, theme: CoeloTheme.light);
 }
 
-@Preview(name: 'Ações de arquivo · compacta · dark', size: Size(96, 96))
+@Preview(name: 'Ações de arquivo · compacta · dark', size: Size(72, 64))
 Widget institutionFileActionsCompactDarkPreview() {
   return _fileActionsPreview(compact: true, theme: CoeloTheme.dark);
 }
 
 Widget _fileActionsPreview({required bool compact, required ThemeData theme}) {
   return MaterialApp(
+    key: ValueKey((compact, theme.brightness)),
     debugShowCheckedModeBanner: false,
     theme: theme,
     home: Scaffold(
@@ -320,6 +321,7 @@ Widget institutionImportReviewDarkPreview() {
 
 Widget _importDialogPreview({required bool reviewing, required ThemeData theme}) {
   return MaterialApp(
+    key: ValueKey((reviewing, theme.brightness)),
     debugShowCheckedModeBanner: false,
     theme: theme,
     home: Scaffold(

@@ -509,6 +509,7 @@ Widget superadminActivityEmptyDarkPreview() {
 
 Widget _activityPanelPreview(SuperadminActivityController controller, ThemeData theme) {
   return MaterialApp(
+    key: ValueKey((controller.activities.isEmpty, theme.brightness)),
     debugShowCheckedModeBanner: false,
     theme: theme,
     home: Material(

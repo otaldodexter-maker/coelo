@@ -6,29 +6,87 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('renders file toolbar previews in both themes and layouts', (tester) async {
-    for (final preview in [
-      institutionFileActionsPreview,
-      institutionFileActionsDarkPreview,
-      institutionFileActionsCompactLightPreview,
-      institutionFileActionsCompactDarkPreview,
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final configuration in [
+      (
+        preview: institutionFileActionsPreview,
+        size: const Size(320, 64),
+        brightness: Brightness.light,
+      ),
+      (
+        preview: institutionFileActionsDarkPreview,
+        size: const Size(320, 64),
+        brightness: Brightness.dark,
+      ),
+      (
+        preview: institutionFileActionsCompactLightPreview,
+        size: const Size(72, 64),
+        brightness: Brightness.light,
+      ),
+      (
+        preview: institutionFileActionsCompactDarkPreview,
+        size: const Size(72, 64),
+        brightness: Brightness.dark,
+      ),
     ]) {
-      await tester.pumpWidget(preview());
+      await tester.binding.setSurfaceSize(configuration.size);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(configuration.preview());
 
       expect(find.byKey(const Key('institution-files-action')), findsOneWidget);
+      expect(
+        Theme.of(tester.element(find.byKey(const Key('institution-files-action')))).brightness,
+        configuration.brightness,
+      );
       expect(tester.takeException(), isNull);
     }
   });
 
   testWidgets('renders both import steps in light and dark previews', (tester) async {
-    for (final preview in [
-      institutionImportSelectPreview,
-      institutionImportSelectDarkPreview,
-      institutionImportReviewLightPreview,
-      institutionImportReviewDarkPreview,
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final configuration in [
+      (
+        preview: institutionImportSelectPreview,
+        size: const Size(600, 420),
+        brightness: Brightness.light,
+        reviewing: false,
+      ),
+      (
+        preview: institutionImportSelectDarkPreview,
+        size: const Size(600, 420),
+        brightness: Brightness.dark,
+        reviewing: false,
+      ),
+      (
+        preview: institutionImportReviewLightPreview,
+        size: const Size(600, 460),
+        brightness: Brightness.light,
+        reviewing: true,
+      ),
+      (
+        preview: institutionImportReviewDarkPreview,
+        size: const Size(600, 460),
+        brightness: Brightness.dark,
+        reviewing: true,
+      ),
     ]) {
-      await tester.pumpWidget(preview());
+      await tester.binding.setSurfaceSize(configuration.size);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(configuration.preview());
 
       expect(find.text('Importar instituições'), findsOneWidget);
+      if (configuration.reviewing) {
+        expect(find.text('Etapa 2 de 2 · Revisar'), findsOneWidget);
+        expect(find.text('24 linhas válidas'), findsOneWidget);
+        expect(find.text('Etapa 1 de 2 · Arquivo'), findsNothing);
+      } else {
+        expect(find.text('Etapa 1 de 2 · Arquivo'), findsOneWidget);
+        expect(find.text('Etapa 2 de 2 · Revisar'), findsNothing);
+        expect(find.text('24 linhas válidas'), findsNothing);
+      }
+      expect(Theme.of(tester.element(find.byType(Dialog))).brightness, configuration.brightness);
       expect(tester.takeException(), isNull);
     }
   });

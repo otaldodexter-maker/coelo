@@ -8,33 +8,55 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('renders deterministic light and dark activity previews', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(400, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    for (final preview in [
-      superadminActivityStatesLightPreview,
-      superadminActivityStatesDarkPreview,
+    for (final configuration in [
+      (preview: superadminActivityStatesLightPreview, brightness: Brightness.light),
+      (preview: superadminActivityStatesDarkPreview, brightness: Brightness.dark),
     ]) {
-      await tester.pumpWidget(preview());
+      await tester.binding.setSurfaceSize(const Size(400, 520));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(configuration.preview());
 
-      expect(find.text('21/07/2026 · 14:35'), findsNWidgets(5));
-      expect(find.text('55%'), findsOneWidget);
-      expect(find.text('Arquivo preparado'), findsOneWidget);
-      expect(find.text('24 importadas, 2 rejeitadas'), findsOneWidget);
-      expect(find.text('O arquivo não usa o modelo esperado'), findsOneWidget);
-      expect(find.text('Agora você pode acompanhar atividades pelo sininho.'), findsOneWidget);
+      final scrollable = find.byType(Scrollable).first;
+      for (final id in [
+        'preview-import',
+        'preview-success',
+        'preview-partial',
+        'preview-error',
+        'preview-announcement',
+      ]) {
+        final tile = find.byKey(Key('superadmin-activity-$id'));
+        await tester.scrollUntilVisible(tile, 120, scrollable: scrollable);
+        expect(
+          find.descendant(of: tile, matching: find.text('21/07/2026 · 14:35')),
+          findsOneWidget,
+        );
+      }
+      expect(
+        tester.widget<MaterialApp>(find.byType(MaterialApp)).theme?.brightness,
+        configuration.brightness,
+      );
       expect(tester.takeException(), isNull);
     }
   });
 
   testWidgets('renders the empty activity preview in light and dark', (tester) async {
-    for (final preview in [
-      superadminActivityEmptyLightPreview,
-      superadminActivityEmptyDarkPreview,
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final configuration in [
+      (preview: superadminActivityEmptyLightPreview, brightness: Brightness.light),
+      (preview: superadminActivityEmptyDarkPreview, brightness: Brightness.dark),
     ]) {
-      await tester.pumpWidget(preview());
+      await tester.binding.setSurfaceSize(const Size(400, 176));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(configuration.preview());
 
       expect(find.text('Nenhuma notificação por enquanto.'), findsOneWidget);
+      expect(
+        tester.widget<MaterialApp>(find.byType(MaterialApp)).theme?.brightness,
+        configuration.brightness,
+      );
       expect(tester.takeException(), isNull);
     }
   });

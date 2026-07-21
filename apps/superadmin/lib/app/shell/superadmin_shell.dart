@@ -825,72 +825,19 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final itemStyle =
-        MenuItemButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-        ).copyWith(
-          foregroundColor: WidgetStateProperty.resolveWith((states) {
-            final highlighted =
-                states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed);
-            return highlighted ? colors.primary : colors.onSurfaceVariant;
-          }),
-          iconColor: WidgetStateProperty.resolveWith((states) {
-            final highlighted =
-                states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed);
-            return highlighted ? colors.primary : colors.onSurfaceVariant;
-          }),
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            return states.contains(WidgetState.hovered) ||
-                    states.contains(WidgetState.focused) ||
-                    states.contains(WidgetState.pressed)
-                ? colors.primaryContainer
-                : Colors.transparent;
-          }),
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        );
+    final itemStyle = _tourMenuItemStyle(colors);
     return MenuAnchor(
       alignmentOffset: const Offset(0, CoeloSpacing.space2),
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        elevation: const WidgetStatePropertyAll(4),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
-          ),
-        ),
+      style: _tourMenuStyle(colors),
+      menuChildren: _tourMenuItems(
+        itemStyle: itemStyle,
+        onScreenSelected: () =>
+            _showMessage(context, 'O tour desta tela será implementado na etapa final.'),
+        onMenuSelected: () =>
+            _showMessage(context, 'O tour do menu será implementado na etapa final.'),
+        onCompleteSelected: () =>
+            _showMessage(context, 'O tour completo será implementado na etapa final.'),
       ),
-      menuChildren: [
-        _TourMenuItem(
-          menuItemKey: const Key('superadmin-tour-screen'),
-          style: itemStyle,
-          leadingIcon: const Icon(Icons.web_asset_outlined),
-          onSelected: () =>
-              _showMessage(context, 'O tour desta tela será implementado na etapa final.'),
-          label: 'Tour desta tela',
-        ),
-        _TourMenuItem(
-          menuItemKey: const Key('superadmin-tour-menu'),
-          style: itemStyle,
-          leadingIcon: const Icon(Icons.menu_open_rounded),
-          onSelected: () =>
-              _showMessage(context, 'O tour do menu será implementado na etapa final.'),
-          label: 'Tour do menu',
-        ),
-        _TourMenuItem(
-          menuItemKey: const Key('superadmin-tour-complete'),
-          style: itemStyle,
-          leadingIcon: const Icon(Icons.play_circle_outline_rounded),
-          onSelected: () =>
-              _showMessage(context, 'O tour completo será implementado na etapa final.'),
-          label: 'Tour completo',
-        ),
-      ],
       builder: (context, controller, child) {
         final content = Material(
           color: Colors.transparent,
@@ -962,6 +909,80 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
       },
     );
   }
+}
+
+MenuStyle _tourMenuStyle(ColorScheme colors) {
+  return MenuStyle(
+    backgroundColor: WidgetStatePropertyAll(colors.surface),
+    elevation: const WidgetStatePropertyAll(4),
+    padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
+    ),
+  );
+}
+
+ButtonStyle _tourMenuItemStyle(ColorScheme colors) {
+  return MenuItemButton.styleFrom(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+  ).copyWith(
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed);
+      return highlighted ? colors.primary : colors.onSurfaceVariant;
+    }),
+    iconColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed);
+      return highlighted ? colors.primary : colors.onSurfaceVariant;
+    }),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed);
+      return highlighted ? colors.primaryContainer : Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+  );
+}
+
+List<Widget> _tourMenuItems({
+  required ButtonStyle itemStyle,
+  required VoidCallback onScreenSelected,
+  required VoidCallback onMenuSelected,
+  required VoidCallback onCompleteSelected,
+}) {
+  return [
+    _TourMenuItem(
+      menuItemKey: const Key('superadmin-tour-screen'),
+      style: itemStyle,
+      leadingIcon: const Icon(Icons.web_asset_outlined),
+      onSelected: onScreenSelected,
+      label: 'Tour desta tela',
+    ),
+    _TourMenuItem(
+      menuItemKey: const Key('superadmin-tour-menu'),
+      style: itemStyle,
+      leadingIcon: const Icon(Icons.menu_open_rounded),
+      onSelected: onMenuSelected,
+      label: 'Tour do menu',
+    ),
+    _TourMenuItem(
+      menuItemKey: const Key('superadmin-tour-complete'),
+      style: itemStyle,
+      leadingIcon: const Icon(Icons.play_circle_outline_rounded),
+      onSelected: onCompleteSelected,
+      label: 'Tour completo',
+    ),
+  ];
 }
 
 class _TourMenuItem extends StatelessWidget {
@@ -1864,12 +1885,12 @@ Widget superadminCollapsedFooterDarkPreview() {
   return _shellFooterPreview(collapsed: true, themeMode: ThemeMode.dark);
 }
 
-@Preview(name: 'Tours · submenu · light', size: Size(260, 196))
+@Preview(name: 'Tours · submenu · light', size: Size(260, 260))
 Widget superadminTourSubmenuLightPreview() {
   return _tourSubmenuPreview(ThemeMode.light);
 }
 
-@Preview(name: 'Tours · submenu · dark', size: Size(260, 196))
+@Preview(name: 'Tours · submenu · dark', size: Size(260, 260))
 Widget superadminTourSubmenuDarkPreview() {
   return _tourSubmenuPreview(ThemeMode.dark);
 }
@@ -1921,65 +1942,50 @@ Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMod
 
 Widget _tourSubmenuPreview(ThemeMode themeMode) {
   return MaterialApp(
+    key: ValueKey(themeMode),
     debugShowCheckedModeBanner: false,
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
     themeMode: themeMode,
-    home: Scaffold(
-      body: Builder(
-        builder: (context) {
-          final colors = Theme.of(context).colorScheme;
-          final itemStyle =
-              MenuItemButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-              ).copyWith(
-                foregroundColor: WidgetStatePropertyAll(colors.onSurfaceVariant),
-                iconColor: WidgetStatePropertyAll(colors.onSurfaceVariant),
-                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              );
-          return Center(
-            child: Material(
-              color: colors.surface,
-              elevation: CoeloElevation.level2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                side: BorderSide(color: colors.outlineVariant),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space2),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _TourMenuItem(
-                      menuItemKey: const Key('superadmin-tour-screen'),
-                      style: itemStyle,
-                      leadingIcon: const Icon(Icons.web_asset_outlined),
-                      onSelected: _ignoreTourSelection,
-                      label: 'Tour desta tela',
-                    ),
-                    _TourMenuItem(
-                      menuItemKey: const Key('superadmin-tour-menu'),
-                      style: itemStyle,
-                      leadingIcon: const Icon(Icons.menu_open_rounded),
-                      onSelected: _ignoreTourSelection,
-                      label: 'Tour do menu',
-                    ),
-                    _TourMenuItem(
-                      menuItemKey: const Key('superadmin-tour-complete'),
-                      style: itemStyle,
-                      leadingIcon: const Icon(Icons.play_circle_outline_rounded),
-                      onSelected: _ignoreTourSelection,
-                      label: 'Tour completo',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    ),
+    home: const Scaffold(body: Center(child: _TourSubmenuPreviewAnchor())),
   );
+}
+
+class _TourSubmenuPreviewAnchor extends StatefulWidget {
+  const _TourSubmenuPreviewAnchor();
+
+  @override
+  State<_TourSubmenuPreviewAnchor> createState() => _TourSubmenuPreviewAnchorState();
+}
+
+class _TourSubmenuPreviewAnchorState extends State<_TourSubmenuPreviewAnchor> {
+  final _controller = MenuController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _controller.open();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return MenuAnchor(
+      controller: _controller,
+      style: _tourMenuStyle(colors),
+      menuChildren: _tourMenuItems(
+        itemStyle: _tourMenuItemStyle(colors),
+        onScreenSelected: _ignoreTourSelection,
+        onMenuSelected: _ignoreTourSelection,
+        onCompleteSelected: _ignoreTourSelection,
+      ),
+      builder: (context, controller, child) => const SizedBox.square(dimension: CoeloSize.touchMin),
+    );
+  }
 }
 
 void _ignoreThemeMode(ThemeMode mode) {}

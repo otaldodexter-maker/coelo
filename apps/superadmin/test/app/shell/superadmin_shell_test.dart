@@ -17,11 +17,29 @@ void main() {
     tester,
   ) async {
     for (final configuration in [
-      (preview: superadminExpandedFooterLightPreview, brightness: Brightness.light),
-      (preview: superadminExpandedFooterDarkPreview, brightness: Brightness.dark),
-      (preview: superadminCollapsedFooterLightPreview, brightness: Brightness.light),
-      (preview: superadminCollapsedFooterDarkPreview, brightness: Brightness.dark),
+      (
+        preview: superadminExpandedFooterLightPreview,
+        size: const Size(260, 180),
+        brightness: Brightness.light,
+      ),
+      (
+        preview: superadminExpandedFooterDarkPreview,
+        size: const Size(260, 180),
+        brightness: Brightness.dark,
+      ),
+      (
+        preview: superadminCollapsedFooterLightPreview,
+        size: const Size(88, 220),
+        brightness: Brightness.light,
+      ),
+      (
+        preview: superadminCollapsedFooterDarkPreview,
+        size: const Size(88, 220),
+        brightness: Brightness.dark,
+      ),
     ]) {
+      await tester.binding.setSurfaceSize(configuration.size);
+      await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpWidget(configuration.preview());
 
       expect(find.byKey(const Key('superadmin-onboarding-egg')), findsOneWidget);
@@ -31,19 +49,48 @@ void main() {
         Theme.of(tester.element(find.byKey(const Key('superadmin-theme-mode-control')))).brightness,
         configuration.brightness,
       );
+      expect(
+        MediaQuery.of(
+          tester.element(find.byKey(const Key('superadmin-theme-mode-control'))),
+        ).disableAnimations,
+        isTrue,
+      );
       expect(tester.takeException(), isNull);
     }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
   testWidgets('renders the tour submenu preview in light and dark', (tester) async {
-    for (final preview in [superadminTourSubmenuLightPreview, superadminTourSubmenuDarkPreview]) {
-      await tester.pumpWidget(preview());
+    for (final configuration in [
+      (preview: superadminTourSubmenuLightPreview, brightness: Brightness.light),
+      (preview: superadminTourSubmenuDarkPreview, brightness: Brightness.dark),
+    ]) {
+      await tester.binding.setSurfaceSize(const Size(260, 260));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(configuration.preview());
+      await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
       expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
       expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+      final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
+      final colors = Theme.of(tester.element(find.byType(MenuAnchor))).colorScheme;
+      expect(anchor.style?.elevation?.resolve({}), 4);
+      final screenItem = tester.widget<MenuItemButton>(
+        find.byKey(const Key('superadmin-tour-screen')),
+      );
+      expect(
+        screenItem.style?.backgroundColor?.resolve({WidgetState.hovered}),
+        colors.primaryContainer,
+      );
+      expect(screenItem.style?.foregroundColor?.resolve({WidgetState.focused}), colors.primary);
+      expect(
+        Theme.of(tester.element(find.byType(MenuAnchor))).brightness,
+        configuration.brightness,
+      );
       expect(tester.takeException(), isNull);
     }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
   testWidgets('matches the light and dark egg and carrot goldens', (tester) async {
