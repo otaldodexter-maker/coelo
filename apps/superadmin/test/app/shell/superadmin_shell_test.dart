@@ -581,8 +581,9 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-theme-mode-control')), findsOneWidget);
-    expect(tester.getSize(control), const Size(40, 80));
+    expect(tester.getSize(control), const Size(48, 80));
     expect(tester.widget<InkWell>(control).borderRadius, BorderRadius.circular(CoeloRadius.full));
+    expect(tester.takeException(), isNull);
 
     await tester.tap(control);
     await tester.pumpAndSettle();
@@ -606,13 +607,21 @@ void main() {
     expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
 
+    await tester.tap(
+      find.byKey(const Key('superadmin-tour-screen')),
+      buttons: kSecondaryMouseButton,
+      kind: PointerDeviceKind.mouse,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('O tour desta tela será implementado na etapa final.'), findsNothing);
+
     for (final option in {
       'superadmin-tour-screen': 'O tour desta tela será implementado na etapa final.',
       'superadmin-tour-menu': 'O tour do menu será implementado na etapa final.',
       'superadmin-tour-complete': 'O tour completo será implementado na etapa final.',
     }.entries) {
       await tester.tap(find.byKey(Key(option.key)));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text(option.value), findsOneWidget);
       await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
       await tester.pumpAndSettle();

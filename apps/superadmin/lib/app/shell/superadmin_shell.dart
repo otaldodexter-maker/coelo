@@ -964,7 +964,7 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   }
 }
 
-class _TourMenuItem extends StatefulWidget {
+class _TourMenuItem extends StatelessWidget {
   const _TourMenuItem({
     required this.menuItemKey,
     required this.style,
@@ -980,39 +980,13 @@ class _TourMenuItem extends StatefulWidget {
   final String label;
 
   @override
-  State<_TourMenuItem> createState() => _TourMenuItemState();
-}
-
-class _TourMenuItemState extends State<_TourMenuItem> {
-  bool _handledPointerSelection = false;
-
-  void _handlePointerUp(PointerUpEvent event) {
-    _handledPointerSelection = true;
-    widget.onSelected();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _handledPointerSelection = false;
-    });
-  }
-
-  void _handlePressed() {
-    if (_handledPointerSelection) {
-      _handledPointerSelection = false;
-      return;
-    }
-    widget.onSelected();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerUp: _handlePointerUp,
-      child: MenuItemButton(
-        key: widget.menuItemKey,
-        style: widget.style,
-        leadingIcon: widget.leadingIcon,
-        onPressed: _handlePressed,
-        child: Text(widget.label),
-      ),
+    return MenuItemButton(
+      key: menuItemKey,
+      style: style,
+      leadingIcon: leadingIcon,
+      onPressed: onSelected,
+      child: Text(label),
     );
   }
 }
@@ -1132,7 +1106,7 @@ class _ThemeModeControl extends StatelessWidget {
     void toggle() => scope?.onChanged(isDark ? ThemeMode.light : ThemeMode.dark);
 
     return SizedBox(
-      width: collapsed ? 40 : double.infinity,
+      width: collapsed ? CoeloSize.touchMin : double.infinity,
       height: collapsed ? 80 : CoeloSize.touchMin,
       child: LayoutBuilder(
         builder: (context, constraints) {
