@@ -1,7 +1,7 @@
 ---
 title: "Protótipo refinado de arquivos, notificações, tema e tours do Superadmin"
 source: "Solicitações aprovadas pelo usuário em 2026-07-21"
-status: "review"
+status: "approved"
 generated_at: "2026-07-21"
 revised_at: "2026-07-21"
 ---
