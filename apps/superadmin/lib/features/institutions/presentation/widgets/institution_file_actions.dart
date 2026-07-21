@@ -102,8 +102,15 @@ ButtonStyle _fileMenuItemStyle(ColorScheme colors) {
 Future<void> _showImportDialog(BuildContext context, SuperadminActivityController controller) {
   return showDialog<void>(
     context: context,
+    barrierColor: Colors.black.withValues(alpha: 0.54),
     builder: (context) => _InstitutionImportDialog(activityController: controller),
   );
+}
+
+void _showDemoDownload(BuildContext context, String message) {
+  final messenger = ScaffoldMessenger.of(context);
+  messenger.removeCurrentSnackBar();
+  messenger.showSnackBar(SnackBar(content: Text(message)));
 }
 
 class _InstitutionImportDialog extends StatefulWidget {
@@ -125,6 +132,11 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Dialog(
+      backgroundColor: colors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
         child: Padding(
@@ -157,6 +169,16 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                   style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
+                OutlinedButton.icon(
+                  key: const Key('institution-import-template-export'),
+                  onPressed: () => _showDemoDownload(
+                    context,
+                    'Modelo XLSX preparado para download demonstrativo.',
+                  ),
+                  icon: const Icon(Icons.file_download_outlined),
+                  label: const Text('Exportar modelo XLSX'),
+                ),
+                const SizedBox(height: CoeloSpacing.space2),
                 OutlinedButton.icon(
                   key: const Key('institution-demo-file-picker'),
                   onPressed: () => setState(() => _fileSelected = true),

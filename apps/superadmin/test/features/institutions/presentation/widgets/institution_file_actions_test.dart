@@ -62,6 +62,42 @@ void main() {
     controller.dispose();
   });
 
+  testWidgets('uses a neutral surface and prepares the demo XLSX template download', (
+    tester,
+  ) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-import')));
+    await tester.pumpAndSettle();
+
+    final dialog = tester.widget<Dialog>(find.byType(Dialog));
+    expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
+    expect(find.byKey(const Key('institution-import-template-export')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-import-template-export')));
+    await tester.pump();
+
+    expect(find.text('Modelo XLSX preparado para download demonstrativo.'), findsOneWidget);
+  });
+
+  testWidgets('uses a neutral surface in the dark import dialog', (tester) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller, theme: CoeloTheme.dark));
+
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-import')));
+    await tester.pumpAndSettle();
+
+    final dialog = tester.widget<Dialog>(find.byType(Dialog));
+    expect(dialog.backgroundColor, CoeloTheme.dark.colorScheme.surface);
+  });
+
   testWidgets('creates a completed CSV export activity', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
@@ -77,9 +113,9 @@ void main() {
   });
 }
 
-Widget _app(SuperadminActivityController controller, {bool compact = false}) {
+Widget _app(SuperadminActivityController controller, {bool compact = false, ThemeData? theme}) {
   return MaterialApp(
-    theme: CoeloTheme.light,
+    theme: theme ?? CoeloTheme.light,
     home: MediaQuery(
       data: const MediaQueryData(size: Size(1024, 800)),
       child: Scaffold(
