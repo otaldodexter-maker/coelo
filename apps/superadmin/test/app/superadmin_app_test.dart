@@ -26,6 +26,8 @@ void main() {
       app.theme?.colorScheme.primaryContainer,
     );
     expect(app.themeMode, ThemeMode.system);
+    expect(app.themeAnimationStyle?.duration, CoeloMotion.standard);
+    expect(app.themeAnimationStyle?.curve, const Cubic(0.2, 0, 0, 1));
     expect(
       tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
       ThemeMode.system,

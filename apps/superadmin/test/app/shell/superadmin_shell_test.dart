@@ -1,3 +1,4 @@
+import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -75,7 +76,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('superadmin-navigation-flyout-structure')), findsOneWidget);
+    final flyout = find.byKey(const Key('superadmin-navigation-flyout-structure'));
+    expect(flyout, findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
     final triggerRect = tester.getRect(
       find.byKey(const Key('superadmin-navigation-section-structure')),
     );
@@ -101,9 +104,67 @@ void main() {
       colors.primary.withValues(alpha: 0.16),
     );
     expect(institutions.style?.foregroundColor?.resolve({}), colors.primary);
+    expect(institutions.style?.iconColor?.resolve({}), colors.primary);
     expect(units.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
     expect(units.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
+    expect(units.style?.iconColor?.resolve({WidgetState.hovered}), colors.primary);
     expect(units.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+  });
+
+  testWidgets('does not overflow while the sidebar collapses', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    for (var frame = 0; frame < 8; frame += 1) {
+      await tester.pump(const Duration(milliseconds: 25));
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('does not overflow while the sidebar expands', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final toggle = find.byKey(const Key('superadmin-sidebar-collapse'));
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    await tester.tap(toggle);
+    for (var frame = 0; frame < 8; frame += 1) {
+      await tester.pump(const Duration(milliseconds: 25));
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('keeps the collapse toggle clickable at its right inner edge', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final toggle = find.byKey(const Key('superadmin-sidebar-collapse'));
+    final toggleRect = tester.getRect(toggle);
+    final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
+    expect(toggleRect.right, sidebarRect.right + CoeloSpacing.space2);
+
+    await tester.tapAt(Offset(toggleRect.right - 1, toggleRect.center.dy));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width,
+      88,
+      reason: 'visual $toggleRect, sidebar $sidebarRect',
+    );
+  });
+
+  testWidgets('keeps compact header actions four pixels below the app bar top', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final appBar = tester.widget<AppBar>(find.byType(AppBar));
+    expect(appBar.actionsPadding, const EdgeInsetsDirectional.only(top: 4, end: 20));
   });
 
   testWidgets('uses aligned compact headers and collapses the desktop sidebar', (tester) async {
@@ -286,6 +347,10 @@ void main() {
 
     expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-settings-action')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('superadmin-profile-divider-spacing'))).height,
+      CoeloSpacing.space2 + 1,
+    );
     final logoutButton = find.byKey(const Key('superadmin-logout-action'));
     expect(logoutButton, findsOneWidget);
 
@@ -295,7 +360,7 @@ void main() {
     expect(logoutCount, 1);
   });
 
-  testWidgets('keeps the compact profile menu close to the right edge', (tester) async {
+  testWidgets('keeps the compact profile menu subtly inset from the right edge', (tester) async {
     for (final width in [375.0, 768.0]) {
       await tester.binding.setSurfaceSize(Size(width, 800));
       await tester.pumpWidget(_shellApp());
@@ -305,12 +370,35 @@ void main() {
       await tester.tap(trigger);
       await tester.pumpAndSettle();
 
-      final profileActionRect = tester.getRect(find.byKey(const Key('superadmin-profile-action')));
+      final triggerRect = tester.getRect(trigger);
+      final actionRect = tester.getRect(find.byKey(const Key('superadmin-profile-action')));
+      final panelRects =
+          find
+              .ancestor(
+                of: find.byKey(const Key('superadmin-profile-action')),
+                matching: find.byType(Material),
+              )
+              .evaluate()
+              .map((element) {
+                final box = element.renderObject! as RenderBox;
+                return box.localToGlobal(Offset.zero) & box.size;
+              })
+              .where((rect) => rect.width >= actionRect.width && rect.height > actionRect.height)
+              .toList()
+            ..sort(
+              (left, right) => (left.width * left.height).compareTo(right.width * right.height),
+            );
+      expect(panelRects, isNotEmpty);
+      final panelRect = panelRects.first;
       expect(
-        profileActionRect.right,
-        inInclusiveRange(width - CoeloSpacing.space4, width - CoeloSpacing.space2),
-        reason: 'viewport $width, trigger ${tester.getRect(trigger)}, action $profileActionRect',
+        panelRect.right,
+        closeTo(triggerRect.right, 1),
+        reason:
+            'viewport $width, trigger $triggerRect, '
+            'panel $panelRect',
       );
+      expect(panelRect.left, greaterThanOrEqualTo(0));
+      expect(panelRect.bottom, lessThanOrEqualTo(800));
 
       await tester.tap(trigger);
       await tester.pumpAndSettle();
@@ -413,12 +501,21 @@ void main() {
     expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
   });
 
-  testWidgets('shows safe feedback for header utility actions', (tester) async {
-    await tester.pumpWidget(_shellApp());
+  testWidgets('opens notifications and keeps safe feedback for placeholder actions', (
+    tester,
+  ) async {
+    final activities = SuperadminActivityController();
+    addTearDown(activities.dispose);
+    activities.completeDemoExport(SuperadminExportFormat.csv);
+    await tester.pumpWidget(_shellApp(activities: activities));
 
     await tester.tap(find.byKey(const Key('superadmin-notifications')));
-    await tester.pump();
-    expect(find.text('As notificações serão implementadas em breve.'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Notificações'), findsOneWidget);
+    expect(find.text('instituicoes.csv'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-activity-close')));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pump();
@@ -431,7 +528,9 @@ void main() {
     expect(find.text('Configurações será implementado em breve.'), findsOneWidget);
   });
 
-  testWidgets('uses a horizontal and vertical binary theme toggle', (tester) async {
+  testWidgets('uses a full-width carrot theme control and preserves the compact toggle', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(const _ThemeShellHarness());
@@ -439,9 +538,9 @@ void main() {
     final control = find.byKey(const Key('superadmin-theme-mode-control'));
     expect(control, findsOneWidget);
     expect(find.text('Seguir o sistema'), findsNothing);
-    expect(tester.getSize(control), const Size(160, 40));
-    expect(find.byIcon(Icons.light_mode_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
+    expect(tester.getSize(control), const Size(244, 48));
+    expect(find.text('Aparência'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-theme-carrot')), findsOneWidget);
 
     await tester.tap(control);
     await tester.pumpAndSettle();
@@ -461,6 +560,38 @@ void main() {
       Theme.of(tester.element(find.byKey(const Key('superadmin-sidebar')))).brightness,
       Brightness.light,
     );
+  });
+
+  testWidgets('shows the onboarding egg and keeps its action as a safe placeholder', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    expect(find.text('Fazer tour'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-onboarding-egg')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
+    await tester.pump();
+    expect(find.text('O onboarding guiado será implementado em breve.'), findsOneWidget);
+  });
+
+  testWidgets('periodically nudges the onboarding egg unless motion is reduced', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final motion = find.byKey(const Key('superadmin-onboarding-egg-motion'));
+    final initialTransform = tester.widget<Transform>(motion).transform.clone();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pump(const Duration(milliseconds: 90));
+    expect(tester.widget<Transform>(motion).transform, isNot(initialTransform));
+
+    await tester.pumpWidget(_shellApp(disableAnimations: true));
+    final reducedInitial = tester.widget<Transform>(motion).transform.clone();
+    await tester.pump(const Duration(seconds: 5));
+    expect(tester.widget<Transform>(motion).transform, reducedInitial);
   });
 
   testWidgets('stays responsive at the supported viewport widths', (tester) async {
@@ -510,14 +641,24 @@ class _ThemeShellHarnessState extends State<_ThemeShellHarness> {
   }
 }
 
-Widget _shellApp({Brightness brightness = Brightness.light}) {
+Widget _shellApp({
+  Brightness brightness = Brightness.light,
+  SuperadminActivityController? activities,
+  bool disableAnimations = false,
+}) {
   return MaterialApp(
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
     themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
-    home: SuperadminShell(
-      logout: () async => const LogoutResult.success(),
-      child: const SizedBox.expand(),
+    home: Builder(
+      builder: (context) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(disableAnimations: disableAnimations),
+        child: SuperadminShell(
+          logout: () async => const LogoutResult.success(),
+          activityController: activities,
+          child: const SizedBox.expand(),
+        ),
+      ),
     ),
   );
 }

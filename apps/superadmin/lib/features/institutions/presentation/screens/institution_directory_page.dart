@@ -5,12 +5,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../app/activity/superadmin_activity.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_directory_query.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_directory_view_model.dart';
+import '../widgets/institution_file_actions.dart';
 
 enum _DirectoryDisplay { cards, table }
 
@@ -27,12 +29,14 @@ class InstitutionDirectoryPage extends StatefulWidget {
 class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   late final InstitutionDirectoryViewModel _viewModel;
   late final TextEditingController _searchController;
+  late final SuperadminActivityController _activityController;
   _DirectoryDisplay _display = _DirectoryDisplay.cards;
 
   @override
   void initState() {
     super.initState();
     _viewModel = InstitutionDirectoryViewModel(repository: widget.repository);
+    _activityController = SuperadminActivityController();
     _searchController = TextEditingController()..addListener(_onSearchChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _viewModel.load());
   }
@@ -45,6 +49,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       ..removeListener(_onSearchChanged)
       ..dispose();
     _viewModel.dispose();
+    _activityController.dispose();
     super.dispose();
   }
 
@@ -56,6 +61,11 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   Widget build(BuildContext context) {
     return SuperadminShell(
       logout: widget.logout,
+      activityController: _activityController,
+      actions: [InstitutionFileActions(activityController: _activityController)],
+      compactActions: [
+        InstitutionFileActions(activityController: _activityController, compact: true),
+      ],
       child: AnimatedBuilder(
         animation: _viewModel,
         builder: (context, child) {

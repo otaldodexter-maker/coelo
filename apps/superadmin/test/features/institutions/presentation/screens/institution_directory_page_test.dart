@@ -498,14 +498,56 @@ void main() {
     await gesture.removePointer();
   });
 
-  testWidgets('omits the deferred import action on compact layouts', (tester) async {
+  testWidgets('condenses file actions on compact layouts', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    expect(find.text('Importar instituições'), findsNothing);
+    expect(find.byKey(const Key('institution-file-actions-menu')), findsOneWidget);
+    expect(find.byKey(const Key('institution-import-action')), findsNothing);
+    expect(find.byKey(const Key('institution-export-action')), findsNothing);
+  });
+
+  testWidgets('keeps import progress in the notification center without blocking the page', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-import-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-demo-file-picker')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-import-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-import-confirm')));
+    await tester.pump();
+
+    expect(find.byKey(const Key('institution-filter-toolbar')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('%'), findsOneWidget);
+    expect(find.text('instituicoes-julho.xlsx'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('superadmin-activity-close')));
+    await tester.pumpAndSettle();
+
+    await tester.pump(const Duration(milliseconds: 2400));
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-notification-badge')),
+        matching: find.text('1'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+    expect(find.text('100%'), findsOneWidget);
+    expect(find.text('24 importadas, 2 rejeitadas'), findsOneWidget);
   });
 
   testWidgets('uses one card column at 375 and multiple columns at 1440', (tester) async {

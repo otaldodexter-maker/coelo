@@ -77,12 +77,16 @@ class _SuperadminAppState extends State<SuperadminApp> {
 
   @override
   Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     return MaterialApp.router(
       title: SuperadminAppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: CoeloTheme.light,
       darkTheme: CoeloTheme.dark,
       themeMode: _themeMode,
+      themeAnimationStyle: reduceMotion
+          ? AnimationStyle.noAnimation
+          : const AnimationStyle(duration: CoeloMotion.standard, curve: Cubic(0.2, 0, 0, 1)),
       builder: (context, child) => SuperadminThemeModeScope(
         mode: _themeMode,
         onChanged: _setThemeMode,

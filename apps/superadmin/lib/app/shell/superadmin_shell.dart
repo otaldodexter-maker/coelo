@@ -1,16 +1,23 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/widget_previews.dart';
 
+import '../activity/superadmin_activity.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
+import 'superadmin_activity_center.dart';
 
 const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
+const _compactProfileMenuWidth = 176.0;
+const _compactProfileTriggerWidth = 52.0;
+const _coeloMotionCurve = Cubic(0.2, 0, 0, 1);
 
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
@@ -19,6 +26,8 @@ class SuperadminShell extends StatefulWidget {
     this.title = 'Instituições',
     this.subtitle = 'Gerencie as instituições da plataforma.',
     this.actions = const [],
+    this.compactActions = const [],
+    this.activityController,
     super.key,
   });
 
@@ -27,6 +36,8 @@ class SuperadminShell extends StatefulWidget {
   final String title;
   final String subtitle;
   final List<Widget> actions;
+  final List<Widget> compactActions;
+  final SuperadminActivityController? activityController;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
@@ -34,6 +45,23 @@ class SuperadminShell extends StatefulWidget {
 
 class _SuperadminShellState extends State<SuperadminShell> {
   bool _sidebarCollapsed = false;
+  late final SuperadminActivityController _activityController;
+  late final bool _ownsActivityController;
+
+  @override
+  void initState() {
+    super.initState();
+    _ownsActivityController = widget.activityController == null;
+    _activityController = widget.activityController ?? SuperadminActivityController();
+  }
+
+  @override
+  void dispose() {
+    if (_ownsActivityController) {
+      _activityController.dispose();
+    }
+    super.dispose();
+  }
 
   Future<void> _handleLogout() async {
     final result = await widget.logout();
@@ -53,7 +81,10 @@ class _SuperadminShellState extends State<SuperadminShell> {
         final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
         if (!isDesktop) {
           return Scaffold(
-            appBar: _CompactAppBar(onLogout: _handleLogout),
+            appBar: _CompactAppBar(
+              onLogout: _handleLogout,
+              activityController: _activityController,
+            ),
             drawer: Drawer(
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
@@ -74,7 +105,9 @@ class _SuperadminShellState extends State<SuperadminShell> {
                   title: widget.title,
                   subtitle: widget.subtitle,
                   actions: widget.actions,
+                  compactActions: widget.compactActions,
                   onLogout: _handleLogout,
+                  activityController: _activityController,
                   compact: true,
                 ),
                 const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -84,6 +117,7 @@ class _SuperadminShellState extends State<SuperadminShell> {
           );
         }
 
+        final sidebarWidth = _sidebarCollapsed ? _collapsedSidebarWidth : _expandedSidebarWidth;
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
           body: Padding(
@@ -91,19 +125,35 @@ class _SuperadminShellState extends State<SuperadminShell> {
             child: Row(
               children: [
                 AnimatedContainer(
-                  key: const Key('superadmin-sidebar'),
-                  width: _sidebarCollapsed ? _collapsedSidebarWidth : _expandedSidebarWidth,
+                  width: sidebarWidth + _shellGutter,
                   duration: CoeloMotion.short,
                   curve: Curves.easeOut,
-                  child: _FloatingSurface(
-                    key: const Key('superadmin-floating-sidebar'),
-                    child: _Sidebar(
-                      collapsed: _sidebarCollapsed,
-                      onToggle: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
-                    ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      AnimatedContainer(
+                        key: const Key('superadmin-sidebar'),
+                        width: sidebarWidth,
+                        duration: CoeloMotion.short,
+                        curve: Curves.easeOut,
+                        child: _FloatingSurface(
+                          key: const Key('superadmin-floating-sidebar'),
+                          child: _Sidebar(collapsed: _sidebarCollapsed),
+                        ),
+                      ),
+                      AnimatedPositioned(
+                        left: sidebarWidth - CoeloSpacing.space4,
+                        top: CoeloSpacing.space8,
+                        duration: CoeloMotion.short,
+                        curve: Curves.easeOut,
+                        child: _SidebarToggle(
+                          collapsed: _sidebarCollapsed,
+                          onPressed: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: _shellGutter),
                 Expanded(
                   child: _FloatingSurface(
                     key: const Key('superadmin-floating-content'),
@@ -114,7 +164,9 @@ class _SuperadminShellState extends State<SuperadminShell> {
                           title: widget.title,
                           subtitle: widget.subtitle,
                           actions: widget.actions,
+                          compactActions: widget.compactActions,
                           onLogout: _handleLogout,
+                          activityController: _activityController,
                         ),
                         const _InsetDivider(key: Key('superadmin-page-divider')),
                         Expanded(child: pageBody),
@@ -132,28 +184,17 @@ class _SuperadminShellState extends State<SuperadminShell> {
 }
 
 class _Sidebar extends StatelessWidget {
-  const _Sidebar({required this.collapsed, required this.onToggle});
+  const _Sidebar({required this.collapsed});
 
   final bool collapsed;
-  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
+    return Column(
       children: [
-        Column(
-          children: [
-            _BrandHeader(collapsed: collapsed),
-            const _InsetDivider(key: Key('superadmin-brand-divider')),
-            Expanded(child: _NavigationContent(collapsed: collapsed)),
-          ],
-        ),
-        Positioned(
-          right: -CoeloSpacing.space2,
-          top: CoeloSpacing.space8,
-          child: _SidebarToggle(collapsed: collapsed, onPressed: onToggle),
-        ),
+        _BrandHeader(collapsed: collapsed),
+        const _InsetDivider(key: Key('superadmin-brand-divider')),
+        Expanded(child: _NavigationContent(collapsed: collapsed)),
       ],
     );
   }
@@ -217,105 +258,39 @@ class _BrandHeader extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           horizontal: collapsed ? CoeloSpacing.space5 : CoeloSpacing.space4,
         ),
-        child: Row(
-          mainAxisAlignment: collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
-          children: [
-            Container(
-              key: const Key('superadmin-brand-mark'),
-              width: CoeloSize.touchMin,
-              height: CoeloSize.touchMin,
-              padding: const EdgeInsets.all(CoeloSpacing.space2),
-              decoration: BoxDecoration(
-                color: isDark ? CoeloPalette.neutral0 : colors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: SvgPicture.asset(
-                isDark ? 'assets/brand/logo-coelo-orange.svg' : 'assets/brand/logo-coelo-white.svg',
-                key: Key(isDark ? 'superadmin-brand-logo-dark' : 'superadmin-brand-logo-light'),
-                semanticsLabel: 'Coelo',
-              ),
-            ),
-            if (!collapsed) ...[
-              const SizedBox(width: CoeloSpacing.space3),
-              Expanded(child: Text('Superadmin', style: theme.textTheme.titleMedium)),
-            ],
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final showDetails = !collapsed && constraints.maxWidth >= 60;
+            return Row(
+              mainAxisAlignment: showDetails ? MainAxisAlignment.start : MainAxisAlignment.center,
+              children: [
+                Container(
+                  key: const Key('superadmin-brand-mark'),
+                  width: CoeloSize.touchMin,
+                  height: CoeloSize.touchMin,
+                  padding: const EdgeInsets.all(CoeloSpacing.space2),
+                  decoration: BoxDecoration(
+                    color: isDark ? CoeloPalette.neutral0 : colors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(
+                    isDark
+                        ? 'assets/brand/logo-coelo-orange.svg'
+                        : 'assets/brand/logo-coelo-white.svg',
+                    key: Key(isDark ? 'superadmin-brand-logo-dark' : 'superadmin-brand-logo-light'),
+                    semanticsLabel: 'Coelo',
+                  ),
+                ),
+                if (showDetails) ...[
+                  const SizedBox(width: CoeloSpacing.space3),
+                  Expanded(child: Text('Superadmin', style: theme.textTheme.titleMedium)),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
-  }
-}
-
-class _OfficialCoeloMark extends StatelessWidget {
-  const _OfficialCoeloMark({required this.foregroundColor, required this.detailColor});
-
-  final Color foregroundColor;
-  final Color detailColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _OfficialCoeloMarkPainter(
-        foregroundColor: foregroundColor,
-        detailColor: detailColor,
-      ),
-    );
-  }
-}
-
-class _OfficialCoeloMarkPainter extends CustomPainter {
-  const _OfficialCoeloMarkPainter({required this.foregroundColor, required this.detailColor});
-
-  final Color foregroundColor;
-  final Color detailColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const sourceWidth = 360.15;
-    const sourceHeight = 349.32;
-    final scale = math.min(size.width / sourceWidth, size.height / sourceHeight);
-    final dx = (size.width - sourceWidth * scale) / 2;
-    final dy = (size.height - sourceHeight * scale) / 2;
-    canvas
-      ..save()
-      ..translate(dx, dy)
-      ..scale(scale);
-
-    final silhouette = Path()
-      ..moveTo(253.55, 186.36)
-      ..relativeCubicTo(13.42, -8.18, 27.51, -18.49, 41.37, -30.58)
-      ..cubicTo(343.75, 113.15, 371.09, 64.58, 356, 47.29)
-      ..relativeCubicTo(-15.09, -17.29, -66.91, 3.26, -115.74, 45.88)
-      ..relativeCubicTo(-15.02, 13.11, -28, 26.79, -38.35, 39.94)
-      ..relativeCubicTo(-5.54, -15.79, -13.41, -32.93, -23.39, -50.19)
-      ..cubicTo(146.08, 26.82, 103.68, -9.36, 83.81, 2.13)
-      ..relativeCubicTo(-19.87, 11.49, -9.67, 66.29, 22.77, 122.4)
-      ..relativeCubicTo(5.18, 8.96, 10.61, 17.41, 16.17, 25.24)
-      ..relativeCubicTo(-62.34, -0.08, -112.36, 24.83, -121.34, 65.13)
-      ..relativeCubicTo(-11.51, 51.66, 48.78, 109.05, 134.67, 128.19)
-      ..relativeCubicTo(85.88, 19.13, 164.84, -7.23, 176.35, -58.89)
-      ..relativeCubicTo(7.66, -34.4, -16.51, -71.33, -58.87, -97.82)
-      ..close();
-    canvas.drawPath(silhouette, Paint()..color = foregroundColor);
-
-    final details = Paint()..color = detailColor;
-    canvas
-      ..drawCircle(const Offset(91.62, 236.52), 17.96, details)
-      ..drawCircle(const Offset(221.39, 262.97), 14.29, details);
-    final nose = Path()
-      ..moveTo(154.92, 284.67)
-      ..relativeCubicTo(5.7, -6.21, 2.54, -16.26, -5.69, -18.1)
-      ..relativeCubicTo(-8.23, -1.83, -15.36, 5.93, -12.83, 13.97)
-      ..relativeCubicTo(2.53, 8.04, 12.81, 10.33, 18.52, 4.13)
-      ..close();
-    canvas
-      ..drawPath(nose, details)
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _OfficialCoeloMarkPainter oldDelegate) {
-    return oldDelegate.foregroundColor != foregroundColor || oldDelegate.detailColor != detailColor;
   }
 }
 
@@ -451,6 +426,13 @@ class _NavigationContentState extends State<_NavigationContent> {
             ],
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CoeloSpacing.space2,
+            vertical: CoeloSpacing.space2,
+          ),
+          child: _OnboardingTourButton(collapsed: widget.collapsed),
+        ),
         const _InsetDivider(),
         Padding(
           padding: const EdgeInsets.fromLTRB(
@@ -559,25 +541,34 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
         color: background,
         borderRadius: BorderRadius.circular(CoeloRadius.md),
       ),
-      child: Row(
-        children: [
-          Icon(widget.section.icon, color: foreground, size: CoeloSize.iconMd),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: Text(
-              widget.section.label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: foreground,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          Icon(
-            widget.expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-            color: foreground,
-            size: CoeloSize.iconSm,
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final showDetails = constraints.maxWidth >= 120;
+          return Row(
+            children: [
+              Icon(widget.section.icon, color: foreground, size: CoeloSize.iconMd),
+              if (showDetails) ...[
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Text(
+                    widget.section.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: foreground,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Icon(
+                  widget.expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                  color: foreground,
+                  size: CoeloSize.iconSm,
+                ),
+              ],
+            ],
+          );
+        },
       ),
     );
     return MouseRegion(
@@ -709,6 +700,11 @@ ButtonStyle _navigationMenuItemStyle(ColorScheme colors, {required bool active})
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
       return active || highlighted ? colors.primary : colors.onSurfaceVariant;
     }),
+    iconColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return active || highlighted ? colors.primary : colors.onSurfaceVariant;
+    }),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
@@ -731,6 +727,191 @@ void _handleDestinationTap(BuildContext context, _NavigationDestinationData dest
   }
 }
 
+class _OnboardingTourButton extends StatefulWidget {
+  const _OnboardingTourButton({required this.collapsed});
+
+  final bool collapsed;
+
+  @override
+  State<_OnboardingTourButton> createState() => _OnboardingTourButtonState();
+}
+
+class _OnboardingTourButtonState extends State<_OnboardingTourButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+  late final Animation<double> _rotation;
+  late final Animation<double> _glow;
+  Timer? _initialTimer;
+  Timer? _periodicTimer;
+  bool? _reduceMotion;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: CoeloMotion.emphasized);
+    _rotation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: -4 * math.pi / 180), weight: 1),
+      TweenSequenceItem(
+        tween: Tween(begin: -4 * math.pi / 180, end: 4 * math.pi / 180),
+        weight: 2,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 4 * math.pi / 180, end: -3 * math.pi / 180),
+        weight: 2,
+      ),
+      TweenSequenceItem(tween: Tween(begin: -3 * math.pi / 180, end: 0), weight: 1),
+    ]).animate(CurvedAnimation(parent: _animationController, curve: _coeloMotionCurve));
+    _glow = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: 1), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 1),
+    ]).animate(_animationController);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    if (_reduceMotion == reduceMotion) {
+      return;
+    }
+    _reduceMotion = reduceMotion;
+    _cancelTimers();
+    _animationController.reset();
+    if (!reduceMotion) {
+      _initialTimer = Timer(const Duration(seconds: 4), () {
+        if (!mounted) {
+          return;
+        }
+        _animationController.forward(from: 0);
+        _periodicTimer = Timer.periodic(const Duration(seconds: 8), (_) {
+          if (mounted) {
+            _animationController.forward(from: 0);
+          }
+        });
+      });
+    }
+  }
+
+  void _cancelTimers() {
+    _initialTimer?.cancel();
+    _periodicTimer?.cancel();
+    _initialTimer = null;
+    _periodicTimer = null;
+  }
+
+  @override
+  void dispose() {
+    _cancelTimers();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final content = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: const Key('superadmin-onboarding-tour'),
+        onTap: () => _showMessage(context, 'O onboarding guiado será implementado em breve.'),
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+        overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+        child: SizedBox(
+          width: widget.collapsed ? CoeloSize.touchMin : double.infinity,
+          height: CoeloSize.touchMin,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final useCompactLayout = widget.collapsed || constraints.maxWidth < 180;
+              return Row(
+                mainAxisAlignment: useCompactLayout
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.start,
+                children: [
+                  if (!useCompactLayout) const SizedBox(width: CoeloSpacing.space3),
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        key: const Key('superadmin-onboarding-egg-motion'),
+                        angle: _rotation.value,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors.primary.withValues(alpha: 0.16 * _glow.value),
+                                blurRadius: CoeloSpacing.space3 * _glow.value,
+                                spreadRadius: CoeloSpacing.spaceHalf * _glow.value,
+                              ),
+                            ],
+                          ),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: const SizedBox.square(
+                      dimension: CoeloSize.iconMd,
+                      child: CustomPaint(
+                        key: Key('superadmin-onboarding-egg'),
+                        painter: _FlatEggPainter(),
+                      ),
+                    ),
+                  ),
+                  if (!useCompactLayout) ...[
+                    const SizedBox(width: CoeloSpacing.space3),
+                    Expanded(child: Text('Fazer tour', style: theme.textTheme.labelLarge)),
+                    Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
+                    const SizedBox(width: CoeloSpacing.space2),
+                  ],
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    return Tooltip(message: 'Iniciar onboarding', child: content);
+  }
+}
+
+class _FlatEggPainter extends CustomPainter {
+  const _FlatEggPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final egg = Path()
+      ..moveTo(size.width * 0.5, 0)
+      ..cubicTo(
+        size.width * 0.78,
+        size.height * 0.08,
+        size.width,
+        size.height * 0.5,
+        size.width * 0.84,
+        size.height * 0.82,
+      )
+      ..cubicTo(
+        size.width * 0.7,
+        size.height,
+        size.width * 0.3,
+        size.height,
+        size.width * 0.16,
+        size.height * 0.82,
+      )
+      ..cubicTo(0, size.height * 0.5, size.width * 0.22, size.height * 0.08, size.width * 0.5, 0)
+      ..close();
+    canvas.drawPath(egg, Paint()..color = const Color(0xFFFFE0D5));
+    canvas.drawCircle(
+      Offset(size.width * 0.58, size.height * 0.58),
+      size.width * 0.13,
+      Paint()..color = const Color(0xFFD63C00),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 class _ThemeModeControl extends StatelessWidget {
   const _ThemeModeControl({required this.collapsed});
 
@@ -744,96 +925,204 @@ class _ThemeModeControl extends StatelessWidget {
     final colors = theme.colorScheme;
     final isDark =
         mode == ThemeMode.dark || (mode == ThemeMode.system && theme.brightness == Brightness.dark);
-    final size = collapsed ? const Size(40, 80) : const Size(160, 40);
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final duration = reduceMotion ? Duration.zero : CoeloMotion.standard;
 
     void toggle() => scope?.onChanged(isDark ? ThemeMode.light : ThemeMode.dark);
 
-    return Tooltip(
-      message: isDark ? 'Ativar tema claro' : 'Ativar tema escuro',
-      child: Semantics(
-        button: true,
-        toggled: isDark,
-        label: isDark ? 'Tema escuro ativo' : 'Tema claro ativo',
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            key: const Key('superadmin-theme-mode-control'),
-            onTap: toggle,
-            borderRadius: BorderRadius.circular(CoeloRadius.full),
-            overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-            child: AnimatedContainer(
-              duration: CoeloMotion.standard,
-              width: size.width,
-              height: size.height,
-              padding: const EdgeInsets.all(CoeloSpacing.space1),
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(CoeloRadius.full),
-                border: Border.all(color: colors.outlineVariant),
-              ),
-              child: Stack(
-                children: [
-                  if (collapsed) ...[
-                    const Positioned(
-                      top: CoeloSpacing.space2,
-                      left: 0,
-                      right: 0,
-                      child: Icon(Icons.light_mode_outlined, size: CoeloSize.iconSm),
-                    ),
-                    const Positioned(
-                      bottom: CoeloSpacing.space2,
-                      left: 0,
-                      right: 0,
-                      child: Icon(Icons.dark_mode_outlined, size: CoeloSize.iconSm),
-                    ),
-                  ] else ...[
-                    const Positioned(
-                      left: CoeloSpacing.space2,
-                      top: 0,
-                      bottom: 0,
-                      child: Icon(Icons.light_mode_outlined, size: CoeloSize.iconSm),
-                    ),
-                    const Positioned(
-                      right: CoeloSpacing.space2,
-                      top: 0,
-                      bottom: 0,
-                      child: Icon(Icons.dark_mode_outlined, size: CoeloSize.iconSm),
-                    ),
-                  ],
-                  AnimatedAlign(
-                    duration: CoeloMotion.standard,
-                    curve: Curves.easeOutCubic,
-                    alignment: collapsed
-                        ? (isDark ? Alignment.bottomCenter : Alignment.topCenter)
-                        : (isDark ? Alignment.centerRight : Alignment.centerLeft),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      padding: const EdgeInsets.all(CoeloSpacing.space1),
-                      decoration: BoxDecoration(
-                        color: colors.primary,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.12),
-                            blurRadius: CoeloSpacing.space1,
-                          ),
-                        ],
-                      ),
-                      child: _OfficialCoeloMark(
-                        foregroundColor: colors.onPrimary,
-                        detailColor: colors.primaryContainer,
-                      ),
-                    ),
+    return SizedBox(
+      width: collapsed ? 40 : double.infinity,
+      height: collapsed ? 80 : CoeloSize.touchMin,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final useCompactLayout = collapsed || constraints.maxWidth < 180;
+          return Tooltip(
+            message: isDark ? 'Ativar tema claro' : 'Ativar tema escuro',
+            child: Semantics(
+              button: true,
+              toggled: isDark,
+              label: isDark ? 'Tema escuro ativo' : 'Tema claro ativo',
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  key: const Key('superadmin-theme-mode-control'),
+                  onTap: toggle,
+                  borderRadius: BorderRadius.circular(
+                    useCompactLayout ? CoeloRadius.full : CoeloRadius.md,
                   ),
-                ],
+                  overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+                  child: AnimatedContainer(
+                    duration: duration,
+                    curve: _coeloMotionCurve,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: useCompactLayout ? CoeloSpacing.space1 : CoeloSpacing.space3,
+                      vertical: CoeloSpacing.space1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(
+                        useCompactLayout ? CoeloRadius.full : CoeloRadius.md,
+                      ),
+                      border: Border.all(color: colors.outlineVariant),
+                    ),
+                    child: useCompactLayout
+                        ? _CollapsedCarrotSwitch(isDark: isDark, duration: duration, colors: colors)
+                        : Row(
+                            children: [
+                              Expanded(child: Text('Aparência', style: theme.textTheme.labelLarge)),
+                              Icon(
+                                isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                                size: CoeloSize.iconSm,
+                                color: colors.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: CoeloSpacing.space1),
+                              Text(
+                                isDark ? 'Escuro' : 'Claro',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: CoeloSpacing.space2),
+                              _HorizontalCarrotSwitch(
+                                isDark: isDark,
+                                duration: duration,
+                                colors: colors,
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
+}
+
+class _CollapsedCarrotSwitch extends StatelessWidget {
+  const _CollapsedCarrotSwitch({
+    required this.isDark,
+    required this.duration,
+    required this.colors,
+  });
+
+  final bool isDark;
+  final Duration duration;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Positioned(
+          top: CoeloSpacing.space2,
+          left: 0,
+          right: 0,
+          child: Icon(Icons.light_mode_outlined, size: CoeloSize.iconSm),
+        ),
+        const Positioned(
+          bottom: CoeloSpacing.space2,
+          left: 0,
+          right: 0,
+          child: Icon(Icons.dark_mode_outlined, size: CoeloSize.iconSm),
+        ),
+        AnimatedAlign(
+          duration: duration,
+          curve: _coeloMotionCurve,
+          alignment: isDark ? Alignment.bottomCenter : Alignment.topCenter,
+          child: _CarrotThumb(colors: colors),
+        ),
+      ],
+    );
+  }
+}
+
+class _HorizontalCarrotSwitch extends StatelessWidget {
+  const _HorizontalCarrotSwitch({
+    required this.isDark,
+    required this.duration,
+    required this.colors,
+  });
+
+  final bool isDark;
+  final Duration duration;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: CoeloSpacing.space16,
+      height: CoeloSpacing.space8,
+      padding: const EdgeInsets.all(CoeloSpacing.space1),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(CoeloRadius.full),
+      ),
+      child: AnimatedAlign(
+        duration: duration,
+        curve: _coeloMotionCurve,
+        alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
+        child: _CarrotThumb(colors: colors, size: CoeloSpacing.space6),
+      ),
+    );
+  }
+}
+
+class _CarrotThumb extends StatelessWidget {
+  const _CarrotThumb({required this.colors, this.size = CoeloSpacing.space8});
+
+  final ColorScheme colors;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(CoeloSpacing.space1),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(color: colors.primary.withValues(alpha: 0.12), blurRadius: CoeloSpacing.space1),
+        ],
+      ),
+      child: const CustomPaint(key: Key('superadmin-theme-carrot'), painter: _FlatCarrotPainter()),
+    );
+  }
+}
+
+class _FlatCarrotPainter extends CustomPainter {
+  const _FlatCarrotPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final carrot = Path()
+      ..moveTo(size.width * 0.28, size.height * 0.3)
+      ..quadraticBezierTo(size.width * 0.76, size.height * 0.3, size.width * 0.5, size.height)
+      ..quadraticBezierTo(
+        size.width * 0.2,
+        size.height * 0.52,
+        size.width * 0.28,
+        size.height * 0.3,
+      )
+      ..close();
+    canvas.drawPath(carrot, Paint()..color = const Color(0xFFD63C00));
+    final leaves = Paint()
+      ..color = const Color(0xFF2D8A4E)
+      ..strokeWidth = math.max(1.5, size.width * 0.1)
+      ..strokeCap = StrokeCap.round;
+    final root = Offset(size.width * 0.4, size.height * 0.3);
+    canvas
+      ..drawLine(root, Offset(size.width * 0.24, 0), leaves)
+      ..drawLine(root, Offset(size.width * 0.5, 0), leaves)
+      ..drawLine(root, Offset(size.width * 0.7, size.height * 0.08), leaves);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _NavigationItem extends StatefulWidget {
@@ -947,9 +1236,10 @@ class _NavigationItemState extends State<_NavigationItem> {
 }
 
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _CompactAppBar({required this.onLogout});
+  const _CompactAppBar({required this.onLogout, required this.activityController});
 
   final VoidCallback onLogout;
+  final SuperadminActivityController activityController;
 
   @override
   Size get preferredSize => const Size.fromHeight(CoeloSize.touchMin);
@@ -965,8 +1255,12 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.menu),
         ),
       ),
+      actionsPadding: const EdgeInsetsDirectional.only(
+        top: CoeloSpacing.space1,
+        end: CoeloSpacing.space5,
+      ),
       actions: [
-        const _HeaderUtilityActions(),
+        _HeaderUtilityActions(activityController: activityController),
         _ProfileSummary(onLogout: onLogout, compact: true),
         const SizedBox(width: CoeloSpacing.space2),
       ],
@@ -979,14 +1273,18 @@ class _PageHeader extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.actions,
+    required this.compactActions,
     required this.onLogout,
+    required this.activityController,
     this.compact = false,
   });
 
   final String title;
   final String subtitle;
   final List<Widget> actions;
+  final List<Widget> compactActions;
   final VoidCallback onLogout;
+  final SuperadminActivityController activityController;
   final bool compact;
 
   @override
@@ -995,9 +1293,8 @@ class _PageHeader extends StatelessWidget {
     final colors = theme.colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final showHeaderActions =
-            !compact || constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
         final compactProfile = constraints.maxWidth < 900;
+        final visibleActions = compact && compactActions.isNotEmpty ? compactActions : actions;
         return SizedBox(
           height: _headerHeight,
           child: Padding(
@@ -1025,14 +1322,14 @@ class _PageHeader extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (showHeaderActions && actions.isNotEmpty) ...[
+                if (visibleActions.isNotEmpty) ...[
                   const SizedBox(width: CoeloSpacing.space4),
-                  ...actions.expand(
+                  ...visibleActions.expand(
                     (action) => [action, const SizedBox(width: CoeloSpacing.space2)],
                   ),
                 ],
                 if (!compact) ...[
-                  const _HeaderUtilityActions(),
+                  _HeaderUtilityActions(activityController: activityController),
                   const SizedBox(width: CoeloSpacing.space2),
                   _ProfileSummary(onLogout: onLogout, compact: compactProfile),
                 ],
@@ -1097,13 +1394,51 @@ class _ProfileSummary extends StatelessWidget {
           }),
           overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         );
+    final menuItems = <Widget>[
+      MenuItemButton(
+        key: const Key('superadmin-profile-action'),
+        style: standardItemStyle,
+        leadingIcon: const Icon(Icons.person_outline),
+        onPressed: () => _showMessage(context, 'O perfil será implementado em breve.'),
+        child: const Text('Perfil'),
+      ),
+      MenuItemButton(
+        key: const Key('superadmin-settings-action'),
+        style: standardItemStyle,
+        leadingIcon: const Icon(Icons.settings_outlined),
+        onPressed: () => _showMessage(context, 'Configurações será implementado em breve.'),
+        child: const Text('Configurações'),
+      ),
+      const Padding(
+        key: Key('superadmin-profile-divider-spacing'),
+        padding: EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+        child: _InsetDivider(key: Key('superadmin-profile-divider')),
+      ),
+      MenuItemButton(
+        key: const Key('superadmin-logout-action'),
+        style: logoutStyle,
+        leadingIcon: const Icon(Icons.logout),
+        onPressed: onLogout,
+        child: const Text('Sair'),
+      ),
+    ];
     return MenuAnchor(
-      alignmentOffset: const Offset(0, CoeloSpacing.space2),
+      crossAxisUnconstrained: !compact,
+      alignmentOffset: Offset(
+        compact ? _compactProfileTriggerWidth - _compactProfileMenuWidth : 0,
+        CoeloSpacing.space2,
+      ),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
         elevation: const WidgetStatePropertyAll(4),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-        alignment: compact ? AlignmentDirectional.bottomEnd : null,
+        alignment: compact ? AlignmentDirectional.bottomStart : null,
+        minimumSize: compact
+            ? const WidgetStatePropertyAll(Size(_compactProfileMenuWidth, 0))
+            : null,
+        maximumSize: compact
+            ? const WidgetStatePropertyAll(Size(_compactProfileMenuWidth, double.infinity))
+            : null,
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CoeloRadius.lg),
@@ -1111,30 +1446,7 @@ class _ProfileSummary extends StatelessWidget {
           ),
         ),
       ),
-      menuChildren: [
-        MenuItemButton(
-          key: const Key('superadmin-profile-action'),
-          style: standardItemStyle,
-          leadingIcon: const Icon(Icons.person_outline),
-          onPressed: () => _showMessage(context, 'O perfil será implementado em breve.'),
-          child: const Text('Perfil'),
-        ),
-        MenuItemButton(
-          key: const Key('superadmin-settings-action'),
-          style: standardItemStyle,
-          leadingIcon: const Icon(Icons.settings_outlined),
-          onPressed: () => _showMessage(context, 'Configurações será implementado em breve.'),
-          child: const Text('Configurações'),
-        ),
-        const _InsetDivider(),
-        MenuItemButton(
-          key: const Key('superadmin-logout-action'),
-          style: logoutStyle,
-          leadingIcon: const Icon(Icons.logout),
-          onPressed: onLogout,
-          child: const Text('Sair'),
-        ),
-      ],
+      menuChildren: menuItems,
       builder: (context, controller, child) {
         return Tooltip(
           message: 'Abrir menu do usuário',
@@ -1179,7 +1491,9 @@ class _ProfileSummary extends StatelessWidget {
 }
 
 class _HeaderUtilityActions extends StatelessWidget {
-  const _HeaderUtilityActions();
+  const _HeaderUtilityActions({required this.activityController});
+
+  final SuperadminActivityController activityController;
 
   @override
   Widget build(BuildContext context) {
@@ -1196,12 +1510,9 @@ class _HeaderUtilityActions extends StatelessWidget {
           style: _headerUtilityButtonStyle(colors, hoverColor),
           icon: const Icon(Icons.bug_report_outlined),
         ),
-        IconButton(
-          key: const Key('superadmin-notifications'),
-          tooltip: 'Notificações',
-          onPressed: () => _showMessage(context, 'As notificações serão implementadas em breve.'),
-          style: _headerUtilityButtonStyle(colors, hoverColor),
-          icon: const Icon(Icons.notifications_none_rounded),
+        SuperadminActivityCenter(
+          controller: activityController,
+          buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),
         ),
       ],
     );
@@ -1231,3 +1542,60 @@ void _showMessage(BuildContext context, String message) {
     ..removeCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message)));
 }
+
+@Preview(name: 'Rodapé da navegação · expandido · light', size: Size(260, 180))
+Widget superadminExpandedFooterLightPreview() {
+  return _shellFooterPreview(collapsed: false, themeMode: ThemeMode.light);
+}
+
+@Preview(name: 'Rodapé da navegação · expandido · dark', size: Size(260, 180))
+Widget superadminExpandedFooterDarkPreview() {
+  return _shellFooterPreview(collapsed: false, themeMode: ThemeMode.dark);
+}
+
+@Preview(name: 'Rodapé da navegação · recolhido', size: Size(88, 220))
+Widget superadminCollapsedFooterPreview() {
+  return _shellFooterPreview(collapsed: true, themeMode: ThemeMode.light);
+}
+
+Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMode}) {
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: CoeloTheme.light,
+    darkTheme: CoeloTheme.dark,
+    themeMode: themeMode,
+    home: SuperadminThemeModeScope(
+      mode: themeMode,
+      onChanged: _ignoreThemeMode,
+      child: Scaffold(
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            width: collapsed ? _collapsedSidebarWidth : _expandedSidebarWidth,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(CoeloSpacing.space2),
+                  child: _OnboardingTourButton(collapsed: collapsed),
+                ),
+                const _InsetDivider(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space3,
+                  ),
+                  child: _ThemeModeControl(collapsed: collapsed),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void _ignoreThemeMode(ThemeMode mode) {}
