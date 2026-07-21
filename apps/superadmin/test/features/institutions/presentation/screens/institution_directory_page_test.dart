@@ -213,26 +213,25 @@ void main() {
     await tester.tap(find.text('Ativa'));
     await tester.pumpAndSettle();
 
-    final option = tester.widget<MenuItemButton>(
+    final row = tester.widget<MenuItemButton>(
       find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
     );
-    final colors = CoeloTheme.light.colorScheme;
-    expect(option.style?.backgroundColor?.resolve({}), Colors.transparent);
-    expect(option.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
-    expect(option.style?.foregroundColor?.resolve({}), colors.primary);
-    expect(option.style?.iconColor?.resolve({}), colors.primary);
-    expect(option.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
-    expect(
-      tester
-          .widget<Checkbox>(
-            find.descendant(
-              of: find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
-              matching: find.byType(Checkbox),
-            ),
-          )
-          .value,
-      isTrue,
+    final checkbox = tester.widget<Checkbox>(
+      find.descendant(
+        of: find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
+        matching: find.byType(Checkbox),
+      ),
     );
+    final colors = CoeloTheme.light.colorScheme;
+    expect(row.style?.backgroundColor?.resolve({}), Colors.transparent);
+    expect(row.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
+    expect(row.style?.foregroundColor?.resolve({}), colors.primary);
+    expect(row.style?.iconColor?.resolve({}), colors.primary);
+    expect(row.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(checkbox.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(checkbox.splashRadius, 0);
+    expect(checkbox.materialTapTargetSize, MaterialTapTargetSize.shrinkWrap);
+    expect(checkbox.value, isTrue);
   });
 
   testWidgets('uses rounded anchored menus below their filter trigger', (tester) async {

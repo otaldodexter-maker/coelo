@@ -493,19 +493,21 @@ class _DirectoryFilterMenuState<T> extends State<_DirectoryFilterMenu<T>> {
                         children: visibleItems
                             .map((item) {
                               final selected = _draftValues.contains(item.value);
-                              return MenuItemButton(
-                                closeOnActivate: false,
-                                onPressed: widget.onApply == null
-                                    ? null
-                                    : () => _toggle(item.value),
-                                style: _filterMenuItemStyle(colors, selected: selected),
-                                leadingIcon: Checkbox(
-                                  value: selected,
-                                  onChanged: widget.onApply == null
+                              return Semantics(
+                                checked: selected,
+                                enabled: widget.onApply != null,
+                                child: MenuItemButton(
+                                  closeOnActivate: false,
+                                  onPressed: widget.onApply == null
                                       ? null
-                                      : (_) => _toggle(item.value),
+                                      : () => _toggle(item.value),
+                                  style: _filterMenuItemStyle(colors, selected: selected),
+                                  leadingIcon: _FilterSelectionIndicator(
+                                    selected: selected,
+                                    enabled: widget.onApply != null,
+                                  ),
+                                  child: Text(item.label),
                                 ),
-                                child: Text(item.label),
                               );
                             })
                             .toList(growable: false),
@@ -618,6 +620,28 @@ String _normalizeFilterSearch(String value) {
     normalized = normalized.replaceAll(replacement.key, replacement.value);
   }
   return normalized;
+}
+
+class _FilterSelectionIndicator extends StatelessWidget {
+  const _FilterSelectionIndicator({required this.selected, required this.enabled});
+
+  final bool selected;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: IgnorePointer(
+        child: Checkbox(
+          value: selected,
+          onChanged: enabled ? (_) {} : null,
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          splashRadius: 0,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+    );
+  }
 }
 
 ButtonStyle _filterMenuItemStyle(ColorScheme colors, {required bool selected}) {
