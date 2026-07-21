@@ -5,14 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('shows separate import and export actions on desktop', (tester) async {
+  testWidgets('shows one Arquivos menu with import and export options on desktop', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
     await tester.pumpWidget(_app(controller));
 
-    expect(find.text('Exportar'), findsOneWidget);
+    expect(find.byKey(const Key('institution-files-action')), findsOneWidget);
+    expect(find.text('Arquivos'), findsOneWidget);
+    expect(find.byKey(const Key('institution-import-action')), findsNothing);
+    expect(find.byKey(const Key('institution-export-action')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Importar'), findsOneWidget);
-    expect(find.byKey(const Key('institution-file-actions-menu')), findsNothing);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
   });
 
   testWidgets('condenses file actions into one compact menu below 768', (tester) async {
@@ -20,7 +28,7 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(_app(controller, compact: true));
 
-    expect(find.byKey(const Key('institution-file-actions-menu')), findsOneWidget);
+    expect(find.byKey(const Key('institution-files-action')), findsOneWidget);
     expect(find.text('Exportar'), findsNothing);
     expect(find.text('Importar'), findsNothing);
   });
@@ -29,7 +37,9 @@ void main() {
     final controller = SuperadminActivityController(tickInterval: const Duration(seconds: 30));
     await tester.pumpWidget(_app(controller));
 
-    await tester.tap(find.byKey(const Key('institution-import-action')));
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-import')));
     await tester.pumpAndSettle();
     expect(find.text('Importar instituições'), findsOneWidget);
     expect(find.text('Selecionar arquivo de demonstração'), findsOneWidget);
@@ -57,9 +67,9 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(_app(controller));
 
-    await tester.tap(find.byKey(const Key('institution-export-action')));
+    await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('CSV'));
+    await tester.tap(find.byKey(const Key('institution-files-export-csv')));
     await tester.pumpAndSettle();
 
     expect(controller.activities.single.fileName, 'instituicoes.csv');

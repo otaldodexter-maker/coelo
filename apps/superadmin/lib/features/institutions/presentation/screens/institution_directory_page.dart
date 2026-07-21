@@ -62,15 +62,12 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     return SuperadminShell(
       logout: widget.logout,
       activityController: _activityController,
-      actions: [InstitutionFileActions(activityController: _activityController)],
-      compactActions: [
-        InstitutionFileActions(activityController: _activityController, compact: true),
-      ],
       child: AnimatedBuilder(
         animation: _viewModel,
         builder: (context, child) {
           return _InstitutionDirectoryContent(
             viewModel: _viewModel,
+            activityController: _activityController,
             searchController: _searchController,
             display: _display,
             onDisplayChanged: (display) => setState(() => _display = display),
@@ -90,6 +87,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
 class _InstitutionDirectoryContent extends StatelessWidget {
   const _InstitutionDirectoryContent({
     required this.viewModel,
+    required this.activityController,
     required this.searchController,
     required this.display,
     required this.onDisplayChanged,
@@ -98,6 +96,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
   });
 
   final InstitutionDirectoryViewModel viewModel;
+  final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final _DirectoryDisplay display;
   final ValueChanged<_DirectoryDisplay> onDisplayChanged;
@@ -119,6 +118,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
           children: [
             _DirectoryToolbar(
               viewModel: viewModel,
+              activityController: activityController,
               searchController: searchController,
               display: display,
               onDisplayChanged: onDisplayChanged,
@@ -146,6 +146,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
 class _DirectoryToolbar extends StatelessWidget {
   const _DirectoryToolbar({
     required this.viewModel,
+    required this.activityController,
     required this.searchController,
     required this.display,
     required this.onDisplayChanged,
@@ -153,6 +154,7 @@ class _DirectoryToolbar extends StatelessWidget {
   });
 
   final InstitutionDirectoryViewModel viewModel;
+  final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final _DirectoryDisplay display;
   final ValueChanged<_DirectoryDisplay> onDisplayChanged;
@@ -283,6 +285,7 @@ class _DirectoryToolbar extends StatelessWidget {
               showSelectedIcon: false,
               onSelectionChanged: (selection) => onDisplayChanged(selection.single),
             ),
+            InstitutionFileActions(activityController: activityController, compact: compact),
             if (viewModel.query.hasActiveFilters)
               TextButton.icon(
                 onPressed: onClearFilters,

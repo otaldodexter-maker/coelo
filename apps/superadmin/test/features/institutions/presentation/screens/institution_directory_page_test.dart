@@ -1,4 +1,5 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
@@ -497,14 +498,25 @@ void main() {
     await gesture.removePointer();
   });
 
-  testWidgets('condenses file actions on compact layouts', (tester) async {
+  testWidgets('places the files action in the toolbar on compact layouts', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('institution-file-actions-menu')), findsOneWidget);
+    final filesAction = find.byKey(const Key('institution-files-action'));
+    expect(filesAction, findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('institution-filter-toolbar')),
+        matching: filesAction,
+      ),
+      findsOneWidget,
+    );
+    final shell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
+    expect(shell.actions, isEmpty);
+    expect(shell.compactActions, isEmpty);
     expect(find.byKey(const Key('institution-import-action')), findsNothing);
     expect(find.byKey(const Key('institution-export-action')), findsNothing);
   });
@@ -517,7 +529,9 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('institution-import-action')));
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-import')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-demo-file-picker')));
     await tester.pumpAndSettle();

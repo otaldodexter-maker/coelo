@@ -12,92 +12,49 @@ class InstitutionFileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (compact) {
-      return _CompactFileActions(activityController: activityController);
-    }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _ExportAction(activityController: activityController),
-        const SizedBox(width: CoeloSpacing.space2),
-        FilledButton.icon(
-          key: const Key('institution-import-action'),
-          onPressed: () => _showImportDialog(context, activityController),
-          icon: const Icon(Icons.upload_file_outlined),
-          label: const Text('Importar'),
-        ),
-      ],
-    );
-  }
-}
-
-class _ExportAction extends StatelessWidget {
-  const _ExportAction({required this.activityController});
-
-  final SuperadminActivityController activityController;
-
-  @override
-  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return MenuAnchor(
-      alignmentOffset: const Offset(0, CoeloSpacing.space2),
+      alignmentOffset: Offset(compact ? -152 : 0, CoeloSpacing.space2),
       style: _fileMenuStyle(context),
       menuChildren: [
         MenuItemButton(
-          onPressed: () => activityController.completeDemoExport(SuperadminExportFormat.csv),
-          leadingIcon: const Icon(Icons.table_rows_outlined),
-          child: const Text('CSV'),
-        ),
-        MenuItemButton(
-          onPressed: () => activityController.completeDemoExport(SuperadminExportFormat.xlsx),
-          leadingIcon: const Icon(Icons.grid_on_outlined),
-          child: const Text('XLSX'),
-        ),
-      ],
-      builder: (context, controller, child) {
-        return OutlinedButton.icon(
-          key: const Key('institution-export-action'),
-          onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-          icon: const Icon(Icons.download_outlined),
-          label: const Text('Exportar'),
-        );
-      },
-    );
-  }
-}
-
-class _CompactFileActions extends StatelessWidget {
-  const _CompactFileActions({required this.activityController});
-
-  final SuperadminActivityController activityController;
-
-  @override
-  Widget build(BuildContext context) {
-    return MenuAnchor(
-      alignmentOffset: const Offset(-152, CoeloSpacing.space2),
-      style: _fileMenuStyle(context),
-      menuChildren: [
-        MenuItemButton(
+          key: const Key('institution-files-import'),
+          style: _fileMenuItemStyle(colors),
           onPressed: () => _showImportDialog(context, activityController),
           leadingIcon: const Icon(Icons.upload_file_outlined),
-          child: const Text('Importar instituições'),
+          child: const Text('Importar'),
         ),
         MenuItemButton(
+          key: const Key('institution-files-export-csv'),
+          style: _fileMenuItemStyle(colors),
           onPressed: () => activityController.completeDemoExport(SuperadminExportFormat.csv),
           leadingIcon: const Icon(Icons.table_rows_outlined),
           child: const Text('Exportar CSV'),
         ),
         MenuItemButton(
+          key: const Key('institution-files-export-xlsx'),
+          style: _fileMenuItemStyle(colors),
           onPressed: () => activityController.completeDemoExport(SuperadminExportFormat.xlsx),
           leadingIcon: const Icon(Icons.grid_on_outlined),
           child: const Text('Exportar XLSX'),
         ),
       ],
       builder: (context, controller, child) {
-        return IconButton(
-          key: const Key('institution-file-actions-menu'),
-          tooltip: 'Importar ou exportar instituições',
-          onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-          icon: const Icon(Icons.more_vert_rounded),
+        final onPressed = () => controller.isOpen ? controller.close() : controller.open();
+        if (compact) {
+          return IconButton(
+            key: const Key('institution-files-action'),
+            tooltip: 'Arquivos',
+            style: IconButton.styleFrom(minimumSize: const Size.square(CoeloSize.touchMin)),
+            onPressed: onPressed,
+            icon: const Icon(Icons.folder_open_outlined),
+          );
+        }
+        return OutlinedButton.icon(
+          key: const Key('institution-files-action'),
+          onPressed: onPressed,
+          icon: const Icon(Icons.folder_open_outlined),
+          label: const Text('Arquivos'),
         );
       },
     );
@@ -116,6 +73,29 @@ MenuStyle _fileMenuStyle(BuildContext context) {
         side: BorderSide(color: colors.outlineVariant),
       ),
     ),
+  );
+}
+
+ButtonStyle _fileMenuItemStyle(ColorScheme colors) {
+  return MenuItemButton.styleFrom(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+  ).copyWith(
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primary : colors.onSurfaceVariant;
+    }),
+    iconColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primary : colors.onSurfaceVariant;
+    }),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return highlighted ? colors.primaryContainer : Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
   );
 }
 
