@@ -20,6 +20,12 @@ class SuperadminActivityCenter extends StatefulWidget {
 class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
   final MenuController _menuController = MenuController();
   final FocusNode _triggerFocusNode = FocusNode(debugLabel: 'superadmin-notifications');
+  var _restoreFocusOnClose = false;
+
+  void _closeAndRestoreFocus() {
+    _restoreFocusOnClose = true;
+    _menuController.close();
+  }
 
   @override
   void dispose() {
@@ -41,12 +47,16 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
         final unreadCount = widget.controller.unreadCount;
         return MenuAnchor(
           controller: _menuController,
-          onOpen: () => widget.controller.setCenterOpen(true),
+          onOpen: () {
+            _restoreFocusOnClose = false;
+            widget.controller.setCenterOpen(true);
+          },
           onClose: () {
             widget.controller.setCenterOpen(false);
-            if (mounted) {
+            if (_restoreFocusOnClose && mounted) {
               _triggerFocusNode.requestFocus();
             }
+            _restoreFocusOnClose = false;
           },
           alignmentOffset: Offset(CoeloSize.touchMin - panelWidth, CoeloSpacing.space2),
           style: _activityMenuStyle(context, panelWidth),
@@ -55,7 +65,10 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
               key: const Key('superadmin-activity-panel'),
               width: panelWidth,
               height: panelHeight,
-              child: _ActivityPanel(controller: widget.controller),
+              child: _ActivityPanel(
+                controller: widget.controller,
+                onCloseRequested: _closeAndRestoreFocus,
+              ),
             ),
           ],
           builder: (context, controller, child) {
@@ -70,7 +83,7 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
                 child: IconButton(
                   key: const Key('superadmin-notifications'),
                   focusNode: _triggerFocusNode,
-                  onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+                  onPressed: () => controller.isOpen ? _closeAndRestoreFocus() : controller.open(),
                   style: widget.buttonStyle,
                   icon: Badge(
                     key: const Key('superadmin-notification-badge'),
@@ -106,9 +119,10 @@ MenuStyle _activityMenuStyle(BuildContext context, double width) {
 }
 
 class _ActivityPanel extends StatefulWidget {
-  const _ActivityPanel({required this.controller});
+  const _ActivityPanel({required this.controller, required this.onCloseRequested});
 
   final SuperadminActivityController controller;
+  final VoidCallback onCloseRequested;
 
   @override
   State<_ActivityPanel> createState() => _ActivityPanelState();
@@ -130,7 +144,7 @@ class _ActivityPanelState extends State<_ActivityPanel> {
       autofocus: true,
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
-          MenuController.maybeOf(context)?.close();
+          widget.onCloseRequested();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -151,7 +165,7 @@ class _ActivityPanelState extends State<_ActivityPanel> {
                 IconButton(
                   key: const Key('superadmin-activity-close'),
                   tooltip: 'Fechar notificações',
-                  onPressed: () => MenuController.maybeOf(context)?.close(),
+                  onPressed: widget.onCloseRequested,
                   icon: const Icon(Icons.close_rounded),
                 ),
               ],
@@ -493,7 +507,7 @@ Widget _activityPanelPreview(SuperadminActivityController controller, ThemeData 
     data: theme,
     child: Material(
       color: theme.colorScheme.surface,
-      child: _ActivityPanel(controller: controller),
+      child: _ActivityPanel(controller: controller, onCloseRequested: () {}),
     ),
   );
 }

@@ -528,6 +528,27 @@ void main() {
     expect(find.text('Configurações será implementado em breve.'), findsOneWidget);
   });
 
+  testWidgets('does not reactivate notifications when Bug or OC closes the panel', (tester) async {
+    await tester.pumpWidget(_shellApp());
+
+    final notifications = find.byKey(const Key('superadmin-notifications'));
+    await tester.tap(notifications);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-report-bug')));
+    await tester.pumpAndSettle();
+
+    expect(Focus.of(tester.element(notifications)).hasFocus, isFalse);
+    expect(find.text('O reporte de bugs será implementado em breve.'), findsOneWidget);
+
+    await tester.tap(notifications);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+
+    expect(Focus.of(tester.element(notifications)).hasFocus, isFalse);
+    expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
+  });
+
   testWidgets('uses a full-width carrot theme control and preserves the compact toggle', (
     tester,
   ) async {

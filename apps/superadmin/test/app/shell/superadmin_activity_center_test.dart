@@ -212,6 +212,24 @@ void main() {
     expect(find.byKey(const Key('superadmin-activity-panel')), findsNothing);
     expect(Focus.of(tester.element(trigger)).hasFocus, isTrue);
   });
+
+  testWidgets('closes with the close button and returns focus to the notification trigger', (
+    tester,
+  ) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    final trigger = find.byKey(const Key('superadmin-notifications'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('superadmin-activity-close')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-activity-panel')), findsNothing);
+    expect(Focus.of(tester.element(trigger)).hasFocus, isTrue);
+  });
 }
 
 List<SuperadminActivity> _fourActivities() => [
