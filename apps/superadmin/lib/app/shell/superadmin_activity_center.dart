@@ -196,7 +196,10 @@ class _ActivityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final canDownload = activity.kind != SuperadminActivityKind.announcement;
+    final canDownload =
+        activity.fileName != null &&
+        (activity.kind == SuperadminActivityKind.import ||
+            activity.kind == SuperadminActivityKind.export);
     return Material(
       key: Key('superadmin-activity-${activity.id}'),
       color: Colors.transparent,
@@ -370,9 +373,11 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
 }
 
 String _formatActivityTimestamp(DateTime value) {
+  final localValue = value.toLocal();
   String twoDigits(int part) => part.toString().padLeft(2, '0');
-  return '${twoDigits(value.day)}/${twoDigits(value.month)}/${value.year}'
-      ' · ${twoDigits(value.hour)}:${twoDigits(value.minute)}';
+  return '${twoDigits(localValue.day)}/${twoDigits(localValue.month)}/'
+      '${localValue.year.toString().padLeft(4, '0')}'
+      ' · ${twoDigits(localValue.hour)}:${twoDigits(localValue.minute)}';
 }
 
 String _activityKindLabel(SuperadminActivityKind kind) => switch (kind) {

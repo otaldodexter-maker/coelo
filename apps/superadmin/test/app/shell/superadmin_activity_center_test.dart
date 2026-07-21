@@ -57,6 +57,28 @@ void main() {
     expect(find.text('21/07/2026 · 14:35'), findsOneWidget);
   });
 
+  testWidgets('formats UTC timestamps in local time with a four-digit year', (tester) async {
+    final createdAt = DateTime.utc(26, 7, 21, 14, 35);
+    final controller = SuperadminActivityController.seeded([
+      SuperadminActivity(
+        id: 'utc-export',
+        kind: SuperadminActivityKind.export,
+        status: SuperadminActivityStatus.succeeded,
+        subject: 'Instituições',
+        summary: 'Arquivo preparado',
+        createdAt: createdAt,
+        fileName: 'instituicoes.xlsx',
+      ),
+    ]);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_expectedLocalTimestamp(createdAt)), findsOneWidget);
+  });
+
   testWidgets('makes a long activity list scrollable with inset dividers', (tester) async {
     final controller = SuperadminActivityController.seeded(_fourActivities());
     addTearDown(controller.dispose);
@@ -73,6 +95,20 @@ void main() {
     expect(scrollbar.thumbVisibility, isTrue);
   });
 
+  testWidgets('keeps the scrollbar thumb hidden for a short activity list', (tester) async {
+    final controller = SuperadminActivityController.seeded(_fourActivities().take(3));
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    final scrollbar = tester.widget<Scrollbar>(
+      find.byKey(const Key('superadmin-activity-scrollbar')),
+    );
+    expect(scrollbar.thumbVisibility, isFalse);
+  });
+
   testWidgets('highlights and prepares a demonstrative activity download', (tester) async {
     final controller = SuperadminActivityController.seeded(_fourActivities());
     addTearDown(controller.dispose);
@@ -85,11 +121,46 @@ void main() {
       find.descendant(of: exportTile, matching: find.byType(InkWell)),
     );
     expect(tileInk.hoverColor, CoeloTheme.light.colorScheme.primaryContainer);
+    expect(tileInk.focusColor, CoeloTheme.light.colorScheme.primaryContainer);
+
+    final announcementInk = tester.widget<InkWell>(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-activity-announcement-1')),
+        matching: find.byType(InkWell),
+      ),
+    );
+    expect(announcementInk.onTap, isNull);
 
     await tester.tap(exportTile);
     await tester.pump();
 
     expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsOneWidget);
+  });
+
+  testWidgets('keeps a file activity without a filename inert', (tester) async {
+    final controller = SuperadminActivityController.seeded([
+      SuperadminActivity(
+        id: 'export-without-file',
+        kind: SuperadminActivityKind.export,
+        status: SuperadminActivityStatus.failed,
+        subject: 'Instituições',
+        summary: 'Nenhum arquivo foi gerado',
+        createdAt: DateTime(2026, 7, 21, 14, 35),
+      ),
+    ]);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    final tileInk = tester.widget<InkWell>(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-activity-export-without-file')),
+        matching: find.byType(InkWell),
+      ),
+    );
+
+    expect(tileInk.onTap, isNull);
   });
 
   testWidgets('expands an activity status with mouse and touch', (tester) async {
@@ -177,6 +248,14 @@ List<SuperadminActivity> _fourActivities() => [
     createdAt: DateTime(2026, 7, 21, 13),
   ),
 ];
+
+String _expectedLocalTimestamp(DateTime value) {
+  final localValue = value.toLocal();
+  String twoDigits(int part) => part.toString().padLeft(2, '0');
+  return '${twoDigits(localValue.day)}/${twoDigits(localValue.month)}/'
+      '${localValue.year.toString().padLeft(4, '0')}'
+      ' · ${twoDigits(localValue.hour)}:${twoDigits(localValue.minute)}';
+}
 
 Widget _app(SuperadminActivityController controller, {Size size = const Size(800, 600)}) {
   return MaterialApp(
