@@ -33,4 +33,16 @@ void main() {
       ThemeMode.system,
     );
   });
+
+  testWidgets('disables the global theme transition when reduced motion is requested', (
+    tester,
+  ) async {
+    tester.binding.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.binding.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await tester.pumpWidget(const SuperadminApp());
+
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.themeAnimationStyle, same(AnimationStyle.noAnimation));
+  });
 }

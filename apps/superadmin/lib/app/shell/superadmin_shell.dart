@@ -1126,9 +1126,8 @@ class _ThemeModeControl extends StatelessWidget {
                     useCompactLayout ? CoeloRadius.full : CoeloRadius.lg,
                   ),
                   overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-                  child: AnimatedContainer(
-                    duration: duration,
-                    curve: _coeloMotionCurve,
+                  child: Container(
+                    key: const Key('superadmin-theme-mode-surface'),
                     padding: EdgeInsets.symmetric(
                       horizontal: useCompactLayout ? CoeloSpacing.space1 : CoeloSpacing.space3,
                       vertical: CoeloSpacing.space1,
@@ -1145,16 +1144,27 @@ class _ThemeModeControl extends StatelessWidget {
                         : Row(
                             children: [
                               Expanded(child: Text('Aparência', style: theme.textTheme.labelLarge)),
-                              Icon(
-                                isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-                                size: CoeloSize.iconSm,
-                                color: colors.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: CoeloSpacing.space1),
-                              Text(
-                                isDark ? 'Escuro' : 'Claro',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colors.onSurfaceVariant,
+                              AnimatedSwitcher(
+                                duration: duration,
+                                switchInCurve: _coeloMotionCurve,
+                                switchOutCurve: _coeloMotionCurve,
+                                child: Row(
+                                  key: ValueKey(isDark),
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                                      size: CoeloSize.iconSm,
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: CoeloSpacing.space1),
+                                    Text(
+                                      isDark ? 'Escuro' : 'Claro',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: colors.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(width: CoeloSpacing.space2),

@@ -593,6 +593,85 @@ void main() {
     );
   });
 
+  testWidgets('interpolates theme colors without changing geometry', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeShellHarness());
+
+    final control = find.byKey(const Key('superadmin-theme-mode-control'));
+    final lightColor = _themeControlDecoration(tester).color;
+    final lightSize = tester.getSize(control);
+    final lightRadius = _themeControlDecoration(tester).borderRadius;
+    final darkColor = CoeloTheme.dark.colorScheme.surfaceContainerHighest;
+
+    await tester.tap(control);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 110));
+
+    final middleDecoration = _themeControlDecoration(tester);
+    expect(middleDecoration.color, isNot(lightColor));
+    expect(middleDecoration.color, isNot(darkColor));
+    expect(tester.getSize(control), lightSize);
+    expect(middleDecoration.borderRadius, lightRadius);
+
+    await tester.pump(const Duration(milliseconds: 110));
+    final darkDecoration = _themeControlDecoration(tester);
+    expect(darkDecoration.color, darkColor);
+    expect(tester.getSize(control), lightSize);
+    expect(darkDecoration.borderRadius, lightRadius);
+  });
+
+  testWidgets('keeps the theme marker and content on the global transition timing', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeShellHarness());
+
+    final control = find.byKey(const Key('superadmin-theme-mode-control'));
+    expect(find.descendant(of: control, matching: find.byType(AnimatedContainer)), findsNothing);
+
+    final marker = tester.widget<AnimatedAlign>(
+      find.descendant(of: control, matching: find.byType(AnimatedAlign)),
+    );
+    expect(marker.duration, CoeloMotion.standard);
+    expect(marker.curve, const Cubic(0.2, 0, 0, 1));
+
+    final content = tester.widget<AnimatedSwitcher>(
+      find.descendant(of: control, matching: find.byType(AnimatedSwitcher)),
+    );
+    expect(content.duration, CoeloMotion.standard);
+    expect(content.switchInCurve, const Cubic(0.2, 0, 0, 1));
+    expect(content.switchOutCurve, const Cubic(0.2, 0, 0, 1));
+  });
+
+  testWidgets('switches theme instantly without changing geometry under reduced motion', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeShellHarness(disableAnimations: true));
+
+    final control = find.byKey(const Key('superadmin-theme-mode-control'));
+    final lightSize = tester.getSize(control);
+    final lightRadius = _themeControlDecoration(tester).borderRadius;
+
+    await tester.tap(control);
+    await tester.pump();
+
+    final darkDecoration = _themeControlDecoration(tester);
+    expect(darkDecoration.color, CoeloTheme.dark.colorScheme.surfaceContainerHighest);
+    expect(tester.getSize(control), lightSize);
+    expect(darkDecoration.borderRadius, lightRadius);
+
+    final marker = tester.widget<AnimatedAlign>(
+      find.descendant(of: control, matching: find.byType(AnimatedAlign)),
+    );
+    final content = tester.widget<AnimatedSwitcher>(
+      find.descendant(of: control, matching: find.byType(AnimatedSwitcher)),
+    );
+    expect(marker.duration, Duration.zero);
+    expect(content.duration, Duration.zero);
+  });
+
   testWidgets('opens the three demonstration tour options', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -684,7 +763,9 @@ void main() {
 }
 
 class _ThemeShellHarness extends StatefulWidget {
-  const _ThemeShellHarness();
+  const _ThemeShellHarness({this.disableAnimations = false});
+
+  final bool disableAnimations;
 
   @override
   State<_ThemeShellHarness> createState() => _ThemeShellHarnessState();
@@ -699,10 +780,16 @@ class _ThemeShellHarnessState extends State<_ThemeShellHarness> {
       theme: CoeloTheme.light,
       darkTheme: CoeloTheme.dark,
       themeMode: _mode,
+      themeAnimationStyle: widget.disableAnimations
+          ? AnimationStyle.noAnimation
+          : const AnimationStyle(duration: CoeloMotion.standard, curve: Cubic(0.2, 0, 0, 1)),
       builder: (context, child) => SuperadminThemeModeScope(
         mode: _mode,
         onChanged: (mode) => setState(() => _mode = mode),
-        child: child!,
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: widget.disableAnimations),
+          child: child!,
+        ),
       ),
       home: SuperadminShell(
         logout: () async => const LogoutResult.success(),
@@ -732,4 +819,11 @@ Widget _shellApp({
       ),
     ),
   );
+}
+
+BoxDecoration _themeControlDecoration(WidgetTester tester) {
+  return tester
+          .widget<Container>(find.byKey(const Key('superadmin-theme-mode-surface')))
+          .decoration!
+      as BoxDecoration;
 }
