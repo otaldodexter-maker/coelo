@@ -530,9 +530,8 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
         : _highlighted
         ? colors.primary
         : colors.onSurfaceVariant;
-    final content = AnimatedContainer(
+    final content = Container(
       key: Key('superadmin-navigation-section-${widget.section.id}'),
-      duration: CoeloMotion.short,
       padding: const EdgeInsets.symmetric(
         horizontal: CoeloSpacing.space3,
         vertical: CoeloSpacing.space3,
@@ -885,9 +884,9 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
                             key: const Key('superadmin-onboarding-egg'),
                             painter: _FlatEggPainter(
                               baseColor: colors.primaryContainer,
-                              firstStripeColor: colors.tertiaryContainer,
-                              secondStripeColor: colors.secondaryContainer,
-                              dotColor: colors.primary,
+                              firstStripeColor: colors.tertiary,
+                              secondStripeColor: colors.primary,
+                              dotColor: colors.onPrimaryContainer,
                             ),
                           ),
                         ),
@@ -1498,38 +1497,40 @@ class _NavigationItemState extends State<_NavigationItem> {
         : _highlighted
         ? colors.primary
         : colors.onSurfaceVariant;
-    final content = AnimatedContainer(
+    final content = Container(
       key: Key('superadmin-navigation-${widget.id}'),
-      duration: CoeloMotion.short,
-      curve: Curves.easeOut,
       margin: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
-      padding: EdgeInsets.symmetric(
-        horizontal: widget.collapsed ? CoeloSpacing.space2 : CoeloSpacing.space3,
-        vertical: CoeloSpacing.space3,
-      ),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(CoeloRadius.md),
       ),
-      child: Row(
-        mainAxisAlignment: widget.collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
-        children: [
-          Icon(widget.icon, color: foreground, size: CoeloSize.iconMd),
-          if (!widget.collapsed) ...[
-            const SizedBox(width: CoeloSpacing.space3),
-            Expanded(
-              child: Text(
-                widget.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: foreground,
-                  fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
+      child: AnimatedPadding(
+        duration: CoeloMotion.short,
+        curve: Curves.easeOut,
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.collapsed ? CoeloSpacing.space2 : CoeloSpacing.space3,
+          vertical: CoeloSpacing.space3,
+        ),
+        child: Row(
+          mainAxisAlignment: widget.collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+          children: [
+            Icon(widget.icon, color: foreground, size: CoeloSize.iconMd),
+            if (!widget.collapsed) ...[
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: foreground,
+                    fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
     return MouseRegion(

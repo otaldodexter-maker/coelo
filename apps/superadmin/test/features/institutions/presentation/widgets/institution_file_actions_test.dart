@@ -184,6 +184,50 @@ void main() {
     expect(dialog.backgroundColor, CoeloTheme.dark.colorScheme.surface);
   });
 
+  testWidgets('fits selection and review at 375 with scaled text in light and dark', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+      final controller = SuperadminActivityController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(
+        _app(
+          controller,
+          theme: theme,
+          size: const Size(375, 800),
+          textScaler: const TextScaler.linear(1.5),
+        ),
+      );
+
+      await tester.tap(find.byKey(const Key('institution-files-action')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('institution-files-import')));
+      await tester.pumpAndSettle();
+
+      final dialogBarrier = find.byWidgetPredicate(
+        (widget) => widget is ModalBarrier && widget.color == Colors.black.withValues(alpha: 0.54),
+      );
+      expect(dialogBarrier, findsOneWidget);
+      final barrier = tester.widget<ModalBarrier>(dialogBarrier);
+      expect(barrier.dismissible, isTrue);
+      expect(tester.widget<Dialog>(find.byType(Dialog)).backgroundColor, theme.colorScheme.surface);
+      expect(tester.takeException(), isNull, reason: 'select / ${theme.brightness}');
+
+      await tester.tap(find.byKey(const Key('institution-demo-file-picker')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('institution-import-review')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('24 linhas válidas'), findsOneWidget);
+      expect(find.text('Importar 26 linhas'), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'review / ${theme.brightness}');
+    }
+  });
+
   testWidgets('creates a completed CSV export activity', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
@@ -199,11 +243,17 @@ void main() {
   });
 }
 
-Widget _app(SuperadminActivityController controller, {bool compact = false, ThemeData? theme}) {
+Widget _app(
+  SuperadminActivityController controller, {
+  bool compact = false,
+  ThemeData? theme,
+  Size size = const Size(1024, 800),
+  TextScaler textScaler = TextScaler.noScaling,
+}) {
   return MaterialApp(
     theme: theme ?? CoeloTheme.light,
     home: MediaQuery(
-      data: const MediaQueryData(size: Size(1024, 800)),
+      data: MediaQueryData(size: size, textScaler: textScaler),
       child: Scaffold(
         body: Align(
           alignment: Alignment.topRight,

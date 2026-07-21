@@ -21,6 +21,7 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
   final MenuController _menuController = MenuController();
   final FocusNode _triggerFocusNode = FocusNode(debugLabel: 'superadmin-notifications');
   var _restoreFocusOnClose = false;
+  var _isOpen = false;
 
   void _closeAndRestoreFocus() {
     _restoreFocusOnClose = true;
@@ -28,7 +29,19 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
   }
 
   @override
+  void didUpdateWidget(covariant SuperadminActivityCenter oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_isOpen && oldWidget.controller != widget.controller) {
+      oldWidget.controller.setCenterOpen(false);
+      widget.controller.setCenterOpen(true);
+    }
+  }
+
+  @override
   void dispose() {
+    if (_isOpen) {
+      widget.controller.setCenterOpen(false);
+    }
     _triggerFocusNode.dispose();
     super.dispose();
   }
@@ -41,17 +54,21 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
         final viewport = MediaQuery.sizeOf(context);
         final availableWidth = math.max(0.0, viewport.width - CoeloSpacing.space8);
         final panelWidth = math.min(400.0, availableWidth);
-        final panelHeight = widget.controller.activities.isEmpty
+        final desiredPanelHeight = widget.controller.activities.isEmpty
             ? 176.0
-            : math.min(520.0, 84 + widget.controller.activities.length * 132.0);
+            : math.min(520.0, 84 + widget.controller.activities.length * 176.0);
+        final maxPanelHeight = math.max(0.0, math.min(520.0, viewport.height - 32));
+        final panelHeight = math.min(desiredPanelHeight, maxPanelHeight);
         final unreadCount = widget.controller.unreadCount;
         return MenuAnchor(
           controller: _menuController,
           onOpen: () {
+            _isOpen = true;
             _restoreFocusOnClose = false;
             widget.controller.setCenterOpen(true);
           },
           onClose: () {
+            _isOpen = false;
             widget.controller.setCenterOpen(false);
             if (_restoreFocusOnClose && mounted) {
               _triggerFocusNode.requestFocus();
@@ -73,13 +90,18 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
           ],
           builder: (context, controller, child) {
             final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
+            final notificationLabel = controller.isOpen
+                ? 'Fechar notificações'
+                : unreadCount == 0
+                ? 'Abrir notificações'
+                : 'Abrir notificações, $badgeLabel não lidas';
             return Tooltip(
-              message: 'Notificações',
+              message: notificationLabel,
+              excludeFromSemantics: true,
               child: Semantics(
                 button: true,
-                label: unreadCount == 0
-                    ? 'Abrir notificações'
-                    : 'Abrir notificações, $badgeLabel não lidas',
+                excludeSemantics: true,
+                label: notificationLabel,
                 child: IconButton(
                   key: const Key('superadmin-notifications'),
                   focusNode: _triggerFocusNode,
@@ -130,6 +152,28 @@ class _ActivityPanel extends StatefulWidget {
 
 class _ActivityPanelState extends State<_ActivityPanel> {
   final ScrollController _scrollController = ScrollController();
+  var _thumbVisible = false;
+  var _thumbUpdateScheduled = false;
+
+  void _scheduleThumbVisibilityUpdate() {
+    if (_thumbUpdateScheduled) {
+      return;
+    }
+    _thumbUpdateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _thumbUpdateScheduled = false;
+      if (!mounted) {
+        return;
+      }
+      final thumbVisible =
+          widget.controller.activities.isNotEmpty &&
+          _scrollController.hasClients &&
+          _scrollController.position.maxScrollExtent > 0;
+      if (thumbVisible != _thumbVisible) {
+        setState(() => _thumbVisible = thumbVisible);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -139,6 +183,7 @@ class _ActivityPanelState extends State<_ActivityPanel> {
 
   @override
   Widget build(BuildContext context) {
+    _scheduleThumbVisibilityUpdate();
     final theme = Theme.of(context);
     return Focus(
       autofocus: true,
@@ -179,7 +224,7 @@ class _ActivityPanelState extends State<_ActivityPanel> {
               child: Scrollbar(
                 key: const Key('superadmin-activity-scrollbar'),
                 controller: _scrollController,
-                thumbVisibility: widget.controller.activities.length > 3,
+                thumbVisibility: _thumbVisible,
                 child: ListView.separated(
                   controller: _scrollController,
                   primary: false,
@@ -334,14 +379,26 @@ class SuperadminActivityStatusIndicator extends StatefulWidget {
 }
 
 class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivityStatusIndicator> {
+  final FocusNode _focusNode = FocusNode(debugLabel: 'superadmin-activity-status');
   var _hovered = false;
   var _focused = false;
   var _tapped = false;
 
+  void _toggleExpanded() {
+    _focusNode.requestFocus();
+    setState(() => _tapped = !_tapped);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final expanded = _hovered || _focused || _tapped;
+    final expanded = _hovered || _tapped;
     final (background, foreground) = _activityStatusColors(context, widget.status);
     final label = _activityStatusLabel(widget.status);
     return ConstrainedBox(
@@ -353,29 +410,50 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
         onEnter: (_) => setState(() => _hovered = true),
         onExit: (_) => setState(() => _hovered = false),
         child: FocusableActionDetector(
+          focusNode: _focusNode,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (intent) {
+                _toggleExpanded();
+                return null;
+              },
+            ),
+          },
           onShowFocusHighlight: (focused) => setState(() => _focused = focused),
           child: Semantics(
             label: 'Status: $label',
             button: true,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => setState(() => _tapped = !_tapped),
+              onTap: _toggleExpanded,
               child: Center(
-                child: AnimatedContainer(
-                  duration: CoeloMotion.short,
-                  curve: Curves.easeOut,
+                child: Container(
                   constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: expanded ? CoeloSpacing.space2 : CoeloSpacing.space1,
-                    vertical: CoeloSpacing.space1,
-                  ),
                   decoration: BoxDecoration(
                     color: expanded ? background : foreground,
                     borderRadius: BorderRadius.circular(CoeloRadius.full),
+                    border: _focused
+                        ? Border.all(color: expanded ? foreground : background, width: 2)
+                        : null,
                   ),
-                  child: expanded
-                      ? Text(label, style: theme.textTheme.labelSmall?.copyWith(color: foreground))
-                      : const SizedBox.square(dimension: CoeloSpacing.space2),
+                  child: AnimatedPadding(
+                    duration: CoeloMotion.short,
+                    curve: Curves.easeOut,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: expanded ? CoeloSpacing.space2 : CoeloSpacing.space1,
+                      vertical: CoeloSpacing.space1,
+                    ),
+                    child: expanded
+                        ? Text(
+                            label,
+                            style: theme.textTheme.labelSmall?.copyWith(color: foreground),
+                          )
+                        : const SizedBox.square(dimension: CoeloSpacing.space2),
+                  ),
                 ),
               ),
             ),

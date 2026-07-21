@@ -2,8 +2,8 @@ import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('simulates an import through the approved progress steps', () async {
-    final controller = SuperadminActivityController(tickInterval: const Duration(milliseconds: 1));
+  testWidgets('simulates an import through the approved progress steps', (tester) async {
+    final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
 
     controller.startDemoImport();
@@ -13,7 +13,14 @@ void main() {
     expect(controller.activities.single.status, SuperadminActivityStatus.inProgress);
     expect(controller.unreadCount, 0);
 
-    await Future<void>.delayed(const Duration(milliseconds: 12));
+    for (final progress in [25, 55, 80, 100]) {
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(controller.activities.single.progress, progress);
+      expect(
+        controller.activities.single.status,
+        progress == 100 ? SuperadminActivityStatus.partial : SuperadminActivityStatus.inProgress,
+      );
+    }
 
     final activity = controller.activities.single;
     expect(activity.progress, 100);
@@ -22,14 +29,14 @@ void main() {
     expect(controller.unreadCount, 1);
   });
 
-  test('keeps completions read while the activity center is open', () async {
-    final controller = SuperadminActivityController(tickInterval: const Duration(milliseconds: 1));
+  testWidgets('keeps completions read while the activity center is open', (tester) async {
+    final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
 
     controller
       ..setCenterOpen(true)
       ..startDemoImport();
-    await Future<void>.delayed(const Duration(milliseconds: 12));
+    await tester.pump(const Duration(milliseconds: 2400));
 
     expect(controller.activities.single.isRead, isTrue);
     expect(controller.unreadCount, 0);

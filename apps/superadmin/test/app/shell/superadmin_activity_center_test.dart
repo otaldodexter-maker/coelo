@@ -98,6 +98,66 @@ void main() {
     expect(semanticsLabels, contains('Status: Concluída'));
   });
 
+  testWidgets('updates the notification action label without duplicate tooltip semantics', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    controller.completeDemoExport(SuperadminExportFormat.csv);
+    await tester.pumpWidget(_app(controller));
+
+    expect(find.bySemanticsLabel('Abrir notificações, 1 não lidas'), findsOneWidget);
+    expect(find.bySemanticsLabel('Notificações'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Fechar notificações'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('Abrir notificações')), findsNothing);
+    semantics.dispose();
+  });
+
+  testWidgets('closes the previous controller when an open center changes controller', (
+    tester,
+  ) async {
+    final first = SuperadminActivityController();
+    final second = SuperadminActivityController();
+    addTearDown(first.dispose);
+    addTearDown(second.dispose);
+    var controller = first;
+    late StateSetter rebuild;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            rebuild = setState;
+            return Scaffold(
+              body: Align(
+                alignment: Alignment.topRight,
+                child: SuperadminActivityCenter(controller: controller),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+    rebuild(() => controller = second);
+    await tester.pump();
+
+    first.completeDemoExport(SuperadminExportFormat.csv);
+    second.completeDemoExport(SuperadminExportFormat.xlsx);
+    await tester.pump();
+
+    expect(first.unreadCount, 1);
+    expect(second.unreadCount, 0);
+  });
+
   testWidgets('shows a deterministic timestamp under an activity', (tester) async {
     final now = DateTime(2026, 7, 21, 14, 35);
     final controller = SuperadminActivityController(now: () => now);
@@ -133,26 +193,39 @@ void main() {
     expect(find.text(_expectedLocalTimestamp(createdAt)), findsOneWidget);
   });
 
-  testWidgets('makes a long activity list scrollable with inset dividers', (tester) async {
-    final controller = SuperadminActivityController.seeded(_fourActivities());
-    addTearDown(controller.dispose);
-    await tester.pumpWidget(_app(controller));
-
-    await tester.tap(find.byKey(const Key('superadmin-notifications')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('superadmin-activity-scrollbar')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-activity-divider-0')), findsOneWidget);
-    final scrollbar = tester.widget<Scrollbar>(
-      find.byKey(const Key('superadmin-activity-scrollbar')),
-    );
-    expect(scrollbar.thumbVisibility, isTrue);
-  });
-
-  testWidgets('keeps the scrollbar thumb hidden for a short activity list', (tester) async {
+  testWidgets('shows the thumb when three scaled activities overflow a low viewport', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 320));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final controller = SuperadminActivityController.seeded(_fourActivities().take(3));
     addTearDown(controller.dispose);
-    await tester.pumpWidget(_app(controller));
+    await tester.pumpWidget(
+      _app(controller, size: const Size(375, 320), textScaler: const TextScaler.linear(1.5)),
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(find.byKey(const Key('superadmin-activity-panel'))).height, 288);
+    expect(find.byKey(const Key('superadmin-activity-scrollbar')), findsOneWidget);
+    final scrollbar = tester.widget<Scrollbar>(
+      find.byKey(const Key('superadmin-activity-scrollbar')),
+    );
+    expect(scrollbar.controller?.position.maxScrollExtent, greaterThan(0));
+    expect(scrollbar.thumbVisibility, isTrue);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -160));
+    await tester.pump();
+    expect(find.byKey(const Key('superadmin-activity-divider-0')), findsOneWidget);
+  });
+
+  testWidgets('keeps the thumb hidden when a short list fits a high viewport', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = SuperadminActivityController.seeded(_fourActivities().take(1));
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller, size: const Size(800, 900)));
 
     await tester.tap(find.byKey(const Key('superadmin-notifications')));
     await tester.pumpAndSettle();
@@ -160,7 +233,37 @@ void main() {
     final scrollbar = tester.widget<Scrollbar>(
       find.byKey(const Key('superadmin-activity-scrollbar')),
     );
+    expect(scrollbar.controller?.position.maxScrollExtent, 0);
     expect(scrollbar.thumbVisibility, isFalse);
+  });
+
+  testWidgets('updates the thumb from scroll metrics when open content grows', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = SuperadminActivityController.seeded(_fourActivities().take(1));
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller, size: const Size(800, 900)));
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<Scrollbar>(find.byKey(const Key('superadmin-activity-scrollbar')))
+          .thumbVisibility,
+      isFalse,
+    );
+
+    controller
+      ..completeDemoExport(SuperadminExportFormat.csv)
+      ..completeDemoExport(SuperadminExportFormat.xlsx)
+      ..completeDemoExport(SuperadminExportFormat.csv);
+    await tester.pumpAndSettle();
+
+    final scrollbar = tester.widget<Scrollbar>(
+      find.byKey(const Key('superadmin-activity-scrollbar')),
+    );
+    expect(scrollbar.controller?.position.maxScrollExtent, greaterThan(0));
+    expect(scrollbar.thumbVisibility, isTrue);
   });
 
   testWidgets('highlights and prepares a demonstrative activity download', (tester) async {
@@ -228,19 +331,13 @@ void main() {
     final status = find.byKey(const Key('superadmin-activity-status-demo-export-0'));
     expect(tester.getSize(status).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(tester.getSize(status).width, greaterThanOrEqualTo(CoeloSize.touchMin));
-    var animatedStatus = tester.widget<AnimatedContainer>(
-      find.descendant(of: status, matching: find.byType(AnimatedContainer)),
-    );
-    expect(animatedStatus.child, isA<SizedBox>());
+    expect(find.descendant(of: status, matching: find.byType(AnimatedContainer)), findsNothing);
+    expect(find.descendant(of: status, matching: find.text('Concluída')), findsNothing);
     final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await gesture.addPointer(location: Offset.zero);
     await gesture.moveTo(tester.getCenter(status));
     await tester.pumpAndSettle();
     expect(find.text('Concluída'), findsOneWidget);
-    animatedStatus = tester.widget<AnimatedContainer>(
-      find.descendant(of: status, matching: find.byType(AnimatedContainer)),
-    );
-    expect(animatedStatus.child, isA<Text>());
 
     await gesture.moveTo(Offset.zero);
     await tester.pumpAndSettle();
@@ -248,6 +345,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Concluída'), findsOneWidget);
     await gesture.removePointer();
+  });
+
+  testWidgets('toggles status with Enter and Space without starting the tile download', (
+    tester,
+  ) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    controller.completeDemoExport(SuperadminExportFormat.xlsx);
+    await tester.pumpWidget(_app(controller));
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    final status = find.byKey(const Key('superadmin-activity-status-demo-export-0'));
+    final detector = tester.widget<FocusableActionDetector>(
+      find.descendant(of: status, matching: find.byType(FocusableActionDetector)),
+    );
+    expect(detector.focusNode, isNotNull);
+    detector.focusNode!.requestFocus();
+    await tester.pump();
+    expect(detector.focusNode!.hasPrimaryFocus, isTrue);
+
+    final statusLabel = find.descendant(of: status, matching: find.text('Concluída'));
+    for (final key in [LogicalKeyboardKey.enter, LogicalKeyboardKey.space]) {
+      expect(statusLabel, findsNothing);
+      await tester.sendKeyEvent(key);
+      await tester.pumpAndSettle();
+      expect(statusLabel, findsOneWidget);
+      await tester.sendKeyEvent(key);
+      await tester.pumpAndSettle();
+      expect(statusLabel, findsNothing);
+    }
+
+    expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsNothing);
   });
 
   testWidgets('closes with Escape and returns focus to the notification trigger', (tester) async {
@@ -264,7 +394,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('superadmin-activity-panel')), findsNothing);
-    expect(Focus.of(tester.element(trigger)).hasFocus, isTrue);
+    expect(tester.widget<IconButton>(trigger).focusNode?.hasPrimaryFocus, isTrue);
   });
 
   testWidgets('closes with the close button and returns focus to the notification trigger', (
@@ -282,7 +412,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('superadmin-activity-panel')), findsNothing);
-    expect(Focus.of(tester.element(trigger)).hasFocus, isTrue);
+    expect(tester.widget<IconButton>(trigger).focusNode?.hasPrimaryFocus, isTrue);
   });
 }
 
@@ -329,11 +459,15 @@ String _expectedLocalTimestamp(DateTime value) {
       ' · ${twoDigits(localValue.hour)}:${twoDigits(localValue.minute)}';
 }
 
-Widget _app(SuperadminActivityController controller, {Size size = const Size(800, 600)}) {
+Widget _app(
+  SuperadminActivityController controller, {
+  Size size = const Size(800, 600),
+  TextScaler textScaler = TextScaler.noScaling,
+}) {
   return MaterialApp(
     theme: CoeloTheme.light,
     home: MediaQuery(
-      data: MediaQueryData(size: size),
+      data: MediaQueryData(size: size, textScaler: textScaler),
       child: Scaffold(
         body: Align(
           alignment: Alignment.topRight,

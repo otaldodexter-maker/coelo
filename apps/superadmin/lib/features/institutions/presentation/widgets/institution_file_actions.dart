@@ -215,14 +215,16 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                   style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                 ),
                 const SizedBox(height: CoeloSpacing.space5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                OverflowBar(
+                  alignment: MainAxisAlignment.end,
+                  spacing: CoeloSpacing.space2,
+                  overflowAlignment: OverflowBarAlignment.end,
+                  overflowSpacing: CoeloSpacing.space2,
                   children: [
                     TextButton(
                       onPressed: () => setState(() => _reviewing = false),
                       child: const Text('Voltar'),
                     ),
-                    const SizedBox(width: CoeloSpacing.space2),
                     FilledButton(
                       key: const Key('institution-import-confirm'),
                       onPressed: () {
@@ -255,7 +257,7 @@ class _ImportSummaryRow extends StatelessWidget {
       children: [
         Icon(icon, color: color),
         const SizedBox(width: CoeloSpacing.space2),
-        Text(label, style: Theme.of(context).textTheme.bodyLarge),
+        Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyLarge)),
       ],
     );
   }

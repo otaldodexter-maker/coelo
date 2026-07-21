@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_activity_center.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -95,14 +97,24 @@ void main() {
 
   testWidgets('matches the light and dark egg and carrot goldens', (tester) async {
     tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(260, 180);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
     for (final configuration in [
-      (name: 'light', preview: superadminExpandedFooterLightPreview),
-      (name: 'dark', preview: superadminExpandedFooterDarkPreview),
+      (name: 'light', preview: superadminExpandedFooterLightPreview, size: const Size(260, 180)),
+      (name: 'dark', preview: superadminExpandedFooterDarkPreview, size: const Size(260, 180)),
+      (
+        name: 'collapsed_light',
+        preview: superadminCollapsedFooterLightPreview,
+        size: const Size(88, 220),
+      ),
+      (
+        name: 'collapsed_dark',
+        preview: superadminCollapsedFooterDarkPreview,
+        size: const Size(88, 220),
+      ),
     ]) {
+      tester.view.physicalSize = configuration.size;
       await tester.pumpWidget(configuration.preview());
 
       await expectLater(
@@ -300,25 +312,19 @@ void main() {
 
     final activeDecoration =
         tester
-                .widget<AnimatedContainer>(
-                  find.byKey(const Key('superadmin-navigation-institutions')),
-                )
+                .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
                 .decoration!
             as BoxDecoration;
     expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary.withValues(alpha: 0.10));
     final activeSectionDecoration =
         tester
-                .widget<AnimatedContainer>(
-                  find.byKey(const Key('superadmin-navigation-section-structure')),
-                )
+                .widget<Container>(find.byKey(const Key('superadmin-navigation-section-structure')))
                 .decoration!
             as BoxDecoration;
     expect(activeSectionDecoration.color, CoeloTheme.light.colorScheme.primary);
     final inactiveSectionDecoration =
         tester
-                .widget<AnimatedContainer>(
-                  find.byKey(const Key('superadmin-navigation-section-access')),
-                )
+                .widget<Container>(find.byKey(const Key('superadmin-navigation-section-access')))
                 .decoration!
             as BoxDecoration;
     expect(
@@ -326,9 +332,7 @@ void main() {
       CoeloTheme.light.colorScheme.primaryContainer.withValues(alpha: 0),
     );
     final inactiveDestinationDecoration =
-        tester
-                .widget<AnimatedContainer>(find.byKey(const Key('superadmin-navigation-units')))
-                .decoration!
+        tester.widget<Container>(find.byKey(const Key('superadmin-navigation-units'))).decoration!
             as BoxDecoration;
     expect(
       inactiveDestinationDecoration.color,
@@ -360,7 +364,7 @@ void main() {
     await gesture.moveTo(tester.getCenter(access));
     await tester.pumpAndSettle();
 
-    final decoration = tester.widget<AnimatedContainer>(access).decoration! as BoxDecoration;
+    final decoration = tester.widget<Container>(access).decoration! as BoxDecoration;
     expect(decoration.color, CoeloTheme.light.colorScheme.primaryContainer);
 
     await gesture.removePointer();
@@ -632,6 +636,33 @@ void main() {
     expect(find.text('Configurações será implementado em breve.'), findsOneWidget);
   });
 
+  testWidgets('keeps a completion unread when a breakpoint replaces an open center', (
+    tester,
+  ) async {
+    final activities = SuperadminActivityController();
+    addTearDown(activities.dispose);
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp(activities: activities));
+
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+    await tester.binding.setSurfaceSize(const Size(375, 800));
+    await tester.pumpAndSettle();
+
+    activities.completeDemoExport(SuperadminExportFormat.csv);
+    await tester.pump();
+
+    expect(activities.unreadCount, 1);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-notification-badge')),
+        matching: find.text('1'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('does not reactivate notifications when Bug or OC closes the panel', (tester) async {
     await tester.pumpWidget(_shellApp());
 
@@ -641,7 +672,7 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pumpAndSettle();
 
-    expect(Focus.of(tester.element(notifications)).hasFocus, isFalse);
+    expect(tester.widget<IconButton>(notifications).focusNode?.hasPrimaryFocus, isFalse);
     expect(find.text('O reporte de bugs será implementado em breve.'), findsOneWidget);
 
     await tester.tap(notifications);
@@ -649,7 +680,7 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
 
-    expect(Focus.of(tester.element(notifications)).hasFocus, isFalse);
+    expect(tester.widget<IconButton>(notifications).focusNode?.hasPrimaryFocus, isFalse);
     expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
   });
 
@@ -723,6 +754,65 @@ void main() {
     expect(darkDecoration.color, darkColor);
     expect(tester.getSize(control), lightSize);
     expect(darkDecoration.borderRadius, lightRadius);
+  });
+
+  testWidgets('keeps navigation and status colors on the global 110 and 220 ms frames', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeShellHarness(showStatus: true));
+
+    final navigation = find.byKey(const Key('superadmin-navigation-section-structure'));
+    final status = find.byKey(const Key('theme-transition-status'));
+    final statusSurface = _statusThemeSurface(status);
+    final lightNavigation = _surfaceDecoration(tester, navigation).color;
+    final lightStatus = _surfaceDecoration(tester, statusSurface).color;
+
+    await tester.tap(find.byKey(const Key('superadmin-theme-mode-control')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 110));
+
+    final middleNavigation = Theme.of(tester.element(navigation)).colorScheme.primary;
+    final middleStatus = Theme.of(
+      tester.element(status),
+    ).extension<CoeloStatusColors>()!.onSuccessContainer;
+    expect(middleNavigation, isNot(lightNavigation));
+    expect(middleNavigation, isNot(CoeloTheme.dark.colorScheme.primary));
+    expect(middleStatus, isNot(lightStatus));
+    expect(middleStatus, isNot(CoeloTheme.dark.extension<CoeloStatusColors>()!.onSuccessContainer));
+    expect(_surfaceDecoration(tester, navigation).color, middleNavigation);
+    expect(_surfaceDecoration(tester, statusSurface).color, middleStatus);
+
+    await tester.pump(const Duration(milliseconds: 110));
+
+    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
+    expect(
+      _surfaceDecoration(tester, statusSurface).color,
+      CoeloTheme.dark.extension<CoeloStatusColors>()!.onSuccessContainer,
+    );
+  });
+
+  testWidgets('switches navigation and status surfaces immediately under reduced motion', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeShellHarness(disableAnimations: true, showStatus: true));
+
+    final navigation = find.byKey(const Key('superadmin-navigation-section-structure'));
+    final statusSurface = _statusThemeSurface(find.byKey(const Key('theme-transition-status')));
+
+    await tester.tap(find.byKey(const Key('superadmin-theme-mode-control')));
+    await tester.pump();
+
+    expect(tester.widget<Widget>(navigation), isA<Container>());
+    expect(tester.widget<Widget>(statusSurface), isA<Container>());
+    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
+    expect(
+      _surfaceDecoration(tester, statusSurface).color,
+      CoeloTheme.dark.extension<CoeloStatusColors>()!.onSuccessContainer,
+    );
   });
 
   testWidgets('keeps the theme marker and content on the global transition timing', (tester) async {
@@ -846,6 +936,38 @@ void main() {
     final reducedInitial = tester.widget<Transform>(motion).transform.clone();
     await tester.pump(const Duration(seconds: 6));
     expect(tester.widget<Transform>(motion).transform, reducedInitial);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('does not schedule the egg timer in reduced motion and cancels it on dispose', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final restTimers = <Timer>[];
+    final timerCapture = ZoneSpecification(
+      createTimer: (self, parent, zone, duration, callback) {
+        final timer = parent.createTimer(zone, duration, callback);
+        if (duration == const Duration(milliseconds: 3500)) {
+          restTimers.add(timer);
+        }
+        return timer;
+      },
+    );
+
+    await runZoned(
+      () => tester.pumpWidget(_shellApp(disableAnimations: true)),
+      zoneSpecification: timerCapture,
+    );
+    expect(restTimers, isEmpty);
+
+    await runZoned(() => tester.pumpWidget(_shellApp()), zoneSpecification: timerCapture);
+    expect(restTimers, hasLength(1));
+    expect(restTimers.single.isActive, isTrue);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(restTimers.single.isActive, isFalse);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('supports the final responsive, theme, text scaling and motion matrix', (
@@ -877,9 +999,10 @@ void main() {
 }
 
 class _ThemeShellHarness extends StatefulWidget {
-  const _ThemeShellHarness({this.disableAnimations = false});
+  const _ThemeShellHarness({this.disableAnimations = false, this.showStatus = false});
 
   final bool disableAnimations;
+  final bool showStatus;
 
   @override
   State<_ThemeShellHarness> createState() => _ThemeShellHarnessState();
@@ -907,7 +1030,14 @@ class _ThemeShellHarnessState extends State<_ThemeShellHarness> {
       ),
       home: SuperadminShell(
         logout: () async => const LogoutResult.success(),
-        child: const SizedBox.expand(),
+        child: widget.showStatus
+            ? const Center(
+                child: SuperadminActivityStatusIndicator(
+                  key: Key('theme-transition-status'),
+                  status: SuperadminActivityStatus.succeeded,
+                ),
+              )
+            : const SizedBox.expand(),
       ),
     );
   }
@@ -943,6 +1073,31 @@ BoxDecoration _themeControlDecoration(WidgetTester tester) {
           .widget<Container>(find.byKey(const Key('superadmin-theme-mode-surface')))
           .decoration!
       as BoxDecoration;
+}
+
+Finder _statusThemeSurface(Finder status) {
+  return find
+      .descendant(
+        of: status,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              (widget is AnimatedContainer && widget.decoration is BoxDecoration) ||
+              (widget is Container && widget.decoration is BoxDecoration),
+        ),
+      )
+      .first;
+}
+
+BoxDecoration _surfaceDecoration(WidgetTester tester, Finder finder) {
+  final widget = tester.widget<Widget>(finder);
+  if (widget is AnimatedContainer) {
+    final renderedContainer = find.descendant(of: finder, matching: find.byType(Container)).first;
+    return tester.widget<Container>(renderedContainer).decoration! as BoxDecoration;
+  }
+  if (widget is Container) {
+    return widget.decoration! as BoxDecoration;
+  }
+  throw StateError('Expected a themed surface, found ${widget.runtimeType}.');
 }
 
 Future<void> _loadGoldenFonts() async {
