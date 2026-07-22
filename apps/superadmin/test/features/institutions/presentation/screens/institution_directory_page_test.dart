@@ -558,6 +558,18 @@ void main() {
     }
   });
 
+  testWidgets('keeps the compact files submenu inset on a narrowed desktop', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1320, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    final menuItem = tester.getRect(find.byKey(const Key('institution-files-import')));
+    expect(menuItem.right, lessThanOrEqualTo(1320 - CoeloSpacing.space4));
+  });
+
   testWidgets('keeps import progress in the notification center without blocking the page', (
     tester,
   ) async {
@@ -576,6 +588,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-import-confirm')));
     await tester.pump();
+
+    expect(find.byType(SnackBar), findsNothing);
+    expect(find.byKey(const Key('superadmin-transient-notice')), findsOneWidget);
 
     expect(find.byKey(const Key('institution-filter-toolbar')), findsOneWidget);
     await tester.tap(find.byKey(const Key('superadmin-notifications')));
@@ -640,6 +655,41 @@ void main() {
     await tester.drag(tableScroll, const Offset(-250, 0));
     await tester.pump();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the pinned institution row aligned and highlighted with its table row', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+
+    final row = find.byKey(const Key('institution-table-row-demo-institution-aurora'));
+    final pinned = find.byKey(const Key('institution-pinned-row-demo-institution-aurora'));
+    final pinnedColumn = find.byKey(const Key('institution-pinned-column'));
+    expect(pinned, findsOneWidget);
+    expect(pinnedColumn, findsOneWidget);
+    expect(tester.getTopLeft(pinned).dy, tester.getTopLeft(row).dy);
+    expect(tester.getSize(pinned).height, tester.getSize(row).height);
+    final table = find.byKey(const Key('institution-directory-table'));
+    expect(
+      tester.getBottomLeft(table).dy - tester.getBottomLeft(pinnedColumn).dy,
+      CoeloSpacing.space3,
+    );
+
+    final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await gesture.addPointer(location: Offset.zero);
+    await gesture.moveTo(tester.getCenter(pinned));
+    await tester.pumpAndSettle();
+    final pinnedDecoration = tester.widget<AnimatedContainer>(pinned).decoration! as BoxDecoration;
+    expect(pinnedDecoration.color, CoeloTheme.light.colorScheme.primaryContainer);
+    await gesture.removePointer();
+
+    final statusChip = tester.widget<Chip>(find.byType(Chip).first);
+    expect(statusChip.side, isNot(BorderSide.none));
   });
 
   testWidgets('keeps table scrolling inside the page viewport', (tester) async {

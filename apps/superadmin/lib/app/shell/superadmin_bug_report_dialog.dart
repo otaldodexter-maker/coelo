@@ -3,52 +3,48 @@ import 'package:flutter/material.dart';
 
 import 'superadmin_notice.dart';
 
-Future<void> showSuperadminBugReportDialog(BuildContext context, {required String currentScreen}) {
+Future<void> showSuperadminBugReportDialog(
+  BuildContext context, {
+  required String currentScreen,
+  required Map<String, List<String>> sections,
+}) {
   return showDialog<void>(
     context: context,
     barrierColor: Colors.black.withValues(alpha: 0.54),
-    builder: (context) => _SuperadminBugReportDialog(currentScreen: currentScreen),
+    builder: (context) =>
+        _SuperadminBugReportDialog(currentScreen: currentScreen, sections: sections),
   );
 }
 
 class _SuperadminBugReportDialog extends StatefulWidget {
-  const _SuperadminBugReportDialog({required this.currentScreen});
+  const _SuperadminBugReportDialog({required this.currentScreen, required this.sections});
 
   final String currentScreen;
+  final Map<String, List<String>> sections;
 
   @override
   State<_SuperadminBugReportDialog> createState() => _SuperadminBugReportDialogState();
 }
 
 class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> {
-  static const _menus = <String>[
-    'Estrutura',
-    'Acessos',
-    'Operação',
-    'Comunicação',
-    'Governança',
-    'Outros',
-  ];
-  static const _screensByMenu = <String, List<String>>{
-    'Estrutura': ['Instituições', 'Unidades', 'Grupos', 'Outro'],
-    'Acessos': ['Pessoas', 'Outro'],
-    'Operação': ['Instituições', 'Unidades', 'Grupos', 'Outro'],
-    'Comunicação': ['Instituições', 'Pessoas', 'Grupos', 'Outro'],
-    'Governança': ['Instituições', 'Unidades', 'Outro'],
-    'Outros': ['Outro'],
-  };
-
   final _descriptionController = TextEditingController();
-  late String _selectedMenu = _menus.firstWhere(
-    (menu) => (_screensByMenu[menu] ?? const <String>[]).contains(widget.currentScreen),
-    orElse: () => 'Outros',
-  );
-  late String _selectedScreen =
-      (_screensByMenu[_selectedMenu] ?? const <String>[]).contains(widget.currentScreen)
-      ? widget.currentScreen
-      : (_screensByMenu[_selectedMenu] ?? const <String>[]).first;
+  late String _selectedMenu;
+  String? _selectedScreen;
   final _otherSubjectController = TextEditingController();
   var _attached = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMenu = widget.sections.keys.firstWhere(
+      (menu) => (widget.sections[menu] ?? const <String>[]).contains(widget.currentScreen),
+      orElse: () => 'Outros',
+    );
+    final screens = widget.sections[_selectedMenu] ?? const <String>[];
+    _selectedScreen = screens.contains(widget.currentScreen)
+        ? widget.currentScreen
+        : (screens.isEmpty ? null : screens.first);
+  }
 
   @override
   void dispose() {
@@ -77,6 +73,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
     return Dialog(
       key: const Key('superadmin-bug-report-dialog'),
       backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(CoeloRadius.lg),
         side: BorderSide(color: colors.outlineVariant),
@@ -92,10 +89,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      'Informe qual bug ou problema achou',
-                      style: theme.textTheme.headlineSmall,
-                    ),
+                    child: Text('Bug? O Coelo resolve!', style: theme.textTheme.headlineSmall),
                   ),
                   IconButton(
                     key: const Key('superadmin-bug-report-close'),
@@ -111,13 +105,13 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
               _BugSingleSelect<String>(
                 key: const Key('superadmin-bug-menu'),
                 value: _selectedMenu,
-                items: _menus,
+                items: widget.sections.keys.toList(growable: false),
                 itemKey: (value) => Key('superadmin-bug-menu-option-$value'),
                 onChanged: (value) {
-                  final screens = _screensByMenu[value] ?? const <String>[];
+                  final screens = widget.sections[value] ?? const <String>[];
                   setState(() {
                     _selectedMenu = value;
-                    _selectedScreen = screens.first;
+                    _selectedScreen = screens.isEmpty ? null : screens.first;
                   });
                 },
               ),
@@ -129,14 +123,16 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
                   decoration: const InputDecoration(hintText: 'Sobre o que é o assunto?'),
                 ),
               ],
-              const SizedBox(height: CoeloSpacing.space3),
-              _BugSingleSelect<String>(
-                key: const Key('superadmin-bug-screen'),
-                value: _selectedScreen,
-                items: _screensByMenu[_selectedMenu] ?? const <String>[],
-                itemKey: (value) => Key('superadmin-bug-screen-option-$value'),
-                onChanged: (value) => setState(() => _selectedScreen = value),
-              ),
+              if (_selectedMenu != 'Outros') ...[
+                const SizedBox(height: CoeloSpacing.space3),
+                _BugSingleSelect<String>(
+                  key: const Key('superadmin-bug-screen'),
+                  value: _selectedScreen!,
+                  items: widget.sections[_selectedMenu] ?? const <String>[],
+                  itemKey: (value) => Key('superadmin-bug-screen-option-$value'),
+                  onChanged: (value) => setState(() => _selectedScreen = value),
+                ),
+              ],
               const SizedBox(height: CoeloSpacing.space4),
               TextField(
                 key: const Key('superadmin-bug-description'),
@@ -151,15 +147,36 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
                 ),
               ),
               const SizedBox(height: CoeloSpacing.space4),
-              OutlinedButton.icon(
-                key: const Key('superadmin-bug-attach'),
-                onPressed: () => setState(() => _attached = true),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colors.primary,
-                  side: BorderSide(color: colors.primary),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  key: const Key('superadmin-bug-attach'),
+                  onPressed: () => setState(() => _attached = true),
+                  style:
+                      TextButton.styleFrom(
+                        foregroundColor: colors.primary,
+                        padding: EdgeInsets.zero,
+                      ).copyWith(
+                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                        textStyle: WidgetStateProperty.resolveWith((states) {
+                          final highlighted =
+                              states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused);
+                          return theme.textTheme.labelLarge?.copyWith(
+                            decoration: highlighted
+                                ? TextDecoration.underline
+                                : TextDecoration.none,
+                            decorationColor: colors.primary,
+                          );
+                        }),
+                      ),
+                  icon: const Icon(Icons.attach_file_rounded),
+                  label: Text(_attached ? 'evidencia-anexada.png' : 'Anexar Evidência'),
                 ),
-                icon: const Icon(Icons.attach_file_rounded),
-                label: Text(_attached ? 'print-anexado.png' : 'Anexar print'),
+              ),
+              Text(
+                'Até 10 arquivos · PNG, JPG, JPEG, WEBP, PDF, DOCX, MP4, MOV ou WEBM.',
+                style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
               ),
               const SizedBox(height: CoeloSpacing.space5),
               FilledButton(
@@ -168,7 +185,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(CoeloSize.touchMin),
                 ),
-                child: const Text('Bug? O Coelo resolve!'),
+                child: const Text('Enviar'),
               ),
             ],
           ),
@@ -196,68 +213,100 @@ class _BugSingleSelect<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final label = '$value';
-    return MenuAnchor(
-      alignmentOffset: const Offset(0, CoeloSpacing.space1),
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        elevation: const WidgetStatePropertyAll(6),
-        padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-        maximumSize: const WidgetStatePropertyAll(Size(320, 360)),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
-          ),
-        ),
-      ),
-      menuChildren: [
-        SizedBox(
-          width: 300,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: items
-                .map(
-                  (item) => MenuItemButton(
-                    key: itemKey(item),
-                    onPressed: () => onChanged(item),
-                    style: MenuItemButton.styleFrom(
-                      foregroundColor: item == value ? colors.primary : colors.onSurfaceVariant,
-                      backgroundColor: item == value ? colors.primaryContainer : Colors.transparent,
-                    ),
-                    child: Text('$item'),
-                  ),
-                )
-                .toList(growable: false),
-          ),
-        ),
-      ],
-      builder: (context, controller, child) => OutlinedButton(
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        style:
-            OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(CoeloSize.touchMin),
-              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-              shape: const StadiumBorder(),
-            ).copyWith(
-              foregroundColor: WidgetStateProperty.resolveWith((states) {
-                return states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-                    ? colors.primary
-                    : colors.onSurfaceVariant;
-              }),
-              side: WidgetStateProperty.resolveWith((states) {
-                final active =
-                    states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-                return BorderSide(color: active ? colors.primary : colors.outlineVariant);
-              }),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final menuWidth = constraints.maxWidth;
+        return MenuAnchor(
+          alignmentOffset: const Offset(0, CoeloSpacing.space1),
+          style: MenuStyle(
+            backgroundColor: WidgetStatePropertyAll(colors.surface),
+            elevation: const WidgetStatePropertyAll(6),
+            padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+            maximumSize: WidgetStatePropertyAll(Size(menuWidth, 360)),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                side: BorderSide(color: colors.outlineVariant),
+              ),
             ),
-        child: Row(
-          children: [
-            Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
-            const SizedBox(width: CoeloSpacing.space1),
-            const Icon(Icons.arrow_drop_down_rounded),
+          ),
+          menuChildren: [
+            SizedBox(
+              width: menuWidth,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: items
+                    .map(
+                      (item) => MenuItemButton(
+                        key: itemKey(item),
+                        onPressed: () => onChanged(item),
+                        style: MenuItemButton.styleFrom().copyWith(
+                          foregroundColor: WidgetStateProperty.resolveWith((states) {
+                            final highlighted =
+                                states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused);
+                            return item == value || highlighted
+                                ? colors.primary
+                                : colors.onSurfaceVariant;
+                          }),
+                          backgroundColor: WidgetStateProperty.resolveWith((states) {
+                            final highlighted =
+                                states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused);
+                            return item == value || highlighted
+                                ? colors.primaryContainer
+                                : Colors.transparent;
+                          }),
+                          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                          shape: WidgetStateProperty.resolveWith((states) {
+                            final highlighted =
+                                states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused);
+                            return RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                item == value || highlighted ? 0 : CoeloRadius.md,
+                              ),
+                            );
+                          }),
+                        ),
+                        child: Text('$item'),
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
+            ),
           ],
-        ),
-      ),
+          builder: (context, controller, child) => OutlinedButton(
+            onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+            style:
+                OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(CoeloSize.touchMin),
+                  padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
+                  shape: const StadiumBorder(),
+                ).copyWith(
+                  foregroundColor: WidgetStateProperty.resolveWith((states) {
+                    return states.contains(WidgetState.hovered) ||
+                            states.contains(WidgetState.focused)
+                        ? colors.primary
+                        : colors.onSurfaceVariant;
+                  }),
+                  side: WidgetStateProperty.resolveWith((states) {
+                    final active =
+                        states.contains(WidgetState.hovered) ||
+                        states.contains(WidgetState.focused);
+                    return BorderSide(color: active ? colors.primary : colors.outlineVariant);
+                  }),
+                ),
+            child: Row(
+              children: [
+                Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                const SizedBox(width: CoeloSpacing.space1),
+                const Icon(Icons.arrow_drop_down_rounded),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

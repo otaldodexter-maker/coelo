@@ -627,7 +627,7 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-bug-report-dialog')), findsOneWidget);
-    expect(find.text('Informe qual bug ou problema achou'), findsOneWidget);
+    expect(find.text('Bug? O Coelo resolve!'), findsOneWidget);
     expect(
       find.descendant(
         of: find.byKey(const Key('superadmin-bug-screen')),
@@ -725,7 +725,14 @@ void main() {
     await tester.enterText(refreshedDescription, 'A tabela não atualizou após o filtro.');
     await tester.tap(find.byKey(const Key('superadmin-bug-attach')));
     await tester.pump();
-    expect(find.text('print-anexado.png'), findsOneWidget);
+    expect(find.text('evidencia-anexada.png'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Outros')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-bug-other-subject')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-bug-screen')), findsNothing);
 
     final submit = find.byKey(const Key('superadmin-bug-submit'));
     await tester.ensureVisible(submit);
@@ -736,6 +743,82 @@ void main() {
     expect(find.text('Relato enviado com sucesso.'), findsOneWidget);
     expect(find.byKey(const Key('superadmin-bug-report-dialog')), findsNothing);
     expect(find.byKey(const Key('superadmin-transient-notice')), findsOneWidget);
+  });
+
+  testWidgets('uses the live navigation hierarchy and the approved bug menu states', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_shellApp());
+    await tester.tap(find.byKey(const Key('superadmin-report-bug')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu')));
+    await tester.pumpAndSettle();
+    for (final section in [
+      'Estrutura',
+      'Acessos',
+      'Operação',
+      'Comunicação',
+      'Governança',
+      'Conta',
+      'Outros',
+    ]) {
+      expect(find.byKey(Key('superadmin-bug-menu-option-$section')), findsOneWidget);
+    }
+
+    final selectedItem = tester.widget<MenuItemButton>(
+      find.byKey(const Key('superadmin-bug-menu-option-Estrutura')),
+    );
+    final selectedShape = selectedItem.style?.shape?.resolve({}) as RoundedRectangleBorder;
+    final hoverShape =
+        selectedItem.style?.shape?.resolve({WidgetState.hovered}) as RoundedRectangleBorder;
+    expect(selectedShape.borderRadius, BorderRadius.zero);
+    expect(hoverShape.borderRadius, BorderRadius.zero);
+    final idleItem = tester.widget<MenuItemButton>(
+      find.byKey(const Key('superadmin-bug-menu-option-Conta')),
+    );
+    final idleShape = idleItem.style?.shape?.resolve({}) as RoundedRectangleBorder;
+    final idleHoverShape =
+        idleItem.style?.shape?.resolve({WidgetState.hovered}) as RoundedRectangleBorder;
+    expect(idleShape.borderRadius, BorderRadius.circular(CoeloRadius.md));
+    expect(idleHoverShape.borderRadius, BorderRadius.zero);
+
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Acessos')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-bug-screen')));
+    await tester.pumpAndSettle();
+    for (final screen in ['Pessoas', 'Usuários internos', 'Perfis e permissões', 'Outro']) {
+      expect(find.byKey(Key('superadmin-bug-screen-option-$screen')), findsOneWidget);
+    }
+
+    await tester.tap(find.byKey(const Key('superadmin-bug-screen-option-Pessoas')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Conta')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-bug-screen')));
+    await tester.pumpAndSettle();
+    for (final screen in ['Perfil', 'Configurações', 'Outros']) {
+      expect(find.byKey(Key('superadmin-bug-screen-option-$screen')), findsOneWidget);
+    }
+  });
+
+  testWidgets('underlines evidence in orange only on hover without duplicate tooltip', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_shellApp());
+    await tester.tap(find.byKey(const Key('superadmin-report-bug')));
+    await tester.pumpAndSettle();
+
+    final attach = find.byKey(const Key('superadmin-bug-attach'));
+    expect(find.ancestor(of: attach, matching: find.byType(Tooltip)), findsNothing);
+    final button = tester.widget<TextButton>(attach);
+    final idleStyle = button.style?.textStyle?.resolve({});
+    final hoverStyle = button.style?.textStyle?.resolve({WidgetState.hovered});
+    expect(idleStyle?.decoration, TextDecoration.none);
+    expect(hoverStyle?.decoration, TextDecoration.underline);
+    expect(hoverStyle?.decorationColor, CoeloTheme.light.colorScheme.primary);
   });
 
   testWidgets('clears the notification focus after an outside close', (tester) async {

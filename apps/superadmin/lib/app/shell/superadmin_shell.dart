@@ -13,6 +13,9 @@ import 'superadmin_activity_center.dart';
 import 'superadmin_bug_report_dialog.dart';
 import 'superadmin_notice.dart';
 
+const _sidebarMotionDuration = Duration(milliseconds: 420);
+const _sidebarMotionCurve = Cubic(0.22, 1, 0.36, 1);
+
 const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
@@ -132,16 +135,16 @@ class _SuperadminShellState extends State<SuperadminShell> {
                 children: [
                   AnimatedContainer(
                     width: sidebarWidth + _shellGutter,
-                    duration: const Duration(milliseconds: 260),
-                    curve: Curves.easeOutCubic,
+                    duration: _sidebarMotionDuration,
+                    curve: _sidebarMotionCurve,
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
                         AnimatedContainer(
                           key: const Key('superadmin-sidebar'),
                           width: sidebarWidth,
-                          duration: const Duration(milliseconds: 260),
-                          curve: Curves.easeOutCubic,
+                          duration: _sidebarMotionDuration,
+                          curve: _sidebarMotionCurve,
                           child: _FloatingSurface(
                             key: const Key('superadmin-floating-sidebar'),
                             child: _Sidebar(collapsed: _sidebarCollapsed),
@@ -150,8 +153,8 @@ class _SuperadminShellState extends State<SuperadminShell> {
                         AnimatedPositioned(
                           left: sidebarWidth - CoeloSpacing.space4,
                           top: CoeloSpacing.space8,
-                          duration: const Duration(milliseconds: 260),
-                          curve: Curves.easeOutCubic,
+                          duration: _sidebarMotionDuration,
+                          curve: _sidebarMotionCurve,
                           child: _SidebarToggle(
                             collapsed: _sidebarCollapsed,
                             onPressed: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
@@ -392,6 +395,11 @@ const _navigationSections = <_NavigationSectionData>[
     _NavigationDestinationData('support', 'Suporte', Icons.support_agent_outlined),
     _NavigationDestinationData('audit', 'Auditoria', Icons.security_outlined),
   ]),
+];
+
+const _accountDestinations = <_NavigationDestinationData>[
+  _NavigationDestinationData('profile', 'Perfil', Icons.person_outline),
+  _NavigationDestinationData('settings', 'Configurações', Icons.settings_outlined),
 ];
 
 class _NavigationContent extends StatefulWidget {
@@ -1301,7 +1309,7 @@ class _CarrotThumb extends StatelessWidget {
               ? CoeloPalette.forest700
               : statusColors.successContainer,
           leafAccentColor: theme.brightness == Brightness.light
-              ? CoeloPalette.forest100
+              ? CoeloPalette.forest500
               : statusColors.onSuccessContainer,
         ),
       ),
@@ -1724,20 +1732,19 @@ class _ProfileSummary extends StatelessWidget {
           overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         );
     final menuItems = <Widget>[
-      MenuItemButton(
-        key: const Key('superadmin-profile-action'),
-        style: standardItemStyle,
-        leadingIcon: const Icon(Icons.person_outline),
-        onPressed: () => _showMessage(context, 'O perfil será implementado em breve.'),
-        child: const Text('Perfil'),
-      ),
-      MenuItemButton(
-        key: const Key('superadmin-settings-action'),
-        style: standardItemStyle,
-        leadingIcon: const Icon(Icons.settings_outlined),
-        onPressed: () => _showMessage(context, 'Configurações será implementado em breve.'),
-        child: const Text('Configurações'),
-      ),
+      for (final destination in _accountDestinations)
+        MenuItemButton(
+          key: Key('superadmin-${destination.id}-action'),
+          style: standardItemStyle,
+          leadingIcon: Icon(destination.icon),
+          onPressed: () => _showMessage(
+            context,
+            destination.id == 'profile'
+                ? 'O perfil será implementado em breve.'
+                : 'Configurações será implementado em breve.',
+          ),
+          child: Text(destination.label),
+        ),
       const Padding(
         key: Key('superadmin-profile-divider-spacing'),
         padding: EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
@@ -1836,7 +1843,19 @@ class _HeaderUtilityActions extends StatelessWidget {
         IconButton(
           key: const Key('superadmin-report-bug'),
           tooltip: 'Reportar bug',
-          onPressed: () => showSuperadminBugReportDialog(context, currentScreen: currentScreen),
+          onPressed: () => showSuperadminBugReportDialog(
+            context,
+            currentScreen: currentScreen,
+            sections: {
+              for (final section in _navigationSections)
+                section.label: [
+                  ...section.destinations.map((destination) => destination.label),
+                  'Outro',
+                ],
+              'Conta': [..._accountDestinations.map((destination) => destination.label), 'Outros'],
+              'Outros': const [],
+            },
+          ),
           style: _headerUtilityButtonStyle(colors, hoverColor),
           icon: const Icon(Icons.bug_report_outlined),
         ),

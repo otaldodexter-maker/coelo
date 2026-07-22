@@ -308,7 +308,7 @@ Widget _app(
         body: Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space4),
           child: Align(
-            alignment: Alignment.topRight,
+            alignment: compact ? Alignment.topLeft : Alignment.topRight,
             child: InstitutionFileActions(activityController: controller, compact: compact),
           ),
         ),

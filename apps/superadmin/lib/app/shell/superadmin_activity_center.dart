@@ -218,6 +218,7 @@ class _ActivityPanelState extends State<_ActivityPanel> {
                   key: const Key('superadmin-activity-close'),
                   tooltip: 'Fechar notificações',
                   onPressed: widget.onCloseRequested,
+                  style: IconButton.styleFrom(foregroundColor: theme.colorScheme.error),
                   icon: const Icon(Icons.close_rounded),
                 ),
               ],
@@ -266,110 +267,117 @@ class _ActivityTile extends StatelessWidget {
         activity.fileName != null &&
         (activity.kind == SuperadminActivityKind.import ||
             activity.kind == SuperadminActivityKind.export);
-    return Material(
-      key: Key('superadmin-activity-${activity.id}'),
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(CoeloRadius.md),
-      child: InkWell(
-        hoverColor: colors.primaryContainer,
-        focusColor: colors.primaryContainer,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space2,
+        vertical: CoeloSpacing.space1,
+      ),
+      child: Material(
+        key: Key('superadmin-activity-${activity.id}'),
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(CoeloRadius.md),
-        onTap: canDownload
-            ? () {
-                final fileName = activity.fileName;
-                if (fileName == null) {
-                  return;
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          hoverColor: colors.primaryContainer,
+          focusColor: colors.primaryContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+          onTap: canDownload
+              ? () {
+                  final fileName = activity.fileName;
+                  if (fileName == null) {
+                    return;
+                  }
+                  showSuperadminNotice(
+                    context,
+                    'Download demonstrativo de $fileName preparado.',
+                    icon: Icons.file_download_outlined,
+                  );
                 }
-                showSuperadminNotice(
-                  context,
-                  'Download demonstrativo de $fileName preparado.',
-                  icon: Icons.file_download_outlined,
-                );
-              }
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space4,
-            vertical: CoeloSpacing.space2,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                key: Key('superadmin-activity-icon-${activity.id}'),
-                width: CoeloSize.touchMin,
-                height: CoeloSize.touchMin,
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  borderRadius: BorderRadius.circular(CoeloRadius.md),
-                  border: Border.all(color: colors.outlineVariant),
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space4,
+              vertical: CoeloSpacing.space2,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  key: Key('superadmin-activity-icon-${activity.id}'),
+                  width: CoeloSize.touchMin,
+                  height: CoeloSize.touchMin,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(CoeloRadius.md),
+                    border: Border.all(color: colors.outlineVariant),
+                  ),
+                  child: Icon(_activityIcon(activity.kind), color: colors.onPrimary),
                 ),
-                child: Icon(_activityIcon(activity.kind), color: colors.onPrimary),
-              ),
-              const SizedBox(width: CoeloSpacing.space3),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${_activityKindLabel(activity.kind)} · ${activity.subject}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelLarge,
-                          ),
-                        ),
-                        const SizedBox(width: CoeloSpacing.space2),
-                        SuperadminActivityStatusIndicator(
-                          key: Key('superadmin-activity-status-${activity.id}'),
-                          surfaceKey: Key('superadmin-activity-status-surface-${activity.id}'),
-                          status: activity.status,
-                        ),
-                      ],
-                    ),
-                    if (activity.fileName case final fileName?) ...[
-                      const SizedBox(height: CoeloSpacing.space1),
-                      Text(
-                        fileName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ],
-                    const SizedBox(height: CoeloSpacing.space1),
-                    Text(
-                      activity.summary,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space1),
-                    Text(
-                      _formatActivityTimestamp(activity.createdAt),
-                      style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
-                    ),
-                    if (activity.progress case final progress?) ...[
-                      const SizedBox(height: CoeloSpacing.space2),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Row(
                         children: [
                           Expanded(
-                            child: LinearProgressIndicator(
-                              value: progress / 100,
-                              minHeight: CoeloSpacing.space1,
-                              borderRadius: BorderRadius.circular(CoeloRadius.xs),
+                            child: Text(
+                              '${_activityKindLabel(activity.kind)} · ${activity.subject}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelLarge,
                             ),
                           ),
                           const SizedBox(width: CoeloSpacing.space2),
-                          Text('$progress%', style: theme.textTheme.labelMedium),
+                          SuperadminActivityStatusIndicator(
+                            key: Key('superadmin-activity-status-${activity.id}'),
+                            surfaceKey: Key('superadmin-activity-status-surface-${activity.id}'),
+                            status: activity.status,
+                          ),
                         ],
                       ),
+                      if (activity.fileName case final fileName?) ...[
+                        const SizedBox(height: CoeloSpacing.space1),
+                        Text(
+                          fileName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        activity.summary,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        _formatActivityTimestamp(activity.createdAt),
+                        style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                      if (activity.progress case final progress?) ...[
+                        const SizedBox(height: CoeloSpacing.space2),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: LinearProgressIndicator(
+                                value: progress / 100,
+                                minHeight: CoeloSpacing.space1,
+                                borderRadius: BorderRadius.circular(CoeloRadius.xs),
+                              ),
+                            ),
+                            const SizedBox(width: CoeloSpacing.space2),
+                            Text('$progress%', style: theme.textTheme.labelMedium),
+                          ],
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

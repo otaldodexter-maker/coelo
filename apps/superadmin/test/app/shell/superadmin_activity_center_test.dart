@@ -314,6 +314,11 @@ void main() {
     );
     expect(tileInk.hoverColor, CoeloTheme.light.colorScheme.primaryContainer);
     expect(tileInk.focusColor, CoeloTheme.light.colorScheme.primaryContainer);
+    expect(tileInk.borderRadius, BorderRadius.circular(CoeloRadius.md));
+    final panelRect = tester.getRect(find.byKey(const Key('superadmin-activity-panel')));
+    final tileRect = tester.getRect(exportTile);
+    expect(tileRect.left, greaterThan(panelRect.left));
+    expect(tileRect.right, lessThan(panelRect.right));
     final iconSurface = tester.widget<Container>(
       find.byKey(const Key('superadmin-activity-icon-demo-export')),
     );

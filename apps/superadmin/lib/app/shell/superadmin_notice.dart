@@ -49,26 +49,51 @@ class SuperadminNoticeHost extends StatefulWidget {
 }
 
 class _SuperadminNoticeHostState extends State<SuperadminNoticeHost> {
+  static const _transitionDuration = Duration(milliseconds: 360);
+
   final _notices = <_NoticeEntry>[];
+  final _dismissingIds = <int>{};
   final _timers = <Timer>[];
   var _nextId = 0;
 
   void add(String message, IconData icon) {
+    final activeNotices = _notices
+        .where((notice) => !_dismissingIds.contains(notice.id))
+        .toList(growable: false);
+    if (activeNotices.length >= 3) {
+      _dismiss(activeNotices.first);
+    }
+    final entry = _NoticeEntry(id: _nextId++, message: message, icon: icon);
     setState(() {
-      if (_notices.length >= 3) {
-        _notices.removeAt(0);
-      }
-      final entry = _NoticeEntry(id: _nextId++, message: message, icon: icon);
       _notices.add(entry);
-      late final Timer timer;
-      timer = Timer(const Duration(seconds: 6), () {
-        _timers.remove(timer);
-        if (mounted) {
-          setState(() => _notices.removeWhere((notice) => notice.id == entry.id));
-        }
-      });
-      _timers.add(timer);
     });
+    _schedule(const Duration(seconds: 6), () => _dismiss(entry));
+  }
+
+  void _dismiss(_NoticeEntry entry) {
+    if (!mounted || !_notices.contains(entry) || _dismissingIds.contains(entry.id)) {
+      return;
+    }
+    setState(() => _dismissingIds.add(entry.id));
+    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : _transitionDuration;
+    _schedule(duration, () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _dismissingIds.remove(entry.id);
+        _notices.remove(entry);
+      });
+    });
+  }
+
+  void _schedule(Duration duration, VoidCallback callback) {
+    late final Timer timer;
+    timer = Timer(duration, () {
+      _timers.remove(timer);
+      callback();
+    });
+    _timers.add(timer);
   }
 
   @override
@@ -98,11 +123,11 @@ class _SuperadminNoticeHostState extends State<SuperadminNoticeHost> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      for (final notice in _notices.reversed)
-                        Padding(
+                      for (final notice in _notices)
+                        _AnimatedNotice(
                           key: ValueKey(notice.id),
-                          padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-                          child: _AnimatedNotice(entry: notice),
+                          entry: notice,
+                          visible: !_dismissingIds.contains(notice.id),
                         ),
                     ],
                   ),
@@ -138,35 +163,50 @@ class _NoticeEntry {
 }
 
 class _AnimatedNotice extends StatelessWidget {
-  const _AnimatedNotice({required this.entry});
+  const _AnimatedNotice({required this.entry, required this.visible, super.key});
 
   final _NoticeEntry entry;
+  final bool visible;
 
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-      tween: Tween(begin: 0, end: 1),
-      builder: (context, value, child) => Opacity(
-        opacity: value,
-        child: Transform.translate(offset: Offset(0, 12 * (1 - value)), child: child),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : _SuperadminNoticeHostState._transitionDuration,
+      curve: const Cubic(0.2, 0, 0, 1),
+      tween: Tween(begin: 0, end: visible ? 1 : 0),
+      builder: (context, value, child) => ClipRect(
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          heightFactor: value,
+          child: Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, (visible ? 12 : -6) * (1 - value)),
+              child: child,
+            ),
+          ),
+        ),
       ),
-      child: Material(
-        elevation: CoeloElevation.level2,
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space4,
-            vertical: CoeloSpacing.space2,
+      child: Padding(
+        padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+        child: Material(
+          elevation: CoeloElevation.level2,
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space4,
+              vertical: CoeloSpacing.space2,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            ),
+            child: _NoticeContent(message: entry.message, icon: entry.icon),
           ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-          ),
-          child: _NoticeContent(message: entry.message, icon: entry.icon),
         ),
       ),
     );

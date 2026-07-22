@@ -340,7 +340,7 @@ class _DirectoryToolbar extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-                  child: Align(alignment: Alignment.centerRight, child: actions),
+                  child: Align(alignment: Alignment.centerLeft, child: actions),
                 ),
               ),
             ],
@@ -709,9 +709,14 @@ class _FilterSelectionIndicator extends StatelessWidget {
 }
 
 ButtonStyle _filterMenuItemStyle(ColorScheme colors, {required bool selected}) {
-  return MenuItemButton.styleFrom(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-  ).copyWith(
+  return MenuItemButton.styleFrom().copyWith(
+    shape: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(highlighted ? 0 : CoeloRadius.md),
+      );
+    }),
     foregroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
@@ -1134,9 +1139,6 @@ class _InstitutionCardState extends State<_InstitutionCard> {
                             decoration: BoxDecoration(
                               color: colors.secondaryContainer,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: colors.onSecondaryContainer.withValues(alpha: 0.22),
-                              ),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -1361,6 +1363,7 @@ class _InstitutionTable extends StatefulWidget {
 
 class _InstitutionTableState extends State<_InstitutionTable> {
   final ScrollController _scrollController = ScrollController();
+  String? _hoveredItemId;
   late final Map<_InstitutionColumn, double> _columnWidths = {
     for (final column in _InstitutionColumn.values) column: column.initialWidth,
   };
@@ -1414,7 +1417,7 @@ class _InstitutionTableState extends State<_InstitutionTable> {
                               children: [
                                 _headerRow(context),
                                 ...widget.items.map((item) => _dataRow(context, item)),
-                                const SizedBox(height: CoeloSpacing.space2),
+                                const SizedBox(height: CoeloSpacing.space3),
                               ],
                             ),
                           ),
@@ -1423,7 +1426,7 @@ class _InstitutionTableState extends State<_InstitutionTable> {
                       Positioned(
                         left: 0,
                         top: 0,
-                        bottom: 0,
+                        height: 56 + widget.items.length * 65,
                         width: _columnWidths[_InstitutionColumn.institution],
                         child: IgnorePointer(child: _pinnedInstitutionColumn(context)),
                       ),
@@ -1503,23 +1506,17 @@ class _InstitutionTableState extends State<_InstitutionTable> {
 
   Widget _pinnedInstitutionColumn(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: colors.shadow.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(3, 0),
-          ),
-        ],
-      ),
+    return ColoredBox(
+      key: const Key('institution-pinned-column'),
+      color: colors.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _headerCell(context, _InstitutionColumn.institution, pinned: true),
+          ColoredBox(
+            color: colors.surfaceContainer,
+            child: _headerCell(context, _InstitutionColumn.institution, pinned: true),
+          ),
           ...widget.items.map((item) => _pinnedInstitutionRow(context, item)),
-          const SizedBox(height: CoeloSpacing.space2),
         ],
       ),
     );
@@ -1527,9 +1524,12 @@ class _InstitutionTableState extends State<_InstitutionTable> {
 
   Widget _pinnedInstitutionRow(BuildContext context, InstitutionDirectoryItem item) {
     final colors = Theme.of(context).colorScheme;
-    return Container(
-      height: 64,
+    return AnimatedContainer(
+      key: Key('institution-pinned-row-${item.id}'),
+      duration: CoeloMotion.fast,
+      height: 65,
       decoration: BoxDecoration(
+        color: _hoveredItemId == item.id ? colors.primaryContainer : colors.surface,
         border: Border(bottom: BorderSide(color: colors.outlineVariant)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
@@ -1544,11 +1544,7 @@ class _InstitutionTableState extends State<_InstitutionTable> {
         Container(
           width: 32,
           height: 32,
-          decoration: BoxDecoration(
-            color: colors.secondaryContainer,
-            shape: BoxShape.circle,
-            border: Border.all(color: colors.onSecondaryContainer.withValues(alpha: 0.22)),
-          ),
+          decoration: BoxDecoration(color: colors.secondaryContainer, shape: BoxShape.circle),
           alignment: Alignment.center,
           child: Text(item.initials, style: TextStyle(color: colors.onSecondaryContainer)),
         ),
@@ -1592,6 +1588,9 @@ class _InstitutionTableState extends State<_InstitutionTable> {
       child: InkWell(
         key: Key('institution-table-row-${item.id}'),
         overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+        onHover: (hovered) {
+          setState(() => _hoveredItemId = hovered ? item.id : null);
+        },
         onTap: () {
           final messenger = ScaffoldMessenger.of(context);
           messenger
@@ -1716,7 +1715,7 @@ class _StatusChip extends StatelessWidget {
       label: Text(status.label),
       backgroundColor: background,
       labelStyle: theme.textTheme.labelSmall?.copyWith(color: foreground),
-      side: BorderSide.none,
+      side: BorderSide(color: foreground.withValues(alpha: 0.28)),
       visualDensity: VisualDensity.compact,
     );
   }
@@ -1766,6 +1765,10 @@ class _ExpandableStatusIndicatorState extends State<_ExpandableStatusIndicator> 
               decoration: BoxDecoration(
                 color: background,
                 borderRadius: BorderRadius.circular(CoeloRadius.full),
+                border: Border.all(
+                  color: foreground.withValues(alpha: _focused ? 0.48 : 0.28),
+                  width: _focused ? 2 : 1,
+                ),
               ),
               child: _expanded
                   ? Text(

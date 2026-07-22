@@ -14,6 +14,7 @@ class InstitutionFileActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final compactMenuOffset = MediaQuery.sizeOf(context).width < 768 ? 0.0 : -128.0;
     void export(SuperadminExportFormat format) {
       activityController.completeDemoExport(format);
       showSuperadminNotice(
@@ -27,7 +28,7 @@ class InstitutionFileActions extends StatelessWidget {
         compact ? SizedBox(width: 176, child: item) : item;
 
     return MenuAnchor(
-      alignmentOffset: Offset(compact ? -144 : CoeloSpacing.space1, CoeloSpacing.space2),
+      alignmentOffset: Offset(compact ? compactMenuOffset : -80, CoeloSpacing.space2),
       style: _fileMenuStyle(context, compact: compact),
       menuChildren: [
         constrainCompactMenuItem(
@@ -123,7 +124,8 @@ Future<void> _showImportDialog(BuildContext context, SuperadminActivityControlle
   return showDialog<void>(
     context: context,
     barrierColor: Colors.black.withValues(alpha: 0.54),
-    builder: (context) => _InstitutionImportDialog(activityController: controller),
+    builder: (dialogContext) =>
+        _InstitutionImportDialog(activityController: controller, noticeContext: context),
   );
 }
 
@@ -132,10 +134,15 @@ void _showDemoDownload(BuildContext context, String message) {
 }
 
 class _InstitutionImportDialog extends StatefulWidget {
-  const _InstitutionImportDialog({required this.activityController, this.initialReview = false});
+  const _InstitutionImportDialog({
+    required this.activityController,
+    this.initialReview = false,
+    this.noticeContext,
+  });
 
   final SuperadminActivityController activityController;
   final bool initialReview;
+  final BuildContext? noticeContext;
 
   @override
   State<_InstitutionImportDialog> createState() => _InstitutionImportDialogState();
@@ -149,8 +156,10 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final noticeContext = widget.noticeContext ?? context;
     return Dialog(
       backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(CoeloRadius.lg),
         side: BorderSide(color: colors.outlineVariant),
@@ -192,7 +201,7 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                 OutlinedButton.icon(
                   key: const Key('institution-import-template-export'),
                   onPressed: () => _showDemoDownload(
-                    context,
+                    noticeContext,
                     'Modelo XLSX preparado para download demonstrativo.',
                   ),
                   style: OutlinedButton.styleFrom(
@@ -250,7 +259,7 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                       onPressed: () {
                         widget.activityController.startDemoImport();
                         showSuperadminNotice(
-                          context,
+                          noticeContext,
                           'A importação está em andamento. Acompanhe pelo sininho.',
                           icon: Icons.upload_file_outlined,
                         );
