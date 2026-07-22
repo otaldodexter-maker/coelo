@@ -41,6 +41,7 @@ final class InstitutionDirectoryItem {
     this.street,
     this.addressNumber,
     this.complement,
+    this.postalCode,
     this.contactEmail,
     this.contactPhone,
     this.contactMobilePhone,
@@ -60,6 +61,7 @@ final class InstitutionDirectoryItem {
       street: _optionalString(json['street']),
       addressNumber: _optionalString(json['number']),
       complement: _optionalString(json['complement']),
+      postalCode: _optionalString(json['postal_code']),
       city: _optionalString(json['city']),
       state: _optionalString(json['state']),
       contactEmail: _optionalString(json['contact_email']),
@@ -84,6 +86,7 @@ final class InstitutionDirectoryItem {
   final String? street;
   final String? addressNumber;
   final String? complement;
+  final String? postalCode;
   final String? city;
   final String? state;
   final String? contactEmail;

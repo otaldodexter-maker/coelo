@@ -3,7 +3,7 @@ title: "Protótipo refinado de arquivos, notificações, tema e tours do Superad
 source: "Solicitações aprovadas pelo usuário em 2026-07-21"
 status: "approved"
 generated_at: "2026-07-21"
-revised_at: "2026-07-21"
+revised_at: "2026-07-22"
 ---
 
 # Protótipo refinado de arquivos, notificações, tema e tours do Superadmin
@@ -21,6 +21,7 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 - Exportações e downloads continuam demonstrativos: nenhuma opção gera, salva ou transfere um arquivo real nesta fase.
 - Central de notificações com importações, exportações e novidades; badge de concluídas não vistas.
 - Data e hora local em cada atividade, aplicáveis a importações, exportações e anúncios.
+- Avisos de ação ficam centralizados dentro do contêiner do shell, com até três itens empilhados e entrada/saída suave.
 - Status `Em andamento`, `Concluída`, `Parcial` e `Falhou`, com cor sempre acompanhada por texto/semântica.
 - Seletor de tema com cenoura flat redesenhada, formato horizontal expandido e vertical recolhido.
 - Ação `Fazer tour` com ovo flat e submenu demonstrativo para `Tour desta tela`, `Tour do menu` e `Tour completo`.
@@ -54,7 +55,7 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 - Clicar em uma atividade de importação ou exportação mostra uma confirmação de download simulado; anúncios permanecem apenas informativos.
 - Overlays fecham com `Esc`, devolvem foco ao acionador e oferecem alvos de pelo menos 48 px.
 - Fechar o sininho por `Esc` ou pelo botão fechar devolve foco ao sininho. Clicar em OC, Bug ou outro controle preserva o foco no controle clicado e não deixa o sininho visualmente ativo.
-- A troca de tema usa uma única transição coordenada de 220 ms com curva cúbica `(0.2, 0, 0, 1)`, interpolando superfícies, bordas, texto, ícones e marcador sem saltos ou animações concorrentes; reduced motion torna a mudança instantânea.
+- A troca de tema usa uma única transição coordenada de 420 ms com `easeInOut`, interpolando superfícies, bordas, texto, ícones e marcador sem saltos ou animações concorrentes; reduced motion torna a mudança instantânea.
 - O ovo executa um ciclo de aproximadamente 900 ms com balanço direita/esquerda progressivamente menor e brilho sincronizado, repousa aproximadamente 3,5 segundos e repete; reduced motion o mantém estático.
 - Hover nunca é a única indicação de uma ação: menus e atividades continuam acionáveis por toque e teclado.
 - Checkbox e linha de filtro formam um único alvo interativo: clicar ou tocar em qualquer ponto alterna a seleção, enquanto o foco visível permanece representado pela linha e pelo contorno semântico do checkbox.
@@ -68,7 +69,7 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 - O modal usa superfície neutra e oferece a exportação simulada do modelo XLSX.
 - Todas as atividades mostram data e hora e atividades de arquivo respondem ao clique com feedback de download simulado.
 - A central apresenta scrollbar somente quando necessário e não rouba foco de OC, Bug ou outros controles.
-- A troca light/dark permanece visualmente contínua durante os 220 ms e não apresenta frames com geometrias ou cores incompatíveis.
+- A troca light/dark permanece visualmente contínua durante os 320 ms e não apresenta frames com geometrias ou cores incompatíveis.
 - Nenhuma largura de 375, 768, 1024 ou 1440 px produz overflow em light ou dark.
 - O shell continua válido sem controlador de atividades.
 - Flutter mínimo passa a ser 3.38 para permitir `@Preview`.
@@ -83,3 +84,17 @@ Validar, sem backend, a experiência de importar e exportar instituições, acom
 - Testes com relógio controlado para timestamp e ciclo periódico do ovo, incluindo cancelamento dos timers.
 - Testes de tema durante o frame intermediário da animação e com reduced motion.
 - Verificação responsiva em 375, 768, 1024 e 1440 px, light/dark e texto ampliado.
+
+## Refinamentos aprovados em 2026-07-22
+
+- No tema claro, as três folhas da cenoura usam verde de contraste mais forte; no tema escuro, preservam o resultado já aprovado.
+- A transição global light/dark passa a 420 ms com `easeInOut`, e todas as superfícies visíveis devem interpolar cores sem saltos concorrentes.
+- O ovo passa a ser coral, sem as três linhas decorativas anteriores, com ornamento simples inspirado na referência aprovada e contraste próprio em light/dark. O balanço, brilho e duração percebida ficam aproximadamente 30% mais evidentes, mantendo repouso periódico e respeitando reduced motion.
+- O submenu de tours abre lateralmente ao acionador. Quando faltar espaço vertical, desloca-se para cima; não deve cobrir o próprio botão nos estados expandido ou recolhido.
+- O seletor card/tabela adota a mesma altura e proporção dos filtros. Ele e `Arquivos` formam um grupo independente alinhado ao extremo direito da mesma faixa em desktop; em mobile, ficam em uma linha própria após um divisor sutil.
+- Em mobile e tablet, os menus de visualização e arquivos permanecem ancorados aos respectivos acionadores e são reposicionados dentro da viewport, sem deslocamento excessivo à esquerda nem aderência à borda direita.
+- O modal de importação mantém o scrim preto translúcido, usa superfície branca no light e superfície neutra escura no dark. `Importar arquivo` é a ação primária laranja; `Exportar modelo .xlsx` é uma ação secundária sutil.
+- A central de notificações usa o tom claro já adotado nos cards para o estado expandido. Ícones de atividade conservam contraste durante hover e o sininho não mantém estado laranja após fechamento por clique externo.
+- Importação, exportação e outras confirmações relevantes mostram um aviso informativo sutil que entra de baixo para cima, permanece por cerca de seis segundos e é substituído pela solicitação seguinte. O aviso não é clicável e direciona textualmente o acompanhamento ao sininho.
+- `Reportar bug` abre modal com superfície neutra, título orientativo, seletores únicos de menu e tela no padrão dos filtros, seleção inicialmente preenchida com a tela atual, menu `Outros` com assunto livre, descrição multilinha, anexo de print demonstrativo e botão amplo `Bug? O Coelo resolve!`.
+- A tabela de instituições inclui a coluna `CEP`, proveniente de `postal_code`, posicionada depois de `Bairro`; a primeira coluna de instituição permanece congelada durante a rolagem horizontal.

@@ -314,6 +314,11 @@ void main() {
     );
     expect(tileInk.hoverColor, CoeloTheme.light.colorScheme.primaryContainer);
     expect(tileInk.focusColor, CoeloTheme.light.colorScheme.primaryContainer);
+    final iconSurface = tester.widget<Container>(
+      find.byKey(const Key('superadmin-activity-icon-demo-export')),
+    );
+    final iconDecoration = iconSurface.decoration! as BoxDecoration;
+    expect(iconDecoration.color, isNot(CoeloTheme.light.colorScheme.primaryContainer));
 
     final announcementInk = tester.widget<InkWell>(
       find.descendant(
@@ -327,6 +332,21 @@ void main() {
     await tester.pump();
 
     expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsOneWidget);
+  });
+
+  testWidgets('uses the light semantic container for the collapsed status marker', (tester) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    controller.completeDemoExport(SuperadminExportFormat.xlsx);
+    await tester.pumpWidget(_app(controller));
+    await tester.tap(find.byKey(const Key('superadmin-notifications')));
+    await tester.pumpAndSettle();
+
+    final marker = tester.widget<Container>(
+      find.byKey(const Key('superadmin-activity-status-surface-demo-export-0')),
+    );
+    final decoration = marker.decoration! as BoxDecoration;
+    expect(decoration.color, CoeloTheme.light.extension<CoeloStatusColors>()!.successContainer);
   });
 
   testWidgets('keeps a file activity without a filename inert', (tester) async {

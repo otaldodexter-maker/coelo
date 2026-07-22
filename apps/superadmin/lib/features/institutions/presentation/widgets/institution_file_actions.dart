@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
+import '../../../../app/shell/superadmin_notice.dart';
 
 class InstitutionFileActions extends StatelessWidget {
   const InstitutionFileActions({required this.activityController, this.compact = false, super.key});
@@ -13,30 +14,48 @@ class InstitutionFileActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    void export(SuperadminExportFormat format) {
+      activityController.completeDemoExport(format);
+      showSuperadminNotice(
+        context,
+        'A exportação está em andamento. Acompanhe pelo sininho.',
+        icon: Icons.download_outlined,
+      );
+    }
+
+    Widget constrainCompactMenuItem(Widget item) =>
+        compact ? SizedBox(width: 176, child: item) : item;
+
     return MenuAnchor(
-      alignmentOffset: Offset(compact ? -152 : 0, CoeloSpacing.space2),
-      style: _fileMenuStyle(context),
+      alignmentOffset: Offset(compact ? -144 : CoeloSpacing.space1, CoeloSpacing.space2),
+      style: _fileMenuStyle(context, compact: compact),
       menuChildren: [
-        MenuItemButton(
-          key: const Key('institution-files-import'),
-          style: _fileMenuItemStyle(colors),
-          onPressed: () => _showImportDialog(context, activityController),
-          leadingIcon: const Icon(Icons.upload_file_outlined),
-          child: const Text('Importar'),
+        constrainCompactMenuItem(
+          MenuItemButton(
+            key: const Key('institution-files-import'),
+            style: _fileMenuItemStyle(colors),
+            onPressed: () => _showImportDialog(context, activityController),
+            leadingIcon: const Icon(Icons.upload_file_outlined),
+            child: const Text('Importar'),
+          ),
         ),
-        MenuItemButton(
-          key: const Key('institution-files-export-csv'),
-          style: _fileMenuItemStyle(colors),
-          onPressed: () => activityController.completeDemoExport(SuperadminExportFormat.csv),
-          leadingIcon: const Icon(Icons.table_rows_outlined),
-          child: const Text('Exportar CSV'),
+        constrainCompactMenuItem(
+          MenuItemButton(
+            key: const Key('institution-files-export-csv'),
+            style: _fileMenuItemStyle(colors),
+            onPressed: () => export(SuperadminExportFormat.csv),
+            leadingIcon: const Icon(Icons.table_rows_outlined),
+            child: const Text('Exportar CSV'),
+          ),
         ),
-        MenuItemButton(
-          key: const Key('institution-files-export-xlsx'),
-          style: _fileMenuItemStyle(colors),
-          onPressed: () => activityController.completeDemoExport(SuperadminExportFormat.xlsx),
-          leadingIcon: const Icon(Icons.grid_on_outlined),
-          child: const Text('Exportar XLSX'),
+        constrainCompactMenuItem(
+          MenuItemButton(
+            key: const Key('institution-files-export-xlsx'),
+            style: _fileMenuItemStyle(colors),
+            onPressed: () => export(SuperadminExportFormat.xlsx),
+            leadingIcon: const Icon(Icons.grid_on_outlined),
+            child: const Text('Exportar XLSX'),
+          ),
         ),
       ],
       builder: (context, controller, child) {
@@ -61,9 +80,10 @@ class InstitutionFileActions extends StatelessWidget {
   }
 }
 
-MenuStyle _fileMenuStyle(BuildContext context) {
+MenuStyle _fileMenuStyle(BuildContext context, {required bool compact}) {
   final colors = Theme.of(context).colorScheme;
   return MenuStyle(
+    alignment: AlignmentDirectional.bottomStart,
     backgroundColor: WidgetStatePropertyAll(colors.surface),
     elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
     padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
@@ -108,9 +128,7 @@ Future<void> _showImportDialog(BuildContext context, SuperadminActivityControlle
 }
 
 void _showDemoDownload(BuildContext context, String message) {
-  final messenger = ScaffoldMessenger.of(context);
-  messenger.removeCurrentSnackBar();
-  messenger.showSnackBar(SnackBar(content: Text(message)));
+  showSuperadminNotice(context, message, icon: Icons.file_download_outlined);
 }
 
 class _InstitutionImportDialog extends StatefulWidget {
@@ -153,10 +171,12 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                   IconButton(
                     tooltip: 'Fechar importação',
                     onPressed: () => Navigator.of(context).pop(),
+                    style: IconButton.styleFrom(foregroundColor: colors.error),
                     icon: const Icon(Icons.close_rounded),
                   ),
                 ],
               ),
+              Divider(height: 1, color: colors.outlineVariant),
               const SizedBox(height: CoeloSpacing.space2),
               Text(
                 _reviewing ? 'Etapa 2 de 2 · Revisar' : 'Etapa 1 de 2 · Arquivo',
@@ -175,19 +195,19 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                     context,
                     'Modelo XLSX preparado para download demonstrativo.',
                   ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: colors.primary,
+                    side: BorderSide(color: colors.primary),
+                  ),
                   icon: const Icon(Icons.file_download_outlined),
-                  label: const Text('Exportar modelo XLSX'),
+                  label: const Text('Exportar modelo .xlsx'),
                 ),
                 const SizedBox(height: CoeloSpacing.space2),
-                OutlinedButton.icon(
+                FilledButton.icon(
                   key: const Key('institution-demo-file-picker'),
                   onPressed: () => setState(() => _fileSelected = true),
                   icon: const Icon(Icons.file_open_outlined),
-                  label: Text(
-                    _fileSelected
-                        ? 'instituicoes-julho.xlsx'
-                        : 'Selecionar arquivo de demonstração',
-                  ),
+                  label: Text(_fileSelected ? 'instituicoes-julho.xlsx' : 'Importar arquivo'),
                 ),
                 if (_fileSelected) ...[
                   const SizedBox(height: CoeloSpacing.space4),
@@ -229,6 +249,11 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
                       key: const Key('institution-import-confirm'),
                       onPressed: () {
                         widget.activityController.startDemoImport();
+                        showSuperadminNotice(
+                          context,
+                          'A importação está em andamento. Acompanhe pelo sininho.',
+                          icon: Icons.upload_file_outlined,
+                        );
                         Navigator.of(context).pop();
                       },
                       child: const Text('Importar 26 linhas'),

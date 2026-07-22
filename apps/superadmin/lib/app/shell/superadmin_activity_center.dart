@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widget_previews.dart';
 
 import '../activity/superadmin_activity.dart';
+import 'superadmin_notice.dart';
 
 class SuperadminActivityCenter extends StatefulWidget {
   const SuperadminActivityCenter({required this.controller, this.buttonStyle, super.key});
@@ -72,6 +73,8 @@ class _SuperadminActivityCenterState extends State<SuperadminActivityCenter> {
             widget.controller.setCenterOpen(false);
             if (_restoreFocusOnClose && mounted) {
               _triggerFocusNode.requestFocus();
+            } else {
+              _triggerFocusNode.unfocus();
             }
             _restoreFocusOnClose = false;
           },
@@ -277,12 +280,11 @@ class _ActivityTile extends StatelessWidget {
                 if (fileName == null) {
                   return;
                 }
-                final messenger = ScaffoldMessenger.of(context);
-                messenger
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(content: Text('Download demonstrativo de $fileName preparado.')),
-                  );
+                showSuperadminNotice(
+                  context,
+                  'Download demonstrativo de $fileName preparado.',
+                  icon: Icons.file_download_outlined,
+                );
               }
             : null,
         child: Padding(
@@ -294,13 +296,15 @@ class _ActivityTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
+                key: Key('superadmin-activity-icon-${activity.id}'),
                 width: CoeloSize.touchMin,
                 height: CoeloSize.touchMin,
                 decoration: BoxDecoration(
-                  color: colors.primaryContainer,
+                  color: colors.primary,
                   borderRadius: BorderRadius.circular(CoeloRadius.md),
+                  border: Border.all(color: colors.outlineVariant),
                 ),
-                child: Icon(_activityIcon(activity.kind), color: colors.primary),
+                child: Icon(_activityIcon(activity.kind), color: colors.onPrimary),
               ),
               const SizedBox(width: CoeloSpacing.space3),
               Expanded(
@@ -320,6 +324,7 @@ class _ActivityTile extends StatelessWidget {
                         const SizedBox(width: CoeloSpacing.space2),
                         SuperadminActivityStatusIndicator(
                           key: Key('superadmin-activity-status-${activity.id}'),
+                          surfaceKey: Key('superadmin-activity-status-surface-${activity.id}'),
                           status: activity.status,
                         ),
                       ],
@@ -373,9 +378,10 @@ class _ActivityTile extends StatelessWidget {
 }
 
 class SuperadminActivityStatusIndicator extends StatefulWidget {
-  const SuperadminActivityStatusIndicator({required this.status, super.key});
+  const SuperadminActivityStatusIndicator({required this.status, this.surfaceKey, super.key});
 
   final SuperadminActivityStatus status;
+  final Key? surfaceKey;
 
   @override
   State<SuperadminActivityStatusIndicator> createState() =>
@@ -436,13 +442,14 @@ class _SuperadminActivityStatusIndicatorState extends State<SuperadminActivitySt
               onTap: _toggleExpanded,
               child: Center(
                 child: Container(
+                  key: widget.surfaceKey,
                   constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
                   decoration: BoxDecoration(
-                    color: expanded ? background : foreground,
+                    color: background,
                     borderRadius: BorderRadius.circular(CoeloRadius.full),
                     border: _focused
-                        ? Border.all(color: expanded ? foreground : background, width: 2)
-                        : null,
+                        ? Border.all(color: foreground, width: 2)
+                        : Border.all(color: foreground.withValues(alpha: expanded ? 0.18 : 0.28)),
                   ),
                   child: AnimatedPadding(
                     duration: CoeloMotion.short,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_activity_center.dart';
@@ -609,9 +610,7 @@ void main() {
     expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
   });
 
-  testWidgets('opens notifications and keeps safe feedback for placeholder actions', (
-    tester,
-  ) async {
+  testWidgets('opens notifications and the bug report form', (tester) async {
     final activities = SuperadminActivityController();
     addTearDown(activities.dispose);
     activities.completeDemoExport(SuperadminExportFormat.csv);
@@ -626,8 +625,19 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
-    await tester.pump();
-    expect(find.text('O reporte de bugs será implementado em breve.'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-bug-report-dialog')), findsOneWidget);
+    expect(find.text('Informe qual bug ou problema achou'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-bug-screen')),
+        matching: find.text('Instituições'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-bug-report-close')));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
@@ -673,7 +683,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.widget<IconButton>(notifications).focusNode?.hasPrimaryFocus, isFalse);
-    expect(find.text('O reporte de bugs será implementado em breve.'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-bug-report-dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-bug-report-close')));
+    await tester.pumpAndSettle();
 
     await tester.tap(notifications);
     await tester.pumpAndSettle();
@@ -682,6 +695,59 @@ void main() {
 
     expect(tester.widget<IconButton>(notifications).focusNode?.hasPrimaryFocus, isFalse);
     expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
+  });
+
+  testWidgets('submits a bug report with current screen, multiline text and demo attachment', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_shellApp());
+
+    await tester.tap(find.byKey(const Key('superadmin-report-bug')));
+    await tester.pumpAndSettle();
+
+    final screenField = find.byKey(const Key('superadmin-bug-screen'));
+    final description = find.byKey(const Key('superadmin-bug-description'));
+    expect(screenField, findsOneWidget);
+    expect(find.descendant(of: screenField, matching: find.text('Instituições')), findsOneWidget);
+    expect(tester.widget<TextField>(description).maxLines, greaterThanOrEqualTo(4));
+    expect(find.text('Outro'), findsNothing);
+
+    await tester.tap(screenField);
+    await tester.pumpAndSettle();
+    expect(find.text('Outro'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-bug-screen-option-Outro')), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_shellApp());
+    await tester.tap(find.byKey(const Key('superadmin-report-bug')));
+    await tester.pumpAndSettle();
+    final refreshedDescription = find.byKey(const Key('superadmin-bug-description'));
+    await tester.enterText(refreshedDescription, 'A tabela não atualizou após o filtro.');
+    await tester.tap(find.byKey(const Key('superadmin-bug-attach')));
+    await tester.pump();
+    expect(find.text('print-anexado.png'), findsOneWidget);
+
+    final submit = find.byKey(const Key('superadmin-bug-submit'));
+    await tester.ensureVisible(submit);
+    await tester.pump();
+    await tester.tap(submit);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Relato enviado com sucesso.'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-bug-report-dialog')), findsNothing);
+    expect(find.byKey(const Key('superadmin-transient-notice')), findsOneWidget);
+  });
+
+  testWidgets('clears the notification focus after an outside close', (tester) async {
+    await tester.pumpWidget(_shellApp());
+
+    final notifications = find.byKey(const Key('superadmin-notifications'));
+    await tester.tap(notifications);
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(500, 500));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<IconButton>(notifications).focusNode?.hasFocus, isFalse);
   });
 
   testWidgets('uses a full-width carrot theme control and preserves the compact toggle', (
@@ -741,7 +807,7 @@ void main() {
 
     await tester.tap(control);
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 110));
+    await tester.pump(const Duration(milliseconds: 210));
 
     final middleDecoration = _themeControlDecoration(tester);
     expect(middleDecoration.color, isNot(lightColor));
@@ -749,14 +815,14 @@ void main() {
     expect(tester.getSize(control), lightSize);
     expect(middleDecoration.borderRadius, lightRadius);
 
-    await tester.pump(const Duration(milliseconds: 110));
+    await tester.pump(const Duration(milliseconds: 210));
     final darkDecoration = _themeControlDecoration(tester);
     expect(darkDecoration.color, darkColor);
     expect(tester.getSize(control), lightSize);
     expect(darkDecoration.borderRadius, lightRadius);
   });
 
-  testWidgets('keeps navigation and status colors on the global 110 and 220 ms frames', (
+  testWidgets('keeps navigation and status colors on the global 210 and 420 ms frames', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
@@ -771,25 +837,25 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-theme-mode-control')));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 110));
+    await tester.pump(const Duration(milliseconds: 210));
 
     final middleNavigation = Theme.of(tester.element(navigation)).colorScheme.primary;
     final middleStatus = Theme.of(
       tester.element(status),
-    ).extension<CoeloStatusColors>()!.onSuccessContainer;
+    ).extension<CoeloStatusColors>()!.successContainer;
     expect(middleNavigation, isNot(lightNavigation));
     expect(middleNavigation, isNot(CoeloTheme.dark.colorScheme.primary));
     expect(middleStatus, isNot(lightStatus));
-    expect(middleStatus, isNot(CoeloTheme.dark.extension<CoeloStatusColors>()!.onSuccessContainer));
+    expect(middleStatus, isNot(CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer));
     expect(_surfaceDecoration(tester, navigation).color, middleNavigation);
     expect(_surfaceDecoration(tester, statusSurface).color, middleStatus);
 
-    await tester.pump(const Duration(milliseconds: 110));
+    await tester.pump(const Duration(milliseconds: 210));
 
     expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
     expect(
       _surfaceDecoration(tester, statusSurface).color,
-      CoeloTheme.dark.extension<CoeloStatusColors>()!.onSuccessContainer,
+      CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,
     );
   });
 
@@ -811,7 +877,7 @@ void main() {
     expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
     expect(
       _surfaceDecoration(tester, statusSurface).color,
-      CoeloTheme.dark.extension<CoeloStatusColors>()!.onSuccessContainer,
+      CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,
     );
   });
 
@@ -826,15 +892,15 @@ void main() {
     final marker = tester.widget<AnimatedAlign>(
       find.descendant(of: control, matching: find.byType(AnimatedAlign)),
     );
-    expect(marker.duration, CoeloMotion.standard);
-    expect(marker.curve, const Cubic(0.2, 0, 0, 1));
+    expect(marker.duration, const Duration(milliseconds: 420));
+    expect(marker.curve, Curves.easeInOut);
 
     final content = tester.widget<AnimatedSwitcher>(
       find.descendant(of: control, matching: find.byType(AnimatedSwitcher)),
     );
-    expect(content.duration, CoeloMotion.standard);
-    expect(content.switchInCurve, const Cubic(0.2, 0, 0, 1));
-    expect(content.switchOutCurve, const Cubic(0.2, 0, 0, 1));
+    expect(content.duration, const Duration(milliseconds: 420));
+    expect(content.switchInCurve, Curves.easeInOut);
+    expect(content.switchOutCurve, Curves.easeInOut);
   });
 
   testWidgets('switches theme instantly without changing geometry under reduced motion', (
@@ -927,9 +993,12 @@ void main() {
     final motion = find.byKey(const Key('superadmin-onboarding-egg-motion'));
     final resting = tester.widget<Transform>(motion).transform.clone();
     await tester.pump(const Duration(milliseconds: 3500));
-    await tester.pump(const Duration(milliseconds: 180));
-    expect(tester.widget<Transform>(motion).transform, isNot(resting));
-    await tester.pump(const Duration(milliseconds: 900));
+    await tester.pump(const Duration(milliseconds: 120));
+    final animated = tester.widget<Transform>(motion).transform;
+    expect(animated, isNot(resting));
+    final angle = math.atan2(animated.entry(1, 0), animated.entry(0, 0)).abs();
+    expect(angle, greaterThan(4.5 * math.pi / 180));
+    await tester.pump(const Duration(milliseconds: 835));
     expect(tester.widget<Transform>(motion).transform, resting);
 
     await tester.pumpWidget(_shellApp(disableAnimations: true));
@@ -937,6 +1006,29 @@ void main() {
     await tester.pump(const Duration(seconds: 6));
     expect(tester.widget<Transform>(motion).transform, reducedInitial);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('opens the tour menu beside expanded and collapsed triggers', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    var trigger = find.byKey(const Key('superadmin-onboarding-tour'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    var firstOption = find.byKey(const Key('superadmin-tour-screen'));
+    expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
+
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+    trigger = find.byKey(const Key('superadmin-onboarding-tour'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    firstOption = find.byKey(const Key('superadmin-tour-screen'));
+    expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
+    expect(tester.getRect(firstOption).right, lessThanOrEqualTo(1200));
   });
 
   testWidgets('does not schedule the egg timer in reduced motion and cancels it on dispose', (
@@ -1019,7 +1111,7 @@ class _ThemeShellHarnessState extends State<_ThemeShellHarness> {
       themeMode: _mode,
       themeAnimationStyle: widget.disableAnimations
           ? AnimationStyle.noAnimation
-          : const AnimationStyle(duration: CoeloMotion.standard, curve: Cubic(0.2, 0, 0, 1)),
+          : const AnimationStyle(duration: Duration(milliseconds: 420), curve: Curves.easeInOut),
       builder: (context, child) => SuperadminThemeModeScope(
         mode: _mode,
         onChanged: (mode) => setState(() => _mode = mode),

@@ -128,7 +128,7 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-files-import')));
     await tester.pumpAndSettle();
     expect(find.text('Importar instituições'), findsOneWidget);
-    expect(find.text('Selecionar arquivo de demonstração'), findsOneWidget);
+    expect(find.text('Importar arquivo'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('institution-demo-file-picker')));
     await tester.pumpAndSettle();
@@ -163,11 +163,61 @@ void main() {
     final dialog = tester.widget<Dialog>(find.byType(Dialog));
     expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
     expect(find.byKey(const Key('institution-import-template-export')), findsOneWidget);
+    expect(find.text('Exportar modelo .xlsx'), findsOneWidget);
+    expect(find.text('Importar arquivo'), findsOneWidget);
+    expect(
+      tester.widget<Widget>(find.byKey(const Key('institution-demo-file-picker'))),
+      isA<FilledButton>(),
+    );
+    expect(
+      tester.widget<Widget>(find.byKey(const Key('institution-import-template-export'))),
+      isA<OutlinedButton>(),
+    );
 
     await tester.tap(find.byKey(const Key('institution-import-template-export')));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Modelo XLSX preparado para download demonstrativo.'), findsOneWidget);
+    final notice = tester.widget<SnackBar>(find.byType(SnackBar));
+    expect(notice.duration, const Duration(seconds: 6));
+    expect(notice.behavior, SnackBarBehavior.floating);
+    expect(notice.action, isNull);
+  });
+
+  testWidgets('shows a six-second informational notice when an export starts', (tester) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller));
+
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-export-xlsx')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(find.text('A exportação está em andamento. Acompanhe pelo sininho.'), findsOneWidget);
+    final notice = tester.widget<SnackBar>(find.byType(SnackBar));
+    expect(notice.duration, const Duration(seconds: 6));
+    expect(notice.behavior, SnackBarBehavior.floating);
+    expect(notice.action, isNull);
+  });
+
+  testWidgets('keeps the compact files menu anchored inside the viewport', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller, compact: true, size: const Size(375, 800)));
+
+    final trigger = find.byKey(const Key('institution-files-action'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+
+    final firstItem = find.byKey(const Key('institution-files-import'));
+    final menuRect = tester.getRect(firstItem);
+    expect(menuRect.left, greaterThanOrEqualTo(16));
+    expect(menuRect.right, lessThanOrEqualTo(359));
+    expect(menuRect.top, greaterThanOrEqualTo(tester.getBottomLeft(trigger).dy));
   });
 
   testWidgets('uses a neutral surface in the dark import dialog', (tester) async {
@@ -255,9 +305,12 @@ Widget _app(
     home: MediaQuery(
       data: MediaQueryData(size: size, textScaler: textScaler),
       child: Scaffold(
-        body: Align(
-          alignment: Alignment.topRight,
-          child: InstitutionFileActions(activityController: controller, compact: compact),
+        body: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: InstitutionFileActions(activityController: controller, compact: compact),
+          ),
         ),
       ),
     ),

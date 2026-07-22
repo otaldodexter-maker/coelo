@@ -30,12 +30,20 @@ void main() {
     final typeLeft = tester.getTopLeft(find.byKey(const Key('institution-type-filter'))).dx;
     final statusLeft = tester.getTopLeft(find.byKey(const Key('institution-status-filter'))).dx;
     final stateLeft = tester.getTopLeft(find.byKey(const Key('institution-state-filter'))).dx;
-    expect(typeLeft, lessThan(statusLeft));
-    expect(statusLeft, lessThan(stateLeft));
+    expect(
+      typeLeft,
+      lessThan(statusLeft),
+      reason: 'type=$typeLeft status=$statusLeft state=$stateLeft',
+    );
+    expect(
+      statusLeft,
+      lessThan(stateLeft),
+      reason: 'type=$typeLeft status=$statusLeft state=$stateLeft',
+    );
     final searchField = tester.widget<TextField>(find.byType(TextField));
     expect(searchField.decoration?.hintText, 'Buscar por nome');
     expect(searchField.decoration?.hintText, isNot(contains('domínio')));
-    expect(tester.getSize(find.byType(TextField)).width, 300);
+    expect(tester.getSize(find.byType(TextField)).width, 216);
     final searchBorder = searchField.decoration!.enabledBorder! as OutlineInputBorder;
     expect(searchBorder.borderRadius.topLeft.x, CoeloRadius.full);
     expect(find.text('Importar instituições'), findsNothing);
@@ -281,7 +289,13 @@ void main() {
 
     expect(find.byKey(const Key('institution-directory-table')), findsOneWidget);
     expect(find.byKey(const Key('create-institution-banner')), findsOneWidget);
-    expect(find.text('Instituto Aurora'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('institution-directory-table')),
+        matching: find.text('Instituto Aurora'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Centro Horizonte'), findsNothing);
   });
 
@@ -309,6 +323,7 @@ void main() {
       'number': 'Número',
       'complement': 'Complemento',
       'district': 'Bairro',
+      'postal-code': 'CEP',
       'city': 'Município',
       'state': 'UF',
     };
@@ -325,6 +340,7 @@ void main() {
     expect(find.byKey(const Key('copy-email-demo-institution-aurora')), findsOneWidget);
     expect(find.byKey(const Key('copy-phone-demo-institution-aurora')), findsOneWidget);
     expect(find.byKey(const Key('copy-mobile-phone-demo-institution-aurora')), findsOneWidget);
+    expect(find.text('01310-100'), findsOneWidget);
 
     final viewportWidth = tester
         .getSize(find.byKey(const Key('institution-directory-table-viewport')))
@@ -521,6 +537,27 @@ void main() {
     expect(find.byKey(const Key('institution-export-action')), findsNothing);
   });
 
+  testWidgets('keeps view and file controls grouped at the responsive trailing edge', (
+    tester,
+  ) async {
+    for (final width in [375.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+
+      final actions = find.byKey(const Key('institution-toolbar-actions'));
+      final view = find.byKey(const Key('institution-display-toggle'));
+      final files = find.byKey(const Key('institution-files-action'));
+      expect(actions, findsOneWidget);
+      expect(tester.getSize(view).height, CoeloSize.touchMin);
+      expect(tester.getTopRight(files).dx, lessThanOrEqualTo(width - CoeloSpacing.space4));
+      expect(tester.getTopLeft(files).dx, greaterThan(tester.getTopLeft(view).dx));
+      expect(tester.takeException(), isNull, reason: 'toolbar width $width');
+    }
+  });
+
   testWidgets('keeps import progress in the notification center without blocking the page', (
     tester,
   ) async {
@@ -619,10 +656,14 @@ void main() {
     expect(find.byType(Scrollbar), findsOneWidget);
 
     final scrollable = find.byKey(const Key('institution-directory-table-scroll'));
-    final before = tester.getTopLeft(find.text('Instituição')).dx;
+    final before = tester
+        .getTopLeft(find.byKey(const Key('institution-column-header-institution')))
+        .dx;
     await tester.drag(scrollable, const Offset(-600, 0));
     await tester.pumpAndSettle();
-    final after = tester.getTopLeft(find.text('Instituição')).dx;
+    final after = tester
+        .getTopLeft(find.byKey(const Key('institution-column-header-institution')))
+        .dx;
     expect(after, lessThan(before));
   });
 

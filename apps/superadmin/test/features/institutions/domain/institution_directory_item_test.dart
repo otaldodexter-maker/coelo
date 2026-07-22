@@ -14,6 +14,7 @@ void main() {
       'type_name': 'Escola',
       'district': 'Pinheiros',
       'street': 'Rua das Flores',
+      'postal_code': '01234-567',
       'number': '120',
       'complement': 'Sala 4',
       'city': 'São Paulo',
@@ -39,6 +40,7 @@ void main() {
     expect(item.typeName, 'Escola');
     expect(item.district, 'Pinheiros');
     expect(item.street, 'Rua das Flores');
+    expect(item.postalCode, '01234-567');
     expect(item.addressNumber, '120');
     expect(item.complement, 'Sala 4');
     expect(item.city, 'São Paulo');

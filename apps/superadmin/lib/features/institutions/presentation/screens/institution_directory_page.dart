@@ -165,15 +165,21 @@ class _DirectoryToolbar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+        final compactFileAction = compact || constraints.maxWidth < 1000;
         final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 160.0;
-        return Wrap(
-          key: const Key('institution-filter-toolbar'),
+        final searchWidth = compact
+            ? constraints.maxWidth
+            : compactFileAction
+            ? 216.0
+            : 300.0;
+        final filters = Wrap(
+          key: const Key('institution-filter-controls'),
           spacing: CoeloSpacing.space3,
           runSpacing: CoeloSpacing.space2,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             SizedBox(
-              width: compact ? constraints.maxWidth : 300,
+              width: searchWidth,
               height: CoeloSize.touchMin,
               child: TextField(
                 controller: searchController,
@@ -268,30 +274,85 @@ class _DirectoryToolbar extends StatelessWidget {
                   onApply: viewModel.setDistricts,
                 ),
               ),
-            SegmentedButton<_DirectoryDisplay>(
-              segments: const [
-                ButtonSegment(
-                  value: _DirectoryDisplay.cards,
-                  tooltip: 'Exibir como cards',
-                  icon: Icon(key: Key('institution-view-cards'), Icons.grid_view_rounded),
-                ),
-                ButtonSegment(
-                  value: _DirectoryDisplay.table,
-                  tooltip: 'Exibir como tabela',
-                  icon: Icon(key: Key('institution-view-table'), Icons.table_rows_rounded),
-                ),
-              ],
-              selected: {display},
-              showSelectedIcon: false,
-              onSelectionChanged: (selection) => onDisplayChanged(selection.single),
-            ),
-            InstitutionFileActions(activityController: activityController, compact: compact),
             if (viewModel.query.hasActiveFilters)
               TextButton.icon(
                 onPressed: onClearFilters,
                 icon: const Icon(Icons.filter_alt_off_outlined),
                 label: const Text('Limpar filtros'),
               ),
+          ],
+        );
+        final actions = SizedBox(
+          key: const Key('institution-toolbar-actions'),
+          height: CoeloSize.touchMin,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                key: const Key('institution-display-toggle'),
+                height: CoeloSize.touchMin,
+                child: SegmentedButton<_DirectoryDisplay>(
+                  style: const ButtonStyle(
+                    minimumSize: WidgetStatePropertyAll(
+                      Size(CoeloSize.touchMin, CoeloSize.touchMin),
+                    ),
+                    padding: WidgetStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+                    ),
+                  ),
+                  segments: const [
+                    ButtonSegment(
+                      value: _DirectoryDisplay.cards,
+                      tooltip: 'Exibir como cards',
+                      icon: Icon(key: Key('institution-view-cards'), Icons.grid_view_rounded),
+                    ),
+                    ButtonSegment(
+                      value: _DirectoryDisplay.table,
+                      tooltip: 'Exibir como tabela',
+                      icon: Icon(key: Key('institution-view-table'), Icons.table_rows_rounded),
+                    ),
+                  ],
+                  selected: {display},
+                  showSelectedIcon: false,
+                  onSelectionChanged: (selection) => onDisplayChanged(selection.single),
+                ),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              InstitutionFileActions(
+                activityController: activityController,
+                compact: compactFileAction,
+              ),
+            ],
+          ),
+        );
+        if (compact) {
+          return Column(
+            key: const Key('institution-filter-toolbar'),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              filters,
+              const SizedBox(height: CoeloSpacing.space3),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+                  child: Align(alignment: Alignment.centerRight, child: actions),
+                ),
+              ),
+            ],
+          );
+        }
+        return Row(
+          key: const Key('institution-filter-toolbar'),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: filters),
+            const SizedBox(width: CoeloSpacing.space4),
+            actions,
           ],
         );
       },
@@ -1069,10 +1130,19 @@ class _InstitutionCardState extends State<_InstitutionCard> {
                         SizedBox.square(
                           key: Key('institution-avatar-${item.id}'),
                           dimension: 44,
-                          child: CircleAvatar(
-                            backgroundColor: colors.secondaryContainer,
-                            foregroundColor: colors.onSecondaryContainer,
-                            child: Text(item.initials),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: colors.secondaryContainer,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: colors.onSecondaryContainer.withValues(alpha: 0.22),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              item.initials,
+                              style: TextStyle(color: colors.onSecondaryContainer),
+                            ),
                           ),
                         ),
                         const SizedBox(width: CoeloSpacing.space3),
@@ -1327,26 +1397,37 @@ class _InstitutionTableState extends State<_InstitutionTable> {
                       PointerDeviceKind.trackpad,
                     },
                   ),
-                  child: Scrollbar(
-                    controller: _scrollController,
-                    thumbVisibility: true,
-                    child: SingleChildScrollView(
-                      key: const Key('institution-directory-table-scroll'),
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        key: const Key('institution-directory-table'),
-                        width: tableWidth,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _headerRow(context),
-                            ...widget.items.map((item) => _dataRow(context, item)),
-                            const SizedBox(height: CoeloSpacing.space2),
-                          ],
+                  child: Stack(
+                    children: [
+                      Scrollbar(
+                        controller: _scrollController,
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          key: const Key('institution-directory-table-scroll'),
+                          controller: _scrollController,
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            key: const Key('institution-directory-table'),
+                            width: tableWidth,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _headerRow(context),
+                                ...widget.items.map((item) => _dataRow(context, item)),
+                                const SizedBox(height: CoeloSpacing.space2),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: _columnWidths[_InstitutionColumn.institution],
+                        child: IgnorePointer(child: _pinnedInstitutionColumn(context)),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -1358,74 +1439,129 @@ class _InstitutionTableState extends State<_InstitutionTable> {
   }
 
   Widget _headerRow(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return ColoredBox(
-      color: colors.surfaceContainer,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       child: Row(
         children: _InstitutionColumn.values
-            .map((column) {
-              return SizedBox(
-                key: Key('institution-column-header-${column.id}'),
-                width: _columnWidths[column],
-                height: 56,
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          column.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.dataTableTheme.headingTextStyle,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.resizeColumn,
-                        child: GestureDetector(
-                          key: Key('institution-column-resizer-${column.id}'),
-                          behavior: HitTestBehavior.opaque,
-                          onHorizontalDragUpdate: (details) {
-                            setState(() {
-                              _columnWidths[column] = (_columnWidths[column]! + details.delta.dx)
-                                  .clamp(column.minimumWidth, 600);
-                            });
-                          },
-                          child: SizedBox(
-                            width: CoeloSpacing.space3,
-                            child: Center(
-                              child: Container(width: 1, height: 24, color: colors.outlineVariant),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            })
+            .map((column) => _headerCell(context, column))
             .toList(growable: false),
       ),
+    );
+  }
+
+  Widget _headerCell(BuildContext context, _InstitutionColumn column, {bool pinned = false}) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return SizedBox(
+      key: Key('institution-column-header-${column.id}${pinned ? '-pinned' : ''}'),
+      width: _columnWidths[column],
+      height: 56,
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                column.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.dataTableTheme.headingTextStyle,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.resizeColumn,
+              child: GestureDetector(
+                key: Key('institution-column-resizer-${column.id}${pinned ? '-pinned' : ''}'),
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _columnWidths[column] = (_columnWidths[column]! + details.delta.dx).clamp(
+                      column.minimumWidth,
+                      600,
+                    );
+                  });
+                },
+                child: SizedBox(
+                  width: CoeloSpacing.space3,
+                  child: Center(
+                    child: Container(width: 1, height: 24, color: colors.outlineVariant),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pinnedInstitutionColumn(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(3, 0),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _headerCell(context, _InstitutionColumn.institution, pinned: true),
+          ...widget.items.map((item) => _pinnedInstitutionRow(context, item)),
+          const SizedBox(height: CoeloSpacing.space2),
+        ],
+      ),
+    );
+  }
+
+  Widget _pinnedInstitutionRow(BuildContext context, InstitutionDirectoryItem item) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      height: 64,
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+      child: _institutionCell(context, item),
+    );
+  }
+
+  Widget _institutionCell(BuildContext context, InstitutionDirectoryItem item) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: colors.secondaryContainer,
+            shape: BoxShape.circle,
+            border: Border.all(color: colors.onSecondaryContainer.withValues(alpha: 0.22)),
+          ),
+          alignment: Alignment.center,
+          child: Text(item.initials, style: TextStyle(color: colors.onSecondaryContainer)),
+        ),
+        const SizedBox(width: CoeloSpacing.space2),
+        Expanded(child: Text(item.publicName, maxLines: 1, overflow: TextOverflow.ellipsis)),
+      ],
     );
   }
 
   Widget _dataRow(BuildContext context, InstitutionDirectoryItem item) {
     final colors = Theme.of(context).colorScheme;
     final values = <_InstitutionColumn, Widget>{
-      _InstitutionColumn.institution: Row(
-        children: [
-          CircleAvatar(radius: 16, child: Text(item.initials)),
-          const SizedBox(width: CoeloSpacing.space2),
-          Expanded(child: Text(item.publicName, maxLines: 1, overflow: TextOverflow.ellipsis)),
-        ],
-      ),
+      _InstitutionColumn.institution: _institutionCell(context, item),
       _InstitutionColumn.type: _cellText(item.typeName ?? 'Não informado'),
       _InstitutionColumn.units: _cellText('${item.unitsCount}'),
       _InstitutionColumn.groups: _cellText('${item.groupsCount}'),
@@ -1444,6 +1580,7 @@ class _InstitutionTableState extends State<_InstitutionTable> {
       ),
       _InstitutionColumn.domain: _copyableContent(item, 'domain', 'Domínio', item.primaryDomain),
       _InstitutionColumn.street: _cellText(item.street ?? '—'),
+      _InstitutionColumn.postalCode: _cellText(item.postalCode ?? '—'),
       _InstitutionColumn.number: _cellText(item.addressNumber ?? '—'),
       _InstitutionColumn.complement: _cellText(item.complement ?? '—'),
       _InstitutionColumn.district: _cellText(item.district ?? '—'),
@@ -1523,6 +1660,7 @@ enum _InstitutionColumn {
   number('number', 'Número', 110, 88),
   complement('complement', 'Complemento', 170, 130),
   district('district', 'Bairro', 150, 120),
+  postalCode('postal-code', 'CEP', 130, 110),
   city('city', 'Município', 170, 130),
   state('state', 'UF', 80, 64);
 

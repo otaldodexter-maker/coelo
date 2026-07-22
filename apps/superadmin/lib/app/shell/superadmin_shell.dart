@@ -10,6 +10,8 @@ import '../activity/superadmin_activity.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
 import 'superadmin_activity_center.dart';
+import 'superadmin_bug_report_dialog.dart';
+import 'superadmin_notice.dart';
 
 const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
@@ -17,7 +19,7 @@ const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
 const _compactProfileMenuWidth = 176.0;
 const _compactProfileTriggerWidth = 52.0;
-const _coeloMotionCurve = Cubic(0.2, 0, 0, 1);
+const _coeloMotionCurve = Curves.easeInOut;
 
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
@@ -84,6 +86,7 @@ class _SuperadminShellState extends State<SuperadminShell> {
             appBar: _CompactAppBar(
               onLogout: _handleLogout,
               activityController: _activityController,
+              currentScreen: widget.title,
             ),
             drawer: Drawer(
               shape: const RoundedRectangleBorder(
@@ -99,20 +102,22 @@ class _SuperadminShellState extends State<SuperadminShell> {
                 ),
               ),
             ),
-            body: Column(
-              children: [
-                _PageHeader(
-                  title: widget.title,
-                  subtitle: widget.subtitle,
-                  actions: widget.actions,
-                  compactActions: widget.compactActions,
-                  onLogout: _handleLogout,
-                  activityController: _activityController,
-                  compact: true,
-                ),
-                const _InsetDivider(key: Key('superadmin-page-divider')),
-                Expanded(child: pageBody),
-              ],
+            body: SuperadminNoticeHost(
+              child: Column(
+                children: [
+                  _PageHeader(
+                    title: widget.title,
+                    subtitle: widget.subtitle,
+                    actions: widget.actions,
+                    compactActions: widget.compactActions,
+                    onLogout: _handleLogout,
+                    activityController: _activityController,
+                    compact: true,
+                  ),
+                  const _InsetDivider(key: Key('superadmin-page-divider')),
+                  Expanded(child: pageBody),
+                ],
+              ),
             ),
           );
         }
@@ -120,61 +125,63 @@ class _SuperadminShellState extends State<SuperadminShell> {
         final sidebarWidth = _sidebarCollapsed ? _collapsedSidebarWidth : _expandedSidebarWidth;
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-          body: Padding(
-            padding: const EdgeInsets.all(_shellGutter),
-            child: Row(
-              children: [
-                AnimatedContainer(
-                  width: sidebarWidth + _shellGutter,
-                  duration: CoeloMotion.short,
-                  curve: Curves.easeOut,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      AnimatedContainer(
-                        key: const Key('superadmin-sidebar'),
-                        width: sidebarWidth,
-                        duration: CoeloMotion.short,
-                        curve: Curves.easeOut,
-                        child: _FloatingSurface(
-                          key: const Key('superadmin-floating-sidebar'),
-                          child: _Sidebar(collapsed: _sidebarCollapsed),
-                        ),
-                      ),
-                      AnimatedPositioned(
-                        left: sidebarWidth - CoeloSpacing.space4,
-                        top: CoeloSpacing.space8,
-                        duration: CoeloMotion.short,
-                        curve: Curves.easeOut,
-                        child: _SidebarToggle(
-                          collapsed: _sidebarCollapsed,
-                          onPressed: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: _FloatingSurface(
-                    key: const Key('superadmin-floating-content'),
-                    clip: true,
-                    child: Column(
+          body: SuperadminNoticeHost(
+            child: Padding(
+              padding: const EdgeInsets.all(_shellGutter),
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    width: sidebarWidth + _shellGutter,
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeOutCubic,
+                    child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        _PageHeader(
-                          title: widget.title,
-                          subtitle: widget.subtitle,
-                          actions: widget.actions,
-                          compactActions: widget.compactActions,
-                          onLogout: _handleLogout,
-                          activityController: _activityController,
+                        AnimatedContainer(
+                          key: const Key('superadmin-sidebar'),
+                          width: sidebarWidth,
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                          child: _FloatingSurface(
+                            key: const Key('superadmin-floating-sidebar'),
+                            child: _Sidebar(collapsed: _sidebarCollapsed),
+                          ),
                         ),
-                        const _InsetDivider(key: Key('superadmin-page-divider')),
-                        Expanded(child: pageBody),
+                        AnimatedPositioned(
+                          left: sidebarWidth - CoeloSpacing.space4,
+                          top: CoeloSpacing.space8,
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                          child: _SidebarToggle(
+                            collapsed: _sidebarCollapsed,
+                            onPressed: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: _FloatingSurface(
+                      key: const Key('superadmin-floating-content'),
+                      clip: true,
+                      child: Column(
+                        children: [
+                          _PageHeader(
+                            title: widget.title,
+                            subtitle: widget.subtitle,
+                            actions: widget.actions,
+                            compactActions: widget.compactActions,
+                            onLogout: _handleLogout,
+                            activityController: _activityController,
+                          ),
+                          const _InsetDivider(key: Key('superadmin-page-divider')),
+                          Expanded(child: pageBody),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -467,7 +474,7 @@ class _ExpandedNavigationSection extends StatelessWidget {
         children: [
           _NavigationSectionHeader(section: section, expanded: expanded, onTap: onToggle),
           AnimatedSize(
-            duration: CoeloMotion.short,
+            duration: const Duration(milliseconds: 260),
             curve: Curves.easeOut,
             alignment: Alignment.topCenter,
             child: expanded
@@ -748,23 +755,23 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 835),
     );
     _rotation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: 4 * math.pi / 180), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0, end: 7.3 * math.pi / 180), weight: 20),
       TweenSequenceItem(
-        tween: Tween(begin: 4 * math.pi / 180, end: -4 * math.pi / 180),
+        tween: Tween(begin: 7.3 * math.pi / 180, end: -7.3 * math.pi / 180),
         weight: 25,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: -4 * math.pi / 180, end: 2 * math.pi / 180),
+        tween: Tween(begin: -7.3 * math.pi / 180, end: 3.65 * math.pi / 180),
         weight: 20,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: 2 * math.pi / 180, end: -2 * math.pi / 180),
+        tween: Tween(begin: 3.65 * math.pi / 180, end: -3.65 * math.pi / 180),
         weight: 20,
       ),
-      TweenSequenceItem(tween: Tween(begin: -2 * math.pi / 180, end: 0), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: -3.65 * math.pi / 180, end: 0), weight: 15),
     ]).animate(_animationController);
     _glow = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0, end: 1), weight: 1),
@@ -826,7 +833,10 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
     final colors = theme.colorScheme;
     final itemStyle = _tourMenuItemStyle(colors);
     return MenuAnchor(
-      alignmentOffset: const Offset(0, CoeloSpacing.space2),
+      alignmentOffset: Offset(
+        widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space2 : 252,
+        -CoeloSize.touchMin,
+      ),
       style: _tourMenuStyle(colors),
       menuChildren: _tourMenuItems(
         itemStyle: itemStyle,
@@ -868,9 +878,11 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: colors.primary.withValues(alpha: 0.16 * _glow.value),
-                                    blurRadius: CoeloSpacing.space3 * _glow.value,
-                                    spreadRadius: CoeloSpacing.spaceHalf * _glow.value,
+                                    color: CoeloPalette.orange300.withValues(
+                                      alpha: 0.38 * _glow.value,
+                                    ),
+                                    blurRadius: CoeloSpacing.space5 * _glow.value,
+                                    spreadRadius: CoeloSpacing.space2 * _glow.value,
                                   ),
                                 ],
                               ),
@@ -883,10 +895,12 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
                           child: CustomPaint(
                             key: const Key('superadmin-onboarding-egg'),
                             painter: _FlatEggPainter(
-                              baseColor: colors.primaryContainer,
-                              firstStripeColor: colors.tertiary,
-                              secondStripeColor: colors.primary,
-                              dotColor: colors.onPrimaryContainer,
+                              baseColor: theme.brightness == Brightness.dark
+                                  ? CoeloPalette.orange400
+                                  : CoeloPalette.orange500,
+                              ornamentColor: theme.brightness == Brightness.dark
+                                  ? CoeloPalette.orange100
+                                  : CoeloPalette.peach50,
                             ),
                           ),
                         ),
@@ -1012,17 +1026,10 @@ class _TourMenuItem extends StatelessWidget {
 }
 
 class _FlatEggPainter extends CustomPainter {
-  const _FlatEggPainter({
-    required this.baseColor,
-    required this.firstStripeColor,
-    required this.secondStripeColor,
-    required this.dotColor,
-  });
+  const _FlatEggPainter({required this.baseColor, required this.ornamentColor});
 
   final Color baseColor;
-  final Color firstStripeColor;
-  final Color secondStripeColor;
-  final Color dotColor;
+  final Color ornamentColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1050,60 +1057,47 @@ class _FlatEggPainter extends CustomPainter {
     canvas
       ..save()
       ..clipPath(egg);
-    final firstStripe = Path()
-      ..moveTo(-size.width * 0.08, size.height * 0.38)
+    final wave = Path()
+      ..moveTo(-size.width * 0.08, size.height * 0.62)
       ..cubicTo(
-        size.width * 0.22,
-        size.height * 0.26,
-        size.width * 0.68,
-        size.height * 0.48,
-        size.width * 1.08,
-        size.height * 0.3,
-      );
-    final secondStripe = Path()
-      ..moveTo(-size.width * 0.08, size.height * 0.67)
+        size.width * 0.2,
+        size.height * 0.45,
+        size.width * 0.34,
+        size.height * 0.8,
+        size.width * 0.58,
+        size.height * 0.6,
+      )
       ..cubicTo(
-        size.width * 0.3,
-        size.height * 0.5,
-        size.width * 0.7,
-        size.height * 0.78,
+        size.width * 0.76,
+        size.height * 0.44,
+        size.width * 0.9,
+        size.height * 0.7,
         size.width * 1.08,
-        size.height * 0.58,
+        size.height * 0.54,
       );
     canvas
       ..drawPath(
-        firstStripe,
+        wave,
         Paint()
-          ..color = firstStripeColor
+          ..color = ornamentColor
           ..style = PaintingStyle.stroke
-          ..strokeWidth = math.max(2, size.height * 0.14)
-          ..strokeCap = StrokeCap.round,
-      )
-      ..drawPath(
-        secondStripe,
-        Paint()
-          ..color = secondStripeColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = math.max(2, size.height * 0.14)
+          ..strokeWidth = math.max(2, size.height * 0.1)
           ..strokeCap = StrokeCap.round,
       )
       ..restore();
-    final dots = Paint()..color = dotColor;
+    final dots = Paint()..color = ornamentColor;
     for (final center in [
-      Offset(size.width * 0.38, size.height * 0.23),
-      Offset(size.width * 0.64, size.height * 0.56),
-      Offset(size.width * 0.4, size.height * 0.82),
+      Offset(size.width * 0.3, size.height * 0.28),
+      Offset(size.width * 0.5, size.height * 0.24),
+      Offset(size.width * 0.7, size.height * 0.28),
     ]) {
-      canvas.drawCircle(center, size.width * 0.055, dots);
+      canvas.drawCircle(center, size.width * 0.06, dots);
     }
   }
 
   @override
   bool shouldRepaint(covariant _FlatEggPainter oldDelegate) {
-    return baseColor != oldDelegate.baseColor ||
-        firstStripeColor != oldDelegate.firstStripeColor ||
-        secondStripeColor != oldDelegate.secondStripeColor ||
-        dotColor != oldDelegate.dotColor;
+    return baseColor != oldDelegate.baseColor || ornamentColor != oldDelegate.ornamentColor;
   }
 }
 
@@ -1121,7 +1115,7 @@ class _ThemeModeControl extends StatelessWidget {
     final isDark =
         mode == ThemeMode.dark || (mode == ThemeMode.system && theme.brightness == Brightness.dark);
     final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    final duration = reduceMotion ? Duration.zero : CoeloMotion.standard;
+    final duration = reduceMotion ? Duration.zero : const Duration(milliseconds: 420);
 
     void toggle() => scope?.onChanged(isDark ? ThemeMode.light : ThemeMode.dark);
 
@@ -1303,8 +1297,12 @@ class _CarrotThumb extends StatelessWidget {
         painter: _FlatCarrotPainter(
           bodyColor: colors.primary,
           markColor: colors.onPrimary,
-          leafColor: statusColors.successContainer,
-          leafAccentColor: statusColors.onSuccessContainer,
+          leafColor: theme.brightness == Brightness.light
+              ? CoeloPalette.forest700
+              : statusColors.successContainer,
+          leafAccentColor: theme.brightness == Brightness.light
+              ? CoeloPalette.forest100
+              : statusColors.onSuccessContainer,
         ),
       ),
     );
@@ -1505,7 +1503,7 @@ class _NavigationItemState extends State<_NavigationItem> {
         borderRadius: BorderRadius.circular(CoeloRadius.md),
       ),
       child: AnimatedPadding(
-        duration: CoeloMotion.short,
+        duration: const Duration(milliseconds: 260),
         curve: Curves.easeOut,
         padding: EdgeInsets.symmetric(
           horizontal: widget.collapsed ? CoeloSpacing.space2 : CoeloSpacing.space3,
@@ -1559,10 +1557,15 @@ class _NavigationItemState extends State<_NavigationItem> {
 }
 
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _CompactAppBar({required this.onLogout, required this.activityController});
+  const _CompactAppBar({
+    required this.onLogout,
+    required this.activityController,
+    required this.currentScreen,
+  });
 
   final VoidCallback onLogout;
   final SuperadminActivityController activityController;
+  final String currentScreen;
 
   @override
   Size get preferredSize => const Size.fromHeight(CoeloSize.touchMin);
@@ -1583,7 +1586,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
         end: CoeloSpacing.space5,
       ),
       actions: [
-        _HeaderUtilityActions(activityController: activityController),
+        _HeaderUtilityActions(activityController: activityController, currentScreen: currentScreen),
         _ProfileSummary(onLogout: onLogout, compact: true),
         const SizedBox(width: CoeloSpacing.space2),
       ],
@@ -1652,7 +1655,10 @@ class _PageHeader extends StatelessWidget {
                   ),
                 ],
                 if (!compact) ...[
-                  _HeaderUtilityActions(activityController: activityController),
+                  _HeaderUtilityActions(
+                    activityController: activityController,
+                    currentScreen: title,
+                  ),
                   const SizedBox(width: CoeloSpacing.space2),
                   _ProfileSummary(onLogout: onLogout, compact: compactProfile),
                 ],
@@ -1814,9 +1820,10 @@ class _ProfileSummary extends StatelessWidget {
 }
 
 class _HeaderUtilityActions extends StatelessWidget {
-  const _HeaderUtilityActions({required this.activityController});
+  const _HeaderUtilityActions({required this.activityController, required this.currentScreen});
 
   final SuperadminActivityController activityController;
+  final String currentScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -1829,7 +1836,7 @@ class _HeaderUtilityActions extends StatelessWidget {
         IconButton(
           key: const Key('superadmin-report-bug'),
           tooltip: 'Reportar bug',
-          onPressed: () => _showMessage(context, 'O reporte de bugs será implementado em breve.'),
+          onPressed: () => showSuperadminBugReportDialog(context, currentScreen: currentScreen),
           style: _headerUtilityButtonStyle(colors, hoverColor),
           icon: const Icon(Icons.bug_report_outlined),
         ),
@@ -1860,10 +1867,7 @@ ButtonStyle _headerUtilityButtonStyle(ColorScheme colors, Color hoverColor) {
 }
 
 void _showMessage(BuildContext context, String message) {
-  final messenger = ScaffoldMessenger.of(context);
-  messenger
-    ..removeCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message)));
+  showSuperadminNotice(context, message);
 }
 
 @Preview(name: 'Rodapé da navegação · expandido · light', size: Size(260, 180))

@@ -86,7 +86,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       themeMode: _themeMode,
       themeAnimationStyle: reduceMotion
           ? AnimationStyle.noAnimation
-          : const AnimationStyle(duration: CoeloMotion.standard, curve: Cubic(0.2, 0, 0, 1)),
+          : const AnimationStyle(duration: Duration(milliseconds: 420), curve: Curves.easeInOut),
       builder: (context, child) => SuperadminThemeModeScope(
         mode: _themeMode,
         onChanged: _setThemeMode,
