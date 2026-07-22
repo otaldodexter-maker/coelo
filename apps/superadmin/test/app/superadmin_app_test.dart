@@ -45,4 +45,36 @@ void main() {
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.themeAnimationStyle, same(AnimationStyle.noAnimation));
   });
+
+  testWidgets('reverses an in-flight theme transition from the requested mode', (tester) async {
+    await tester.pumpWidget(const SuperadminApp());
+    await tester.pumpAndSettle();
+
+    final toggle = find.byKey(const ValueKey('superadmin-login-theme-toggle'));
+    await tester.tap(toggle);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
+      ThemeMode.light,
+    );
+    expect(Theme.of(tester.element(toggle)).brightness, Brightness.light);
+
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+    await tester.tap(toggle);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
+      ThemeMode.dark,
+    );
+    expect(Theme.of(tester.element(toggle)).brightness, Brightness.dark);
+  });
 }

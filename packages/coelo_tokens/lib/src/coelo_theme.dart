@@ -12,6 +12,19 @@ abstract final class CoeloTheme {
     statusColors: CoeloStatusColors.light,
     actionColors: const CoeloActionColors(primaryHover: CoeloPalette.orange600),
     secondaryText: CoeloSemanticColors.lightTextSecondary,
+    visualColors: CoeloVisualColors(
+      brandMarkBackground: CoeloPalette.orange500,
+      brandMarkForeground: CoeloPalette.neutral0,
+      eggBase: CoeloPalette.orange500,
+      eggOrnament: CoeloPalette.peach50,
+      carrotLeaf: CoeloPalette.forest700,
+      carrotLeafAccent: CoeloPalette.forest500,
+      navigationActive: CoeloPalette.orange500.withValues(alpha: 0.10),
+      navigationActiveHover: CoeloPalette.orange500.withValues(alpha: 0.16),
+      loginCardSurfaceTint: CoeloColorSchemes.light.surface,
+      loginCardShadow: CoeloColorSchemes.light.shadow.withValues(alpha: 0.08),
+      loginCardBorder: BorderSide.none,
+    ),
   );
 
   static final dark = _buildTheme(
@@ -20,6 +33,19 @@ abstract final class CoeloTheme {
     statusColors: CoeloStatusColors.dark,
     actionColors: const CoeloActionColors(primaryHover: CoeloPalette.orange400),
     secondaryText: CoeloSemanticColors.darkTextSecondary,
+    visualColors: CoeloVisualColors(
+      brandMarkBackground: CoeloPalette.neutral0,
+      brandMarkForeground: CoeloPalette.orange500,
+      eggBase: CoeloPalette.orange400,
+      eggOrnament: CoeloPalette.orange100,
+      carrotLeaf: Color(0xFF0B5A31),
+      carrotLeafAccent: Color(0xFFB9F6D2),
+      navigationActive: CoeloPalette.orange300.withValues(alpha: 0.18),
+      navigationActiveHover: CoeloPalette.orange300.withValues(alpha: 0.24),
+      loginCardSurfaceTint: CoeloColorSchemes.dark.surfaceTint,
+      loginCardShadow: CoeloColorSchemes.dark.shadow,
+      loginCardBorder: BorderSide(color: CoeloColorSchemes.dark.outline),
+    ),
   );
 
   static ThemeData _buildTheme({
@@ -28,6 +54,7 @@ abstract final class CoeloTheme {
     required CoeloStatusColors statusColors,
     required CoeloActionColors actionColors,
     required Color secondaryText,
+    required CoeloVisualColors visualColors,
   }) {
     final isDark = colorScheme.brightness == Brightness.dark;
     final surface = colorScheme.surface;
@@ -65,6 +92,7 @@ abstract final class CoeloTheme {
           xl: CoeloRadius.xl,
           full: CoeloRadius.full,
         ),
+        visualColors,
       ],
       materialTapTargetSize: MaterialTapTargetSize.padded,
       visualDensity: VisualDensity.standard,
@@ -349,6 +377,84 @@ abstract final class CoeloTheme {
           secondaryText: secondaryText,
         ).labelLarge,
       ),
+    );
+  }
+}
+
+@immutable
+final class CoeloVisualColors extends ThemeExtension<CoeloVisualColors> {
+  const CoeloVisualColors({
+    required this.brandMarkBackground,
+    required this.brandMarkForeground,
+    required this.eggBase,
+    required this.eggOrnament,
+    required this.carrotLeaf,
+    required this.carrotLeafAccent,
+    required this.navigationActive,
+    required this.navigationActiveHover,
+    required this.loginCardSurfaceTint,
+    required this.loginCardShadow,
+    required this.loginCardBorder,
+  });
+
+  final Color brandMarkBackground;
+  final Color brandMarkForeground;
+  final Color eggBase;
+  final Color eggOrnament;
+  final Color carrotLeaf;
+  final Color carrotLeafAccent;
+  final Color navigationActive;
+  final Color navigationActiveHover;
+  final Color loginCardSurfaceTint;
+  final Color loginCardShadow;
+  final BorderSide loginCardBorder;
+
+  @override
+  CoeloVisualColors copyWith({
+    Color? brandMarkBackground,
+    Color? brandMarkForeground,
+    Color? eggBase,
+    Color? eggOrnament,
+    Color? carrotLeaf,
+    Color? carrotLeafAccent,
+    Color? navigationActive,
+    Color? navigationActiveHover,
+    Color? loginCardSurfaceTint,
+    Color? loginCardShadow,
+    BorderSide? loginCardBorder,
+  }) {
+    return CoeloVisualColors(
+      brandMarkBackground: brandMarkBackground ?? this.brandMarkBackground,
+      brandMarkForeground: brandMarkForeground ?? this.brandMarkForeground,
+      eggBase: eggBase ?? this.eggBase,
+      eggOrnament: eggOrnament ?? this.eggOrnament,
+      carrotLeaf: carrotLeaf ?? this.carrotLeaf,
+      carrotLeafAccent: carrotLeafAccent ?? this.carrotLeafAccent,
+      navigationActive: navigationActive ?? this.navigationActive,
+      navigationActiveHover: navigationActiveHover ?? this.navigationActiveHover,
+      loginCardSurfaceTint: loginCardSurfaceTint ?? this.loginCardSurfaceTint,
+      loginCardShadow: loginCardShadow ?? this.loginCardShadow,
+      loginCardBorder: loginCardBorder ?? this.loginCardBorder,
+    );
+  }
+
+  @override
+  CoeloVisualColors lerp(ThemeExtension<CoeloVisualColors>? other, double t) {
+    if (other is! CoeloVisualColors) {
+      return this;
+    }
+    return CoeloVisualColors(
+      brandMarkBackground: Color.lerp(brandMarkBackground, other.brandMarkBackground, t)!,
+      brandMarkForeground: Color.lerp(brandMarkForeground, other.brandMarkForeground, t)!,
+      eggBase: Color.lerp(eggBase, other.eggBase, t)!,
+      eggOrnament: Color.lerp(eggOrnament, other.eggOrnament, t)!,
+      carrotLeaf: Color.lerp(carrotLeaf, other.carrotLeaf, t)!,
+      carrotLeafAccent: Color.lerp(carrotLeafAccent, other.carrotLeafAccent, t)!,
+      navigationActive: Color.lerp(navigationActive, other.navigationActive, t)!,
+      navigationActiveHover: Color.lerp(navigationActiveHover, other.navigationActiveHover, t)!,
+      loginCardSurfaceTint: Color.lerp(loginCardSurfaceTint, other.loginCardSurfaceTint, t)!,
+      loginCardShadow: Color.lerp(loginCardShadow, other.loginCardShadow, t)!,
+      loginCardBorder: BorderSide.lerp(loginCardBorder, other.loginCardBorder, t),
     );
   }
 }

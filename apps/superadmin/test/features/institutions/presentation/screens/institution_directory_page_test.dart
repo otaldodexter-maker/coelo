@@ -486,7 +486,7 @@ void main() {
     final cardSurface = find.byKey(const Key('institution-card-surface-demo-institution-aurora'));
     expect(createSurface, findsOneWidget);
     expect(cardSurface, findsOneWidget);
-    final createRest = tester.widget<AnimatedContainer>(createSurface).decoration! as BoxDecoration;
+    final createRest = _renderedDecoration(tester, createSurface);
     expect(createRest.color, Colors.transparent);
     final createInk = tester.widget<InkWell>(
       find.descendant(of: createSurface, matching: find.byType(InkWell)),
@@ -502,13 +502,12 @@ void main() {
     await gesture.moveTo(tester.getCenter(createSurface));
     await tester.pumpAndSettle();
     final colors = Theme.of(tester.element(createSurface)).colorScheme;
-    final createHover =
-        tester.widget<AnimatedContainer>(createSurface).decoration! as BoxDecoration;
+    final createHover = _renderedDecoration(tester, createSurface);
     expect(createHover.boxShadow!.single.color, colors.primary.withValues(alpha: 0.15));
 
     await gesture.moveTo(tester.getCenter(cardSurface));
     await tester.pumpAndSettle();
-    final cardHover = tester.widget<AnimatedContainer>(cardSurface).decoration! as BoxDecoration;
+    final cardHover = _renderedDecoration(tester, cardSurface);
     expect(cardHover.border!.top.color, colors.primary.withValues(alpha: 0.5));
     expect(cardHover.boxShadow!.single.color, colors.primary.withValues(alpha: 0.15));
     await gesture.removePointer();
@@ -684,7 +683,7 @@ void main() {
     await gesture.addPointer(location: Offset.zero);
     await gesture.moveTo(tester.getCenter(pinned));
     await tester.pumpAndSettle();
-    final pinnedDecoration = tester.widget<AnimatedContainer>(pinned).decoration! as BoxDecoration;
+    final pinnedDecoration = _renderedDecoration(tester, pinned);
     expect(pinnedDecoration.color, CoeloTheme.light.colorScheme.primaryContainer);
     await gesture.removePointer();
 
@@ -793,6 +792,104 @@ void main() {
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
+
+  testWidgets('finishes themed card surfaces with the global transition without a local tail', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeTransitionDirectoryApp());
+    await tester.pumpAndSettle();
+
+    final surface = find.byKey(const Key('institution-card-surface-demo-institution-aurora'));
+    final light = _renderedDecoration(tester, surface);
+
+    await tester.tap(find.byKey(const Key('institution-theme-test-toggle')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 420));
+
+    final dark = _renderedDecoration(tester, surface);
+    expect(dark.color, CoeloTheme.dark.colorScheme.surface);
+    expect(dark.border?.top.color, CoeloTheme.dark.colorScheme.outlineVariant);
+    expect(dark.color, isNot(light.color));
+
+    await tester.pump(const Duration(milliseconds: 220));
+    expect(_renderedDecoration(tester, surface), dark);
+  });
+
+  testWidgets('switches themed card surfaces in one frame under reduced motion', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(const _ThemeTransitionDirectoryApp(disableAnimations: true));
+    await tester.pumpAndSettle();
+
+    final surface = find.byKey(const Key('institution-card-surface-demo-institution-aurora'));
+    await tester.tap(find.byKey(const Key('institution-theme-test-toggle')));
+    await tester.pump();
+
+    final dark = _renderedDecoration(tester, surface);
+    expect(dark.color, CoeloTheme.dark.colorScheme.surface);
+    expect(dark.border?.top.color, CoeloTheme.dark.colorScheme.outlineVariant);
+  });
+}
+
+class _ThemeTransitionDirectoryApp extends StatefulWidget {
+  const _ThemeTransitionDirectoryApp({this.disableAnimations = false});
+
+  final bool disableAnimations;
+
+  @override
+  State<_ThemeTransitionDirectoryApp> createState() => _ThemeTransitionDirectoryAppState();
+}
+
+class _ThemeTransitionDirectoryAppState extends State<_ThemeTransitionDirectoryApp> {
+  ThemeMode _mode = ThemeMode.light;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: CoeloTheme.light,
+      darkTheme: CoeloTheme.dark,
+      themeMode: _mode,
+      themeAnimationStyle: widget.disableAnimations
+          ? AnimationStyle.noAnimation
+          : const AnimationStyle(duration: Duration(milliseconds: 420), curve: Curves.easeInOut),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(disableAnimations: widget.disableAnimations),
+        child: Stack(
+          children: [
+            child!,
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Material(
+                child: IconButton(
+                  key: const Key('institution-theme-test-toggle'),
+                  onPressed: () => setState(() {
+                    _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+                  }),
+                  icon: const Icon(Icons.brightness_6_outlined),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      home: InstitutionDirectoryPage(
+        repository: const FakeInstitutionDirectoryRepository(),
+        logout: () async => const LogoutResult.success(),
+      ),
+    );
+  }
+}
+
+BoxDecoration _renderedDecoration(WidgetTester tester, Finder finder) {
+  final widget = tester.widget<Widget>(finder);
+  if (widget is Container) {
+    return widget.decoration! as BoxDecoration;
+  }
+  final rendered = find.descendant(of: finder, matching: find.byType(Container)).first;
+  return tester.widget<Container>(rendered).decoration! as BoxDecoration;
 }
 
 Widget _app({

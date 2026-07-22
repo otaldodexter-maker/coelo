@@ -255,6 +255,48 @@ void main() {
     }
   });
 
+  testWidgets('coordinates sidebar geometry and content throughout collapse and expansion', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final sidebar = find.byKey(const Key('superadmin-sidebar'));
+    final toggle = find.byKey(const Key('superadmin-sidebar-collapse'));
+
+    await tester.tap(toggle);
+    await tester.pump();
+    expect(find.text('Estrutura'), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 40));
+    expect(tester.getSize(sidebar).width, greaterThan(230));
+    expect(find.text('Estrutura'), findsOneWidget);
+
+    await tester.pumpAndSettle();
+    expect(tester.getSize(sidebar).width, 88);
+    expect(find.text('Estrutura'), findsNothing);
+
+    await tester.tap(toggle);
+    await tester.pump();
+    expect(find.byKey(const Key('superadmin-navigation-section-structure')), findsWidgets);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(sidebar).width, 260);
+    expect(find.text('Estrutura'), findsOneWidget);
+  });
+
+  testWidgets('collapses the sidebar immediately when reduced motion is requested', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp(disableAnimations: true));
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pump();
+
+    expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 88);
+    expect(find.text('Estrutura'), findsNothing);
+  });
+
   testWidgets('keeps the collapse toggle clickable at its right inner edge', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -306,10 +348,10 @@ void main() {
     expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 260);
     expect(
       tester.getSize(find.byKey(const Key('superadmin-sidebar-collapse'))),
-      const Size(24, 24),
+      const Size.square(CoeloSize.touchMin),
     );
     expect(tester.getSize(find.byKey(const Key('superadmin-brand-mark'))), const Size(48, 48));
-    expect(find.byKey(const Key('superadmin-brand-logo-light')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
 
     final activeDecoration =
         tester
@@ -417,16 +459,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.descendant(
-          of: drawer,
-          matching: find.byKey(
-            Key(
-              configuration.brightness == Brightness.dark
-                  ? 'superadmin-brand-logo-dark'
-                  : 'superadmin-brand-logo-light',
-            ),
-          ),
-        ),
+        find.descendant(of: drawer, matching: find.byKey(const Key('superadmin-brand-logo'))),
         findsOneWidget,
       );
       expect(find.descendant(of: drawer, matching: find.text('Owner Coelo')), findsNothing);
@@ -580,8 +613,7 @@ void main() {
     final lightDecoration = lightMark.decoration! as BoxDecoration;
     expect(lightDecoration.shape, BoxShape.circle);
     expect(lightDecoration.color, CoeloTheme.light.colorScheme.primary);
-    expect(find.byKey(const Key('superadmin-brand-logo-light')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-brand-logo-dark')), findsNothing);
+    expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
 
     await tester.pumpWidget(_shellApp(brightness: Brightness.dark));
     await tester.pumpAndSettle();
@@ -589,8 +621,7 @@ void main() {
     final darkDecoration = darkMark.decoration! as BoxDecoration;
     expect(darkDecoration.shape, BoxShape.circle);
     expect(darkDecoration.color, CoeloPalette.neutral0);
-    expect(find.byKey(const Key('superadmin-brand-logo-dark')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-brand-logo-light')), findsNothing);
+    expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
   });
 
   testWidgets('shows safe feedback when logout fails', (tester) async {

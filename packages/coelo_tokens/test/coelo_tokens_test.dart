@@ -54,6 +54,33 @@ void main() {
       expect(status?.warning, const Color(0xFF8A4F00));
       expect(status?.infoContainer, const Color(0xFFE6F4FA));
     });
+
+    test('interpolates component visuals without a brightness midpoint jump', () {
+      CoeloVisualColors visualOf(ThemeData theme) => theme.extension<CoeloVisualColors>()!;
+
+      final light = visualOf(CoeloTheme.light);
+      final dark = visualOf(CoeloTheme.dark);
+      final middle = visualOf(ThemeData.lerp(CoeloTheme.light, CoeloTheme.dark, 0.5));
+
+      expect(
+        middle.brandMarkBackground,
+        Color.lerp(light.brandMarkBackground, dark.brandMarkBackground, 0.5),
+      );
+      expect(
+        middle.brandMarkForeground,
+        Color.lerp(light.brandMarkForeground, dark.brandMarkForeground, 0.5),
+      );
+      expect(middle.eggBase, Color.lerp(light.eggBase, dark.eggBase, 0.5));
+      expect(middle.carrotLeaf, Color.lerp(light.carrotLeaf, dark.carrotLeaf, 0.5));
+      expect(
+        middle.loginCardSurfaceTint,
+        Color.lerp(light.loginCardSurfaceTint, dark.loginCardSurfaceTint, 0.5),
+      );
+      expect(
+        middle.loginCardBorder,
+        BorderSide.lerp(light.loginCardBorder, dark.loginCardBorder, 0.5),
+      );
+    });
   });
 
   group('Coelo scales', () {

@@ -13,8 +13,8 @@ import 'superadmin_activity_center.dart';
 import 'superadmin_bug_report_dialog.dart';
 import 'superadmin_notice.dart';
 
-const _sidebarMotionDuration = Duration(milliseconds: 420);
-const _sidebarMotionCurve = Cubic(0.22, 1, 0.36, 1);
+const _sidebarMotionDuration = CoeloMotion.emphasized;
+const _sidebarMotionCurve = Cubic(0.4, 0, 0.2, 1);
 
 const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
@@ -48,24 +48,48 @@ class SuperadminShell extends StatefulWidget {
   State<SuperadminShell> createState() => _SuperadminShellState();
 }
 
-class _SuperadminShellState extends State<SuperadminShell> {
+class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProviderStateMixin {
   bool _sidebarCollapsed = false;
+  late final AnimationController _sidebarController;
   late final SuperadminActivityController _activityController;
   late final bool _ownsActivityController;
 
   @override
   void initState() {
     super.initState();
+    _sidebarController = AnimationController(vsync: this, duration: _sidebarMotionDuration);
     _ownsActivityController = widget.activityController == null;
     _activityController = widget.activityController ?? SuperadminActivityController();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_reduceMotion && _sidebarController.isAnimating) {
+      _sidebarController.value = _sidebarCollapsed ? 1 : 0;
+    }
+  }
+
+  @override
   void dispose() {
+    _sidebarController.dispose();
     if (_ownsActivityController) {
       _activityController.dispose();
     }
     super.dispose();
+  }
+
+  bool get _reduceMotion => MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
+  void _toggleSidebar() {
+    final collapsed = !_sidebarCollapsed;
+    setState(() => _sidebarCollapsed = collapsed);
+    final target = collapsed ? 1.0 : 0.0;
+    if (_reduceMotion) {
+      _sidebarController.value = target;
+      return;
+    }
+    unawaited(_sidebarController.animateTo(target, curve: _sidebarMotionCurve));
   }
 
   Future<void> _handleLogout() async {
@@ -125,70 +149,110 @@ class _SuperadminShellState extends State<SuperadminShell> {
           );
         }
 
-        final sidebarWidth = _sidebarCollapsed ? _collapsedSidebarWidth : _expandedSidebarWidth;
+        final contentSurface = Expanded(
+          child: _FloatingSurface(
+            key: const Key('superadmin-floating-content'),
+            clip: true,
+            child: Column(
+              children: [
+                _PageHeader(
+                  title: widget.title,
+                  subtitle: widget.subtitle,
+                  actions: widget.actions,
+                  compactActions: widget.compactActions,
+                  onLogout: _handleLogout,
+                  activityController: _activityController,
+                ),
+                const _InsetDivider(key: Key('superadmin-page-divider')),
+                Expanded(child: pageBody),
+              ],
+            ),
+          ),
+        );
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
           body: SuperadminNoticeHost(
             child: Padding(
               padding: const EdgeInsets.all(_shellGutter),
-              child: Row(
-                children: [
-                  AnimatedContainer(
-                    width: sidebarWidth + _shellGutter,
-                    duration: _sidebarMotionDuration,
-                    curve: _sidebarMotionCurve,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        AnimatedContainer(
-                          key: const Key('superadmin-sidebar'),
-                          width: sidebarWidth,
-                          duration: _sidebarMotionDuration,
-                          curve: _sidebarMotionCurve,
-                          child: _FloatingSurface(
-                            key: const Key('superadmin-floating-sidebar'),
-                            child: _Sidebar(collapsed: _sidebarCollapsed),
-                          ),
+              child: AnimatedBuilder(
+                animation: _sidebarController,
+                child: contentSurface,
+                builder: (context, content) {
+                  final sidebarWidth =
+                      _expandedSidebarWidth -
+                      (_expandedSidebarWidth - _collapsedSidebarWidth) * _sidebarController.value;
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: sidebarWidth + _shellGutter,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            SizedBox(
+                              key: const Key('superadmin-sidebar'),
+                              width: sidebarWidth,
+                              child: _FloatingSurface(
+                                key: const Key('superadmin-floating-sidebar'),
+                                child: _SidebarTransition(
+                                  collapsed: _sidebarCollapsed,
+                                  reduceMotion: _reduceMotion,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: sidebarWidth - CoeloSpacing.space10,
+                              top: CoeloSpacing.space5,
+                              child: _SidebarToggle(
+                                collapsed: _sidebarCollapsed,
+                                onPressed: _toggleSidebar,
+                              ),
+                            ),
+                          ],
                         ),
-                        AnimatedPositioned(
-                          left: sidebarWidth - CoeloSpacing.space4,
-                          top: CoeloSpacing.space8,
-                          duration: _sidebarMotionDuration,
-                          curve: _sidebarMotionCurve,
-                          child: _SidebarToggle(
-                            collapsed: _sidebarCollapsed,
-                            onPressed: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: _FloatingSurface(
-                      key: const Key('superadmin-floating-content'),
-                      clip: true,
-                      child: Column(
-                        children: [
-                          _PageHeader(
-                            title: widget.title,
-                            subtitle: widget.subtitle,
-                            actions: widget.actions,
-                            compactActions: widget.compactActions,
-                            onLogout: _handleLogout,
-                            activityController: _activityController,
-                          ),
-                          const _InsetDivider(key: Key('superadmin-page-divider')),
-                          Expanded(child: pageBody),
-                        ],
                       ),
-                    ),
-                  ),
-                ],
+                      content!,
+                    ],
+                  );
+                },
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _SidebarTransition extends StatelessWidget {
+  const _SidebarTransition({required this.collapsed, required this.reduceMotion});
+
+  final bool collapsed;
+  final bool reduceMotion;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: AnimatedSwitcher(
+        duration: reduceMotion ? Duration.zero : _sidebarMotionDuration,
+        switchInCurve: _sidebarMotionCurve,
+        switchOutCurve: _sidebarMotionCurve,
+        layoutBuilder: (currentChild, previousChildren) => Stack(
+          alignment: AlignmentDirectional.topStart,
+          fit: StackFit.expand,
+          children: [...previousChildren, ?currentChild],
+        ),
+        child: SizedBox.expand(
+          key: ValueKey(collapsed),
+          child: Align(
+            alignment: AlignmentDirectional.topStart,
+            child: SizedBox(
+              width: collapsed ? _collapsedSidebarWidth : null,
+              height: double.infinity,
+              child: _Sidebar(collapsed: collapsed),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -260,8 +324,7 @@ class _BrandHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isDark = colors.brightness == Brightness.dark;
+    final visual = theme.extension<CoeloVisualColors>()!;
     return SizedBox(
       height: _headerHeight,
       child: Padding(
@@ -280,14 +343,13 @@ class _BrandHeader extends StatelessWidget {
                   height: CoeloSize.touchMin,
                   padding: const EdgeInsets.all(CoeloSpacing.space2),
                   decoration: BoxDecoration(
-                    color: isDark ? CoeloPalette.neutral0 : colors.primary,
+                    color: visual.brandMarkBackground,
                     shape: BoxShape.circle,
                   ),
                   child: SvgPicture.asset(
-                    isDark
-                        ? 'assets/brand/logo-coelo-orange.svg'
-                        : 'assets/brand/logo-coelo-white.svg',
-                    key: Key(isDark ? 'superadmin-brand-logo-dark' : 'superadmin-brand-logo-light'),
+                    'assets/brand/logo-coelo-white.svg',
+                    key: const Key('superadmin-brand-logo'),
+                    colorFilter: ColorFilter.mode(visual.brandMarkForeground, BlendMode.srcIn),
                     semanticsLabel: 'Coelo',
                   ),
                 ),
@@ -313,31 +375,36 @@ class _SidebarToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        shape: BoxShape.circle,
-        border: Border.all(color: colors.outlineVariant),
-        boxShadow: [
-          BoxShadow(
-            color: colors.shadow.withValues(alpha: 0.08),
-            blurRadius: CoeloSpacing.space1,
-            offset: const Offset(0, CoeloSpacing.spaceHalf),
-          ),
-        ],
+    return IconButton(
+      key: const Key('superadmin-sidebar-collapse'),
+      tooltip: collapsed ? 'Expandir menu' : 'Recolher menu',
+      onPressed: onPressed,
+      style: IconButton.styleFrom(
+        minimumSize: const Size.square(CoeloSize.touchMin),
+        maximumSize: const Size.square(CoeloSize.touchMin),
+        padding: EdgeInsets.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      child: IconButton(
-        key: const Key('superadmin-sidebar-collapse'),
-        tooltip: collapsed ? 'Expandir menu' : 'Recolher menu',
-        onPressed: onPressed,
-        style: IconButton.styleFrom(
-          minimumSize: const Size.square(CoeloSpacing.space6),
-          maximumSize: const Size.square(CoeloSpacing.space6),
-          padding: EdgeInsets.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      icon: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          shape: BoxShape.circle,
+          border: Border.all(color: colors.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: colors.shadow.withValues(alpha: 0.08),
+              blurRadius: CoeloSpacing.space1,
+              offset: const Offset(0, CoeloSpacing.spaceHalf),
+            ),
+          ],
         ),
-        iconSize: CoeloSpacing.space4,
-        icon: Icon(collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded),
+        child: SizedBox.square(
+          dimension: CoeloSpacing.space6,
+          child: Icon(
+            collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
+            size: CoeloSpacing.space4,
+          ),
+        ),
       ),
     );
   }
@@ -649,7 +716,7 @@ class _CollapsedNavigationSection extends StatelessWidget {
                 for (final destination in section.destinations)
                   MenuItemButton(
                     key: Key('superadmin-navigation-${destination.id}'),
-                    style: _navigationMenuItemStyle(colors, active: destination.active),
+                    style: _navigationMenuItemStyle(theme, active: destination.active),
                     leadingIcon: Icon(destination.icon),
                     onPressed: () => _handleDestinationTap(context, destination),
                     child: Text(destination.label),
@@ -703,9 +770,9 @@ class _CollapsedNavigationSection extends StatelessWidget {
   }
 }
 
-ButtonStyle _navigationMenuItemStyle(ColorScheme colors, {required bool active}) {
-  final activeOpacity = colors.brightness == Brightness.dark ? 0.18 : 0.10;
-  final activeHoverOpacity = colors.brightness == Brightness.dark ? 0.24 : 0.16;
+ButtonStyle _navigationMenuItemStyle(ThemeData theme, {required bool active}) {
+  final colors = theme.colorScheme;
+  final visual = theme.extension<CoeloVisualColors>()!;
   return MenuItemButton.styleFrom(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
   ).copyWith(
@@ -723,7 +790,7 @@ ButtonStyle _navigationMenuItemStyle(ColorScheme colors, {required bool active})
       final highlighted =
           states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
       if (active) {
-        return colors.primary.withValues(alpha: highlighted ? activeHoverOpacity : activeOpacity);
+        return highlighted ? visual.navigationActiveHover : visual.navigationActive;
       }
       return highlighted ? colors.primaryContainer : colors.primaryContainer.withValues(alpha: 0);
     }),
@@ -839,6 +906,7 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final visual = theme.extension<CoeloVisualColors>()!;
     final itemStyle = _tourMenuItemStyle(colors);
     return MenuAnchor(
       alignmentOffset: Offset(
@@ -903,12 +971,8 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
                           child: CustomPaint(
                             key: const Key('superadmin-onboarding-egg'),
                             painter: _FlatEggPainter(
-                              baseColor: theme.brightness == Brightness.dark
-                                  ? CoeloPalette.orange400
-                                  : CoeloPalette.orange500,
-                              ornamentColor: theme.brightness == Brightness.dark
-                                  ? CoeloPalette.orange100
-                                  : CoeloPalette.peach50,
+                              baseColor: visual.eggBase,
+                              ornamentColor: visual.eggOrnament,
                             ),
                           ),
                         ),
@@ -1286,9 +1350,7 @@ class _CarrotThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+    final visual = theme.extension<CoeloVisualColors>()!;
     return Container(
       width: size,
       height: size,
@@ -1305,12 +1367,8 @@ class _CarrotThumb extends StatelessWidget {
         painter: _FlatCarrotPainter(
           bodyColor: colors.primary,
           markColor: colors.onPrimary,
-          leafColor: theme.brightness == Brightness.light
-              ? CoeloPalette.forest700
-              : statusColors.successContainer,
-          leafAccentColor: theme.brightness == Brightness.light
-              ? CoeloPalette.forest500
-              : statusColors.onSuccessContainer,
+          leafColor: visual.carrotLeaf,
+          leafAccentColor: visual.carrotLeafAccent,
         ),
       ),
     );
@@ -1490,11 +1548,11 @@ class _NavigationItemState extends State<_NavigationItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final activeBackgroundOpacity = colors.brightness == Brightness.dark
-        ? (_highlighted ? 0.24 : 0.18)
-        : (_highlighted ? 0.16 : 0.10);
+    final visual = theme.extension<CoeloVisualColors>()!;
     final background = widget.isActive
-        ? colors.primary.withValues(alpha: activeBackgroundOpacity)
+        ? _highlighted
+              ? visual.navigationActiveHover
+              : visual.navigationActive
         : _highlighted
         ? colors.primaryContainer
         : colors.primaryContainer.withValues(alpha: 0);

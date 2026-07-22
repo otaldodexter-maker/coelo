@@ -1,6 +1,8 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../app/theme/superadmin_theme_mode_scope.dart';
+
 class LoginHeader extends StatelessWidget {
   const LoginHeader({
     this.title = 'Acesse sua conta',
@@ -15,19 +17,36 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final themeModeScope = SuperadminThemeModeScope.maybeOf(context);
+    final requestedMode = themeModeScope?.mode;
+    final isDark = switch (requestedMode) {
+      ThemeMode.dark => true,
+      ThemeMode.light => false,
+      ThemeMode.system || null => theme.brightness == Brightness.dark,
+    };
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final logo = Image.asset(
+      'assets/brand/logo-coelo-orange.png',
+      key: ValueKey(isDark),
+      width: CoeloSize.brandMarkLg,
+      cacheWidth: 360,
+      fit: BoxFit.contain,
+      color: isDark ? colors.onSurface : null,
+      colorBlendMode: isDark ? BlendMode.srcIn : null,
+      semanticLabel: 'Coelo',
+    );
 
     return Column(
       children: [
-        Image.asset(
-          'assets/brand/logo-coelo-orange.png',
-          width: CoeloSize.brandMarkLg,
-          cacheWidth: 360,
-          fit: BoxFit.contain,
-          color: isDark ? colors.onSurface : null,
-          colorBlendMode: isDark ? BlendMode.srcIn : null,
-          semanticLabel: 'Coelo',
-        ),
+        if (themeModeScope == null)
+          logo
+        else
+          AnimatedSwitcher(
+            duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 420),
+            switchInCurve: Curves.easeInOut,
+            switchOutCurve: Curves.easeInOut,
+            child: logo,
+          ),
         const SizedBox(
           key: ValueKey('superadmin-login-gap-logo-chip'),
           height: CoeloSpacing.space1,

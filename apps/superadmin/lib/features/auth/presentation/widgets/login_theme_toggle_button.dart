@@ -1,6 +1,8 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../app/theme/superadmin_theme_mode_scope.dart';
+
 class LoginThemeToggleButton extends StatelessWidget {
   const LoginThemeToggleButton({required this.onThemeModeChanged, super.key});
 
@@ -8,7 +10,13 @@ class LoginThemeToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final requestedMode = SuperadminThemeModeScope.maybeOf(context)?.mode;
+    final isDark = switch (requestedMode) {
+      ThemeMode.dark => true,
+      ThemeMode.light => false,
+      ThemeMode.system || null => theme.brightness == Brightness.dark,
+    };
 
     return Semantics(
       button: true,
