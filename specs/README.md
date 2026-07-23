@@ -9,6 +9,7 @@ Specs SDD iniciais da fundacao Coelo. Elas organizam escopo, fontes, dados, perm
 | `003-superadmin-core.md` | approved-for-technical-spec | Escopo base aprovado do Superadmin MVP. |
 | `012-superadmin-mvp.md` | draft-for-review | Spec final enxuta do Superadmin MVP, pronta para revisão e consolidacao. |
 | `011-superadmin-database-rls.md` | approved-for-initial-migration | Foundation de banco/RLS ja entregue e mantida como referencia tecnica. |
+| `014-atividade-contextual.md` | approved-for-planning | Conceito de Atividade contextual, reutilizavel por turma dentro da mesma instituicao. |
 
 ## Estado pratico
 

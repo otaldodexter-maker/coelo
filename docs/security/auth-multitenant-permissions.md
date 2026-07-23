@@ -169,6 +169,7 @@ O MVP oferece login por e-mail ou celular, conforme escolha do usuário, além d
 | Instituição | Tenant principal. | Limite superior dos dados do cliente. |
 | Unidade | Pertence à instituição. | Escopo operacional e de conteúdo. |
 | Grupo | Pertence à unidade. | Turma/equipe/atendimento e perfil social. |
+| Atividade | É definida na instituição, disponibilizada por unidade e acionada dentro do grupo. | Escopo funcional contextual, reutilizável na mesma instituição, com professores e permissões por turma. |
 | Criança contextual | Pessoa global + instituição. | Rotina, responsáveis e dados locais. |
 | Responsável contextual | Pessoa global + permissão para criança/contexto. | Acesso familiar. |
 | Equipe contextual | Pessoa global + membership/papel. | Acesso profissional. |
@@ -184,6 +185,7 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | guardian_context_permission | Autoriza o responsável a ver e agir naquele contexto institucional. |
 | group_membership | Vincula a criança ao grupo/turma. |
 | permission flags | Rotina, comunicados, agenda, chat e outras ações, conforme definição futura. |
+| activity_group_link | Define a atividade dentro da turma e os professores/permissões contextuais. |
 
 - Mais de dois responsáveis são permitidos.
 
@@ -199,10 +201,18 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | Diretor/Owner | Instituição | Configuração, pessoas, permissões e operação completa. |
 | Admin autorizado | Instituição/unidade | Gestão delegada, inclusive permissões quando explicitamente autorizado. |
 | Coordenador | Unidades/grupos | Supervisão e operação, sem poder automático de alterar permissões. |
-| Professor | Grupos | Rotina, conteúdo e chat com responsáveis vinculados. |
+| Professor | Grupos/Atividades | Rotina, conteúdo e chat com responsáveis vinculados, sempre no vínculo contextual da turma. |
 | Equipe | Função/contexto | Ações limitadas. |
 | Responsável | Criança/contextos autorizados | Rotina, Flow, agenda e chat. |
 | Participante | Contexto específico | Opcional e restrito. |
+
+- A instituição é proprietária de toda atividade, inclusive quando a criação se origina em uma unidade.
+
+- A unidade ou usuário da unidade só pode criar atividade quando uma capacidade específica estiver habilitada na gestão do perfil.
+
+- Na criação pela unidade, o vínculo com a instituição-mãe e com a unidade de origem é automático; a instituição pode editar, restringir ou desativar a atividade.
+
+- Um ator restrito à unidade não recebe acesso automático a unidades irmãs nem a seus grupos.
 
 | Modelo de autorização<br>RBAC define o que um papel pode fazer; o escopo contextual define onde; vínculos familiares e regras específicas definem sobre quem. |
 | --- |

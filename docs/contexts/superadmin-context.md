@@ -12,7 +12,7 @@ generated_at: "2026-06-22"
 
 ## Objetivo
 
-Operacao interna Coelo: instituicoes, planos, entitlements, suporte auditado, logs, incidentes e governanca da plataforma.
+Operacao interna Coelo: instituicoes, planos, entitlements, atividades sugeridas, suporte auditado, logs, incidentes e governanca da plataforma.
 
 ## Fontes
 
@@ -27,3 +27,4 @@ Operacao interna Coelo: instituicoes, planos, entitlements, suporte auditado, lo
 - Evitar privilegio amplo por padrao.
 - Nunca expor `service_role` no cliente.
 - Acoes sensiveis exigem caminho server-side e trilha de auditoria.
+- A estrutura do menu deve refletir a sequencia: Supabase primeiro, menu depois, tela por ultimo.

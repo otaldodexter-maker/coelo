@@ -431,7 +431,21 @@ A decisao tecnica inicial de schemas para o Coelo e:
 | Retenção | Prazos não definidos. |
 | Download mídia | Bloqueado por padrão. |
 
-# 26. Perguntas em aberto
+# 26. Atividades Contextuais
+
+- `Atividade` e um conceito reutilizavel por turma dentro da mesma instituicao.
+- A atividade pertence a instituicao, mas pode ser criada pela propria instituicao ou por uma unidade autorizada.
+- Quando criada por uma unidade, herda automaticamente a instituicao-mae, registra a unidade de origem e nasce vinculada a ela.
+- A instituicao pode ajustar, ampliar, restringir, arquivar ou desativar uma atividade criada por qualquer unidade filha.
+- A criacao por unidade depende de uma capacidade especifica habilitada na gestao do perfil do ator; a autorizacao deve ser validada no servidor.
+- Um ator limitado a unidade nao pode vincular a atividade a unidades irmas ou grupos fora do seu escopo sem permissao institucional adicional.
+- Toda atividade nasce vinculada a pelo menos uma unidade e pode ser expandida para outras depois.
+- A atividade pode ser vinculada a uma ou mais turmas da mesma instituicao.
+- O professor ou coordenador atua no contexto da atividade naquela turma, com permissoes herdadas e overrides contextuais.
+- Uma mesma atividade pode ter mais de um professor na mesma turma.
+- O banco deve tratar o dominio como entidade propria, nao como mero atributo da turma.
+
+# 27. Perguntas em aberto
 
 - Resolvido em 2026-06-23: `public`, `app_private`, `audit` e `analytics` sao os schemas iniciais. Novos schemas exigem spec ou ADR.
 
@@ -447,7 +461,7 @@ A decisao tecnica inicial de schemas para o Coelo e:
 
 - Qual estratégia de particionamento/arquivamento após escala?
 
-# 27. Próximas specs
+# 28. Próximas specs
 
 - ERD físico com cardinalidades e constraints.
 

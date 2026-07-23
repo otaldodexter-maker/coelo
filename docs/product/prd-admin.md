@@ -92,6 +92,7 @@ A importação em massa entra no MVP por CSV e XLSX e deve abranger, conforme o 
 | Instituição | Sim | Dados, configurações e branding leve. |
 | Unidades | Sim | Criar, editar e inativar unidades e seus perfis sociais. |
 | Grupos/turmas | Sim | Criar grupos, tipos, vínculos, perfis e regras de seguidores. |
+| Atividades | Sim | Criar, editar e vincular atividades a pelo menos uma unidade e depois a grupos, com professores e permissões por turma. A unidade cria somente quando essa capacidade estiver habilitada em seu perfil. |
 | Pessoas | Sim | Cadastrar, deduplicar, convidar e vincular papéis. |
 | Participantes/crianças | Sim | Dados mínimos, contexto institucional, grupos e responsáveis. |
 | Responsáveis | Sim | Vínculo, autorizações e visibilidade por criança/contexto. |
@@ -126,6 +127,7 @@ A importação em massa entra no MVP por CSV e XLSX e deve abranger, conforme o 
 | Ação | Owner/Diretor | Admin autorizado | Coordenador | Professor |
 | --- | --- | --- | --- | --- |
 | Criar unidade/grupo | Sim | Sim, se delegado | Não ou conforme operação | Não |
+| Criar atividade | Sim | Sim, se a capacidade estiver habilitada no perfil | Com delegação explícita | Não |
 | Cadastrar/importar pessoas | Sim | Sim | Com permissão operacional | Não |
 | Alterar permissões | Sim | Sim, se autorizado | Não | Não |
 | Vincular responsável | Sim | Sim | Com permissão | Solicitar/visualizar se permitido |
@@ -153,6 +155,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | --- | --- | --- |
 | Unidades | Nome, identificadores internos e dados institucionais aplicáveis. | Campos finais na spec técnica. |
 | Grupos/turmas | Unidade, nome, tipo, período/faixa quando aplicável. | Evitar nomenclatura exclusivamente escolar no banco. |
+| Atividades | Nome, descrição, instituição, unidade de origem, unidades vinculadas, grupos, professores e permissões por turma. | Reutilizável dentro da mesma instituição; criação pela unidade exige delegação. |
 | Participantes/crianças | Nome, nascimento quando aplicável, identificadores e grupo. | Dados mínimos; username e contexto tratados pelo Auth/Data Master. |
 | Responsáveis | Nome, CPF obrigatório, e-mail/celular, relação e permissões. | Criar ou vincular pessoa adulta existente. |
 | Equipe | Nome, CPF obrigatório, contato, papel e escopo. | Convite pode ser enviado após validação. |
@@ -234,6 +237,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | AD-RF-011 | Rotina | Gerenciar templates e permissões do diário. |
 | AD-RF-012 | Chat | Configurar canais, membros e escopos de histórico. |
 | AD-RF-013 | Auditoria | Registrar importações, vínculos, permissões e mudanças sensíveis. |
+| AD-RF-014 | Atividades | Criar, editar, vincular e gerir atividades por turma com permissões contextuais; criação pela unidade depende de capacidade explícita no perfil. |
 
 # 13. Regras de negócio
 
@@ -246,6 +250,10 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 - A instituição decide quais responsáveis vinculados podem ver seu contexto.
 
 - Somente owner/diretor e admins autorizados alteram permissões.
+
+- A atividade pertence sempre à instituição. Quando criada por uma unidade autorizada, herda a instituição-mãe, nasce vinculada à unidade de origem e continua ajustável pela instituição.
+
+- Usuários com escopo apenas de unidade não podem vincular a atividade a unidades irmãs ou grupos externos ao seu escopo sem permissão institucional adicional.
 
 - Importação nunca pode expor dados completos de pessoa pertencente a outro tenant durante deduplicação.
 
@@ -261,6 +269,10 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | --- | --- |
 | unit_created/updated | Estrutura institucional. |
 | group_created/updated | Grupos e perfis. |
+| activity_created/updated | Definição e vínculo de atividades. |
+| activity_created_by_unit | Criação delegada, instituição herdada e unidade de origem. |
+| activity_group_linked | Atividade vinculada à turma. |
+| activity_member_assigned | Professor ou coordenação vinculados à atividade na turma. |
 | import_started/completed/failed | Onboarding e qualidade dos dados. |
 | person_created/matched | Deduplicação. |
 | guardian_context_permission_changed | Governança familiar. |
@@ -358,6 +370,8 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 - Technical Spec: parser, staging, validação, deduplicação e rollback.
 
 - Technical Spec: permissões do Admin e policies RLS.
+
+- Functional/Technical Spec: atividades contextuais por turma.
 
 - Test Plan: importação, isolamento e vínculos familiares.
 

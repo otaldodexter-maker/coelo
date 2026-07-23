@@ -534,6 +534,16 @@ D29 · Branding e White-label Supporting · Futuro
 | Dependências | Tenancy, Planos/Entitlements, Mídia e pipeline de release. |
 | Eventos publicados | branding_updated, custom_domain_verified, app_variant_requested, release_published. |
 
+D30 · Atividades Contextuais Core · MVP
+
+| Responsabilidade | Definir atividades reutilizáveis dentro da instituição e especializar sua operação por unidade e grupo/turma. |
+| --- | --- |
+| Fonte oficial | Definição da atividade, origem institucional ou unidade autorizada, vínculos com unidades e turmas, professores e permissões contextuais. |
+| Não controla | A turma, a identidade da pessoa, o conteúdo físico de mídia, o evento de agenda, a conversa ou o registro de presença. |
+| Entidades principais | activity_definitions, activity_unit_links, activity_group_links, activity_group_assignments, activity_permission_profiles. |
+| Dependências | Tenancy, Contexto/Autorização, Perfis/Audiência, Chat, Agenda, Mídia, Rotina e Auditoria. |
+| Eventos publicados | activity_created, activity_created_by_unit, activity_linked_to_unit, activity_linked_to_group, activity_member_assigned, activity_permission_changed. |
+
 # 7. Fonte oficial e eventos
 
 ## 7.1 Matriz de source of truth
@@ -542,6 +552,7 @@ D29 · Branding e White-label Supporting · Futuro
 | --- | --- |
 | Pessoa, credencial e username | Identidade e Autenticação |
 | Instituição, unidade e grupo | Tenancy e Estrutura Institucional |
+| Definição de atividade e vínculos com unidades, turmas e professores | Atividades Contextuais |
 | Papel, escopo e permissão | Contexto e Autorização |
 | Vínculo responsável-criança | Família e Relações com a Criança |
 | Perfil social e audiência | Perfis Sociais e Audiência |
@@ -662,7 +673,7 @@ Planos e Entitlements é a camada que permite vender combinações de funcionali
 
 ## 10.2 Próximas entregas recomendadas
 
-1. Criar Functional Specs individuais para D03 Contexto/Autorização, D05 Perfis/Audiência, D06 Flow, D07 Now, D08 Moments, D10 Rotina, D12 Chat, D13 Agenda e D14 Autorizações.
+1. Criar Functional Specs individuais para D03 Contexto/Autorização, D05 Perfis/Audiência, D06 Flow, D07 Now, D08 Moments, D10 Rotina, D12 Chat, D13 Agenda, D14 Autorizações e D30 Atividades Contextuais.
 
 2. Revisar o PRD Modelo de Dados Master para refletir os novos owners e a separação de tabelas de Flow, Now e Moments.
 

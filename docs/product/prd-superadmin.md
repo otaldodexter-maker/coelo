@@ -170,6 +170,12 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 - Não usar credenciais do usuário final nem chaves secretas no navegador.
 
+## 7.5 Atividades sugeridas
+
+- Manter uma base de atividades sugeridas para acelerar a criação de instituição e unidade.
+- Permitir que a sugestão gere atividade editável, não um catálogo rígido.
+- Registrar de forma auditável quando uma sugestão for aplicada a um tenant.
+
 # 8. Fluxos principais
 
 | Fluxo | Passos essenciais | Critério de aceite |
@@ -322,6 +328,8 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 - Technical Spec: schema de tenants, planos, platform memberships e notices.
 
 - Technical Spec: RLS e funções administrativas.
+
+- Technical Spec: atividades sugeridas, seeds e vínculos por turma.
 
 - Test Plan: isolamento entre tenants e cargos internos.
 

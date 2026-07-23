@@ -155,6 +155,16 @@ Isso permite dois modos no futuro:
 | `analytics.usage_counters` | `institution_id`, `counter_name`, `period_start`, `period_end`, `dimensions_json`, `value`, `updated_at` | Unico por instituicao/contador/periodo/dimensoes. |
 | `analytics.usage_snapshots` | `institution_id`, `snapshot_name`, `period_start`, `period_end`, `payload_json`, `source_cursor`, `generated_at` | Snapshot para dashboard futuro; nao vira fonte transacional. |
 
+### Atividades Contextuais
+
+| Tabela | Campos-chave | Constraints e indices |
+| --- | --- | --- |
+| `activity_definitions` | `id`, `institution_id`, `name`, `description`, `origin_scope_kind`, `origin_unit_id`, `created_by_person_id`, `status`, `created_at`, `updated_at`, `archived_at` | Definicao reutilizavel da atividade dentro da mesma instituicao; `origin_scope_kind` distingue criacao institucional ou por unidade, sem transferir a propriedade do tenant. |
+| `activity_unit_links` | `activity_id`, `unit_id`, `status`, `starts_at`, `ends_at`, `created_at` | Disponibilidade da atividade por unidade; o cadastro inicial exige ao menos uma unidade e impede uso cruzado entre instituicoes. |
+| `activity_group_links` | `activity_id`, `group_id`, `status`, `default_policy_json`, `created_at`, `updated_at` | Vínculo da atividade com a turma; a atividade opera sempre dentro do grupo. |
+| `activity_group_assignments` | `activity_group_link_id`, `person_id`, `membership_id`, `assignment_role`, `permissions_json`, `status`, `assigned_at`, `revoked_at` | Professor/coordenador vinculado a atividade naquela turma; pode haver mais de um professor por turma, com permissoes por turma e heranca de padroes. |
+| `activity_suggestions` | `institution_id`, `unit_id`, `template_code`, `seed_json`, `status`, `created_at` | Seeds sugeridos na criacao de instituicao ou unidade; nao sao catalogo global. |
+
 ### Chat Institucional
 
 | Tabela | Campos-chave | Constraints e indices |
@@ -201,6 +211,7 @@ Qualquer `SECURITY DEFINER` deve ficar em `app_private`, definir `search_path`, 
 | Planos e limites | Owner, Operations, Auditor. | Via RPC; Owner/Operations com grant; sempre auditado. |
 | Platform memberships/grants | Owner full; Auditor leitura; usuario pode ler o proprio membership. | Via RPC; apenas Owner; novo Owner exige MFA. |
 | Avisos/popups | Equipe Coelo autorizada ve configuracao; destinatarios veem apenas recibos/avisos calculados para si. | Via RPC; Owner/Operations/Content com grant; publish congela regras. |
+| Atividades contextuais | Owner, Operations e Admin institucional autorizado; unidade pode inserir apenas quando a capacidade específica estiver habilitada no perfil; professor/coordenador le apenas o que estiver vinculado ao grupo. | Via RPC transacional e RLS; atividade, unidade e turma mantêm o mesmo `institution_id`; criação pela unidade herda a instituição, força a unidade de origem como primeiro vínculo e não autoriza unidades irmãs. A instituição pode atualizar ou desativar atividades originadas em suas unidades. |
 | Suporte | Owner, Auditor e Support veem sessoes conforme papel; Support ve as proprias sessoes. | Abrir/fechar por RPC; acoes sensiveis exigem sessao ativa. |
 | Audit logs | Owner e Auditor leem por permissao `audit.read`; Support le logs das proprias sessoes somente via RPC especifica quando necessario. | Schema `audit`; append-only por RPC/trigger; sem grants diretos para cliente. |
 | Analytics/counters/snapshots | Owner, Operations e Auditor leem por permissao `analytics.read`; raw limitado. | Schema `analytics`; escrita server-side; cliente comum nao insere raw events sensiveis. |
@@ -219,6 +230,11 @@ Policies devem usar `TO authenticated` com predicate de autorizacao; nunca `TO a
 - `platform_memberships(person_id, role_id, status)`.
 - `platform_member_permission_overrides(membership_id, permission_id, status)` unique ativo.
 - `institution_subscriptions(institution_id, status, starts_at desc)`.
+- `activity_definitions(institution_id, status, created_at)`.
+- `activity_unit_links(activity_id, unit_id, status)`; ao menos um vínculo ativo por atividade.
+- `activity_group_links(activity_id, group_id, status)`.
+- `activity_group_assignments(activity_group_link_id, person_id, status)`; múltiplas linhas por turma são permitidas para professores diferentes.
+- Criacao de `activity_definitions` e do primeiro `activity_unit_links` deve ocorrer na mesma RPC transacional, impedindo atividade sem unidade ou com `institution_id` informado livremente pelo cliente.
 - `notice_rules(notice_id, position)`.
 - `notice_rules(target_type, target_id)` quando `target_id is not null`.
 - `notice_receipts(notice_id, person_id, institution_id)` unique.

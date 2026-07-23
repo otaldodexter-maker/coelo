@@ -233,7 +233,7 @@ Figura 3 — Camadas internas e independência dos bounded contexts.
 | apps/coelo_site | Astro para coelo.me. |
 | packages/design_system | Tokens, temas, componentes e acessibilidade compartilhados. |
 | packages/core_* | Auth, contexto, rede, erros, observabilidade e utilitários estáveis. |
-| packages/domain_* | Contextos: perfis, Flow, Now, Moments, Rotina, Chat, Agenda, Mídia etc. |
+| packages/domain_* | Contextos: perfis, Flow, Now, Moments, Rotina, Chat, Agenda, Mídia, Atividades etc. |
 | supabase/migrations | Migrations ordenadas e revisadas. |
 | supabase/functions | Edge Functions por comando/capacidade. |
 | supabase/tests | Testes SQL, RLS e isolamento. |

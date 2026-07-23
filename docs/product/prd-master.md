@@ -219,7 +219,7 @@ O Coelo deve nascer amplo o suficiente para qualquer instituição que cuide, ac
 | Chat/canais | Chat 1:1 contextual, canais por turma/unidade, atendimento responsável-instituição, chat interno e auditoria. |
 | Rotina infantil | Diário de rotina, alimentação, sono, higiene, saúde, humor, atividades, ocorrências, presença (Assiduidade), pontualidade. |
 | Agenda | Eventos, lembretes, autorizações, presença/RSVP, recorrências e integração futura. |
-| Gestão | Superadmin, Admin, unidades, grupos, pessoas, permissões, templates, conteúdo global e configurações. |
+| Gestão | Superadmin, Admin, unidades, grupos, atividades, pessoas, permissões, templates, conteúdo global e configurações. |
 | Dados e BI | Eventos, logs, auditoria, métricas operacionais, dashboards futuros e exportações. |
 | Expansões | IA, pagamentos, matrícula digital, financeiro leve, integrações, white label, relatórios e módulos especializados. |
 
@@ -233,7 +233,7 @@ O Coelo deve nascer amplo o suficiente para qualquer instituição que cuide, ac
 | Login unificado | Sim | E-mail/celular, convites, recuperação, pessoa única e contexto ativo. |
 | Multi-tenant | Sim | Instituição > Unidade > Grupo/Perfil > Criança/Aluno/Atendido > Responsável, com vínculos flexíveis. |
 | Superadmin | Sim | Gestão de clientes, status, planos, usuários internos, avisos e logs. |
-| Admin | Sim | Unidades, grupos, pessoas, responsáveis, equipe (perfil), permissões, comunicados, agenda, rotina e chat. |
+| Admin | Sim | Unidades, grupos, atividades, pessoas, responsáveis, equipe (perfil), permissões, comunicados, agenda, rotina e chat. |
 | App mobile | Sim | iOS/Android para responsáveis, professores, coordenadores, direção e equipe. |
 | Feed/comunicados | Sim | Privado, contextual, com mídia e confirmação de leitura. |
 | Stories/momentos | Sim | Diferencial visual, privado por perfil/unidade/grupo. |
@@ -684,7 +684,7 @@ Como o Coelo trata dados de crianças/adolescentes, segurança e LGPD devem ser 
 | RF-001 | Autenticação | Permitir login/recuperação por e-mail e/ou celular, com convites e vínculo de pessoa global. |
 | RF-002 | Contexto ativo | Permitir alternar instituição, papel, unidade/grupo quando a pessoa tiver múltiplos vínculos. |
 | RF-003 | Superadmin | Cadastrar, editar, ativar/inativar instituições e gerenciar usuários internos do Coelo. |
-| RF-004 | Admin | Cadastrar unidades, grupos, pessoas, crianças/alunos/atendidos, responsáveis e equipe. |
+| RF-004 | Admin | Cadastrar unidades, grupos, atividades, pessoas, crianças/alunos/atendidos, responsáveis e equipe. |
 | RF-005 | Deduplicação | Buscar pessoa existente antes de criar novo cadastro, com proteção de privacidade entre tenants. |
 | RF-006 | Vínculos | Permitir múltiplos vínculos por pessoa, por instituição, unidade, grupo e criança. |
 | RF-007 | Perfis sociais | Criar perfis de unidade/grupo e seguidores automáticos por vínculo. |
@@ -873,6 +873,7 @@ O Coelo é um bom candidato para Spec-Driven Development porque envolve muitas r
 | 03 | Modelo de Dados Master | Crítica | Schema, FKs, eventos, logs e retenção. |
 | 04 | Superadmin | Alta | Operação Coelo. |
 | 05 | Admin Instituição | Alta | Onboarding e gestão do cliente. |
+| 17 | Atividades Contextuais por Turma | Alta | Reutilização, criação institucional ou delegada à unidade, permissões e operação por turma dentro da mesma instituição. |
 | 06 | Feed, Comunicados e Confirmação de Leitura | Alta | Valor inicial. |
 | 07 | Stories/Momentos e Mídia Infantil | Alta | Diferencial visual e privacidade. |
 | 08 | Chat/Canais | Alta | Comunicação bidirecional. |
@@ -945,6 +946,7 @@ O Coelo é um bom candidato para Spec-Driven Development porque envolve muitas r
 1. Definir release plan v1 em marcos de 2 a 4 semanas.
 
 1. Criar protótipo navegável das telas principais do Admin e App.
+1. Criar Sub-PRD 03: Atividades Contextuais e permissões por turma.
 
 1. Preparar política de privacidade, termos, consentimento de imagem e DPA com revisão jurídica.
 
