@@ -3,9 +3,10 @@ title: "Coelo PRD Modelo de Dados Master Oficial v1"
 source_file: "Coelo PRD Modelo de Dados Master Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Modelo de Dados Master Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Modelo de Dados Master Oficial v1.docx"
+supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -444,6 +445,22 @@ A decisao tecnica inicial de schemas para o Coelo e:
 - O professor ou coordenador atua no contexto da atividade naquela turma, com permissoes herdadas e overrides contextuais.
 - Uma mesma atividade pode ter mais de um professor na mesma turma.
 - O banco deve tratar o dominio como entidade propria, nao como mero atributo da turma.
+
+## 26.1 Modelo fisico implementado
+
+| Tabela | Responsabilidade |
+| --- | --- |
+| `activity_definitions` | Definicao pertencente a instituicao, origem institucional/unidade, criador, status e arquivamento. |
+| `activity_unit_links` | Unidades em que a atividade esta disponivel; ao menos um vinculo ativo e obrigatorio. |
+| `activity_group_links` | Reutilizacao da atividade em uma turma da mesma instituicao e unidade. |
+| `activity_group_assignments` | Pessoas/memberships associados a atividade naquela turma, permitindo varios professores. |
+| `activity_capabilities` | Catalogo extensivel de capacidades contextuais. |
+| `activity_permission_profiles` | Perfil institucional ou de unidade aplicavel ao vinculo com turma. |
+| `activity_permission_profile_capabilities` | Allow/deny normalizado por perfil e capacidade. |
+| `activity_assignment_permission_overrides` | Allow/deny final por atribuicao de pessoa, sem extrapolar o vinculo. |
+| `activity_suggestions` | Sugestoes institucionais ou de unidade; o seed de produto permanece pendente. |
+
+FKs compostas preservam instituicao e unidade em definicoes, vinculos, grupos e memberships. A criacao pela unidade nao aceita `institution_id` do cliente: `create_activity_for_unit` deriva o owner institucional e grava definicao e primeiro vinculo em uma unica transacao. Todas as tabelas expostas possuem RLS e grants explicitos.
 
 # 27. Perguntas em aberto
 

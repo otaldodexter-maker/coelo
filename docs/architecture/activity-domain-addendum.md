@@ -1,8 +1,8 @@
 ---
 title: "Addendum de Atividade Contextual"
-source: "conversa com usuario em 2026-07-23; docs/architecture/domain-map.md; docs/data/data-model.md; docs/product/prd-master.md"
-status: "planning-addendum"
-generated_at: "2026-07-23"
+source: "conversa com usuario em 2026-07-23; docs/architecture/domain-map.md; docs/data/data-model.md; docs/product/prd-master.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+status: "implemented-database-addendum"
+generated_at: "2026-07-24"
 ---
 
 # Addendum De Atividade Contextual
@@ -20,6 +20,12 @@ generated_at: "2026-07-23"
 - Professores e coordenadores podem ser vinculados por turma, com permissoes contextuais.
 - Instituicao e unidade podem sugerir atividades padrao na criacao.
 - A implementacao deve começar pelo Supabase, depois menu e, por fim, tela.
+
+## Fundacao Fisica
+
+O dominio foi implementado em `public` com `activity_definitions`, `activity_unit_links`, `activity_group_links`, `activity_group_assignments`, `activity_permission_profiles`, `activity_permission_profile_capabilities`, `activity_assignment_permission_overrides`, `activity_capabilities` e `activity_suggestions`. Funcoes de autorizacao, criacao transacional, validacao e auditoria ficam em `app_private`; somente wrappers `security invoker` de criacao sao expostos em `public`.
+
+Perfis definem capacidades por instituicao ou unidade. Overrides por atribuicao podem permitir ou negar uma capacidade, mas nunca criam contexto: sem atribuicao ativa da pessoa naquela atividade e turma, nao ha acesso. Conversa, presenca, eventos e Now apenas consomem esse contexto futuramente.
 
 ## Relacionamento Com O Mapa
 

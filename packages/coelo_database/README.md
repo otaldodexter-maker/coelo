@@ -21,3 +21,9 @@ Validacoes principais:
 
 - `tests/2026-06-23-superadmin-foundation-validation.sql`
 - `tests/2026-06-23-schema-boundaries-catalog-validation.sql`
+- `tests/2026-07-24-contextual-activities-foundation-validation.sql`
+
+Fundacao de Atividades Contextuais:
+
+- `migrations/20260724120307_contextual_activities_foundation.sql`
+- `migrations/20260724122545_contextual_activities_fk_index_hardening.sql`

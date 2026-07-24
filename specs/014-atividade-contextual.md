@@ -1,8 +1,8 @@
 ---
 title: "Atividade Contextual"
-source: "conversa com usuario em 2026-07-23; docs/architecture/domain-map.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; docs/product/prd-admin.md; docs/product/prd-superadmin.md"
-status: "approved-for-planning"
-generated_at: "2026-07-23"
+source: "conversa com usuario em 2026-07-23; docs/architecture/domain-map.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; docs/product/prd-admin.md; docs/product/prd-superadmin.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+status: "implemented-database-foundation"
+generated_at: "2026-07-24"
 ---
 
 # Atividade Contextual
@@ -54,6 +54,20 @@ A hierarquia atual resolve bem instituicao > unidade > grupo, mas nao representa
 - `activity_group_assignments`: pessoas vinculadas a atividade naquela turma.
 - `activity_permission_profiles`: permissoes padrao e overrides por turma, herdando regras da instituicao e da unidade.
 - `activity_suggestions`: sementes padrao sugeridas na criacao de instituicao ou unidade.
+
+### Implementacao Fisica Aprovada Em 2026-07-24
+
+A fundacao fisica usa as seis entidades acima e tres tabelas normalizadas:
+
+- `activity_capabilities`: catalogo extensivel das capacidades `conversation`, `attendance`, `events` e `media_now`;
+- `activity_permission_profile_capabilities`: capacidades permitidas ou negadas por perfil institucional ou de unidade;
+- `activity_assignment_permission_overrides`: override final por pessoa, atividade e turma.
+
+Os perfis nao armazenam JSON de permissoes. A autorizacao efetiva combina perfil, capacidade e override normalizados, sempre limitada por um `activity_group_assignment` ativo. `activity_group_links` referencia um perfil opcional, e `activity_group_assignments` referencia um membership institucional coerente com pessoa e instituicao.
+
+A criacao atomica e exposta por `public.create_activity_for_institution(...)` e `public.create_activity_for_unit(...)`, wrappers `security invoker` sobre funcoes protegidas em `app_private`. A variante de unidade nao recebe `institution_id`: deriva a instituicao de `origin_unit_id` no servidor e cria o primeiro `activity_unit_link` na mesma transacao.
+
+O catalogo institucional foi ampliado com `activities.read`, `activities.create`, `activities.manage`, `activities.link_units`, `activities.link_groups`, `activities.assign_people` e `activities.manage_permissions`. Nenhum papel recebeu essas capacidades automaticamente.
 
 ## Regras De Permissao E Tenant
 
@@ -125,6 +139,5 @@ Registros sensiveis devem entrar em auditoria quando alterarem acesso, professor
 
 - Definir se a atividade tera pagina propria ou apenas subpagina dentro do grupo no MVP.
 - Definir se o nome exibido para a turma devera ser "atividade" em todos os contextos ou se a UI podera usar termos mais amigaveis.
-- Fechar o formato fisico dos grants por atividade sem abrir regra demais no cliente.
-- Definir na Technical Spec o identificador fisico da capacidade de criar/gerir atividades exposta na gestao do perfil.
 - Decidir quais tipos de sugestao padrao entram por tipo de instituicao.
+- Definir os papeis institucionais que receberao cada capacidade no seed de produto; a migration registra o catalogo, mas nao amplia acesso automaticamente.

@@ -1,8 +1,8 @@
 ---
 title: "Atividades Contextuais E Criacao Delegada Pela Unidade"
-source: "conversa com usuario em 2026-07-23; docs/product/prd-master.md; docs/product/prd-admin.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; specs/014-atividade-contextual.md"
-status: "Accepted for planning"
-generated_at: "2026-07-23"
+source: "conversa com usuario em 2026-07-23; docs/product/prd-master.md; docs/product/prd-admin.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; specs/014-atividade-contextual.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+status: "Accepted and implemented"
+generated_at: "2026-07-24"
 ---
 
 # Atividades Contextuais E Criacao Delegada Pela Unidade
@@ -64,9 +64,14 @@ professor para a mesma atividade, e permissoes diferentes.
   final de gerenciamento.
 - A implementacao segue a ordem: Supabase/Postgres e RLS, menu, depois telas.
 
+## Materializacao Fisica
+
+A decisao foi materializada em 2026-07-24 com tabelas normalizadas para definicao, unidades, turmas, atribuicoes, perfis, capacidades, overrides e sugestoes. A criacao institucional e a criacao delegada usam RPCs transacionais distintas; a RPC da unidade recebe apenas `origin_unit_id`, deriva a instituicao no servidor e exige `activities.create` naquele escopo.
+
+O catalogo institucional separa `activities.read`, `activities.create`, `activities.manage`, `activities.link_units`, `activities.link_groups`, `activities.assign_people` e `activities.manage_permissions`. Grants de unidade continuam limitados ao `unit_id` ou `group_id` do grant. Operacoes entre unidades irmas exigem grant institucional adicional.
+
 ## Fora De Escopo Desta Decisao
 
-- Definir o identificador fisico final da capacidade de criar/gerir atividades.
 - Definir o schema final de conversa, presenca, eventos ou midia.
 - Definir a tela final de atividades.
-- Autorizar migrations ou implementacao sem plano tecnico aprovado.
+- Definir quais papeis recebem cada capacidade por padrao.
