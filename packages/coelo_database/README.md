@@ -51,3 +51,24 @@ prefixos remotos das migrations novas diferem dos nomes locais gerados antes
 da aplicacao; o nome semantico e a ordem sao equivalentes. Migrations antigas
 tambem possuem drift historico de prefixo e nao foram renomeadas ou reparadas
 destrutivamente.
+
+## Fluxo Oficial Do Supabase CLI
+
+`migrations/` e a fonte canonica versionada. Antes de comandos CLI que leem
+migrations, execute:
+
+```powershell
+& packages/coelo_database/scripts/Sync-SupabaseCliMigrations.ps1 -Mode Prepare
+```
+
+O script copia e verifica nomes e SHA-256 em
+`supabase/migrations/`, diretorio gerado e ignorado pelo Git. Depois do comando
+CLI, a limpeza opcional e:
+
+```powershell
+& packages/coelo_database/scripts/Sync-SupabaseCliMigrations.ps1 -Mode Clean
+```
+
+Novas migrations nascem com `npx supabase migration new <nome>
+--workdir packages/coelo_database`; o arquivo gerado deve ser movido para
+`migrations/` sem alterar o timestamp.

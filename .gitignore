@@ -43,3 +43,10 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
+
+# Generated Supabase CLI workspace
+packages/coelo_database/supabase/.temp/
+packages/coelo_database/supabase/migrations/*.sql
+
+# Local visual brainstorming state
+.superpowers/
