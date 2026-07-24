@@ -1,6 +1,6 @@
 ---
 title: "Pessoas, Acessos Contextuais, Atividades, Chat E Assiduidade"
-source: "AGENTS.md; docs/product/prd-master.md; docs/product/prd-admin.md; docs/product/prd-app.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; decisions/0012-contextual-experiences-and-conversation-history.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; validacoes do usuario em 2026-07-24"
+source: "AGENTS.md; docs/product/prd-master.md; docs/product/prd-admin.md; docs/product/prd-app.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; decisions/0012-contextual-experiences-and-conversation-history.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; validacoes do usuario e auditoria Supabase em 2026-07-24"
 status: "draft-for-written-review"
 generated_at: "2026-07-24"
 ---
@@ -8,12 +8,41 @@ generated_at: "2026-07-24"
 # Objetivo
 
 Consolidar o modelo funcional de pessoas, instituicoes, unidades, grupos,
-atividades, criancas, responsaveis, profissionais, chat e assiduidade antes de
-alterar o Supabase.
+atividades, criancas, responsaveis, profissionais, chat e assiduidade antes do
+proximo ciclo de consolidacao do Supabase.
 
 Esta especificacao registra as decisoes de produto validadas. Ela nao autoriza
-migrations, mudancas de RLS, telas ou implementacao. A materializacao tecnica
-deve nascer de um plano posterior, depois da revisao escrita deste documento.
+migrations, mudancas de RLS, telas ou implementacao adicional. A fundacao
+fisica criada em 2026-07-24 deve ser confrontada com este desenho e com a
+auditoria remota. A consolidacao tecnica nasce de um plano posterior, depois
+da revisao escrita deste documento.
+
+# Alternativas Avaliadas Nesta Revisao
+
+## Cadastro Infantil
+
+- Somente instituicao: mais controle, mas aumenta trabalho e impede
+  pre-cadastro familiar.
+- Somente responsavel: mais rapido, mas eleva risco de duplicidade e vinculo
+  indevido.
+- Hibrido aprovado: qualquer lado inicia; instituicao valida o contexto.
+
+## Pessoas De Confianca
+
+- Duplicar cadastro integral em cada tenant: simples, mas repete CPF, telefone
+  e manutencao.
+- Compartilhar uma autorizacao global: reduz duplicidade, mas mistura decisoes
+  independentes de tenants.
+- Lista privada reutilizavel com autorizacoes contextuais independentes,
+  aprovada: reduz digitacao e preserva isolamento.
+
+## Caixa De Conversas
+
+- Lista unica sem filtros: simples, mas perde escala para familias com varios
+  filhos.
+- Abas exclusivas: organiza, mas esconde conversas e exige navegacao constante.
+- Lista completa por padrao com filtros opcionais, aprovada: mantem uma unica
+  superficie sem misturar conversas ou policies.
 
 # Principios Centrais
 
@@ -40,6 +69,34 @@ instituicoes diferentes sem duplicacao.
 Uma pessoa pode existir sem credencial. Convite e Auth ativam uma forma de
 acesso, mas nao concedem dados por si mesmos.
 
+## Entrada Do Adulto E Descoberta Institucional
+
+Um adulto pode chegar ao Coelo por dois caminhos equivalentes:
+
+- criar previamente sua conta global no aplicativo;
+- receber convite de uma instituicao ou unidade e criar ou reutilizar sua conta.
+
+A conta global pode possuir e-mail principal e `@identificador`. O mesmo login
+e reutilizado quando a pessoa e responsavel em uma instituicao, profissional
+em outra ou acumula os dois papeis. Criar a conta nao concede acesso a
+instituicao, unidade, crianca, grupo ou atividade.
+
+Instituicoes possuem `@identificador` e e-mail principal; unidades podem ter
+identificador proprio. Identificadores publicos de instituicoes e unidades sao
+unicos no Coelo. Um adulto autenticado pode localizar exatamente uma
+instituicao ou unidade por `@`, e-mail, link ou QR privado e enviar uma
+solicitacao de vinculo para uma ou varias criancas.
+
+- A busca nao e um diretorio social aberto.
+- Busca por e-mail ou `@` exige valor exato, possui rate limit e e auditavel.
+- O perfil encontrado revela apenas informacoes institucionais publicas
+  minimas.
+- A solicitacao nao libera dados antes da aprovacao.
+- Instituicao ou unidade valida a crianca, a relacao familiar e as capacidades.
+- A unidade decide dentro do proprio escopo; a instituicao enxerga, audita,
+  assume ou cancela solicitacoes de suas unidades.
+- Instituicao ou unidade continuam podendo iniciar o convite.
+
 ## Crianca
 
 A crianca nao possui login no MVP. O modelo deve permanecer preparado para:
@@ -52,6 +109,23 @@ A crianca nao possui login no MVP. O modelo deve permanecer preparado para:
 
 `people`, `child_contexts` ou `@username` infantil nao ativam login ou
 visibilidade automaticamente.
+
+O cadastro da crianca usa modelo hibrido:
+
+- responsavel pode iniciar um perfil infantil privado;
+- instituicao ou unidade pode iniciar o cadastro e convidar responsaveis;
+- a crianca possui uma identidade global e contextos institucionais separados;
+- o perfil infantil nao precisa de e-mail, login ou `@` no MVP;
+- codigo ou QR privado pode permitir que o responsavel apresente a referencia
+  da crianca a uma instituicao;
+- a instituicao valida a identidade e cria seu proprio contexto;
+- possivel duplicidade nunca e unificada automaticamente apenas por nome e
+  data de nascimento;
+- reconciliacao de duplicidade exige verificacao, permissao e auditoria.
+
+A aprovacao cria primeiro o vinculo crianca-unidade. A turma pode ser definida
+durante a aprovacao ou posteriormente. Uma crianca aprovada e ainda sem turma
+permanece em estado explicito de aguardando alocacao.
 
 ## Experiencia Familiar E Profissional
 
@@ -188,13 +262,17 @@ Fisicamente, catalogo e detalhe devem permanecer separados:
 Isso permite BI sobre o catalogo e analise dos detalhes recorrentes sem
 duplicar o valor conhecido em duas colunas.
 
-## Convite E Escopo
+## Convite, Solicitacao E Escopo
 
-Somente instituicao ou unidade pode cadastrar e convidar responsavel. Um
-responsavel nao convida outro responsavel.
+Somente instituicao ou unidade pode ativar, cadastrar institucionalmente e
+convidar responsavel. Um responsavel nao convida outro responsavel para obter
+acesso institucional. O pre-cadastro do adulto e a solicitacao iniciada por ele
+nao substituem a aprovacao institucional.
 
 - Convite institucional concede acesso aos contextos da crianca no tenant.
 - Convite de unidade concede acesso somente a essa unidade e descendentes.
+- Solicitacao do responsavel e enviada a instituicao ou unidade localizada.
+- Solicitacao pendente nao concede qualquer acesso.
 - Um convite pode selecionar varias criancas.
 - Relacao familiar e permissoes sao persistidas separadamente por crianca.
 - A mesma pessoa pode ter relacoes e capacidades diferentes para irmaos.
@@ -264,9 +342,35 @@ Dados esperados:
 - observacoes;
 - origem, autor e aprovador/suspensor.
 
+O modelo separa duas entidades:
+
+1. pessoa de confianca privada e reutilizavel pelo responsavel;
+2. autorizacao operacional independente para uma crianca em uma unidade.
+
 Responsavel com `Gerenciar pessoas autorizadas = Sim` pode cadastrar uma pessoa
-uma vez e selecionar uma ou varias criancas e unidades. A autorizacao entra em
-vigor imediatamente.
+de confianca uma vez e selecionar uma ou varias criancas e unidades. Ao entrar
+em outra unidade ou instituicao, pode:
+
+- reutilizar toda a lista;
+- selecionar apenas algumas pessoas;
+- escolher criancas e unidades individualmente;
+- manter uma lista diferente no novo contexto.
+
+Reutilizar nao compartilha uma unica autorizacao entre tenants. Para cada
+combinacao crianca-unidade e criada uma autorizacao contextual independente.
+A autorizacao de retirada pertence a crianca dentro da unidade, nao a turma;
+mudanca de turma na mesma unidade nao exige recriacao.
+
+A pessoa de confianca original permanece privada para o responsavel que a
+cadastrou. Cada autorizacao contextual guarda o snapshot minimo necessario
+para a operacao institucional. Outro tenant nao descobre a lista, os vinculos
+ou o historico do responsavel.
+
+A instituicao enxerga apenas as autorizacoes do proprio tenant. Suspensao,
+validade e status em uma unidade nao alteram silenciosamente outra unidade.
+Alteracoes cadastrais permitem selecionar todas ou apenas algumas autorizacoes
+afetadas. A autorizacao criada por responsavel habilitado entra em vigor
+imediatamente.
 
 Instituicao ou unidade pode suspender imediatamente por seguranca, registrando
 motivo. Somente responsaveis com a capacidade podem ver a lista e receber
@@ -294,7 +398,8 @@ Fluxo:
 
 Acessos institucionais acompanham a crianca. Acessos exclusivos da unidade
 anterior nao migram. Pessoas autorizadas tambem nao sao copiadas
-silenciosamente; responsavel autorizado pode selecionar quais deseja recriar.
+silenciosamente; o responsavel autorizado escolhe se deseja reutilizar todas,
+algumas ou nenhuma no destino.
 
 # Atividades
 
@@ -383,14 +488,16 @@ participantes daquele contexto.
 
 A instituicao pode escolher:
 
-- chat institucional unificado;
 - chat institucional e chats de unidade separados;
 - somente chat institucional;
 - somente chats de unidade;
 - unidades especificas sem chat.
 
-Instituicao com uma unica unidade pode unificar a entrada sem perder o contexto
-historico. A configuracao pode mudar quando a estrutura crescer.
+Unificacao significa uma unica entrada visual para conversas, nao mistura
+mensagens, participantes ou policies de contextos diferentes. A configuracao
+define quais canais existem; a caixa de entrada agrega apenas os canais aos
+quais a pessoa possui acesso. A configuracao pode mudar quando a estrutura
+crescer sem reescrever o historico.
 
 Chats institucionais e de unidade sao recebidos somente por equipes de
 atendimento configuradas. Pessoas e papeis podem receber capacidades distintas
@@ -400,6 +507,29 @@ Professor exclusivo de atividade conversa apenas com responsaveis das criancas
 participantes e nao acessa chat ou historico geral do grupo. Quando sai do
 contexto, perde acesso; novo profissional autorizado pode consultar o historico
 institucional aplicavel.
+
+## Caixa Unica De Conversas
+
+O Principal oferece uma unica superficie chamada `Conversas`.
+
+- A visao padrao `Todas` lista todos os canais autorizados.
+- Filtros opcionais separam `Instituicoes e unidades`, `Turmas` e `Atividades`.
+- O filtro de crianca fica em nivel separado dos filtros de tipo.
+- Cada item continua sendo uma conversa independente e contextual.
+- Unidade mostra discretamente a instituicao a que pertence.
+- Atividade mostra obrigatoriamente a turma e a crianca ou criancas
+  relacionadas.
+- Busca atua apenas sobre conversas que a pessoa ja pode acessar.
+
+Instituicao, unidade, turma e atividade podem possuir avatar ou imagem circular.
+O estado de disponibilidade aparece sobreposto ao avatar: online, offline,
+ausente ou ocupado. Em conversas coletivas, o estado representa a
+disponibilidade do atendimento, nao a presenca de todas as pessoas da equipe.
+O estado deve possuir alternativa textual e semantica; cor isolada nao basta.
+
+Quando um desses contextos publicar Now, o avatar recebe uma borda de
+indicacao. O desenho visual futuro nao deve usar degrades. Essas notas orientam
+uma spec de UX/UI posterior e nao autorizam implementacao de tela nesta etapa.
 
 # Presenca E Assiduidade
 
@@ -541,10 +671,19 @@ Eventos relevantes incluem:
 - Convite de varias criancas cria relacoes e capacidades independentes.
 - Responsavel acompanha automaticamente os vinculos da crianca no seu escopo.
 - Responsavel sem `Gerenciar pessoas autorizadas` nao descobre a lista.
+- Adulto pre-cadastrado nao recebe acesso antes de convite ou solicitacao
+  aprovada.
+- Crianca pre-cadastrada nao entra em um tenant sem validacao institucional.
+- Aprovacao pode deixar crianca vinculada a unidade e aguardando turma.
+- Pessoa de confianca pode ser reutilizada sem compartilhar autorizacao entre
+  unidades ou tenants.
+- Autorizacao de retirada continua valida apos troca de turma na mesma unidade.
 - Transferencia depende de aceite do destino e preserva auditoria.
 - Atividade local e promovida sem duplicar definicao ou historico.
 - Atividade pode abranger toda a turma ou criancas selecionadas.
 - Chat preserva pessoa, papel, escopo e criancas relacionadas.
+- Caixa unica agrega conversas sem misturar os registros contextuais.
+- Filtro de crianca e independente do filtro de tipo de conversa.
 - Equipe nao configurada nao le chat institucional ou de unidade.
 - Aviso de ausencia preenche a lista como pendencia, nao como oficial.
 - Somente `Gerenciar presenca` confirma ou corrige presenca.
@@ -552,32 +691,74 @@ Eventos relevantes incluem:
 - RLS bloqueia consultas e comandos fora de tenant, unidade, grupo, atividade,
   crianca e capacidade.
 
-# Lacunas Confirmadas No Supabase Atual
+# Testes Adicionais Exigidos No Proximo Ciclo
 
-A fundacao existente e parcial. O plano tecnico posterior deve confrontar:
+- Adulto pre-cadastra conta e continua sem acesso institucional.
+- Instituicao convida adulto existente por e-mail ou `@identificador`.
+- Responsavel solicita vinculo por `@`, e-mail, link e QR institucional.
+- Solicitacao pendente nao revela dados e aprovacao materializa capacidades.
+- Responsavel pre-cadastra crianca e instituicao cria contexto validado.
+- Instituicao inicia crianca e convida responsavel posteriormente.
+- Possivel duplicidade infantil nao e mesclada automaticamente.
+- Crianca aprovada fica na unidade sem turma e pode ser alocada depois.
+- Pessoa de confianca e reutilizada em duas criancas e duas instituicoes.
+- Suspensao em uma unidade nao altera autorizacao de outra unidade.
+- Um tenant nao descobre a lista privada nem autorizacoes de outro tenant.
+- Troca de turma preserva autorizacao de retirada da mesma unidade.
+- Revogacao de vinculo remove acesso operacional e torna historico elegivel a
+  somente leitura.
+- Caixa unica retorna apenas conversas autorizadas e filtros nao ampliam RLS.
+- Conversa de atividade referencia a turma correta e seus participantes.
 
-- `groups.unit_id` ainda permite nulo, apesar da regra de grupo por unidade;
-- `institution_memberships.role_code` e escopo legado se sobrepoem a
-  `institution_role_assignments` e grants;
-- familia e papeis possuem principalmente policies de leitura do Superadmin,
-  sem operacao final de Admin e Principal;
-- `guardian_context_permissions` nao representa toda a matriz validada;
-- nao existe catalogo normalizado de relacoes familiares;
-- nao existem pessoas autorizadas e autorizacoes por crianca/unidade;
-- nao existe transferencia transacional entre unidades;
-- nao existe atribuicao profissional direta por crianca;
-- Atividades nao possuem participacao individual de crianca;
-- Atividades nao possuem classificacao completa de disponibilidade, promocao e
-  politica institucional;
-- chat atual nao representa a mesma pessoa em dois papeis na mesma conversa;
-- mensagens nao preservam todos os snapshots contextuais aprovados;
-- nao existe equipe de atendimento configuravel por contexto;
-- nao existe dominio fisico de presenca, avisos, justificativas, sessoes,
-  lembretes e assiduidade;
-- RLS e RPCs finais ainda precisam ser desenhadas por dominio.
+# Documentos Canonicos A Alinhar Depois Da Revisao
+
+- ADR 0015, para identidade infantil hibrida, solicitacao de vinculo, pessoa de
+  confianca reutilizavel e caixa unica de conversas.
+- Spec 015, para estados, entidades, testes e correcao de 29 para 30 tabelas.
+- Modelo de dados, para separar pessoa de confianca privada de autorizacao
+  crianca-unidade.
+- Auth multi-tenant, para busca institucional exata, pre-cadastro e aprovacao.
+- PRDs App e Admin, para as jornadas de solicitacao, validacao e conversas.
+- Open questions, encerrando as decisoes agora aprovadas e preservando apenas
+  retencao, login infantil e modelo comercial como temas adiados.
+- Design System e spec futura de UX/UI, para avatar, presenca, borda de Now,
+  filtros em niveis diferentes e proibicao de degrades nessa superficie.
+
+# Estado E Lacunas Confirmadas No Supabase Atual
+
+A fundacao contextual foi aplicada ao projeto `coelo`
+(`evvbomzejfijozbtgvpt`) em 2026-07-24, mas a auditoria posterior confirmou que
+ela ainda nao esta pronta para consumo operacional completo pelo Admin e
+Principal. O proximo plano tecnico deve confrontar:
+
+- historico local e remoto de migrations com 15 versoes sem correspondencia;
+- policy de leitura de `authorized_people` com comparacao de ID sombreada;
+- revogacao de chat que ainda depende de desativar participante e nao
+  revalida todos os vinculos dinamicamente;
+- RLS operacional incompleta em tabelas centrais legadas;
+- integridade cross-tenant insuficiente em grupos, escopos legados,
+  assiduidade e grants polimorficos;
+- grants excessivos de `anon` e `authenticated` em tabelas legadas;
+- ausencia de fluxo transacional completo para aceitar convite de responsavel;
+- ausencia de reutilizacao de pessoa de confianca entre tenants com
+  autorizacoes independentes;
+- autorizacoes atuais centradas no tenant, sem a camada privada reutilizavel
+  aprovada nesta revisao;
+- transferencia em lote sem decisao parcial coerente;
+- outbox de notificacao sem dispatcher, retry, idempotencia ou Realtime
+  operacional;
+- assiduidade sem criacao transacional completa de sessao/participantes e sem
+  scheduler dos lembretes;
+- sobreposicao entre campos e tabelas legadas e normalizadas de membership,
+  familia, chat e atividades;
+- `updated_at` sem automacao consistente e chaves estrangeiras sem indices;
+- testes predominantemente estruturais, sem cobrir revogacao, aceite de
+  convite, reutilizacao, parcialidade e mismatches cross-tenant;
+- 30 tabelas contextuais novas, embora documentos atuais registrem 29.
 
 Nenhuma dessas lacunas deve ser corrigida antes da aprovacao documental e de
-um plano de migrations pequenas, versionadas e testadas.
+um plano de migrations pequenas, versionadas, testadas e reconciliadas com o
+historico remoto.
 
 # Fora De Escopo E Decisoes Adiadas
 
@@ -586,5 +767,6 @@ um plano de migrations pequenas, versionadas e testadas.
 - experiencia infantil e login de crianca;
 - desenho visual final do seletor de contexto;
 - telas finais de Admin e Principal;
+- implementacao visual da caixa de conversas, avatares, presenca e borda de Now;
 - implementacao dos dominios Flow, rotina, agenda e midia;
-- migration ou alteracao imediata do Supabase.
+- migration ou alteracao imediata do Supabase sem plano revisado.
