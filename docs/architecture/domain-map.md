@@ -3,9 +3,10 @@ title: "Coelo Mapa de Dominios Oficial v1"
 source_file: "Coelo Mapa de Dominios Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Mapa de Dominios Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Mapa de Dominios e Arquitetura/Coelo Mapa de Dominios Oficial v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -698,7 +699,72 @@ Planos e Entitlements é a camada que permite vender combinações de funcionali
 | Planos comerciais | Nomes, preços e combinações finais; o mapa apenas prepara a estrutura. |
 | Comentários | Preparados no futuro; desativados no MVP. |
 
-# 11. Fontes e referências
+# 11. Aditivo 2026-07-24 — Dominios Contextuais
+
+## 11.1 Identity
+
+Mantem pessoa global, Auth opcional e perfil. Crianca permanece sem login no
+MVP, com estrutura preparada para experiencia infantil futura. Identity nao
+decide papel, tenant ou visibilidade.
+
+## 11.2 Tenancy
+
+Mantem instituicao, unidade e grupo. Grupo pertence obrigatoriamente a unidade.
+Tenancy fornece a arvore de ownership, mas nao concede capacidades sozinho.
+
+## 11.3 Family Authorization
+
+Mantem:
+
+- relacao familiar global;
+- acesso do responsavel por crianca e escopo;
+- capacidades familiares;
+- pessoas autorizadas sem login;
+- autorizacoes por crianca/unidade;
+- transferencias entre unidades.
+
+`Guardian Access` e `Authorized Contacts` sao conceitos distintos. Somente o
+primeiro oferece experiencia no Principal.
+
+## 11.4 Professional Authorization
+
+Mantem memberships, papeis padrao/personalizados, capacidades, atribuicoes por
+escopo e overrides. Permite abrangencia dinamica de descendentes ou selecoes
+fixas e atribuicao direta a criancas.
+
+## 11.5 Activities
+
+Mantem definicao institucional, origem, disponibilidade, politica,
+unidades/grupos, participantes e atribuicoes profissionais. Atividade local
+pode ser promovida sem duplicar a definicao. Conversa, presenca, rotina, agenda
+e midia apenas consomem o contexto de atividade.
+
+## 11.6 Chat
+
+Mantem conversas e historico por instituicao, unidade, grupo ou atividade.
+Preserva pessoa autora, papel, contexto e criancas relacionadas. Equipes de
+atendimento controlam chats institucionais e de unidade.
+
+## 11.7 Attendance
+
+Mantem sessoes, participantes, avisos familiares, registro oficial,
+justificativas, revisoes e assiduidade. Aviso familiar e intencao; confirmacao
+profissional e o registro oficial.
+
+## 11.8 Context Map Atualizado
+
+| Upstream | Downstream | Contrato |
+| --- | --- | --- |
+| Identity | Todos | Pessoa e Auth opcional. |
+| Tenancy | Family/Professional Authorization | Instituicao, unidade e grupo coerentes. |
+| Family Authorization | Principal, Chat, Attendance | Crianca representada e capacidades familiares. |
+| Professional Authorization | Admin, Chat, Attendance, Activities | Papel, escopo e capacidades efetivas. |
+| Activities | Chat, Attendance, Routine, Agenda, Media | Contexto e participantes autorizados. |
+| Attendance | Notifications, Analytics | Pendencias, registros oficiais e eventos minimizados. |
+| Chat | Notifications | Mensagens contextuais; nunca fonte de presenca. |
+| Todos | Audit | Antes/depois, ator, sujeito, contexto e motivo. |
+
+# 12. Fontes e referências
 
 ## 11.1 Fontes internas do Coelo
 

@@ -3,9 +3,10 @@ title: "Coelo PRD Admin Oficial v1"
 source_file: "Coelo PRD Admin Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Admin Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Admin Oficial v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -374,6 +375,20 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 - Functional/Technical Spec: atividades contextuais por turma.
 
 - Test Plan: importação, isolamento e vínculos familiares.
+
+# 22. Aditivo 2026-07-24 — Gestão Contextual
+
+O Admin deve permitir:
+
+- cadastrar profissionais com papéis padrão ou customizados, escopo automático de descendentes ou seleção explícita e eventual vínculo com crianças específicas;
+- convidar responsáveis para uma ou várias crianças, definindo vínculo e permissões por criança durante o convite e permitindo edição posterior;
+- consultar e suspender pessoas autorizadas para emergência, retirada ou transporte, sempre com motivo, auditoria e notificação;
+- solicitar transferência de crianças entre unidades, aceitar no destino, processar lote e manter estado aguardando alocação quando não houver turma;
+- criar atividades institucionais ou locais, promover atividade local sem duplicá-la, definir participação e governar capacidades;
+- configurar chats por instituição, unidade, grupo e atividade, inclusive unificação em instituição de unidade única e equipes responsáveis;
+- administrar presença, pendências familiares, correções auditadas e painéis de assiduidade.
+
+Listas e ações devem desaparecer quando o profissional não possuir permissão. Um administrador da unidade pode enxergar todas as turmas ou apenas as selecionadas; unidade irmã nunca é herdada.
 
 # Fontes e referências
 

@@ -1,8 +1,8 @@
 ---
 title: "Superadmin MVP Database e RLS"
 source: "specs/010-superadmin-completo-v1-technical-spec.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; docs/security/lgpd-security-media.md; Supabase RLS/Auth docs consultados em 2026-06-23"
-status: "approved-for-initial-migration"
-generated_at: "2026-06-23"
+status: "implemented-foundation-with-contextual-gaps"
+generated_at: "2026-07-24"
 ---
 
 # Superadmin MVP Database e RLS
@@ -311,3 +311,21 @@ O seed minimo deve criar:
 - Validar juridicamente o poder total do Owner Coelo antes de dados reais.
 - Escolher ferramenta de teste SQL/RLS em `packages/coelo_database`.
 - Refinar RPCs finais, policies completas e convencoes de migration Supabase conforme os proximos fluxos do Superadmin forem implementados.
+
+## Aditivo 2026-07-24 — Lacunas Contextuais
+
+Este aditivo diferencia fundação física existente de autorização operacional pronta. Nenhuma migration adicional foi aplicada como parte desta revisão documental.
+
+| Área | Estado remoto observado | Próxima implementação |
+| --- | --- | --- |
+| Pessoas e estrutura | Tabelas fundacionais presentes; `groups.unit_id` ainda aceita nulo. | Tratar legado e exigir unidade para novos grupos. |
+| Papéis e grants | Estruturas presentes, com sobreposição ao membership legado. | Definir fonte canônica, negação explícita e escopos selecionados/descendentes. |
+| Família | Vínculos básicos presentes; autorização ainda ampla. | Matriz responsável–criança, catálogo de vínculo e convite multi-criança. |
+| Pessoas autorizadas | Ausente. | Emergência/retirada/transporte, suspensão, notificações e proteção de documentos. |
+| Profissional–criança | Ausente. | Vínculo explícito com escopo e RLS. |
+| Transferência de unidade | Ausente. | Solicitação, aceite do destino, lote, fila de alocação e auditoria. |
+| Atividades | Fundação contextual presente. | Governança, promoção sem duplicação, participação individual e política de capacidades. |
+| Chat | Fundação presente, sem snapshots contextuais suficientes. | Escopo, pessoa real, papel e crianças relacionadas. |
+| Assiduidade | Ausente. | Avisos, lista oficial, revisão, lembretes, anexos, auditoria e agregados. |
+
+As próximas migrations devem incluir testes negativos entre tenants, unidades irmãs, grupos não selecionados, atividades sem assignment e crianças não vinculadas.

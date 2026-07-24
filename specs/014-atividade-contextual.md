@@ -1,7 +1,7 @@
 ---
 title: "Atividade Contextual"
-source: "conversa com usuario em 2026-07-23; docs/architecture/domain-map.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; docs/product/prd-admin.md; docs/product/prd-superadmin.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
-status: "implemented-database-foundation"
+source: "conversa com usuario em 2026-07-23 e 2026-07-24; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+status: "implemented-foundation-with-approved-expansion"
 generated_at: "2026-07-24"
 ---
 
@@ -69,6 +69,22 @@ A criacao atomica e exposta por `public.create_activity_for_institution(...)` e 
 
 O catalogo institucional foi ampliado com `activities.read`, `activities.create`, `activities.manage`, `activities.link_units`, `activities.link_groups`, `activities.assign_people` e `activities.manage_permissions`. Nenhum papel recebeu essas capacidades automaticamente.
 
+### Governança Aprovada Para A Próxima Migration
+
+A identidade da atividade permanece em `activity_definitions`. A evolução física deve separar:
+
+- origem: criada pela instituição ou por uma unidade;
+- distribuição: padrão institucional ou local da unidade;
+- política: opcional, obrigatória ou fixa;
+- participação no grupo: todas as crianças ou seleção explícita;
+- política institucional por capacidade: obrigatória, habilitada por padrão, desabilitada por padrão ou proibida.
+
+Promover uma atividade local para padrão institucional deve preservar o mesmo `activity_definition_id`, sua origem e seu histórico. Promoção não cria cópia. A instituição visualiza e governa todas as atividades de suas unidades.
+
+Quando uma capacidade não for obrigatória nem proibida, a unidade administra o valor efetivo para seus grupos. Atividade fixa bloqueia os campos definidos pela política institucional, sem impedir que a unidade configure os demais.
+
+Estas regras estão aprovadas, mas ainda não fazem parte da migration fundacional referenciada nesta spec.
+
 ## Regras De Permissao E Tenant
 
 - A atividade pertence sempre a uma instituicao.
@@ -134,6 +150,11 @@ Registros sensiveis devem entrar em auditoria quando alterarem acesso, professor
 - Validar dois ou mais professores vinculados a mesma atividade e turma.
 - Validar heranca de permissao padrao da instituicao/unidade com override por turma.
 - Validar seeds de sugestao na criacao de instituicao/unidade.
+- Promover atividade local a padrao institucional sem criar nova definicao.
+- Negar duplicacao logica durante a promocao.
+- Alternar participacao entre todo o grupo e criancas selecionadas sem atravessar a instituicao.
+- Aplicar politicas `required`, `default_on`, `default_off` e `prohibited` por capacidade.
+- Impedir que a unidade altere capacidade bloqueada pela instituicao.
 
 ## Riscos E Perguntas Abertas
 

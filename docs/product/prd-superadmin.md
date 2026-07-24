@@ -3,9 +3,10 @@ title: "Coelo PRD Superadmin Oficial v1"
 source_file: "Coelo PRD Superadmin Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Superadmin Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Superadmin Oficial v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -401,6 +402,21 @@ Admin institucional e App principal nao devem acessar `audit` ou `analytics` dir
 - Cargos internos: manter Owner, Operations, Support, Content e Auditor.
 - Contadores do MVP: armazenar eventos, contadores e snapshots; dashboard visual fica fora.
 - Figma: wireframe simples, com desktop, tablet e mobile.
+
+# 21. Aditivo 2026-07-24 — Governança Da Plataforma
+
+O Superadmin deve inspecionar, auditar e oferecer suporte aos domínios contextuais, mas não se torna o operador cotidiano da instituição.
+
+São responsabilidades da plataforma:
+
+- manter catálogos técnicos de permissões e capacidades;
+- visualizar saúde de migrations, policies RLS, auditoria e isolamento;
+- diagnosticar vínculos e escopos sem conceder acesso silencioso;
+- suportar instituição em incidentes por sessão temporária, justificada e auditada;
+- acompanhar agregados não sensíveis de adoção de atividades, chats e assiduidade;
+- preservar a separação entre governança Coelo e autoridade institucional.
+
+O menu do Superadmin deve priorizar catálogos, diagnóstico e auditoria. Cadastros cotidianos de responsáveis, profissionais, pessoas autorizadas, turmas, atividades e presença pertencem ao Admin.
 
 # Fontes e referências
 

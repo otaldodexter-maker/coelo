@@ -3,9 +3,10 @@ title: "Coelo PRD Master v1"
 source_file: "Coelo PRD Master v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Master v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Master v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -951,6 +952,18 @@ O Coelo é um bom candidato para Spec-Driven Development porque envolve muitas r
 1. Preparar política de privacidade, termos, consentimento de imagem e DPA com revisão jurídica.
 
 1. Selecionar instituição piloto, mapear dados reais e criar roteiro de onboarding.
+
+# 48.1 Aditivo 2026-07-24 — Modelo Contextual Integrado
+
+O produto adota pessoa global e atuação contextual. A mesma pessoa pode ser responsável e profissional, com experiências separadas e permissões calculadas pelo vínculo ativo. Instituição, unidade, grupo, atividade e criança são contextos de autorização; atividade não cria novo nível rígido.
+
+O MVP não oferece login à criança, mas preserva uma pessoa global que poderá receber acesso futuro. Responsáveis com login são convidados apenas por instituição ou unidade. Pessoas autorizadas para emergência, retirada ou transporte formam cadastro operacional sem acesso ao app.
+
+Atividades pertencem à instituição, podem nascer locais em uma unidade e ser promovidas ao catálogo institucional sem duplicação. Seus módulos — conversa, assiduidade, agenda, rotina e mídia — continuam domínios próprios e são habilitados por políticas institucionais e configuração da unidade.
+
+Assiduidade passa a ser domínio próprio. Avisos familiares podem antecipar ausência, presença esperada, atraso ou saída; profissionais autorizados transformam a pendência em registro oficial. O produto deve oferecer visão por criança, turma, unidade e instituição.
+
+Transferências entre unidades exigem solicitação e aceite do destino. Ao terminar o vínculo institucional, o acesso operacional é removido; conversas históricas podem permanecer somente leitura conforme política de retenção.
 
 # 49. Fontes e referências pesquisadas
 

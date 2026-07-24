@@ -4,6 +4,7 @@ source_file: "Coelo PRD Modelo de Dados Master Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Modelo de Dados Master Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Modelo de Dados Master Oficial v1.docx"
 supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+contextual_access_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -491,6 +492,53 @@ FKs compostas preservam instituicao e unidade em definicoes, vinculos, grupos e 
 - Seed de dois tenants e cenários multi-papel.
 
 - Plano de importação CSV/XLSX e reconciliação.
+
+# 29. Aditivo 2026-07-24 — Pessoas, Autorizações E Assiduidade
+
+Este aditivo projeta o modelo físico aprovado para a próxima etapa. Ele não declara essas estruturas como já migradas.
+
+## 29.1 Autorização profissional
+
+- A identidade continua global em `people`; o acesso nasce de vínculo contextual.
+- Papéis profissionais padrão ou customizados devem ser atribuídos por instituição, unidade, grupo, atividade e, quando necessário, criança.
+- A autorização efetiva combina concessões do papel, concessões diretas, negações explícitas e escopo. Uma negação explícita da pessoa prevalece.
+- O escopo pode incluir descendentes automaticamente ou somente itens selecionados. Acesso a uma unidade não inclui unidades irmãs.
+- O vínculo profissional com criança deve existir como entidade própria; não deve ser inferido apenas do grupo.
+
+## 29.2 Família E Pessoas Autorizadas
+
+- O vínculo responsável–criança deve guardar um código de catálogo (`pai`, `mae`, `avo`, `ava`, `irmao`, `irma`, `padrasto`, `madrasta`, `primo`, `prima`, `tio`, `tia`, `outro`) e um detalhe livre separado.
+- Convites de responsáveis são emitidos apenas por instituição ou unidade. Um mesmo convite pode relacionar várias crianças, com vínculo e permissões próprios por criança.
+- Permissões familiares devem ser flags normalizadas por responsável, criança e contexto. Nascem habilitadas no convite, mas instituição ou unidade pode alterá-las.
+- Pessoas autorizadas para emergência, retirada ou transporte não possuem login por esse cadastro. Seus dados, tipos de autorização, crianças e contextos devem ser modelados separadamente do responsável usuário.
+- Autorizações criadas por responsável habilitado tornam-se ativas imediatamente; suspensão institucional ou da unidade exige motivo, auditoria e notificação.
+
+## 29.3 Atividade
+
+- `activity_definitions` permanece como identidade única pertencente à instituição.
+- Origem (`institution` ou `unit`), distribuição (`institution_standard` ou `unit_local`) e política (`optional`, `mandatory`, `fixed`) são dimensões distintas.
+- Promover uma atividade local a padrão institucional altera sua governança sem criar outra definição.
+- Participação pode abranger todo o grupo ou crianças selecionadas.
+- Cada capacidade da atividade deve admitir política institucional `required`, `default_on`, `default_off` ou `prohibited`; quando não estiver bloqueada, a unidade administra o valor efetivo.
+
+## 29.4 Conversa
+
+- Conversas devem guardar escopo institucional, de unidade, grupo ou atividade.
+- Participantes são pessoas reais; o contexto de exibição deve preservar nome, papel exercido e zero, uma ou várias crianças relacionadas no momento da mensagem.
+- Encerrado o vínculo institucional da criança, módulos operacionais desaparecem e conversas históricas ficam somente leitura conforme retenção aplicável.
+
+## 29.5 Assiduidade
+
+O domínio de presença deve ser independente e referenciar instituição, unidade, grupo, atividade opcional, criança e período/aula. A implementação física deverá separar ocorrência/lista oficial, aviso do responsável, catálogo e detalhe do motivo, anexos privados, revisão, correção, lembretes e agregados.
+
+Avisos abrangem ausência, presença esperada, chegada tardia, saída antecipada e períodos. Eles preenchem a lista como pendência, nunca se tornam registro oficial automaticamente e não equivalem a falta justificada.
+
+## 29.6 Integridade Obrigatória
+
+- Grupos novos devem pertencer obrigatoriamente a uma unidade; a migration deverá tratar registros legados antes de tornar `groups.unit_id` não nulo.
+- Toda FK contextual deve impedir cruzamento de instituição por constraint composta ou validação server-side.
+- CPF e outros documentos de pessoas autorizadas exigem estratégia de minimização, cifragem/tokenização e retenção antes de produção.
+- Alterações de permissão, suspensão, transferência, presença oficial e contexto histórico devem ser auditadas.
 
 # Fontes e referências
 

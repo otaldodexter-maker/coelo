@@ -3,9 +3,10 @@ title: "Coelo Arquitetura Macro Oficial v1"
 source_file: "Coelo Arquitetura Macro Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Arquitetura Macro Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Mapa de Dominios e Arquitetura/Coelo Arquitetura Macro Oficial v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -670,7 +671,63 @@ O cenário oficial é um piloto com 1 a 5 instituições e até 2.000 usuários 
 | Próxima entrega recomendada<br>Criar primeiro a fundacao de dados do Superadmin Completo v1: schema, RLS, Owner/MFA, ativacao de instituicao, auditoria, avisos/popups segmentados e eventos/contadores/snapshots. Depois: wireframe Figma em desktop/tablet/mobile -> componentes Flutter compartilhaveis -> telas do fluxo de ativacao -> demais fluxos do Superadmin. |
 | --- |
 
-# 16. Fontes e referências
+# 16. Aditivo 2026-07-24 — Contextos, Chat E Assiduidade
+
+## 16.1 Projecao De Experiencias
+
+`people` permanece como raiz global. Experiencia familiar ou profissional e
+uma projecao dos vinculos ativos da pessoa, nunca uma nova identidade. Toda
+requisicao privada deve resolver:
+
+1. pessoa autenticada;
+2. instituicao;
+3. experiencia/papel;
+4. unidade, grupo, atividade ou crianca aplicavel;
+5. capacidade efetiva;
+6. restricoes explicitas.
+
+Trocar experiencia recompõe navegacao, dados, realtime e caches. Uma negacao
+individual explicita prevalece sobre allows herdados no mesmo escopo.
+
+## 16.2 Dependencias Entre Dominios
+
+```text
+Identity
+  -> Tenancy
+    -> Family Authorization / Professional Authorization
+      -> Activities
+        -> Chat / Attendance / Agenda / Routine / Media
+
+Comandos sensiveis -> Audit
+Eventos operacionais -> Notifications / Analytics
+```
+
+Family Authorization separa responsaveis com acesso ao Coelo de pessoas
+autorizadas apenas para emergencia, retirada ou transporte. Professional
+Authorization suporta papeis acumulados, descendentes automaticos, selecoes
+fixas e atribuicoes por crianca.
+
+## 16.3 Attendance
+
+Attendance/Assiduidade e um dominio transacional proprio. Ele guarda sessoes,
+participantes esperados, avisos familiares, registros oficiais, motivos,
+justificativas e revisoes. Grupo e atividade fornecem contexto, mas nao sao a
+fonte do registro.
+
+Chat pode exibir cards e respostas sobre presenca, sem se tornar a fonte
+oficial. Notifications agenda lembretes e pendencias. Analytics consome apenas
+eventos minimizados e agregados autorizados.
+
+## 16.4 Fronteiras De Seguranca
+
+- Tabelas expostas usam RLS por tenant e contexto.
+- Operacoes compostas e sensiveis usam RPC/caminho server-side auditado.
+- Revogacao invalida leitura, escrita, realtime, notificacoes e caches.
+- Mensagens preservam snapshot de autor, papel e contexto.
+- Anexos de justificativa e CPFs permanecem minimizados e privados.
+- Unidade nunca amplia acesso para unidade irma.
+
+# 17. Fontes e referências
 
 ## 16.1 Fontes internas
 

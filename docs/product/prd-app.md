@@ -3,9 +3,10 @@ title: "Coelo PRD App Oficial v1"
 source_file: "Coelo PRD App Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD App Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD App Oficial v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -428,6 +429,28 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 - Test Plan multi-contexto, mídia e sincronização.
 
 - Protótipo navegável do App por perfil.
+
+# 27. Aditivo 2026-07-24 — Experiência Familiar E Profissional
+
+A mesma conta pode alternar entre experiência familiar e profissional sem misturar permissões. A UI deve sempre mostrar em qual instituição, unidade, turma, atividade e papel a pessoa está atuando.
+
+Na experiência familiar:
+
+- o responsável vê somente crianças e contextos autorizados;
+- a permissão `Gerenciar pessoas autorizadas` controla a lista de emergência, retirada e transporte;
+- uma autorização criada fica ativa imediatamente, e suspensão institucional gera aviso imediato;
+- o responsável pode informar ausência, presença esperada, atraso, saída antecipada ou período futuro, com motivo, texto e anexo;
+- eventos futuros geram lembrete no dia anterior;
+- o aviso aparece como pendência até revisão profissional, inclusive como card acionável no chat.
+
+Na experiência profissional:
+
+- atividades, turmas, crianças e conversas aparecem somente dentro dos assignments;
+- quem possui `Gerenciar presença` pode confirmar, corrigir ou desfazer registros, sempre com auditoria;
+- mensagens mostram a pessoa real, o papel contextual e as crianças relacionadas;
+- professor restrito a atividade conversa somente com seus participantes.
+
+Encerrado o vínculo da criança com a instituição, os módulos deixam de aparecer e o histórico de conversa fica somente leitura conforme retenção aprovada.
 
 # Fontes e referências
 

@@ -3,9 +3,10 @@ title: "Coelo PRD Auth Multi-tenant e Permissoes Oficial v1"
 source_file: "Coelo PRD Auth Multi-tenant e Permissoes Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Auth Multi-tenant e Permissoes Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Auth Multi-tenant e Permissoes Oficial v1.docx"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -434,6 +435,49 @@ Este aditivo registra uma decisao especifica do Superadmin Completo v1: MFA e ob
 A obrigatoriedade de MFA para Operations, Support, Content, Auditor, Admin institucional, direcao e outros perfis privilegiados permanece em aberto e deve ser definida por papel e risco em Technical Spec propria.
 
 Esta decisao atualiza parcialmente a pergunta aberta de MFA sem encerrar a politica geral de autenticacao reforcada.
+
+# 27. Aditivo 2026-07-24 — Autorização Contextual
+
+## 27.1 Identidade E Experiência
+
+Uma pessoa pode ser simultaneamente responsável e profissional. A identidade é única, mas a experiência e a autorização são calculadas por contexto. O app deve separar claramente a atuação familiar da atuação profissional e nunca usar a experiência selecionada como única barreira de segurança.
+
+Crianças não possuem login no MVP. O modelo deve permitir que a pessoa da criança receba identidade de autenticação no futuro sem recriar seus vínculos.
+
+## 27.2 Cálculo De Permissão
+
+A decisão server-side deve avaliar:
+
+`tenant ativo + membership ativo + papel/grant + escopo + vínculo contextual + ausência de negação explícita`
+
+- Negação explícita da pessoa prevalece sobre concessões.
+- Escopo descendente inclui somente filhos hierárquicos, nunca unidades irmãs.
+- Professor vinculado apenas a uma atividade e turma não recebe acesso ao restante do grupo.
+- Override de atividade não pode conceder acesso fora do vínculo que o contém.
+- Vínculo direto com criança não amplia automaticamente o acesso às demais crianças do grupo.
+- Toda operação sensível deve revalidar o contexto no banco, mesmo que a UI oculte a ação.
+
+## 27.3 Responsáveis E Pessoas Autorizadas
+
+- Somente instituição ou unidade emite convite de responsável com login.
+- Permissões familiares são definidas por responsável e criança, inicialmente permitidas e editáveis durante ou depois do convite.
+- Apenas o responsável com `manage_authorized_people` pode consultar ou alterar pessoas autorizadas daquela criança.
+- Cadastrar pessoa autorizada produz efeito imediato e notifica os contextos institucionais afetados.
+- Instituição ou unidade pode suspender uma autorização por segurança, informando motivo e notificando os responsáveis autorizados.
+- Pessoa autorizada para retirada ou emergência não recebe sessão autenticada por esse vínculo.
+
+## 27.4 Profissionais
+
+- Papéis padrão e customizados podem ter escopo institucional, de unidade, grupo, atividade ou criança.
+- Um administrador de unidade pode ter todas as turmas ou somente seleção explícita.
+- Pessoas que falam pela instituição, unidade, grupo ou atividade devem exibir a pessoa real e o papel contextual.
+- Acesso à lista de crianças, responsáveis ou pessoas autorizadas exige permissão explícita; ausência de permissão significa ausência da lista.
+
+## 27.5 RLS E Estado Atual
+
+As tabelas fundacionais de pessoas, estrutura, papéis, família, chat e atividades existem no projeto remoto. Porém, várias policies anteriores ainda atendem somente à operação da plataforma Coelo. Elas não constituem autorização operacional completa para Admin e Principal.
+
+A próxima implementação deve criar helpers pequenos para escopo e negação, usar policies específicas por operação, testar JWTs de tenants distintos, manter RPCs transacionais para comandos sensíveis e provar que grants ou overrides não atravessam o vínculo contextual.
 
 # Fontes e referências
 
