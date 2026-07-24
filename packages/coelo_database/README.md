@@ -22,8 +22,32 @@ Validacoes principais:
 - `tests/2026-06-23-superadmin-foundation-validation.sql`
 - `tests/2026-06-23-schema-boundaries-catalog-validation.sql`
 - `tests/2026-07-24-contextual-activities-foundation-validation.sql`
+- `tests/2026-07-24-contextual-authorization-core-validation.sql`
+- `tests/2026-07-24-family-authorizations-transfers-validation.sql`
+- `tests/2026-07-24-activity-governance-participation-validation.sql`
+- `tests/2026-07-24-contextual-chat-validation.sql`
+- `tests/2026-07-24-attendance-assiduity-validation.sql`
 
 Fundacao de Atividades Contextuais:
 
 - `migrations/20260724120307_contextual_activities_foundation.sql`
 - `migrations/20260724122545_contextual_activities_fk_index_hardening.sql`
+
+## Dominios Contextuais 2026-07-24
+
+A fundacao remota de autorizacao, familia, atividades, chat e assiduidade foi
+aplicada ao projeto `coelo` (`evvbomzejfijozbtgvpt`). As migrations locais
+foram geradas pelo Supabase CLI e cobrem:
+
+- autorizacao contextual, deny individual e atribuicao profissional-crianca;
+- catalogo familiar, pessoas autorizadas e transferencia entre unidades;
+- governanca, promocao e participacao individual em atividades;
+- chat contextual, equipes, snapshots de autoria e historico somente leitura;
+- avisos familiares, presenca oficial, revisoes e agregados de assiduidade;
+- compatibilidade, indices de FKs e endurecimento de policies/triggers.
+
+O historico remoto usa o timestamp efetivo de cada chamada MCP. Por isso, os
+prefixos remotos das migrations novas diferem dos nomes locais gerados antes
+da aplicacao; o nome semantico e a ordem sao equivalentes. Migrations antigas
+tambem possuem drift historico de prefixo e nao foram renomeadas ou reparadas
+destrutivamente.

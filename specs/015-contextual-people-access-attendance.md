@@ -1,7 +1,7 @@
 ---
 title: "Pessoas, Acessos Contextuais E Assiduidade"
 source: "decisions/0015-contextual-people-authorizations-attendance.md; docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
-status: "approved-for-documentation"
+status: "implemented-database-foundation"
 generated_at: "2026-07-24"
 ---
 
@@ -33,8 +33,7 @@ hierarquico e assiduidade sem misturar experiencias ou tenants.
 - Modelo comercial de responsaveis adicionais.
 - Prazo juridico de retencao.
 - Telas finais.
-- Nomes fisicos finais de tabelas e funcoes.
-- Implementacao imediata no Supabase.
+- Telas e navegacao dos apps.
 
 ## Superficies Afetadas
 
@@ -239,3 +238,31 @@ alem do necessario.
 - Retencao de chat e dados infantis depende de decisao juridica.
 - Experiencia infantil futura depende de consentimento e LGPD.
 - Modelo comercial de responsaveis nao integra esta spec.
+
+## Implementacao Fisica Verificada Em 2026-07-24
+
+A fundacao desta spec foi aplicada ao projeto Supabase `coelo`
+(`evvbomzejfijozbtgvpt`). A autorizacao efetiva usa membership ativo, papeis e
+permissoes, grants diretos, escopo contextual e
+`institution_member_permission_overrides`; deny individual explicito
+prevalece.
+
+As estruturas principais implementadas sao:
+
+- familia: `family_relationship_types`, `guardian_context_permission_grants`,
+  `guardian_invitation_children`, `authorized_people` e
+  `authorized_person_authorizations`;
+- transferencia e notificacao: `child_unit_transfer_requests`,
+  `child_unit_transfer_items`, `context_notification_events` e
+  `context_notification_recipients`;
+- atividade: `activity_capability_policies`,
+  `activity_group_capability_settings` e `activity_group_participants`;
+- chat: settings institucionais/de unidade, equipes, participantes,
+  criancas relacionadas, snapshots de autoria e RPC transacional de criacao;
+- assiduidade: catalogo, sessoes, participantes esperados, avisos, anexos,
+  registros oficiais, revisoes e views agregadas `security_invoker`.
+
+Todas as 29 tabelas novas expostas possuem RLS, policy, grants explicitos,
+registro em `schema_tables`/`schema_columns` e nenhum grant para `anon`.
+Comandos sensiveis usam RPCs server-side e auditoria. O aviso familiar de
+presenca permanece pendente ate confirmacao profissional.

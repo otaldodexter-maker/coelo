@@ -475,9 +475,16 @@ A decisão server-side deve avaliar:
 
 ## 27.5 RLS E Estado Atual
 
-As tabelas fundacionais de pessoas, estrutura, papéis, família, chat e atividades existem no projeto remoto. Porém, várias policies anteriores ainda atendem somente à operação da plataforma Coelo. Elas não constituem autorização operacional completa para Admin e Principal.
+A fundação operacional foi aplicada ao projeto remoto em 2026-07-24. O helper
+`app_private.has_context_permission(...)` combina membership ativo,
+assignments/permissões, grants diretos, escopo e overrides individuais. Deny
+explícito prevalece e escopo de unidade não alcança unidade irmã.
 
-A próxima implementação deve criar helpers pequenos para escopo e negação, usar policies específicas por operação, testar JWTs de tenants distintos, manter RPCs transacionais para comandos sensíveis e provar que grants ou overrides não atravessam o vínculo contextual.
+As 29 tabelas contextuais novas possuem RLS e policies por operação, grants
+explícitos para `authenticated` e nenhum grant para `anon`. Comandos sensíveis
+usam RPCs transacionais, funções privilegiadas em `app_private` com
+`search_path = ''` e auditoria. Testes remotos cobrem deny individual,
+isolamento de unidade/tenant, atividades, chat histórico e assiduidade.
 
 # Fontes e referências
 

@@ -764,6 +764,15 @@ profissional e o registro oficial.
 | Chat | Notifications | Mensagens contextuais; nunca fonte de presenca. |
 | Todos | Audit | Antes/depois, ator, sujeito, contexto e motivo. |
 
+## 11.9 Estado Fisico Em 2026-07-24
+
+Os contextos `Family Authorization`, `Professional Authorization`,
+`Activities`, `Chat` e `Attendance` possuem fundacao aplicada no Supabase
+`coelo`. As fronteiras acima sao reforcadas por FKs/validadores de tenant,
+helpers de permissao contextual, RPCs transacionais, auditoria, grants
+explicitos e RLS. O proximo passo de produto e expor primeiro a navegacao de
+Atividades no Superadmin e depois a gestao operacional no Admin.
+
 # 12. Fontes e referências
 
 ## 11.1 Fontes internas do Coelo

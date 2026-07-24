@@ -540,6 +540,29 @@ Avisos abrangem ausência, presença esperada, chegada tardia, saída antecipada
 - CPF e outros documentos de pessoas autorizadas exigem estratégia de minimização, cifragem/tokenização e retenção antes de produção.
 - Alterações de permissão, suspensão, transferência, presença oficial e contexto histórico devem ser auditadas.
 
+## 29.7 Modelo Físico Aplicado
+
+O projeto remoto `coelo` materializa este aditivo desde 2026-07-24:
+
+- autorização profissional em `institution_member_permission_overrides` e
+  `professional_child_assignments`;
+- família em `family_relationship_types`,
+  `guardian_context_permission_grants`, `guardian_invitation_children`,
+  `authorized_people` e `authorized_person_authorizations`;
+- transferência/notificação em `child_unit_transfer_requests`,
+  `child_unit_transfer_items`, `context_notification_events` e
+  `context_notification_recipients`;
+- governança de atividade em `activity_capability_policies`,
+  `activity_group_capability_settings` e `activity_group_participants`;
+- chat contextual em settings, equipes, participantes, vínculos de crianças e
+  snapshots de autoria;
+- assiduidade em catálogo, sessões, participantes esperados, avisos, anexos,
+  registros oficiais, revisões e views agregadas.
+
+Todas as 29 tabelas novas expostas têm RLS, policies e grants explícitos; as
+views de assiduidade usam `security_invoker`. As FKs contextuais possuem
+índices e validações server-side, e `groups.unit_id` é obrigatório.
+
 # Fontes e referências
 
 ## Fontes internas

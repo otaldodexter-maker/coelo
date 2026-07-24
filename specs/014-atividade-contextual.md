@@ -1,7 +1,7 @@
 ---
 title: "Atividade Contextual"
 source: "conversa com usuario em 2026-07-23 e 2026-07-24; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
-status: "implemented-foundation-with-approved-expansion"
+status: "implemented-database-foundation"
 generated_at: "2026-07-24"
 ---
 
@@ -69,9 +69,9 @@ A criacao atomica e exposta por `public.create_activity_for_institution(...)` e 
 
 O catalogo institucional foi ampliado com `activities.read`, `activities.create`, `activities.manage`, `activities.link_units`, `activities.link_groups`, `activities.assign_people` e `activities.manage_permissions`. Nenhum papel recebeu essas capacidades automaticamente.
 
-### Governança Aprovada Para A Próxima Migration
+### Governança Implementada Em 2026-07-24
 
-A identidade da atividade permanece em `activity_definitions`. A evolução física deve separar:
+A identidade da atividade permanece em `activity_definitions`. A evolução física separa:
 
 - origem: criada pela instituição ou por uma unidade;
 - distribuição: padrão institucional ou local da unidade;
@@ -83,7 +83,12 @@ Promover uma atividade local para padrão institucional deve preservar o mesmo `
 
 Quando uma capacidade não for obrigatória nem proibida, a unidade administra o valor efetivo para seus grupos. Atividade fixa bloqueia os campos definidos pela política institucional, sem impedir que a unidade configure os demais.
 
-Estas regras estão aprovadas, mas ainda não fazem parte da migration fundacional referenciada nesta spec.
+Essas regras foram materializadas em
+`20260724152713_activity_governance_and_participation.sql`, com
+`activity_capability_policies`, `activity_group_capability_settings`,
+`activity_group_participants` e a RPC
+`promote_activity_to_institution_standard`. A promocao preserva o ID e a
+origem historica da definicao.
 
 ## Regras De Permissao E Tenant
 

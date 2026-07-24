@@ -27,9 +27,9 @@ O dominio foi implementado em `public` com `activity_definitions`, `activity_uni
 
 Perfis definem capacidades por instituicao ou unidade. Overrides por atribuicao podem permitir ou negar uma capacidade, mas nunca criam contexto: sem atribuicao ativa da pessoa naquela atividade e turma, nao ha acesso. Conversa, presenca, eventos e Now apenas consomem esse contexto futuramente.
 
-## Governanca Aprovada
+## Governanca Implementada
 
-O modelo futuro separa:
+O modelo fisico separa:
 
 - origem: instituicao ou unidade;
 - disponibilidade: padrao institucional ou especifica de unidade;
@@ -58,9 +58,10 @@ rotina, agenda, midia, Now e chat usam politicas institucionais:
 - desativada por padrao e editavel;
 - proibida.
 
-A fundacao aplicada em 2026-07-24 ainda nao materializa promocao, politica
-completa ou participacao individual de crianca. Esses pontos dependem de
-migration futura aprovada.
+A fundacao aplicada em 2026-07-24 materializa promocao sem duplicacao,
+politica institucional por capacidade, configuracao efetiva por
+atividade-grupo e participacao individual de crianca. A RPC de promocao
+preserva o ID e registra ator, momento e motivo em auditoria.
 
 ## Relacionamento Com O Mapa
 
