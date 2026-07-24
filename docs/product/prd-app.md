@@ -111,7 +111,7 @@ O usuário é uma pessoa única e pode ter múltiplos papéis. O contexto ativo 
 
 | Módulo | MVP | Resumo |
 | --- | --- | --- |
-| Login/contexto | Sim | E-mail ou celular, @username e troca de contexto. |
+| Login/contexto | Sim | Conta adulta global por e-mail ou celular, `@identificador` opcional e troca de contexto. Criança não possui login no MVP. |
 | Flow | Sim | Posts, comunicados, mídia, confirmação de leitura e reações simples. |
 | Now | Sim | Fotos/vídeos curtos com expiração padrão de 24h. |
 | Moments | Sim | Vídeos privados de até 2 minutos. |
@@ -128,7 +128,7 @@ O usuário é uma pessoa única e pode ter múltiplos papéis. O contexto ativo 
 | --- | --- |
 | Flow | Posts, comunicados, mídia e perfis seguidos. |
 | Rotina | Diário e histórico por criança. |
-| Chat | Conversas e canais autorizados. |
+| Conversas | Caixa única de conversas e canais autorizados, com filtros opcionais. |
 | Agenda | Eventos, respostas e autorizações. |
 | Perfil/Contexto | Conta, crianças, instituições, papel ativo, preferências e termos. |
 
@@ -142,7 +142,7 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 | Seguidores automáticos | Derivados dos vínculos e regras de audiência. |
 | Formatos | Texto, descrição, carrossel de até 10 fotos e vídeos curtos de até 30 segundos no MVP. |
 | Comunicados | Podem exigir confirmação de leitura. |
-| Menções | Criança pode ser marcada por @username apenas dentro de audiência autorizada. |
+| Menções | Criança pode ser referenciada somente dentro de audiência autorizada, sem depender de `@username` no MVP. |
 | Reações | Simples no MVP. |
 | Comentários | Desativados no MVP. |
 | Conteúdo global | Avisos sistêmicos obrigatórios; dicas opcionais podem ser silenciadas. |
@@ -214,6 +214,21 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 
 - Exclusão é soft delete com registro de auditoria.
 
+## 11.1 Caixa De Conversas
+
+`Conversas` é uma única caixa de entrada visual. `Todas` é a visão padrão;
+`Instituições e unidades`, `Turmas` e `Atividades` são filtros opcionais. O
+filtro de criança pertence a um nível separado. Cada item continua sendo uma
+conversa independente e contextual no banco; a agregação e os filtros nunca
+criam um escopo compartilhado nem ampliam autorização.
+
+Instituição, unidade, turma e atividade podem usar avatar circular na caixa. O
+ponto de presença indica disponibilidade do serviço ou da equipe em contextos
+coletivos, não a presença de todas as pessoas. O estado deve possuir texto e
+semântica acessível, sem depender somente da cor. Publicação ativa de Now é
+representada por um anel visual ao redor do avatar e não se confunde com
+presença.
+
 # 12. Agenda
 
 | Funcionalidade | MVP/v1 |
@@ -253,13 +268,15 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 | Agenda | Eventos, RSVP e autorizações. |
 | Chat | Conversas por contexto. |
 | Privacidade | Preferências, termos, consentimentos e solicitações. |
-| Conta | E-mail, celular, @username e alternância de contexto. |
+| Conta | E-mail, celular, `@identificador` adulto e alternância de contexto. |
 
 # 15. Fluxos principais
 
 | Fluxo | Passos | Critério de aceite |
 | --- | --- | --- |
 | Primeiro acesso | Abrir convite → autenticar → confirmar perfil → escolher contexto → onboarding. | Usuário vê apenas dados do contexto autorizado. |
+| Pré-cadastro | Criar conta adulta global → verificar contato → localizar exatamente instituição/unidade por `@`, e-mail, link ou QR → solicitar vínculo. | Conta e solicitação pendente não concedem acesso institucional. |
+| Cadastrar criança | Responsável inicia perfil infantil privado → apresenta referência à instituição → aguarda validação. | Instituição cria seu contexto e vincula primeiro à unidade; turma pode ser definida depois. |
 | Trocar contexto | Abrir seletor → escolher instituição/papel → confirmar. | Feed, rotinas, chats e ações mudam sem mistura de dados. |
 | Ler comunicado | Abrir Flow → acessar post → confirmar leitura quando exigido. | Recibo é registrado. |
 | Registrar rotina | Selecionar grupo → aplicar template → ajustar crianças → revisar → publicar. | Responsáveis autorizados recebem apenas a rotina correspondente. |
@@ -298,7 +315,8 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 
 - Download de mídia fica bloqueado por padrão; screenshot não pode ser tecnicamente impedido de forma absoluta e deve ser comunicado em política.
 
-- Criança pode ser mencionada por @username somente em contexto autorizado.
+- Criança pode ser referenciada somente em contexto autorizado; `@username`
+  infantil não é necessário no MVP.
 
 - Responsável vê contextos da criança para os quais foi selecionado/autorizado.
 
@@ -343,7 +361,8 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 
 - Analytics evita nomes e dados desnecessários de crianças.
 
-- @username infantil não é público; pesquisa restrita a instituições autorizadas.
+- Não existe busca pública ou diretório infantil. Código/QR privado,
+  `child_context` ou eventual `@username` não concedem login nem acesso.
 
 - Termos, consentimentos e papel jurídico aguardam validação no PRD LGPD.
 
@@ -401,7 +420,7 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 | Professor–responsável | Conversa direta quando houver vínculo com a criança. |
 | Responsável–responsável | Fora do MVP. |
 | Download de mídia | Bloqueado por padrão. |
-| Navegação | Flow, Rotina, Chat, Agenda e Perfil/Contexto. |
+| Navegação | Flow, Rotina, Conversas, Agenda e Perfil/Contexto. |
 | Offline | Offline-tolerant; full offline-first futuro. |
 
 # 25. Perguntas em aberto
@@ -413,8 +432,6 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 - Qual limite de tamanho de arquivo por tipo de mídia?
 
 - Quais tipos de rotina aparecem por segmento?
-
-- Quais conversas o Admin pode consultar por padrão versus por permissão?
 
 - Qual ferramenta de push será usada?
 
@@ -436,9 +453,20 @@ A mesma conta pode alternar entre experiência familiar e profissional sem mistu
 
 Na experiência familiar:
 
+- o adulto pode criar conta global antes de qualquer instituição, mas conta,
+  e-mail e `@identificador` não concedem acesso;
+- o responsável pode localizar exatamente instituição/unidade por `@`, e-mail,
+  link ou QR e solicitar vínculo, que permanece pendente até validação;
+- o cadastro infantil é híbrido: responsável ou instituição inicia, a
+  instituição valida e cria seu contexto, vincula primeiro à unidade e pode
+  alocar turma depois;
 - o responsável vê somente crianças e contextos autorizados;
 - a permissão `Gerenciar pessoas autorizadas` controla a lista de emergência, retirada e transporte;
-- uma autorização criada fica ativa imediatamente, e suspensão institucional gera aviso imediato;
+- pessoa de confiança é privada e reutilizável pelo responsável; cada uso cria
+  autorização independente para criança, instituição e unidade, sem pertencer
+  à turma;
+- uma autorização criada fica ativa imediatamente, e suspensão institucional
+  gera aviso imediato sem afetar autorizações de outra unidade ou tenant;
 - o responsável pode informar ausência, presença esperada, atraso, saída antecipada ou período futuro, com motivo, texto e anexo;
 - eventos futuros geram lembrete no dia anterior;
 - o aviso aparece como pendência até revisão profissional, inclusive como card acionável no chat.
@@ -450,7 +478,14 @@ Na experiência profissional:
 - mensagens mostram a pessoa real, o papel contextual e as crianças relacionadas;
 - professor restrito a atividade conversa somente com seus participantes.
 
-Encerrado o vínculo da criança com a instituição, os módulos deixam de aparecer e o histórico de conversa fica somente leitura conforme retenção aprovada.
+Em `Conversas`, `Todas` agrega por padrão apenas as conversas autorizadas;
+filtros opcionais de tipo e o filtro separado de criança apenas restringem a
+lista. Revogação de vínculo remove imediatamente a conversa operacional,
+inclusive de cache e Realtime.
+
+Encerrado o vínculo da criança com a instituição, os módulos deixam de aparecer
+e o histórico de conversa fica somente leitura conforme a política de retenção
+quando aprovada.
 
 # Fontes e referências
 

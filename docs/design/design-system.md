@@ -3,6 +3,7 @@ title: "Coelo Design System Oficial v1"
 source_file: "Coelo Design System Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Design System Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Design/Coelo Design System Oficial v1.docx"
+supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-06-22"
@@ -376,6 +377,9 @@ A geometria acompanha o coelho da marca: acolhedora e arredondada, mas sem trans
 | Estilo Airbnb/Instagram sem copiar<br>Use superfícies claras, tipografia firme, mídia em destaque e ações familiares. Evite reproduzir gradientes, ícones ou layouts proprietários. A inspiração é a simplicidade de uso, não a aparência literal. |
 | --- |
 
+| Sem gradientes<br>Gradientes não são usados nas superfícies visuais do Coelo. Estados, hierarquia e marca devem usar tokens semânticos, cor sólida, borda, forma, texto e elevação. |
+| --- |
+
 # 10. Ícones, avatares, fotos e ilustrações
 
 ## 10.1 Iconografia
@@ -399,6 +403,10 @@ Biblioteca recomendada: Material Symbols Rounded, estilo outlined, peso visual c
 | Criança | Círculo com controle de privacidade | Iniciais ou ícone protegido; respeitar autorização de imagem. |
 | Instituição/unidade/grupo | Quadrado arredondado 12–16 | Símbolo ou iniciais da instituição. |
 | Coelo oficial | Símbolo da marca | Coelho laranja ou negativo oficial. |
+
+Na caixa `Conversas`, instituição, unidade, turma e atividade podem usar avatar
+circular. Essa variante é contextual e não substitui o formato institucional
+padrão em outras superfícies.
 
 ## 10.3 Fotografia e mídia
 
@@ -559,6 +567,22 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 - Separar claramente mensagens institucionais, internas e relacionadas a uma criança.
 
 - Anexos mostram tipo, tamanho, origem e disponibilidade; falha de upload deve ser recuperável.
+
+### Caixa De Conversas E Estado Do Avatar
+
+- `Conversas` é uma única caixa de entrada visual; `Todas` é a visão padrão.
+- `Instituições e unidades`, `Turmas` e `Atividades` são filtros opcionais.
+- O filtro de criança pertence a um nível separado do filtro de tipo.
+- Cada item representa uma conversa independente e contextual; filtros não
+  sugerem canal ou autorização compartilhada.
+- O ponto de presença sobre o avatar representa disponibilidade do serviço ou
+  da equipe em contextos coletivos, não a presença de todas as pessoas.
+- Presença nunca pode ser comunicada apenas por cor: exige texto acessível,
+  rótulo/ícone quando visível e nome, papel e estado na semântica.
+- O anel ao redor do avatar representa estado de publicação do Now. Ele não é
+  indicador de presença e deve ter alternativa semântica.
+- Nenhum avatar, anel de Now, ponto de presença ou superfície da caixa usa
+  gradiente.
 
 ## 15.2 Diário de rotina
 

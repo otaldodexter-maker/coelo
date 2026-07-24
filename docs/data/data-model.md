@@ -117,10 +117,14 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | Instituição | institutions | Tenant principal. |
 | Unidade | units | Campus, sede ou operação local. |
 | Grupo/turma | groups | Tipo diferencia turma, equipe ou atendimento. |
-| Pessoa | people | Adulto ou criança, com ou sem login. |
-| Usuário | auth.users + user_profiles | Pessoa com Auth ativo. |
-| Criança contextual | child_contexts | Pessoa dentro de uma instituição. |
+| Pessoa | people | Identidade global de adulto ou criança. |
+| Usuário | auth.users + user_profiles | Credencial opcional; criança não possui Auth no MVP. |
+| Criança contextual | child_contexts | Contexto infantil pertencente à instituição. |
+| Vínculo criança–unidade | child_unit_links | Primeiro posicionamento institucional após aprovação. |
+| Vínculo criança–grupo | child_group_links | Alocação opcional posterior ao vínculo com a unidade. |
 | Responsável | guardian_links + permissions | Relação global e autorização contextual. |
+| Pessoa de confiança | trusted_people | Fonte privada e reutilizável do responsável. |
+| Autorização operacional | trusted_person_authorizations | Decisão independente por instituição, criança e unidade. |
 | Papel/vínculo | memberships | Escopo e datas. |
 | Perfil social | social_profiles | Instituição, unidade, grupo ou Coelo. |
 
@@ -129,8 +133,8 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | Domínio | Entidades principais |
 | --- | --- |
 | Identidade | people, person_profile_details, person_professional_details, person_education_details, person_addresses, auth.users, user_profiles, usernames, contacts/identities, schema_tables, schema_columns. |
-| Tenancy | institutions, units, groups, memberships, child_contexts. |
-| Família | guardian_links, guardian_context_permissions. |
+| Tenancy | institutions, units, groups, memberships, child_contexts, child_unit_links, child_group_links. |
+| Família | guardian_links, guardian_context_permissions, trusted_people, trusted_person_authorizations. |
 | Superadmin | platform_memberships, plans, institution_subscriptions, platform_notices, support_sessions, import_jobs. |
 | Social | social_profiles, follows, posts, post_audiences, reactions, read_receipts, stories/now, moments. |
 | Mídia | media_assets, media_variants, media_consents/access policies. |
@@ -168,12 +172,21 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | units | Unidade. | institution_id. |
 | groups | Grupo/turma/equipe. | institution_id, unit_id, type. |
 | memberships | Pessoa–contexto–papel. | person_id, institution_id, unit_id/group_id opcionais, role, status, dates. |
-| child_contexts | Criança dentro do tenant. | person_id + institution_id; dados locais e status. |
-| child_group_links | Criança em grupos. | child_context_id, group_id, status/dates. |
+| child_contexts | Contexto infantil pertencente à instituição. | person_id + institution_id; dados locais e status. |
+| child_unit_links | Primeiro posicionamento institucional da criança. | child_context_id, unit_id, status/dates; criado na aprovação. |
+| child_group_links | Alocação opcional em grupo. | child_context_id, group_id, status/dates; pode ser criada depois. |
 | guardian_links | Relação familiar global. | guardian_person_id, child_person_id, relation, status. |
 | guardian_context_permissions | Acesso familiar por tenant. | guardian_link_id, child_context_id, permissions/status. |
+| trusted_people | Pessoa de confiança privada do responsável. | guardian_person_id, dados protegidos, status; reutilizável sem exposição a tenants. |
+| trusted_person_authorizations | Autorização operacional contextual. | institution_id, child_context_id, unit_id, trusted_person_id, tipo, validade e status independentes. |
 
-Interpretação oficial de D1: a criança é uma pessoa global. Cada instituição cria ou vincula um child_context próprio e conecta esse contexto às unidades, grupos e responsáveis autorizados. O responsável enxerga os contextos em que guardian_context_permissions estiver ativo.
+Interpretação oficial de D1: a criança é uma pessoa global. Cada instituição
+valida e possui seu `child_context`, cria primeiro o `child_unit_link` e pode
+criar o `child_group_link` durante a aprovação ou depois. O responsável
+enxerga apenas os contextos em que `guardian_context_permissions` estiver
+ativo. A pessoa de confiança permanece privada ao responsável; cada uso gera
+autorização independente por instituição, contexto infantil e unidade, nunca
+por turma.
 
 # 9. Superadmin e planos
 
@@ -193,7 +206,8 @@ Interpretação oficial de D1: a criança é uma pessoa global. Cada instituiç�
 | support_sessions | Canal de atendimento Coelo aberto por instituição ou unidade. |
 | support_messages | Mensagens do atendimento Coelo. |
 
-- Registrar estrutura para adicional após dois responsáveis por criança/contexto, sem calcular cobrança no MVP.
+- Não limitar tecnicamente a quantidade de responsáveis por criança/contexto;
+  eventual regra comercial permanece adiada e não produz cobrança no MVP.
 
 - Nenhum status de pagamento deve ser tratado como fonte financeira definitiva nesta versão.
 
@@ -234,6 +248,13 @@ Prazos de retenção de mídia não estão definidos. O modelo deve possuir camp
 | message_receipts | Entrega/leitura. |
 | message_edits | Histórico de edição quando habilitado. |
 | channel_policies | Regras por instituição, unidade ou grupo: horários, anexos, respostas e histórico. |
+
+- `Conversas` é uma consulta agregada sobre conversas autorizadas, não uma
+  conversa compartilhada nem um novo escopo de autorização.
+
+- `Todas` é a visão padrão; filtros de tipo (`Instituições e unidades`,
+  `Turmas`, `Atividades`) e o filtro separado de criança apenas restringem a
+  consulta e nunca ampliam RLS.
 
 - Professor–responsável depende de vínculo válido com criança/grupo.
 
@@ -377,8 +398,8 @@ A decisao tecnica inicial de schemas para o Coelo e:
 | DM-RF-002 | Contexto infantil | Permitir child_context por instituição. |
 | DM-RF-003 | Família | Separar relação global e autorização contextual. |
 | DM-RF-004 | Multi-papel | Modelar memberships com escopo. |
-| DM-RF-005 | Planos | Preparar plano/limites sem cobrança automática. |
-| DM-RF-006 | Responsáveis adicionais | Preparar medição após dois responsáveis. |
+| DM-RF-005 | Planos | Permitir regras comerciais futuras sem limitar tecnicamente responsáveis nem cobrar automaticamente. |
+| DM-RF-006 | Responsáveis adicionais | Não impor limite técnico; eventual medição comercial depende de decisão futura. |
 | DM-RF-007 | Social | Modelar Flow, reações, Now e Moments. |
 | DM-RF-008 | Comentários | Preparar entidade sem habilitar no MVP. |
 | DM-RF-009 | Mídia | Classificar e ligar a objetos privados. |
@@ -400,7 +421,8 @@ A decisao tecnica inicial de schemas para o Coelo e:
 
 - Comentários podem permanecer desabilitados sem alterar posts/reactions.
 
-- Planos e contagem de responsáveis existem sem cobrança automática.
+- A quantidade de responsáveis não possui limite técnico; eventual regra de
+  plano permanece adiada e sem cobrança automática.
 
 - Importação guarda resultado por linha e não mistura tenants.
 
@@ -426,10 +448,10 @@ A decisao tecnica inicial de schemas para o Coelo e:
 | Hierarquia | Instituição → unidade → grupo; criança pode estar em múltiplos níveis/contextos. |
 | Responsável | Relação + autorização por contexto. |
 | CPF adultos | Obrigatório. |
-| Username infantil | Global, pesquisa restrita. |
+| Identificador infantil | Não necessário no MVP; eventual decisão pertence à experiência/login infantil. |
 | Importação | CSV/XLSX para entidades aplicáveis. |
 | Planos | Manual no MVP, preparado para automação. |
-| Responsáveis adicionais | Preparar regra após dois, sem cobrança. |
+| Responsáveis adicionais | Sem limite técnico; eventual regra comercial permanece adiada. |
 | Retenção | Prazos não definidos. |
 | Download mídia | Bloqueado por padrão. |
 
@@ -471,7 +493,8 @@ FKs compostas preservam instituicao e unidade em definicoes, vinculos, grupos e 
 
 - Quais flags compõem guardian_context_permissions?
 
-- Como provar autorização institucional para pesquisa de username infantil?
+- Quais salvaguardas serão exigidas caso a experiência/login infantil futura
+  adote identificador próprio?
 
 - Quais entidades terão soft delete obrigatório?
 
@@ -508,10 +531,13 @@ Este aditivo projeta o modelo físico aprovado para a próxima etapa. Ele não d
 ## 29.2 Família E Pessoas Autorizadas
 
 - O vínculo responsável–criança deve guardar um código de catálogo (`pai`, `mae`, `avo`, `ava`, `irmao`, `irma`, `padrasto`, `madrasta`, `primo`, `prima`, `tio`, `tia`, `outro`) e um detalhe livre separado.
-- Convites de responsáveis são emitidos apenas por instituição ou unidade. Um mesmo convite pode relacionar várias crianças, com vínculo e permissões próprios por criança.
+- Adulto pode criar conta global antes de qualquer instituição; instituição ou unidade também pode convidar conta nova ou existente. Conta, e-mail e `@identificador` não concedem acesso por si mesmos.
+- Responsável autenticado pode solicitar vínculo ao localizar exatamente instituição/unidade por `@`, e-mail, link ou QR. A solicitação permanece sem acesso até validação institucional.
+- O cadastro infantil é híbrido: responsável ou instituição inicia, a instituição valida seu `child_context` e a aprovação cria primeiro o `child_unit_link`; `child_group_link` é opcional naquele momento.
 - Permissões familiares devem ser flags normalizadas por responsável, criança e contexto. Nascem habilitadas no convite, mas instituição ou unidade pode alterá-las.
-- Pessoas autorizadas para emergência, retirada ou transporte não possuem login por esse cadastro. Seus dados, tipos de autorização, crianças e contextos devem ser modelados separadamente do responsável usuário.
-- Autorizações criadas por responsável habilitado tornam-se ativas imediatamente; suspensão institucional ou da unidade exige motivo, auditoria e notificação.
+- Pessoa de confiança é uma fonte privada e reutilizável do responsável e não recebe login por esse cadastro.
+- Cada uso cria autorização independente por instituição, `child_context` e unidade; autorização de retirada não pertence à turma.
+- Autorizações criadas por responsável habilitado tornam-se ativas imediatamente; suspensão institucional ou da unidade exige motivo, auditoria e notificação sem afetar outra autorização.
 
 ## 29.3 Atividade
 
@@ -525,6 +551,7 @@ Este aditivo projeta o modelo físico aprovado para a próxima etapa. Ele não d
 
 - Conversas devem guardar escopo institucional, de unidade, grupo ou atividade.
 - Participantes são pessoas reais; o contexto de exibição deve preservar nome, papel exercido e zero, uma ou várias crianças relacionadas no momento da mensagem.
+- A caixa `Conversas` é somente uma query agregada. Cada conversa mantém participantes, policies e revogação contextuais independentes no banco.
 - Encerrado o vínculo institucional da criança, módulos operacionais desaparecem e conversas históricas ficam somente leitura conforme retenção aplicável.
 
 ## 29.5 Assiduidade
@@ -537,7 +564,7 @@ Avisos abrangem ausência, presença esperada, chegada tardia, saída antecipada
 
 - Grupos novos devem pertencer obrigatoriamente a uma unidade; a migration deverá tratar registros legados antes de tornar `groups.unit_id` não nulo.
 - Toda FK contextual deve impedir cruzamento de instituição por constraint composta ou validação server-side.
-- CPF e outros documentos de pessoas autorizadas exigem estratégia de minimização, cifragem/tokenização e retenção antes de produção.
+- CPF e outros documentos de pessoas de confiança exigem estratégia de minimização, cifragem/tokenização e retenção antes de produção.
 - Alterações de permissão, suspensão, transferência, presença oficial e contexto histórico devem ser auditadas.
 
 ## 29.7 Modelo Físico Aplicado
@@ -559,9 +586,14 @@ O projeto remoto `coelo` materializa este aditivo desde 2026-07-24:
 - assiduidade em catálogo, sessões, participantes esperados, avisos, anexos,
   registros oficiais, revisões e views agregadas.
 
-Todas as 29 tabelas novas expostas têm RLS, policies e grants explícitos; as
+Todas as 30 tabelas novas expostas têm RLS, policies e grants explícitos; as
 views de assiduidade usam `security_invoker`. As FKs contextuais possuem
 índices e validações server-side, e `groups.unit_id` é obrigatório.
+
+A fundação aplicada ainda representa pessoas autorizadas diretamente em
+`authorized_people` e precisa de consolidação posterior para a fonte privada
+reutilizável e suas autorizações independentes. Este documento não autoriza
+migration, mudança de RLS ou correção física sem plano técnico aprovado.
 
 # Fontes e referências
 

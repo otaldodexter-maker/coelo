@@ -157,7 +157,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | Unidades | Nome, identificadores internos e dados institucionais aplicáveis. | Campos finais na spec técnica. |
 | Grupos/turmas | Unidade, nome, tipo, período/faixa quando aplicável. | Evitar nomenclatura exclusivamente escolar no banco. |
 | Atividades | Nome, descrição, instituição, unidade de origem, unidades vinculadas, grupos, professores e permissões por turma. | Reutilizável dentro da mesma instituição; criação pela unidade exige delegação. |
-| Participantes/crianças | Nome, nascimento quando aplicável, identificadores e grupo. | Dados mínimos; username e contexto tratados pelo Auth/Data Master. |
+| Participantes/crianças | Nome, nascimento quando aplicável, referência privada e grupo opcional. | Dados mínimos; criança não depende de `@username` e o contexto pertence à instituição. |
 | Responsáveis | Nome, CPF obrigatório, e-mail/celular, relação e permissões. | Criar ou vincular pessoa adulta existente. |
 | Equipe | Nome, CPF obrigatório, contato, papel e escopo. | Convite pode ser enviado após validação. |
 | Vínculos | Criança–responsável, pessoa–papel, grupo–pessoa. | Selecionar quais responsáveis podem ver cada contexto. |
@@ -179,7 +179,17 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 
 - Ao cadastrar adulto, CPF é obrigatório; e-mail e/ou celular permitem convite e login.
 
-- Pessoa pode existir sem Auth ativo até receber convite.
+- Adulto pode criar conta global antes de qualquer instituição; instituição ou
+  unidade também pode convidar conta nova ou existente.
+
+- Pessoa pode existir sem Auth ativo, e a credencial Auth continua opcional
+  para a identidade global. Criança não possui credencial no MVP.
+
+- Conta, e-mail ou `@identificador` não concedem acesso por si mesmos.
+
+- Responsável autenticado pode localizar exatamente instituição/unidade por
+  `@`, e-mail, link ou QR e solicitar vínculo; a solicitação permanece sem
+  acesso até validação institucional.
 
 - Antes de criar, o sistema busca possível correspondência sem revelar dados completos de outro tenant.
 
@@ -189,13 +199,22 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 
 - A criança pode estar vinculada a duas ou mais instituições, unidades e grupos.
 
-- Cada instituição mantém um registro contextual da criança, sem duplicar a pessoa global.
+- Cadastro infantil é híbrido: responsável ou instituição inicia e a
+  instituição valida identidade, relação e possível duplicidade sem merge
+  automático.
+
+- Cada instituição possui um registro contextual da criança, sem duplicar a
+  pessoa global.
+
+- A aprovação cria primeiro o vínculo criança–unidade. A turma é opcional
+  naquele momento; sem turma, a criança fica aguardando alocação.
 
 - A relação familiar pode existir globalmente, mas a visibilidade é concedida no contexto da instituição.
 
 - No cadastro/vínculo, a instituição seleciona quais responsáveis poderão visualizar aquele contexto.
 
-- Estrutura preparada para registrar mais de dois responsáveis e futura cobrança adicional, sem bloqueio/cobrança no MVP.
+- A arquitetura aceita qualquer quantidade de responsáveis sem limite técnico;
+  eventual regra comercial permanece adiada e não bloqueia nem cobra no MVP.
 
 # 10. Conteúdo e operação
 
@@ -215,6 +234,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | Fluxo | Passos essenciais | Critério de aceite |
 | --- | --- | --- |
 | Onboarding | Acessar checklist → revisar instituição → criar/importar unidades e grupos → importar pessoas → revisar vínculos. | Instituição fica apta a convidar usuários e operar o App. |
+| Revisar solicitação | Abrir fila → validar responsável, criança, relação e duplicidade → aprovar/rejeitar → definir unidade e turma opcional. | Aprovação cria contexto e vínculo criança–unidade; solicitação pendente não concede acesso. |
 | Criar grupo | Selecionar unidade → definir nome/tipo → configurar equipe e perfil → salvar. | Grupo e perfil privado ficam vinculados ao tenant. |
 | Importar base | Escolher tipo → upload CSV/XLSX → mapear → validar → confirmar → revisar resultado. | Nenhum registro com erro crítico é gravado silenciosamente. |
 | Vincular responsáveis | Selecionar criança → buscar/cadastrar responsáveis → definir visibilidade por contexto. | Somente responsáveis autorizados veem o contexto. |
@@ -262,7 +282,8 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 
 - Comentários ficam desativados no MVP; reações simples são permitidas.
 
-- Cobrança por responsáveis adicionais é apenas preparada no modelo de dados.
+- Limite ou cobrança por responsáveis permanece fora do MVP e depende de
+  decisão comercial futura.
 
 # 14. Eventos e auditoria
 
@@ -347,7 +368,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | CPF de adultos | Obrigatório. |
 | Criança multi-instituição | Pessoa global com contextos por instituição/unidade/grupo. |
 | Visibilidade de responsáveis | Selecionada pela instituição em cada contexto. |
-| Responsáveis adicionais | Estrutura preparada para cobrança após dois; sem cobrança no MVP. |
+| Responsáveis adicionais | Sem limite técnico; eventual regra comercial permanece adiada e sem cobrança no MVP. |
 | Comentários | Fora do MVP; reações simples entram. |
 
 # 20. Perguntas em aberto
@@ -381,11 +402,24 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 O Admin deve permitir:
 
 - cadastrar profissionais com papéis padrão ou customizados, escopo automático de descendentes ou seleção explícita e eventual vínculo com crianças específicas;
-- convidar responsáveis para uma ou várias crianças, definindo vínculo e permissões por criança durante o convite e permitindo edição posterior;
-- consultar e suspender pessoas autorizadas para emergência, retirada ou transporte, sempre com motivo, auditoria e notificação;
+- convidar responsáveis novos ou pre-cadastrados para uma ou várias crianças,
+  definindo vínculo e permissões por criança durante o convite e permitindo
+  edição posterior;
+- revisar solicitações iniciadas pelo responsável por busca exata, link ou QR,
+  inclusive possível duplicidade, sem liberar dados antes da aprovação;
+- validar cadastro infantil iniciado por qualquer lado, criar o contexto da
+  instituição e vincular primeiro à unidade, deixando turma opcional;
+- consultar a pessoa de confiança privada apresentada pelo responsável somente
+  no contexto da autorização e suspender autorizações de emergência, retirada
+  ou transporte por instituição, criança e unidade, sempre com motivo,
+  auditoria e notificação;
+- manter cada suspensão independente: autorização de retirada não pertence à
+  turma e decisão em uma unidade/tenant não altera outra;
 - solicitar transferência de crianças entre unidades, aceitar no destino, processar lote e manter estado aguardando alocação quando não houver turma;
 - criar atividades institucionais ou locais, promover atividade local sem duplicá-la, definir participação e governar capacidades;
-- configurar chats por instituição, unidade, grupo e atividade, inclusive unificação em instituição de unidade única e equipes responsáveis;
+- configurar chats por instituição, unidade, grupo e atividade e equipes
+  responsáveis; a caixa única `Conversas` é somente agregação visual de
+  conversas contextuais independentes;
 - administrar presença, pendências familiares, correções auditadas e painéis de assiduidade.
 
 Listas e ações devem desaparecer quando o profissional não possuir permissão. Um administrador da unidade pode enxergar todas as turmas ou apenas as selecionadas; unidade irmã nunca é herdada.

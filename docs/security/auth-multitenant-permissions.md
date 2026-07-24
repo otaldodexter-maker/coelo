@@ -74,7 +74,11 @@ Documento derivado do Product Vision Oficial v1 e do PRD Master Oficial v1 do Co
 
 Este PRD define a fundação de acesso do Coelo. Uma pessoa possui identidade global, mas pode ter vários papéis e vínculos em diferentes instituições. O login não concede acesso por si só: a visibilidade é calculada a partir de memberships, vínculos familiares, contexto ativo e políticas RLS.
 
-O MVP oferece login por e-mail ou celular, conforme escolha do usuário, além de @username. CPF é obrigatório para adultos. Crianças possuem @username global, porém a pesquisa é restrita a instituições autorizadas; não existe busca pública ou indexação aberta.
+O MVP oferece login adulto por e-mail ou celular, conforme escolha do usuário,
+além de `@identificador` global. CPF é obrigatório para adultos. Crianças são
+identidades globais sem credencial no MVP; não precisam de e-mail, login ou
+`@username`. Referências infantis privadas podem ser apresentadas por código ou
+QR, sem busca pública ou indexação aberta.
 
 | Regra de ouro<br>Pessoa é global. Papel é contextual. Visibilidade deriva do vínculo ativo com instituição, unidade, grupo e criança. |
 | --- |
@@ -98,8 +102,8 @@ O MVP oferece login por e-mail ou celular, conforme escolha do usuário, além d
 | Área | MVP | Definição |
 | --- | --- | --- |
 | Pessoa global | Sim | Cadastro unificado de adulto ou criança. |
-| Auth | Sim | E-mail ou celular; senha e/ou OTP conforme fluxo final. |
-| @username | Sim | Adultos e crianças; regras de pesquisa diferentes. |
+| Auth | Sim | Credencial opcional para pessoas; e-mail ou celular adulto, senha e/ou OTP conforme fluxo final. Criança não possui Auth no MVP. |
+| @username | Sim | Adultos, instituições e unidades. Identificador infantil fica adiado para a spec de experiência infantil. |
 | CPF adultos | Sim | Obrigatório para responsáveis e equipe. |
 | Convites | Sim | Por link seguro com expiração e reenvio controlado. |
 | Deduplicação | Sim | CPF, e-mail, celular e identificadores protegidos. |
@@ -114,7 +118,7 @@ O MVP oferece login por e-mail ou celular, conforme escolha do usuário, além d
 | Conceito | Definição |
 | --- | --- |
 | Pessoa | Registro global de identidade de adulto ou criança. |
-| Usuário Auth | Pessoa com credencial e sessão ativa no Supabase Auth. |
+| Usuário Auth | Pessoa com credencial opcional e sessão ativa no Supabase Auth; criança não possui credencial no MVP. |
 | Perfil de usuário | Avatar, @username, preferências e status de conta. |
 | Membership | Vínculo da pessoa com instituição/unidade/grupo e papel. |
 | Registro contextual da criança | Dados da criança específicos de uma instituição. |
@@ -138,14 +142,14 @@ O MVP oferece login por e-mail ou celular, conforme escolha do usuário, além d
 | Tipo | Regra |
 | --- | --- |
 | Adultos | Global e único, usado em perfil, menções e busca interna controlada. |
-| Crianças | Global e único, pesquisável somente por instituições autorizadas. |
+| Crianças | Não é necessário no MVP; eventual identificador integra a spec futura de experiência e login infantil. |
 | Instituições/unidades/grupos | Username privado da rede, quando aplicável. |
 | Busca pública | Não existe. |
 | Indexação externa | Não permitida. |
-| Edição | Responsável deve ter acesso fácil ao username da criança e poder solicitar/realizar edição conforme regra. |
-| Menções | Somente em audiências e contextos autorizados. |
+| Edição | Adulto edita o próprio identificador conforme fluxo protegido; regra infantil fica adiada. |
+| Menções | Somente em audiências e contextos autorizados; criança pode ser referenciada pelo contexto sem `@username`. |
 
-| Proteção infantil<br>A escolha por @username global infantil exige salvaguardas: nenhuma busca pública, resposta mínima em pesquisas, autorização institucional e validação de vínculo antes de revelar ou convidar a criança. |
+| Proteção infantil<br>`people`, `child_contexts`, código/QR privado ou eventual `@username` infantil não ativam login nem visibilidade. A instituição valida o contexto antes de liberar qualquer dado. |
 | --- |
 
 # 8. CPF e deduplicação
@@ -156,7 +160,8 @@ O MVP oferece login por e-mail ou celular, conforme escolha do usuário, além d
 
 - E-mail e celular também participam do matching.
 
-- A criança pode usar identificadores próprios e @username; CPF infantil não foi definido como obrigatório.
+- A criança pode usar referência privada controlada; CPF infantil e
+  `@username` não são obrigatórios no MVP.
 
 - Possíveis correspondências exigem fluxo controlado de vinculação/convite, não cópia automática de dados.
 
@@ -188,9 +193,10 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | permission flags | Rotina, comunicados, agenda, chat e outras ações, conforme definição futura. |
 | activity_group_link | Define a atividade dentro da turma e os professores/permissões contextuais. |
 
-- Mais de dois responsáveis são permitidos.
+- Qualquer quantidade de responsáveis é permitida tecnicamente.
 
-- A estrutura comercial fica preparada para adicional após dois responsáveis, sem cobrança ou bloqueio no MVP.
+- A arquitetura não limita tecnicamente a quantidade de responsáveis. Eventual
+  regra comercial permanece adiada, sem cobrança ou bloqueio no MVP.
 
 - Revogar acesso em uma instituição não remove a relação familiar global nem acessos válidos em outra instituição.
 
@@ -236,7 +242,7 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 
 | Etapa | Regra |
 | --- | --- |
-| Criação | Admin seleciona pessoa e papel/contexto. |
+| Criação | Instituição/unidade seleciona pessoa e papel/contexto; adulto também pode chegar por solicitação de vínculo. |
 | Entrega | E-mail ou celular com link/código seguro. |
 | Expiração | Obrigatória; prazo exato na Technical Spec. |
 | Aceite | Usuário autentica ou cria credencial e confirma vínculo. |
@@ -244,13 +250,21 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | Reenvio | Controlado e com rate limit. |
 | Revogação | Convite pendente pode ser cancelado. |
 
+Conta, e-mail ou `@identificador` nunca concedem acesso por si mesmos. Adulto
+pode criar conta global antes de qualquer instituição. Responsável autenticado
+pode localizar exatamente instituição/unidade por `@`, e-mail, link ou QR e
+solicitar vínculo; a solicitação continua sem acesso até validação
+institucional.
+
 # 14. Fluxos principais
 
 | Fluxo | Passos | Critério de aceite |
 | --- | --- | --- |
 | Login | Escolher e-mail/celular → autenticar → carregar vínculos → escolher contexto. | A sessão não concede dados fora dos vínculos. |
+| Pré-cadastro adulto | Criar conta global → verificar contato → permanecer sem contexto ou solicitar vínculo. | Conta sem vínculo não recebe dados institucionais. |
 | Convite de adulto | Admin cadastra/busca → define papel → envia → adulto autentica → aceita. | Pessoa não é duplicada. |
-| Vincular criança multi-instituição | Instituição busca username/identificador autorizado → cria child_context → vincula grupos e responsáveis. | Cada tenant vê apenas seu contexto. |
+| Solicitar vínculo | Responsável localiza exatamente instituição/unidade por `@`, e-mail, link ou QR → informa criança/relação → aguarda revisão. | Solicitação pendente não concede nem revela dados privados. |
+| Vincular criança multi-instituição | Responsável ou instituição inicia → instituição revisa identidade/duplicidade → cria `child_context` e `child_unit_link` → grupo opcional. | Cada tenant vê apenas seu contexto; possível duplicidade não é mesclada automaticamente. |
 | Autorizar responsável | Selecionar criança/contexto → selecionar responsáveis → conceder acessos. | Somente selecionados veem o contexto. |
 | Trocar papel | Abrir seletor → escolher vínculo → atualizar sessão lógica. | Ações e dados mudam imediatamente. |
 | Recuperar conta | Solicitar por e-mail/celular → verificar → redefinir/acessar. | Fluxo não enumera contas. |
@@ -261,8 +275,8 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | --- | --- | --- |
 | AU-RF-001 | Pessoa | Manter pessoa global independente de Auth. |
 | AU-RF-002 | Login | Permitir e-mail ou celular conforme escolha. |
-| AU-RF-003 | Username | Criar @username único para adultos e crianças. |
-| AU-RF-004 | Busca infantil | Restringir pesquisa de criança a instituições autorizadas. |
+| AU-RF-003 | Identificador | Criar `@identificador` único para adultos, instituições e unidades; criança não depende dele no MVP. |
+| AU-RF-004 | Referência infantil | Permitir código/QR privado sem conceder acesso ou expor diretório infantil. |
 | AU-RF-005 | CPF | Exigir CPF de adultos. |
 | AU-RF-006 | Deduplicação | Relacionar CPF, e-mail e celular sem revelar outro tenant. |
 | AU-RF-007 | Convites | Criar, reenviar, expirar e revogar convites. |
@@ -342,14 +356,15 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 
 - CPF e contatos devem ser mascarados em telas de busca.
 
-- Username infantil não pode ser exposto em APIs públicas de pesquisa.
+- Criança não pode ser exposta em APIs públicas de pesquisa; eventual
+  identificador infantil futuro segue a mesma restrição.
 
 # 20. Requisitos não funcionais
 
 | Categoria | Requisito |
 | --- | --- |
 | Segurança | Deny-by-default, RLS e validação server-side. |
-| Privacidade | Minimização, mascaramento e busca infantil restrita. |
+| Privacidade | Minimização, mascaramento e ausência de diretório infantil; referências privadas não concedem acesso. |
 | Performance | Carregar vínculos e contexto sem múltiplas consultas desnecessárias. |
 | Confiabilidade | Convites idempotentes e sessões consistentes. |
 | Auditabilidade | Ações de identidade e permissão rastreáveis. |
@@ -366,9 +381,15 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 
 - Criança vinculada a duas instituições mantém uma pessoa global e dois contextos isolados.
 
-- Instituição não autorizada não localiza criança por username.
+- Criança não é localizável em diretório ou busca pública.
 
-- Instituição autorizada localiza e inicia fluxo de vínculo sem receber dados além do necessário.
+- Responsável localiza exatamente instituição/unidade e inicia solicitação sem
+  receber dados privados além do perfil institucional mínimo.
+
+- A solicitação não concede acesso antes da validação institucional.
+
+- A aprovação cria primeiro o vínculo criança–unidade; turma pode ser definida
+  depois.
 
 - Responsável não selecionado para um contexto não vê a criança naquela instituição.
 
@@ -380,7 +401,7 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 
 | Risco | Impacto | Mitigação |
 | --- | --- | --- |
-| Username infantil global | Crítico | Busca restrita, não indexação, resposta mínima e autorização. |
+| Identificador infantil futuro | Crítico | Fora do MVP; spec própria, não indexação e validação institucional antes de qualquer uso. |
 | CPF obrigatório aumentar atrito | Médio | Explicar finalidade, proteger e validar. |
 | Duplicidade de pessoas | Alto | Matching, fluxo de vínculo e merge controlado. |
 | RLS complexa | Crítico | Policies pequenas, funções auxiliares e testes multi-tenant. |
@@ -394,10 +415,11 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 | Login | E-mail ou celular, conforme escolha do usuário. |
 | @username | Parte da identidade. |
 | CPF adultos | Obrigatório. |
-| @username crianças | Global, pesquisável somente por instituições autorizadas. |
+| @username crianças | Não necessário no MVP; decisão futura ligada à experiência e ao login infantil. |
 | Pessoa | Global. |
+| Auth | Credencial opcional; criança não possui no MVP. |
 | Papel | Contextual. |
-| Criança multi-instituição | Uma pessoa global com child_context por instituição. |
+| Criança multi-instituição | Uma pessoa global com `child_context` pertencente a cada instituição, `child_unit_link` inicial e `child_group_link` opcional posterior. |
 | Responsável | Acesso selecionado por contexto institucional. |
 | Alterar permissões Admin | Owner/diretor e admins autorizados. |
 | MFA | Ainda não definida como requisito do MVP. |
@@ -406,9 +428,8 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 
 - Senha, OTP ou ambos em cada canal?
 
-- Qual prova torna uma instituição “autorizada” a pesquisar username infantil?
-
-- Quem aprova alteração de username da criança?
+- Identificador e edição de perfil infantil permanecem adiados para a spec de
+  experiência/login infantil; não fazem parte do onboarding do MVP.
 
 - Quais flags de permissão familiar existirão no MVP?
 
@@ -424,7 +445,8 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 
 - Functional Spec de login, convite, recuperação e seletor de contexto.
 
-- Threat model de username infantil e deduplicação.
+- Threat model de eventual identificador infantil e deduplicação, se adotado
+  pela spec futura de experiência/login infantil.
 
 - Test Plan de dois tenants, multi-papel e vínculos familiares.
 
@@ -444,6 +466,16 @@ Uma pessoa pode ser simultaneamente responsável e profissional. A identidade é
 
 Crianças não possuem login no MVP. O modelo deve permitir que a pessoa da criança receba identidade de autenticação no futuro sem recriar seus vínculos.
 
+Adulto pode criar conta global antes de qualquer instituição, e instituição ou
+unidade pode convidar conta nova ou existente. Conta, e-mail ou
+`@identificador` não concedem acesso por si mesmos. Responsável autenticado
+pode localizar exatamente instituição/unidade por `@`, e-mail, link ou QR e
+solicitar vínculo; a solicitação fica sem acesso até validação institucional.
+
+O cadastro infantil é híbrido. Responsável ou instituição inicia, a instituição
+valida e cria seu `child_context`; a aprovação cria primeiro o
+`child_unit_link`, e o `child_group_link` é opcional naquele momento.
+
 ## 27.2 Cálculo De Permissão
 
 A decisão server-side deve avaliar:
@@ -459,19 +491,30 @@ A decisão server-side deve avaliar:
 
 ## 27.3 Responsáveis E Pessoas Autorizadas
 
-- Somente instituição ou unidade emite convite de responsável com login.
+- Instituição ou unidade emite convite de responsável com login, sem impedir
+  pré-cadastro adulto ou solicitação de vínculo iniciada pelo responsável.
 - Permissões familiares são definidas por responsável e criança, inicialmente permitidas e editáveis durante ou depois do convite.
-- Apenas o responsável com `manage_authorized_people` pode consultar ou alterar pessoas autorizadas daquela criança.
-- Cadastrar pessoa autorizada produz efeito imediato e notifica os contextos institucionais afetados.
-- Instituição ou unidade pode suspender uma autorização por segurança, informando motivo e notificando os responsáveis autorizados.
-- Pessoa autorizada para retirada ou emergência não recebe sessão autenticada por esse vínculo.
+- Apenas o responsável com `manage_authorized_people` pode consultar pessoas
+  de confiança ou alterar autorizações daquela criança.
+- Pessoa de confiança é um registro privado e reutilizável do responsável e
+  não recebe sessão autenticada por esse vínculo.
+- Cada uso da pessoa de confiança cria autorização independente por
+  instituição, `child_context` e unidade; autorização de retirada não pertence
+  à turma.
+- Cadastrar autorização produz efeito imediato e notifica apenas o contexto
+  institucional afetado.
+- Instituição ou unidade pode suspender uma autorização por segurança,
+  informando motivo e notificando os responsáveis autorizados, sem alterar
+  status ou visibilidade em outra unidade ou tenant.
 
 ## 27.4 Profissionais
 
 - Papéis padrão e customizados podem ter escopo institucional, de unidade, grupo, atividade ou criança.
 - Um administrador de unidade pode ter todas as turmas ou somente seleção explícita.
 - Pessoas que falam pela instituição, unidade, grupo ou atividade devem exibir a pessoa real e o papel contextual.
-- Acesso à lista de crianças, responsáveis ou pessoas autorizadas exige permissão explícita; ausência de permissão significa ausência da lista.
+- Acesso à lista de crianças, responsáveis, pessoas de confiança ou
+  autorizações exige permissão explícita; ausência de permissão significa
+  ausência da lista.
 
 ## 27.5 RLS E Estado Atual
 
@@ -480,11 +523,21 @@ A fundação operacional foi aplicada ao projeto remoto em 2026-07-24. O helper
 assignments/permissões, grants diretos, escopo e overrides individuais. Deny
 explícito prevalece e escopo de unidade não alcança unidade irmã.
 
-As 29 tabelas contextuais novas possuem RLS e policies por operação, grants
+As 30 tabelas contextuais novas possuem RLS e policies por operação, grants
 explícitos para `authenticated` e nenhum grant para `anon`. Comandos sensíveis
 usam RPCs transacionais, funções privilegiadas em `app_private` com
 `search_path = ''` e auditoria. Testes remotos cobrem deny individual,
 isolamento de unidade/tenant, atividades, chat histórico e assiduidade.
+
+A caixa `Conversas` deve ser apenas uma query agregada sobre registros
+contextuais independentes. Filtros de tipo e criança nunca formam escopo
+compartilhado nem ampliam RLS. Toda leitura e operação deve revalidar
+dinamicamente membership, vínculo infantil, equipe e capacidade; ocultar ou
+desativar participante no cliente não basta para revogar acesso.
+
+A fundação aplicada ainda requer consolidação da fonte privada reutilizável da
+pessoa de confiança e da revogação dinâmica de chat. Nenhuma migration ou
+alteração de policy é autorizada por este aditivo sem plano técnico aprovado.
 
 # Fontes e referências
 
