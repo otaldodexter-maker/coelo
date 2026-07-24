@@ -1,6 +1,7 @@
 # Local agent and Codex runtime state
 .agents/
 .codex/
+.worktrees/
 
 # Environment and secrets
 .env
