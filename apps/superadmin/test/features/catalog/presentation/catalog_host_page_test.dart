@@ -37,6 +37,31 @@ void main() {
     expect(find.byKey(const Key('superadmin-navigation-catalog')), findsOneWidget);
   });
 
+  testWidgets('opens conversations through its specific shell capability', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var conversationsOpened = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: CatalogHostPage(
+          catalogUrl: 'https://catalog.coelo.me',
+          logout: _logout,
+          onInstitutionsOpen: () {},
+          onConversationsOpen: () => conversationsOpened += 1,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Mensagens'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Expandir conversas'));
+
+    expect(conversationsOpened, 1);
+  });
+
   testWidgets('rejects a catalog URL without an allowed web origin', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

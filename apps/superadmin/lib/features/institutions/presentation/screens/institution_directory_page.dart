@@ -83,6 +83,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       logout: widget.logout,
       activityController: _activityController,
       onBugReportSubmitted: widget.onBugReportSubmitted,
+      onOpenConversations: widget.onConversationsOpen,
       onDestinationSelected: (destination) {
         if (destination == 'home') {
           widget.onHomeOpen?.call();
@@ -90,8 +91,6 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
           widget.onCatalogOpen?.call();
         } else if (destination == 'support') {
           widget.onSupportOpen?.call();
-        } else if (destination == 'conversations') {
-          widget.onConversationsOpen?.call();
         }
       },
       child: Builder(

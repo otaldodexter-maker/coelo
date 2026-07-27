@@ -26,6 +26,8 @@ const _compactProfileMenuWidth = 176.0;
 const _compactProfileTriggerWidth = 52.0;
 const _coeloMotionCurve = Curves.easeInOut;
 
+void _noOp() {}
+
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
     required this.logout,
@@ -37,6 +39,7 @@ class SuperadminShell extends StatefulWidget {
     this.activityController,
     this.currentDestination = 'institutions',
     this.onDestinationSelected,
+    this.onOpenConversations,
     this.onBugReportSubmitted,
     @Deprecated('O launcher de mensagens agora é global.') this.showChatLauncher = false,
     super.key,
@@ -51,6 +54,7 @@ class SuperadminShell extends StatefulWidget {
   final SuperadminActivityController? activityController;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
+  final VoidCallback? onOpenConversations;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
   @Deprecated('O launcher de mensagens agora é global.')
@@ -266,8 +270,8 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
           right: CoeloSpacing.space4,
           bottom: CoeloSpacing.space4,
           child: SuperadminChatLauncher(
-            onExpand: () => widget.onDestinationSelected?.call('conversations'),
-            canExpand: widget.onDestinationSelected != null,
+            onExpand: widget.onOpenConversations ?? _noOp,
+            canExpand: widget.onOpenConversations != null,
           ),
         ),
       ],

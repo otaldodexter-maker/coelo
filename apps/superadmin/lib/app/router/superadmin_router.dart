@@ -109,6 +109,10 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.homeName,
             builder: (context, state) => SuperadminHelpCenterPage(
               logout: logout,
+              onOpenConversations: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'home'},
+              ),
               onDestinationSelected: (destination) {
                 if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.institutionsName);
@@ -116,11 +120,6 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.supportName);
-                } else if (destination == 'conversations') {
-                  context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'home'},
-                  );
                 }
               },
             ),
@@ -279,16 +278,15 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devHomeName,
             builder: (context, state) => SuperadminHelpCenterPage(
               logout: _previewLogout,
+              onOpenConversations: () => context.goNamed(
+                SuperadminRoutes.devConversationsName,
+                queryParameters: const {'from': 'home'},
+              ),
               onDestinationSelected: (destination) {
                 if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
-                } else if (destination == 'conversations') {
-                  context.goNamed(
-                    SuperadminRoutes.devConversationsName,
-                    queryParameters: const {'from': 'home'},
-                  );
                 }
               },
             ),

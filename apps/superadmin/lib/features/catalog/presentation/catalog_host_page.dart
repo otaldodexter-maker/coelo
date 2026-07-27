@@ -43,6 +43,7 @@ final class CatalogHostPage extends StatelessWidget {
       logout: logout,
       currentDestination: 'catalog',
       onBugReportSubmitted: onBugReportSubmitted,
+      onOpenConversations: onConversationsOpen,
       onDestinationSelected: (destination) {
         if (destination == 'home') {
           onHomeOpen?.call();
@@ -50,8 +51,6 @@ final class CatalogHostPage extends StatelessWidget {
           onInstitutionsOpen();
         } else if (destination == 'support') {
           onSupportOpen?.call();
-        } else if (destination == 'conversations') {
-          onConversationsOpen?.call();
         }
       },
       actions: [

@@ -11,10 +11,16 @@ const _demoResponse =
     'de conhecimento do Coelo para responder com orientações verificadas.';
 
 class SuperadminHelpCenterPage extends StatefulWidget {
-  const SuperadminHelpCenterPage({required this.logout, this.onDestinationSelected, super.key});
+  const SuperadminHelpCenterPage({
+    required this.logout,
+    this.onDestinationSelected,
+    this.onOpenConversations,
+    super.key,
+  });
 
   final LogoutAction logout;
   final ValueChanged<String>? onDestinationSelected;
+  final VoidCallback? onOpenConversations;
 
   @override
   State<SuperadminHelpCenterPage> createState() => _SuperadminHelpCenterPageState();
@@ -109,6 +115,7 @@ class _SuperadminHelpCenterPageState extends State<SuperadminHelpCenterPage> {
       title: 'Home',
       subtitle: 'Tire dúvidas e encontre orientações sobre o Coelo.',
       onDestinationSelected: widget.onDestinationSelected,
+      onOpenConversations: widget.onOpenConversations,
       child: _HelpCenterBody(
         conversations: List.unmodifiable(_conversations),
         selectedConversation: _selectedConversation,

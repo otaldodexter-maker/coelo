@@ -216,12 +216,13 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('shows the global chat launcher without full-page navigation', (tester) async {
+  testWidgets('keeps expansion disabled for a partial generic navigation callback', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final shell = SuperadminShell(
       logout: () async => const LogoutResult.success(),
+      onDestinationSelected: (_) {},
       child: const SizedBox.expand(),
     );
     await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
@@ -233,6 +234,29 @@ void main() {
     final expand = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full));
     expect(expand.tooltip, 'Expandir conversas indisponível nesta tela');
     expect(expand.onPressed, isNull);
+  });
+
+  testWidgets('expands through the specific conversations capability', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var expansions = 0;
+
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      onDestinationSelected: (_) {},
+      onOpenConversations: () => expansions += 1,
+      child: const SizedBox.expand(),
+    );
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
+
+    await tester.tap(find.text('Mensagens'));
+    await tester.pumpAndSettle();
+
+    final expand = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full));
+    expect(expand.tooltip, 'Expandir conversas');
+    expect(expand.onPressed, isNotNull);
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.open_in_full));
+    expect(expansions, 1);
   });
 
   testWidgets('keeps the legacy visibility default false', (tester) async {
