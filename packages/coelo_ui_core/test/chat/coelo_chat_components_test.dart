@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -148,6 +149,78 @@ void main() {
     await tester.pump();
     await tester.tap(find.widgetWithIcon(IconButton, Icons.send_rounded));
     expect(sends, 1);
+  });
+
+  testWidgets('composer sends a non-empty message when Enter is pressed', (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    var sends = 0;
+
+    await tester.pumpWidget(_app(CoeloChatComposer(controller: controller, onSend: () => sends++)));
+
+    await tester.enterText(find.byType(TextField), 'Olá');
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
+
+    expect(sends, 1);
+  });
+
+  testWidgets('composer keeps Enter available for a newline while Shift is pressed', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    var sends = 0;
+
+    await tester.pumpWidget(_app(CoeloChatComposer(controller: controller, onSend: () => sends++)));
+
+    await tester.enterText(find.byType(TextField), 'Olá');
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+
+    expect(sends, 0);
+  });
+
+  testWidgets('composer exposes context and styles an enabled send action', (tester) async {
+    final controller = TextEditingController(text: 'Olá');
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        CoeloChatComposer(controller: controller, onSend: () {}, contextLabel: 'Turma Girassol'),
+      ),
+    );
+
+    final colors = Theme.of(tester.element(find.byType(CoeloChatComposer))).colorScheme;
+    final sendButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.send_rounded),
+    );
+
+    expect(find.text('Turma Girassol'), findsOne);
+    expect(sendButton.onPressed, isNotNull);
+    expect(sendButton.style?.backgroundColor?.resolve(<WidgetState>{}), colors.primary);
+  });
+
+  testWidgets('composer enables the optional emoji action when supplied', (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    var emojiOpens = 0;
+
+    await tester.pumpWidget(
+      _app(
+        CoeloChatComposer(
+          controller: controller,
+          onSend: () {},
+          onEmojiPressed: () => emojiOpens++,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('Adicionar emoji'));
+
+    expect(emojiOpens, 1);
   });
 }
 

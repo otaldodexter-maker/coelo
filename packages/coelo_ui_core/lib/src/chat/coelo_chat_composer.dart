@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 final class CoeloChatComposer extends StatefulWidget {
   const CoeloChatComposer({
@@ -11,6 +12,8 @@ final class CoeloChatComposer extends StatefulWidget {
     this.showAudioAction = false,
     this.onMediaPressed,
     this.onAudioPressed,
+    this.contextLabel,
+    this.onEmojiPressed,
     super.key,
   });
 
@@ -22,6 +25,8 @@ final class CoeloChatComposer extends StatefulWidget {
   final bool showAudioAction;
   final VoidCallback? onMediaPressed;
   final VoidCallback? onAudioPressed;
+  final String? contextLabel;
+  final VoidCallback? onEmojiPressed;
 
   @override
   State<CoeloChatComposer> createState() => _CoeloChatComposerState();
@@ -53,52 +58,87 @@ final class _CoeloChatComposerState extends State<CoeloChatComposer> {
 
   bool get _canSend => widget.enabled && widget.controller.text.trim().isNotEmpty;
 
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.enter &&
+        !HardwareKeyboard.instance.isShiftPressed &&
+        _canSend) {
+      widget.onSend();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
-      ),
+      decoration: BoxDecoration(color: colors.surface),
       child: SafeArea(
         top: false,
         child: Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: TextField(
-                  controller: widget.controller,
-                  enabled: widget.enabled,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  decoration: InputDecoration(
-                    hintText: widget.hintText,
-                    prefixIcon: const Icon(Icons.sentiment_satisfied_alt_outlined),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Focus(
+                      onKeyEvent: _handleKeyEvent,
+                      child: TextField(
+                        controller: widget.controller,
+                        enabled: widget.enabled,
+                        minLines: 1,
+                        maxLines: 5,
+                        textInputAction: TextInputAction.newline,
+                        decoration: InputDecoration(
+                          hintText: widget.hintText,
+                          prefixIcon: IconButton(
+                            tooltip: 'Adicionar emoji',
+                            onPressed: widget.enabled ? widget.onEmojiPressed : null,
+                            icon: const Icon(Icons.sentiment_satisfied_alt_outlined),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  if (widget.showAudioAction)
+                    IconButton(
+                      tooltip: widget.onAudioPressed == null ? 'Áudio · Em breve' : 'Gravar áudio',
+                      onPressed: widget.enabled ? widget.onAudioPressed : null,
+                      icon: const Icon(Icons.mic_none_outlined),
+                    ),
+                  if (widget.showMediaAction)
+                    IconButton(
+                      tooltip: widget.onMediaPressed == null
+                          ? 'Mídia · Em breve'
+                          : 'Adicionar mídia',
+                      onPressed: widget.enabled ? widget.onMediaPressed : null,
+                      icon: const Icon(Icons.image_outlined),
+                    ),
+                  IconButton(
+                    tooltip: 'Enviar mensagem',
+                    onPressed: _canSend ? widget.onSend : null,
+                    style: _canSend
+                        ? IconButton.styleFrom(
+                            backgroundColor: colors.primary,
+                            foregroundColor: colors.onPrimary,
+                          )
+                        : null,
+                    icon: const Icon(Icons.send_rounded),
+                  ),
+                ],
               ),
-              if (widget.showAudioAction)
-                IconButton(
-                  tooltip: widget.onAudioPressed == null ? 'Áudio · Em breve' : 'Gravar áudio',
-                  onPressed: widget.enabled ? widget.onAudioPressed : null,
-                  icon: const Icon(Icons.mic_none_outlined),
+              if (widget.contextLabel case final contextLabel?)
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Text(contextLabel, style: Theme.of(context).textTheme.labelSmall),
                 ),
-              if (widget.showMediaAction)
-                IconButton(
-                  tooltip: widget.onMediaPressed == null ? 'Mídia · Em breve' : 'Adicionar mídia',
-                  onPressed: widget.enabled ? widget.onMediaPressed : null,
-                  icon: const Icon(Icons.image_outlined),
-                ),
-              IconButton(
-                tooltip: 'Enviar mensagem',
-                onPressed: _canSend ? widget.onSend : null,
-                icon: const Icon(Icons.send_rounded),
-              ),
             ],
           ),
         ),
