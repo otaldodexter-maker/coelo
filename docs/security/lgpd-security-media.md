@@ -238,7 +238,7 @@ A ANPD admite que diferentes hipóteses legais da LGPD podem ser aplicáveis ao 
 | Admin | Tenant e escopo delegado. |
 | Diretor/Owner | Instituição inteira. |
 | Equipe Coelo | Conforme cargo interno e auditoria. |
-| Instituição autorizada | Pesquisa username infantil somente dentro do fluxo autorizado. |
+| Instituição autorizada | Localiza a referência infantil somente em fluxo contextual autorizado, sem busca por `@username` no MVP. |
 
 # 15. Suporte interno
 
@@ -320,7 +320,7 @@ A ANPD estabelece processo para comunicação de incidentes que possam causar ri
 | LG-RF-008 | Incidentes | Manter fluxo de registro, contenção e comunicação. |
 | LG-RF-009 | Retenção | Suportar estados e timestamps, sem prazos definidos. |
 | LG-RF-010 | Analytics | Minimizar e pseudonimizar eventos. |
-| LG-RF-011 | Username infantil | Restringir pesquisa a instituições autorizadas. |
+| LG-RF-011 | Referência infantil | Restringir código, QR ou outra referência privada a fluxos institucionais autorizados; não criar busca por `@username` no MVP. |
 | LG-RF-012 | Auditoria | Registrar permissão, vínculo, mídia e acesso sensível. |
 
 # 21. Requisitos não funcionais
@@ -348,7 +348,7 @@ A ANPD estabelece processo para comunicação de incidentes que possam causar ri
 
 - Acesso de suporte gera sessão e audit logs.
 
-- Instituição não autorizada não pesquisa username infantil.
+- Instituição não autorizada não resolve código, QR ou outra referência infantil privada.
 
 - Consentimento/autorização de imagem é consultável antes de publicar.
 
@@ -364,7 +364,7 @@ A ANPD estabelece processo para comunicação de incidentes que possam causar ri
 | --- | --- | --- |
 | Papel jurídico indefinido | Crítico | Revisão jurídica antes do piloto real. |
 | Retenção indefinida | Alto | Decisão bloqueadora e modelo preparado. |
-| Username infantil expor criança | Crítico | Busca restrita, não indexação e autorização. |
+| Referência infantil expor criança | Crítico | Sem busca por `@username` no MVP; código/QR privado, não indexação e validação institucional. |
 | Suporte interno excessivo | Crítico | Cargo, auditoria, minimização e revisão. |
 | Mídia compartilhada fora do app | Alto | Download bloqueado, termos e educação; não prometer impedir screenshot. |
 | Vazamento entre tenants | Crítico | RLS, testes, threat modeling e logs. |
@@ -394,7 +394,7 @@ A ANPD estabelece processo para comunicação de incidentes que possam causar ri
 
 - Quais prazos de retenção e critérios de exclusão?
 
-- Qual fluxo prova autorização institucional para username infantil?
+- Qual fluxo futuro provará autorização institucional para resolver uma referência infantil privada, caso código ou QR seja adotado?
 
 - Quais cargos internos acessam quais classes de dados?
 
