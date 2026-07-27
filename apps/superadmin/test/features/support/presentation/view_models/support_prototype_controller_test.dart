@@ -83,6 +83,38 @@ void main() {
     expect(() => filters.assigneeIds.add('member-dev'), throwsUnsupportedError);
   });
 
+  test('preserves requester context and ownership when copying a ticket', () {
+    const requesterContext = SupportRequesterContext(
+      institution: 'Centro Horizonte',
+      unit: 'Unidade Cambui',
+    );
+    final item = ticket(
+      id: 'SUP-1',
+      status: SupportTicketStatus.newRequest,
+      requesterContext: requesterContext,
+      ownerId: 'member-support',
+      collaboratorIds: {'member-qa'},
+    );
+
+    final copied = item.copyWith(status: SupportTicketStatus.inProgress);
+
+    expect(copied.requesterContext, same(requesterContext));
+    expect(copied.ownerId, 'member-support');
+    expect(copied.collaboratorIds, {'member-qa'});
+  });
+
+  test('removes a ticket owner when copyWith clears it', () {
+    final item = ticket(
+      id: 'SUP-1',
+      status: SupportTicketStatus.newRequest,
+      ownerId: 'member-support',
+    );
+
+    final copied = item.copyWith(clearOwner: true);
+
+    expect(copied.ownerId, isNull);
+  });
+
   test('creates a new session ticket from a report draft', () {
     final controller = SupportPrototypeController(initialTickets: [], clock: () => fixedNow);
     addTearDown(controller.dispose);
