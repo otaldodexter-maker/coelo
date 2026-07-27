@@ -214,6 +214,15 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 
 - Exclusão é soft delete com registro de auditoria.
 
+- Revogação de vínculo remove imediatamente o acesso operacional à conversa:
+  inbox, busca, cache, Realtime, envio, comandos e novas assinaturas.
+
+- Histórico elegível não integra a caixa operacional. Se a política de retenção
+  aplicável, ainda adiada, permitir a preservação, ele pode ser retornado apenas
+  por consulta de histórico separada e somente leitura; essa consulta não
+  restaura participantes, novas mensagens, Realtime, contexto operacional ou
+  acesso a outros módulos.
+
 ## 11.1 Caixa De Conversas
 
 `Conversas` é uma única caixa de entrada visual. `Todas` é a visão padrão;
@@ -221,6 +230,11 @@ Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado p
 filtro de criança pertence a um nível separado. Cada item continua sendo uma
 conversa independente e contextual no banco; a agregação e os filtros nunca
 criam um escopo compartilhado nem ampliam autorização.
+
+Depois de uma revogação, `Conversas` e sua busca continuam estritamente
+operacionais: não exibem o contexto, inclusive por cache ou Realtime. O
+histórico elegível, se uma futura política de retenção o permitir, fica fora
+dessa superfície e exige consulta separada, somente leitura.
 
 Instituição, unidade, turma e atividade podem usar avatar circular na caixa. O
 ponto de presença indica disponibilidade do serviço ou da equipe em contextos
@@ -398,6 +412,15 @@ presença.
 
 - Mídia privada não possui URL pública permanente e download está bloqueado por padrão.
 
+- Revogação remove imediatamente o contexto de inbox, busca, cache e Realtime
+  operacionais e bloqueia envio, comandos e novas assinaturas.
+
+- Histórico elegível é retornado somente por consulta separada e somente leitura
+  quando a política de retenção aplicável o permitir; nunca pela caixa ou busca
+  operacional.
+
+- Negação pela política de retenção remove o resultado de histórico.
+
 # 23. Riscos e mitigação
 
 | Risco | Impacto | Mitigação |
@@ -434,6 +457,9 @@ presença.
 - Quais tipos de rotina aparecem por segmento?
 
 - Qual ferramenta de push será usada?
+
+- Qual política jurídica de retenção define se, por quanto tempo e para quem o
+  histórico de conversa revogado pode ser consultado somente leitura?
 
 # 26. Próximas specs
 
@@ -484,8 +510,9 @@ lista. Revogação de vínculo remove imediatamente a conversa operacional,
 inclusive de cache e Realtime.
 
 Encerrado o vínculo da criança com a instituição, os módulos deixam de aparecer
-e o histórico de conversa fica somente leitura conforme a política de retenção
-quando aprovada.
+e o histórico de conversa, se elegível sob uma política de retenção futura, é
+consultado separadamente e somente leitura. Ele não restaura o contexto
+operacional, participantes, novas mensagens, Realtime ou outros módulos.
 
 # Fontes e referências
 

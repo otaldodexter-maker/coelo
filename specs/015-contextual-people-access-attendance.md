@@ -112,6 +112,9 @@ analise futura sem alterar silenciosamente o catalogo.
 - Snapshot de papel e contexto por mensagem.
 - Caixa `Conversas` como consulta agregada, sem criar escopo de autorizacao
   compartilhado.
+- Acesso operacional e historico elegivel sao consultas distintas: a primeira
+  exige vinculo ativo; a segunda e somente leitura e depende de uma politica de
+  retencao ainda adiada permitir a preservacao.
 
 ### Assiduidade
 
@@ -174,8 +177,11 @@ analise futura sem alterar silenciosamente o catalogo.
 - `Todas` como visao inicial.
 - `Instituicoes e unidades`, `Turmas` e `Atividades` como filtros opcionais.
 - Filtro de crianca em nivel separado.
-- Contexto revogado removido imediatamente dos resultados, sem ampliar acesso
-  por filtro ou cache.
+- Contexto revogado removido imediatamente da caixa, busca, cache, Realtime e
+  demais resultados operacionais, sem ampliar acesso por filtro.
+- Historico elegivel nao reaparece na caixa operacional: quando permitido pela
+  politica de retencao ainda adiada, so pode ser consultado em leitura por uma
+  consulta de historico separada.
 
 ### Transferencia
 
@@ -249,6 +255,12 @@ alem do necessario.
 - Caixa unica retorna conversas independentes autorizadas; filtros de tipo e
   crianca nao ampliam acesso.
 - Equipe nao configurada nao le chat institucional/unidade.
+- Revogacao remove imediatamente o contexto de inbox, busca, cache e Realtime
+  operacionais e bloqueia mensagens, comandos e novas assinaturas.
+- Historico de conversa somente pode ser retornado por consulta separada,
+  somente leitura, quando a politica de retencao aplicavel ainda adiada o
+  permitir; ele nao restaura participantes, contexto operacional, novas
+  mensagens, Realtime ou outros modulos.
 - Aviso familiar aparece como pendencia.
 - Aviso futuro gera lembrete D-1 para familia e equipe afetada.
 - Pendencia nao vira oficial automaticamente.
@@ -281,8 +293,14 @@ alem do necessario.
 - Atividade com toda turma e com criancas selecionadas.
 - Chat com nenhuma, uma e varias criancas.
 - Caixa unica com filtros de tipo e crianca em niveis separados.
-- Revogacao dinamica remove conversa e operacoes de caches, Realtime e
-  consultas sem depender apenas de participante desativado.
+- Revogacao dinamica remove o contexto de inbox, busca, cache e Realtime
+  operacionais sem depender apenas de participante desativado.
+- Revogacao bloqueia envio de mensagem, comandos, novas assinaturas e qualquer
+  outra escrita no contexto revogado.
+- Historico elegivel aparece somente em consulta de historico separada e
+  somente leitura quando a politica de retencao aplicavel o permitir; nunca na
+  caixa ou busca operacional.
+- Negacao pela politica de retencao remove o resultado de historico.
 - Troca de profissional preservando autoria e historico.
 - Aviso de ausencia confirmado, corrigido e mantido pendente.
 - Presenca de grupo diferente de presenca de atividade.
@@ -293,7 +311,9 @@ alem do necessario.
 - Matriz extensa de capacidades exige UX clara.
 - Contexto ativo incorreto pode causar acao no papel errado.
 - Documentos de justificativa exigem classificacao e acesso restrito.
-- Retencao de chat e dados infantis depende de decisao juridica.
+- Retencao de chat e dados infantis, inclusive os criterios que tornam um
+  historico elegivel para consulta separada, depende de decisao juridica ainda
+  adiada.
 - Experiencia infantil futura depende de consentimento e LGPD.
 - Modelo comercial de responsaveis nao integra esta spec.
 

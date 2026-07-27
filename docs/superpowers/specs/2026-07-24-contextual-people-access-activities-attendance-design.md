@@ -312,9 +312,13 @@ uma caracteristica global da pessoa.
 - Mudancas notificam o responsavel afetado e a instituicao.
 
 Quando a crianca sai da instituicao, o responsavel perde imediatamente acesso
-a Flow, rotina, agenda, midia, atividades, turmas e novos comandos. Conversas
-das quais participou permanecem somente leitura enquanto a politica de
-retencao aplicavel as preservar.
+a Flow, rotina, agenda, midia, atividades, turmas e novos comandos. Tambem
+perde o acesso operacional a conversas: inbox, busca, cache, Realtime e novas
+assinaturas. Conversas das quais participou podem ser retornadas somente por
+uma consulta de historico separada e somente leitura, se a politica de retencao
+aplicavel, ainda adiada, permitir a preservacao. Esse historico nao restaura
+participantes, novas mensagens, Realtime, contexto operacional ou outros
+modulos.
 
 # Pessoas Autorizadas Sem Acesso Ao Coelo
 
@@ -503,6 +507,18 @@ Chats institucionais e de unidade sao recebidos somente por equipes de
 atendimento configuradas. Pessoas e papeis podem receber capacidades distintas
 para receber, responder, atribuir, encaminhar ou supervisionar.
 
+## Revogacao E Consulta De Historico
+
+A revogacao e imediata para toda superficie operacional de conversa. O contexto
+revogado nao pode aparecer na inbox ou busca, permanecer em cache, receber
+Realtime ou aceitar envio, comandos e novas assinaturas.
+
+Historico elegivel e uma consulta separada da caixa operacional e somente
+leitura. Ele somente pode ser retornado se a politica juridica de retencao,
+ainda adiada, permitir a preservacao; a negacao dessa politica remove o
+resultado. A consulta de historico nunca reativa participantes ou contexto,
+nem libera novas mensagens, Realtime ou outros modulos.
+
 Professor exclusivo de atividade conversa apenas com responsaveis das criancas
 participantes e nao acessa chat ou historico geral do grupo. Quando sai do
 contexto, perde acesso; novo profissional autorizado pode consultar o historico
@@ -650,7 +666,10 @@ Eventos relevantes incluem:
 # Estados E Tratamento De Erros
 
 - Convite pendente nao libera dados.
-- Contexto revogado desaparece da navegacao e invalida operacoes em andamento.
+- Contexto revogado desaparece da navegacao, inbox, busca, cache e Realtime
+  operacionais e invalida operacoes, comandos e novas assinaturas em andamento.
+- Historico elegivel exige consulta separada e somente leitura; se a politica
+  de retencao ainda adiada nao o permitir, nenhum resultado e retornado.
 - Tentativa cross-tenant ou cross-unit falha sem revelar existencia do alvo.
 - Transferencia rejeitada preserva os vinculos atuais.
 - Transferencia parcial em lote informa cada resultado sem mover crianca
@@ -685,6 +704,11 @@ Eventos relevantes incluem:
 - Caixa unica agrega conversas sem misturar os registros contextuais.
 - Filtro de crianca e independente do filtro de tipo de conversa.
 - Equipe nao configurada nao le chat institucional ou de unidade.
+- Revogacao remove imediatamente contexto de inbox, busca, cache e Realtime
+  operacionais e bloqueia novas mensagens, comandos e assinaturas.
+- Historico elegivel aparece somente por consulta separada e somente leitura,
+  condicionado a politica de retencao ainda adiada; nunca restaura contexto,
+  participantes, mensagens, Realtime ou outros modulos.
 - Aviso de ausencia preenche a lista como pendencia, nao como oficial.
 - Somente `Gerenciar presenca` confirma ou corrige presenca.
 - Dashboards nao tratam pendencias como presenca ou falta oficial.
@@ -705,8 +729,12 @@ Eventos relevantes incluem:
 - Suspensao em uma unidade nao altera autorizacao de outra unidade.
 - Um tenant nao descobre a lista privada nem autorizacoes de outro tenant.
 - Troca de turma preserva autorizacao de retirada da mesma unidade.
-- Revogacao de vinculo remove acesso operacional e torna historico elegivel a
-  somente leitura.
+- Revogacao de vinculo remove contexto de inbox, busca, cache e Realtime
+  operacionais e bloqueia envio, comandos e novas assinaturas.
+- Historico elegivel e visivel somente por consulta separada e somente leitura,
+  quando a politica de retencao aplicavel o permitir; nunca pela caixa ou busca
+  operacional.
+- Negacao pela politica de retencao remove o resultado de historico.
 - Caixa unica retorna apenas conversas autorizadas e filtros nao ampliam RLS.
 - Conversa de atividade referencia a turma correta e seus participantes.
 
@@ -763,7 +791,8 @@ historico remoto.
 # Fora De Escopo E Decisoes Adiadas
 
 - modelo comercial ou cobranca por quantidade de responsaveis;
-- prazo juridico de retencao de chat e dados infantis;
+- prazo juridico de retencao de chat e dados infantis, inclusive a elegibilidade
+  de historico revogado em consulta separada e somente leitura;
 - experiencia infantil e login de crianca;
 - desenho visual final do seletor de contexto;
 - telas finais de Admin e Principal;
