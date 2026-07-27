@@ -1,8 +1,9 @@
-import 'dart:ui' show SemanticsAction, SemanticsFlag;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show SemanticsData;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -57,10 +58,54 @@ void main() {
 
     final currentPage = find.byKey(const Key('coelo-pagination-page-2'));
     expect(_outlinedButton(tester, currentPage).onPressed, isNull);
-    expect(tester.getSemantics(currentPage).hasFlag(SemanticsFlag.isSelected), isTrue);
+    final semantics = tester.getSemantics(currentPage).getSemanticsData();
+    expect(semantics.flagsCollection.isSelected, Tristate.isTrue);
+    expect(semantics.hasAction(SemanticsAction.tap), isFalse);
 
     await tester.tap(currentPage);
     expect(selectedPages, isEmpty);
+  });
+
+  testWidgets('exposes tap semantics only for enabled pagination controls', (tester) async {
+    await _pumpPagination(tester, currentPage: 1, totalPages: 3);
+
+    expect(_semanticsFor(tester, find.text('Anterior')).hasAction(SemanticsAction.tap), isFalse);
+    expect(
+      _semanticsFor(tester, find.byIcon(Icons.chevron_right)).hasAction(SemanticsAction.tap),
+      isTrue,
+    );
+    expect(
+      _semanticsFor(
+        tester,
+        find.byKey(const Key('coelo-pagination-page-1')),
+      ).hasAction(SemanticsAction.tap),
+      isFalse,
+    );
+    expect(
+      _semanticsFor(
+        tester,
+        find.byKey(const Key('coelo-pagination-page-2')),
+      ).hasAction(SemanticsAction.tap),
+      isTrue,
+    );
+
+    await _pumpPagination(tester, currentPage: 3, totalPages: 3);
+
+    expect(_semanticsFor(tester, find.text('Anterior')).hasAction(SemanticsAction.tap), isTrue);
+    expect(
+      _semanticsFor(tester, find.byIcon(Icons.chevron_right)).hasAction(SemanticsAction.tap),
+      isFalse,
+    );
+  });
+
+  testWidgets('uses a stronger border as a non-color cue for the current page', (tester) async {
+    await _pumpPagination(tester, currentPage: 2, totalPages: 3);
+
+    final current = _outlinedButton(tester, find.byKey(const Key('coelo-pagination-page-2')));
+    final currentSide = current.style?.side?.resolve(const {});
+
+    expect(currentSide, isNotNull);
+    expect(currentSide!.width, 2);
   });
 
   testWidgets('uses a smaller page window at compact widths', (tester) async {
@@ -116,7 +161,18 @@ void main() {
     expect(() => _pagination(currentPage: 0, totalPages: 1), throwsA(isA<AssertionError>()));
     expect(() => _pagination(currentPage: 2, totalPages: 1), throwsA(isA<AssertionError>()));
     expect(() => _pagination(pageSize: 0), throwsA(isA<AssertionError>()));
+    expect(() => _pagination(pageSizeOptions: const []), throwsA(isA<AssertionError>()));
+    expect(() => _pagination(pageSizeOptions: const [10, 0, 50]), throwsA(isA<AssertionError>()));
+    expect(
+      () => _pagination(pageSize: 25, pageSizeOptions: const [10, 50, 100]),
+      throwsA(isA<AssertionError>()),
+    );
+    expect(() => _pagination(pageSizeOptions: const [10, 50, 10]), throwsA(isA<AssertionError>()));
   });
+}
+
+SemanticsData _semanticsFor(WidgetTester tester, Finder finder) {
+  return tester.getSemantics(finder).getSemanticsData();
 }
 
 OutlinedButton _button(WidgetTester tester, String label) {

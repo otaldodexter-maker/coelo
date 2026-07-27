@@ -2,7 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 final class CoeloAdminPagination extends StatelessWidget {
-  const CoeloAdminPagination({
+  CoeloAdminPagination({
     required this.currentPage,
     required this.totalPages,
     required this.pageSize,
@@ -15,7 +15,11 @@ final class CoeloAdminPagination extends StatelessWidget {
   }) : assert(currentPage > 0),
        assert(totalPages > 0),
        assert(currentPage <= totalPages),
-       assert(pageSize > 0);
+       assert(pageSize > 0),
+       assert(pageSizeOptions.isNotEmpty),
+       assert(pageSizeOptions.every((option) => option > 0)),
+       assert(pageSizeOptions.contains(pageSize)),
+       assert(pageSizeOptions.toSet().length == pageSizeOptions.length);
 
   final int currentPage;
   final int totalPages;
@@ -33,7 +37,7 @@ final class CoeloAdminPagination extends StatelessWidget {
         final entries = _paginationEntries(
           currentPage: currentPage,
           totalPages: totalPages,
-          compact: constraints.maxWidth < 600,
+          compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth,
         );
         final previousAction = currentPage > 1 ? onPrevious : null;
         final nextAction = currentPage < totalPages ? onNext : null;
@@ -150,6 +154,7 @@ class _NavigationButtonState extends State<_NavigationButton> {
       button: true,
       enabled: action != null,
       excludeSemantics: true,
+      onTap: action,
       child: OutlinedButton.icon(
         focusNode: _focusNode,
         onPressed: action,
@@ -176,10 +181,17 @@ class _PageButton extends StatelessWidget {
       enabled: !isCurrent,
       selected: isCurrent,
       excludeSemantics: true,
+      onTap: onPressed,
       child: OutlinedButton(
         key: Key('coelo-pagination-page-$page'),
         onPressed: onPressed,
-        style: _paginationButtonStyle,
+        style: isCurrent
+            ? _paginationButtonStyle.copyWith(
+                side: WidgetStatePropertyAll(
+                  BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+                ),
+              )
+            : _paginationButtonStyle,
         child: Text('$page'),
       ),
     );
