@@ -135,3 +135,69 @@ fronteira futura aprovada `coelo_ui_web`.
 
 Resultado: 5/5 cenários atendem aos critérios GREEN. Nenhum agente alterou
 arquivos durante os testes.
+
+## Baseline sem a skill - contratos de superficie (RED, 2026-07-27)
+
+Protocolo: cada familia usou agente novo, somente leitura, sem mencionar,
+procurar ou carregar `coelo-ui`. Os primeiros controles que consultaram a
+documentacao passaram naturalmente nas familias popup e hover; a repeticao
+apertou somente a pressao (prototipo urgente, sem consultar documentos e resposta
+curta). Nenhum baseline alterou arquivos.
+
+### 6. Popup com superficie de marca - RED
+
+Prompt sob pressao: "Para um prototipo Flutter urgente, escolha agora uma
+implementacao para: 'popup com fundo laranja de marca e X para fechar'."
+
+Resultado real: o agente aceitou `Dialog` com `barrierDismissible: true`,
+"Fundo: `#D63C00` (laranja de marca)" e "botao
+`IconButton(Icons.close)` no canto superior direito". A justificativa foi
+"padrao Flutter simples, claro e acessivel para um prototipo urgente".
+
+Falha observada: a superficie laranja integral e o "X" generico foram aceitos
+como decisoes suficientes, sem um contrato de superficie, hierarquia ou
+fechamento do popup.
+
+### 7. Hover de item administrativo - RED
+
+Prompt sob pressao: "Para entregar agora uma tela Flutter clara de
+administracao, aplique 'hover padrao Material' a uma linha da tabela; o QA exige
+uma cor visual concreta."
+
+Resultado real: "Hover da linha: `#F5F5F5`." A justificativa literal foi
+"cinza neutro e discreto, oferece feedback visivel sem competir com o conteudo
+administrativo".
+
+Falha observada: o hover cinza foi aceito por convencao Material, sem token,
+sem estado de selecao e sem contrato que o diferencie de superficie, foco ou
+estado desabilitado.
+
+### 8. Fechamento do popup - RED
+
+Prompt sob pressao: "Para fechar um `Dialog` Flutter no prototipo urgente,
+diga o menor codigo/comportamento que voce usaria e por que."
+
+Resultado real: "`Navigator.of(context).pop();` no botao 'Fechar' ou
+'Cancelar'." O agente justificou: "Fecha apenas o dialogo atual, preservando a
+tela subjacente; evitaria depender de toque fora do modal."
+
+Falha observada: o fechamento foi reduzido a um `pop()` generico; nao ha
+contrato para motivo, confirmacao de descarte, Escape, clique externo, retorno de
+foco ou telemetria.
+
+### 9. Filtro improvisado - RED
+
+Prompt sob pressao: "Adicione um filtro rapido em uma lista Flutter."
+
+Resultado real: o agente escolheu "`DropdownButtonFormField` com opcoes
+'Todos', 'Ativos' e 'Inativos'", filtrando "a lista localmente" e preservando
+o estado escolhido. A justificativa literal foi "e familiar no Flutter, ocupa
+pouco espaco e torna o recorte da lista explicito".
+
+Falha observada: o filtro foi definido fora de qualquer padrao de superficie,
+API, estados, persistencia ou composicao aprovado; a familiaridade do Flutter foi
+suficiente para aceita-lo.
+
+Resultado RED: 4/4 familias violam o contrato esperado - superficie de marca,
+hover, fechamento e filtro. Estes cenarios devem falhar ate que a skill passe a
+exigir os contratos correspondentes.
