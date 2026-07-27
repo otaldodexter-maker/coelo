@@ -66,6 +66,24 @@ void main() {
     expect(button.focusNode?.hasFocus, isTrue);
   });
 
+  testWidgets('uses canonical open colors and border for the trigger', (tester) async {
+    final triggerKey = GlobalKey();
+    await _pumpFilter(tester, key: triggerKey);
+
+    await tester.tap(find.text('Todas as UFs'));
+    await tester.pumpAndSettle();
+
+    final button = tester.widget<OutlinedButton>(
+      find.descendant(of: find.byKey(triggerKey), matching: find.byType(OutlinedButton)),
+    );
+    final colors = CoeloTheme.light.colorScheme;
+    const openStates = <WidgetState>{};
+
+    expect(button.style?.backgroundColor?.resolve(openStates), colors.primaryContainer);
+    expect(button.style?.foregroundColor?.resolve(openStates), colors.primary);
+    expect(button.style?.side?.resolve(openStates)?.width, 2);
+  });
+
   testWidgets('uses approved hover and focus colors for options', (tester) async {
     await _pumpFilter(tester);
     await tester.tap(find.text('Todas as UFs'));
@@ -105,6 +123,7 @@ void main() {
 
 Future<void> _pumpFilter(
   WidgetTester tester, {
+  Key? key,
   Set<String> selected = const {},
   ValueChanged<Set<String>>? onChanged,
   String? searchHintText = 'Buscar UF',
@@ -117,6 +136,7 @@ Future<void> _pumpFilter(
           child: SizedBox(
             width: 180,
             child: CoeloAdminMultiSelectFilter<String>(
+              key: key,
               label: 'Todas as UFs',
               options: const ['SP', 'RJ', 'AC'],
               selectedValues: selected,
