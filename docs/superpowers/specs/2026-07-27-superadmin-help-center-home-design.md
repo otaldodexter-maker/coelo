@@ -36,8 +36,10 @@ IA, API ou persistência.
 - No desktop, o painel de conversas pode ser recolhido para um rail de 88 px e
   expandido novamente sem perder o estado da sessão.
 - A ação de envio usa o ícone padrão de Conversas, fica fora da caixa de texto,
-  permanece neutra quando desabilitada e recebe o fundo primário Coelo quando
-  houver conteúdo válido.
+  usa `primaryContainer` e `onPrimaryContainer` enquanto desabilitada, sem hover
+  nem ação, e recebe o fundo primário Coelo quando houver conteúdo válido. O
+  glifo fica centralizado em uma caixa `CoeloSize.iconMd` dentro do alvo
+  `CoeloSize.touchMin`.
 
 ## Responsividade
 

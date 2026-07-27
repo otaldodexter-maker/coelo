@@ -25,7 +25,12 @@ const catalogRegistryManifestJson = r'''
   "admin.single-select-field": [],
   "admin.pagination": [],
   "admin.create-action": [],
+  "admin.file-actions": [],
   "admin.resizable-table": [],
+  "admin.kanban-board": [],
+  "admin.work-item-card": [],
+  "admin.assignee-stack": [],
+  "admin.workspace-layout": [],
   "admin.context-picker": []
 }
 ''';
@@ -48,7 +53,12 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'admin.single-select-field': (_) => const _SingleSelectFieldExample(),
     'admin.pagination': (_) => const _PaginationExample(),
     'admin.create-action': (_) => const _CreateActionExample(),
+    'admin.file-actions': (_) => const _FileActionsExample(),
     'admin.resizable-table': (_) => const _ResizableTableExample(),
+    'admin.kanban-board': (_) => const _KanbanBoardExample(),
+    'admin.work-item-card': (_) => const _WorkItemCardExample(),
+    'admin.assignee-stack': (_) => const _AssigneeStackExample(),
+    'admin.workspace-layout': (_) => const _WorkspaceLayoutExample(),
     ...buildChatCatalogExamples(),
   };
   final decoded = jsonDecode(catalogRegistryManifestJson) as Map<String, Object?>;
@@ -266,6 +276,89 @@ final class _CreateActionExampleState extends State<_CreateActionExample> {
       ],
     );
   }
+}
+
+final class _FileActionsExample extends StatelessWidget {
+  const _FileActionsExample();
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminFileActions(
+    actions: [
+      CoeloAdminFileAction(
+        label: 'Importar arquivo',
+        icon: Icons.upload_file_rounded,
+        onPressed: () {},
+      ),
+      CoeloAdminFileAction(label: 'Exportar CSV', icon: Icons.download_rounded, onPressed: () {}),
+    ],
+  );
+}
+
+final class _KanbanBoardExample extends StatelessWidget {
+  const _KanbanBoardExample();
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 360,
+    child: CoeloAdminKanbanBoard<String, String>(
+      statuses: const ['Novo', 'Em andamento'],
+      statusLabel: (status) => status,
+      itemsForStatus: (status) => status == 'Novo' ? const ['Chamado #1042'] : const [],
+      itemBuilder: (context, item) => CoeloAdminWorkItemCard<String>(
+        eyebrow: 'Suporte',
+        title: item,
+        summary: 'Acompanhe o atendimento operacional.',
+        onTap: () {},
+      ),
+      onItemAccepted: (_, _) {},
+    ),
+  );
+}
+
+final class _WorkItemCardExample extends StatelessWidget {
+  const _WorkItemCardExample();
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminWorkItemCard<String>(
+    eyebrow: 'Instituição',
+    title: 'Cadastro em revisão',
+    summary: 'Documentação recebida e aguardando validação.',
+    metadata: const ['Hoje', 'Prioridade normal'],
+    onTap: () {},
+  );
+}
+
+final class _AssigneeStackExample extends StatelessWidget {
+  const _AssigneeStackExample();
+
+  @override
+  Widget build(BuildContext context) => const CoeloAdminAssigneeStack(
+    items: [
+      CoeloAdminAssigneeItem(label: 'Ana Lima', initials: 'AL', roleLabel: 'Atendimento'),
+      CoeloAdminAssigneeItem(label: 'Caio Melo', initials: 'CM', roleLabel: 'Operações'),
+    ],
+  );
+}
+
+final class _WorkspaceLayoutExample extends StatelessWidget {
+  const _WorkspaceLayoutExample();
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 320,
+    child: CoeloAdminWorkspaceLayout(
+      toolbar: const Padding(
+        padding: EdgeInsets.all(CoeloSpacing.space3),
+        child: Text('Toolbar operacional'),
+      ),
+      body: const ColoredBox(
+        color: Colors.transparent,
+        child: Center(child: Text('Lista ou quadro')),
+      ),
+      detailVisible: true,
+      detail: const Center(child: Text('Detalhes')),
+    ),
+  );
 }
 
 final class _ResizableTableExample extends StatelessWidget {

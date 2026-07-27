@@ -70,12 +70,23 @@ $matches = @(
             $entry.example,
             $entry.replacement
         ) -join ' '
+        $queryTerms = @(
+            if (-not [string]::IsNullOrWhiteSpace($Query)) {
+                $Query.Trim() -split '\s+' | Where-Object {
+                    -not [string]::IsNullOrWhiteSpace($_)
+                }
+            }
+        )
         $matchesQuery = (
-            [string]::IsNullOrWhiteSpace($Query) -or
-            $haystack.IndexOf(
-                $Query,
-                [System.StringComparison]::OrdinalIgnoreCase
-            ) -ge 0
+            $queryTerms.Count -eq 0 -or
+            @(
+                $queryTerms | Where-Object {
+                    $haystack.IndexOf(
+                        $_,
+                        [System.StringComparison]::OrdinalIgnoreCase
+                    ) -lt 0
+                }
+            ).Count -eq 0
         )
         $matchesId -and $matchesConsumer -and $matchesOwner -and
             $matchesStatus -and $matchesQuery

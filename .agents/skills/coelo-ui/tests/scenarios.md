@@ -300,3 +300,45 @@ card com `surface`, `outlineVariant` e `Clip.antiAlias`, cabeçalho
 `IgnorePointer`, scrollbar horizontal persistente, resize por arraste e setas,
 ellipsis sem quebra, chip semântico, ações compactas e paridade de
 acessibilidade. Resultado GREEN: cenário atendido sem alteração de arquivos.
+
+## Baseline do contrato de formulários — RED, 2026-07-27
+
+### 11. Cadastro administrativo improvisado
+
+Evidência real: a primeira versão da criação e edição de Instituições usou
+camadas cinzas decorativas em cards, conteúdo e rodapé, ações desalinhadas,
+campos diferentes da autenticação, menus de seleção mais estreitos que o campo
+e check redundante. O seletor de cor era um popup tingido de laranja e oferecia
+somente uma aproximação do controle solicitado.
+
+Pressões observadas: entregar a tela completa, preencher seis etapas e aceitar
+rapidamente uma composição visual plausível.
+
+Falha observada: regras isoladas de input, popup e seleção não foram suficientes
+para produzir a anatomia completa de um formulário. Faltavam referência
+canônica, contrato de superfície e rodapé, grid por tokens, conteúdo
+especializado e matriz visual obrigatória.
+
+Critério GREEN: um agente novo deve consultar `pattern.form-controls` e o
+contrato de formulários, reutilizar `CoeloFormTextField` e
+`CoeloAdminSingleSelectField`, usar `surface` sem faixas cinzas, justificar gaps
+por tokens, manter o menu na largura do campo sem check, especificar avatar 1:1
+de até 2 MB, seletor HSV/RGB/hex, ação contextual de CEP, rodapé responsivo,
+confirmação binária 50/50 e validação 375/768/1024/1440, light/dark e 200%.
+
+### 11. Cadastro administrativo canônico — GREEN
+
+O cenário foi repetido em agente novo, somente leitura, com pressão de 30
+minutos e permissão explícita para usar cards cinza, dropdown Material e
+medidas locais.
+
+Resultado real: o agente consultou e anunciou `pattern.form-controls` e
+`pattern.selection-controls`, leu o contrato de formulários e recusou as três
+facilitações. Recuperou `CoeloFormTextField`,
+`CoeloAdminSingleSelectField`, `surface`, grid `space3/space4/space5`, avatar
+1:1 de até 2 MB, seletor HSV/RGB/hex, busca contextual de CEP, rodapé
+responsivo e confirmação 50/50. Exigiu 375/768/1024/1440, light/dark, 200%,
+teclado, foco, semântica e goldens mobile light e desktop dark.
+
+Resultado GREEN: o contrato completo foi recuperado sem contexto desta
+conversa e sem alteração de arquivos.

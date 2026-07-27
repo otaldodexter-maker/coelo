@@ -45,7 +45,7 @@ void main() {
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.form-controls');
-    expect(find.byType(CoeloFormTextField), findsOneWidget);
+    expect(find.byType(CoeloFormTextField), findsNWidgets(2));
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.selection-controls');
     expect(find.byType(CoeloAdminMultiSelectFilter<String>), findsOneWidget);
@@ -54,6 +54,23 @@ void main() {
     await _pumpFoundation(tester, entries, foundations, 'pattern.status-feedback');
     expect(find.byType(CoeloStatusChip), findsOneWidget);
     expect(find.byType(CoeloStatePanel), findsOneWidget);
+  });
+
+  testWidgets('documents the canonical registration and editing form contract', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await _pumpFoundation(tester, entries, foundations, 'pattern.form-controls');
+
+    expect(find.byKey(const Key('foundation-form-neutral-surface')), findsOneWidget);
+    expect(find.byKey(const Key('foundation-form-responsive-grid')), findsOneWidget);
+    expect(find.byKey(const Key('foundation-form-action-footer')), findsOneWidget);
+    expect(find.textContaining('Instituições é a referência canônica'), findsOneWidget);
+    expect(find.textContaining('375, 768, 1024 e 1440'), findsOneWidget);
+    expect(find.textContaining('texto a 200%'), findsAtLeastNWidgets(1));
+
+    final exit = tester.getSize(find.widgetWithText(OutlinedButton, 'Sair sem salvar'));
+    final continueEditing = tester.getSize(find.widgetWithText(FilledButton, 'Continuar editando'));
+    expect(exit.width, continueEditing.width);
   });
 
   testWidgets('keeps migrated action, form, selection and theme guidance interactive', (
@@ -67,7 +84,10 @@ void main() {
     expect(find.text('Ativações no exemplo: 1'), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.form-controls');
-    final field = find.byType(EditableText);
+    final field = find.descendant(
+      of: find.byKey(const Key('foundation-real-core-form-text-field')),
+      matching: find.byType(EditableText),
+    );
     await tester.ensureVisible(field);
     await tester.enterText(field, 'Coelo');
     await tester.pump();

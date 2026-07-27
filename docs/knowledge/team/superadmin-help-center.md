@@ -23,8 +23,9 @@ experiência como demonstração. Não há IA real, API, Supabase ou persistênc
 
 No desktop, o histórico pode ser recolhido para um rail compacto de 88 px e
 expandido novamente. O envio fica fora do campo de escrita e segue o padrão
-visual de Conversas: estado neutro quando desabilitado e fundo primário Coelo
-quando há conteúdo válido.
+visual de ações de marca: laranja claro sem hover enquanto desabilitado e fundo
+primário Coelo quando há conteúdo válido. O ícone permanece centralizado no alvo
+interativo.
 
 `Comunicação > Conversas` continua sendo a superfície separada para comunicação
 humana.

@@ -38,9 +38,29 @@
       "source": "cf03f5a3",
       "example": "6cfadc88"
     },
+    "admin.file-actions": {
+      "source": "f9ead305",
+      "example": "1a9de0e2"
+    },
     "admin.resizable-table": {
-      "source": "d79ec228",
+      "source": "83456134",
       "example": "28c16c6f"
+    },
+    "admin.kanban-board": {
+      "source": "d8778fbf",
+      "example": "c8184dc9"
+    },
+    "admin.work-item-card": {
+      "source": "00e64596",
+      "example": "4be821ae"
+    },
+    "admin.assignee-stack": {
+      "source": "9e95f129",
+      "example": "3ca7b1d6"
+    },
+    "admin.workspace-layout": {
+      "source": "b1bf9b78",
+      "example": "6cb119f6"
     },
     "pattern.action-hierarchy": {
       "source": "811c9dc5",
@@ -48,7 +68,7 @@
     },
     "pattern.form-controls": {
       "source": "811c9dc5",
-      "example": "75a66bfc"
+      "example": "b89c37a3"
     },
     "pattern.selection-controls": {
       "source": "811c9dc5",
@@ -56,7 +76,7 @@
     },
     "pattern.interaction-states": {
       "source": "811c9dc5",
-      "example": "4b8d2a6b"
+      "example": "31c1eb54"
     },
     "pattern.overlay-surfaces": {
       "source": "811c9dc5",

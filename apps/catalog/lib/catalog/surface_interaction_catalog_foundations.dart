@@ -118,6 +118,55 @@ final class _InteractionStatesFoundationState extends State<_InteractionStatesFo
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const Text('Ações de marca — primária, tonal e envio antecipado'),
+        const SizedBox(height: CoeloSpacing.space2),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            FilledButton.icon(
+              key: const Key('surface-interaction-primary-action'),
+              style: _primaryActionStyle(colors),
+              onPressed: () {},
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Nova conversa'),
+            ),
+            ActionChip(
+              key: const Key('surface-interaction-tonal-action'),
+              avatar: const Icon(Icons.arrow_outward_rounded, size: 18),
+              label: const Text('Como cadastro uma instituição?'),
+              color: WidgetStatePropertyAll(colors.primaryContainer),
+              backgroundColor: colors.primaryContainer,
+              labelStyle: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(color: colors.onPrimaryContainer),
+              iconTheme: IconThemeData(color: colors.primary),
+              side: BorderSide(color: colors.outlineVariant),
+              surfaceTintColor: Colors.transparent,
+              onPressed: () {},
+            ),
+            IconButton.filled(
+              key: const Key('surface-interaction-send-action'),
+              tooltip: 'Escreva uma mensagem para enviar',
+              onPressed: null,
+              style: IconButton.styleFrom(
+                minimumSize: const Size.square(CoeloSize.touchMin),
+                fixedSize: const Size.square(CoeloSize.touchMin),
+                padding: EdgeInsets.zero,
+                disabledBackgroundColor: colors.primaryContainer,
+                disabledForegroundColor: colors.onPrimaryContainer,
+                overlayColor: Colors.transparent,
+              ),
+              icon: const SizedBox.square(
+                key: Key('surface-interaction-send-icon-box'),
+                dimension: CoeloSize.iconMd,
+                child: Center(child: Icon(Icons.send_rounded)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space5),
         const Text('Item discreto — navegação, menu ou lista de ações'),
         const SizedBox(height: CoeloSpacing.space2),
         TextButton(
@@ -346,6 +395,16 @@ CoeloAdminTableColumn<_ExampleInstitution> _textColumn(
 
 Widget _ellipsis(String value) =>
     Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false);
+
+ButtonStyle _primaryActionStyle(ColorScheme colors) {
+  return FilledButton.styleFrom(
+    backgroundColor: colors.primary,
+    foregroundColor: colors.onPrimary,
+    disabledBackgroundColor: colors.surfaceContainer,
+    disabledForegroundColor: colors.onSurfaceVariant,
+    overlayColor: Colors.transparent,
+  );
+}
 
 ButtonStyle _discreteItemStyle(ColorScheme colors) {
   return TextButton.styleFrom(

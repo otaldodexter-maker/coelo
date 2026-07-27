@@ -51,6 +51,23 @@ e aos controles já usados no login e na listagem de instituições.
   formulário até existir um segundo consumidor que justifique API visual
   pública própria; suas regras de produto já são oficiais no Design System.
 
+## Contrato reutilizável
+
+As decisões desta tela formam o baseline de cadastro e edição do Coelo. Novos
+formulários devem consultar `pattern.form-controls` e
+`.agents/skills/coelo-ui/references/form-layout-contracts.md`, comparar com
+Instituições e autenticação e preservar:
+
+- superfície neutra sem faixas cinzas decorativas;
+- grid e espaçamentos baseados em tokens;
+- campos e seleções compartilhados;
+- ações contextuais integradas ao campo;
+- rodapé responsivo e confirmação binária 50/50;
+- matriz 375/768/1024/1440, light/dark, texto a 200% e goldens mínimos.
+
+Divergências exigem regra de produto explícita e atualização coordenada da
+fonte canônica, Design System, índice, catálogo, exemplos e testes.
+
 ## Limites
 
 Nesta etapa, a foto é uma prévia local. Persistência de mídia depende do fluxo

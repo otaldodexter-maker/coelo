@@ -1,5 +1,5 @@
 ---
-source: "user-approved visual references; docs/design/design-system.md; apps/superadmin/lib/app/shell/superadmin_bug_report_dialog.dart"
+source: "user-approved visual references; docs/design/design-system.md; apps/superadmin/lib/app/shell/superadmin_bug_report_dialog.dart; apps/superadmin/lib/features/help_center/presentation/screens/superadmin_help_center_page.dart"
 status: "approved"
 generated_at: "2026-07-27"
 ---
@@ -47,6 +47,30 @@ usam `colorScheme.primaryContainer` no hover e no foco, mas não recebem cantos
 arredondados nem espaçamento entre linhas.
 
 O menu lateral do Superadmin é a referência visual canônica desse contrato.
+
+## Contrato de ações de marca
+
+Ações primárias, ações tonais e sugestões preservam a hierarquia laranja:
+
+- a ação primária usa `colorScheme.primary` e `colorScheme.onPrimary`;
+- hover, foco e pressionamento permanecem na paleta primária aprovada;
+- `overlayColor`, splash ou tint adicional são transparentes quando poderiam
+  produzir uma camada branca ou cinza sobre o laranja;
+- ações tonais e sugestões usam `colorScheme.primaryContainer` e
+  `colorScheme.onPrimaryContainer`, inclusive no hover e foco;
+- o estado desabilitado padrão continua neutro;
+- uma ação primária antecipada que permanece visível, como enviar antes de
+  existir conteúdo, pode usar `primaryContainer` e `onPrimaryContainer` enquanto
+  `onPressed` for nulo, sem hover e com semântica de indisponibilidade;
+- essa exceção tonal não autoriza opacidade isolada nem faz o controle parecer
+  acionável.
+
+Botões de ícone usam alvo mínimo `CoeloSize.touchMin`. Glifos assimétricos,
+como `Icons.send_rounded`, ficam centralizados em uma caixa quadrada
+`CoeloSize.iconMd`, sem deslocamento manual. A Home da Central de ajuda do
+Superadmin é a referência visual desse conjunto.
+O catálogo registra os estados primário, tonal, antecipado desabilitado e a
+centralização do glifo como comparação recuperável.
 
 ## Contrato da ação de fechar
 

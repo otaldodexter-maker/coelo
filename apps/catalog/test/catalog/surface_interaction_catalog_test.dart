@@ -102,6 +102,51 @@ void main() {
     expect(find.byType(Checkbox), findsNothing);
   });
 
+  testWidgets('preserves brand hierarchy for primary, tonal and send actions', (tester) async {
+    await _pumpFoundation(tester, 'pattern.interaction-states', CoeloTheme.light);
+    final theme = Theme.of(
+      tester.element(find.byKey(const Key('surface-interaction-primary-action'))),
+    );
+    final primary = tester.widget<FilledButton>(
+      find.byKey(const Key('surface-interaction-primary-action')),
+    );
+    final tonal = tester.widget<ActionChip>(
+      find.byKey(const Key('surface-interaction-tonal-action')),
+    );
+    final send = tester.widget<IconButton>(
+      find.byKey(const Key('surface-interaction-send-action')),
+    );
+
+    expect(
+      primary.style?.backgroundColor?.resolve(<WidgetState>{WidgetState.hovered}),
+      theme.colorScheme.primary,
+    );
+    expect(
+      primary.style?.overlayColor?.resolve(<WidgetState>{WidgetState.hovered}),
+      Colors.transparent,
+    );
+    expect(
+      tonal.color?.resolve(<WidgetState>{WidgetState.hovered}),
+      theme.colorScheme.primaryContainer,
+    );
+    expect(
+      send.style?.backgroundColor?.resolve(<WidgetState>{WidgetState.disabled}),
+      theme.colorScheme.primaryContainer,
+    );
+    expect(
+      send.style?.foregroundColor?.resolve(<WidgetState>{WidgetState.disabled}),
+      theme.colorScheme.onPrimaryContainer,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('surface-interaction-send-action'))),
+      const Size.square(CoeloSize.touchMin),
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('surface-interaction-send-icon-box'))),
+      const Size.square(CoeloSize.iconMd),
+    );
+  });
+
   testWidgets('uses real filters and the canonical institutions table', (tester) async {
     await _pumpFoundation(tester, 'pattern.selection-controls', CoeloTheme.light);
     expect(find.byType(CoeloAdminMultiSelectFilter<String>), findsOneWidget);

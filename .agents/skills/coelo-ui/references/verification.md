@@ -15,6 +15,8 @@ Aplicar proporcionalmente ao risco:
   goldens;
 - verificar light/dark, 375/768/1024/1440 quando aplicável, texto a 200%,
   teclado, foco, semântica e reduced motion;
+- em cadastro e edição, proteger no mínimo mobile light e desktop dark com
+  golden e conferir que rodapé ou ação fixa não cobrem o último campo;
 - buscar HEX, `Color(0x...)`, `TextStyle` e espaçamento/breakpoint local quando
   existir token semântico;
 - validar imports e fronteiras;

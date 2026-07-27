@@ -36,11 +36,21 @@ Assert-QueryContains -Query 'popup modal dialog overlay' `
     -ExpectedId 'pattern.overlay-surfaces'
 Assert-QueryContains -Query 'hover laranja arredondado' `
     -ExpectedId 'pattern.interaction-states'
+Assert-QueryContains -Query 'envio antecipado disabled' `
+    -ExpectedId 'pattern.interaction-states'
+Assert-QueryContains -Query 'glifo assimetrico' `
+    -ExpectedId 'pattern.interaction-states'
 Assert-QueryContains -Query 'close dismiss vermelho' `
     -ExpectedId 'pattern.overlay-surfaces'
 Assert-QueryContains -Query 'single-select' `
     -ExpectedId 'pattern.selection-controls'
 Assert-QueryContains -Query 'scrollbar horizontal sempre visivel' `
     -ExpectedId 'admin.resizable-table'
+Assert-QueryContains -Query 'cadastros edicoes superficie neutra' `
+    -ExpectedId 'pattern.form-controls'
+Assert-QueryContains -Query 'confirmacao binaria 50/50' `
+    -ExpectedId 'pattern.form-controls'
+Assert-QueryContains -Query 'rodape responsivo texto 200%' `
+    -ExpectedId 'pattern.form-controls'
 
 Write-Output 'query-index.tests.ps1: PASS'

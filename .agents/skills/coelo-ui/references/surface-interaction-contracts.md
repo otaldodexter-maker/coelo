@@ -37,6 +37,20 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   espaçamento entre linhas.
 - O menu lateral do Superadmin é a referência de item discreto.
 
+## Ações primárias, tonais e por ícone
+
+- Ação primária usa `colorScheme.primary` e `onPrimary`; hover, foco e pressed
+  permanecem na paleta primária aprovada, sem overlay branco ou cinza.
+- Ação tonal, chip acionável e sugestão preservam `primaryContainer` e
+  `onPrimaryContainer` no hover e foco. O overlay adicional é transparente.
+- Disabled é neutro por padrão. Somente ação primária antecipada e ainda
+  indisponível pode usar `primaryContainer` e `onPrimaryContainer`, com
+  `onPressed: null`, sem hover e sem depender apenas de opacidade.
+- Botão de ícone usa alvo mínimo `CoeloSize.touchMin`. Glifo assimétrico usa
+  caixa quadrada `CoeloSize.iconMd` centralizada, sem `Transform.translate` ou
+  padding assimétrico não aprovado.
+- A Home da Central de ajuda do Superadmin é a referência visual.
+
 ## Close, dismiss e “X”
 
 - A ação de fechar ou dispensar usa `Icons.close_rounded`,

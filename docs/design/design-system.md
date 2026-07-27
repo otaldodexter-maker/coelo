@@ -456,6 +456,21 @@ Cada tela deve ter uma ação primária clara. O uso excessivo de botões preenc
 | Focus | #D63C00 | #FFFFFF | Ring #D63C00 ou #FF9B78 fora do componente. |
 | Disabled | #EEF0F1 | #737B80 | Sem sombra; cursor/semântica desabilitados. |
 
+### Preservação da marca nos estados interativos
+
+- Ações primárias não recebem overlay branco ou cinza. Hover, foco e pressed
+  permanecem na paleta primária aprovada, com overlay adicional transparente.
+- Ações tonais, chips acionáveis e sugestões preservam
+  `colorScheme.primaryContainer` e `colorScheme.onPrimaryContainer` no hover e
+  foco, sem camada neutra adicional.
+- Disabled permanece neutro por padrão. Uma ação primária antecipada que
+  continua visível, como enviar antes de existir conteúdo, pode usar
+  `primaryContainer` e `onPrimaryContainer` somente com `onPressed: null`, sem
+  hover e com semântica de indisponibilidade.
+- Botões de ícone mantêm alvo mínimo `CoeloSize.touchMin`. Glifos assimétricos
+  usam uma caixa quadrada `CoeloSize.iconMd` centralizada; não aplicar
+  deslocamento manual sem decisão visual aprovada.
+
 # 12. Formulários e entradas
 
 Formulários devem parecer simples mesmo quando o domínio é complexo. O usuário vê uma decisão por vez; campos relacionados podem ser agrupados, mas não escondidos em lógica imprevisível.
@@ -482,9 +497,12 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   pertencem à escala oficial e reproduzem a densidade dos campos de login sem
   colar bordas ou controles.
 - Rodapé de fluxo usa `spacing.3` interno, `radius.lg`, borda
-  `outlineVariant` e `surfaceContainer`. Em compact, a ação primária ocupa a
+  `outlineVariant` e `surface`. Em compact, a ação primária ocupa a
   largura e precede cancelar/anterior; em medium ou maior, cancelar fica à
   esquerda e navegação/continuidade à direita.
+- Confirmação binária simétrica, como sair sem salvar versus continuar
+  editando, divide a largura útil igualmente entre as duas ações, com
+  `spacing.3` entre elas.
 - Single-select administrativo usa `CoeloAdminSingleSelectField`: opções
   contínuas de pelo menos 48 px, superfície neutra, e
   `primaryContainer`/`primary` para seleção, hover e foco. Não usar o menu
@@ -502,8 +520,15 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   para exibição em alta densidade sem transferência excessiva. Rejeitar antes
   do upload e explicar formato, proporção e limite junto ao controle.
 - Cor institucional aceita hexadecimal `#RRGGBB` e seleção visual por área
-  bidimensional de saturação/valor com controle de matiz. A amostra nunca
-  substitui o valor textual, para manter precisão e acessibilidade.
+  bidimensional de saturação/valor com controle de matiz, amostras atual e
+  nova e edição HSV e RGB. A amostra nunca substitui o valor textual, para
+  manter precisão e acessibilidade.
+- Ícones de campo representam o significado específico, evitando repetir um
+  símbolo genérico em todo o grupo. Ação contextual que opera sobre o valor,
+  como `Buscar CEP`, fica no próprio campo com tooltip, semântica e alvo mínimo.
+- Instituições no Superadmin é a referência canônica de cadastro e edição;
+  autenticação é a referência do campo-base. Validar 375, 768, 1024 e 1440 px,
+  light/dark e texto a 200%, com golden mínimo em mobile light e desktop dark.
 
 ## Anatomia do campo
 

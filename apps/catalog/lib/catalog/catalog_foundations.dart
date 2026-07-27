@@ -100,15 +100,18 @@ final class _FormControlsFoundation extends StatefulWidget {
 
 final class _FormControlsFoundationState extends State<_FormControlsFoundation> {
   final _controller = TextEditingController();
+  final _secondaryController = TextEditingController();
 
   @override
   void dispose() {
     _controller.dispose();
+    _secondaryController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -117,12 +120,89 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
           'persistente, ícone, hint, hover, foco, erro e autofill.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          key: const Key('foundation-real-core-form-text-field'),
-          controller: _controller,
-          labelText: 'E-mail',
-          hintText: 'seu.email@coelo.me',
-          prefixIcon: Icons.mail_outline_rounded,
+        DecoratedBox(
+          key: const Key('foundation-form-neutral-surface'),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            border: Border.all(color: colors.outlineVariant),
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Instituição', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: CoeloSpacing.space2),
+                const Text(
+                  'Instituições é a referência canônica; autenticação define o campo-base.',
+                ),
+                const SizedBox(height: CoeloSpacing.space5),
+                LayoutBuilder(
+                  key: const Key('foundation-form-responsive-grid'),
+                  builder: (context, constraints) {
+                    final fields = [
+                      CoeloFormTextField(
+                        key: const Key('foundation-real-core-form-text-field'),
+                        controller: _controller,
+                        labelText: 'Nome público',
+                        hintText: 'Como a instituição aparece no Coelo',
+                        prefixIcon: Icons.apartment_rounded,
+                      ),
+                      CoeloFormTextField(
+                        controller: _secondaryController,
+                        labelText: '@ da instituição',
+                        hintText: 'instituicao',
+                        prefixIcon: Icons.alternate_email_rounded,
+                      ),
+                    ];
+                    if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
+                      return Column(
+                        children: [
+                          fields.first,
+                          const SizedBox(height: CoeloSpacing.space4),
+                          fields.last,
+                        ],
+                      );
+                    }
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: fields.first),
+                        const SizedBox(width: CoeloSpacing.space3),
+                        Expanded(child: fields.last),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: CoeloSpacing.space5),
+                const Text('Verificar 375, 768, 1024 e 1440 px, light/dark e texto a 200%.'),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        DecoratedBox(
+          key: const Key('foundation-form-action-footer'),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            border: Border.all(color: colors.outlineVariant),
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(onPressed: () {}, child: const Text('Sair sem salvar')),
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: FilledButton(onPressed: () {}, child: const Text('Continuar editando')),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

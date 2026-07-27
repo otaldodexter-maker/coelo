@@ -36,6 +36,18 @@ busca contextual por CEP. O aviso de convite e ativação usa
 popup. Plano não possui justificativa. A confirmação de saída reserva metade da
 largura para cada uma das duas ações.
 
+## Referência reutilizável
+
+Instituições é a referência canônica para novos formulários de cadastro e
+edição. O contrato completo está em
+`.agents/skills/coelo-ui/references/form-layout-contracts.md` e no padrão
+`pattern.form-controls` do índice e catálogo.
+
+Além dos componentes, o contrato cobre superfície neutra, grid 12/16, grupos
+20, ícones contextuais, ações como busca de CEP, conteúdo especializado, rodapé
+responsivo, confirmação binária 50/50 e verificação em
+375/768/1024/1440, light/dark e texto a 200%.
+
 `CoeloFormTextField` é o campo-base compartilhado por autenticação, cadastro e
 edição. `CoeloAdminSingleSelectField` é a seleção única de formulários
 administrativos. O padrão usa 12 px entre colunas, 16 px entre linhas e 20 px
