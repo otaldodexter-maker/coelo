@@ -57,10 +57,22 @@ void main() {
     expect(entries.every((entry) => entry.ownerPackage == 'coelo_tokens'), isTrue);
   });
 
-  test('does not advertise disabled for the multiselect public API', () {
+  test('advertises the approved multiselect lifecycle without disabled', () {
     final entries = _entriesById();
 
-    expect(entries['admin.multi-select-filter']!.states, ['closed', 'open', 'focused', 'selected']);
+    final states = entries['admin.multi-select-filter']!.states;
+
+    expect(states, [
+      'closed',
+      'open',
+      'focused',
+      'selected',
+      'searching',
+      'empty',
+      'draft',
+      'applied',
+    ]);
+    expect(states, isNot(contains('disabled')));
   });
 
   test('does not advertise an unapproved pressed presentation for create action', () {

@@ -223,6 +223,63 @@ teclado, e não recuperou o componente canônico `CoeloAdminResizableTable`.
 
 ## Reexecução com a skill - contratos de superfície (GREEN, 2026-07-27)
 
+### 6. Popup com superfície de marca - GREEN
+
+Evidência real: o agente novo informou primeiro a consulta ao índice. A busca
+`popup superfície de marca` não retornou entradas; a busca canônica `popup`
+recuperou `pattern.overlay-surfaces`. Em seguida, abriu o contrato de
+superfícies.
+
+Resposta: reutilizaria a composição local do reporte de bug do Superadmin com
+painel em `colorScheme.surface` nos dois temas, barreira preta translúcida,
+conteúdo contextual e ação primária quando aplicável. O controle de fechar usa
+`Icons.close_rounded`, `error`, fundo transparente, `errorContainer` no
+hover/foco, alvo de 48 px, tooltip e semântica. Recusou explicitamente o
+fundo-base laranja/de marca, `primaryContainer` como contêiner, o `Icons.close`
+genérico e assumir `barrierDismissible` sem regra de descarte. Não criou API ou
+variante pública e condicionou qualquer lacuna à aprovação, seguida de índice,
+catálogo, exemplo e testes.
+
+### 7. Hover de item administrativo - GREEN
+
+Evidência real: o agente novo anunciou a consulta. `hover item administrativo`
+não retornou entradas; `admin` recuperou `pattern.interaction-states` e
+`admin.resizable-table`, antes da leitura do contrato.
+
+Resposta: para a linha administrativa, reutilizaria `CoeloAdminResizableTable`:
+hover/foco/seleção em `colorScheme.primaryContainer`, linha contínua sem raio ou
+gap e divisor `outlineVariant`; estado desabilitado não recebe hover e não há
+overlay cinza adicional. Recusou `#F5F5F5`, qualquer HEX local, o hover padrão
+Material, zebra, raio, espaçamento e novo token/componente sem aprovação.
+
+### 8. Fechamento do popup - GREEN
+
+Evidência real: o agente novo anunciou `close`, que recuperou
+`pattern.overlay-surfaces` e `admin.multi-select-filter`, antes da leitura do
+contrato.
+
+Resposta: `Navigator.of(context).pop()` é apenas o mecanismo de encerramento;
+o controle completo usa `Icons.close_rounded`, ícone `error`, fundo e splash
+transparentes, `errorContainer` em hover/foco, alvo de 48 px, tooltip e
+semântica de fechar. Quando permitido, `Esc` fecha e devolve foco à origem; em
+multi-select, fecha/Esc descarta rascunho não aplicado. Recusou entregar apenas
+um `pop()` genérico e não inventou confirmação de descarte ou telemetria sem
+spec de domínio.
+
+### 9. Filtro improvisado - GREEN
+
+Evidência real: o agente novo anunciou `filter`, que recuperou
+`admin.listing-toolbar`, `admin.multi-select-filter` e
+`pattern.selection-controls`, antes da leitura do contrato.
+
+Resposta: reutilizaria `CoeloAdminListingToolbar` e, para múltipla seleção,
+`CoeloAdminMultiSelectFilter`: busca e gatilho de 48 px em pill, borda
+`outlineVariant`/foco ou aberto em `primary` 2 px, painel `surface` a 4 px do
+gatilho, rascunho, busca interna, vazio, `Limpar` e `Aplicar`; Esc descarta o
+rascunho. Recusou `ChoiceChip` improvisado, API/componente/variante pública
+nova e presumir seleção única ou múltipla sem a regra de produto. Lacunas
+exigem proposta e aprovação; depois atualiza índice, catálogo, exemplo e testes.
+
 ### 10. Tabela administrativa canônica - GREEN
 
 Prompt: repetir o cenário 10 com a instrução explícita de usar `$coelo-ui`,
