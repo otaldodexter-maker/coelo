@@ -4,14 +4,15 @@ status: "approved"
 generated_at: "2026-07-27"
 ---
 
-# Padrões de popups, hover e fechamento
+# Padrões de popups, hover, fechamento e filtros
 
 ## Objetivo
 
 Eliminar a criação recorrente de popups com fundo laranja-claro e de estados de
 hover cinza. O diálogo de reporte de bug é a referência visual canônica para
 overlays; o menu lateral do Superadmin é a referência para itens interativos
-discretos. A ação de fechar também deve preservar o “X” vermelho canônico.
+discretos. A ação de fechar também deve preservar o “X” vermelho canônico, e
+filtros devem reproduzir a anatomia validada em Instituições e Bug.
 
 ## Contrato visual
 
@@ -65,6 +66,61 @@ regra representa fechamento, não exclusão de dados nem outras ações destruti
 O popup de reporte de bug e o modal de importação do Superadmin são as
 referências visuais canônicas.
 
+## Contrato de filtros
+
+### Toolbar
+
+- Busca aparece primeiro, seguida dos filtros e das ações no extremo direito.
+- Controles possuem altura mínima de 48 px.
+- Espaçamentos usam tokens Coelo e a composição quebra responsivamente sem
+  deformar os controles.
+
+### Busca e gatilhos
+
+- Usam forma pill com `CoeloRadius.full`.
+- Usam superfície neutra e borda `colorScheme.outlineVariant`.
+- Foco visível ou menu aberto usa borda `colorScheme.primary` de 2 px.
+- O gatilho aberto usa `colorScheme.primaryContainer` no fundo.
+- Texto e seta usam `colorScheme.primary` no estado ativo.
+
+### Painel
+
+- Usa `colorScheme.surface`.
+- Usa `CoeloRadius.lg`, borda `colorScheme.outlineVariant` e elevação.
+- Abre a 4 px do gatilho.
+- Nunca usa laranja como fundo da superfície inteira.
+
+### Opções
+
+- São linhas contínuas com altura mínima de 48 px, sem raio ou espaço entre
+  linhas.
+- Hover e foco usam `colorScheme.primaryContainer`, com overlay adicional
+  transparente.
+- Multi-select usa checkbox e texto em `colorScheme.primary` quando
+  selecionado, mantendo o fundo transparente até hover ou foco. O checkbox não
+  possui hover, splash ou fundo independente.
+- Single-select não usa checkbox; seleção, hover e foco usam
+  `colorScheme.primaryContainer` no fundo e `colorScheme.primary` no conteúdo.
+
+### Busca interna e rodapé
+
+- Busca interna permanece no topo, usa forma pill e borda primária no foco,
+  filtra localmente e possui estado vazio.
+- O rodapé do multi-select permanece visível, separado por divisor.
+- `Limpar` é ação textual e `Aplicar` é ação primária.
+- Estados desabilitados usam tokens semânticos.
+
+### Comportamento
+
+- Alterações do multi-select permanecem em rascunho até `Aplicar`.
+- `Esc` ou fechamento descarta alterações não aplicadas e devolve o foco ao
+  gatilho.
+- A busca interna é limpa ao reabrir.
+- Mouse, teclado e toque acessam os mesmos estados e ações.
+
+A tela de Instituições é a referência canônica do multi-select. O popup de Bug
+é a referência canônica do single-select.
+
 ## Fontes a atualizar
 
 1. `docs/design/design-system.md`, para oficializar a regra semântica.
@@ -72,7 +128,8 @@ referências visuais canônicas.
 3. O catálogo e seu índice, com exemplos recuperáveis por `popup`, `modal`,
    `dialog`, `overlay`, `surface`, `superfície`, `branco`, `laranja`, `hover`,
    `menu`, `submenu`, `lista`, `filtro`, `tabela`, `fechar`, `close`, `dismiss`
-   e `vermelho`.
+   `vermelho`, `multi-select`, `single-select`, `busca`, `gatilho`, `painel`,
+   `limpar` e `aplicar`.
 
 ## Catálogo
 
@@ -94,6 +151,10 @@ O catálogo também deve comparar:
 - linha de tabela densa em linha contínua;
 - ausência de camada cinza sobre o estado destacado.
 - ação de fechar em repouso, hover e foco, com tooltip contextual.
+- toolbar com busca, filtros e ações;
+- multi-select fechado, aberto, pesquisando, selecionado, hover, foco, vazio,
+  rascunho, aplicação e limpeza;
+- single-select fechado, aberto, selecionado, hover e foco.
 
 ## Verificação
 
@@ -112,6 +173,11 @@ O catálogo também deve comparar:
   raio ou espaçamento entre linhas.
 - Testes devem assegurar ícone `error`, fundo `errorContainer`, forma circular,
   alvo mínimo de 48 px, tooltip e ausência de overlay cinza na ação de fechar.
+- Testes devem assegurar forma pill, altura mínima, bordas de repouso e foco,
+  superfície neutra do painel, raio, elevação e distância do gatilho.
+- Testes devem assegurar linhas contínuas, checkbox sem camada própria,
+  seleção, hover, busca interna, rodapé, rascunho, aplicação, limpeza, `Esc` e
+  restauração de foco.
 - As mudanças preexistentes no repositório devem ser preservadas.
 
 ## Fora de escopo
@@ -123,3 +189,4 @@ O catálogo também deve comparar:
 - Aplicar cantos arredondados ou espaçamento às opções de filtro e às linhas de
   tabelas densas.
 - Reutilizar o contrato de fechamento para exclusão ou outra ação destrutiva.
+- Criar regras de domínio ou opções de seleção dentro dos componentes visuais.
