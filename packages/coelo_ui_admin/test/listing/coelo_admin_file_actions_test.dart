@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('opens reusable file actions and invokes the selected operation', (
-    tester,
-  ) async {
+  testWidgets('opens reusable file actions and invokes the selected operation', (tester) async {
     var exports = 0;
     await tester.pumpWidget(
       MaterialApp(
@@ -33,6 +31,9 @@ void main() {
     await tester.tap(trigger);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('export')), findsOneWidget);
+    final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
+    expect(anchor.style?.surfaceTintColor?.resolve({}), Colors.transparent);
+    expect(anchor.alignmentOffset?.dy, CoeloSpacing.spaceHalf);
 
     await tester.tap(find.byKey(const Key('export')));
     await tester.pump();

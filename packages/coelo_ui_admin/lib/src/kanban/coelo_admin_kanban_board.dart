@@ -140,7 +140,7 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
           child: DecoratedBox(
             key: ValueKey<(String, S)>(('coelo-admin-kanban-lane', status)),
             decoration: BoxDecoration(
-              color: accepting ? colors.primaryContainer : colors.surfaceContainerLow,
+              color: colors.primaryContainer,
               borderRadius: BorderRadius.circular(CoeloRadius.lg),
               border: Border.all(color: accepting ? colors.primary : colors.outlineVariant),
             ),

@@ -53,8 +53,9 @@ final class _CoeloAdminWorkItemCardState<T extends Object>
     if (data == null) {
       return card;
     }
-    return LongPressDraggable<T>(
+    return Draggable<T>(
       data: data,
+      hitTestBehavior: HitTestBehavior.opaque,
       feedback:
           widget.dragFeedback ??
           Material(

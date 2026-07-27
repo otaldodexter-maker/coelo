@@ -23,14 +23,13 @@ void main() {
     expect(doubleTaps, 1);
   });
 
-  testWidgets('starts drag only after a long press', (tester) async {
+  testWidgets('starts drag as soon as a pointer moves', (tester) async {
     var taps = 0;
     await _pumpCard(tester, onTap: () => taps += 1, dragData: 'ticket');
 
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(CoeloAdminWorkItemCard<String>)),
     );
-    await tester.pump(kLongPressTimeout + const Duration(milliseconds: 50));
     await gesture.moveBy(const Offset(100, 0));
     await tester.pump();
 

@@ -31,10 +31,11 @@ final class CoeloAdminFileActions extends StatelessWidget {
         : -128.0;
 
     return MenuAnchor(
-      alignmentOffset: Offset(compact ? compactMenuOffset : -80, CoeloSpacing.space2),
+      alignmentOffset: Offset(compact ? compactMenuOffset : -80, CoeloSpacing.spaceHalf),
       style: MenuStyle(
         alignment: AlignmentDirectional.bottomStart,
         backgroundColor: WidgetStatePropertyAll(colors.surface),
+        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
         elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
         shape: WidgetStatePropertyAll(

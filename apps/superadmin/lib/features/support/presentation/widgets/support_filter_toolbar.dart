@@ -123,6 +123,16 @@ final class SupportFilterToolbar extends StatelessWidget {
                   onChanged: (selectedScreens) => _update(screens: selectedScreens),
                 ),
               ),
+            if (controller.hasActiveFilters)
+              TextButton.icon(
+                key: const Key('support-clear-filters'),
+                onPressed: () {
+                  searchController.clear();
+                  controller.clearFilters();
+                },
+                icon: const Icon(Icons.filter_alt_off_outlined),
+                label: const Text('Limpar filtros'),
+              ),
           ],
         );
         return CoeloAdminListingToolbar(

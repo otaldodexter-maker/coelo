@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('expands four neutral lanes edge-to-edge when they fit', (tester) async {
+  testWidgets('expands four softly branded lanes edge-to-edge when they fit', (tester) async {
     await _pumpBoard(tester, width: 1200);
 
     final lanes = _Status.values.map(_laneFinder).toList(growable: false);
     for (final lane in lanes) {
       expect(tester.getSize(lane).width, 291);
       final decoration = tester.widget<DecoratedBox>(lane).decoration as BoxDecoration;
-      expect(decoration.color, CoeloColorSchemes.light.surfaceContainerLow);
+      expect(decoration.color, CoeloColorSchemes.light.primaryContainer);
     }
     expect(tester.getTopLeft(lanes.first).dx, 0);
     expect(tester.getBottomRight(lanes.last).dx, 1200);

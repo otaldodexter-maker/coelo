@@ -186,6 +186,7 @@ final class _CardMenuState extends State<_CardMenu> {
     final colors = Theme.of(context).colorScheme;
     final ticket = widget.ticket;
     final supportKanban = widget.widget;
+    final menuStyle = _menuSurfaceStyle(colors);
     return MenuAnchor(
       childFocusNode: _menuFocusNode,
       onOpen: () {
@@ -199,20 +200,14 @@ final class _CardMenuState extends State<_CardMenu> {
           }
         });
       },
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        elevation: const WidgetStatePropertyAll(6),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
-          ),
-        ),
-      ),
+      alignmentOffset: const Offset(0, CoeloSpacing.spaceHalf),
+      style: menuStyle,
       menuChildren: [
         SubmenuButton(
           focusNode: _ownerMenuFocusNode,
           style: _menuItemStyle(colors),
+          menuStyle: menuStyle,
+          leadingIcon: const Icon(Icons.person_add_alt_1_outlined),
           menuChildren: [
             for (final member in supportKanban.teamMembers)
               Semantics(
@@ -234,6 +229,8 @@ final class _CardMenuState extends State<_CardMenu> {
         ),
         SubmenuButton(
           style: _menuItemStyle(colors),
+          menuStyle: menuStyle,
+          leadingIcon: const Icon(Icons.group_outlined),
           menuChildren: [
             for (final member in supportKanban.teamMembers)
               Semantics(
@@ -268,6 +265,8 @@ final class _CardMenuState extends State<_CardMenu> {
         const Divider(height: 1),
         SubmenuButton(
           style: _menuItemStyle(colors),
+          menuStyle: menuStyle,
+          leadingIcon: const Icon(Icons.swap_horiz_rounded),
           menuChildren: [
             for (final status in SupportTicketStatus.values)
               Semantics(
@@ -326,6 +325,21 @@ final class _CardMenuState extends State<_CardMenu> {
       ),
     );
   }
+}
+
+MenuStyle _menuSurfaceStyle(ColorScheme colors) {
+  return MenuStyle(
+    backgroundColor: WidgetStatePropertyAll(colors.surface),
+    surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+    elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
+    padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
+    ),
+  );
 }
 
 ButtonStyle _menuItemStyle(ColorScheme colors, {bool selected = false, bool checked = false}) {

@@ -59,6 +59,25 @@ void main() {
     expect(find.text('Conversa não carrega'), findsNothing);
   });
 
+  testWidgets('shows clear filters only while a filter is active', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    expect(find.byKey(const Key('support-clear-filters')), findsNothing);
+
+    await tester.enterText(find.byKey(const Key('support-search')), 'SUP-001');
+    await tester.pump();
+    expect(find.byKey(const Key('support-clear-filters')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('support-clear-filters')));
+    await tester.pump();
+    expect(controller.hasActiveFilters, isFalse);
+    expect(find.byKey(const Key('support-clear-filters')), findsNothing);
+    expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
+    expect(find.byKey(const Key('support-card-SUP-002')), findsOneWidget);
+  });
+
   testWidgets('assigns an owner from the kanban card menu', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
@@ -77,6 +96,21 @@ void main() {
     );
   });
 
+  testWidgets('card submenus use the approved raised surface', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    await tester.tap(find.byKey(const Key('support-card-menu-SUP-001')));
+    await tester.pumpAndSettle();
+
+    final submenu = tester.widget<SubmenuButton>(find.byType(SubmenuButton).first);
+    final menuStyle = submenu.menuStyle!;
+    expect(menuStyle.backgroundColor?.resolve({}), CoeloTheme.light.colorScheme.surface);
+    expect(menuStyle.surfaceTintColor?.resolve({}), Colors.transparent);
+    expect(menuStyle.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
+  });
+
   testWidgets('requires an owner when a kanban drop starts work', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
@@ -85,7 +119,6 @@ void main() {
     final card = find.byKey(const Key('support-card-SUP-001'));
     final target = _laneFinder(SupportTicketStatus.inProgress);
     final gesture = await tester.startGesture(tester.getCenter(card));
-    await tester.pump(kLongPressTimeout + const Duration(milliseconds: 50));
     await gesture.moveTo(tester.getCenter(target));
     await tester.pump();
     await gesture.up();
