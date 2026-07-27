@@ -201,6 +201,7 @@ void main() {
         ticket(
           id: 'SUP-1',
           status: SupportTicketStatus.inProgress,
+          ownerId: 'member-support',
           menu: 'Conversas',
           screen: 'Lista',
           subject: 'Falha no chat',
@@ -216,6 +217,7 @@ void main() {
         ticket(
           id: 'SUP-2',
           status: SupportTicketStatus.inProgress,
+          ownerId: 'member-dev',
           menu: 'Conversas',
           screen: 'Lista',
           subject: 'Falha no chat',
@@ -242,6 +244,75 @@ void main() {
 
     expect(controller.filteredTickets.map((value) => value.id), ['SUP-1']);
     expect(controller.hasActiveFilters, isTrue);
+  });
+
+  test('requires an owner before moving a ticket to in progress', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
+      clock: () => fixedNow,
+    );
+    addTearDown(controller.dispose);
+
+    expect(controller.changeStatus('SUP-1', SupportTicketStatus.inProgress), isFalse);
+    controller.assignOwner('SUP-1', 'member-support');
+    expect(controller.changeStatus('SUP-1', SupportTicketStatus.inProgress), isTrue);
+  });
+
+  test('assigns one owner and immutable collaborators', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
+      clock: () => fixedNow,
+    );
+    addTearDown(controller.dispose);
+
+    controller.assignOwner('SUP-1', 'member-dev');
+    controller.setCollaborators('SUP-1', {'member-qa', 'member-support'});
+
+    expect(controller.tickets.single.ownerId, 'member-dev');
+    expect(controller.tickets.single.collaboratorIds, {'member-qa', 'member-support'});
+  });
+
+  test('filters tickets by owner or collaborator', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [
+        ticket(id: 'SUP-1', status: SupportTicketStatus.inProgress, ownerId: 'member-dev'),
+        ticket(
+          id: 'SUP-2',
+          status: SupportTicketStatus.waitingRequester,
+          collaboratorIds: {'member-qa'},
+        ),
+      ],
+    );
+    addTearDown(controller.dispose);
+
+    controller.updateFilters(SupportFilters(assigneeIds: {'member-qa'}));
+
+    expect(controller.filteredTickets.map((ticket) => ticket.id), ['SUP-2']);
+  });
+
+  test('copies the demonstrative session context into a submitted report', () {
+    const sessionContext = SupportRequesterContext(
+      institution: 'Centro Horizonte',
+      unit: 'Unidade Cambui',
+    );
+    final controller = SupportPrototypeController(
+      initialTickets: const [],
+      clock: () => fixedNow,
+      sessionRequesterContext: sessionContext,
+    );
+    addTearDown(controller.dispose);
+
+    final created = controller.submitReport(
+      const SupportReportDraft(
+        menu: 'Instituicoes',
+        screen: 'Diretorio',
+        subject: 'Erro ao salvar',
+        description: 'O botao nao conclui a acao.',
+        requester: 'Camila Rocha',
+      ),
+    );
+
+    expect(created.requesterContext, same(sessionContext));
   });
 
   test('changes and closes a ticket status', () {
@@ -285,7 +356,9 @@ void main() {
 
   test('trims a support reply and ignores an empty reply', () {
     final controller = SupportPrototypeController(
-      initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.inProgress)],
+      initialTickets: [
+        ticket(id: 'SUP-1', status: SupportTicketStatus.inProgress, ownerId: 'member-support'),
+      ],
       clock: () => fixedNow,
     );
     addTearDown(controller.dispose);

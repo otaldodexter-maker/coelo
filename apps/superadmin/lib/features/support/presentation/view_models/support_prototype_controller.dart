@@ -1,20 +1,61 @@
 import 'package:flutter/foundation.dart';
 
+import '../../domain/support_requester_context.dart';
+import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 
 final class SupportPrototypeController extends ChangeNotifier {
-  SupportPrototypeController({Iterable<SupportTicket>? initialTickets, DateTime Function()? clock})
-    : _clock = clock ?? DateTime.now {
+  SupportPrototypeController({
+    Iterable<SupportTicket>? initialTickets,
+    DateTime Function()? clock,
+    SupportRequesterContext sessionRequesterContext = defaultSessionRequesterContext,
+  }) : _clock = clock ?? DateTime.now,
+       _sessionRequesterContext = sessionRequesterContext {
     _tickets = List.unmodifiable(initialTickets?.toList() ?? _defaultTickets(_clock()));
   }
 
+  static const defaultTeamMembers = <SupportTeamMember>[
+    SupportTeamMember(
+      id: 'member-support',
+      name: 'Ana Souza',
+      initials: 'AS',
+      role: SupportTeamRole.support,
+    ),
+    SupportTeamMember(
+      id: 'member-dev',
+      name: 'Caio Lima',
+      initials: 'CL',
+      role: SupportTeamRole.development,
+    ),
+    SupportTeamMember(
+      id: 'member-cs',
+      name: 'Bia Nunes',
+      initials: 'BN',
+      role: SupportTeamRole.customerSuccess,
+    ),
+    SupportTeamMember(
+      id: 'member-qa',
+      name: 'Davi Reis',
+      initials: 'DR',
+      role: SupportTeamRole.qualityAssurance,
+    ),
+  ];
+
+  static const defaultSessionRequesterContext = SupportRequesterContext(
+    institution: 'Centro Horizonte',
+    unit: 'Unidade Cambui',
+    group: 'Turma Girassol',
+  );
+
   final DateTime Function() _clock;
+  final SupportRequesterContext _sessionRequesterContext;
   late List<SupportTicket> _tickets;
   SupportFilters _filters = SupportFilters.empty;
   String? _selectedTicketId;
   int _nextSessionNumber = 1;
 
   List<SupportTicket> get tickets => _tickets;
+  List<SupportTeamMember> get teamMembers => defaultTeamMembers;
   SupportFilters get filters => _filters;
   bool get hasActiveFilters => _filters.hasActiveFilters;
 
@@ -47,6 +88,7 @@ final class SupportPrototypeController extends ChangeNotifier {
       screen: draft.screen,
       description: draft.description,
       requester: draft.requester,
+      requesterContext: _sessionRequesterContext,
       createdAt: now,
       updatedAt: now,
       status: SupportTicketStatus.newRequest,
@@ -64,8 +106,24 @@ final class SupportPrototypeController extends ChangeNotifier {
     return ticket;
   }
 
-  void changeStatus(String ticketId, SupportTicketStatus status) {
+  void assignOwner(String ticketId, String? memberId) {
+    _replaceTicket(
+      ticketId,
+      (ticket) => ticket.copyWith(ownerId: memberId, clearOwner: memberId == null),
+    );
+  }
+
+  void setCollaborators(String ticketId, Set<String> memberIds) {
+    _replaceTicket(ticketId, (ticket) => ticket.copyWith(collaboratorIds: memberIds));
+  }
+
+  bool changeStatus(String ticketId, SupportTicketStatus status) {
+    final ticket = _ticketById(ticketId);
+    if (ticket == null || (status == SupportTicketStatus.inProgress && ticket.ownerId == null)) {
+      return false;
+    }
     _replaceTicket(ticketId, (ticket) => ticket.copyWith(status: status, updatedAt: _clock()));
+    return true;
   }
 
   void selectTicket(String? ticketId) {
@@ -144,11 +202,17 @@ final class SupportPrototypeController extends ChangeNotifier {
       ticket.requester,
       ticket.menu,
       ticket.screen,
+      ticket.requesterContext?.breadcrumb ?? '',
+      ticket.ownerId ?? '',
+      ...ticket.collaboratorIds,
     ].join(' ').toLowerCase();
     return (search.isEmpty || searchableText.contains(search)) &&
         (_filters.statuses.isEmpty || _filters.statuses.contains(ticket.status)) &&
         (_filters.menus.isEmpty || _filters.menus.contains(ticket.menu)) &&
         (_filters.screens.isEmpty || _filters.screens.contains(ticket.screen)) &&
+        (_filters.assigneeIds.isEmpty ||
+            _filters.assigneeIds.contains(ticket.ownerId) ||
+            ticket.collaboratorIds.any(_filters.assigneeIds.contains)) &&
         (!_filters.unreadOnly || _hasUnreadRequesterMessage(ticket));
   }
 
@@ -156,6 +220,15 @@ final class SupportPrototypeController extends ChangeNotifier {
     return ticket.messages.any(
       (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
     );
+  }
+
+  SupportTicket? _ticketById(String ticketId) {
+    for (final ticket in _tickets) {
+      if (ticket.id == ticketId) {
+        return ticket;
+      }
+    }
+    return null;
   }
 
   String _nextSessionId() {
@@ -195,6 +268,12 @@ List<SupportTicket> _defaultTickets(DateTime now) {
       screen: 'Diretorio',
       description: 'O salvamento nao conclui.',
       requester: 'Camila Rocha',
+      requesterContext: const SupportRequesterContext(
+        institution: 'Centro Horizonte',
+        unit: 'Unidade Cambui',
+        group: 'Turma Girassol',
+        activity: 'Oficina de Arte',
+      ),
       createdAt: now.subtract(const Duration(hours: 4)),
       updatedAt: now.subtract(const Duration(hours: 1)),
       status: SupportTicketStatus.newRequest,
@@ -217,6 +296,13 @@ List<SupportTicket> _defaultTickets(DateTime now) {
       screen: 'Lista de conversas',
       description: 'A lista fica vazia.',
       requester: 'Joao Mendes',
+      requesterContext: const SupportRequesterContext(
+        institution: 'Colegio Aurora',
+        unit: 'Unidade Centro',
+        group: 'Turma Azul',
+      ),
+      ownerId: 'member-dev',
+      collaboratorIds: const {'member-support'},
       createdAt: now.subtract(const Duration(days: 1)),
       updatedAt: now.subtract(const Duration(minutes: 30)),
       status: SupportTicketStatus.inProgress,
@@ -238,6 +324,7 @@ List<SupportTicket> _defaultTickets(DateTime now) {
       screen: 'Perfil',
       description: 'Precisamos de mais detalhes.',
       requester: 'Lia Farias',
+      requesterContext: const SupportRequesterContext(institution: 'Escola Semente'),
       createdAt: now.subtract(const Duration(days: 2)),
       updatedAt: now.subtract(const Duration(hours: 5)),
       status: SupportTicketStatus.waitingRequester,
