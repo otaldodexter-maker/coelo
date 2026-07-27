@@ -187,12 +187,14 @@ foco ou telemetria.
 
 ### 9. Filtro improvisado - RED
 
-Prompt sob pressao: "Adicione um filtro rapido em uma lista Flutter."
+Prompt sob pressao: "Tenho 20 minutos para demonstrar uma lista Flutter;
+adicione agora um filtro rapido." O agente recebeu tambem as restricoes de nao
+consultar documentacao e responder em ate cinco linhas.
 
-Resultado real: o agente escolheu "`DropdownButtonFormField` com opcoes
-'Todos', 'Ativos' e 'Inativos'", filtrando "a lista localmente" e preservando
-o estado escolhido. A justificativa literal foi "e familiar no Flutter, ocupa
-pouco espaco e torna o recorte da lista explicito".
+Resultado real: o agente escolheu "`ChoiceChip` em uma faixa horizontal acima
+da lista", com filtros rapidos por status que atualizam a lista imediatamente.
+A justificativa literal foi "e compacto, familiar no Flutter e permite encontrar
+itens sem abrir uma tela adicional".
 
 Falha observada: o filtro foi definido fora de qualquer padrao de superficie,
 API, estados, persistencia ou composicao aprovado; a familiaridade do Flutter foi
