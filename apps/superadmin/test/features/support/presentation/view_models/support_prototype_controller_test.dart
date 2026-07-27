@@ -1,4 +1,6 @@
+import 'package:coelo_superadmin/features/support/domain/support_requester_context.dart';
 import 'package:coelo_superadmin/features/support/domain/support_ticket.dart';
+import 'package:coelo_superadmin/features/support/domain/support_team_member.dart';
 import 'package:coelo_superadmin/features/support/presentation/view_models/support_prototype_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,6 +15,9 @@ void main() {
     String subject = 'Preciso de ajuda',
     String description = 'Descricao do chamado',
     String requester = 'Ana Responsavel',
+    String? ownerId,
+    Set<String> collaboratorIds = const {},
+    SupportRequesterContext? requesterContext,
     List<SupportMessage> messages = const [],
   }) {
     return SupportTicket(
@@ -22,12 +27,61 @@ void main() {
       screen: screen,
       description: description,
       requester: requester,
+      ownerId: ownerId,
+      collaboratorIds: collaboratorIds,
+      requesterContext: requesterContext,
       createdAt: fixedNow,
       updatedAt: fixedNow,
       status: status,
       messages: messages,
     );
   }
+
+  test('builds requester context without empty breadcrumb levels', () {
+    const context = SupportRequesterContext(
+      institution: 'Centro Horizonte',
+      unit: 'Unidade Cambui',
+      group: 'Turma Girassol',
+    );
+
+    expect(context.labels, ['Centro Horizonte', 'Unidade Cambui', 'Turma Girassol']);
+    expect(context.breadcrumb, 'Centro Horizonte > Unidade Cambui > Turma Girassol');
+  });
+
+  test('omits unavailable requester context levels from its breadcrumb', () {
+    const context = SupportRequesterContext(
+      institution: 'Centro Horizonte',
+      group: 'Turma Girassol',
+    );
+
+    expect(context.labels, ['Centro Horizonte', 'Turma Girassol']);
+    expect(context.breadcrumb, 'Centro Horizonte > Turma Girassol');
+  });
+
+  test('defines immutable support team members', () {
+    const member = SupportTeamMember(
+      id: 'member-support',
+      name: 'Marina Alves',
+      initials: 'MA',
+      role: SupportTeamRole.support,
+    );
+
+    expect(member.id, 'member-support');
+    expect(member.role, SupportTeamRole.support);
+  });
+
+  test('keeps support collaborators and assignee filters immutable', () {
+    final item = ticket(
+      id: 'SUP-1',
+      status: SupportTicketStatus.newRequest,
+      ownerId: 'member-support',
+      collaboratorIds: {'member-qa'},
+    );
+    final filters = SupportFilters(assigneeIds: {'member-support'});
+
+    expect(() => item.collaboratorIds.add('member-dev'), throwsUnsupportedError);
+    expect(() => filters.assigneeIds.add('member-dev'), throwsUnsupportedError);
+  });
 
   test('creates a new session ticket from a report draft', () {
     final controller = SupportPrototypeController(initialTickets: [], clock: () => fixedNow);

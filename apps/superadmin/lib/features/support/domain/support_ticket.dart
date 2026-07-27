@@ -1,3 +1,5 @@
+import 'support_requester_context.dart';
+
 enum SupportTicketStatus { newRequest, inProgress, waitingRequester, completed }
 
 enum SupportMessageAuthor { support, requester }
@@ -52,9 +54,13 @@ final class SupportTicket {
     required this.createdAt,
     required this.updatedAt,
     required this.status,
+    this.requesterContext,
+    this.ownerId,
+    Set<String> collaboratorIds = const {},
     List<SupportAttachment> attachments = const [],
     List<SupportMessage> messages = const [],
-  }) : attachments = List.unmodifiable(attachments),
+  }) : collaboratorIds = Set.unmodifiable(collaboratorIds),
+       attachments = List.unmodifiable(attachments),
        messages = List.unmodifiable(messages);
 
   final String id;
@@ -63,6 +69,9 @@ final class SupportTicket {
   final String screen;
   final String description;
   final String requester;
+  final SupportRequesterContext? requesterContext;
+  final String? ownerId;
+  final Set<String> collaboratorIds;
   final DateTime createdAt;
   final DateTime updatedAt;
   final SupportTicketStatus status;
@@ -72,6 +81,10 @@ final class SupportTicket {
   SupportTicket copyWith({
     DateTime? updatedAt,
     SupportTicketStatus? status,
+    SupportRequesterContext? requesterContext,
+    String? ownerId,
+    bool clearOwner = false,
+    Set<String>? collaboratorIds,
     List<SupportAttachment>? attachments,
     List<SupportMessage>? messages,
   }) {
@@ -82,6 +95,9 @@ final class SupportTicket {
       screen: screen,
       description: description,
       requester: requester,
+      requesterContext: requesterContext ?? this.requesterContext,
+      ownerId: clearOwner ? null : ownerId ?? this.ownerId,
+      collaboratorIds: collaboratorIds ?? this.collaboratorIds,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
@@ -97,16 +113,19 @@ final class SupportFilters {
     Set<SupportTicketStatus> statuses = const {},
     Set<String> menus = const {},
     Set<String> screens = const {},
+    Set<String> assigneeIds = const {},
     this.unreadOnly = false,
   }) : statuses = Set.unmodifiable(statuses),
        menus = Set.unmodifiable(menus),
-       screens = Set.unmodifiable(screens);
+       screens = Set.unmodifiable(screens),
+       assigneeIds = Set.unmodifiable(assigneeIds);
 
   const SupportFilters._empty()
     : search = '',
       statuses = const {},
       menus = const {},
       screens = const {},
+      assigneeIds = const {},
       unreadOnly = false;
 
   static const empty = SupportFilters._empty();
@@ -115,6 +134,7 @@ final class SupportFilters {
   final Set<SupportTicketStatus> statuses;
   final Set<String> menus;
   final Set<String> screens;
+  final Set<String> assigneeIds;
   final bool unreadOnly;
 
   bool get hasActiveFilters =>
@@ -122,6 +142,7 @@ final class SupportFilters {
       statuses.isNotEmpty ||
       menus.isNotEmpty ||
       screens.isNotEmpty ||
+      assigneeIds.isNotEmpty ||
       unreadOnly;
 
   @override
@@ -131,12 +152,19 @@ final class SupportFilters {
         _setsEqual(other.statuses, statuses) &&
         _setsEqual(other.menus, menus) &&
         _setsEqual(other.screens, screens) &&
+        _setsEqual(other.assigneeIds, assigneeIds) &&
         other.unreadOnly == unreadOnly;
   }
 
   @override
-  int get hashCode =>
-      Object.hash(search, _setHash(statuses), _setHash(menus), _setHash(screens), unreadOnly);
+  int get hashCode => Object.hash(
+    search,
+    _setHash(statuses),
+    _setHash(menus),
+    _setHash(screens),
+    _setHash(assigneeIds),
+    unreadOnly,
+  );
 }
 
 final class SupportReportDraft {
