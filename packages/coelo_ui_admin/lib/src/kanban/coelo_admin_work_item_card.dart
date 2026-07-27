@@ -84,90 +84,99 @@ final class _CoeloAdminWorkItemCardState<T extends Object>
             borderRadius: BorderRadius.circular(CoeloRadius.lg),
             side: BorderSide(color: highlighted ? colors.primary : colors.outlineVariant),
           ),
-          child: InkWell(
-            focusNode: interactive ? widget.focusNode : null,
-            onTap: interactive ? widget.onTap : null,
-            onDoubleTap: interactive ? widget.onDoubleTap : null,
-            onFocusChange: interactive ? (value) => setState(() => _focused = value) : null,
-            overlayColor: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.hovered) ||
-                  states.contains(WidgetState.focused) ||
-                  states.contains(WidgetState.pressed)) {
-                return colors.primaryContainer.withValues(alpha: 0.45);
-              }
-              return Colors.transparent;
-            }),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
+            children: [
+              InkWell(
+                focusNode: interactive ? widget.focusNode : null,
+                onTap: interactive ? widget.onTap : null,
+                onDoubleTap: interactive ? widget.onDoubleTap : null,
+                onFocusChange: interactive ? (value) => setState(() => _focused = value) : null,
+                overlayColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.pressed)) {
+                    return colors.primaryContainer.withValues(alpha: 0.3);
+                  }
+                  return Colors.transparent;
+                }),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                  child: Padding(
+                    padding: const EdgeInsets.all(CoeloSpacing.space3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: Text(
-                            widget.eyebrow,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.eyebrow,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
+                              ),
+                            ),
+                            if (widget.trailingMenu != null)
+                              const SizedBox.square(dimension: CoeloSize.touchMin),
+                          ],
+                        ),
+                        const SizedBox(height: CoeloSpacing.space2),
+                        Text(
+                          widget.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: CoeloSpacing.space1),
+                        Text(
+                          widget.summary,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                        ),
+                        for (final value in widget.metadata) ...[
+                          const SizedBox(height: CoeloSpacing.space2),
+                          Text(
+                            value,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(
                               context,
-                            ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
+                            ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                           ),
-                        ),
-                        if (widget.trailingMenu != null) widget.trailingMenu!,
+                        ],
+                        if (widget.assignees != null || widget.indicators != null) ...[
+                          const SizedBox(height: CoeloSpacing.space3),
+                          Row(
+                            children: [
+                              if (widget.assignees != null)
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: widget.assignees,
+                                  ),
+                                )
+                              else
+                                const Spacer(),
+                              if (widget.indicators != null) widget.indicators!,
+                            ],
+                          ),
+                        ],
                       ],
                     ),
-                    const SizedBox(height: CoeloSpacing.space2),
-                    Text(
-                      widget.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space1),
-                    Text(
-                      widget.summary,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                    ),
-                    for (final value in widget.metadata) ...[
-                      const SizedBox(height: CoeloSpacing.space2),
-                      Text(
-                        value,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                      ),
-                    ],
-                    if (widget.assignees != null || widget.indicators != null) ...[
-                      const SizedBox(height: CoeloSpacing.space3),
-                      Row(
-                        children: [
-                          if (widget.assignees != null)
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: widget.assignees,
-                              ),
-                            )
-                          else
-                            const Spacer(),
-                          if (widget.indicators != null) widget.indicators!,
-                        ],
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
-            ),
+              if (interactive && widget.trailingMenu != null)
+                Positioned(
+                  top: CoeloSpacing.space3,
+                  right: CoeloSpacing.space3,
+                  child: widget.trailingMenu!,
+                ),
+            ],
           ),
         ),
       ),

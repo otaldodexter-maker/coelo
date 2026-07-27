@@ -76,6 +76,15 @@ void main() {
     expect(_laneFinder(_Status.doing), findsOneWidget);
   });
 
+  testWidgets('lets a workspace keep horizontal lanes when its body is narrowed', (tester) async {
+    await _pumpBoard(tester, width: 500, compact: false);
+
+    for (final status in _Status.values) {
+      expect(_laneFinder(status), findsOneWidget);
+    }
+    expect(find.byKey(const Key('coelo-admin-kanban-scroll')), findsOneWidget);
+  });
+
   testWidgets('supports mouse touch stylus and trackpad dragging', (tester) async {
     await _pumpBoard(tester, width: 800);
     final configuration = tester.widget<ScrollConfiguration>(
@@ -105,6 +114,7 @@ Future<void> _pumpBoard(
   void Function(String item, _Status status)? onItemAccepted,
   _Status? selectedStatus,
   ValueChanged<_Status>? onSelectedStatusChanged,
+  bool? compact,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = Size(width, 600);
@@ -130,6 +140,7 @@ Future<void> _pumpBoard(
             onItemAccepted: onItemAccepted ?? (item, status) {},
             selectedStatus: selectedStatus,
             onSelectedStatusChanged: onSelectedStatusChanged,
+            compact: compact,
           ),
         ),
       ),

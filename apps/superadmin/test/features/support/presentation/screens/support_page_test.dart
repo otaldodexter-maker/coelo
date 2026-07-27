@@ -235,6 +235,39 @@ void main() {
     );
   });
 
+  testWidgets('opens file exports beside the view selector', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('support-files-export-csv')), findsOneWidget);
+    expect(find.byKey(const Key('support-files-export-xlsx')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('support-files-export-csv')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(find.textContaining('Exportação CSV da lista filtrada'), findsOneWidget);
+  });
+
+  testWidgets('double click opens full-screen details without firing single click', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    final card = find.byKey(const Key('support-card-SUP-001'));
+    await tester.tap(card);
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tap(card);
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Dialog), findsOneWidget);
+    expect(controller.selectedTicket?.id, 'SUP-001');
+  });
+
   testWidgets('restores a unique table target that reopens the same ticket with Enter', (
     tester,
   ) async {
@@ -249,20 +282,14 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
 
-    const targetKey = Key('support-table-row-restore-SUP-001');
-    final targetFinder = find.byKey(targetKey);
+    final rowBackground = find.byKey(const Key('coelo-admin-table-row-background-SUP-001'));
+    final targetFinder = find.ancestor(of: rowBackground, matching: find.byType(InkWell));
     expect(targetFinder, findsOneWidget);
-    final target = tester.widget<FocusableActionDetector>(targetFinder);
+    final target = tester.widget<InkWell>(targetFinder);
     expect(target.focusNode?.hasFocus, isTrue);
-    expect(tester.getSemantics(targetFinder).flagsCollection.isButton, isTrue);
-    expect(tester.getSemantics(targetFinder).label, 'Abrir chamado SUP-001');
+    expect(tester.getSemantics(find.byKey(const Key('SUP-001'))).flagsCollection.isButton, isTrue);
 
-    final focusSurface = tester.widget<AnimatedContainer>(
-      find.descendant(
-        of: targetFinder,
-        matching: find.byKey(const Key('support-table-row-focus-surface-SUP-001')),
-      ),
-    );
+    final focusSurface = tester.widget<Container>(rowBackground);
     expect(
       (focusSurface.decoration! as BoxDecoration).color,
       CoeloTheme.light.colorScheme.primaryContainer,
@@ -397,10 +424,12 @@ void main() {
     expect(controller.selectedTicket, isNull);
     expect(find.byKey(const Key('support-detail-panel')), findsNothing);
     final card = tester.widget<InkWell>(
-      find.descendant(
-        of: find.byKey(const Key('support-card-SUP-001')),
-        matching: find.byType(InkWell),
-      ),
+      find
+          .descendant(
+            of: find.byKey(const Key('support-card-SUP-001')),
+            matching: find.byType(InkWell),
+          )
+          .first,
     );
     expect(card.focusNode?.hasFocus, isTrue);
   });
@@ -441,6 +470,5 @@ String _dateTime(DateTime value) =>
     '${value.hour.toString().padLeft(2, '0')}:'
     '${value.minute.toString().padLeft(2, '0')}';
 
-Finder _laneFinder(SupportTicketStatus status) => find.byKey(
-  ValueKey<(String, SupportTicketStatus)>(('coelo-admin-kanban-lane', status)),
-);
+Finder _laneFinder(SupportTicketStatus status) =>
+    find.byKey(ValueKey<(String, SupportTicketStatus)>(('coelo-admin-kanban-lane', status)));

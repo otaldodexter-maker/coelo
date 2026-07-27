@@ -19,6 +19,7 @@ final class CoeloAdminKanbanBoard<T extends Object, S> extends StatefulWidget {
     this.emptyLaneBuilder,
     this.selectedStatus,
     this.onSelectedStatusChanged,
+    this.compact,
     super.key,
   });
 
@@ -30,6 +31,7 @@ final class CoeloAdminKanbanBoard<T extends Object, S> extends StatefulWidget {
   final Widget Function(BuildContext context, S status)? emptyLaneBuilder;
   final S? selectedStatus;
   final ValueChanged<S>? onSelectedStatusChanged;
+  final bool? compact;
 
   @override
   State<CoeloAdminKanbanBoard<T, S>> createState() => _CoeloAdminKanbanBoardState<T, S>();
@@ -52,7 +54,7 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
     }
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 600) {
+        if (widget.compact ?? constraints.maxWidth < 600) {
           final selected = widget.selectedStatus ?? widget.statuses.first;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

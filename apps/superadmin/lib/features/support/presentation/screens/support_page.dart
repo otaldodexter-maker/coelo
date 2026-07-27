@@ -73,8 +73,8 @@ class _SupportPageState extends State<SupportPage> {
             displayMode: _displayMode,
             onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
             readFilterFocusScopeNode: _readFilterFocusScopeNode,
-            onExportCsv: () => _showExportPrototype('CSV'),
-            onExportXlsx: () => _showExportPrototype('XLSX'),
+            onExportCsv: (context) => _showExportPrototype(context, 'CSV'),
+            onExportXlsx: (context) => _showExportPrototype(context, 'XLSX'),
           ),
         ),
         body: _listing(tickets),
@@ -198,9 +198,9 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-  void _showExportPrototype(String format) {
+  void _showExportPrototype(BuildContext noticeContext, String format) {
     showSuperadminNotice(
-      context,
+      noticeContext,
       'Exportação $format da lista filtrada preparada para a futura integração.',
       icon: Icons.download_outlined,
     );

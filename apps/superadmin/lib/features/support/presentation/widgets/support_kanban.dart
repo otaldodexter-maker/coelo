@@ -88,6 +88,7 @@ final class _SupportKanbanState extends State<SupportKanban> {
       statuses: SupportTicketStatus.values,
       statusLabel: _statusLabel,
       selectedStatus: _compactStatus,
+      compact: MediaQuery.sizeOf(context).width < 600,
       onSelectedStatusChanged: (status) => setState(() => _compactStatus = status),
       itemsForStatus: (status) =>
           widget.tickets.where((ticket) => ticket.status == status).toList(growable: false),

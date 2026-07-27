@@ -27,8 +27,8 @@ final class SupportFilterToolbar extends StatelessWidget {
   final SupportDisplayMode displayMode;
   final ValueChanged<SupportDisplayMode> onDisplayModeChanged;
   final FocusScopeNode readFilterFocusScopeNode;
-  final VoidCallback onExportCsv;
-  final VoidCallback onExportXlsx;
+  final ValueChanged<BuildContext> onExportCsv;
+  final ValueChanged<BuildContext> onExportXlsx;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ final class SupportFilterToolbar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 152.0;
+        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 132.0;
         final controls = Wrap(
           spacing: CoeloSpacing.space3,
           runSpacing: CoeloSpacing.space2,
@@ -50,7 +50,7 @@ final class SupportFilterToolbar extends StatelessWidget {
           children: [
             SizedBox(
               key: const Key('support-search'),
-              width: compact ? constraints.maxWidth : 260,
+              width: compact ? constraints.maxWidth : 232,
               height: CoeloSize.touchMin,
               child: CoeloSearchField(
                 controller: searchController,
@@ -164,13 +164,13 @@ final class SupportFilterToolbar extends StatelessWidget {
                   key: const Key('support-files-export-csv'),
                   label: 'Exportar CSV',
                   icon: Icons.table_rows_outlined,
-                  onPressed: onExportCsv,
+                  onPressed: () => onExportCsv(context),
                 ),
                 CoeloAdminFileAction(
                   key: const Key('support-files-export-xlsx'),
                   label: 'Exportar XLSX',
                   icon: Icons.grid_on_outlined,
-                  onPressed: onExportXlsx,
+                  onPressed: () => onExportXlsx(context),
                 ),
               ],
             ),

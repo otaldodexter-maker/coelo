@@ -23,7 +23,12 @@ final class CoeloAdminWorkspaceLayout extends StatelessWidget {
         final visibleDetail = detailVisible && detail != null;
         late final Widget content;
         if (!visibleDetail) {
-          content = SizedBox(width: constraints.maxWidth, child: body);
+          content = constraints.maxWidth < CoeloBreakpoints.expanded.minWidth
+              ? SizedBox(width: constraints.maxWidth, child: body)
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [Expanded(child: body)],
+                );
         } else if (constraints.maxWidth < CoeloBreakpoints.expanded.minWidth) {
           content = SizedBox(width: constraints.maxWidth, child: detail);
         } else if (constraints.maxWidth < CoeloBreakpoints.large.minWidth) {
