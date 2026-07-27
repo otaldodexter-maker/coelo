@@ -782,7 +782,7 @@ Principal. O proximo plano tecnico deve confrontar:
 - `updated_at` sem automacao consistente e chaves estrangeiras sem indices;
 - testes predominantemente estruturais, sem cobrir revogacao, aceite de
   convite, reutilizacao, parcialidade e mismatches cross-tenant;
-- 30 tabelas contextuais novas, embora documentos atuais registrem 29.
+- 30 tabelas contextuais novas; os documentos canônicos agora registram a contagem verificada de 30.
 
 Nenhuma dessas lacunas deve ser corrigida antes da aprovacao documental e de
 um plano de migrations pequenas, versionadas, testadas e reconciliadas com o
