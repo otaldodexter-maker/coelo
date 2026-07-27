@@ -199,7 +199,7 @@ class _PaginationEllipsis extends StatelessWidget {
 }
 
 final _paginationButtonStyle = OutlinedButton.styleFrom(
-  minimumSize: const Size(48, 48),
+  minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
   padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
 );
 
