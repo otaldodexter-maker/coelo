@@ -336,6 +336,48 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 150);
   });
+
+  testWidgets('controller focuses the exact interactive row and keyboard reactivates it', (
+    tester,
+  ) async {
+    final controller = CoeloAdminTableController();
+    var pressed = 0;
+    await _pumpTable(tester, controller: controller, onRowPressed: (_) => pressed += 1);
+
+    expect(controller.focusRow('row-2'), isTrue);
+    await tester.pump();
+
+    final rowInkWell = tester.widget<InkWell>(
+      find.ancestor(
+        of: find.byKey(const Key('coelo-admin-table-row-background-row-2')),
+        matching: find.byType(InkWell),
+      ),
+    );
+    expect(rowInkWell.focusNode!.hasFocus, isTrue);
+    expect(
+      _decorationColor(tester, const Key('coelo-admin-table-row-background-row-2')),
+      CoeloColorSchemes.light.primaryContainer,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('coelo-admin-table-pinned-column')),
+        matching: find.byType(Focus),
+      ),
+      findsNothing,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(pressed, 1);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(pressed, 2);
+
+    expect(controller.focusRow('missing-row'), isFalse);
+    await tester.pumpWidget(const SizedBox());
+    expect(controller.focusRow('row-2'), isFalse);
+  });
 }
 
 Color? _decorationColor(WidgetTester tester, Key key) {
@@ -353,6 +395,7 @@ Future<void> _pumpTable(
   ValueChanged<TestRow>? onRowPressed,
   bool Function(TestRow row)? isSelected,
   CoeloAdminTableColumn<TestRow> pinnedColumn = _nameColumn,
+  CoeloAdminTableController? controller,
 }) async {
   Widget table(List<TestRow> currentRows) {
     return CoeloAdminResizableTable<TestRow>(
@@ -364,6 +407,7 @@ Future<void> _pumpTable(
       rowHeight: 64,
       onRowPressed: onRowPressed,
       isSelected: isSelected,
+      controller: controller,
     );
   }
 
