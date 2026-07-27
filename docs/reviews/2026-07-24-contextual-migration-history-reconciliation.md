@@ -1,7 +1,7 @@
 ---
 title: "Contextual Migration History Reconciliation"
 source: "Supabase project evvbomzejfijozbtgvpt; packages/coelo_database/migrations; Supabase CLI 2.109.1"
-status: "phase-2-go"
+status: "phase-2-no-go"
 generated_at: "2026-07-27"
 ---
 
@@ -422,14 +422,14 @@ retornou `Remote database is up to date.` e declarou explicitamente
 
 Em `2026-07-27`, os 11 scripts existentes foram lidos integralmente e
 executados no projeto `evvbomzejfijozbtgvpt`, na ordem definida pelo plano,
-usando Supabase `execute_sql`. Os nove scripts que criam fixtures executaram
-`BEGIN` e `ROLLBACK`; uma verificacao posterior encontrou zero usuarios de
-autenticacao e zero instituicoes correspondentes as fixtures.
+usando Supabase `execute_sql`. Nove scripts executaram `BEGIN` e `ROLLBACK`;
+seis deles criaram fixtures. Uma verificacao posterior encontrou zero
+usuarios de autenticacao e zero instituicoes correspondentes as fixtures.
 
 | Ordem | Validacao | Resultado |
 | ---: | --- | --- |
 | 1 | `2026-06-23-superadmin-foundation-validation.sql` | PASS |
-| 2 | `2026-06-23-schema-boundaries-catalog-validation.sql` | PASS, com delta de catalogo registrado abaixo |
+| 2 | `2026-06-23-schema-boundaries-catalog-validation.sql` | FAIL; 26 colunas ausentes do catalogo |
 | 3 | `2026-07-17-institution-directory-validation.sql` | PASS; rollback confirmado |
 | 4 | `2026-07-20-institution-contact-directory-validation.sql` | PASS; rollback confirmado |
 | 5 | `2026-07-20-people-context-foundation-validation.sql` | PASS; rollback confirmado |
@@ -440,11 +440,15 @@ autenticacao e zero instituicoes correspondentes as fixtures.
 | 10 | `2026-07-24-contextual-chat-validation.sql` | PASS; rollback confirmado |
 | 11 | `2026-07-24-attendance-assiduity-validation.sql` | PASS; rollback confirmado |
 
-O segundo script e somente leitura e concluiu sem erro, mas sua consulta de
-delta retornou 26 colunas presentes no schema e ainda ausentes de
-`public.schema_columns`. Esse resultado e preservado como lacuna logica do
-catalogo; esta tarefa nao executou DML para corrigi-lo e nao afirma que essa
-lacuna foi resolvida.
+O segundo script e somente leitura e concluiu sem erro de transporte, mas sua
+consulta de delta retornou 26 colunas presentes no schema e ainda ausentes de
+`public.schema_columns`. Um resultado nao vazio nessa consulta e falha
+logica, portanto o resultado correto e 10/11, nao 11/11.
+
+O fingerprint estrutural permaneceu igual porque cobre definicoes de
+columns, constraints, policies e functions. Ele nao cobre o conteudo das
+tabelas de catalogo `public.schema_tables` e `public.schema_columns`; por isso,
+o valor inalterado nao contradiz nem elimina as 26 ausencias encontradas.
 
 ## Contagens Estruturais
 
@@ -475,18 +479,36 @@ Nenhum advisor foi corrigido nesta tarefa.
 - o ledger permaneceu com as mesmas 18 versions e nomes canonicos;
 - o fingerprint permaneceu em 1840 itens e
   `15dbd25272e225eafb2b9fd84507043a`;
-- os 11 scripts concluiram sem erro;
-- as fixtures transacionais nao permaneceram no banco;
+- 10 dos 11 scripts passaram;
+- `2026-06-23-schema-boundaries-catalog-validation.sql` falhou logicamente
+  ao retornar 26 colunas nao catalogadas;
+- as fixtures dos seis scripts que inserem dados nao permaneceram no banco;
 - os totais e codigos dos advisors permaneceram inalterados;
 - nenhum DDL de produto, DML persistente, migration, migration repair,
   `apply_migration`, `db reset` ou `db push` real foi executado.
 
+## Bloqueador E Remediacao
+
+A Fase 2 permanece bloqueada pela divergencia entre as colunas fisicas e
+`public.schema_columns`. A remediacao deve:
+
+1. tornar a validacao de schema boundaries assertiva, para que qualquer linha
+   ausente encerre o script com erro;
+2. criar uma nova migration canonica que adicione ao catalogo as 26 entradas
+   ausentes, sem reescrever migrations ja aplicadas;
+3. aplicar essa migration pelo fluxo aprovado;
+4. reexecutar os 11 testes, os advisors, as contagens estruturais, o ledger, o
+   status do projeto e o fingerprint;
+5. liberar a Fase 2 somente quando os 11 testes passarem logicamente e todos
+   os demais gates permanecerem validos.
+
+Nenhuma dessas correcoes foi executada nesta tarefa documental.
+
 # Resultado
 
-**GO para iniciar a Fase 2.**
+**NO-GO para iniciar a Fase 2.**
 
 O historico remoto continua reconciliado com as 18 versions e nomes canonicos
-locais, o schema permanece estruturalmente identico e os 11 scripts de
-validacao concluiram sem erro. A Fase 2 deve tratar as lacunas logicas
-documentadas, inclusive as 26 colunas ainda ausentes de `schema_columns`, sem
-interpretar este GO como conclusao dessas correcoes de produto.
+locais e o fingerprint estrutural permanece identico, mas apenas 10 dos 11
+testes passaram. As 26 colunas ausentes de `schema_columns` sao um bloqueador
+explicito ate a remediacao e a revalidacao completa.
