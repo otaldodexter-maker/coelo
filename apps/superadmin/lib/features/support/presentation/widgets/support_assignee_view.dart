@@ -19,9 +19,7 @@ final class SupportAssigneeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final members = [
       ...teamMembers.where((member) => member.id == ownerId),
-      ...teamMembers.where(
-        (member) => member.id != ownerId && collaboratorIds.contains(member.id),
-      ),
+      ...teamMembers.where((member) => member.id != ownerId && collaboratorIds.contains(member.id)),
     ];
     if (members.isEmpty) {
       return const Text('Sem responsável', maxLines: 1, overflow: TextOverflow.ellipsis);

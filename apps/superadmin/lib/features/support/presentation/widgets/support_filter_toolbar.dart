@@ -36,9 +36,7 @@ final class SupportFilterToolbar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final filterWidth = compact
-            ? (constraints.maxWidth - CoeloSpacing.space3) / 2
-            : 152.0;
+        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 152.0;
         final controls = Wrap(
           spacing: CoeloSpacing.space3,
           runSpacing: CoeloSpacing.space2,
@@ -128,9 +126,7 @@ final class SupportFilterToolbar extends StatelessWidget {
               height: CoeloSize.touchMin,
               child: SegmentedButton<SupportDisplayMode>(
                 style: const ButtonStyle(
-                  minimumSize: WidgetStatePropertyAll(
-                    Size(CoeloSize.touchMin, CoeloSize.touchMin),
-                  ),
+                  minimumSize: WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
                   padding: WidgetStatePropertyAll(
                     EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
                   ),
@@ -163,10 +159,7 @@ final class SupportFilterToolbar extends StatelessWidget {
       for (final ticket in controller.tickets)
         if (menus.contains(ticket.menu)) ticket.screen,
     };
-    _update(
-      menus: menus,
-      screens: controller.filters.screens.intersection(availableScreens),
-    );
+    _update(menus: menus, screens: controller.filters.screens.intersection(availableScreens));
   }
 
   void _update({

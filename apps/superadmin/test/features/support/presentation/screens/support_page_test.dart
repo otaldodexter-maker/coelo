@@ -26,13 +26,17 @@ void main() {
     await tester.tap(find.byKey(const Key('support-menu-filter')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Instituições').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Aplicar').last);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('support-screen-filter')), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('support-search')), 'Acesso restabelecido');
+    await tester.enterText(
+      find.byKey(const Key('support-search')),
+      'Nao consigo atualizar uma instituicao',
+    );
     await tester.pump();
-    expect(find.text('Acesso restabelecido'), findsWidgets);
+    expect(find.text('Nao consigo atualizar uma instituicao'), findsWidgets);
     expect(find.text('Conversa não carrega'), findsNothing);
   });
 

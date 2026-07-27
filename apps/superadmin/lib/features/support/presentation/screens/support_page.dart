@@ -62,67 +62,11 @@ class _SupportPageState extends State<SupportPage> {
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: Column(
         children: [
-          CoeloAdminListingToolbar(
-            search: SizedBox(
-              width: 260,
-              child: TextField(
-                key: const Key('support-search'),
-                controller: _search,
-                onChanged: (v) => _filters(search: v),
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Buscar chamados',
-                ),
-              ),
-            ),
-            filters: [
-              CoeloAdminMultiSelectFilter<SupportTicketStatus>(
-                label: 'Status',
-                options: SupportTicketStatus.values,
-                selectedValues: widget.controller.filters.statuses,
-                optionLabel: _statusLabel,
-                onChanged: (v) => _filters(statuses: v),
-              ),
-              CoeloAdminMultiSelectFilter<String>(
-                label: 'Menu',
-                options: _values((ticket) => ticket.menu),
-                selectedValues: widget.controller.filters.menus,
-                optionLabel: (v) => v,
-                onChanged: (v) => _filters(menus: v),
-              ),
-              CoeloAdminMultiSelectFilter<String>(
-                label: 'Tela',
-                options: _values((ticket) => ticket.screen),
-                selectedValues: widget.controller.filters.screens,
-                optionLabel: (v) => v,
-                onChanged: (v) => _filters(screens: v),
-              ),
-              FilterChip(
-                key: const Key('support-unread-filter'),
-                label: const Text('Não lidas'),
-                selected: widget.controller.filters.unreadOnly,
-                onSelected: (value) => _filters(unreadOnly: value),
-              ),
-            ],
-            actions: [
-              SegmentedButton<bool>(
-                key: const Key('support-view-toggle'),
-                segments: const [
-                  ButtonSegment(
-                    value: false,
-                    icon: Icon(Icons.view_kanban_outlined),
-                    label: Text('Kanban'),
-                  ),
-                  ButtonSegment(
-                    value: true,
-                    icon: Icon(Icons.table_rows_outlined),
-                    label: Text('Tabela'),
-                  ),
-                ],
-                selected: {_table},
-                onSelectionChanged: (value) => setState(() => _table = value.single),
-              ),
-            ],
+          SupportFilterToolbar(
+            controller: widget.controller,
+            searchController: _search,
+            displayMode: _displayMode,
+            onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
           ),
           const SizedBox(height: CoeloSpacing.space3),
           Expanded(
@@ -141,95 +85,14 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-  List<String> _values(String Function(SupportTicket ticket) select) =>
-      {for (final ticket in widget.controller.tickets) select(ticket)}.toList()..sort();
-
-  void _filters({
-    String? search,
-    Set<SupportTicketStatus>? statuses,
-    Set<String>? menus,
-    Set<String>? screens,
-    bool? unreadOnly,
-  }) {
-    final f = widget.controller.filters;
-    widget.controller.updateFilters(
-      SupportFilters(
-        search: search ?? f.search,
-        statuses: statuses ?? f.statuses,
-        menus: menus ?? f.menus,
-        screens: screens ?? f.screens,
-        unreadOnly: unreadOnly ?? f.unreadOnly,
-      ),
-    );
-  }
-
   Widget _listing(List<SupportTicket> tickets, bool wide) {
-    if (_table) {
-      return CoeloAdminResizableTable<SupportTicket>(
-        items: tickets,
-        rowKey: (t) => t.id,
-        headerHeight: 48,
-        rowHeight: 60,
-        onRowPressed: _open,
-        isSelected: (t) => t.id == widget.controller.selectedTicket?.id,
-        pinnedColumn: CoeloAdminTableColumn(
-          id: 'subject',
-          label: 'Chamado',
-          initialWidth: 260,
-          minWidth: 200,
-          maxWidth: 420,
-          cellBuilder: (_, t) => Text(t.subject),
-        ),
-        columns: [
-          CoeloAdminTableColumn(
-            id: 'location',
-            label: 'Menu / tela',
-            initialWidth: 200,
-            minWidth: 160,
-            maxWidth: 300,
-            cellBuilder: (_, t) => Text('${t.menu} > ${t.screen}'),
-          ),
-          CoeloAdminTableColumn(
-            id: 'requester',
-            label: 'Solicitante',
-            initialWidth: 160,
-            minWidth: 130,
-            maxWidth: 240,
-            cellBuilder: (_, t) => Text(t.requester),
-          ),
-          CoeloAdminTableColumn(
-            id: 'status',
-            label: 'Status',
-            initialWidth: 190,
-            minWidth: 160,
-            maxWidth: 220,
-            cellBuilder: (_, t) => _statusMenu(t),
-          ),
-          CoeloAdminTableColumn(
-            id: 'attachments',
-            label: 'Anexos',
-            initialWidth: 90,
-            minWidth: 80,
-            maxWidth: 120,
-            cellBuilder: (_, t) => Text('${t.attachments.length}'),
-          ),
-          CoeloAdminTableColumn(
-            id: 'unread',
-            label: 'Não lidas',
-            initialWidth: 100,
-            minWidth: 90,
-            maxWidth: 130,
-            cellBuilder: (_, t) => Text('${_unreadCount(t)}'),
-          ),
-          CoeloAdminTableColumn(
-            id: 'updated',
-            label: 'Atualizado em',
-            initialWidth: 150,
-            minWidth: 130,
-            maxWidth: 210,
-            cellBuilder: (_, t) => Text(_dateTime(t.updatedAt)),
-          ),
-        ],
+    if (_displayMode == SupportDisplayMode.table) {
+      return SupportTicketTable(
+        tickets: tickets,
+        teamMembers: widget.controller.teamMembers,
+        selectedTicketId: widget.controller.selectedTicket?.id,
+        onTicketPressed: _open,
+        statusBuilder: _statusMenu,
       );
     }
     if (!wide) {
@@ -466,16 +329,6 @@ class _SupportPageState extends State<SupportPage> {
     child: _chip(ticket.status),
   );
 }
-
-int _unreadCount(SupportTicket ticket) => ticket.messages
-    .where(
-      (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
-    )
-    .length;
-
-String _dateTime(DateTime value) =>
-    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')} '
-    '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
 CoeloMessageDeliveryState _deliveryState(SupportMessage message) => switch (message.deliveryState) {
   SupportMessageDeliveryState.sent => CoeloMessageDeliveryState.sent,

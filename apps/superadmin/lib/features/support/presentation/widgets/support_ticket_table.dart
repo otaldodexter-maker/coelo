@@ -26,7 +26,7 @@ final class SupportTicketTable extends StatelessWidget {
     final ticketColumn = CoeloAdminTableColumn<SupportTicket>(
       id: 'ticket',
       label: 'Chamado',
-      initialWidth: 260,
+      initialWidth: 240,
       minWidth: 200,
       maxWidth: 420,
       cellBuilder: (context, ticket) => _ticketCell(context, ticket),
@@ -35,7 +35,7 @@ final class SupportTicketTable extends StatelessWidget {
       CoeloAdminTableColumn<SupportTicket>(
         id: 'origin',
         label: 'Origem',
-        initialWidth: 220,
+        initialWidth: 200,
         minWidth: 160,
         maxWidth: 320,
         cellBuilder: (_, ticket) => _text('${ticket.menu} > ${ticket.screen}'),
@@ -43,7 +43,7 @@ final class SupportTicketTable extends StatelessWidget {
       CoeloAdminTableColumn<SupportTicket>(
         id: 'requester-context',
         label: 'Solicitante / contexto',
-        initialWidth: 260,
+        initialWidth: 240,
         minWidth: 200,
         maxWidth: 420,
         cellBuilder: (context, ticket) => _requesterCell(context, ticket),
@@ -51,7 +51,7 @@ final class SupportTicketTable extends StatelessWidget {
       CoeloAdminTableColumn<SupportTicket>(
         id: 'assignee',
         label: 'Responsável',
-        initialWidth: 160,
+        initialWidth: 140,
         minWidth: 120,
         maxWidth: 260,
         cellBuilder: (_, ticket) => SupportAssigneeView(
@@ -148,9 +148,7 @@ Widget _text(String value) => Align(
 
 int _unreadCount(SupportTicket ticket) => ticket.messages
     .where(
-      (message) =>
-          message.author == SupportMessageAuthor.requester &&
-          !message.isReadBySupport,
+      (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
     )
     .length;
 
