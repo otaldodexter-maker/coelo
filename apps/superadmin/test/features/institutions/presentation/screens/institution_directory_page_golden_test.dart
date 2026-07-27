@@ -259,7 +259,14 @@ final class _PendingRepository implements InstitutionDirectoryRepository {
 
   void complete() {
     if (!_page.isCompleted) {
-      _page.complete(const domain.InstitutionDirectoryPage(items: [], totalCount: 0, page: 0));
+      _page.complete(
+        const domain.InstitutionDirectoryPage(
+          items: [],
+          totalCount: 0,
+          page: 0,
+          pageSize: InstitutionDirectoryQuery.defaultPageSize,
+        ),
+      );
     }
   }
 }

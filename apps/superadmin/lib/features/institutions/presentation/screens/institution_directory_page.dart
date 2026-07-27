@@ -223,7 +223,7 @@ class _InstitutionDirectoryResults extends StatelessWidget {
                     ),
             ),
             if (viewModel.state == InstitutionDirectoryLoadState.success &&
-                (viewModel.page.totalCount / InstitutionDirectoryQuery.pageSize).ceil() > 1) ...[
+                (viewModel.page.totalCount / viewModel.page.pageSize).ceil() > 1) ...[
               const SizedBox(height: CoeloSpacing.space4),
               Align(
                 alignment: Alignment.centerRight,

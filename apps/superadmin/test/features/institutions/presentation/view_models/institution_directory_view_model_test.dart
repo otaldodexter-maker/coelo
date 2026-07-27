@@ -61,6 +61,18 @@ void main() {
     expect(repository.queries.last.page, 0);
   });
 
+  test('changes page size and restarts pagination', () async {
+    final repository = _StubRepository();
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.goToPage(1);
+    await viewModel.setPageSize(50);
+
+    expect(repository.queries.last.page, 0);
+    expect(repository.queries.last.pageSize, 50);
+  });
+
   test('cascades UF, municipality, and district filters', () async {
     final repository = _StubRepository();
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
@@ -172,8 +184,12 @@ void main() {
 
   test('distinguishes initial empty data from no search result', () async {
     final repository = _StubRepository(
-      onFetch: (query) async =>
-          InstitutionDirectoryPage(items: const [], totalCount: 0, page: query.page),
+      onFetch: (query) async => InstitutionDirectoryPage(
+        items: const [],
+        totalCount: 0,
+        page: query.page,
+        pageSize: query.pageSize,
+      ),
     );
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
     addTearDown(viewModel.dispose);
@@ -253,5 +269,6 @@ InstitutionDirectoryPage _page(InstitutionDirectoryQuery query) {
     ],
     totalCount: 1,
     page: query.page,
+    pageSize: query.pageSize,
   );
 }

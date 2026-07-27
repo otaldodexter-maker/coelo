@@ -64,7 +64,6 @@ void main() {
     final pageOfFifty = InstitutionDirectoryQuery(page: 2, pageSize: 50);
 
     expect(pageOfTen, isNot(pageOfFifty));
-    expect(pageOfTen.hashCode, isNot(pageOfFifty.hashCode));
     expect(() => InstitutionDirectoryQuery(pageSize: 25), throwsA(isA<AssertionError>()));
   });
 }

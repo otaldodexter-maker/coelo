@@ -34,6 +34,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     items: [],
     totalCount: 0,
     page: 0,
+    pageSize: InstitutionDirectoryQuery.defaultPageSize,
   );
   InstitutionDirectoryFilterOptions _filterOptions = InstitutionDirectoryFilterOptions.empty;
   InstitutionDirectoryLoadState _state = InstitutionDirectoryLoadState.initial;
@@ -97,6 +98,10 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     return _replaceAndLoad(_queryWith(page: value));
   }
 
+  Future<void> setPageSize(int value) {
+    return _replaceAndLoad(_queryWith(pageSize: value));
+  }
+
   InstitutionDirectoryQuery _queryWith({
     String? search,
     Set<InstitutionStatus>? statuses,
@@ -106,6 +111,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     Set<String>? districts,
     Set<String>? typeIds,
     int page = 0,
+    int? pageSize,
   }) {
     return InstitutionDirectoryQuery(
       search: search ?? _query.search,
@@ -116,6 +122,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       districts: districts ?? _query.districts,
       typeIds: typeIds ?? _query.typeIds,
       page: page,
+      pageSize: pageSize ?? _query.pageSize,
     );
   }
 
@@ -195,6 +202,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       districts: supported(value.districts, options.districts),
       typeIds: value.typeIds,
       page: value.page,
+      pageSize: value.pageSize,
     );
   }
 

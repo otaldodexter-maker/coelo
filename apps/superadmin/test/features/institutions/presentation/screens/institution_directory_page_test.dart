@@ -843,7 +843,7 @@ void main() {
     expect(after, lessThan(before));
   });
 
-  testWidgets('paginates the directory in groups of twenty items', (tester) async {
+  testWidgets('paginates the directory in groups of ten items', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -851,7 +851,7 @@ void main() {
       _app(
         repository: FakeInstitutionDirectoryRepository(
           items: List.generate(
-            21,
+            11,
             (index) => InstitutionDirectoryItem(
               id: 'institution-$index',
               publicName: 'Instituição ${(index + 1).toString().padLeft(2, '0')}',
@@ -875,7 +875,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.text('Página 1 de 2'),
+      find.byKey(const Key('coelo-pagination-page-1')),
       600,
       scrollable: find
           .descendant(
@@ -885,12 +885,12 @@ void main() {
           .first,
     );
     await tester.pumpAndSettle();
-    expect(find.text('Página 1 de 2'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-pagination-page-1')), findsOneWidget);
     await tester.tap(find.text('Próxima'));
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.text('Página 2 de 2'),
+      find.byKey(const Key('coelo-pagination-page-2')),
       600,
       scrollable: find
           .descendant(
@@ -900,8 +900,8 @@ void main() {
           .first,
     );
     await tester.pumpAndSettle();
-    expect(find.text('Página 2 de 2'), findsOneWidget);
-    expect(find.text('Instituição 21'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-pagination-page-2')), findsOneWidget);
+    expect(find.text('Instituição 11'), findsOneWidget);
   });
 
   testWidgets('supports requested widths in light and dark themes without layout exceptions', (
@@ -1102,7 +1102,12 @@ final class _PendingFilterOptionsRepository implements InstitutionDirectoryRepos
 
   @override
   Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
-    return domain.InstitutionDirectoryPage(items: const [], totalCount: 0, page: query.page);
+    return domain.InstitutionDirectoryPage(
+      items: const [],
+      totalCount: 0,
+      page: query.page,
+      pageSize: query.pageSize,
+    );
   }
 
   @override
