@@ -14,7 +14,10 @@ silenciosamente.
 
 ## Fluxo obrigatório
 
-1. Identificar produto, tela e contexto.
+1. Identificar produto, tela e contexto. Quando a tarefa mencionar popup, modal,
+   dialog, overlay, hover, menu, filtro, close, dismiss ou “X”, ler
+   obrigatoriamente o [contrato de superfícies e interação](references/surface-interaction-contracts.md)
+   antes de decidir ou implementar a composição visual.
 2. Consultar primeiro o índice com
    `scripts/query-index.ps1 -Query "<termo>"`. Informar ao usuário:
    `Consultei o índice Coelo UI para <contexto>.`

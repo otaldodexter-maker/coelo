@@ -4,7 +4,7 @@ source: "Coelo Design System Oficial v1.docx; docs/superpowers/specs/2026-07-24-
 source_file: "Coelo Design System Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Design System Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Design/Coelo Design System Oficial v1.docx"
-supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
+supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -648,7 +648,7 @@ Os painéis administrativos devem ser mais densos que o App, mas não mais confu
 | Elemento | Padrão |
 | --- | --- |
 | Cabeçalho | 12–14 px SemiBold; surface subtle; ordenação com ícone e texto acessível. |
-| Linha | 48–56 px; hover neutro; seleção com primary container. |
+| Linha | 48–56 px; hover e foco com primary container, sem raio ou espaçamento entre linhas; seleção com primary container. |
 | Ações | Menu contextual; até 2 ações rápidas visíveis. |
 | Status | Chip com texto + cor + ícone opcional. |
 | Números | Alinhar à direita; usar tabular figures quando disponível. |
@@ -673,6 +673,79 @@ Os painéis administrativos devem ser mais densos que o App, mas não mais confu
 - Evitar gráficos 3D, arco-íris, pizza com muitas categorias e dashboards “Natalinos”.
 
 - Para status binário, use semântica; para séries analíticas, use data.1–6.
+
+## 17.3 Contratos de superfícies e interação
+
+Esta seção operacional formaliza a decisão aprovada em
+`docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md`. Ela
+complementa a fonte oficial deste documento para popups, estados de hover,
+fechamento e filtros; não cria componente público nem altera fluxos de domínio.
+
+### Popups, modais, diálogos e painéis
+
+- A superfície-base usa `colorScheme.surface` em light e dark. Não usar
+  `colorScheme.primaryContainer`, laranja-claro ou outra tonalidade de marca
+  como fundo integral do contêiner.
+- A anatomia contém barreira preta translúcida, contêiner de superfície, conteúdo
+  contextual, ação primária quando aplicável e ação de fechamento. A barreira
+  deve preservar o contraste do conteúdo.
+- Painéis de filtro usam `colorScheme.surface`, `CoeloRadius.lg`, borda
+  `colorScheme.outlineVariant`, elevação e distância de 4 px do gatilho.
+- O diálogo de reporte de bug do Superadmin é a referência canônica de
+  composição de overlay, sem promover seu conteúdo de domínio a componente
+  genérico.
+
+### Hover, foco e exceções de linhas contínuas
+
+- Itens discretos de navegação, menus, submenus e listas de ações usam
+  `colorScheme.primaryContainer` no hover e foco visível, conteúdo destacado em
+  `colorScheme.primary`, `CoeloRadius.md` e margem vertical
+  `CoeloSpacing.spaceHalf` entre itens consecutivos.
+- O overlay ou splash adicional é transparente: não adicionar camada cinza sobre
+  o estado destacado. O estado desabilitado não recebe hover.
+- Opções de filtro e linhas de tabelas densas são a exceção: permanecem linhas
+  contínuas, sem raio ou espaçamento entre linhas, embora usem
+  `colorScheme.primaryContainer` no hover e foco.
+- O menu lateral do Superadmin é a referência canônica para itens discretos; a
+  tabela administrativa é a referência para a exceção de linha contínua.
+
+### Fechar e dispensar
+
+- Todo “X” que fecha ou dispensa uma superfície usa `Icons.close_rounded`,
+  ícone `colorScheme.error` em repouso, fundo transparente e forma circular.
+- Hover e foco visível usam `colorScheme.errorContainer`, mantendo o ícone em
+  `colorScheme.error` e overlay ou splash adicional transparente.
+- A ação possui alvo mínimo de 48 px, tooltip contextual e semântica de
+  fechamento; não reutilizar este contrato para exclusão de dados ou outra ação
+  destrutiva.
+- `Esc` fecha overlays quando permitido, descarta rascunhos não aplicados de
+  filtros e devolve o foco ao gatilho ou à origem. Mouse, teclado e toque devem
+  alcançar os mesmos estados e ações.
+
+### Filtros
+
+- A toolbar apresenta busca, filtros e ações no extremo direito. Busca e
+  gatilhos têm altura mínima de 48 px, forma pill com `CoeloRadius.full`,
+  superfície neutra e borda `colorScheme.outlineVariant`; foco ou menu aberto
+  usa borda `colorScheme.primary` de 2 px.
+- O gatilho aberto usa `colorScheme.primaryContainer`; texto e seta ativos usam
+  `colorScheme.primary`. As opções têm altura mínima de 48 px, são linhas
+  contínuas e usam hover/foco sem camada adicional cinza.
+- Multi-select mantém alterações em rascunho até `Aplicar`, checkbox sem hover,
+  splash ou fundo próprio, busca interna com estado vazio e rodapé persistente
+  com `Limpar` e `Aplicar`. O single-select não usa checkbox.
+- `CoeloAdminMultiSelectFilter` é a referência de implementação para o
+  multi-select administrativo; a tela de Instituições é a referência canônica
+  de comportamento e o popup de Bug é a referência do single-select.
+
+### Acessibilidade e referências canônicas
+
+- Resolver cores por tokens semânticos em ambos os temas, sem HEX ou branco
+  literal local. Validar contraste, foco visível, leitor de tela, tooltip,
+  teclado, alvo mínimo e retorno de foco.
+- Referências canônicas: diálogo de reporte de bug e modal de importação do
+  Superadmin para fechamento; menu lateral do Superadmin para hover discreto;
+  Instituições para multi-select; popup de Bug para single-select.
 
 # 18. Movimento e transições
 
