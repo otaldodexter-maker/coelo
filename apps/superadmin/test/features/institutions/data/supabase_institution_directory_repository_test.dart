@@ -9,6 +9,63 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('keeps state options unfiltered and cascades distinct location options', () async {
+    final capturedUris = <Uri>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        capturedUris.add(request.url);
+        final table = request.url.pathSegments.last;
+        final locations = [
+          {'state': 'SP', 'city': 'Campinas', 'district': 'Centro'},
+          {'state': 'SP', 'city': 'Campinas', 'district': 'Centro'},
+          {'state': 'PR', 'city': 'Curitiba', 'district': 'Batel'},
+        ];
+        final body = switch (table) {
+          'plans' || 'institution_types' => <Map<String, String>>[],
+          'institution_directory_locations' =>
+            request.url.queryParameters['select'] == 'state'
+                ? locations
+                : locations
+                      .where(
+                        (location) => location['state'] == 'SP' && location['city'] == 'Campinas',
+                      )
+                      .toList(growable: false),
+          _ => <Map<String, String>>[],
+        };
+        return Response(
+          jsonEncode(body),
+          200,
+          headers: {'content-range': '0-0/1', 'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseInstitutionDirectoryRepository(client);
+
+    final options = await repository.fetchFilterOptions(states: {'SP'}, cities: {'Campinas'});
+
+    final stateRequest = capturedUris.singleWhere(
+      (uri) =>
+          uri.pathSegments.last == 'institution_directory_locations' &&
+          uri.queryParameters['select'] == 'state',
+    );
+    final dependentRequest = capturedUris.singleWhere(
+      (uri) =>
+          uri.pathSegments.last == 'institution_directory_locations' &&
+          uri.queryParameters['select'] == 'state,city,district',
+    );
+    expect(stateRequest.queryParameters['state'], isNull);
+    expect(stateRequest.queryParameters['city'], isNull);
+    expect(dependentRequest.queryParameters['state'], contains('SP'));
+    expect(dependentRequest.queryParameters['city'], contains('Campinas'));
+    expect(options.states.map((option) => option.label), ['PR', 'SP']);
+    expect(options.cities.map((option) => option.label), ['Campinas']);
+    expect(options.districts.map((option) => option.label), ['Centro']);
+  });
+
   test('sends multiselect filters as PostgREST IN clauses', () async {
     Uri? capturedUri;
     final client = SupabaseClient(

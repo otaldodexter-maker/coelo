@@ -1,0 +1,36 @@
+name: coelo_catalog
+description: Catalogo privado do Design System Coelo.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.38.0"
+
+dependencies:
+  coelo_auth:
+    path: ../../packages/coelo_auth
+  coelo_ui_admin:
+    path: ../../packages/coelo_ui_admin
+  coelo_ui_core:
+    path: ../../packages/coelo_ui_core
+  coelo_tokens:
+    path: ../../packages/coelo_tokens
+  flutter:
+    sdk: flutter
+  supabase_flutter: 2.16.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/coelo-ui.index.jsonl
+    - assets/catalog-sync-report.json
+  fonts:
+    - family: Nunito Sans
+      fonts:
+        - asset: assets/brand/NunitoSans-VariableFont.ttf

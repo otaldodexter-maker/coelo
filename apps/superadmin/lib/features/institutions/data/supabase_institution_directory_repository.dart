@@ -64,6 +64,7 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
     Set<String> cities = const {},
   }) async {
     try {
+      final statesRequest = _client.from('institution_directory_locations').select('state');
       var locationsRequest = _client
           .from('institution_directory_locations')
           .select('state, city, district');
@@ -76,13 +77,15 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       final results = await Future.wait<List<dynamic>>([
         _client.from('plans').select('id, name').eq('status', 'active').order('name'),
         _client.from('institution_types').select('id, name').eq('status', 'active').order('name'),
+        statesRequest.order('state'),
         locationsRequest.order('city').order('district'),
       ]);
       return InstitutionDirectoryFilterOptions(
         plans: _optionsFromRows(results[0]),
         types: _optionsFromRows(results[1]),
-        cities: states.isEmpty ? const [] : _locationOptionsFromRows(results[2], 'city'),
-        districts: cities.isEmpty ? const [] : _locationOptionsFromRows(results[2], 'district'),
+        states: _locationOptionsFromRows(results[2], 'state'),
+        cities: states.isEmpty ? const [] : _locationOptionsFromRows(results[3], 'city'),
+        districts: cities.isEmpty ? const [] : _locationOptionsFromRows(results[3], 'district'),
       );
     } on PostgrestException catch (error) {
       if (error.code == '42501' || error.code == 'PGRST301') {

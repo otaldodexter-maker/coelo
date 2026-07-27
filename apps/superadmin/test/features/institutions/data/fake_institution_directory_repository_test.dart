@@ -45,6 +45,29 @@ void main() {
     expect(cityOptions.districts.map((option) => option.label), ['Cambuí', 'Icaraí']);
   });
 
+  test('returns distinct states from all records and cascades geographic options', () async {
+    final repository = FakeInstitutionDirectoryRepository(
+      items: [
+        ..._items,
+        _item(
+          id: 'institution-3',
+          publicName: 'Escola Sol',
+          state: 'SP',
+          city: 'Campinas',
+          district: 'Centro',
+        ),
+      ],
+    );
+
+    final allOptions = await repository.fetchFilterOptions();
+    final stateOptions = await repository.fetchFilterOptions(states: {'SP'});
+    final cityOptions = await repository.fetchFilterOptions(states: {'SP'}, cities: {'Campinas'});
+
+    expect(allOptions.states.map((option) => option.label), ['RJ', 'SP']);
+    expect(stateOptions.cities.map((option) => option.label), ['Campinas']);
+    expect(cityOptions.districts.map((option) => option.label), [_items.first.district, 'Centro']);
+  });
+
   test('paginates twenty institutions and reports the server total', () async {
     final items = List.generate(
       25,

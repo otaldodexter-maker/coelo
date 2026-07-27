@@ -1,0 +1,477 @@
+import 'dart:ui' show SemanticsAction, Tristate;
+
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('keeps a pinned duplicate over a horizontally scrollable table', (tester) async {
+    await _pumpTable(tester);
+
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byKey(const Key('coelo-admin-table-scroll')),
+    );
+    final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
+
+    expect(scroll.scrollDirection, Axis.horizontal);
+    expect(scroll.controller!.position.maxScrollExtent, greaterThan(0));
+    expect(scrollbar.thumbVisibility, isTrue);
+    expect(find.byType(Card), findsOneWidget);
+    expect(tester.widget<Card>(find.byType(Card)).clipBehavior, Clip.antiAlias);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('coelo-admin-table-pinned-column')),
+        matching: find.text('Alpha'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('coelo-admin-table-row-background-row-1'))).height,
+      65,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('coelo-admin-table-pinned-row-background-row-1'))).height,
+      65,
+    );
+    expect(
+      tester.getTopLeft(find.byKey(const Key('coelo-admin-table-pinned-row-background-row-1'))).dy,
+      tester.getTopLeft(find.byKey(const Key('coelo-admin-table-row-background-row-1'))).dy,
+    );
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer(location: tester.getCenter(find.byKey(const Key('row-1'))));
+    await tester.pumpAndSettle();
+    expect(
+      _decorationColor(tester, const Key('coelo-admin-table-pinned-row-background-row-1')),
+      CoeloColorSchemes.light.primaryContainer,
+    );
+  });
+
+  testWidgets('keeps an idle main row background transparent', (tester) async {
+    await _pumpTable(tester);
+
+    final row = tester.widget<Container>(
+      find.byKey(const Key('coelo-admin-table-row-background-row-1')),
+    );
+
+    expect((row.decoration! as BoxDecoration).color, isNull);
+  });
+
+  testWidgets('aligns pinned and main rows in a wide overflowing table', (tester) async {
+    final columns = List.generate(
+      16,
+      (index) => CoeloAdminTableColumn<TestRow>(
+        id: 'column-$index',
+        label: 'Coluna $index',
+        initialWidth: 180,
+        minWidth: 120,
+        maxWidth: 240,
+        cellBuilder: _statusCell,
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 1096,
+            child: CoeloAdminResizableTable<TestRow>(
+              items: const [TestRow('wide-row', 'Alpha', 'Ativa')],
+              rowKey: (row) => row.id,
+              pinnedColumn: _nameColumn,
+              columns: columns,
+              headerHeight: 56,
+              rowHeight: 64,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .getTopLeft(find.byKey(const Key('coelo-admin-table-pinned-row-background-wide-row')))
+          .dy,
+      tester.getTopLeft(find.byKey(const Key('coelo-admin-table-row-background-wide-row'))).dy,
+    );
+  });
+
+  testWidgets('aligns headers and cells and keeps row keys stable', (tester) async {
+    await _pumpTable(tester);
+
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 160);
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-cell-name-row-1'))).width, 160);
+    expect(find.byKey(const Key('row-1')), findsOneWidget);
+
+    await _pumpTable(tester, rows: const [TestRow('row-1', 'Alpha atualizada', 'Ativa')]);
+
+    expect(find.byKey(const Key('row-1')), findsOneWidget);
+    expect(find.text('Alpha atualizada'), findsNWidgets(2));
+  });
+
+  testWidgets('keeps state attached to row identity when rows reorder', (tester) async {
+    final rows = ValueNotifier<List<TestRow>>(const [
+      TestRow('row-1', 'Alpha', 'Ativa'),
+      TestRow('row-2', 'Beta', 'Pendente'),
+    ]);
+    addTearDown(rows.dispose);
+    await _pumpTable(tester, rowsListenable: rows, pinnedColumn: _statefulNameColumn);
+    expect(find.text('row-1:Alpha:0'), findsNWidgets(2));
+    expect(find.text('row-2:Beta:0'), findsNWidgets(2));
+    await tester.tap(find.text('row-1:Alpha:0').first);
+    await tester.pump();
+    expect(find.text('row-1:Alpha:1'), findsOneWidget);
+
+    rows.value = const [TestRow('row-2', 'Beta', 'Pendente'), TestRow('row-1', 'Alpha', 'Ativa')];
+    await tester.pumpAndSettle();
+
+    expect(find.text('row-1:Alpha:1'), findsOneWidget);
+    expect(find.text('row-1:Alpha:0'), findsOneWidget);
+    expect(find.text('row-2:Beta:0'), findsNWidgets(2));
+  });
+
+  testWidgets('synchronizes hover and selected highlights and handles row taps', (tester) async {
+    var pressed = 0;
+    await _pumpTable(
+      tester,
+      onRowPressed: (_) => pressed += 1,
+      isSelected: (row) => row.id == 'row-2',
+    );
+
+    final selectedMain = _decorationColor(
+      tester,
+      const Key('coelo-admin-table-row-background-row-2'),
+    );
+    final selectedPinned = _decorationColor(
+      tester,
+      const Key('coelo-admin-table-pinned-row-background-row-2'),
+    );
+    expect(selectedMain, CoeloColorSchemes.light.primaryContainer);
+    expect(selectedPinned, selectedMain);
+    expect(
+      tester.getSemantics(find.byKey(const Key('row-2'))).flagsCollection.isSelected,
+      Tristate.isTrue,
+    );
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer(location: tester.getCenter(find.byKey(const Key('row-1'))));
+    await tester.pumpAndSettle();
+
+    final hoveredMain = tester.widget<InkWell>(
+      find.ancestor(
+        of: find.byKey(const Key('coelo-admin-table-row-background-row-1')),
+        matching: find.byType(InkWell),
+      ),
+    );
+    final hoveredPinned = _decorationColor(
+      tester,
+      const Key('coelo-admin-table-pinned-row-background-row-1'),
+    );
+    expect(
+      hoveredMain.overlayColor?.resolve({WidgetState.hovered}),
+      CoeloColorSchemes.light.primaryContainer,
+    );
+    expect(hoveredPinned, CoeloColorSchemes.light.primaryContainer);
+
+    await tester.tap(find.byKey(const Key('row-1')));
+    expect(pressed, 1);
+  });
+
+  testWidgets('exposes accessible resize handles and resizes in eight pixel steps', (tester) async {
+    await _pumpTable(tester);
+
+    final handle = find.bySemanticsLabel('Redimensionar coluna Nome');
+    expect(handle, findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('coelo-admin-table-pinned-column')),
+        matching: find.byType(Focus),
+      ),
+      findsNothing,
+    );
+    expect(
+      tester.getSemantics(handle).getSemanticsData().hasAction(SemanticsAction.increase),
+      isTrue,
+    );
+    expect(
+      tester.getSemantics(handle).getSemanticsData().hasAction(SemanticsAction.decrease),
+      isTrue,
+    );
+
+    await tester.tap(handle);
+    await tester.pump();
+    final focusIndicator = tester.widget<Container>(
+      find.byKey(const Key('coelo-admin-table-resizer-indicator-name')),
+    );
+    expect(
+      (focusIndicator.decoration! as BoxDecoration).color,
+      Theme.of(tester.element(handle)).extension<CoeloActionColors>()!.focusRing,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 168);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 160);
+  });
+
+  testWidgets('clamps drag resizing to the configured minimum and maximum', (tester) async {
+    await _pumpTable(tester);
+
+    final handle = find.bySemanticsLabel('Redimensionar coluna Nome');
+    await tester.drag(handle, const Offset(500, 0));
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 200);
+
+    await tester.drag(handle, const Offset(-500, 0));
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 120);
+  });
+
+  testWidgets('reconciles widths when column identifiers change', (tester) async {
+    var pinnedColumn = _nameColumn;
+    var columns = const [_statusColumn, _cityColumn];
+    late StateSetter updateTable;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              updateTable = setState;
+              return SizedBox(
+                width: 300,
+                child: CoeloAdminResizableTable<TestRow>(
+                  key: const Key('dynamic-columns-table'),
+                  items: const [TestRow('row-1', 'Alpha', 'Ativa')],
+                  rowKey: (row) => row.id,
+                  pinnedColumn: pinnedColumn,
+                  columns: columns,
+                  headerHeight: 56,
+                  rowHeight: 64,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.bySemanticsLabel('Redimensionar coluna Nome'));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 168);
+
+    updateTable(() {
+      pinnedColumn = _codeColumn;
+      columns = const [_nameColumn, _districtColumn];
+    });
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-code'))).width, 140);
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 168);
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-district'))).width, 210);
+    expect(find.byKey(const Key('coelo-admin-table-header-status')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-table-header-city')), findsNothing);
+  });
+
+  testWidgets('clamps preserved width when column constraints change', (tester) async {
+    var pinnedColumn = _nameColumn;
+    late StateSetter updateTable;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              updateTable = setState;
+              return SizedBox(
+                width: 300,
+                child: CoeloAdminResizableTable<TestRow>(
+                  items: const [TestRow('row-1', 'Alpha', 'Ativa')],
+                  rowKey: (row) => row.id,
+                  pinnedColumn: pinnedColumn,
+                  columns: const [_statusColumn],
+                  headerHeight: 56,
+                  rowHeight: 64,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.bySemanticsLabel('Redimensionar coluna Nome'));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 168);
+
+    updateTable(() {
+      pinnedColumn = CoeloAdminTableColumn<TestRow>(
+        id: 'name',
+        label: 'Nome',
+        initialWidth: 140,
+        minWidth: 120,
+        maxWidth: 150,
+        cellBuilder: (context, row) => Text(row.name),
+      );
+    });
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 150);
+  });
+}
+
+Color? _decorationColor(WidgetTester tester, Key key) {
+  final container = tester.widget<Container>(find.byKey(key));
+  return (container.decoration! as BoxDecoration).color;
+}
+
+Future<void> _pumpTable(
+  WidgetTester tester, {
+  List<TestRow> rows = const [
+    TestRow('row-1', 'Alpha', 'Ativa'),
+    TestRow('row-2', 'Beta', 'Pendente'),
+  ],
+  ValueListenable<List<TestRow>>? rowsListenable,
+  ValueChanged<TestRow>? onRowPressed,
+  bool Function(TestRow row)? isSelected,
+  CoeloAdminTableColumn<TestRow> pinnedColumn = _nameColumn,
+}) async {
+  Widget table(List<TestRow> currentRows) {
+    return CoeloAdminResizableTable<TestRow>(
+      items: currentRows,
+      rowKey: (row) => row.id,
+      pinnedColumn: pinnedColumn,
+      columns: const [_statusColumn],
+      headerHeight: 56,
+      rowHeight: 64,
+      onRowPressed: onRowPressed,
+      isSelected: isSelected,
+    );
+  }
+
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(
+        body: SizedBox(
+          width: 300,
+          child: rowsListenable == null
+              ? table(rows)
+              : ValueListenableBuilder<List<TestRow>>(
+                  valueListenable: rowsListenable,
+                  builder: (context, currentRows, child) => table(currentRows),
+                ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+const _nameColumn = CoeloAdminTableColumn<TestRow>(
+  id: 'name',
+  label: 'Nome',
+  initialWidth: 160,
+  minWidth: 120,
+  maxWidth: 200,
+  cellBuilder: _nameCell,
+);
+
+const _statusColumn = CoeloAdminTableColumn<TestRow>(
+  id: 'status',
+  label: 'Status',
+  initialWidth: 180,
+  minWidth: 140,
+  maxWidth: 220,
+  cellBuilder: _statusCell,
+);
+
+const _cityColumn = CoeloAdminTableColumn<TestRow>(
+  id: 'city',
+  label: 'Cidade',
+  initialWidth: 190,
+  minWidth: 140,
+  maxWidth: 240,
+  cellBuilder: _statusCell,
+);
+
+const _codeColumn = CoeloAdminTableColumn<TestRow>(
+  id: 'code',
+  label: 'Código',
+  initialWidth: 140,
+  minWidth: 120,
+  maxWidth: 180,
+  cellBuilder: _nameCell,
+);
+
+const _districtColumn = CoeloAdminTableColumn<TestRow>(
+  id: 'district',
+  label: 'Bairro',
+  initialWidth: 210,
+  minWidth: 160,
+  maxWidth: 260,
+  cellBuilder: _statusCell,
+);
+
+const _statefulNameColumn = CoeloAdminTableColumn<TestRow>(
+  id: 'name',
+  label: 'Nome',
+  initialWidth: 160,
+  minWidth: 120,
+  maxWidth: 200,
+  cellBuilder: _statefulNameCell,
+);
+
+Widget _nameCell(BuildContext context, TestRow row) => Text(row.name);
+
+Widget _statusCell(BuildContext context, TestRow row) => Text(row.status);
+
+Widget _statefulNameCell(BuildContext context, TestRow row) => _StatefulNameCell(row: row);
+
+final class _StatefulNameCell extends StatefulWidget {
+  const _StatefulNameCell({required this.row});
+
+  final TestRow row;
+
+  @override
+  State<_StatefulNameCell> createState() => _StatefulNameCellState();
+}
+
+final class _StatefulNameCellState extends State<_StatefulNameCell> {
+  late final String _initialId = widget.row.id;
+  var _count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => setState(() => _count += 1),
+      child: Text('$_initialId:${widget.row.name}:$_count'),
+    );
+  }
+}
+
+final class TestRow {
+  const TestRow(this.id, this.name, this.status);
+
+  final String id;
+  final String name;
+  final String status;
+}

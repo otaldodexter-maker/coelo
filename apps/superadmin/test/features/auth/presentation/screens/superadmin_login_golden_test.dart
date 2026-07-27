@@ -9,48 +9,52 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders the desktop login reference', (tester) async {
-    final fontLoader = FontLoader('Nunito Sans')
-      ..addFont(rootBundle.load('assets/brand/NunitoSans-VariableFont.ttf'));
-    await fontLoader.load();
-    final flutterArtifacts = File(Platform.resolvedExecutable).parent.parent.parent;
-    final materialIcons = File(
-      '${flutterArtifacts.path}/material_fonts/MaterialIcons-Regular.otf',
-    ).readAsBytesSync();
-    final materialIconsLoader = FontLoader('MaterialIcons')
-      ..addFont(Future.value(ByteData.sublistView(materialIcons)));
-    await materialIconsLoader.load();
+  setUpAll(_loadGoldenFonts);
 
-    tester.view.physicalSize = const Size(1440, 900);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  for (final themeCase in [
+    (name: 'light', theme: CoeloTheme.light),
+    (name: 'dark', theme: CoeloTheme.dark),
+  ]) {
+    testWidgets('renders the ${themeCase.name} desktop login reference', (tester) async {
+      tester.view.physicalSize = const Size(1440, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    final session = SuperadminSession();
-    addTearDown(session.dispose);
+      final session = SuperadminSession();
+      addTearDown(session.dispose);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: SuperadminLoginScreen(
-          session: session,
-          login: unavailableSuperadminLogin,
-          onForgotPassword: () {},
-          onThemeModeChanged: (_) {},
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: themeCase.theme,
+          home: SuperadminLoginScreen(
+            session: session,
+            login: unavailableSuperadminLogin,
+            onForgotPassword: () {},
+            onThemeModeChanged: (_) {},
+          ),
         ),
-      ),
-    );
-    await tester.runAsync(() async {
-      await precacheImage(
-        const AssetImage('assets/brand/logo-coelo-orange-complete.png'),
-        tester.element(find.byType(SuperadminLoginScreen)),
+      );
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(SuperadminLoginScreen),
+        matchesGoldenFile('goldens/superadmin_login_${themeCase.name}.png'),
       );
     });
-    await tester.pumpAndSettle();
+  }
+}
 
-    await expectLater(
-      find.byType(SuperadminLoginScreen),
-      matchesGoldenFile('goldens/superadmin_login_light.png'),
-    );
-  });
+Future<void> _loadGoldenFonts() async {
+  final fontLoader = FontLoader('Nunito Sans')
+    ..addFont(rootBundle.load('assets/brand/NunitoSans-VariableFont.ttf'));
+  await fontLoader.load();
+
+  final flutterArtifacts = File(Platform.resolvedExecutable).parent.parent.parent;
+  final materialIcons = File(
+    '${flutterArtifacts.path}/material_fonts/MaterialIcons-Regular.otf',
+  ).readAsBytesSync();
+  final materialIconsLoader = FontLoader('MaterialIcons')
+    ..addFont(Future.value(ByteData.sublistView(materialIcons)));
+  await materialIconsLoader.load();
 }

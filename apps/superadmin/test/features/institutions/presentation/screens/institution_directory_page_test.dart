@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_directory_page.dart'
+    as domain;
+import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -145,7 +150,65 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-state-filter')));
     await tester.pumpAndSettle();
     expect(tester.widget<TextField>(stateSearch).controller!.text, isEmpty);
-    expect(find.text('AC — Acre'), findsOneWidget);
+    expect(find.text('PR — Paraná'), findsOneWidget);
+  });
+
+  testWidgets(
+    'uses only accessible state options and keeps their source independent of selection',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('institution-state-filter')));
+      await tester.pumpAndSettle();
+      expect(find.text('SP — São Paulo'), findsOneWidget);
+      expect(find.text('PR — Paraná'), findsOneWidget);
+      expect(find.text('AC — Acre'), findsNothing);
+      expect(find.text('RJ — Rio de Janeiro'), findsNothing);
+      expect(
+        tester.getTopLeft(find.text('SP — São Paulo')).dy,
+        lessThan(tester.getTopLeft(find.text('PR — Paraná')).dy),
+      );
+
+      await tester.tap(find.text('SP — São Paulo'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aplicar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('institution-state-filter')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('PR — Paraná'), findsOneWidget);
+    },
+  );
+
+  testWidgets('disables the UF filter when no registered UFs are accessible', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(repository: const FakeInstitutionDirectoryRepository(items: [])));
+    await tester.pumpAndSettle();
+
+    final trigger = find.byKey(const Key('institution-state-filter'));
+    expect(find.text('Sem UFs cadastradas'), findsOneWidget);
+    expect(tester.widget<OutlinedButton>(trigger).onPressed, isNull);
+  });
+
+  testWidgets('keeps the UF label neutral while filter options are loading', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _PendingFilterOptionsRepository();
+    addTearDown(repository.complete);
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pump();
+
+    final trigger = find.byKey(const Key('institution-state-filter'));
+    expect(find.text('Todas as UFs'), findsOneWidget);
+    expect(find.text('Sem UFs cadastradas'), findsNothing);
+    expect(tester.widget<OutlinedButton>(trigger).onPressed, isNull);
+
+    repository.complete();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('keeps multiselect draft open and applies it in one action', (tester) async {
@@ -291,7 +354,7 @@ void main() {
     expect(find.byKey(const Key('create-institution-banner')), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byKey(const Key('institution-directory-table')),
+        of: find.byKey(const Key('institution-table-row-demo-institution-aurora')),
         matching: find.text('Instituto Aurora'),
       ),
       findsOneWidget,
@@ -329,7 +392,7 @@ void main() {
     };
     final headerPositions = <double>[];
     for (final entry in expectedHeaders.entries) {
-      final header = find.byKey(Key('institution-column-header-${entry.key}'));
+      final header = find.byKey(Key('coelo-admin-table-header-${entry.key}'));
       expect(header, findsOneWidget);
       expect(find.descendant(of: header, matching: find.text(entry.value)), findsOneWidget);
       headerPositions.add(tester.getTopLeft(header).dx);
@@ -346,14 +409,16 @@ void main() {
         .getSize(find.byKey(const Key('institution-directory-table-viewport')))
         .width;
     final bannerWidth = tester.getSize(find.byKey(const Key('create-institution-banner'))).width;
-    final tableWidth = tester.getSize(find.byKey(const Key('institution-directory-table'))).width;
+    final tableScroll = tester.widget<SingleChildScrollView>(
+      find.byKey(const Key('coelo-admin-table-scroll')),
+    );
     expect(bannerWidth, lessThanOrEqualTo(viewportWidth));
-    expect(tableWidth, greaterThan(viewportWidth));
+    expect(tableScroll.controller!.position.maxScrollExtent, greaterThan(0));
 
-    final nameColumn = find.byKey(const Key('institution-column-header-institution'));
+    final nameColumn = find.byKey(const Key('coelo-admin-table-header-institution'));
     final oldWidth = tester.getSize(nameColumn).width;
     await tester.drag(
-      find.byKey(const Key('institution-column-resizer-institution')),
+      find.byKey(const Key('coelo-admin-table-resizer-indicator-institution')),
       const Offset(80, 0),
     );
     await tester.pumpAndSettle();
@@ -648,7 +713,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('create-institution-banner')), findsOneWidget);
-    final tableScroll = find.byKey(const Key('institution-directory-table-scroll'));
+    final tableScroll = find.byKey(const Key('coelo-admin-table-scroll'));
     expect(tableScroll, findsOneWidget);
     await tester.ensureVisible(tableScroll);
     await tester.drag(tableScroll, const Offset(-250, 0));
@@ -666,9 +731,20 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
 
-    final row = find.byKey(const Key('institution-table-row-demo-institution-aurora'));
-    final pinned = find.byKey(const Key('institution-pinned-row-demo-institution-aurora'));
-    final pinnedColumn = find.byKey(const Key('institution-pinned-column'));
+    final row = find.byKey(
+      const Key(
+        'coelo-admin-table-row-background-'
+        'institution-table-row-demo-institution-aurora',
+      ),
+    );
+    expect(find.byKey(const Key('institution-table-row-demo-institution-aurora')), findsOneWidget);
+    final pinned = find.byKey(
+      const Key(
+        'coelo-admin-table-pinned-row-background-'
+        'institution-table-row-demo-institution-aurora',
+      ),
+    );
+    final pinnedColumn = find.byKey(const Key('coelo-admin-table-pinned-column'));
     expect(pinned, findsOneWidget);
     expect(pinnedColumn, findsOneWidget);
     expect(tester.getTopLeft(pinned).dy, tester.getTopLeft(row).dy);
@@ -704,14 +780,14 @@ void main() {
     expect(tester.getSize(viewport).width, lessThanOrEqualTo(1024));
     expect(find.byType(Scrollbar), findsOneWidget);
 
-    final scrollable = find.byKey(const Key('institution-directory-table-scroll'));
+    final scrollable = find.byKey(const Key('coelo-admin-table-scroll'));
     final before = tester
-        .getTopLeft(find.byKey(const Key('institution-column-header-institution')))
+        .getTopLeft(find.byKey(const Key('coelo-admin-table-header-institution')))
         .dx;
     await tester.drag(scrollable, const Offset(-600, 0));
     await tester.pumpAndSettle();
     final after = tester
-        .getTopLeft(find.byKey(const Key('institution-column-header-institution')))
+        .getTopLeft(find.byKey(const Key('coelo-admin-table-header-institution')))
         .dx;
     expect(after, lessThan(before));
   });
@@ -791,6 +867,60 @@ void main() {
       }
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('exposes search semantics and reaches it by keyboard', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final semantics = tester.ensureSemantics();
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getSemantics(find.byType(TextField).first),
+      isSemantics(label: 'Buscar por nome', isTextField: true),
+    );
+    semantics.dispose();
+
+    final editableText = tester.state<EditableTextState>(find.byType(EditableText).first);
+    for (var step = 0; step < 20 && !editableText.widget.focusNode.hasFocus; step++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+
+    expect(editableText.widget.focusNode.hasFocus, isTrue);
+  });
+
+  testWidgets('Escape closes the status filter menu', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.pumpAndSettle();
+    expect(find.text('Aplicar'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.text('Aplicar'), findsNothing);
+  });
+
+  testWidgets('supports 200 percent text at all approved viewports', (tester) async {
+    final widthsWithLayoutExceptions = <double>[];
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+      await tester.pumpAndSettle();
+
+      if (tester.takeException() != null) {
+        widthsWithLayoutExceptions.add(width);
+      }
+      expect(find.text('Instituições'), findsWidgets);
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    expect(widthsWithLayoutExceptions, isEmpty);
   });
 
   testWidgets('finishes themed card surfaces with the global transition without a local tail', (
@@ -895,14 +1025,40 @@ BoxDecoration _renderedDecoration(WidgetTester tester, Finder finder) {
 Widget _app({
   Brightness brightness = Brightness.light,
   InstitutionDirectoryRepository repository = const FakeInstitutionDirectoryRepository(),
+  TextScaler textScaler = TextScaler.noScaling,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
     themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+      child: child!,
+    ),
     home: InstitutionDirectoryPage(
       repository: repository,
       logout: () async => const LogoutResult.success(),
     ),
   );
+}
+
+final class _PendingFilterOptionsRepository implements InstitutionDirectoryRepository {
+  final _options = Completer<InstitutionDirectoryFilterOptions>();
+
+  @override
+  Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
+    return domain.InstitutionDirectoryPage(items: const [], totalCount: 0, page: query.page);
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) => _options.future;
+
+  void complete() {
+    if (!_options.isCompleted) {
+      _options.complete(InstitutionDirectoryFilterOptions.empty);
+    }
+  }
 }

@@ -3,10 +3,10 @@ import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/widget_previews.dart';
 
 import '../activity/superadmin_activity.dart';
+import '../brand/superadmin_brand_mark.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
 import 'superadmin_activity_center.dart';
@@ -33,6 +33,8 @@ class SuperadminShell extends StatefulWidget {
     this.actions = const [],
     this.compactActions = const [],
     this.activityController,
+    this.currentDestination = 'institutions',
+    this.onDestinationSelected,
     super.key,
   });
 
@@ -43,6 +45,8 @@ class SuperadminShell extends StatefulWidget {
   final List<Widget> actions;
   final List<Widget> compactActions;
   final SuperadminActivityController? activityController;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
@@ -124,7 +128,13 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                   children: [
                     const _BrandHeader(collapsed: false),
                     const _InsetDivider(key: Key('superadmin-brand-divider')),
-                    const Expanded(child: _NavigationContent(collapsed: false)),
+                    Expanded(
+                      child: _NavigationContent(
+                        collapsed: false,
+                        currentDestination: widget.currentDestination,
+                        onDestinationSelected: widget.onDestinationSelected,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -181,36 +191,42 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                   final sidebarWidth =
                       _expandedSidebarWidth -
                       (_expandedSidebarWidth - _collapsedSidebarWidth) * _sidebarController.value;
-                  return Row(
+                  return Stack(
+                    clipBehavior: Clip.none,
                     children: [
-                      SizedBox(
-                        width: sidebarWidth + _shellGutter,
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            SizedBox(
-                              key: const Key('superadmin-sidebar'),
-                              width: sidebarWidth,
-                              child: _FloatingSurface(
-                                key: const Key('superadmin-floating-sidebar'),
-                                child: _SidebarTransition(
-                                  collapsed: _sidebarCollapsed,
-                                  reduceMotion: _reduceMotion,
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: sidebarWidth + _shellGutter,
+                            child: Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: SizedBox(
+                                key: const Key('superadmin-sidebar'),
+                                width: sidebarWidth,
+                                height: double.infinity,
+                                child: _FloatingSurface(
+                                  key: const Key('superadmin-floating-sidebar'),
+                                  child: _SidebarTransition(
+                                    collapsed: _sidebarCollapsed,
+                                    reduceMotion: _reduceMotion,
+                                    currentDestination: widget.currentDestination,
+                                    onDestinationSelected: widget.onDestinationSelected,
+                                  ),
                                 ),
                               ),
                             ),
-                            Positioned(
-                              left: sidebarWidth - CoeloSpacing.space10,
-                              top: CoeloSpacing.space5,
-                              child: _SidebarToggle(
-                                collapsed: _sidebarCollapsed,
-                                onPressed: _toggleSidebar,
-                              ),
-                            ),
-                          ],
+                          ),
+                          content!,
+                        ],
+                      ),
+                      Positioned(
+                        left: sidebarWidth - CoeloSpacing.space6 - CoeloSpacing.space1,
+                        top: CoeloSpacing.space5,
+                        child: _SidebarToggle(
+                          collapsed: _sidebarCollapsed,
+                          onPressed: _toggleSidebar,
                         ),
                       ),
-                      content!,
                     ],
                   );
                 },
@@ -224,10 +240,17 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
 }
 
 class _SidebarTransition extends StatelessWidget {
-  const _SidebarTransition({required this.collapsed, required this.reduceMotion});
+  const _SidebarTransition({
+    required this.collapsed,
+    required this.reduceMotion,
+    required this.currentDestination,
+    required this.onDestinationSelected,
+  });
 
   final bool collapsed;
   final bool reduceMotion;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +271,11 @@ class _SidebarTransition extends StatelessWidget {
             child: SizedBox(
               width: collapsed ? _collapsedSidebarWidth : null,
               height: double.infinity,
-              child: _Sidebar(collapsed: collapsed),
+              child: _Sidebar(
+                collapsed: collapsed,
+                currentDestination: currentDestination,
+                onDestinationSelected: onDestinationSelected,
+              ),
             ),
           ),
         ),
@@ -258,9 +285,15 @@ class _SidebarTransition extends StatelessWidget {
 }
 
 class _Sidebar extends StatelessWidget {
-  const _Sidebar({required this.collapsed});
+  const _Sidebar({
+    required this.collapsed,
+    required this.currentDestination,
+    required this.onDestinationSelected,
+  });
 
   final bool collapsed;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +301,13 @@ class _Sidebar extends StatelessWidget {
       children: [
         _BrandHeader(collapsed: collapsed),
         const _InsetDivider(key: Key('superadmin-brand-divider')),
-        Expanded(child: _NavigationContent(collapsed: collapsed)),
+        Expanded(
+          child: _NavigationContent(
+            collapsed: collapsed,
+            currentDestination: currentDestination,
+            onDestinationSelected: onDestinationSelected,
+          ),
+        ),
       ],
     );
   }
@@ -324,7 +363,6 @@ class _BrandHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final visual = theme.extension<CoeloVisualColors>()!;
     return SizedBox(
       height: _headerHeight,
       child: Padding(
@@ -337,22 +375,7 @@ class _BrandHeader extends StatelessWidget {
             return Row(
               mainAxisAlignment: showDetails ? MainAxisAlignment.start : MainAxisAlignment.center,
               children: [
-                Container(
-                  key: const Key('superadmin-brand-mark'),
-                  width: CoeloSize.touchMin,
-                  height: CoeloSize.touchMin,
-                  padding: const EdgeInsets.all(CoeloSpacing.space2),
-                  decoration: BoxDecoration(
-                    color: visual.brandMarkBackground,
-                    shape: BoxShape.circle,
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/brand/logo-coelo-white.svg',
-                    key: const Key('superadmin-brand-logo'),
-                    colorFilter: ColorFilter.mode(visual.brandMarkForeground, BlendMode.srcIn),
-                    semanticsLabel: 'Coelo',
-                  ),
-                ),
+                const SuperadminBrandMark(),
                 if (showDetails) ...[
                   const SizedBox(width: CoeloSpacing.space3),
                   Expanded(child: Text('Superadmin', style: theme.textTheme.titleMedium)),
@@ -375,34 +398,38 @@ class _SidebarToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return IconButton(
-      key: const Key('superadmin-sidebar-collapse'),
-      tooltip: collapsed ? 'Expandir menu' : 'Recolher menu',
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        minimumSize: const Size.square(CoeloSize.touchMin),
-        maximumSize: const Size.square(CoeloSize.touchMin),
-        padding: EdgeInsets.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      icon: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          shape: BoxShape.circle,
-          border: Border.all(color: colors.outlineVariant),
-          boxShadow: [
-            BoxShadow(
-              color: colors.shadow.withValues(alpha: 0.08),
-              blurRadius: CoeloSpacing.space1,
-              offset: const Offset(0, CoeloSpacing.spaceHalf),
-            ),
-          ],
+    return Semantics(
+      label: collapsed ? 'Expandir menu' : 'Recolher menu',
+      button: true,
+      child: IconButton(
+        key: const Key('superadmin-sidebar-collapse'),
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          minimumSize: const Size.square(CoeloSize.touchMin),
+          maximumSize: const Size.square(CoeloSize.touchMin),
+          padding: EdgeInsets.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
-        child: SizedBox.square(
-          dimension: CoeloSpacing.space6,
-          child: Icon(
-            collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
-            size: CoeloSpacing.space4,
+        icon: DecoratedBox(
+          key: const Key('superadmin-sidebar-collapse-visual'),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            shape: BoxShape.circle,
+            border: Border.all(color: colors.outlineVariant),
+            boxShadow: [
+              BoxShadow(
+                color: colors.shadow.withValues(alpha: 0.08),
+                blurRadius: CoeloSpacing.space1,
+                offset: const Offset(0, CoeloSpacing.spaceHalf),
+              ),
+            ],
+          ),
+          child: SizedBox.square(
+            dimension: CoeloSpacing.space6,
+            child: Icon(
+              collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
+              size: CoeloSpacing.space4,
+            ),
           ),
         ),
       ),
@@ -427,7 +454,9 @@ class _NavigationSectionData {
   final IconData icon;
   final List<_NavigationDestinationData> destinations;
 
-  bool get hasActiveDestination => destinations.any((destination) => destination.active);
+  bool hasSelectedDestination(String id) {
+    return destinations.any((destination) => destination.id == id);
+  }
 }
 
 const _navigationSections = <_NavigationSectionData>[
@@ -461,6 +490,7 @@ const _navigationSections = <_NavigationSectionData>[
   _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
     _NavigationDestinationData('support', 'Suporte', Icons.support_agent_outlined),
     _NavigationDestinationData('audit', 'Auditoria', Icons.security_outlined),
+    _NavigationDestinationData('catalog', 'Catálogo', Icons.widgets_outlined, active: true),
   ]),
 ];
 
@@ -470,16 +500,40 @@ const _accountDestinations = <_NavigationDestinationData>[
 ];
 
 class _NavigationContent extends StatefulWidget {
-  const _NavigationContent({required this.collapsed});
+  const _NavigationContent({
+    required this.collapsed,
+    required this.currentDestination,
+    required this.onDestinationSelected,
+  });
 
   final bool collapsed;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<_NavigationContent> createState() => _NavigationContentState();
 }
 
 class _NavigationContentState extends State<_NavigationContent> {
-  final Set<String> _expandedSections = {'structure'};
+  late final Set<String> _expandedSections;
+
+  @override
+  void initState() {
+    super.initState();
+    _expandedSections = {'structure', if (widget.currentDestination == 'catalog') 'governance'};
+  }
+
+  @override
+  void didUpdateWidget(covariant _NavigationContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentDestination != widget.currentDestination) {
+      for (final section in _navigationSections) {
+        if (section.hasSelectedDestination(widget.currentDestination)) {
+          _expandedSections.add(section.id);
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -494,10 +548,16 @@ class _NavigationContentState extends State<_NavigationContent> {
             children: [
               for (final section in _navigationSections)
                 if (widget.collapsed)
-                  _CollapsedNavigationSection(section: section)
+                  _CollapsedNavigationSection(
+                    section: section,
+                    currentDestination: widget.currentDestination,
+                    onDestinationSelected: widget.onDestinationSelected,
+                  )
                 else
                   _ExpandedNavigationSection(
                     section: section,
+                    currentDestination: widget.currentDestination,
+                    onDestinationSelected: widget.onDestinationSelected,
                     expanded: _expandedSections.contains(section.id),
                     onToggle: () => setState(() {
                       if (!_expandedSections.add(section.id)) {
@@ -533,11 +593,15 @@ class _NavigationContentState extends State<_NavigationContent> {
 class _ExpandedNavigationSection extends StatelessWidget {
   const _ExpandedNavigationSection({
     required this.section,
+    required this.currentDestination,
+    required this.onDestinationSelected,
     required this.expanded,
     required this.onToggle,
   });
 
   final _NavigationSectionData section;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
   final bool expanded;
   final VoidCallback onToggle;
 
@@ -547,7 +611,12 @@ class _ExpandedNavigationSection extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
       child: Column(
         children: [
-          _NavigationSectionHeader(section: section, expanded: expanded, onTap: onToggle),
+          _NavigationSectionHeader(
+            section: section,
+            active: section.hasSelectedDestination(currentDestination),
+            expanded: expanded,
+            onTap: onToggle,
+          ),
           AnimatedSize(
             duration: const Duration(milliseconds: 260),
             curve: Curves.easeOut,
@@ -565,7 +634,10 @@ class _ExpandedNavigationSection extends StatelessWidget {
                             id: destination.id,
                             icon: destination.icon,
                             label: destination.label,
-                            isActive: destination.active,
+                            isActive: destination.id == currentDestination,
+                            onTap: destination.active
+                                ? () => onDestinationSelected?.call(destination.id)
+                                : null,
                             collapsed: false,
                           ),
                       ],
@@ -582,11 +654,13 @@ class _ExpandedNavigationSection extends StatelessWidget {
 class _NavigationSectionHeader extends StatefulWidget {
   const _NavigationSectionHeader({
     required this.section,
+    required this.active,
     required this.expanded,
     required this.onTap,
   });
 
   final _NavigationSectionData section;
+  final bool active;
   final bool expanded;
   final VoidCallback onTap;
 
@@ -601,7 +675,7 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final active = widget.section.hasActiveDestination;
+    final active = widget.active;
     final background = active
         ? colors.primary
         : _highlighted
@@ -673,9 +747,15 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
 }
 
 class _CollapsedNavigationSection extends StatelessWidget {
-  const _CollapsedNavigationSection({required this.section});
+  const _CollapsedNavigationSection({
+    required this.section,
+    required this.currentDestination,
+    required this.onDestinationSelected,
+  });
 
   final _NavigationSectionData section;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -685,10 +765,12 @@ class _CollapsedNavigationSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
       child: MenuAnchor(
-        alignmentOffset: const Offset(CoeloSpacing.space2, 0),
+        alignmentOffset: const Offset(CoeloSpacing.space1, -CoeloSpacing.space1),
         style: MenuStyle(
           alignment: AlignmentDirectional.topEnd,
           backgroundColor: WidgetStatePropertyAll(colors.surface),
+          elevation: const WidgetStatePropertyAll(4),
+          padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(CoeloRadius.lg),
@@ -699,16 +781,16 @@ class _CollapsedNavigationSection extends StatelessWidget {
         menuChildren: [
           SizedBox(
             key: Key('superadmin-navigation-flyout-${section.id}'),
-            width: 220,
+            width: 220 - CoeloSpacing.space4,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
-                    CoeloSpacing.space4,
-                    CoeloSpacing.space3,
-                    CoeloSpacing.space4,
+                    CoeloSpacing.space2,
+                    CoeloSpacing.space1,
+                    CoeloSpacing.space2,
                     CoeloSpacing.space2,
                   ),
                   child: Text(section.label, style: Theme.of(context).textTheme.labelLarge),
@@ -716,9 +798,13 @@ class _CollapsedNavigationSection extends StatelessWidget {
                 for (final destination in section.destinations)
                   MenuItemButton(
                     key: Key('superadmin-navigation-${destination.id}'),
-                    style: _navigationMenuItemStyle(theme, active: destination.active),
+                    style: _navigationMenuItemStyle(
+                      theme,
+                      active: destination.id == currentDestination,
+                    ),
                     leadingIcon: Icon(destination.icon),
-                    onPressed: () => _handleDestinationTap(context, destination),
+                    onPressed: () =>
+                        _handleDestinationTap(context, destination, onDestinationSelected),
                     child: Text(destination.label),
                   ),
               ],
@@ -726,7 +812,7 @@ class _CollapsedNavigationSection extends StatelessWidget {
           ),
         ],
         builder: (context, controller, child) {
-          final active = section.hasActiveDestination;
+          final active = section.hasSelectedDestination(currentDestination);
           return Tooltip(
             message: section.label,
             child: IconButton(
@@ -778,17 +864,23 @@ ButtonStyle _navigationMenuItemStyle(ThemeData theme, {required bool active}) {
   ).copyWith(
     foregroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed);
       return active || highlighted ? colors.primary : colors.onSurfaceVariant;
     }),
     iconColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed);
       return active || highlighted ? colors.primary : colors.onSurfaceVariant;
     }),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
       final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed);
       if (active) {
         return highlighted ? visual.navigationActiveHover : visual.navigationActive;
       }
@@ -798,9 +890,15 @@ ButtonStyle _navigationMenuItemStyle(ThemeData theme, {required bool active}) {
   );
 }
 
-void _handleDestinationTap(BuildContext context, _NavigationDestinationData destination) {
+void _handleDestinationTap(
+  BuildContext context,
+  _NavigationDestinationData destination,
+  ValueChanged<String>? onDestinationSelected,
+) {
   if (!destination.active) {
     _showMessage(context, '${destination.label} será implementado em breve.');
+  } else {
+    onDestinationSelected?.call(destination.id);
   }
   final scaffold = Scaffold.maybeOf(context);
   if (scaffold?.isDrawerOpen ?? false) {
@@ -910,7 +1008,7 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
     final itemStyle = _tourMenuItemStyle(colors);
     return MenuAnchor(
       alignmentOffset: Offset(
-        widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space2 : 252,
+        widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 : 252 - CoeloSpacing.space1,
         -CoeloSize.touchMin,
       ),
       style: _tourMenuStyle(colors),
@@ -1516,6 +1614,7 @@ class _NavigationItem extends StatefulWidget {
     required this.icon,
     required this.label,
     required this.collapsed,
+    this.onTap,
     this.isActive = false,
   });
 
@@ -1524,6 +1623,7 @@ class _NavigationItem extends StatefulWidget {
   final String label;
   final bool collapsed;
   final bool isActive;
+  final VoidCallback? onTap;
 
   @override
   State<_NavigationItem> createState() => _NavigationItemState();
@@ -1534,10 +1634,12 @@ class _NavigationItemState extends State<_NavigationItem> {
 
   void _handleTap() {
     final scaffold = Scaffold.maybeOf(context);
-    if (!widget.isActive) {
+    if (widget.onTap == null && !widget.isActive) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('${widget.label} será implementado em breve.')));
+    } else {
+      widget.onTap?.call();
     }
     if (scaffold?.isDrawerOpen ?? false) {
       Navigator.of(context).pop();
@@ -1687,8 +1789,8 @@ class _PageHeader extends StatelessWidget {
       builder: (context, constraints) {
         final compactProfile = constraints.maxWidth < 900;
         final visibleActions = compact && compactActions.isNotEmpty ? compactActions : actions;
-        return SizedBox(
-          height: _headerHeight,
+        return ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: _headerHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space5),
             child: Row(

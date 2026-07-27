@@ -14,7 +14,9 @@ class InstitutionFileActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final compactMenuOffset = MediaQuery.sizeOf(context).width < 768 ? 0.0 : -128.0;
+    final compactMenuOffset = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth
+        ? 0.0
+        : -128.0;
     void export(SuperadminExportFormat format) {
       activityController.completeDemoExport(format);
       showSuperadminNotice(

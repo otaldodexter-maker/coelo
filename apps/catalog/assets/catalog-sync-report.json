@@ -1,0 +1,74 @@
+{
+  "status": "synchronized",
+  "diagnostics": [],
+  "fingerprints": {
+    "core.search-field": {
+      "source": "ab8f7272",
+      "example": "328f3f4e"
+    },
+    "core.status-chip": {
+      "source": "2867d817",
+      "example": "5d94fb98"
+    },
+    "core.state-panel": {
+      "source": "6ed8ee18",
+      "example": "1e6345c6"
+    },
+    "admin.listing-toolbar": {
+      "source": "e9e4b91b",
+      "example": "f1387f98"
+    },
+    "admin.multi-select-filter": {
+      "source": "e74ab4f5",
+      "example": "0d0fb24c"
+    },
+    "admin.pagination": {
+      "source": "ba31a902",
+      "example": "ed9c394e"
+    },
+    "admin.create-action": {
+      "source": "fa585849",
+      "example": "9687564f"
+    },
+    "admin.resizable-table": {
+      "source": "dbd5520f",
+      "example": "61220592"
+    },
+    "pattern.action-hierarchy": {
+      "source": "811c9dc5",
+      "example": "9687564f"
+    },
+    "pattern.form-controls": {
+      "source": "811c9dc5",
+      "example": "037c5fc8"
+    },
+    "pattern.selection-controls": {
+      "source": "811c9dc5",
+      "example": "0d0fb24c"
+    },
+    "pattern.status-feedback": {
+      "source": "811c9dc5",
+      "example": "e7abbf4d"
+    },
+    "foundation.semantic-colors": {
+      "source": "811c9dc5",
+      "example": "7ce7e89f"
+    },
+    "foundation.typography": {
+      "source": "811c9dc5",
+      "example": "372e53dc"
+    },
+    "foundation.themes": {
+      "source": "811c9dc5",
+      "example": "73196416"
+    },
+    "product.surfaces": {
+      "source": "811c9dc5",
+      "example": "b0b1cc83"
+    },
+    "governance.component-lifecycle": {
+      "source": "811c9dc5",
+      "example": "d994ba96"
+    }
+  }
+}

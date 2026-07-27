@@ -9,6 +9,7 @@ import '../../features/auth/domain/reset_password_action.dart';
 import '../../features/auth/presentation/screens/superadmin_forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/superadmin_login_screen.dart';
 import '../../features/auth/presentation/screens/superadmin_reset_password_screen.dart';
+import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
@@ -24,6 +25,11 @@ GoRouter createSuperadminRouter({
   InstitutionDirectoryRepository institutionDirectoryRepository =
       const UnavailableInstitutionDirectoryRepository(),
   ResetPasswordAction resetPassword = unavailableResetPassword,
+  String catalogUrl = const String.fromEnvironment(
+    'COELO_CATALOG_URL',
+    defaultValue: 'https://catalog.coelo.me',
+  ),
+  ValueChanged<Uri>? openExternalCatalog,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
   return GoRouter(
@@ -85,6 +91,8 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => InstitutionDirectoryPage(
               repository: institutionDirectoryRepository,
               logout: logout,
+              onCatalogOpen: () =>
+                  openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
             ),
           ),
           GoRoute(
@@ -93,6 +101,17 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => InstitutionDirectoryPage(
               repository: institutionDirectoryRepository,
               logout: logout,
+              onCatalogOpen: () =>
+                  openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.governanceCatalog,
+            name: SuperadminRoutes.governanceCatalogName,
+            builder: (context, state) => CatalogHostPage(
+              catalogUrl: catalogUrl,
+              logout: logout,
+              onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
             ),
           ),
           GoRoute(
@@ -126,9 +145,11 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devInstitutions,
             name: SuperadminRoutes.devInstitutionsName,
-            builder: (context, state) => const InstitutionDirectoryPage(
-              repository: FakeInstitutionDirectoryRepository(),
+            builder: (context, state) => InstitutionDirectoryPage(
+              repository: const FakeInstitutionDirectoryRepository(),
               logout: _previewLogout,
+              onCatalogOpen: () =>
+                  openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
             ),
           ),
         ],

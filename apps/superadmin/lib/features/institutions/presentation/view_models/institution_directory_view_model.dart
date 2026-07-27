@@ -39,6 +39,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   InstitutionDirectoryLoadState _state = InstitutionDirectoryLoadState.initial;
   String? _errorMessage;
   bool _isLoading = false;
+  bool _hasLoadedFilterOptions = false;
   bool _isDisposed = false;
   int _requestVersion = 0;
   Timer? _searchTimer;
@@ -49,6 +50,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   InstitutionDirectoryLoadState get state => _state;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  bool get hasLoadedFilterOptions => _hasLoadedFilterOptions;
 
   Future<void> load() => _load(_query);
 
@@ -126,6 +128,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   Future<void> _load(InstitutionDirectoryQuery value) async {
     final requestVersion = ++_requestVersion;
     _isLoading = true;
+    _hasLoadedFilterOptions = false;
     _errorMessage = null;
     _state = InstitutionDirectoryLoadState.loading;
     _notifyIfActive();
@@ -139,8 +142,16 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
         return;
       }
 
+      final filterOptions = results[1] as InstitutionDirectoryFilterOptions;
+      _hasLoadedFilterOptions = true;
+      final sanitizedQuery = _sanitizeQuery(value, filterOptions);
+      if (sanitizedQuery != value) {
+        _query = sanitizedQuery;
+        return _load(sanitizedQuery);
+      }
+
       _page = results[0] as InstitutionDirectoryPage;
-      _filterOptions = results[1] as InstitutionDirectoryFilterOptions;
+      _filterOptions = filterOptions;
       if (_page.items.isNotEmpty) {
         _state = InstitutionDirectoryLoadState.success;
       } else if (value.hasActiveFilters) {
@@ -164,6 +175,27 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
         _notifyIfActive();
       }
     }
+  }
+
+  InstitutionDirectoryQuery _sanitizeQuery(
+    InstitutionDirectoryQuery value,
+    InstitutionDirectoryFilterOptions options,
+  ) {
+    Set<String> supported(Set<String> values, List<InstitutionDirectoryFilterOption> available) {
+      final ids = available.map((option) => option.id).toSet();
+      return values.where(ids.contains).toSet();
+    }
+
+    return InstitutionDirectoryQuery(
+      search: value.search,
+      statuses: value.statuses,
+      planId: value.planId,
+      states: supported(value.states, options.states),
+      cities: supported(value.cities, options.cities),
+      districts: supported(value.districts, options.districts),
+      typeIds: value.typeIds,
+      page: value.page,
+    );
   }
 
   void _notifyIfActive() {

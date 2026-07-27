@@ -8,6 +8,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/auth/domain/reset_password_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -55,7 +56,7 @@ void main() {
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
     expect(find.text('Acesse sua conta'), findsOneWidget);
@@ -80,7 +81,7 @@ void main() {
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
@@ -103,7 +104,7 @@ void main() {
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
 
@@ -128,7 +129,7 @@ void main() {
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Esqueci minha senha'));
@@ -156,7 +157,7 @@ void main() {
     addTearDown(session.dispose);
 
     router.go(SuperadminRoutes.forgotPassword);
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.forgotPassword);
@@ -177,7 +178,7 @@ void main() {
     addTearDown(session.dispose);
 
     router.go(SuperadminRoutes.resetPassword);
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.resetPassword);
@@ -198,7 +199,7 @@ void main() {
     addTearDown(session.dispose);
 
     router.go(SuperadminRoutes.forgotPassword);
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);

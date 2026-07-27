@@ -44,6 +44,7 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
   }) async {
     final plans = <String, String>{};
     final types = <String, String>{};
+    final stateOptions = <String, String>{};
     final cityOptions = <String, String>{};
     final districtOptions = <String, String>{};
     for (final item in items) {
@@ -56,6 +57,10 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
       final typeName = item.typeName;
       if (typeId != null && typeName != null) {
         types[typeId] = typeName;
+      }
+      final state = item.state;
+      if (state != null && state.trim().isNotEmpty) {
+        stateOptions[state] = state;
       }
       if (states.isNotEmpty && states.contains(item.state) && item.city != null) {
         cityOptions[item.city!] = item.city!;
@@ -81,6 +86,7 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
     return InstitutionDirectoryFilterOptions(
       plans: options(plans),
       types: options(types),
+      states: options(stateOptions),
       cities: options(cityOptions),
       districts: options(districtOptions),
     );

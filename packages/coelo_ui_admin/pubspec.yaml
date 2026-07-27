@@ -1,0 +1,24 @@
+name: coelo_ui_admin
+description: Padrões administrativos compartilhados por Admin e Superadmin.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"
+
+dependencies:
+  coelo_tokens:
+    path: ../coelo_tokens
+  coelo_ui_core:
+    path: ../coelo_ui_core
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

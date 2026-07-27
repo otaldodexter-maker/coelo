@@ -10,7 +10,12 @@ abstract final class CoeloTheme {
     colorScheme: CoeloColorSchemes.light,
     scaffoldBackgroundColor: CoeloSemanticColors.lightBackground,
     statusColors: CoeloStatusColors.light,
-    actionColors: const CoeloActionColors(primaryHover: CoeloPalette.orange600),
+    actionColors: const CoeloActionColors(
+      primaryHover: CoeloPalette.orange600,
+      primaryPressed: CoeloPalette.orange700,
+      actionLink: CoeloSemanticColors.lightActionLink,
+      focusRing: CoeloPalette.orange500,
+    ),
     secondaryText: CoeloSemanticColors.lightTextSecondary,
     visualColors: CoeloVisualColors(
       brandMarkBackground: CoeloPalette.orange500,
@@ -31,7 +36,12 @@ abstract final class CoeloTheme {
     colorScheme: CoeloColorSchemes.dark,
     scaffoldBackgroundColor: CoeloSemanticColors.darkBackground,
     statusColors: CoeloStatusColors.dark,
-    actionColors: const CoeloActionColors(primaryHover: CoeloPalette.orange400),
+    actionColors: const CoeloActionColors(
+      primaryHover: CoeloPalette.orange400,
+      primaryPressed: CoeloPalette.orange500,
+      actionLink: CoeloSemanticColors.darkActionLink,
+      focusRing: CoeloPalette.orange300,
+    ),
     secondaryText: CoeloSemanticColors.darkTextSecondary,
     visualColors: CoeloVisualColors(
       brandMarkBackground: CoeloPalette.neutral0,
@@ -60,6 +70,7 @@ abstract final class CoeloTheme {
     final surface = colorScheme.surface;
     final border = colorScheme.outline;
     final borderStrong = colorScheme.outlineVariant;
+    final overlayColors = CoeloOverlayColors(scrim: colorScheme.scrim.withValues(alpha: 0.32));
 
     return ThemeData(
       useMaterial3: true,
@@ -74,6 +85,7 @@ abstract final class CoeloTheme {
       extensions: <ThemeExtension<dynamic>>[
         statusColors,
         actionColors,
+        overlayColors,
         CoeloSurfaceColors(
           background: scaffoldBackgroundColor,
           surface: surface,
@@ -184,7 +196,7 @@ abstract final class CoeloTheme {
         backgroundColor: colorScheme.surface,
         surfaceTintColor: colorScheme.surfaceTint,
         showDragHandle: true,
-        modalBarrierColor: colorScheme.scrim.withValues(alpha: 0.32),
+        modalBarrierColor: overlayColors.scrim,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(CoeloRadius.xl)),
         ),
@@ -481,13 +493,31 @@ abstract final class CoeloSemanticColors {
 
 @immutable
 final class CoeloActionColors extends ThemeExtension<CoeloActionColors> {
-  const CoeloActionColors({required this.primaryHover});
+  const CoeloActionColors({
+    required this.primaryHover,
+    required this.primaryPressed,
+    required this.actionLink,
+    required this.focusRing,
+  });
 
   final Color primaryHover;
+  final Color primaryPressed;
+  final Color actionLink;
+  final Color focusRing;
 
   @override
-  CoeloActionColors copyWith({Color? primaryHover}) {
-    return CoeloActionColors(primaryHover: primaryHover ?? this.primaryHover);
+  CoeloActionColors copyWith({
+    Color? primaryHover,
+    Color? primaryPressed,
+    Color? actionLink,
+    Color? focusRing,
+  }) {
+    return CoeloActionColors(
+      primaryHover: primaryHover ?? this.primaryHover,
+      primaryPressed: primaryPressed ?? this.primaryPressed,
+      actionLink: actionLink ?? this.actionLink,
+      focusRing: focusRing ?? this.focusRing,
+    );
   }
 
   @override
@@ -496,7 +526,33 @@ final class CoeloActionColors extends ThemeExtension<CoeloActionColors> {
       return this;
     }
 
-    return CoeloActionColors(primaryHover: Color.lerp(primaryHover, other.primaryHover, t)!);
+    return CoeloActionColors(
+      primaryHover: Color.lerp(primaryHover, other.primaryHover, t)!,
+      primaryPressed: Color.lerp(primaryPressed, other.primaryPressed, t)!,
+      actionLink: Color.lerp(actionLink, other.actionLink, t)!,
+      focusRing: Color.lerp(focusRing, other.focusRing, t)!,
+    );
+  }
+}
+
+@immutable
+final class CoeloOverlayColors extends ThemeExtension<CoeloOverlayColors> {
+  const CoeloOverlayColors({required this.scrim});
+
+  final Color scrim;
+
+  @override
+  CoeloOverlayColors copyWith({Color? scrim}) {
+    return CoeloOverlayColors(scrim: scrim ?? this.scrim);
+  }
+
+  @override
+  CoeloOverlayColors lerp(ThemeExtension<CoeloOverlayColors>? other, double t) {
+    if (other is! CoeloOverlayColors) {
+      return this;
+    }
+
+    return CoeloOverlayColors(scrim: Color.lerp(scrim, other.scrim, t)!);
   }
 }
 

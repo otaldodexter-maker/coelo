@@ -10,55 +10,62 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
-  testWidgets('renders the desktop password recovery form reference', (tester) async {
-    _configureDesktopViewport(tester);
+  for (final themeCase in [
+    (name: 'light', theme: CoeloTheme.light),
+    (name: 'dark', theme: CoeloTheme.dark),
+  ]) {
+    testWidgets('renders the ${themeCase.name} password recovery form reference', (tester) async {
+      _configureDesktopViewport(tester);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: SuperadminForgotPasswordScreen(
-          requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-          onBackToLogin: () {},
-          onThemeModeChanged: (_) {},
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: themeCase.theme,
+          home: SuperadminForgotPasswordScreen(
+            requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+            onBackToLogin: () {},
+            onThemeModeChanged: (_) {},
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    await expectLater(
-      find.byType(SuperadminForgotPasswordScreen),
-      matchesGoldenFile('goldens/superadmin_forgot_password_light.png'),
-    );
-  });
+      await expectLater(
+        find.byType(SuperadminForgotPasswordScreen),
+        matchesGoldenFile('goldens/superadmin_forgot_password_${themeCase.name}.png'),
+      );
+    });
 
-  testWidgets('renders the desktop password recovery success reference', (tester) async {
-    _configureDesktopViewport(tester);
+    testWidgets('renders the ${themeCase.name} password recovery success reference', (
+      tester,
+    ) async {
+      _configureDesktopViewport(tester);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: SuperadminForgotPasswordScreen(
-          requestPasswordRecovery: (_) async {
-            return const PasswordRecoveryResult.success();
-          },
-          onBackToLogin: () {},
-          onThemeModeChanged: (_) {},
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: themeCase.theme,
+          home: SuperadminForgotPasswordScreen(
+            requestPasswordRecovery: (_) async {
+              return const PasswordRecoveryResult.success();
+            },
+            onBackToLogin: () {},
+            onThemeModeChanged: (_) {},
+          ),
         ),
-      ),
-    );
+      );
 
-    await tester.enterText(
-      find.byKey(const Key('superadmin-forgot-password-email')),
-      'owner@coelo.me',
-    );
-    await tester.tap(find.text('Enviar link de recuperação'));
-    await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('superadmin-forgot-password-email')),
+        'owner@coelo.me',
+      );
+      await tester.tap(find.text('Enviar link de recuperação'));
+      await tester.pumpAndSettle();
 
-    await expectLater(
-      find.byType(SuperadminForgotPasswordScreen),
-      matchesGoldenFile('goldens/superadmin_forgot_password_success_light.png'),
-    );
-  });
+      await expectLater(
+        find.byType(SuperadminForgotPasswordScreen),
+        matchesGoldenFile('goldens/superadmin_forgot_password_success_${themeCase.name}.png'),
+      );
+    });
+  }
 }
 
 Future<void> _loadGoldenFonts() async {

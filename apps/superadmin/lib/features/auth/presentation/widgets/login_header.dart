@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../app/brand/superadmin_brand_mark.dart';
 import '../../../../app/theme/superadmin_theme_mode_scope.dart';
 
 class LoginHeader extends StatelessWidget {
@@ -25,16 +26,7 @@ class LoginHeader extends StatelessWidget {
       ThemeMode.system || null => theme.brightness == Brightness.dark,
     };
     final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    final logo = Image.asset(
-      'assets/brand/logo-coelo-orange.png',
-      key: ValueKey(isDark),
-      width: CoeloSize.brandMarkLg,
-      cacheWidth: 360,
-      fit: BoxFit.contain,
-      color: isDark ? colors.onSurface : null,
-      colorBlendMode: isDark ? BlendMode.srcIn : null,
-      semanticLabel: 'Coelo',
-    );
+    final logo = SuperadminBrandMark(key: ValueKey(isDark), size: CoeloSize.brandMarkLg);
 
     return Column(
       children: [

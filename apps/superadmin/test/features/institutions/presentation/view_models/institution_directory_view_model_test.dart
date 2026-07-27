@@ -84,6 +84,29 @@ void main() {
     expect(viewModel.query.districts, isEmpty);
   });
 
+  test('removes invalid geographic selections and loads the sanitized query', () async {
+    final repository = _StubRepository(
+      onFetchFilterOptions: (states, cities) async => const InstitutionDirectoryFilterOptions(
+        plans: [],
+        types: [],
+        states: [InstitutionDirectoryFilterOption(id: 'SP', label: 'SP')],
+        cities: [InstitutionDirectoryFilterOption(id: 'Campinas', label: 'Campinas')],
+        districts: [InstitutionDirectoryFilterOption(id: 'Centro', label: 'Centro')],
+      ),
+    );
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.setStates({'SP', 'RJ'});
+    await viewModel.setCities({'Campinas', 'Curitiba'});
+    await viewModel.setDistricts({'Centro', 'Jardins'});
+
+    expect(viewModel.query.states, {'SP'});
+    expect(viewModel.query.cities, {'Campinas'});
+    expect(viewModel.query.districts, {'Centro'});
+    expect(repository.queries.last, viewModel.query);
+  });
+
   test('preserves unrelated multiselect filters when one filter is applied', () async {
     final repository = _StubRepository();
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
@@ -165,9 +188,11 @@ void main() {
 }
 
 final class _StubRepository implements InstitutionDirectoryRepository {
-  _StubRepository({this.onFetch});
+  _StubRepository({this.onFetch, this.onFetchFilterOptions});
 
   final Future<InstitutionDirectoryPage> Function(InstitutionDirectoryQuery query)? onFetch;
+  final Future<InstitutionDirectoryFilterOptions> Function(Set<String> states, Set<String> cities)?
+  onFetchFilterOptions;
   final queries = <InstitutionDirectoryQuery>[];
   final filterRequests = <(Set<String>, Set<String>)>[];
 
@@ -177,11 +202,25 @@ final class _StubRepository implements InstitutionDirectoryRepository {
     Set<String> cities = const {},
   }) async {
     filterRequests.add((Set.of(states), Set.of(cities)));
+    final dynamicOptions = onFetchFilterOptions?.call(states, cities);
+    if (dynamicOptions != null) {
+      return dynamicOptions;
+    }
     return const InstitutionDirectoryFilterOptions(
       plans: [InstitutionDirectoryFilterOption(id: 'plan-1', label: 'Essencial')],
       types: [],
-      cities: [InstitutionDirectoryFilterOption(id: 'Campinas', label: 'Campinas')],
-      districts: [InstitutionDirectoryFilterOption(id: 'Cambuí', label: 'Cambuí')],
+      states: [
+        InstitutionDirectoryFilterOption(id: 'PR', label: 'PR'),
+        InstitutionDirectoryFilterOption(id: 'SP', label: 'SP'),
+      ],
+      cities: [
+        InstitutionDirectoryFilterOption(id: 'Campinas', label: 'Campinas'),
+        InstitutionDirectoryFilterOption(id: 'Curitiba', label: 'Curitiba'),
+      ],
+      districts: [
+        InstitutionDirectoryFilterOption(id: 'Batel', label: 'Batel'),
+        InstitutionDirectoryFilterOption(id: 'Cambuí', label: 'Cambuí'),
+      ],
     );
   }
 

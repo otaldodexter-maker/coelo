@@ -1,5 +1,9 @@
 # Local agent and Codex runtime state
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/coelo-ui/
+!.agents/skills/coelo-ui/**
 .codex/
 .worktrees/
 

@@ -87,6 +87,20 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  coelo_ui_admin:
+    dependency: "direct main"
+    description:
+      path: "../../packages/coelo_ui_admin"
+      relative: true
+    source: path
+    version: "0.1.0"
+  coelo_ui_core:
+    dependency: "direct main"
+    description:
+      path: "../../packages/coelo_ui_core"
+      relative: true
+    source: path
+    version: "0.1.0"
   collection:
     dependency: transitive
     description:

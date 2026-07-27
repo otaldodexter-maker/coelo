@@ -55,6 +55,72 @@ void main() {
       expect(status?.infoContainer, const Color(0xFFE6F4FA));
     });
 
+    test('exposes approved action and overlay aliases in light and dark themes', () {
+      final lightActions = CoeloTheme.light.extension<CoeloActionColors>()!;
+      final darkActions = CoeloTheme.dark.extension<CoeloActionColors>()!;
+      final lightOverlay = CoeloTheme.light.extension<CoeloOverlayColors>()!;
+      final darkOverlay = CoeloTheme.dark.extension<CoeloOverlayColors>()!;
+
+      expect(lightActions.actionLink, CoeloSemanticColors.lightActionLink);
+      expect(lightActions.primaryPressed, CoeloPalette.orange700);
+      expect(lightActions.focusRing, CoeloTheme.light.colorScheme.primary);
+      expect(darkActions.actionLink, CoeloSemanticColors.darkActionLink);
+      expect(darkActions.primaryPressed, CoeloPalette.orange500);
+      expect(darkActions.focusRing, CoeloTheme.dark.colorScheme.primary);
+      expect(lightOverlay.scrim, CoeloTheme.light.colorScheme.scrim.withValues(alpha: 0.32));
+      expect(darkOverlay.scrim, CoeloTheme.dark.colorScheme.scrim.withValues(alpha: 0.32));
+      expect(CoeloTheme.light.bottomSheetTheme.modalBarrierColor, lightOverlay.scrim);
+      expect(CoeloTheme.dark.bottomSheetTheme.modalBarrierColor, darkOverlay.scrim);
+    });
+
+    test('copies and interpolates all action and overlay aliases', () {
+      final lightActions = CoeloTheme.light.extension<CoeloActionColors>()!;
+      final darkActions = CoeloTheme.dark.extension<CoeloActionColors>()!;
+      final copied = lightActions.copyWith(actionLink: Colors.blue);
+      final middle = lightActions.lerp(darkActions, 0.5);
+
+      expect(copied.actionLink, Colors.blue);
+      expect(copied.primaryHover, lightActions.primaryHover);
+      expect(copied.primaryPressed, lightActions.primaryPressed);
+      expect(copied.focusRing, lightActions.focusRing);
+      expect(middle.actionLink, Color.lerp(lightActions.actionLink, darkActions.actionLink, 0.5));
+      expect(
+        middle.primaryPressed,
+        Color.lerp(lightActions.primaryPressed, darkActions.primaryPressed, 0.5),
+      );
+
+      final lightOverlay = CoeloTheme.light.extension<CoeloOverlayColors>()!;
+      final darkOverlay = CoeloTheme.dark.extension<CoeloOverlayColors>()!;
+      expect(lightOverlay.copyWith(scrim: Colors.red).scrim, Colors.red);
+      expect(
+        lightOverlay.lerp(darkOverlay, 0.5).scrim,
+        Color.lerp(lightOverlay.scrim, darkOverlay.scrim, 0.5),
+      );
+    });
+
+    test('keeps established component theme mappings unchanged', () {
+      for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+        final scheme = theme.colorScheme;
+        final focusedBorder = theme.inputDecorationTheme.focusedBorder! as OutlineInputBorder;
+
+        expect(focusedBorder.borderSide, BorderSide(color: scheme.primary, width: 2));
+        expect(theme.filledButtonTheme.style?.backgroundColor?.resolve({}), scheme.primary);
+        expect(
+          theme.filledButtonTheme.style?.backgroundColor?.resolve({WidgetState.disabled}),
+          scheme.surfaceContainer,
+        );
+        expect(theme.outlinedButtonTheme.style?.foregroundColor?.resolve({}), scheme.primary);
+        expect(theme.textButtonTheme.style?.foregroundColor?.resolve({}), scheme.primary);
+        expect(theme.chipTheme.backgroundColor, scheme.primaryContainer);
+        expect(theme.cardTheme.color, scheme.surface);
+        expect(theme.dataTableTheme.headingRowColor?.resolve({}), scheme.surfaceContainer);
+        expect(
+          theme.dataTableTheme.dataRowColor?.resolve({WidgetState.hovered}),
+          scheme.primaryContainer,
+        );
+      }
+    });
+
     test('interpolates component visuals without a brightness midpoint jump', () {
       CoeloVisualColors visualOf(ThemeData theme) => theme.extension<CoeloVisualColors>()!;
 

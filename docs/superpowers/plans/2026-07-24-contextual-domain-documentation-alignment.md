@@ -185,7 +185,7 @@ rg -n "authorized|autorizad|transfer|attendance|assiduidade|activity_child|parti
 git diff --check -- docs/data/data-model.md docs/security/auth-multitenant-permissions.md specs/011-superadmin-database-rls.md specs/014-atividade-contextual.md
 ```
 
-Expected: todas as lacunas aparecem como futuras e nenhuma e descrita como ja aplicada.
+Expected: todas as lacunas aparecem como futuras e nenhuma e descrita como ja aplicada.66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
 
 ### Task 4: Atualizar PRDs De Produto
 

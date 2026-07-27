@@ -1,5 +1,21 @@
+---
+source: "specs/013-ui-packages-componentization.md"
+status: "reserved-package"
+generated_at: "2026-07-22"
+---
+
 # coelo_ui_principal
 
-Componentes Flutter mobile-first do Principal: Flow, Now, Moments, rotina, chat, agenda, portal e padroes familiares.
+Componentes Flutter especificos do app principal: Flow, Now, Moments, rotina,
+agenda, chat e troca explicita de experiencias contextuais. A pessoa global
+pode combinar papeis familiares, profissionais e internos autorizados conforme
+o ADR 0012; o pacote nao presume uma experiencia somente de responsaveis.
 
-Status: pacote reservado. Qualquer implementacao futura deve nascer de spec aprovada.
+## Regra
+
+Este pacote nao importa componentes administrativos. Quando algo for realmente
+compartilhado com Admin ou Superadmin, ele deve subir para `coelo_ui_core`.
+
+## Status
+
+Pacote reservado. Implementar apenas a partir de specs do app principal.

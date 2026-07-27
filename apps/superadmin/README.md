@@ -1,7 +1,7 @@
 ---
 source: "AGENTS.md; docs/contexts/superadmin-context.md; docs/product/prd-superadmin.md"
-status: "planning-context"
-generated_at: "2026-06-22"
+status: "implemented-foundation"
+generated_at: "2026-07-24"
 ---
 
 # Superadmin Flutter
@@ -22,6 +22,12 @@ auditado, logs e governanca da plataforma.
 - O router fica em `lib/app/router`.
 - Computacoes pesadas devem passar por `lib/core/isolates`.
 - O shell atual ja decide layout por constraints e breakpoints Coelo.
+- A tela de instituicoes usa primitives de `coelo_ui_core`, padroes densos de
+  `coelo_ui_admin` e composicoes de dominio locais.
+- `Governanca > Catalogo` abre a aplicacao de catalogo em origem independente
+  pela rota protegida `/governance/catalog`, sem importar o registry no bundle.
+- Login, esqueci minha senha, redefinicao e shell usam a marca circular
+  compartilhada do app em light e dark.
 
 ## Componentizacao
 

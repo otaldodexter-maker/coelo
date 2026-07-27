@@ -11,6 +11,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -199,11 +200,29 @@ void main() {
     final triggerRect = tester.getRect(
       find.byKey(const Key('superadmin-navigation-section-structure')),
     );
+    final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
     final flyoutRect = tester.getRect(
       find.byKey(const Key('superadmin-navigation-flyout-structure')),
     );
+    const flyoutSurfacePadding = CoeloSpacing.space2;
     expect(flyoutRect.left, greaterThanOrEqualTo(triggerRect.right));
+    expect(flyoutRect.left, sidebarRect.right + CoeloSpacing.space1);
+    expect(flyoutRect.left - flyoutSurfacePadding, sidebarRect.right - CoeloSpacing.space1);
     expect((flyoutRect.top - triggerRect.top).abs(), lessThanOrEqualTo(CoeloSpacing.space2));
+    final navigationAnchor = tester.widget<MenuAnchor>(
+      find
+          .ancestor(
+            of: find.byKey(const Key('superadmin-navigation-section-structure')),
+            matching: find.byType(MenuAnchor),
+          )
+          .first,
+    );
+    expect(
+      navigationAnchor.alignmentOffset,
+      const Offset(CoeloSpacing.space1, -CoeloSpacing.space1),
+    );
+    expect(navigationAnchor.style?.elevation?.resolve({}), 4);
+    expect(navigationAnchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
     expect(find.text('Unidades'), findsOneWidget);
     expect(find.text('Grupos'), findsOneWidget);
     final units = tester.widget<MenuItemButton>(
@@ -223,8 +242,11 @@ void main() {
     expect(institutions.style?.foregroundColor?.resolve({}), colors.primary);
     expect(institutions.style?.iconColor?.resolve({}), colors.primary);
     expect(units.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
+    expect(units.style?.backgroundColor?.resolve({WidgetState.pressed}), colors.primaryContainer);
     expect(units.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
+    expect(units.style?.foregroundColor?.resolve({WidgetState.pressed}), colors.primary);
     expect(units.style?.iconColor?.resolve({WidgetState.hovered}), colors.primary);
+    expect(units.style?.iconColor?.resolve({WidgetState.pressed}), colors.primary);
     expect(units.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
   });
 
@@ -305,7 +327,7 @@ void main() {
     final toggle = find.byKey(const Key('superadmin-sidebar-collapse'));
     final toggleRect = tester.getRect(toggle);
     final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
-    expect(toggleRect.right, sidebarRect.right + CoeloSpacing.space2);
+    expect(toggleRect.right, sidebarRect.right + CoeloSpacing.space5);
 
     await tester.tapAt(Offset(toggleRect.right - 1, toggleRect.center.dy));
     await tester.pumpAndSettle();
@@ -315,6 +337,38 @@ void main() {
       88,
       reason: 'visual $toggleRect, sidebar $sidebarRect',
     );
+  });
+
+  testWidgets('keeps the visual collapse circle partly outside the sidebar', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
+    final toggleRect = tester.getRect(find.byKey(const Key('superadmin-sidebar-collapse')));
+    final visualRect = tester.getRect(find.byKey(const Key('superadmin-sidebar-collapse-visual')));
+
+    expect(visualRect.left, lessThan(sidebarRect.right));
+    expect(visualRect.right, sidebarRect.right + CoeloSpacing.space2);
+    expect(visualRect.size, const Size.square(CoeloSpacing.space6));
+    expect(visualRect.center, toggleRect.center);
+  });
+
+  testWidgets('names the sidebar toggle without showing a visual tooltip', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    expect(find.byTooltip('Recolher menu'), findsNothing);
+    expect(find.bySemanticsLabel('Recolher menu'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Expandir menu'), findsNothing);
+    expect(find.bySemanticsLabel('Expandir menu'), findsOneWidget);
+    semantics.dispose();
   });
 
   testWidgets('keeps compact header actions four pixels below the app bar top', (tester) async {
@@ -611,16 +665,24 @@ void main() {
     await tester.pumpWidget(_shellApp());
     final lightMark = tester.widget<Container>(find.byKey(const Key('superadmin-brand-mark')));
     final lightDecoration = lightMark.decoration! as BoxDecoration;
+    final lightLogo = tester.widget<SvgPicture>(find.byKey(const Key('superadmin-brand-logo')));
+    final lightLoader = lightLogo.bytesLoader as SvgAssetLoader;
     expect(lightDecoration.shape, BoxShape.circle);
     expect(lightDecoration.color, CoeloTheme.light.colorScheme.primary);
+    expect(lightLoader.assetName, 'assets/brand/logo-coelo-white.svg');
+    expect(lightLogo.colorFilter, isNull);
     expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
 
     await tester.pumpWidget(_shellApp(brightness: Brightness.dark));
     await tester.pumpAndSettle();
     final darkMark = tester.widget<Container>(find.byKey(const Key('superadmin-brand-mark')));
     final darkDecoration = darkMark.decoration! as BoxDecoration;
+    final darkLogo = tester.widget<SvgPicture>(find.byKey(const Key('superadmin-brand-logo')));
+    final darkLoader = darkLogo.bytesLoader as SvgAssetLoader;
     expect(darkDecoration.shape, BoxShape.circle);
     expect(darkDecoration.color, CoeloPalette.neutral0);
+    expect(darkLoader.assetName, 'assets/brand/logo-coelo-orange.svg');
+    expect(darkLogo.colorFilter, isNull);
     expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
   });
 
@@ -1131,7 +1193,21 @@ void main() {
     await tester.tap(trigger);
     await tester.pumpAndSettle();
     var firstOption = find.byKey(const Key('superadmin-tour-screen'));
+    var sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
+    const tourSurfacePadding = CoeloSpacing.space2;
     expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
+    expect(tester.getTopLeft(firstOption).dx, sidebarRect.right + CoeloSpacing.space1);
+    expect(
+      tester.getTopLeft(firstOption).dx - tourSurfacePadding,
+      sidebarRect.right - CoeloSpacing.space1,
+    );
+    var tourAnchor = tester.widget<MenuAnchor>(
+      find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
+    );
+    expect(
+      tourAnchor.alignmentOffset,
+      const Offset(252 - CoeloSpacing.space1, -CoeloSize.touchMin),
+    );
 
     await tester.tap(trigger);
     await tester.pumpAndSettle();
@@ -1141,8 +1217,21 @@ void main() {
     await tester.tap(trigger);
     await tester.pumpAndSettle();
     firstOption = find.byKey(const Key('superadmin-tour-screen'));
+    sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
     expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
+    expect(tester.getTopLeft(firstOption).dx, sidebarRect.right + CoeloSpacing.space1);
+    expect(
+      tester.getTopLeft(firstOption).dx - tourSurfacePadding,
+      sidebarRect.right - CoeloSpacing.space1,
+    );
     expect(tester.getRect(firstOption).right, lessThanOrEqualTo(1200));
+    tourAnchor = tester.widget<MenuAnchor>(
+      find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
+    );
+    expect(
+      tourAnchor.alignmentOffset,
+      const Offset(CoeloSize.touchMin + CoeloSpacing.space4, -CoeloSize.touchMin),
+    );
   });
 
   testWidgets('does not schedule the egg timer in reduced motion and cancels it on dispose', (

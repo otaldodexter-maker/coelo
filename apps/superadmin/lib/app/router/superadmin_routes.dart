@@ -3,6 +3,8 @@ abstract final class SuperadminRoutes {
   static const homeName = 'home';
   static const institutions = '/institutions';
   static const institutionsName = 'institutions';
+  static const governanceCatalog = '/governance/catalog';
+  static const governanceCatalogName = 'governance-catalog';
   static const login = '/login';
   static const loginName = 'login';
   static const forgotPassword = '/forgot-password';

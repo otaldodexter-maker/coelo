@@ -12,6 +12,10 @@ dependencies:
     path: ../../packages/coelo_auth
   coelo_tokens:
     path: ../../packages/coelo_tokens
+  coelo_ui_admin:
+    path: ../../packages/coelo_ui_admin
+  coelo_ui_core:
+    path: ../../packages/coelo_ui_core
   flutter:
     sdk: flutter
   flutter_svg: 2.2.3

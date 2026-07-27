@@ -1,0 +1,7 @@
+interface:
+  display_name: "Coelo UI"
+  short_description: "Orienta UI Coelo com padrões aprovados"
+  default_prompt: "Use $coelo-ui para criar ou revisar uma interface Coelo conforme os padrões aprovados."
+
+policy:
+  allow_implicit_invocation: true

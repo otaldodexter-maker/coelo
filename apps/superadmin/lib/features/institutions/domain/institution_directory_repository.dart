@@ -12,6 +12,7 @@ final class InstitutionDirectoryFilterOptions {
   const InstitutionDirectoryFilterOptions({
     required this.plans,
     required this.types,
+    this.states = const [],
     this.cities = const [],
     this.districts = const [],
   });
@@ -19,12 +20,14 @@ final class InstitutionDirectoryFilterOptions {
   static const empty = InstitutionDirectoryFilterOptions(
     plans: [],
     types: [],
+    states: [],
     cities: [],
     districts: [],
   );
 
   final List<InstitutionDirectoryFilterOption> plans;
   final List<InstitutionDirectoryFilterOption> types;
+  final List<InstitutionDirectoryFilterOption> states;
   final List<InstitutionDirectoryFilterOption> cities;
   final List<InstitutionDirectoryFilterOption> districts;
 }

@@ -44,12 +44,6 @@ void main() {
           ),
         ),
       );
-      await tester.runAsync(() async {
-        await precacheImage(
-          const AssetImage('assets/brand/logo-coelo-orange-complete.png'),
-          tester.element(find.byType(SuperadminResetPasswordScreen)),
-        );
-      });
       await tester.pumpAndSettle();
 
       await expectLater(

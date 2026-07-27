@@ -48,8 +48,8 @@ void main() {
     await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
 
     expect(find.text('Superadmin'), findsOneWidget);
-    final logo = tester.widget<Image>(find.byType(Image));
-    expect(logo.semanticLabel, 'Coelo');
+    expect(find.byKey(const Key('superadmin-brand-mark')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
     expect(find.text('Acesse sua conta'), findsOneWidget);
     expect(find.text('Ambiente interno da operação Coelo.'), findsOneWidget);
     expect(find.text('E-mail'), findsOneWidget);
@@ -71,7 +71,6 @@ void main() {
 
     final context = tester.element(find.byType(SuperadminLoginScreen));
     final colors = Theme.of(context).colorScheme;
-    final logo = tester.widget<Image>(find.byType(Image));
     final card = tester.widget<Card>(find.byType(Card));
     final email = tester.widget<TextField>(
       find.descendant(
@@ -80,15 +79,14 @@ void main() {
       ),
     );
 
-    final logoProvider = (logo.image as ResizeImage).imageProvider as AssetImage;
     final divider = tester.widget<Divider>(
       find.byKey(const ValueKey('superadmin-login-header-divider')),
     );
 
-    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange.png');
-    expect(logo.width, CoeloSize.brandMarkLg);
-    expect(logo.height, isNull);
-    expect(logo.color, isNull);
+    expect(
+      tester.getSize(find.byKey(const Key('superadmin-brand-mark'))),
+      const Size.square(CoeloSize.brandMarkLg),
+    );
     expect(find.byKey(const ValueKey('superadmin-login-header-divider')), findsOneWidget);
     expect(card.color, colors.surface);
     expect(card.surfaceTintColor, colors.surface);
@@ -325,11 +323,8 @@ void main() {
 
     final scaffoldContext = tester.element(find.byType(Scaffold));
     expect(Theme.of(scaffoldContext).brightness, Brightness.dark);
-    final logo = tester.widget<Image>(find.byType(Image));
-    final logoProvider = (logo.image as ResizeImage).imageProvider as AssetImage;
-    expect(logoProvider.assetName, 'assets/brand/logo-coelo-orange.png');
-    expect(logo.color, Theme.of(scaffoldContext).colorScheme.onSurface);
-    expect(logo.colorBlendMode, BlendMode.srcIn);
+    expect(find.byKey(const Key('superadmin-brand-mark')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
