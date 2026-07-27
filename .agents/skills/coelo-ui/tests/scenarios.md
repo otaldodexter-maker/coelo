@@ -203,3 +203,43 @@ suficiente para aceita-lo.
 Resultado RED: 4/4 familias violam o contrato esperado - superficie de marca,
 hover, fechamento e filtro. Estes cenarios devem falhar ate que a skill passe a
 exigir os contratos correspondentes.
+
+### 10. Tabela administrativa improvisada - RED
+
+Prompt sob pressão: "Você precisa criar uma tabela administrativa Flutter para
+lista de instituições, semelhante a um produto SaaS. O prazo é agora; escreva a
+implementação/decisões visuais rapidamente."
+
+Resultado real: o agente escolheu "card branco com borda cinza clara, cantos
+12 px e sombra muito sutil", cabeçalho cinza-claro, linhas de 56–64 px,
+divisórias discretas e hover "levemente azulado/cinza". Incluiu rolagem
+horizontal, truncamento, tooltip, chips semânticos e menu de três pontos, mas
+declarou: "Não incluir redimensionamento de colunas nem primeira coluna fixada
+inicialmente".
+
+Falha observada: a escolha natural preservou boa parte da anatomia SaaS, mas
+aceitou hover neutro, omitiu coluna fixa visual e redimensionamento por mouse e
+teclado, e não recuperou o componente canônico `CoeloAdminResizableTable`.
+
+## Reexecução com a skill - contratos de superfície (GREEN, 2026-07-27)
+
+### 10. Tabela administrativa canônica - GREEN
+
+Prompt: repetir o cenário 10 com a instrução explícita de usar `$coelo-ui`,
+consultar primeiro o índice e informar a evidência antes de abrir documentos.
+
+Critério: a resposta deve anunciar `admin.resizable-table`, reutilizar
+`CoeloAdminResizableTable`, indicar card em `colorScheme.surface`, cabeçalho
+`colorScheme.surfaceContainer`, linhas contínuas de 64 px mais divisor,
+`primaryContainer` no hover/foco/seleção, coluna fixa visual, scrollbar
+horizontal visível, redimensionamento por mouse e teclado, truncamento sem
+quebra, status semântico e ações compactas.
+
+Resultado real: o agente anunciou a consulta e recuperou
+`admin.resizable-table` e `CoeloAdminResizableTable<Institution>`. Indicou
+card com `surface`, `outlineVariant` e `Clip.antiAlias`, cabeçalho
+`surfaceContainer`, linhas de 64 px, divisor, hover/foco/seleção em
+`primaryContainer`, cópia da coluna fixa com `ExcludeSemantics` e
+`IgnorePointer`, scrollbar horizontal persistente, resize por arraste e setas,
+ellipsis sem quebra, chip semântico, ações compactas e paridade de
+acessibilidade. Resultado GREEN: cenário atendido sem alteração de arquivos.

@@ -2,6 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $referencePath = Join-Path $PSScriptRoot '..\references\surface-interaction-contracts.md'
 $skillPath = Join-Path $PSScriptRoot '..\SKILL.md'
+$designSystemPath = Join-Path $PSScriptRoot '..\..\..\..\docs\design\design-system.md'
 
 function Assert-Contains {
   param(
@@ -44,6 +45,27 @@ foreach ($expected in @(
   'fundo transparente até hover ou foco'
 )) {
   Assert-Contains -Content $reference -Expected $expected -Source $referencePath -Label 'Surface interaction reference'
+}
+
+if (-not (Test-Path -LiteralPath $designSystemPath)) {
+  throw "Missing required design system: $designSystemPath"
+}
+
+$designSystem = Get-Content -LiteralPath $designSystemPath -Raw
+foreach ($expected in @(
+  'CoeloAdminResizableTable',
+  'colorScheme.surfaceContainer',
+  'colorScheme.outlineVariant',
+  '64 px mais divisor',
+  'coluna fixa visual',
+  'scrollbar horizontal visível',
+  'redimensionamento por mouse e teclado',
+  'truncamento sem quebra',
+  'Status sem',
+  'compactas'
+)) {
+  Assert-Contains -Content $reference -Expected $expected -Source $referencePath -Label 'Administrative table contract'
+  Assert-Contains -Content $designSystem -Expected $expected -Source $designSystemPath -Label 'Design system administrative table contract'
 }
 
 $skill = Get-Content -LiteralPath $skillPath -Raw

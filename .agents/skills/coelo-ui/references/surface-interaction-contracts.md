@@ -66,6 +66,28 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   multi-select administrativo. Instituições é a referência de comportamento do
   multi-select; o popup de Bug é a referência do single-select.
 
+## Tabela administrativa
+
+- Para lista administrativa ampla, consultar `admin.resizable-table` no índice
+  e reutilizar `CoeloAdminResizableTable`; a tabela de Instituições é a
+  referência canônica. Não substituir esse padrão por `DataTable` ou uma tabela
+  local paralela sem aprovação explícita.
+- A superfície é card em `colorScheme.surface`, com borda
+  `colorScheme.outlineVariant`, raio do card e clip anti-alias. O cabeçalho usa
+  `colorScheme.surfaceContainer` e as linhas permanecem contínuas.
+- Cada linha mede 64 px mais divisor de 1 px `colorScheme.outlineVariant`.
+  Hover, foco e seleção usam `colorScheme.primaryContainer`, sem zebra, raio ou
+  espaçamento entre linhas.
+- Manter coluna fixa visual durante o scroll horizontal e excluir sua cópia da
+  semântica. Exibir scrollbar horizontal visível quando necessário e aceitar
+  mouse, toque, caneta e trackpad.
+- Oferecer redimensionamento por mouse e teclado, com cursor de coluna, foco
+  visível e rótulo semântico para o redimensionador. Usar truncamento sem quebra
+  (`ellipsis`), sem wrap; tooltip apenas para informação não crítica.
+- Status semântico usa chip com texto, cor e ícone opcional. Ações compactas
+  expõem no máximo duas ações rápidas ou um menu contextual, separando ações
+  sensíveis.
+
 ## Acessibilidade
 
 - Resolver cores por tokens semânticos nos dois temas, sem HEX ou branco literal

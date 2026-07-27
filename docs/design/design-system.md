@@ -645,15 +645,23 @@ Os painéis administrativos devem ser mais densos que o App, mas não mais confu
 
 ## 17.1 Tabelas
 
-| Elemento | Padrão |
+Para listas administrativas amplas, reutilizar `CoeloAdminResizableTable`, cuja
+referência de composição é a tabela de Instituições. Não substituir por uma
+`DataTable` genérica nem criar uma tabela paralela sem aprovação explícita.
+
+| Elemento | Padrão canônico |
 | --- | --- |
-| Cabeçalho | 12–14 px SemiBold; surface subtle; ordenação com ícone e texto acessível. |
-| Linha | 48–56 px; hover e foco com primary container, sem raio ou espaçamento entre linhas; seleção com primary container. |
-| Ações | Menu contextual; até 2 ações rápidas visíveis. |
-| Status | Chip com texto + cor + ícone opcional. |
+| Superfície | Card em `colorScheme.surface`, borda `colorScheme.outlineVariant`, raio do card e clip anti-alias. O conteúdo não deve vazar pelos cantos. |
+| Cabeçalho | `colorScheme.surfaceContainer`, 12–14 px SemiBold e rótulos acessíveis; manter a mesma geometria das colunas de dados. |
+| Linha | 64 px mais divisor de 1 px `colorScheme.outlineVariant`; linhas contínuas, sem zebra, raio ou espaçamento entre si. Hover, foco e seleção usam `colorScheme.primaryContainer`. |
+| Coluna fixa | A primeira coluna é uma coluna fixa visual durante o scroll horizontal; a duplicação visual não pode duplicar a semântica no leitor de tela. |
+| Overflow | Exibir scrollbar horizontal visível quando necessário, permitir mouse, toque, caneta e trackpad e preservar o clip do card. |
+| Redimensionamento | Cada coluna redimensionável oferece redimensionamento por mouse e teclado, cursor de coluna, foco visível e rótulo semântico para aumentar ou reduzir a largura. |
+| Texto longo | Usar truncamento sem quebra (`ellipsis`), sem wrap; tooltip somente para informação não crítica. |
+| Status | Status semântico usa chip: texto sempre acompanha cor e ícone opcional. |
+| Ações | Usar ações compactas: no máximo duas ações rápidas ou menu contextual; separar ações sensíveis. |
 | Números | Alinhar à direita; usar tabular figures quando disponível. |
-| Texto longo | Truncar com tooltip apenas em informação não crítica. |
-| Responsividade | Priorizar colunas; transformar em cards no compact quando necessário. |
+| Responsividade | Priorizar colunas; no compact, usar cards quando necessário. Se a tabela continuar, manter scroll horizontal em vez de ocultar informação crítica. |
 
 ## 17.2 Paleta para gráficos — uso exclusivo de dados
 
