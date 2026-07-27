@@ -1,8 +1,8 @@
 ---
 title: "Contextual Migration History Reconciliation"
 source: "Supabase project evvbomzejfijozbtgvpt; packages/coelo_database/migrations; Supabase CLI 2.109.1"
-status: "baseline-recorded"
-generated_at: "2026-07-24"
+status: "history-reconciled"
+generated_at: "2026-07-27"
 ---
 
 # Escopo
@@ -89,6 +89,7 @@ O fingerprint cobre columns, constraints, policies e functions dos schemas
 | Momento | Catalog item count | Schema fingerprint |
 | --- | ---: | --- |
 | before | 1840 | 15dbd25272e225eafb2b9fd84507043a |
+| after | 1840 | 15dbd25272e225eafb2b9fd84507043a |
 
 # Advisors Antes
 
@@ -337,24 +338,89 @@ Total: 198. Severidades: INFO=198.
 
 # Reparacao Executada
 
-Nao executada nesta tarefa. Esta fase registra exclusivamente o baseline
-anterior ao reparo de historico.
+Executada em `2026-07-27T09:29:37-03:00`, exclusivamente no projeto
+`evvbomzejfijozbtgvpt`, depois de reconfirmar:
+
+- projeto `coelo` em `ACTIVE_HEALTHY`;
+- PostgreSQL `17.6.1.127` em `sa-east-1`;
+- as mesmas 18 entradas do ledger anterior;
+- os 15 pares semanticos deste relatorio;
+- 1840 itens de catalogo e fingerprint
+  `15dbd25272e225eafb2b9fd84507043a`;
+- mirror local com as 18 migrations canonicas;
+- Supabase CLI `2.109.1`.
+
+O workspace foi vinculado somente ao ref confirmado:
+
+```powershell
+npx.cmd supabase@2.109.1 link --project-ref evvbomzejfijozbtgvpt --workdir packages/coelo_database --agent no --output-format text
+```
+
+As 15 versions remotas antigas foram removidas somente do ledger:
+
+```powershell
+npx.cmd supabase@2.109.1 migration repair 20260720133448 20260720183531 20260720183750 20260724121904 20260724122630 20260724153426 20260724155243 20260724155913 20260724160402 20260724161043 20260724161414 20260724161917 20260724162436 20260724162735 20260724163017 --status reverted --linked --workdir packages/coelo_database --agent no --output-format text
+```
+
+As 15 versions canonicas foram registradas como aplicadas:
+
+```powershell
+npx.cmd supabase@2.109.1 migration repair 20260720103023 20260720180000 20260720190000 20260724120307 20260724122545 20260724152628 20260724152707 20260724152713 20260724152722 20260724152731 20260724161334 20260724161706 20260724162210 20260724162604 20260724162900 --status applied --linked --workdir packages/coelo_database --agent no --output-format text
+```
+
+Os dois comandos terminaram com `Finished supabase migration repair.`. Nao
+foram executados DDL, DML em tabelas de produto, `apply_migration`, `db reset`
+ou `db push` real.
 
 # Ledger Remoto Depois
 
-Nao coletado nesta tarefa. Deve ser preenchido somente depois do reparo de
-historico autorizado.
+O ledger remoto passou a ter exatamente as mesmas 18 versions e nomes dos
+arquivos canonicos locais:
+
+| Version | Name |
+| --- | --- |
+| 20260623191021 | superadmin_foundation_v1 |
+| 20260623203230 | schema_boundaries_catalog_v1 |
+| 20260717151609 | institution_directory_foundation |
+| 20260720103023 | institution_contact_directory_refinement |
+| 20260720180000 | people_context_foundation |
+| 20260720190000 | people_context_advisor_hardening |
+| 20260724120307 | contextual_activities_foundation |
+| 20260724122545 | contextual_activities_fk_index_hardening |
+| 20260724152628 | contextual_authorization_core |
+| 20260724152707 | family_authorizations_and_transfers |
+| 20260724152713 | activity_governance_and_participation |
+| 20260724152722 | contextual_chat_foundation |
+| 20260724152731 | attendance_assiduity_foundation |
+| 20260724161334 | contextual_domains_compatibility_hardening |
+| 20260724161706 | contextual_domains_advisor_hardening |
+| 20260724162210 | contextual_chat_lifecycle_hardening |
+| 20260724162604 | contextual_chat_trigger_hardening |
+| 20260724162900 | contextual_chat_audit_schema_hardening |
+
+`supabase migration list --linked` retornou 18 linhas com `LOCAL` e `REMOTE`
+iguais. A verificacao:
+
+```powershell
+npx.cmd supabase@2.109.1 db push --dry-run --linked --workdir packages/coelo_database --agent no --output-format text
+```
+
+retornou `Remote database is up to date.` e declarou explicitamente
+`DRY RUN: migrations will not be pushed to the database.`.
 
 # Testes E Advisors Depois
 
-Nao executados nesta tarefa. Devem ser registrados depois do reparo para
-comprovar que o fingerprint e os advisors permaneceram inalterados.
+O fingerprint estrutural foi recalculado depois do reparo e permaneceu em
+1840 itens e `15dbd25272e225eafb2b9fd84507043a`, identico ao estado anterior.
+O projeto continuou `ACTIVE_HEALTHY`.
+
+Os 11 testes SQL e os advisors posteriores pertencem a proxima tarefa de
+validacao e ainda nao foram executados nesta etapa.
 
 # Resultado
 
-Baseline remoto registrado com 18 migrations, fingerprint
-`15dbd25272e225eafb2b9fd84507043a` para 1840
-itens de catalogo, 2 advisors de
-seguranca e 198 advisors de
-performance. Nenhuma DDL, DML, migration, reparo ou alteracao remota foi
-executada.
+Historico remoto reconciliado com as 18 versions e nomes canonicos locais.
+O `db push --dry-run` confirmou que nao ha migration pendente. O fingerprint
+depois do reparo e identico ao anterior, e nenhum DDL ou DML de produto foi
+executado. A unica mutacao remota desta etapa ocorreu no ledger
+`supabase_migrations.schema_migrations`.
