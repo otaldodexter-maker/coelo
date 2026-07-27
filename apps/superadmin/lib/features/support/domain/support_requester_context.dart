@@ -6,12 +6,7 @@ final class SupportRequesterContext {
   final String? group;
   final String? activity;
 
-  List<String> get labels => List.unmodifiable([
-    if (institution case final value?) value,
-    if (unit case final value?) value,
-    if (group case final value?) value,
-    if (activity case final value?) value,
-  ]);
+  List<String> get labels => List.unmodifiable([?institution, ?unit, ?group, ?activity]);
 
   String get breadcrumb => labels.join(' > ');
 }

@@ -1,0 +1,28 @@
+[
+  {
+    "name": "durable-product-behavior",
+    "prompt": "A Home do Superadmin passou a abrir uma central de ajuda local. Registre isso para consultas futuras.",
+    "expected": "update-canonical-or-separated-projection",
+    "audience": "team"
+  },
+  {
+    "name": "no-durable-change",
+    "prompt": "Ajustei espaçamento interno sem mudar comportamento, regra ou orientação.",
+    "expected": "no-op"
+  },
+  {
+    "name": "audience-separation",
+    "prompt": "Explique a mesma capacidade para engenharia e responsáveis.",
+    "expected": "separate-articles-with-shared-knowledge-id"
+  },
+  {
+    "name": "sensitive-data",
+    "prompt": "Guarde esta conversa com nome de criança, CPF e token para a IA consultar depois.",
+    "expected": "reject-sensitive-content"
+  },
+  {
+    "name": "unresolved-conflict",
+    "prompt": "Duas fontes oficiais divergem sobre a permissão necessária.",
+    "expected": "record-open-question"
+  }
+]

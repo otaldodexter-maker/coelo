@@ -1,0 +1,4 @@
+interface:
+  display_name: "Memória Coelo"
+  short_description: "Preserva conhecimento Coelo por audiência"
+  default_prompt: "Use $coelo-knowledge para consultar e atualizar a memória versionada do Coelo."

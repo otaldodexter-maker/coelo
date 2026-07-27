@@ -4,6 +4,39 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('ships fifteen deterministic institutions with valid hierarchy', () {
+    final repository = FakeInstitutionDirectoryRepository();
+
+    expect(repository.records, hasLength(15));
+    expect(repository.records.map((record) => record.id).toSet(), hasLength(15));
+    for (final record in repository.records) {
+      expect(record.units.length, inInclusiveRange(1, 4));
+      expect(record.units.expand((unit) => unit.groups), isNotEmpty);
+      for (final unit in record.units) {
+        expect(unit.groups.length, inInclusiveRange(1, 40));
+      }
+      expect(record.directoryItem.unitsCount, record.units.length);
+      expect(
+        record.directoryItem.groupsCount,
+        record.units.fold<int>(0, (total, unit) => total + unit.groups.length),
+      );
+    }
+  });
+
+  test('finds and upserts a record in memory', () async {
+    final repository = FakeInstitutionDirectoryRepository();
+    final original = repository.findById('demo-institution-aurora')!;
+
+    await repository.upsert(original.copyWith(publicName: 'Instituto Aurora Atualizado'));
+
+    expect(
+      repository.findById('demo-institution-aurora')!.publicName,
+      'Instituto Aurora Atualizado',
+    );
+    final page = await repository.fetchPage(InstitutionDirectoryQuery(search: 'Aurora Atualizado'));
+    expect(page.items.single.id, 'demo-institution-aurora');
+  });
+
   test('searches public, trade, and legal names but never the domain', () async {
     final repository = FakeInstitutionDirectoryRepository(items: _items);
 

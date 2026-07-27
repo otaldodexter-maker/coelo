@@ -86,3 +86,15 @@ Cada spec deve conter:
 ## Como Evitar Retrabalho
 
 Antes de criar algo novo, procurar primeiro em `docs/`, `specs/`, `decisions/` e `packages/`. Se uma regra ja existir em documento oficial, preserve-a. Se houver divergencia entre fonte oficial e decisao recente, registre o conflito e peca aprovacao antes de implementar.
+
+## Memoria De Conhecimento
+
+Use `.agents/skills/coelo-knowledge/SKILL.md` sempre que uma tarefa Coelo
+alterar ou explicar produto, dominio, permissoes, UX, documentacao ou
+comportamento observavel.
+
+Antes do trabalho, consulte a projecao em `docs/knowledge/` e suas fontes
+canonicas. Ao terminar, execute o gate de memoria da skill: atualize primeiro a
+fonte canonica, registre somente conhecimento duravel e aprovado para a
+audiencia correta, valide o conteudo e relate o que foi capturado. Quando nada
+reutilizavel mudar, nao crie arquivos apenas para registrar atividade.

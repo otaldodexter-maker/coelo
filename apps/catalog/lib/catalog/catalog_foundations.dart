@@ -4,6 +4,8 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import 'catalog_foundation.dart';
+import 'chat_catalog_foundations.dart';
+import 'surface_interaction_catalog_foundations.dart';
 
 const showroomContentDestinations = <String, String>{
   'actions': 'pattern.action-hierarchy',
@@ -49,6 +51,8 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
       id: 'foundation.themes',
       builder: (_) => const _ThemesFoundation(),
     ),
+    ...buildChatFoundationRegistry(),
+    ...buildSurfaceInteractionFoundationRegistry(),
   };
 }
 

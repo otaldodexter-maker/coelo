@@ -94,7 +94,7 @@ GoRouter _router(SuperadminSession session, {ValueChanged<Uri>? openExternalCata
     login: (_) async => const LoginResult.success(),
     logout: unavailableSuperadminLogout,
     requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-    institutionDirectoryRepository: const FakeInstitutionDirectoryRepository(),
+    institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
     catalogUrl: 'https://catalog.coelo.me',
     openExternalCatalog: openExternalCatalog,
     onThemeModeChanged: (_) {},

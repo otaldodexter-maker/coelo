@@ -7,10 +7,16 @@ import '../../domain/institution_directory_item.dart';
 import 'institution_status_presentation.dart';
 
 class InstitutionDirectoryTable extends StatelessWidget {
-  const InstitutionDirectoryTable({required this.items, required this.createAction, super.key});
+  const InstitutionDirectoryTable({
+    required this.items,
+    required this.createAction,
+    required this.onEdit,
+    super.key,
+  });
 
   final List<InstitutionDirectoryItem> items;
   final Widget createAction;
+  final ValueChanged<InstitutionDirectoryItem> onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class InstitutionDirectoryTable extends StatelessWidget {
                 columns: _InstitutionColumn.values.skip(1).map(_column).toList(growable: false),
                 headerHeight: 56,
                 rowHeight: 64,
-                onRowPressed: (item) => _showDetailsMessage(context),
+                onRowPressed: onEdit,
               ),
             ),
           ],
@@ -100,15 +106,6 @@ class InstitutionDirectoryTable extends StatelessWidget {
         _InstitutionColumn.state => _cellText(item.state ?? '—'),
       },
     );
-  }
-
-  void _showDetailsMessage(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text('Os detalhes da instituição serão implementados em breve.')),
-      );
   }
 
   Widget _cellText(String value) {

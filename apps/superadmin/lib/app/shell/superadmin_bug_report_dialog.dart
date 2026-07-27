@@ -1,16 +1,17 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
-import 'superadmin_notice.dart';
+import '../../features/support/domain/support_ticket.dart';
 
-Future<void> showSuperadminBugReportDialog(
+Future<SupportReportDraft?> showSuperadminBugReportDialog(
   BuildContext context, {
   required String currentScreen,
   required Map<String, List<String>> sections,
 }) {
-  return showDialog<void>(
+  final theme = Theme.of(context);
+  return showDialog<SupportReportDraft>(
     context: context,
-    barrierColor: Colors.black.withValues(alpha: 0.54),
+    barrierColor: theme.extension<CoeloOverlayColors>()!.scrim,
     builder: (context) =>
         _SuperadminBugReportDialog(currentScreen: currentScreen, sections: sections),
   );
@@ -44,22 +45,45 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
     _selectedScreen = screens.contains(widget.currentScreen)
         ? widget.currentScreen
         : (screens.isEmpty ? null : screens.first);
+    _descriptionController.addListener(_onFieldChanged);
+    _otherSubjectController.addListener(_onFieldChanged);
   }
 
   @override
   void dispose() {
+    _descriptionController.removeListener(_onFieldChanged);
+    _otherSubjectController.removeListener(_onFieldChanged);
     _descriptionController.dispose();
     _otherSubjectController.dispose();
     super.dispose();
   }
 
+  bool get _isValid =>
+      _descriptionController.text.trim().isNotEmpty &&
+      (_selectedMenu != 'Outros' || _otherSubjectController.text.trim().isNotEmpty);
+
+  void _onFieldChanged() {
+    setState(() {});
+  }
+
   void _submit() {
-    showSuperadminNotice(
-      context,
-      'Relato enviado com sucesso.',
-      icon: Icons.check_circle_outline_rounded,
+    if (!_isValid) {
+      return;
+    }
+    final description = _descriptionController.text.trim();
+    final subject = _selectedMenu == 'Outros'
+        ? _otherSubjectController.text.trim()
+        : description.split('\n').map((line) => line.trim()).firstWhere((line) => line.isNotEmpty);
+    Navigator.of(context, rootNavigator: true).pop(
+      SupportReportDraft(
+        menu: _selectedMenu,
+        screen: _selectedMenu == 'Outros' ? 'Outros' : _selectedScreen!,
+        subject: subject,
+        description: description,
+        requester: 'Owner Coelo',
+        includeDemoAttachment: _attached,
+      ),
     );
-    _closeDialog();
   }
 
   void _closeDialog() {
@@ -181,7 +205,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
               const SizedBox(height: CoeloSpacing.space5),
               FilledButton(
                 key: const Key('superadmin-bug-submit'),
-                onPressed: _submit,
+                onPressed: _isValid ? _submit : null,
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(CoeloSize.touchMin),
                 ),

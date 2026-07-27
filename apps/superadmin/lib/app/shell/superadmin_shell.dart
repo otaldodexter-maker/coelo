@@ -8,6 +8,8 @@ import 'package:flutter/widget_previews.dart';
 import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
 import '../../features/auth/domain/logout_action.dart';
+import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
+import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
 import 'superadmin_activity_center.dart';
 import 'superadmin_bug_report_dialog.dart';
@@ -35,6 +37,8 @@ class SuperadminShell extends StatefulWidget {
     this.activityController,
     this.currentDestination = 'institutions',
     this.onDestinationSelected,
+    this.onBugReportSubmitted,
+    this.showChatLauncher = false,
     super.key,
   });
 
@@ -47,6 +51,8 @@ class SuperadminShell extends StatefulWidget {
   final SuperadminActivityController? activityController;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final bool showChatLauncher;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
@@ -113,47 +119,55 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
         if (!isDesktop) {
-          return Scaffold(
-            appBar: _CompactAppBar(
-              onLogout: _handleLogout,
-              activityController: _activityController,
-              currentScreen: widget.title,
-            ),
-            drawer: Drawer(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+          return _withChatLauncher(
+            Scaffold(
+              appBar: _CompactAppBar(
+                onLogout: _handleLogout,
+                activityController: _activityController,
+                currentScreen: widget.title,
+                onBugReportSubmitted: widget.onBugReportSubmitted,
               ),
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    const _BrandHeader(collapsed: false),
-                    const _InsetDivider(key: Key('superadmin-brand-divider')),
-                    Expanded(
-                      child: _NavigationContent(
+              drawer: Drawer(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+                ),
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      _BrandHeader(
                         collapsed: false,
                         currentDestination: widget.currentDestination,
                         onDestinationSelected: widget.onDestinationSelected,
                       ),
-                    ),
-                  ],
+                      const _InsetDivider(key: Key('superadmin-brand-divider')),
+                      Expanded(
+                        child: _NavigationContent(
+                          collapsed: false,
+                          currentDestination: widget.currentDestination,
+                          onDestinationSelected: widget.onDestinationSelected,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            body: SuperadminNoticeHost(
-              child: Column(
-                children: [
-                  _PageHeader(
-                    title: widget.title,
-                    subtitle: widget.subtitle,
-                    actions: widget.actions,
-                    compactActions: widget.compactActions,
-                    onLogout: _handleLogout,
-                    activityController: _activityController,
-                    compact: true,
-                  ),
-                  const _InsetDivider(key: Key('superadmin-page-divider')),
-                  Expanded(child: pageBody),
-                ],
+              body: SuperadminNoticeHost(
+                child: Column(
+                  children: [
+                    _PageHeader(
+                      title: widget.title,
+                      subtitle: widget.subtitle,
+                      actions: widget.actions,
+                      compactActions: widget.compactActions,
+                      onLogout: _handleLogout,
+                      activityController: _activityController,
+                      compact: true,
+                      onBugReportSubmitted: widget.onBugReportSubmitted,
+                    ),
+                    const _InsetDivider(key: Key('superadmin-page-divider')),
+                    Expanded(child: pageBody),
+                  ],
+                ),
               ),
             ),
           );
@@ -172,6 +186,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                   compactActions: widget.compactActions,
                   onLogout: _handleLogout,
                   activityController: _activityController,
+                  onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
                 const _InsetDivider(key: Key('superadmin-page-divider')),
                 Expanded(child: pageBody),
@@ -179,62 +194,83 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
             ),
           ),
         );
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-          body: SuperadminNoticeHost(
-            child: Padding(
-              padding: const EdgeInsets.all(_shellGutter),
-              child: AnimatedBuilder(
-                animation: _sidebarController,
-                child: contentSurface,
-                builder: (context, content) {
-                  final sidebarWidth =
-                      _expandedSidebarWidth -
-                      (_expandedSidebarWidth - _collapsedSidebarWidth) * _sidebarController.value;
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: sidebarWidth + _shellGutter,
-                            child: Align(
-                              alignment: AlignmentDirectional.centerStart,
-                              child: SizedBox(
-                                key: const Key('superadmin-sidebar'),
-                                width: sidebarWidth,
-                                height: double.infinity,
-                                child: _FloatingSurface(
-                                  key: const Key('superadmin-floating-sidebar'),
-                                  child: _SidebarTransition(
-                                    collapsed: _sidebarCollapsed,
-                                    reduceMotion: _reduceMotion,
-                                    currentDestination: widget.currentDestination,
-                                    onDestinationSelected: widget.onDestinationSelected,
+        return _withChatLauncher(
+          Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+            body: SuperadminNoticeHost(
+              child: Padding(
+                padding: const EdgeInsets.all(_shellGutter),
+                child: AnimatedBuilder(
+                  animation: _sidebarController,
+                  child: contentSurface,
+                  builder: (context, content) {
+                    final sidebarWidth =
+                        _expandedSidebarWidth -
+                        (_expandedSidebarWidth - _collapsedSidebarWidth) * _sidebarController.value;
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: sidebarWidth + _shellGutter,
+                              child: Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: SizedBox(
+                                  key: const Key('superadmin-sidebar'),
+                                  width: sidebarWidth,
+                                  height: double.infinity,
+                                  child: _FloatingSurface(
+                                    key: const Key('superadmin-floating-sidebar'),
+                                    child: _SidebarTransition(
+                                      collapsed: _sidebarCollapsed,
+                                      reduceMotion: _reduceMotion,
+                                      currentDestination: widget.currentDestination,
+                                      onDestinationSelected: widget.onDestinationSelected,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          content!,
-                        ],
-                      ),
-                      Positioned(
-                        left: sidebarWidth - CoeloSpacing.space6 - CoeloSpacing.space1,
-                        top: CoeloSpacing.space5,
-                        child: _SidebarToggle(
-                          collapsed: _sidebarCollapsed,
-                          onPressed: _toggleSidebar,
+                            content!,
+                          ],
                         ),
-                      ),
-                    ],
-                  );
-                },
+                        Positioned(
+                          left: sidebarWidth - CoeloSpacing.space6 - CoeloSpacing.space1,
+                          top: CoeloSpacing.space5,
+                          child: _SidebarToggle(
+                            collapsed: _sidebarCollapsed,
+                            onPressed: _toggleSidebar,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _withChatLauncher(Widget child) {
+    if (!widget.showChatLauncher || widget.onDestinationSelected == null) {
+      return child;
+    }
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        child,
+        Positioned(
+          right: CoeloSpacing.space4,
+          bottom: CoeloSpacing.space4,
+          child: SuperadminChatLauncher(
+            onExpand: () => widget.onDestinationSelected!('conversations'),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -299,7 +335,11 @@ class _Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _BrandHeader(collapsed: collapsed),
+        _BrandHeader(
+          collapsed: collapsed,
+          currentDestination: currentDestination,
+          onDestinationSelected: onDestinationSelected,
+        ),
         const _InsetDivider(key: Key('superadmin-brand-divider')),
         Expanded(
           child: _NavigationContent(
@@ -356,33 +396,68 @@ class _InsetDivider extends StatelessWidget {
 }
 
 class _BrandHeader extends StatelessWidget {
-  const _BrandHeader({required this.collapsed});
+  const _BrandHeader({
+    required this.collapsed,
+    required this.currentDestination,
+    required this.onDestinationSelected,
+  });
 
   final bool collapsed;
+  final String currentDestination;
+  final ValueChanged<String>? onDestinationSelected;
+
+  void _openHome(BuildContext context) {
+    final scaffold = Scaffold.maybeOf(context);
+    if (scaffold?.isDrawerOpen ?? false) {
+      Navigator.of(context).pop();
+    }
+    if (currentDestination != 'home') {
+      onDestinationSelected?.call('home');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
       height: _headerHeight,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: collapsed ? CoeloSpacing.space5 : CoeloSpacing.space4,
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final showDetails = !collapsed && constraints.maxWidth >= 60;
-            return Row(
-              mainAxisAlignment: showDetails ? MainAxisAlignment.start : MainAxisAlignment.center,
-              children: [
-                const SuperadminBrandMark(),
-                if (showDetails) ...[
-                  const SizedBox(width: CoeloSpacing.space3),
-                  Expanded(child: Text('Superadmin', style: theme.textTheme.titleMedium)),
-                ],
-              ],
-            );
-          },
+      child: Tooltip(
+        message: 'Ir para Home',
+        excludeFromSemantics: true,
+        child: Semantics(
+          label: 'Ir para Home',
+          button: true,
+          excludeSemantics: true,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              key: const Key('superadmin-brand-home'),
+              onTap: () => _openHome(context),
+              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: collapsed ? CoeloSpacing.space5 : CoeloSpacing.space4,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final showDetails = !collapsed && constraints.maxWidth >= 60;
+                    return Row(
+                      mainAxisAlignment: showDetails
+                          ? MainAxisAlignment.start
+                          : MainAxisAlignment.center,
+                      children: [
+                        const SuperadminBrandMark(),
+                        if (showDetails) ...[
+                          const SizedBox(width: CoeloSpacing.space3),
+                          Expanded(child: Text('Superadmin', style: theme.textTheme.titleMedium)),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -484,11 +559,12 @@ const _navigationSections = <_NavigationSectionData>[
     _NavigationDestinationData('import', 'Importações', Icons.upload_file_outlined),
   ]),
   _NavigationSectionData('communication', 'Comunicação', Icons.forum_outlined, [
+    _NavigationDestinationData('conversations', 'Conversas', Icons.forum_outlined, active: true),
     _NavigationDestinationData('invites', 'Convites', Icons.mail_outline),
     _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined),
   ]),
   _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
-    _NavigationDestinationData('support', 'Suporte', Icons.support_agent_outlined),
+    _NavigationDestinationData('support', 'Suporte', Icons.support_agent_outlined, active: true),
     _NavigationDestinationData('audit', 'Auditoria', Icons.security_outlined),
     _NavigationDestinationData('catalog', 'Catálogo', Icons.widgets_outlined, active: true),
   ]),
@@ -520,7 +596,10 @@ class _NavigationContentState extends State<_NavigationContent> {
   @override
   void initState() {
     super.initState();
-    _expandedSections = {'structure', if (widget.currentDestination == 'catalog') 'governance'};
+    _expandedSections = {
+      for (final section in _navigationSections)
+        if (section.hasSelectedDestination(widget.currentDestination)) section.id,
+    };
   }
 
   @override
@@ -546,6 +625,17 @@ class _NavigationContentState extends State<_NavigationContent> {
               vertical: CoeloSpacing.space3,
             ),
             children: [
+              _NavigationItem(
+                id: 'home',
+                icon: Icons.home_outlined,
+                label: 'Home',
+                collapsed: widget.collapsed,
+                isActive: widget.currentDestination == 'home',
+                onTap: widget.currentDestination == 'home'
+                    ? null
+                    : () => widget.onDestinationSelected?.call('home'),
+              ),
+              const SizedBox(height: CoeloSpacing.space2),
               for (final section in _navigationSections)
                 if (widget.collapsed)
                   _CollapsedNavigationSection(
@@ -1729,11 +1819,13 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onLogout,
     required this.activityController,
     required this.currentScreen,
+    this.onBugReportSubmitted,
   });
 
   final VoidCallback onLogout;
   final SuperadminActivityController activityController;
   final String currentScreen;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
   @override
   Size get preferredSize => const Size.fromHeight(CoeloSize.touchMin);
@@ -1754,7 +1846,11 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
         end: CoeloSpacing.space5,
       ),
       actions: [
-        _HeaderUtilityActions(activityController: activityController, currentScreen: currentScreen),
+        _HeaderUtilityActions(
+          activityController: activityController,
+          currentScreen: currentScreen,
+          onBugReportSubmitted: onBugReportSubmitted,
+        ),
         _ProfileSummary(onLogout: onLogout, compact: true),
         const SizedBox(width: CoeloSpacing.space2),
       ],
@@ -1770,6 +1866,7 @@ class _PageHeader extends StatelessWidget {
     required this.compactActions,
     required this.onLogout,
     required this.activityController,
+    this.onBugReportSubmitted,
     this.compact = false,
   });
 
@@ -1779,6 +1876,7 @@ class _PageHeader extends StatelessWidget {
   final List<Widget> compactActions;
   final VoidCallback onLogout;
   final SuperadminActivityController activityController;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool compact;
 
   @override
@@ -1826,6 +1924,7 @@ class _PageHeader extends StatelessWidget {
                   _HeaderUtilityActions(
                     activityController: activityController,
                     currentScreen: title,
+                    onBugReportSubmitted: onBugReportSubmitted,
                   ),
                   const SizedBox(width: CoeloSpacing.space2),
                   _ProfileSummary(onLogout: onLogout, compact: compactProfile),
@@ -1987,10 +2086,15 @@ class _ProfileSummary extends StatelessWidget {
 }
 
 class _HeaderUtilityActions extends StatelessWidget {
-  const _HeaderUtilityActions({required this.activityController, required this.currentScreen});
+  const _HeaderUtilityActions({
+    required this.activityController,
+    required this.currentScreen,
+    this.onBugReportSubmitted,
+  });
 
   final SuperadminActivityController activityController;
   final String currentScreen;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -2003,19 +2107,33 @@ class _HeaderUtilityActions extends StatelessWidget {
         IconButton(
           key: const Key('superadmin-report-bug'),
           tooltip: 'Reportar bug',
-          onPressed: () => showSuperadminBugReportDialog(
-            context,
-            currentScreen: currentScreen,
-            sections: {
-              for (final section in _navigationSections)
-                section.label: [
-                  ...section.destinations.map((destination) => destination.label),
-                  'Outro',
+          onPressed: () async {
+            final draft = await showSuperadminBugReportDialog(
+              context,
+              currentScreen: currentScreen,
+              sections: {
+                for (final section in _navigationSections)
+                  section.label: [
+                    ...section.destinations.map((destination) => destination.label),
+                    'Outro',
+                  ],
+                'Conta': [
+                  ..._accountDestinations.map((destination) => destination.label),
+                  'Outros',
                 ],
-              'Conta': [..._accountDestinations.map((destination) => destination.label), 'Outros'],
-              'Outros': const [],
-            },
-          ),
+                'Outros': const [],
+              },
+            );
+            if (draft == null || !context.mounted) {
+              return;
+            }
+            onBugReportSubmitted?.call(draft);
+            showSuperadminNotice(
+              context,
+              'Relato enviado com sucesso.',
+              icon: Icons.check_circle_outline_rounded,
+            );
+          },
           style: _headerUtilityButtonStyle(colors, hoverColor),
           icon: const Icon(Icons.bug_report_outlined),
         ),

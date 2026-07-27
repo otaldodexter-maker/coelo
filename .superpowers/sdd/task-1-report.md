@@ -81,3 +81,79 @@ Result: exit code 0; `00:00 +9: All tests passed!` after formatting the touched 
 - `submitReport` now advances deterministically past every occupied `support-session-NNN` id supplied in the initial session state.
 - `SupportFilters.hashCode` now uses order-independent set hashes, matching its set-based equality.
 - The support spec now records the full approved prototype surface: `/support`, the `Suporte` shell destination, and its list, filter, detail, message, reply and report components. Backend, persistence and privileged access remain outside this prototype.
+
+## Requester context and support team domain â€” 2026-07-27
+
+### Implementation
+
+- Added immutable `SupportRequesterContext`, with ordered optional labels and a breadcrumb that omits unavailable levels.
+- Added `SupportTeamRole` and immutable `SupportTeamMember`.
+- Extended `SupportTicket` with requester context, nullable owner and immutable collaborator ids; `copyWith` preserves the new state and supports explicit owner removal through `clearOwner`.
+- Extended `SupportFilters` with immutable assignee ids, including active-filter, equality and hash semantics.
+
+### Files
+
+- `apps/superadmin/lib/features/support/domain/support_requester_context.dart` (new)
+- `apps/superadmin/lib/features/support/domain/support_team_member.dart` (new)
+- `apps/superadmin/lib/features/support/domain/support_ticket.dart`
+- `apps/superadmin/test/features/support/presentation/view_models/support_prototype_controller_test.dart`
+
+### TDD record
+
+#### RED
+
+Command, from `apps/superadmin`:
+
+```text
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test test/features/support/presentation/view_models/support_prototype_controller_test.dart
+```
+
+Result: exit code 1. Compilation failed as expected because requester-context and support-team domain files, the ticket ownership parameters, collaborator ids and assignee filter did not exist.
+
+#### GREEN
+
+The same command completed with exit code 0 after the minimal implementation, and again after formatting: `00:00 +13: All tests passed!`.
+
+### Verification and self-review
+
+- Formatted the four task files with `dart format`.
+- `git diff --check -- apps/superadmin/lib/features/support/domain apps/superadmin/test/features/support/presentation/view_models/support_prototype_controller_test.dart` completed without whitespace errors.
+- Reviewed the diff: collection boundaries are defensive/unmodifiable; filter equality, hashing and active state include assignee ids; and `copyWith` preserves requester/ownership/collaboration fields.
+- Memory gate: search found no reusable approved knowledge for this new local domain. No knowledge projection was created. Both `Test-CoeloKnowledge.ps1` validation commands passed.
+
+### Concerns
+
+- The focused Flutter command reports seven newer incompatible package versions during dependency resolution; it remains non-blocking and all 13 focused tests pass.
+- This slice intentionally defines the domain only. Assignment filtering and UI behavior are deferred to later task slices.
+
+### Commit
+
+- `7917282` `feat(superadmin): model support ownership and requester context` — contains only the four implementation/test files listed above. This report remains intentionally unstaged.
+
+## Follow-up fix: `SupportTicket.copyWith` coverage â€” 2026-07-27
+
+### Change
+
+- Added direct regression tests proving `copyWith` preserves `requesterContext`, `ownerId` and `collaboratorIds` when changing another field.
+- Added a direct regression test proving `copyWith(clearOwner: true)` removes the owner.
+- No production code changed. Assignment filtering and status mutation remain intentionally outside this task's verification scope.
+
+### Verification
+
+Command, from `apps/superadmin`:
+
+```text
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test test/features/support/presentation/view_models/support_prototype_controller_test.dart
+```
+
+Result: exit code 0 after formatting; `00:00 +15: All tests passed!`.
+
+### Self-review
+
+- Tests exercise the real immutable domain objects through the existing local `ticket` factory.
+- The preservation and explicit-removal contracts are independent tests, so either behavior can regress without masking the other.
+- The follow-up commit stages only `support_prototype_controller_test.dart`; this report remains unstaged by design.
+
+### Commit
+
+- `bc9f082` `test(superadmin): cover support ticket copy behavior`

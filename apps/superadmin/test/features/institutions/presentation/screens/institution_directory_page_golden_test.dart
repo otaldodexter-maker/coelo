@@ -65,7 +65,7 @@ void main() {
     );
 
     for (final configuration in [
-      (name: 'empty', repository: const FakeInstitutionDirectoryRepository(items: [])),
+      (name: 'empty', repository: FakeInstitutionDirectoryRepository(items: [])),
       (name: 'failure', repository: const _FailureRepository()),
       (name: 'unauthorized', repository: const _UnauthorizedRepository()),
     ]) {
@@ -186,7 +186,7 @@ void main() {
 
 Widget _goldenApp({
   Brightness brightness = Brightness.light,
-  InstitutionDirectoryRepository repository = const FakeInstitutionDirectoryRepository(),
+  InstitutionDirectoryRepository? repository,
 }) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -203,7 +203,10 @@ Widget _goldenApp({
         child: child!,
       ),
     ),
-    home: InstitutionDirectoryPage(repository: repository, logout: _logout),
+    home: InstitutionDirectoryPage(
+      repository: repository ?? FakeInstitutionDirectoryRepository(),
+      logout: _logout,
+    ),
   );
 }
 

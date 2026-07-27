@@ -3,8 +3,16 @@ abstract final class SuperadminRoutes {
   static const homeName = 'home';
   static const institutions = '/institutions';
   static const institutionsName = 'institutions';
+  static const institutionCreate = '/institutions/new';
+  static const institutionCreateName = 'institution-create';
+  static const institutionEdit = '/institutions/:institutionId/edit';
+  static const institutionEditName = 'institution-edit';
   static const governanceCatalog = '/governance/catalog';
   static const governanceCatalogName = 'governance-catalog';
+  static const support = '/support';
+  static const supportName = 'support';
+  static const conversations = '/communication/conversations';
+  static const conversationsName = 'conversations';
   static const login = '/login';
   static const loginName = 'login';
   static const forgotPassword = '/forgot-password';
@@ -17,6 +25,16 @@ abstract final class SuperadminRoutes {
   static const devForgotPasswordName = 'dev-forgot-password';
   static const devResetPassword = '/dev/reset-password';
   static const devResetPasswordName = 'dev-reset-password';
+  static const devHome = '/dev/home';
+  static const devHomeName = 'dev-home';
   static const devInstitutions = '/dev/institutions';
   static const devInstitutionsName = 'dev-institutions';
+  static const devInstitutionCreate = '/dev/institutions/new';
+  static const devInstitutionCreateName = 'dev-institution-create';
+  static const devInstitutionEdit = '/dev/institutions/:institutionId/edit';
+  static const devInstitutionEditName = 'dev-institution-edit';
+  static const devSupport = '/dev/support';
+  static const devSupportName = 'dev-support';
+  static const devConversations = '/dev/conversations';
+  static const devConversationsName = 'dev-conversations';
 }

@@ -16,7 +16,7 @@ class DevMenuOverlay extends StatelessWidget {
       children: [
         child,
         Positioned(
-          right: CoeloSpacing.space4,
+          left: CoeloSpacing.space4,
           bottom: CoeloSpacing.space4,
           child: MenuAnchor(
             builder: (context, controller, child) {
@@ -55,9 +55,21 @@ class DevMenuOverlay extends StatelessWidget {
                 onNavigate: onNavigate,
               ),
               _PreviewMenuItem(
+                icon: Icons.home_outlined,
+                label: 'Home',
+                route: SuperadminRoutes.devHome,
+                onNavigate: onNavigate,
+              ),
+              _PreviewMenuItem(
                 icon: Icons.apartment_outlined,
                 label: 'Instituições',
                 route: SuperadminRoutes.devInstitutions,
+                onNavigate: onNavigate,
+              ),
+              _PreviewMenuItem(
+                icon: Icons.forum_outlined,
+                label: 'Conversas',
+                route: SuperadminRoutes.devConversations,
                 onNavigate: onNavigate,
               ),
             ],

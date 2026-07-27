@@ -68,14 +68,14 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
   });
 
-  testWidgets('redirects authenticated sessions from login to the shell', (tester) async {
+  testWidgets('redirects authenticated sessions from login to Home', (tester) async {
     final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
       session: session,
       login: (_) async => const LoginResult.success(),
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      institutionDirectoryRepository: const FakeInstitutionDirectoryRepository(),
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -84,8 +84,37 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
+    expect(find.text('Como podemos ajudar?'), findsOneWidget);
+  });
+
+  testWidgets('opens Home from the global navigation and brand', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
+    await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
-    expect(find.text('Instituto Aurora'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('superadmin-brand-home')));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
+    expect(find.text('Como podemos ajudar?'), findsOneWidget);
   });
 
   testWidgets('redirects to login when an authenticated session signs out', (tester) async {
@@ -98,7 +127,7 @@ void main() {
         return const LogoutResult.success();
       },
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      institutionDirectoryRepository: const FakeInstitutionDirectoryRepository(),
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -106,7 +135,7 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
@@ -192,7 +221,7 @@ void main() {
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      institutionDirectoryRepository: const FakeInstitutionDirectoryRepository(),
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -202,6 +231,6 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.home);
   });
 }

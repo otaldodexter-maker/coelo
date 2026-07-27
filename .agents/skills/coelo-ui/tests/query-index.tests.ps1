@@ -32,5 +32,15 @@ Assert-QueryContains -Query 'listagem densa' `
     -ExpectedId 'admin.listing-toolbar'
 Assert-QueryContains -Query 'CoeloAdminResizableTable<Row>' `
     -ExpectedId 'admin.resizable-table'
+Assert-QueryContains -Query 'popup modal dialog overlay' `
+    -ExpectedId 'pattern.overlay-surfaces'
+Assert-QueryContains -Query 'hover laranja arredondado' `
+    -ExpectedId 'pattern.interaction-states'
+Assert-QueryContains -Query 'close dismiss vermelho' `
+    -ExpectedId 'pattern.overlay-surfaces'
+Assert-QueryContains -Query 'single-select' `
+    -ExpectedId 'pattern.selection-controls'
+Assert-QueryContains -Query 'scrollbar horizontal sempre visivel' `
+    -ExpectedId 'admin.resizable-table'
 
 Write-Output 'query-index.tests.ps1: PASS'

@@ -5,6 +5,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import 'chat_catalog_examples.dart';
+
 typedef CatalogExampleBuilder = Widget Function(BuildContext context);
 
 const catalogRegistryManifestJson = r'''
@@ -12,11 +14,17 @@ const catalogRegistryManifestJson = r'''
   "core.search-field": [],
   "core.status-chip": [],
   "core.state-panel": [],
+  "core.chat-avatar": [],
+  "core.conversation-tile": [],
+  "core.conversation-header": [],
+  "core.message-bubble": [],
+  "core.chat-composer": [],
   "admin.listing-toolbar": [],
   "admin.multi-select-filter": [],
   "admin.pagination": [],
   "admin.create-action": [],
-  "admin.resizable-table": []
+  "admin.resizable-table": [],
+  "admin.context-picker": []
 }
 ''';
 
@@ -37,6 +45,7 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'admin.pagination': (_) => const _PaginationExample(),
     'admin.create-action': (_) => const _CreateActionExample(),
     'admin.resizable-table': (_) => const _ResizableTableExample(),
+    ...buildChatCatalogExamples(),
   };
   final decoded = jsonDecode(catalogRegistryManifestJson) as Map<String, Object?>;
   final variants = decoded.map(

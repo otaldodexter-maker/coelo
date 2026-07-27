@@ -4,6 +4,8 @@
 .agents/skills/*
 !.agents/skills/coelo-ui/
 !.agents/skills/coelo-ui/**
+!.agents/skills/coelo-knowledge/
+!.agents/skills/coelo-knowledge/**
 .codex/
 .worktrees/
 

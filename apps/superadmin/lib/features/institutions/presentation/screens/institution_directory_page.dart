@@ -2,8 +2,10 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
+import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
+import '../../../support/domain/support_ticket.dart';
 import '../../domain/institution_directory_query.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_directory_view_model.dart';
@@ -17,13 +19,27 @@ class InstitutionDirectoryPage extends StatefulWidget {
   const InstitutionDirectoryPage({
     required this.repository,
     required this.logout,
+    this.onHomeOpen,
     this.onCatalogOpen,
+    this.onSupportOpen,
+    this.onBugReportSubmitted,
+    this.onConversationsOpen,
+    this.onCreate,
+    this.onEdit,
+    this.successMessage,
     super.key,
   });
 
   final InstitutionDirectoryRepository repository;
   final LogoutAction logout;
+  final VoidCallback? onHomeOpen;
   final VoidCallback? onCatalogOpen;
+  final VoidCallback? onSupportOpen;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final VoidCallback? onConversationsOpen;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
+  final String? successMessage;
 
   @override
   State<InstitutionDirectoryPage> createState() => _InstitutionDirectoryPageState();
@@ -34,6 +50,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
   InstitutionDirectoryDisplay _display = InstitutionDirectoryDisplay.cards;
+  bool _noticeShown = false;
 
   @override
   void initState() {
@@ -45,6 +62,14 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   }
 
   @override
+  void didUpdateWidget(covariant InstitutionDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.successMessage != widget.successMessage) {
+      _noticeShown = false;
+    }
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     _viewModel.dispose();
@@ -52,31 +77,48 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     super.dispose();
   }
 
-  void _showFutureFlowMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
   @override
   Widget build(BuildContext context) {
     return SuperadminShell(
       logout: widget.logout,
       activityController: _activityController,
+      showChatLauncher: widget.onConversationsOpen != null,
+      onBugReportSubmitted: widget.onBugReportSubmitted,
       onDestinationSelected: (destination) {
-        if (destination == 'catalog') {
+        if (destination == 'home') {
+          widget.onHomeOpen?.call();
+        } else if (destination == 'catalog') {
           widget.onCatalogOpen?.call();
+        } else if (destination == 'support') {
+          widget.onSupportOpen?.call();
+        } else if (destination == 'conversations') {
+          widget.onConversationsOpen?.call();
         }
       },
-      child: _InstitutionDirectoryContent(
-        viewModel: _viewModel,
-        activityController: _activityController,
-        searchController: _searchController,
-        display: _display,
-        onDisplayChanged: (display) => setState(() => _display = display),
-        onCreate: () =>
-            _showFutureFlowMessage('O cadastro de instituições será implementado em breve.'),
-        onClearFilters: () {
-          _searchController.clear();
-          _viewModel.clearFilters();
+      child: Builder(
+        builder: (context) {
+          final message = widget.successMessage;
+          if (message != null && !_noticeShown) {
+            _noticeShown = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                showSuperadminNotice(context, message, icon: Icons.check_circle_outline_rounded);
+              }
+            });
+          }
+          return _InstitutionDirectoryContent(
+            viewModel: _viewModel,
+            activityController: _activityController,
+            searchController: _searchController,
+            display: _display,
+            onDisplayChanged: (display) => setState(() => _display = display),
+            onCreate: widget.onCreate ?? () {},
+            onEdit: widget.onEdit ?? (_) {},
+            onClearFilters: () {
+              _searchController.clear();
+              _viewModel.clearFilters();
+            },
+          );
         },
       ),
     );
@@ -91,6 +133,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
     required this.display,
     required this.onDisplayChanged,
     required this.onCreate,
+    required this.onEdit,
     required this.onClearFilters,
   });
 
@@ -100,6 +143,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
   final InstitutionDirectoryDisplay display;
   final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
   final VoidCallback onCreate;
+  final ValueChanged<String> onEdit;
   final VoidCallback onClearFilters;
 
   @override
@@ -131,6 +175,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
               viewModel: viewModel,
               display: display,
               onCreate: onCreate,
+              onEdit: onEdit,
             ),
           ],
         );
@@ -144,11 +189,13 @@ class _InstitutionDirectoryResults extends StatelessWidget {
     required this.viewModel,
     required this.display,
     required this.onCreate,
+    required this.onEdit,
   });
 
   final InstitutionDirectoryViewModel viewModel;
   final InstitutionDirectoryDisplay display;
   final VoidCallback onCreate;
+  final ValueChanged<String> onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -167,8 +214,13 @@ class _InstitutionDirectoryResults extends StatelessWidget {
                   ? InstitutionDirectoryTable(
                       items: viewModel.page.items,
                       createAction: InstitutionCreateBanner(onPressed: onCreate),
+                      onEdit: (item) => onEdit(item.id),
                     )
-                  : InstitutionDirectoryCards(items: viewModel.page.items, onCreate: onCreate),
+                  : InstitutionDirectoryCards(
+                      items: viewModel.page.items,
+                      onCreate: onCreate,
+                      onEdit: (item) => onEdit(item.id),
+                    ),
             ),
             if (viewModel.state == InstitutionDirectoryLoadState.success &&
                 (viewModel.page.totalCount / InstitutionDirectoryQuery.pageSize).ceil() > 1) ...[

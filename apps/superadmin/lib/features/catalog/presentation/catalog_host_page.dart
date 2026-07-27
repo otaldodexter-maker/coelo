@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../support/domain/support_ticket.dart';
 import 'catalog_platform_host.dart';
 
 void openConfiguredCatalogExternally(String catalogUrl, {ValueChanged<Uri>? openExternally}) {
@@ -18,12 +19,20 @@ final class CatalogHostPage extends StatelessWidget {
     required this.catalogUrl,
     required this.logout,
     required this.onInstitutionsOpen,
+    this.onHomeOpen,
+    this.onSupportOpen,
+    this.onBugReportSubmitted,
+    this.onConversationsOpen,
     super.key,
   });
 
   final String catalogUrl;
   final LogoutAction logout;
   final VoidCallback onInstitutionsOpen;
+  final VoidCallback? onHomeOpen;
+  final VoidCallback? onSupportOpen;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final VoidCallback? onConversationsOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +42,17 @@ final class CatalogHostPage extends StatelessWidget {
       subtitle: 'Consulte fundamentos, componentes e padrões aprovados.',
       logout: logout,
       currentDestination: 'catalog',
+      showChatLauncher: onConversationsOpen != null,
+      onBugReportSubmitted: onBugReportSubmitted,
       onDestinationSelected: (destination) {
-        if (destination == 'institutions') {
+        if (destination == 'home') {
+          onHomeOpen?.call();
+        } else if (destination == 'institutions') {
           onInstitutionsOpen();
+        } else if (destination == 'support') {
+          onSupportOpen?.call();
+        } else if (destination == 'conversations') {
+          onConversationsOpen?.call();
         }
       },
       actions: [
