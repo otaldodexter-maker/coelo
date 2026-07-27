@@ -48,13 +48,19 @@ void main() {
     expect(identical(result, selected), isFalse);
   });
 
-  testWidgets('Escape closes the menu and restores focus to the trigger', (tester) async {
+  testWidgets('Escape discards the draft and restores focus to the trigger', (tester) async {
     await _pumpFilter(tester);
     final trigger = find.text('Todas as UFs');
 
     await tester.tap(trigger);
     await tester.pumpAndSettle();
     expect(find.text('Aplicar'), findsOneWidget);
+    await tester.tap(find.textContaining('AC'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Aplicar')).onPressed,
+      isNotNull,
+    );
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
@@ -64,6 +70,22 @@ void main() {
       find.ancestor(of: trigger, matching: find.byType(OutlinedButton)),
     );
     expect(button.focusNode?.hasFocus, isTrue);
+
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+
+    final acOption = find.ancestor(
+      of: find.textContaining('AC'),
+      matching: find.byType(MenuItemButton),
+    );
+    expect(
+      tester.widget<Checkbox>(find.descendant(of: acOption, matching: find.byType(Checkbox))).value,
+      isFalse,
+    );
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Aplicar')).onPressed,
+      isNull,
+    );
   });
 
   testWidgets('uses canonical open colors and border for the trigger', (tester) async {
