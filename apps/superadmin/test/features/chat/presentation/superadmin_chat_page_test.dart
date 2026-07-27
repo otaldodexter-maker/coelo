@@ -13,33 +13,47 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('uses inbox, rail and stacked navigation at approved breakpoints', (tester) async {
-    for (final width in [1440.0, 768.0, 375.0]) {
+  for (final width in [1440.0, 1024.0, 768.0, 375.0]) {
+    testWidgets('uses the approved chat composition at ${width.toInt()}px', (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = Size(width, 900);
-      await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(_app(SuperadminChatPage(key: ValueKey(width), logout: _logout)));
       await tester.pumpAndSettle();
 
-      if (width >= CoeloBreakpoints.expanded.minWidth) {
+      if (width == 1440) {
         expect(find.byKey(const Key('superadmin-chat-inbox')), findsOne);
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
+        expect(find.byKey(const Key('superadmin-chat-context-panel')), findsOne);
+        expect(find.byKey(const Key('chat-context-metric')), findsNWidgets(4));
       } else if (width >= CoeloBreakpoints.medium.minWidth) {
         expect(find.byKey(const Key('superadmin-chat-rail')), findsOne);
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
+        expect(find.byKey(const Key('superadmin-chat-context-panel-collapsed')), findsOne);
+        await tester.tap(find.byTooltip('Mostrar detalhes do contexto'));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('superadmin-chat-context-panel')), findsOne);
+        expect(find.text('Professores'), findsOne);
       } else {
         expect(find.byKey(const Key('superadmin-chat-inbox')), findsOne);
         await tester.tap(find.text('Turma Girassol').first);
         await tester.pumpAndSettle();
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
+        expect(find.byKey(const Key('superadmin-chat-context-panel-collapsed')), findsOne);
+        await tester.tap(find.byTooltip('Mostrar detalhes do contexto'));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('superadmin-chat-context-panel')), findsOne);
+        expect(find.text('Professores'), findsOne);
+        await tester.tap(find.byTooltip('Voltar para a conversa'));
+        await tester.pumpAndSettle();
         await tester.tap(find.byTooltip('Voltar para conversas'));
         await tester.pumpAndSettle();
         expect(find.byKey(const Key('superadmin-chat-inbox')), findsOne);
       }
       expect(tester.takeException(), isNull, reason: '$width');
-    }
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-  });
+    });
+  }
 
   testWidgets('groups the desktop inbox and preserves the thread while collapsing it', (
     tester,
@@ -361,26 +375,29 @@ void main() {
     expect(find.text('Imagem anexada · demonstração local'), findsOne);
   });
 
-  testWidgets('keeps the compact inbox usable at 200 percent text', (tester) async {
+  testWidgets('keeps approved viewports usable at 200 percent text', (tester) async {
     tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(375, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
-          child: child!,
+    for (final width in [1440.0, 1024.0, 768.0, 375.0]) {
+      tester.view.physicalSize = Size(width, 900);
+      await tester.pumpWidget(
+        MaterialApp(
+          key: ValueKey(width),
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: const SuperadminChatPage(logout: _logout),
         ),
-        home: const SuperadminChatPage(logout: _logout),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Turma Girassol'), findsOne);
-    expect(tester.takeException(), isNull);
+      expect(find.text('Turma Girassol'), findsWidgets);
+      expect(tester.takeException(), isNull, reason: '$width');
+    }
   });
 }
 

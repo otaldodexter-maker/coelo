@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../chat_fixtures.dart';
+import '../widgets/superadmin_chat_context_panel.dart';
 import '../widgets/superadmin_chat_scope_filters.dart';
 import '../widgets/superadmin_chat_thread_body.dart';
 
@@ -32,6 +33,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   var _selectedIndex = 0;
   var _mobileThreadOpen = false;
   var _inboxCollapsed = false;
+  bool? _contextPanelCollapsedOverride;
   final _scopeSelections = <SuperadminChatScopeKind, String>{};
 
   SuperadminChatConversation get _selected => superadminChatConversations[_selectedIndex];
@@ -70,6 +72,14 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     });
   }
 
+  bool _contextPanelCollapsed({required bool byDefault}) {
+    return _contextPanelCollapsedOverride ?? byDefault;
+  }
+
+  void _toggleContextPanel(bool collapsed) {
+    setState(() => _contextPanelCollapsedOverride = !collapsed);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SuperadminShell(
@@ -86,23 +96,50 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
-                  return _mobileThreadOpen
-                      ? _ChatThread(
+                  if (!_mobileThreadOpen) {
+                    return _ConversationInbox(
+                      key: const Key('superadmin-chat-inbox'),
+                      conversations: _filteredConversations,
+                      selectedIndex: _selectedIndex,
+                      onSelected: (index) => _selectConversation(index, mobile: true),
+                      onNewConversation: _openNewConversation,
+                      onBack: widget.onBack,
+                    );
+                  }
+
+                  final contextPanelCollapsed = _contextPanelCollapsed(byDefault: true);
+                  if (!contextPanelCollapsed) {
+                    return SuperadminChatContextPanel(
+                      conversation: _selected,
+                      collapsed: false,
+                      onToggle: () => _toggleContextPanel(contextPanelCollapsed),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: _ChatThread(
                           key: const Key('superadmin-chat-thread'),
                           conversation: _selected,
                           onBack: () => setState(() => _mobileThreadOpen = false),
-                        )
-                      : _ConversationInbox(
-                          key: const Key('superadmin-chat-inbox'),
-                          conversations: _filteredConversations,
-                          selectedIndex: _selectedIndex,
-                          onSelected: (index) => _selectConversation(index, mobile: true),
-                          onNewConversation: _openNewConversation,
-                          onBack: widget.onBack,
-                        );
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      SizedBox(
+                        height: CoeloSize.touchMin + CoeloSpacing.space4,
+                        child: SuperadminChatContextPanel(
+                          conversation: _selected,
+                          collapsed: true,
+                          onToggle: () => _toggleContextPanel(contextPanelCollapsed),
+                        ),
+                      ),
+                    ],
+                  );
                 }
 
                 if (constraints.maxWidth < CoeloBreakpoints.expanded.minWidth) {
+                  final contextPanelCollapsed = _contextPanelCollapsed(byDefault: true);
                   return Row(
                     children: [
                       _ConversationRail(
@@ -120,10 +157,22 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                           conversation: _selected,
                         ),
                       ),
+                      const VerticalDivider(width: 1),
+                      SizedBox(
+                        width: contextPanelCollapsed
+                            ? CoeloSize.touchMin + CoeloSpacing.space4
+                            : CoeloSize.touchMin * 6,
+                        child: SuperadminChatContextPanel(
+                          conversation: _selected,
+                          collapsed: contextPanelCollapsed,
+                          onToggle: () => _toggleContextPanel(contextPanelCollapsed),
+                        ),
+                      ),
                     ],
                   );
                 }
 
+                final contextPanelCollapsed = _contextPanelCollapsed(byDefault: false);
                 return Row(
                   children: [
                     if (_inboxCollapsed)
@@ -155,6 +204,17 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                       child: _ChatThread(
                         key: const Key('superadmin-chat-thread'),
                         conversation: _selected,
+                      ),
+                    ),
+                    const VerticalDivider(width: 1),
+                    SizedBox(
+                      width: contextPanelCollapsed
+                          ? CoeloSize.touchMin + CoeloSpacing.space4
+                          : CoeloSize.touchMin * 6,
+                      child: SuperadminChatContextPanel(
+                        conversation: _selected,
+                        collapsed: contextPanelCollapsed,
+                        onToggle: () => _toggleContextPanel(contextPanelCollapsed),
                       ),
                     ),
                   ],
