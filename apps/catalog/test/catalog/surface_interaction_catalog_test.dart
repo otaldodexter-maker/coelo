@@ -34,7 +34,7 @@ void main() {
 
       expect(dialog.backgroundColor, theme.colorScheme.surface);
       expect(close.icon, isA<Icon>());
-      expect((close.icon! as Icon).icon, Icons.close_rounded);
+      expect((close.icon as Icon).icon, Icons.close_rounded);
       expect(close.tooltip, 'Fechar demonstração');
       expect(close.constraints?.minWidth, CoeloSize.touchMin);
       expect(close.constraints?.minHeight, CoeloSize.touchMin);
