@@ -368,9 +368,19 @@ As 15 versions canonicas foram registradas como aplicadas:
 npx.cmd supabase@2.109.1 migration repair 20260720103023 20260720180000 20260720190000 20260724120307 20260724122545 20260724152628 20260724152707 20260724152713 20260724152722 20260724152731 20260724161334 20260724161706 20260724162210 20260724162604 20260724162900 --status applied --linked --workdir packages/coelo_database --agent no --output-format text
 ```
 
-Os dois comandos terminaram com `Finished supabase migration repair.`. Nao
-foram executados DDL, DML em tabelas de produto, `apply_migration`, `db reset`
-ou `db push` real.
+Os dois comandos terminaram com `Finished supabase migration repair.`. Antes
+de atualizar as entradas, o CLI oficial executou DDL idempotente restrito ao
+seu ledger interno para garantir:
+
+- `CREATE SCHEMA IF NOT EXISTS supabase_migrations`;
+- `CREATE TABLE IF NOT EXISTS supabase_migrations.schema_migrations`;
+- `ALTER TABLE ... ADD COLUMN IF NOT EXISTS statements`;
+- `ALTER TABLE ... ADD COLUMN IF NOT EXISTS name`.
+
+Esses comandos internos nao constituem DDL de produto. Nenhum DDL foi
+executado nos schemas de produto, e nenhuma DML foi executada em tabelas de
+produto. Tambem nao foram executados `apply_migration`, `db reset` ou
+`db push` real.
 
 # Ledger Remoto Depois
 
@@ -421,6 +431,6 @@ validacao e ainda nao foram executados nesta etapa.
 
 Historico remoto reconciliado com as 18 versions e nomes canonicos locais.
 O `db push --dry-run` confirmou que nao ha migration pendente. O fingerprint
-depois do reparo e identico ao anterior, e nenhum DDL ou DML de produto foi
-executado. A unica mutacao remota desta etapa ocorreu no ledger
-`supabase_migrations.schema_migrations`.
+depois do reparo e identico ao anterior. O CLI executou apenas seu DDL
+idempotente de bootstrap interno e a reconciliacao do ledger em
+`supabase_migrations`; nenhum schema ou dado de produto mudou.

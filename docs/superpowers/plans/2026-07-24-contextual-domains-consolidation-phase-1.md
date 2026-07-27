@@ -1,17 +1,27 @@
 ---
 title: "Contextual Domains Consolidation Phase 1 Implementation Plan"
-source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; remote audit of project evvbomzejfijozbtgvpt on 2026-07-24; Supabase CLI and migration documentation"
+source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; remote audit of project evvbomzejfijozbtgvpt on 2026-07-24; Supabase CLI and migration documentation; Supabase CLI 2.109.1 execution evidence on 2026-07-27"
 status: "ready-for-execution"
-generated_at: "2026-07-24"
+generated_at: "2026-07-27"
 ---
 
 # Contextual Domains Consolidation Phase 1 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Align the approved contextual-domain documentation and restore one deterministic local/remote Supabase migration history without changing the remote schema.
+**Goal:** Align the approved contextual-domain documentation and restore one
+deterministic local/remote Supabase migration history without changing the
+remote product schema.
 
-**Architecture:** This phase performs no DDL. Canonical migrations remain in `packages/coelo_database/migrations`, while a deterministic PowerShell helper mirrors them into the directory expected by Supabase CLI. The remote migration ledger is repaired only after a before-state snapshot proves each remote-only version has the same semantic name and order as one local-only version; schema fingerprints before and after must remain identical.
+**Architecture:** This phase performs no product DDL. Canonical migrations
+remain in `packages/coelo_database/migrations`, while a deterministic
+PowerShell helper mirrors them into the directory expected by Supabase CLI.
+The official CLI may execute idempotent internal DDL in
+`supabase_migrations` to ensure its ledger schema, table and columns before
+repairing history; this does not authorize DDL in product schemas. The remote
+migration ledger is repaired only after a before-state snapshot proves each
+remote-only version has the same semantic name and order as one local-only
+version; product-schema fingerprints before and after must remain identical.
 
 **Tech Stack:** Supabase hosted project `coelo`, PostgreSQL 17.6, Supabase CLI 2.109.1, Supabase MCP, PowerShell 7-compatible scripts, Markdown.
 
@@ -20,7 +30,10 @@ generated_at: "2026-07-24"
 - Remote project name: `coelo`.
 - Remote project ref: `evvbomzejfijozbtgvpt`.
 - Confirm the project is `ACTIVE_HEALTHY` immediately before every remote mutation.
-- This phase must not execute DDL, DML against product tables, `db reset`, `db push`, or `apply_migration`.
+- This phase must not execute product DDL, DML against product tables,
+  `db reset`, `db push`, or `apply_migration`. The only permitted DDL is the
+  idempotent internal-ledger bootstrap intrinsically executed by the official
+  CLI inside `supabase_migrations` during `migration repair`.
 - Repair only `supabase_migrations.schema_migrations`; verify the product schema fingerprint is unchanged.
 - Never invent or rename a migration timestamp.
 - Canonical versioned SQL remains in `packages/coelo_database/migrations`.
@@ -685,8 +698,9 @@ Expected: all 11 scripts complete successfully and roll back their fixtures.
 - [ ] **Step 2: Re-run advisors**
 
 Run Supabase security and performance advisors. The issue counts must be equal
-to the Task 3 baseline because no DDL occurred. Any difference blocks Phase 2
-until explained.
+to the Task 3 baseline because no product DDL occurred; the CLI's idempotent
+ledger bootstrap is confined to `supabase_migrations`. Any difference blocks
+Phase 2 until explained.
 
 - [ ] **Step 3: Verify the remote structural baseline directly**
 
