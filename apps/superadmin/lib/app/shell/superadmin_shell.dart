@@ -38,7 +38,7 @@ class SuperadminShell extends StatefulWidget {
     this.currentDestination = 'institutions',
     this.onDestinationSelected,
     this.onBugReportSubmitted,
-    this.showChatLauncher = true,
+    @Deprecated('O launcher de mensagens agora é global.') this.showChatLauncher = false,
     super.key,
   });
 
@@ -53,7 +53,7 @@ class SuperadminShell extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
-  /// Kept for source compatibility. The global launcher is always rendered.
+  @Deprecated('O launcher de mensagens agora é global.')
   final bool showChatLauncher;
 
   @override
@@ -267,6 +267,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
           bottom: CoeloSpacing.space4,
           child: SuperadminChatLauncher(
             onExpand: () => widget.onDestinationSelected?.call('conversations'),
+            canExpand: widget.onDestinationSelected != null,
           ),
         ),
       ],

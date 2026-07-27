@@ -220,40 +220,43 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: SuperadminShell(
-          logout: () async => const LogoutResult.success(),
-          child: const SizedBox.expand(),
-        ),
-      ),
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      child: const SizedBox.expand(),
     );
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
 
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
     await tester.tap(find.text('Mensagens'));
     await tester.pumpAndSettle();
 
     final expand = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full));
-    expect(expand.onPressed, isNotNull);
-    await tester.tap(find.widgetWithIcon(IconButton, Icons.open_in_full));
-    await tester.pump();
-    expect(tester.takeException(), isNull);
+    expect(expand.tooltip, 'Expandir conversas indisponível nesta tela');
+    expect(expand.onPressed, isNull);
+  });
+
+  testWidgets('keeps the legacy visibility default false', (tester) async {
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      child: const SizedBox.expand(),
+    );
+
+    // ignore: deprecated_member_use_from_same_package
+    expect(shell.showChatLauncher, isFalse);
   });
 
   testWidgets('keeps the legacy visibility flag without hiding the global launcher', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: SuperadminShell(
-          logout: () async => const LogoutResult.success(),
-          showChatLauncher: false,
-          child: const SizedBox.expand(),
-        ),
-      ),
+    // ignore: deprecated_member_use_from_same_package
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      showChatLauncher: false,
+      child: const SizedBox.expand(),
     );
+    // ignore: deprecated_member_use_from_same_package
+    expect(shell.showChatLauncher, isFalse);
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
 
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
   });

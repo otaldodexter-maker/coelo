@@ -13,9 +13,10 @@ import 'superadmin_chat_thread_body.dart';
 enum _LauncherView { inbox, thread }
 
 final class SuperadminChatLauncher extends StatefulWidget {
-  const SuperadminChatLauncher({required this.onExpand, super.key});
+  const SuperadminChatLauncher({required this.onExpand, this.canExpand = true, super.key});
 
   final VoidCallback onExpand;
+  final bool canExpand;
 
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
@@ -144,7 +145,12 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     return Column(
       key: const Key('superadmin-chat-launcher-inbox'),
       children: [
-        _LauncherHeader(title: 'Conversas', onExpand: widget.onExpand, onClose: _close),
+        _LauncherHeader(
+          title: 'Conversas',
+          onExpand: widget.onExpand,
+          canExpand: widget.canExpand,
+          onClose: _close,
+        ),
         const Divider(height: 1),
         Padding(
           padding: const EdgeInsets.fromLTRB(
@@ -233,6 +239,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
           ),
           onBack: () => setState(() => _view = _LauncherView.inbox),
           onExpand: widget.onExpand,
+          canExpand: widget.canExpand,
           onClose: _close,
         ),
         const Divider(height: 1),
@@ -425,6 +432,7 @@ final class _LauncherHeader extends StatelessWidget {
   const _LauncherHeader({
     required this.title,
     required this.onExpand,
+    required this.canExpand,
     required this.onClose,
     this.subtitle,
     this.avatar,
@@ -436,6 +444,7 @@ final class _LauncherHeader extends StatelessWidget {
   final Widget? avatar;
   final VoidCallback? onBack;
   final VoidCallback onExpand;
+  final bool canExpand;
   final VoidCallback onClose;
 
   @override
@@ -484,8 +493,10 @@ final class _LauncherHeader extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Expandir conversas',
-                onPressed: onExpand,
+                tooltip: canExpand
+                    ? 'Expandir conversas'
+                    : 'Expandir conversas indisponível nesta tela',
+                onPressed: canExpand ? onExpand : null,
                 color: colors.onPrimary,
                 icon: const Icon(Icons.open_in_full),
               ),
