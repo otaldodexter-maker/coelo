@@ -6,7 +6,6 @@ import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
-import '../../domain/institution_directory_query.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_directory_view_model.dart';
 import '../widgets/institution_directory_cards.dart';
