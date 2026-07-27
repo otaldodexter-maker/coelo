@@ -41,7 +41,7 @@ final class SupportPrototypeController extends ChangeNotifier {
   SupportTicket submitReport(SupportReportDraft draft) {
     final now = _clock();
     final ticket = SupportTicket(
-      id: 'support-session-${_nextSessionNumber.toString().padLeft(3, '0')}',
+      id: _nextSessionId(),
       subject: draft.subject,
       menu: draft.menu,
       screen: draft.screen,
@@ -59,7 +59,6 @@ final class SupportPrototypeController extends ChangeNotifier {
             ]
           : const [],
     );
-    _nextSessionNumber += 1;
     _tickets = List.unmodifiable([..._tickets, ticket]);
     notifyListeners();
     return ticket;
@@ -157,6 +156,16 @@ final class SupportPrototypeController extends ChangeNotifier {
     return ticket.messages.any(
       (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
     );
+  }
+
+  String _nextSessionId() {
+    while (true) {
+      final id = 'support-session-${_nextSessionNumber.toString().padLeft(3, '0')}';
+      _nextSessionNumber += 1;
+      if (_tickets.every((ticket) => ticket.id != id)) {
+        return id;
+      }
+    }
   }
 
   void _replaceTicket(

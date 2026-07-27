@@ -19,12 +19,13 @@ Entra neste recorte:
 - listagem, seleção, leitura de mensagens recebidas, resposta local e encerramento;
 - filtros por busca, status, menu, tela e mensagens não lidas;
 - quatro estados de UX: `Novo`, `Em andamento`, `Aguardando solicitante` e `Concluído`.
+- a superfície visual completa do protótipo: rota interna `/support`, destino `Suporte` na shell do Superadmin, página de central de suporte, lista de tickets, filtros, painel de detalhe, histórico de mensagens, composer de resposta, ações de status/encerramento e diálogo de novo relato com anexo demonstrativo.
 
-Fica fora de escopo: UI, rotas, shell, catálogo e componentes compartilhados; repositório, persistência, estado assíncrono, banco, Supabase, R2, Realtime e auditoria implementada; acesso a contexto privado, impersonação, permissões de outros apps ou APIs compartilhadas.
+Fica fora de escopo: repositório, persistência, estado assíncrono, banco, Supabase, R2, Realtime e auditoria implementada; acesso a contexto privado, impersonação, permissões de outros apps ou APIs compartilhadas. A primeira fatia desta spec entrega somente o núcleo local; as superfícies visuais, rota e shell acima continuam no escopo aprovado do protótipo e consomem esse núcleo em fatias posteriores.
 
 ## Superfície afetada e permissão
 
-O protótipo pertence exclusivamente a `apps/superadmin`. O limite de permissão é Superadmin: nenhum Admin institucional, usuário do app principal ou pacote compartilhado recebe acesso, contrato ou dependência deste estado. Em uma entrega persistente, o acesso continuará condicionado a cargo interno, escopo autorizado e auditoria conforme o PRD Superadmin.
+O protótipo pertence exclusivamente a `apps/superadmin`. A rota `/support` é apresentada dentro da `SuperadminShell` pelo destino de navegação `Suporte`; sua página reúne a toolbar de filtros e novo relato, a lista filtrada, o detalhe do ticket, anexos e conversa. Em telas amplas, lista e detalhe podem coexistir; em telas compactas, a navegação preserva o retorno à lista e as ações permanecem alcançáveis. O limite de permissão é Superadmin: nenhum Admin institucional, usuário do app principal ou pacote compartilhado recebe acesso, contrato ou dependência deste estado. Em uma entrega persistente, o acesso continuará condicionado a cargo interno, escopo autorizado e auditoria conforme o PRD Superadmin.
 
 ## Entidades e dados
 
@@ -40,6 +41,8 @@ Todas as coleções expostas pelo domínio e controller são imutáveis. Os fixt
 - Sem resultados: a lista filtrada fica vazia sem alterar os dados locais.
 - Relato enviado: cria ticket em `Novo` e permanece disponível até o reload.
 - Resposta vazia: é ignorada; resposta válida é aparada e criada como mensagem do suporte em estado enviado.
+- Ticket concluído: permanece consultável na lista e no detalhe, com as ações disponíveis coerentes com o estado.
+- Anexo demonstrativo: exibe somente os metadados locais disponíveis; não há upload ou URL privada neste protótipo.
 
 ## Eventos locais
 
@@ -55,6 +58,7 @@ O controller emite apenas notificações locais de mudança para criação de re
 - Busca e filtros de status, menu, tela e não lidos se cruzam.
 - Limpar filtros restaura a listagem completa.
 - Nenhum dado sobrevive ao reload do app.
+- A rota `/support`, a navegação `Suporte` da shell e os componentes de lista, detalhe, filtros, mensagens, resposta e novo relato apresentam o estado local sem introduzir integração de backend.
 
 ## Testes exigidos
 

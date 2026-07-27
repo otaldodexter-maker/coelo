@@ -52,3 +52,31 @@ Result: exit code 0; `00:00 +7: All tests passed!`. The final run followed forma
 ## Concerns
 
 The UX statuses intentionally do not map to `public.support_session_status`; OQ-028 records the decision needed before persistence. This prototype resets on reload and produces no audit records by design.
+
+## Review fixes — 2026-07-27
+
+### RED
+
+Command, from `apps/superadmin`:
+
+```text
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart --suppress-analytics test test/features/support/presentation/view_models/support_prototype_controller_test.dart
+```
+
+Result: exit code 1. `skips supplied session ids when creating a report ticket` expected `support-session-002` but received `support-session-001`; `gives equal filter sets the same hash regardless of insertion order` received distinct hash codes for equal filters. The remaining seven tests passed.
+
+### GREEN
+
+Command, from `apps/superadmin`:
+
+```text
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart --suppress-analytics test test/features/support/presentation/view_models/support_prototype_controller_test.dart
+```
+
+Result: exit code 0; `00:00 +9: All tests passed!` after formatting the touched Dart files.
+
+### Fix summary
+
+- `submitReport` now advances deterministically past every occupied `support-session-NNN` id supplied in the initial session state.
+- `SupportFilters.hashCode` now uses order-independent set hashes, matching its set-based equality.
+- The support spec now records the full approved prototype surface: `/support`, the `Suporte` shell destination, and its list, filter, detail, message, reply and report components. Backend, persistence and privileged access remain outside this prototype.

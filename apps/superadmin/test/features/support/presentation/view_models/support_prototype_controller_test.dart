@@ -51,6 +51,41 @@ void main() {
     expect(controller.tickets.single, created);
   });
 
+  test('skips supplied session ids when creating a report ticket', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [ticket(id: 'support-session-001', status: SupportTicketStatus.completed)],
+      clock: () => fixedNow,
+    );
+    addTearDown(controller.dispose);
+
+    final created = controller.submitReport(
+      const SupportReportDraft(
+        menu: 'Conversas',
+        screen: 'Lista de conversas',
+        subject: 'Relato novo',
+        description: 'Descricao nova.',
+        requester: 'Marina Alves',
+      ),
+    );
+
+    expect(created.id, 'support-session-002');
+    expect(controller.tickets.map((ticket) => ticket.id).toSet(), hasLength(2));
+  });
+
+  test('gives equal filter sets the same hash regardless of insertion order', () {
+    final first = SupportFilters(
+      statuses: {SupportTicketStatus.newRequest, SupportTicketStatus.inProgress},
+      menus: {'Conversas', 'Pessoas'},
+    );
+    final second = SupportFilters(
+      statuses: {SupportTicketStatus.inProgress, SupportTicketStatus.newRequest},
+      menus: {'Pessoas', 'Conversas'},
+    );
+
+    expect(first, second);
+    expect(first.hashCode, second.hashCode);
+  });
+
   test('exposes immutable collections from tickets and controller', () {
     final controller = SupportPrototypeController(
       initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],

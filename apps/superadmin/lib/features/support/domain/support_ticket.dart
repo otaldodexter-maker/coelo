@@ -135,13 +135,8 @@ final class SupportFilters {
   }
 
   @override
-  int get hashCode => Object.hash(
-    search,
-    Object.hashAll(statuses),
-    Object.hashAll(menus),
-    Object.hashAll(screens),
-    unreadOnly,
-  );
+  int get hashCode =>
+      Object.hash(search, _setHash(statuses), _setHash(menus), _setHash(screens), unreadOnly);
 }
 
 final class SupportReportDraft {
@@ -164,4 +159,8 @@ final class SupportReportDraft {
 
 bool _setsEqual<T>(Set<T> first, Set<T> second) {
   return first.length == second.length && first.containsAll(second);
+}
+
+int _setHash<T>(Set<T> values) {
+  return values.fold(0, (hash, value) => hash ^ value.hashCode);
 }
