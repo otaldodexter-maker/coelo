@@ -167,6 +167,10 @@ O catálogo também deve comparar:
 - Validadores do índice e da sincronização do catálogo devem passar.
 - Testes documentais ou de widget devem assegurar `colorScheme.surface` em
   light e dark e rejeitar `primaryContainer` como superfície-base.
+- `DialogTheme.surfaceTintColor` e o tint explícito de diálogos devem ser
+  transparentes; elevação não pode reintroduzir tonalidade laranja.
+- Menus de seleção única devem herdar a largura exata do campo e não devem
+  exibir check ou checkbox redundante.
 - Testes devem assegurar `primaryContainer`, `CoeloRadius.md`,
   `CoeloSpacing.spaceHalf` e overlay transparente no hover de itens discretos.
 - Testes devem assegurar que filtros e tabelas preservam linhas contínuas sem

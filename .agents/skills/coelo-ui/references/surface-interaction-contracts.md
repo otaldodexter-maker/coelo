@@ -13,6 +13,8 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
 ## Popup, modal, dialog e overlay
 
 - A superfície-base é `colorScheme.surface` em light e dark.
+- `surfaceTintColor` é sempre `Colors.transparent`; tint de Material não pode
+  recolorir a superfície.
 - É proibido usar `colorScheme.primaryContainer` como fundo-base, assim como
   laranja-claro ou outra tonalidade de marca, do contêiner.
 - Usar barreira preta translúcida, conteúdo contextual e ação primária quando
@@ -61,7 +63,9 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   fundo transparente até hover ou foco. O checkbox não recebe hover, splash ou
   fundo próprio.
 - O single-select usa `colorScheme.primaryContainer` no estado selecionado, hover e foco,
-  com conteúdo em `colorScheme.primary`; não usa checkbox.
+  com conteúdo em `colorScheme.primary`; não usa checkbox nem check. O painel
+  acompanha exatamente a largura do gatilho em todas as superfícies Flutter e
+  web.
 - Reutilizar `CoeloAdminMultiSelectFilter` como referência de implementação do
   multi-select administrativo. Instituições é a referência de comportamento do
   multi-select; o popup de Bug é a referência do single-select.

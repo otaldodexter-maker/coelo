@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('dialogs always use a neutral untinted surface', () {
+    for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+      expect(theme.dialogTheme.backgroundColor, theme.colorScheme.surface);
+      expect(theme.dialogTheme.surfaceTintColor, Colors.transparent);
+    }
+  });
   group('CoeloPalette', () {
     test('exposes the official brand primitives', () {
       expect(CoeloPalette.orange500, const Color(0xFFD63C00));

@@ -45,10 +45,11 @@ void main() {
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.form-controls');
-    expect(find.byType(CoeloSearchField), findsOneWidget);
+    expect(find.byType(CoeloFormTextField), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.selection-controls');
     expect(find.byType(CoeloAdminMultiSelectFilter<String>), findsOneWidget);
+    expect(find.byType(CoeloAdminSingleSelectField<String>), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.status-feedback');
     expect(find.byType(CoeloStatusChip), findsOneWidget);
@@ -70,7 +71,7 @@ void main() {
     await tester.ensureVisible(field);
     await tester.enterText(field, 'Coelo');
     await tester.pump();
-    expect(find.text('Busca: Coelo'), findsOneWidget);
+    expect(find.text('Coelo'), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.selection-controls');
     final selection = find.text('Ativa');

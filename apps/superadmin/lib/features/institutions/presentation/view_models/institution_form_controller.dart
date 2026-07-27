@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
 
 enum InstitutionFormStep {
+  branding('Identidade visual'),
   profile('Perfil da instituição'),
   location('Localização e contato'),
   owner('Responsável inicial'),
   plan('Plano'),
-  branding('Identidade visual'),
   review('Revisão');
 
   const InstitutionFormStep(this.label);
@@ -73,7 +74,7 @@ final class InstitutionFormController extends ChangeNotifier {
   late final String _initialSignature;
   bool _slugManuallyEdited = false;
 
-  InstitutionFormStep currentStep = InstitutionFormStep.profile;
+  InstitutionFormStep currentStep = InstitutionFormStep.branding;
   InstitutionStatus status;
   InstitutionPlan plan;
   InstitutionSubscriptionStatus subscriptionStatus;
@@ -82,6 +83,9 @@ final class InstitutionFormController extends ChangeNotifier {
   bool hasSimulatedLogo;
   bool hasSimulatedCover;
   bool isSaving = false;
+  Uint8List? logoBytes;
+  String? logoFileName;
+  String? logoError;
 
   bool get isEditing => original != null;
   bool get isDirty => _signature != _initialSignature;
@@ -163,6 +167,27 @@ final class InstitutionFormController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setLogo({required Uint8List bytes, required String fileName}) {
+    logoBytes = bytes;
+    logoFileName = fileName;
+    logoError = null;
+    hasSimulatedLogo = true;
+    notifyListeners();
+  }
+
+  void setLogoError(String value) {
+    logoError = value;
+    notifyListeners();
+  }
+
+  void removeLogo() {
+    logoBytes = null;
+    logoFileName = null;
+    logoError = null;
+    hasSimulatedLogo = false;
+    notifyListeners();
+  }
+
   void setSimulatedCover(bool value) {
     hasSimulatedCover = value;
     notifyListeners();
@@ -220,11 +245,6 @@ final class InstitutionFormController extends ChangeNotifier {
         text(InstitutionFormField.contactPhone).isEmpty &&
         value.isEmpty) {
       return 'Informe pelo menos um telefone ou celular institucional.';
-    }
-    if (field == InstitutionFormField.subscriptionJustification &&
-        _requiresJustification &&
-        value.isEmpty) {
-      return 'Explique o motivo desta alteração de assinatura.';
     }
     return null;
   }
@@ -315,12 +335,6 @@ final class InstitutionFormController extends ChangeNotifier {
     return error;
   }
 
-  bool get _requiresJustification => {
-    InstitutionSubscriptionStatus.paused,
-    InstitutionSubscriptionStatus.suspended,
-    InstitutionSubscriptionStatus.canceled,
-  }.contains(subscriptionStatus);
-
   String get _signature => [
     for (final field in InstitutionFormField.values) text(field),
     status.name,
@@ -329,6 +343,7 @@ final class InstitutionFormController extends ChangeNotifier {
     subscriptionStart.toIso8601String(),
     trialEnd?.toIso8601String() ?? '',
     '$hasSimulatedLogo',
+    logoFileName ?? '',
     '$hasSimulatedCover',
   ].join('|');
 
@@ -370,7 +385,6 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.typeName ||
   InstitutionFormField.documentType ||
   InstitutionFormField.document ||
-  InstitutionFormField.slug ||
   InstitutionFormField.primaryDomain ||
   InstitutionFormField.locale ||
   InstitutionFormField.timezone => InstitutionFormStep.profile,
@@ -392,6 +406,7 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.ownerMobilePhone => InstitutionFormStep.owner,
   InstitutionFormField.subscriptionJustification => InstitutionFormStep.plan,
   InstitutionFormField.brandDisplayName ||
+  InstitutionFormField.slug ||
   InstitutionFormField.accentColor ||
   InstitutionFormField.secondaryColor => InstitutionFormStep.branding,
 };
