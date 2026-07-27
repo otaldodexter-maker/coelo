@@ -4,14 +4,14 @@ status: "approved"
 generated_at: "2026-07-27"
 ---
 
-# Padrões de superfície para popups e hover
+# Padrões de popups, hover e fechamento
 
 ## Objetivo
 
 Eliminar a criação recorrente de popups com fundo laranja-claro e de estados de
 hover cinza. O diálogo de reporte de bug é a referência visual canônica para
 overlays; o menu lateral do Superadmin é a referência para itens interativos
-discretos.
+discretos. A ação de fechar também deve preservar o “X” vermelho canônico.
 
 ## Contrato visual
 
@@ -47,13 +47,32 @@ arredondados nem espaçamento entre linhas.
 
 O menu lateral do Superadmin é a referência visual canônica desse contrato.
 
+## Contrato da ação de fechar
+
+Todo “X” cuja ação seja fechar ou dispensar uma superfície usa:
+
+- `Icons.close_rounded`;
+- `colorScheme.error` no ícone em repouso;
+- fundo transparente em repouso;
+- `colorScheme.errorContainer` no hover e no foco visível;
+- `colorScheme.error` no ícone destacado;
+- overlay ou splash adicional transparente;
+- forma circular e alvo interativo mínimo de 48 px;
+- tooltip contextual obrigatório, como `Fechar importação`.
+
+Light e dark resolvem as cores pelos tokens semânticos correspondentes. Esta
+regra representa fechamento, não exclusão de dados nem outras ações destrutivas.
+O popup de reporte de bug e o modal de importação do Superadmin são as
+referências visuais canônicas.
+
 ## Fontes a atualizar
 
 1. `docs/design/design-system.md`, para oficializar a regra semântica.
 2. `.agents/skills/coelo-ui`, para exigir a consulta e a aplicação do contrato.
 3. O catálogo e seu índice, com exemplos recuperáveis por `popup`, `modal`,
    `dialog`, `overlay`, `surface`, `superfície`, `branco`, `laranja`, `hover`,
-   `menu`, `submenu`, `lista`, `filtro` e `tabela`.
+   `menu`, `submenu`, `lista`, `filtro`, `tabela`, `fechar`, `close`, `dismiss`
+   e `vermelho`.
 
 ## Catálogo
 
@@ -74,6 +93,7 @@ O catálogo também deve comparar:
 - opção de filtro em linha contínua;
 - linha de tabela densa em linha contínua;
 - ausência de camada cinza sobre o estado destacado.
+- ação de fechar em repouso, hover e foco, com tooltip contextual.
 
 ## Verificação
 
@@ -90,6 +110,8 @@ O catálogo também deve comparar:
   `CoeloSpacing.spaceHalf` e overlay transparente no hover de itens discretos.
 - Testes devem assegurar que filtros e tabelas preservam linhas contínuas sem
   raio ou espaçamento entre linhas.
+- Testes devem assegurar ícone `error`, fundo `errorContainer`, forma circular,
+  alvo mínimo de 48 px, tooltip e ausência de overlay cinza na ação de fechar.
 - As mudanças preexistentes no repositório devem ser preservadas.
 
 ## Fora de escopo
@@ -100,3 +122,4 @@ O catálogo também deve comparar:
 - Usar branco literal no tema escuro.
 - Aplicar cantos arredondados ou espaçamento às opções de filtro e às linhas de
   tabelas densas.
+- Reutilizar o contrato de fechamento para exclusão ou outra ação destrutiva.
