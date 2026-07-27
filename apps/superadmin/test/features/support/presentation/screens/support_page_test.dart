@@ -3,11 +3,13 @@ import 'package:coelo_superadmin/features/support/domain/support_ticket.dart';
 import 'package:coelo_superadmin/features/support/presentation/screens/support_page.dart';
 import 'package:coelo_superadmin/features/support/presentation/view_models/support_prototype_controller.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('shows four kanban status lanes and filters tickets', (tester) async {
+  testWidgets('shows operational kanban anatomy and filters tickets', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
@@ -16,6 +18,9 @@ void main() {
     expect(find.byKey(const Key('support-kanban-inProgress')), findsOneWidget);
     expect(find.byKey(const Key('support-kanban-waitingRequester')), findsOneWidget);
     expect(find.byKey(const Key('support-kanban-completed')), findsOneWidget);
+    expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
+    expect(find.text('Camila Rocha'), findsWidgets);
+    expect(find.textContaining('Centro Horizonte > Unidade Cambui'), findsWidgets);
     expect(find.byKey(const Key('support-search')), findsOneWidget);
     expect(find.byKey(const Key('support-status-filter')), findsOneWidget);
     expect(find.byKey(const Key('support-menu-filter')), findsOneWidget);
@@ -38,6 +43,47 @@ void main() {
     await tester.pump();
     expect(find.text('Nao consigo atualizar uma instituicao'), findsWidgets);
     expect(find.text('Conversa não carrega'), findsNothing);
+  });
+
+  testWidgets('assigns an owner from the kanban card menu', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    await tester.tap(find.byKey(const Key('support-card-menu-SUP-001')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Atribuir responsável').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ana Souza · Suporte').last);
+    await tester.pumpAndSettle();
+
+    expect(
+      controller.tickets.singleWhere((ticket) => ticket.id == 'SUP-001').ownerId,
+      'member-support',
+    );
+  });
+
+  testWidgets('requires an owner when a kanban drop starts work', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    final card = find.byKey(const Key('support-card-SUP-001'));
+    final target = find.byKey(const Key('support-kanban-inProgress'));
+    final gesture = await tester.startGesture(tester.getCenter(card));
+    await tester.pump(kLongPressTimeout + const Duration(milliseconds: 50));
+    await gesture.moveTo(tester.getCenter(target));
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Escolha o responsável'), findsOneWidget);
+    await tester.tap(find.text('Ana Souza · Suporte').last);
+    await tester.pumpAndSettle();
+
+    final ticket = controller.tickets.singleWhere((item) => item.id == 'SUP-001');
+    expect(ticket.ownerId, 'member-support');
+    expect(ticket.status, SupportTicketStatus.inProgress);
   });
 
   testWidgets('keeps table columns and status menu synchronized', (tester) async {
@@ -71,19 +117,96 @@ void main() {
     );
   });
 
-  testWidgets('opens details and sends a support reply', (tester) async {
+  testWidgets('keeps the principal assignee before collaborators in semantics', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    controller.assignOwner('SUP-001', 'member-dev');
+    controller.setCollaborators('SUP-001', {'member-qa', 'member-support'});
+    await _pump(tester, controller, const Size(1280, 900));
+
+    expect(
+      find.bySemanticsLabel(
+        RegExp(
+          'Caio Lima, Desenvolvimento; Ana Souza, Suporte; Davi Reis, Qualidade',
+          dotAll: true,
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('shows complete detail, updates team, reads and replies', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
 
-    await tester.tap(find.byKey(const Key('support-ticket-SUP-001')));
+    await tester.tap(find.byKey(const Key('support-card-SUP-001')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('support-detail-panel')), findsOneWidget);
+    expect(find.text('Camila Rocha'), findsWidgets);
+    expect(
+      find.text('Centro Horizonte > Unidade Cambui > Turma Girassol > Oficina de Arte'),
+      findsWidgets,
+    );
+    expect(find.byKey(const Key('support-detail-owner')), findsOneWidget);
+    expect(find.byKey(const Key('support-detail-collaborators')), findsOneWidget);
+    expect(controller.selectedTicket!.messages.first.isReadBySupport, isTrue);
+
+    await tester.tap(find.byKey(const Key('support-detail-owner')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ana Souza · Suporte').last);
+    await tester.pumpAndSettle();
+    expect(controller.selectedTicket!.ownerId, 'member-support');
+
+    await tester.tap(find.byKey(const Key('support-detail-collaborators')));
+    await tester.pumpAndSettle();
+    final collaboratorOption = find.widgetWithText(MenuItemButton, 'Caio Lima · Desenvolvimento');
+    expect(collaboratorOption, findsOneWidget);
+    final collaboratorCheckbox = find.descendant(
+      of: collaboratorOption,
+      matching: find.byType(Checkbox),
+    );
+    await tester.tap(find.text('Caio Lima · Desenvolvimento').last);
+    await tester.pumpAndSettle();
+    expect(tester.widget<Checkbox>(collaboratorCheckbox).value, isTrue);
+    expect(find.text('Aplicar'), findsOneWidget);
+    await tester.tap(find.text('Aplicar').last);
+    await tester.pumpAndSettle();
+    expect(controller.selectedTicket!.collaboratorIds, {'member-dev'});
+
+    await tester.scrollUntilVisible(
+      find.text('erro-salvamento.png'),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('support-detail-panel')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(find.text('erro-salvamento.png'), findsOneWidget);
+
     await tester.enterText(find.byKey(const Key('support-composer')), 'Recebemos seu relato.');
     await tester.pump();
     await tester.tap(find.byTooltip('Enviar mensagem'));
     await tester.pump();
     expect(controller.selectedTicket!.messages.last.text, 'Recebemos seu relato.');
+  });
+
+  testWidgets('Escape closes detail and restores focus to its card', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(controller.selectedTicket, isNull);
+    expect(find.byKey(const Key('support-detail-panel')), findsNothing);
+    final card = tester.widget<InkWell>(find.byKey(const Key('support-card-SUP-001')));
+    expect(card.focusNode?.hasFocus, isTrue);
   });
 
   testWidgets('uses one compact lane at a time on phone widths', (tester) async {
