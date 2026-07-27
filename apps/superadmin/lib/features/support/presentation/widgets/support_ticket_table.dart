@@ -1,5 +1,7 @@
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
@@ -30,6 +32,7 @@ final class SupportTicketTable extends StatefulWidget {
 
 final class _SupportTicketTableState extends State<SupportTicketTable> {
   final _rowFocusNodes = <String, FocusNode>{};
+  String? _focusedTicketId;
 
   @override
   void didUpdateWidget(covariant SupportTicketTable oldWidget) {
@@ -90,7 +93,7 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
         initialWidth: 200,
         minWidth: 160,
         maxWidth: 320,
-        cellBuilder: (_, ticket) => _text('${ticket.menu} > ${ticket.screen}'),
+        cellBuilder: (context, ticket) => _originCell(context, ticket),
       ),
       CoeloAdminTableColumn<SupportTicket>(
         id: 'requester-context',
@@ -159,21 +162,66 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
   }
 
   Widget _ticketCell(BuildContext context, SupportTicket ticket) {
-    return Focus(
-      key: Key('support-table-row-focus-${ticket.id}'),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(ticket.id, maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(
+          ticket.subject,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    );
+  }
+
+  Widget _originCell(BuildContext context, SupportTicket ticket) {
+    final colors = Theme.of(context).colorScheme;
+    final focused = _focusedTicketId == ticket.id;
+    return FocusableActionDetector(
+      key: Key('support-table-row-restore-${ticket.id}'),
       focusNode: _focusNodeFor(ticket),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(ticket.id, maxLines: 1, overflow: TextOverflow.ellipsis),
-          Text(
-            ticket.subject,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall,
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+      },
+      actions: <Type, Action<Intent>>{
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            _openTicket(ticket);
+            return null;
+          },
+        ),
+      },
+      onShowFocusHighlight: (focused) {
+        setState(() => _focusedTicketId = focused ? ticket.id : null);
+      },
+      child: Semantics(
+        label: 'Abrir chamado ${ticket.id}',
+        button: true,
+        excludeSemantics: true,
+        onTap: () => _openTicket(ticket),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => _openTicket(ticket),
+          child: AnimatedContainer(
+            key: Key('support-table-row-focus-surface-${ticket.id}'),
+            duration: CoeloMotion.short,
+            curve: Curves.easeOut,
+            alignment: Alignment.centerLeft,
+            decoration: BoxDecoration(
+              color: focused ? colors.primaryContainer : Colors.transparent,
+            ),
+            child: Text(
+              '${ticket.menu} > ${ticket.screen}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: focused ? colors.primary : colors.onSurface),
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

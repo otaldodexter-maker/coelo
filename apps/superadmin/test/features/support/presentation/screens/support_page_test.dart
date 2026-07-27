@@ -233,7 +233,9 @@ void main() {
     );
   });
 
-  testWidgets('restores focus to the exact table row that opened detail', (tester) async {
+  testWidgets('restores a unique table target that reopens the same ticket with Enter', (
+    tester,
+  ) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
@@ -245,10 +247,30 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
 
-    final rowFocus = tester.widgetList<Focus>(
-      find.byKey(const Key('support-table-row-focus-SUP-001')),
+    const targetKey = Key('support-table-row-restore-SUP-001');
+    final targetFinder = find.byKey(targetKey);
+    expect(targetFinder, findsOneWidget);
+    final target = tester.widget<FocusableActionDetector>(targetFinder);
+    expect(target.focusNode?.hasFocus, isTrue);
+    expect(tester.getSemantics(targetFinder).flagsCollection.isButton, isTrue);
+    expect(tester.getSemantics(targetFinder).label, 'Abrir chamado SUP-001');
+
+    final focusSurface = tester.widget<AnimatedContainer>(
+      find.descendant(
+        of: targetFinder,
+        matching: find.byKey(const Key('support-table-row-focus-surface-SUP-001')),
+      ),
     );
-    expect(rowFocus.any((focus) => focus.focusNode?.hasFocus ?? false), isTrue);
+    expect(
+      (focusSurface.decoration! as BoxDecoration).color,
+      CoeloTheme.light.colorScheme.primaryContainer,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    expect(controller.selectedTicket?.id, 'SUP-001');
+    expect(find.byKey(const Key('support-detail-panel')), findsOneWidget);
   });
 
   testWidgets('falls back to read filter when opening marks card filtered out', (tester) async {
