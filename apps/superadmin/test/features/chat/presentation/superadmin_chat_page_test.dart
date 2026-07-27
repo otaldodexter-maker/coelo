@@ -192,6 +192,41 @@ void main() {
     final item = tester.widget<MenuItemButton>(option);
     expect(tester.getSize(option).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(item.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
+    expect(item.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
+  });
+
+  testWidgets('shows the closed scope filter focus with a primary two-pixel border', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+
+    final filter = find.byKey(const Key('superadmin-chat-filter-state'));
+    await tester.tap(filter);
+    await tester.pumpAndSettle();
+    await tester.tap(filter);
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(MenuItemButton, 'CE'), findsNothing);
+
+    final materials = tester
+        .widgetList<Material>(
+          find.ancestor(
+            of: find.descendant(of: filter, matching: find.byType(InkWell)),
+            matching: find.byType(Material),
+          ),
+        )
+        .where((material) => material.shape is StadiumBorder)
+        .toList(growable: false);
+    expect(materials, hasLength(1));
+    final material = materials.single;
+    final side = (material.shape! as StadiumBorder).side;
+    expect(side.color, CoeloTheme.light.colorScheme.primary);
+    expect(side.width, 2);
   });
 
   testWidgets('simulates audio recording and media loading locally', (tester) async {

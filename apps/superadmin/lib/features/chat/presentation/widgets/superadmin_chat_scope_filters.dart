@@ -138,12 +138,20 @@ final class _ScopeFilterButton extends StatefulWidget {
 
 final class _ScopeFilterButtonState extends State<_ScopeFilterButton> {
   final _controller = MenuController();
+  final _focusNode = FocusNode();
   var _open = false;
+  var _focused = false;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final active = _open || widget.selectedValue != null;
+    final active = _open || _focused || widget.selectedValue != null;
     return MenuAnchor(
       controller: _controller,
       alignmentOffset: const Offset(0, CoeloSpacing.spaceHalf),
@@ -189,13 +197,22 @@ final class _ScopeFilterButtonState extends State<_ScopeFilterButton> {
             color: active ? colors.primaryContainer : colors.surface,
             shape: StadiumBorder(
               side: BorderSide(
-                color: _open ? colors.primary : colors.outlineVariant,
-                width: _open ? 2 : 1,
+                color: _open || _focused ? colors.primary : colors.outlineVariant,
+                width: _open || _focused ? 2 : 1,
               ),
             ),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
-              onTap: controller.isOpen ? controller.close : controller.open,
+              focusNode: _focusNode,
+              onTap: () {
+                _focusNode.requestFocus();
+                if (controller.isOpen) {
+                  controller.close();
+                } else {
+                  controller.open();
+                }
+              },
+              onFocusChange: (focused) => setState(() => _focused = focused),
               overlayColor: const WidgetStatePropertyAll(Colors.transparent),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: CoeloSize.touchMin, maxWidth: 240),
@@ -237,7 +254,12 @@ final class _ScopeFilterButtonState extends State<_ScopeFilterButton> {
     final colors = Theme.of(context).colorScheme;
     return ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(224, CoeloSize.touchMin)),
-      foregroundColor: WidgetStatePropertyAll(selected ? colors.primary : colors.onSurface),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            selected || states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+            ? colors.primary
+            : colors.onSurface,
+      ),
       backgroundColor: WidgetStateProperty.resolveWith(
         (states) =>
             selected || states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
