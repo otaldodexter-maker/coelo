@@ -4,12 +4,14 @@ status: "approved"
 generated_at: "2026-07-27"
 ---
 
-# Padrão de superfície para popups e modais
+# Padrões de superfície para popups e hover
 
 ## Objetivo
 
-Eliminar a criação recorrente de popups com fundo laranja-claro e tornar o
-diálogo de reporte de bug a referência visual canônica para overlays do Coelo.
+Eliminar a criação recorrente de popups com fundo laranja-claro e de estados de
+hover cinza. O diálogo de reporte de bug é a referência visual canônica para
+overlays; o menu lateral do Superadmin é a referência para itens interativos
+discretos.
 
 ## Contrato visual
 
@@ -24,12 +26,34 @@ diálogo de reporte de bug a referência visual canônica para overlays do Coelo
 - O diálogo de reporte de bug do Superadmin é a referência visual canônica de
   composição, sem transformar seu conteúdo de domínio em componente genérico.
 
+## Contrato de hover
+
+Itens discretos de navegação, menus, submenus e listas de ações usam:
+
+- `colorScheme.primaryContainer` no hover e no foco visível;
+- `colorScheme.primary` no conteúdo destacado;
+- `CoeloRadius.md` para cantos de 12 px;
+- margem vertical `CoeloSpacing.spaceHalf`, produzindo 4 px entre itens
+  consecutivos;
+- overlay ou splash adicional transparente, para não criar uma camada cinza
+  sobre o laranja-claro.
+
+O estado desabilitado não recebe hover. Light e dark resolvem as cores pelos
+tokens semânticos do tema, sem HEX ou cores físicas locais.
+
+Filtros e tabelas densas são exceções de linha contínua. Suas opções ou linhas
+usam `colorScheme.primaryContainer` no hover e no foco, mas não recebem cantos
+arredondados nem espaçamento entre linhas.
+
+O menu lateral do Superadmin é a referência visual canônica desse contrato.
+
 ## Fontes a atualizar
 
 1. `docs/design/design-system.md`, para oficializar a regra semântica.
 2. `.agents/skills/coelo-ui`, para exigir a consulta e a aplicação do contrato.
-3. O catálogo e seu índice, com exemplo recuperável por `popup`, `modal`,
-   `dialog`, `overlay`, `surface`, `superfície`, `branco` e `laranja`.
+3. O catálogo e seu índice, com exemplos recuperáveis por `popup`, `modal`,
+   `dialog`, `overlay`, `surface`, `superfície`, `branco`, `laranja`, `hover`,
+   `menu`, `submenu`, `lista`, `filtro` e `tabela`.
 
 ## Catálogo
 
@@ -44,15 +68,28 @@ O catálogo deve demonstrar o mesmo popup em light e dark e registrar:
 O exemplo deve apontar para a regra oficial e para o proprietário atual. Esta
 mudança não aprova automaticamente um novo componente público.
 
+O catálogo também deve comparar:
+
+- item discreto com hover/foco laranja-claro, raio e separação;
+- opção de filtro em linha contínua;
+- linha de tabela densa em linha contínua;
+- ausência de camada cinza sobre o estado destacado.
+
 ## Verificação
 
 - Um cenário de baseline deve demonstrar que a orientação atual permite ou não
   impede com clareza o fundo laranja-claro.
+- Outro cenário de baseline deve demonstrar a escolha incorreta de hover cinza,
+  sem raio ou sem separação em um item discreto.
 - O mesmo cenário deve passar após a mudança no skill.
-- A consulta do índice pelos termos de popup deve retornar o padrão.
+- A consulta do índice pelos termos de popup e hover deve retornar os padrões.
 - Validadores do índice e da sincronização do catálogo devem passar.
 - Testes documentais ou de widget devem assegurar `colorScheme.surface` em
   light e dark e rejeitar `primaryContainer` como superfície-base.
+- Testes devem assegurar `primaryContainer`, `CoeloRadius.md`,
+  `CoeloSpacing.spaceHalf` e overlay transparente no hover de itens discretos.
+- Testes devem assegurar que filtros e tabelas preservam linhas contínuas sem
+  raio ou espaçamento entre linhas.
 - As mudanças preexistentes no repositório devem ser preservadas.
 
 ## Fora de escopo
@@ -61,3 +98,5 @@ mudança não aprova automaticamente um novo componente público.
 - Criar automaticamente um novo componente compartilhado.
 - Alterar o conteúdo ou o fluxo funcional dos diálogos.
 - Usar branco literal no tema escuro.
+- Aplicar cantos arredondados ou espaçamento às opções de filtro e às linhas de
+  tabelas densas.
