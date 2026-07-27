@@ -59,14 +59,30 @@ final class _CoeloChatComposerState extends State<CoeloChatComposer> {
   bool get _canSend => widget.enabled && widget.controller.text.trim().isNotEmpty;
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.enter &&
-        !HardwareKeyboard.instance.isShiftPressed &&
-        _canSend) {
-      widget.onSend();
-      return KeyEventResult.handled;
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+      if (HardwareKeyboard.instance.isShiftPressed && widget.enabled) {
+        _insertNewline();
+        return KeyEventResult.handled;
+      }
+      if (_canSend) {
+        widget.onSend();
+        return KeyEventResult.handled;
+      }
     }
     return KeyEventResult.ignored;
+  }
+
+  void _insertNewline() {
+    final value = widget.controller.value;
+    final selection = value.selection;
+    final start = selection.start < 0 ? value.text.length : selection.start;
+    final end = selection.end < 0 ? value.text.length : selection.end;
+    final text = value.text.replaceRange(start, end, '\n');
+    widget.controller.value = value.copyWith(
+      text: text,
+      selection: TextSelection.collapsed(offset: start + 1),
+      composing: TextRange.empty,
+    );
   }
 
   @override

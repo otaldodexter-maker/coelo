@@ -181,6 +181,7 @@ void main() {
     await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
 
     expect(sends, 0);
+    expect(controller.text, 'Olá\n');
   });
 
   testWidgets('composer exposes context and styles an enabled send action', (tester) async {
