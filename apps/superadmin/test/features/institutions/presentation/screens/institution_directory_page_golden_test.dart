@@ -100,15 +100,9 @@ void main() {
       _goldenApp(repository: FakeInstitutionDirectoryRepository(items: _paginationItems())),
     );
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.text('Página 1 de 2'),
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
+    await tester.drag(
+      find.byKey(const Key('institution-directory-content-scroll')),
+      const Offset(0, -1200),
     );
     await tester.pumpAndSettle();
     await expectLater(

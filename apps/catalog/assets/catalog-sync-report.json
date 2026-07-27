@@ -1,6 +1,49 @@
 {
-  "status": "synchronized",
-  "diagnostics": [],
+  "status": "catalogStale",
+  "diagnostics": [
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.multi-select-filter",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.chat-avatar",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.conversation-tile",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.conversation-header",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.message-bubble",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.chat-composer",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.context-picker",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    }
+  ],
   "fingerprints": {
     "core.search-field": {
       "source": "f3e1d2ff",
@@ -23,8 +66,8 @@
       "example": "42ee4890"
     },
     "admin.pagination": {
-      "source": "4733e35e",
-      "example": "98c3c2e2"
+      "source": "cc65d70c",
+      "example": "30f0c684"
     },
     "admin.create-action": {
       "source": "cf03f5a3",
