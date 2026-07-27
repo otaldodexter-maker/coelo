@@ -52,10 +52,21 @@ if (-not (Test-Path -LiteralPath $designSystemPath)) {
 }
 
 $designSystem = Get-Content -LiteralPath $designSystemPath -Raw
+$tableSectionMatch = [regex]::Match(
+  $reference,
+  '(?ms)^## Tabela administrativa\r?\n(?<body>.*?)(?=^## |\z)'
+)
+if (-not $tableSectionMatch.Success) {
+  throw "Missing '## Tabela administrativa' section in $referencePath."
+}
+
+$tableSection = $tableSectionMatch.Groups['body'].Value
 foreach ($expected in @(
   'CoeloAdminResizableTable',
+  'colorScheme.surface',
   'colorScheme.surfaceContainer',
   'colorScheme.outlineVariant',
+  'colorScheme.primaryContainer',
   '64 px mais divisor',
   'coluna fixa visual',
   'scrollbar horizontal visível',
@@ -64,7 +75,7 @@ foreach ($expected in @(
   'Status sem',
   'compactas'
 )) {
-  Assert-Contains -Content $reference -Expected $expected -Source $referencePath -Label 'Administrative table contract'
+  Assert-Contains -Content $tableSection -Expected $expected -Source $referencePath -Label 'Administrative table section'
   Assert-Contains -Content $designSystem -Expected $expected -Source $designSystemPath -Label 'Design system administrative table contract'
 }
 
@@ -74,5 +85,7 @@ Assert-Contains -Content $skill -Expected 'obrigatoriamente o' -Source $skillPat
 Assert-Contains -Content $skill -Expected 'popup' -Source $skillPath -Label 'Coelo UI skill routing'
 Assert-Contains -Content $skill -Expected 'filtro' -Source $skillPath -Label 'Coelo UI skill routing'
 Assert-Contains -Content $skill -Expected 'dismiss' -Source $skillPath -Label 'Coelo UI skill routing'
+Assert-Contains -Content $skill -Expected 'tabela' -Source $skillPath -Label 'Coelo UI skill routing'
+Assert-Contains -Content $skill -Expected 'table' -Source $skillPath -Label 'Coelo UI skill routing'
 
 Write-Output 'surface-interaction-contracts.tests.ps1: PASS'

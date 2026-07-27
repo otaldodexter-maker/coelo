@@ -15,7 +15,7 @@ silenciosamente.
 ## Fluxo obrigatório
 
 1. Identificar produto, tela e contexto. Quando a tarefa mencionar popup, modal,
-   dialog, overlay, hover, menu, filtro, close, dismiss ou “X”, ler
+   dialog, overlay, hover, menu, filtro, tabela, table, close, dismiss ou “X”, ler
    obrigatoriamente o [contrato de superfícies e interação](references/surface-interaction-contracts.md)
    antes de decidir ou implementar a composição visual.
 2. Consultar primeiro o índice com
