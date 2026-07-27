@@ -258,6 +258,47 @@ void main() {
     expect(controller.changeStatus('SUP-1', SupportTicketStatus.inProgress), isTrue);
   });
 
+  test('returns false when changing the status of a nonexistent ticket', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
+    );
+    addTearDown(controller.dispose);
+
+    expect(controller.changeStatus('SUP-404', SupportTicketStatus.completed), isFalse);
+  });
+
+  test('ignores assignment changes for a nonexistent ticket', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
+    );
+    addTearDown(controller.dispose);
+
+    controller.assignOwner('SUP-404', 'member-support');
+    controller.setCollaborators('SUP-404', {'member-qa'});
+
+    expect(controller.tickets.single.ownerId, isNull);
+    expect(controller.tickets.single.collaboratorIds, isEmpty);
+  });
+
+  test('preserves a ticket when in progress is rejected without an owner', () {
+    final priorUpdatedAt = fixedNow.subtract(const Duration(hours: 1));
+    final controller = SupportPrototypeController(
+      initialTickets: [
+        ticket(
+          id: 'SUP-1',
+          status: SupportTicketStatus.newRequest,
+        ).copyWith(updatedAt: priorUpdatedAt),
+      ],
+      clock: () => fixedNow,
+    );
+    addTearDown(controller.dispose);
+
+    expect(controller.changeStatus('SUP-1', SupportTicketStatus.inProgress), isFalse);
+
+    expect(controller.tickets.single.status, SupportTicketStatus.newRequest);
+    expect(controller.tickets.single.updatedAt, priorUpdatedAt);
+  });
+
   test('assigns one owner and immutable collaborators', () {
     final controller = SupportPrototypeController(
       initialTickets: [ticket(id: 'SUP-1', status: SupportTicketStatus.newRequest)],
@@ -288,6 +329,44 @@ void main() {
     controller.updateFilters(SupportFilters(assigneeIds: {'member-qa'}));
 
     expect(controller.filteredTickets.map((ticket) => ticket.id), ['SUP-2']);
+  });
+
+  test('filters tickets by owner', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [
+        ticket(id: 'SUP-1', status: SupportTicketStatus.inProgress, ownerId: 'member-dev'),
+        ticket(
+          id: 'SUP-2',
+          status: SupportTicketStatus.waitingRequester,
+          collaboratorIds: {'member-dev'},
+        ),
+      ],
+    );
+    addTearDown(controller.dispose);
+
+    controller.updateFilters(SupportFilters(assigneeIds: {'member-dev'}));
+
+    expect(controller.filteredTickets.map((ticket) => ticket.id), ['SUP-1', 'SUP-2']);
+  });
+
+  test('finds requester context labels through text search', () {
+    final controller = SupportPrototypeController(
+      initialTickets: [
+        ticket(
+          id: 'SUP-1',
+          status: SupportTicketStatus.newRequest,
+          requesterContext: const SupportRequesterContext(
+            institution: 'Centro Horizonte',
+            activity: 'Oficina de Robotica',
+          ),
+        ),
+      ],
+    );
+    addTearDown(controller.dispose);
+
+    controller.updateFilters(SupportFilters(search: 'oficina de robotica'));
+
+    expect(controller.filteredTickets.map((ticket) => ticket.id), ['SUP-1']);
   });
 
   test('copies the demonstrative session context into a submitted report', () {
