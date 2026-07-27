@@ -196,12 +196,20 @@ final class _FormBody extends StatelessWidget {
                   ],
                 ),
               );
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (desktop) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-                  content,
-                ],
+              return Padding(
+                padding: EdgeInsets.fromLTRB(
+                  desktop ? CoeloSpacing.space5 : CoeloSpacing.space3,
+                  CoeloSpacing.space4,
+                  desktop ? CoeloSpacing.space5 : CoeloSpacing.space3,
+                  CoeloSpacing.space3,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (desktop) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
+                    content,
+                  ],
+                ),
               );
             },
           ),
@@ -253,10 +261,11 @@ final class _FormFooter extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.only(top: CoeloSpacing.space3),
+        padding: const EdgeInsets.all(CoeloSpacing.space3),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+          borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {

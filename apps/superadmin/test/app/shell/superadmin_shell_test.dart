@@ -225,6 +225,22 @@ void main() {
     await tester.pumpWidget(_shellApp(currentDestination: 'home'));
 
     expect(find.byKey(const Key('superadmin-navigation-home')), findsOneWidget);
+    expect(
+      tester.widget<Container>(find.byKey(const Key('superadmin-navigation-home'))).decoration,
+      isA<BoxDecoration>()
+          .having(
+            (decoration) => decoration.color,
+            'color',
+            Theme.of(
+              tester.element(find.byKey(const Key('superadmin-navigation-home'))),
+            ).colorScheme.primary,
+          )
+          .having(
+            (decoration) => decoration.borderRadius,
+            'borderRadius',
+            BorderRadius.circular(CoeloRadius.md),
+          ),
+    );
     expect(find.text('Estrutura'), findsOneWidget);
     expect(find.text('Unidades'), findsNothing);
     expect(find.text('Grupos'), findsNothing);
@@ -234,6 +250,17 @@ void main() {
 
     expect(find.text('Unidades'), findsOneWidget);
     expect(find.text('Grupos'), findsOneWidget);
+    expect(
+      tester.widget<Container>(find.byKey(const Key('superadmin-navigation-institutions'))).decoration,
+      isA<BoxDecoration>()
+          .having(
+            (decoration) => decoration.color,
+            'color',
+            Theme.of(
+              tester.element(find.byKey(const Key('superadmin-navigation-institutions'))),
+            ).colorScheme.primary,
+          ),
+    );
   });
 
   testWidgets('keeps the Superadmin brand background transparent in every interaction state', (
@@ -378,6 +405,57 @@ void main() {
     }
   });
 
+  testWidgets('uses one sidebar tree throughout the collapse and expand motion', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final sidebar = find.byKey(const Key('superadmin-sidebar'));
+    final toggle = find.byKey(const Key('superadmin-sidebar-collapse'));
+    final home = find.byKey(const Key('superadmin-navigation-home'));
+
+    expect(home, findsOneWidget);
+    await tester.tap(toggle);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 40));
+
+    expect(tester.getSize(sidebar).width, inExclusiveRange(88, 260));
+    expect(home, findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpAndSettle();
+    await tester.tap(toggle);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 40));
+
+    expect(tester.getSize(sidebar).width, inExclusiveRange(88, 260));
+    expect(home, findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('rotates the collapse chevron with the sidebar progress', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final toggle = find.byKey(const Key('superadmin-sidebar-collapse'));
+    final chevron = find.byKey(const Key('superadmin-sidebar-collapse-chevron'));
+
+    expect(tester.widget<Transform>(chevron).transform, Matrix4.identity());
+
+    await tester.tap(toggle);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final intermediate = tester.widget<Transform>(chevron).transform;
+    final intermediateAngle = math.atan2(intermediate.entry(1, 0), intermediate.entry(0, 0));
+    expect(intermediateAngle.abs(), inExclusiveRange(0, math.pi));
+
+    await tester.pumpAndSettle();
+    final collapsed = tester.widget<Transform>(chevron).transform;
+    expect(math.atan2(collapsed.entry(1, 0), collapsed.entry(0, 0)).abs(), closeTo(math.pi, 0.001));
+  });
+
   testWidgets('coordinates sidebar geometry and content throughout collapse and expansion', (
     tester,
   ) async {
@@ -513,7 +591,7 @@ void main() {
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
                 .decoration!
             as BoxDecoration;
-    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary.withValues(alpha: 0.10));
+    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary);
     final activeSectionDecoration =
         tester
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-structure')))

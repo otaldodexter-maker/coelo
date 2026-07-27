@@ -16,6 +16,9 @@ final class SupportFilterToolbar extends StatelessWidget {
     required this.searchController,
     required this.displayMode,
     required this.onDisplayModeChanged,
+    required this.readFilterFocusScopeNode,
+    required this.onExportCsv,
+    required this.onExportXlsx,
     super.key,
   });
 
@@ -23,6 +26,9 @@ final class SupportFilterToolbar extends StatelessWidget {
   final TextEditingController searchController;
   final SupportDisplayMode displayMode;
   final ValueChanged<SupportDisplayMode> onDisplayModeChanged;
+  final FocusScopeNode readFilterFocusScopeNode;
+  final VoidCallback onExportCsv;
+  final VoidCallback onExportXlsx;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +42,7 @@ final class SupportFilterToolbar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final filterWidth = compact
-            ? (constraints.maxWidth - CoeloSpacing.space3) / 2
-            : 152.0;
+        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 152.0;
         final controls = Wrap(
           spacing: CoeloSpacing.space3,
           runSpacing: CoeloSpacing.space2,
@@ -92,16 +96,19 @@ final class SupportFilterToolbar extends StatelessWidget {
             ),
             SizedBox(
               width: filterWidth,
-              child: CoeloAdminMultiSelectFilter<SupportReadFilter>(
-                key: const Key('support-read-filter'),
-                label: 'Leitura',
-                options: SupportReadFilter.values,
-                selectedValues: controller.filters.unreadOnly
-                    ? const {SupportReadFilter.unread}
-                    : const {},
-                optionLabel: (_) => 'Não lidas',
-                onChanged: (values) =>
-                    _update(unreadOnly: values.contains(SupportReadFilter.unread)),
+              child: FocusScope(
+                node: readFilterFocusScopeNode,
+                child: CoeloAdminMultiSelectFilter<SupportReadFilter>(
+                  key: const Key('support-read-filter'),
+                  label: 'Leitura',
+                  options: SupportReadFilter.values,
+                  selectedValues: controller.filters.unreadOnly
+                      ? const {SupportReadFilter.unread}
+                      : const {},
+                  optionLabel: (_) => 'Não lidas',
+                  onChanged: (values) =>
+                      _update(unreadOnly: values.contains(SupportReadFilter.unread)),
+                ),
               ),
             ),
             if (selectedMenus.isNotEmpty)
@@ -128,9 +135,7 @@ final class SupportFilterToolbar extends StatelessWidget {
               height: CoeloSize.touchMin,
               child: SegmentedButton<SupportDisplayMode>(
                 style: const ButtonStyle(
-                  minimumSize: WidgetStatePropertyAll(
-                    Size(CoeloSize.touchMin, CoeloSize.touchMin),
-                  ),
+                  minimumSize: WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
                   padding: WidgetStatePropertyAll(
                     EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
                   ),
@@ -152,6 +157,23 @@ final class SupportFilterToolbar extends StatelessWidget {
                 onSelectionChanged: (selection) => onDisplayModeChanged(selection.single),
               ),
             ),
+            CoeloAdminFileActions(
+              compact: compact,
+              actions: [
+                CoeloAdminFileAction(
+                  key: const Key('support-files-export-csv'),
+                  label: 'Exportar CSV',
+                  icon: Icons.table_rows_outlined,
+                  onPressed: onExportCsv,
+                ),
+                CoeloAdminFileAction(
+                  key: const Key('support-files-export-xlsx'),
+                  label: 'Exportar XLSX',
+                  icon: Icons.grid_on_outlined,
+                  onPressed: onExportXlsx,
+                ),
+              ],
+            ),
           ],
         );
       },
@@ -163,10 +185,7 @@ final class SupportFilterToolbar extends StatelessWidget {
       for (final ticket in controller.tickets)
         if (menus.contains(ticket.menu)) ticket.screen,
     };
-    _update(
-      menus: menus,
-      screens: controller.filters.screens.intersection(availableScreens),
-    );
+    _update(menus: menus, screens: controller.filters.screens.intersection(availableScreens));
   }
 
   void _update({

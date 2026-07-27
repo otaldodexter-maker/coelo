@@ -5,7 +5,10 @@ import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 import 'support_assignee_view.dart';
 
-final class SupportTicketTable extends StatelessWidget {
+typedef SupportTableTicketOpenCallback =
+    void Function(SupportTicket ticket, bool Function() restoreFocus);
+
+final class SupportTicketTable extends StatefulWidget {
   const SupportTicketTable({
     required this.tickets,
     required this.teamMembers,
@@ -18,15 +21,27 @@ final class SupportTicketTable extends StatelessWidget {
   final List<SupportTicket> tickets;
   final List<SupportTeamMember> teamMembers;
   final String? selectedTicketId;
-  final ValueChanged<SupportTicket> onTicketPressed;
+  final SupportTableTicketOpenCallback onTicketPressed;
   final Widget Function(SupportTicket ticket) statusBuilder;
+
+  @override
+  State<SupportTicketTable> createState() => _SupportTicketTableState();
+}
+
+final class _SupportTicketTableState extends State<SupportTicketTable> {
+  final _tableController = CoeloAdminTableController();
+
+  void _openTicket(SupportTicket ticket) {
+    _tableController.focusRow(ticket.id);
+    widget.onTicketPressed(ticket, () => _tableController.focusRow(ticket.id));
+  }
 
   @override
   Widget build(BuildContext context) {
     final ticketColumn = CoeloAdminTableColumn<SupportTicket>(
       id: 'ticket',
       label: 'Chamado',
-      initialWidth: 260,
+      initialWidth: 240,
       minWidth: 200,
       maxWidth: 420,
       cellBuilder: (context, ticket) => _ticketCell(context, ticket),
@@ -35,15 +50,15 @@ final class SupportTicketTable extends StatelessWidget {
       CoeloAdminTableColumn<SupportTicket>(
         id: 'origin',
         label: 'Origem',
-        initialWidth: 220,
+        initialWidth: 200,
         minWidth: 160,
         maxWidth: 320,
-        cellBuilder: (_, ticket) => _text('${ticket.menu} > ${ticket.screen}'),
+        cellBuilder: (context, ticket) => _originCell(context, ticket),
       ),
       CoeloAdminTableColumn<SupportTicket>(
         id: 'requester-context',
         label: 'Solicitante / contexto',
-        initialWidth: 260,
+        initialWidth: 240,
         minWidth: 200,
         maxWidth: 420,
         cellBuilder: (context, ticket) => _requesterCell(context, ticket),
@@ -51,13 +66,13 @@ final class SupportTicketTable extends StatelessWidget {
       CoeloAdminTableColumn<SupportTicket>(
         id: 'assignee',
         label: 'Responsável',
-        initialWidth: 160,
+        initialWidth: 140,
         minWidth: 120,
         maxWidth: 260,
         cellBuilder: (_, ticket) => SupportAssigneeView(
           ownerId: ticket.ownerId,
           collaboratorIds: ticket.collaboratorIds,
-          teamMembers: teamMembers,
+          teamMembers: widget.teamMembers,
         ),
       ),
       CoeloAdminTableColumn<SupportTicket>(
@@ -66,7 +81,7 @@ final class SupportTicketTable extends StatelessWidget {
         initialWidth: 190,
         minWidth: 160,
         maxWidth: 220,
-        cellBuilder: (_, ticket) => statusBuilder(ticket),
+        cellBuilder: (_, ticket) => widget.statusBuilder(ticket),
       ),
       CoeloAdminTableColumn<SupportTicket>(
         id: 'attachments',
@@ -95,14 +110,15 @@ final class SupportTicketTable extends StatelessWidget {
     ];
     return CoeloAdminResizableTable<SupportTicket>(
       key: const Key('support-ticket-table'),
-      items: tickets,
+      items: widget.tickets,
       rowKey: (ticket) => ticket.id,
       headerHeight: 56,
       rowHeight: 64,
       pinnedColumn: ticketColumn,
       columns: columns,
-      onRowPressed: onTicketPressed,
-      isSelected: (ticket) => ticket.id == selectedTicketId,
+      controller: _tableController,
+      onRowPressed: _openTicket,
+      isSelected: (ticket) => ticket.id == widget.selectedTicketId,
     );
   }
 
@@ -120,6 +136,10 @@ final class SupportTicketTable extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _originCell(BuildContext context, SupportTicket ticket) {
+    return Text('${ticket.menu} > ${ticket.screen}', maxLines: 1, overflow: TextOverflow.ellipsis);
   }
 
   Widget _requesterCell(BuildContext context, SupportTicket ticket) {
@@ -148,9 +168,7 @@ Widget _text(String value) => Align(
 
 int _unreadCount(SupportTicket ticket) => ticket.messages
     .where(
-      (message) =>
-          message.author == SupportMessageAuthor.requester &&
-          !message.isReadBySupport,
+      (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
     )
     .length;
 

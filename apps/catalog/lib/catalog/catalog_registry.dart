@@ -12,6 +12,7 @@ typedef CatalogExampleBuilder = Widget Function(BuildContext context);
 const catalogRegistryManifestJson = r'''
 {
   "core.search-field": [],
+  "core.form-text-field": [],
   "core.status-chip": [],
   "core.state-panel": [],
   "core.chat-avatar": [],
@@ -21,6 +22,7 @@ const catalogRegistryManifestJson = r'''
   "core.chat-composer": [],
   "admin.listing-toolbar": [],
   "admin.multi-select-filter": [],
+  "admin.single-select-field": [],
   "admin.pagination": [],
   "admin.create-action": [],
   "admin.resizable-table": [],
@@ -38,10 +40,12 @@ final class CatalogExample {
 Map<String, CatalogExample> buildCatalogRegistry() {
   final builders = <String, CatalogExampleBuilder>{
     'core.search-field': (_) => const _SearchFieldExample(),
+    'core.form-text-field': (_) => const _FormTextFieldExample(),
     'core.status-chip': (_) => const _StatusChipExample(),
     'core.state-panel': (_) => const _StatePanelExample(),
     'admin.listing-toolbar': (_) => const _ListingToolbarExample(),
     'admin.multi-select-filter': (_) => const _MultiSelectFilterExample(),
+    'admin.single-select-field': (_) => const _SingleSelectFieldExample(),
     'admin.pagination': (_) => const _PaginationExample(),
     'admin.create-action': (_) => const _CreateActionExample(),
     'admin.resizable-table': (_) => const _ResizableTableExample(),
@@ -59,6 +63,31 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     for (final builder in builders.entries)
       builder.key: CatalogExample(builder: builder.value, approvedVariants: variants[builder.key]!),
   };
+}
+
+final class _FormTextFieldExample extends StatefulWidget {
+  const _FormTextFieldExample();
+
+  @override
+  State<_FormTextFieldExample> createState() => _FormTextFieldExampleState();
+}
+
+final class _FormTextFieldExampleState extends State<_FormTextFieldExample> {
+  final controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloFormTextField(
+    controller: controller,
+    labelText: 'E-mail',
+    hintText: 'seu.email@coelo.me',
+    prefixIcon: Icons.mail_outline_rounded,
+  );
 }
 
 final class _SearchFieldExample extends StatefulWidget {
@@ -171,6 +200,26 @@ final class _MultiSelectFilterExampleState extends State<_MultiSelectFilterExamp
       searchHintText: 'Buscar status',
     );
   }
+}
+
+final class _SingleSelectFieldExample extends StatefulWidget {
+  const _SingleSelectFieldExample();
+
+  @override
+  State<_SingleSelectFieldExample> createState() => _SingleSelectFieldExampleState();
+}
+
+final class _SingleSelectFieldExampleState extends State<_SingleSelectFieldExample> {
+  var value = 'Rascunho';
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminSingleSelectField<String>(
+    label: 'Status',
+    value: value,
+    options: const ['Rascunho', 'Em implantação', 'Ativa'],
+    optionLabel: (option) => option,
+    onChanged: (option) => setState(() => value = option),
+  );
 }
 
 final class _PaginationExample extends StatefulWidget {

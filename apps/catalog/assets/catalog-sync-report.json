@@ -49,6 +49,10 @@
       "source": "f3e1d2ff",
       "example": "877182a0"
     },
+    "core.form-text-field": {
+      "source": "fc09daa7",
+      "example": "40be5032"
+    },
     "core.status-chip": {
       "source": "ad8b1f60",
       "example": "2a511e0d"
@@ -62,8 +66,12 @@
       "example": "662f920e"
     },
     "admin.multi-select-filter": {
-      "source": "25ed64ab",
+      "source": "05433b24",
       "example": "42ee4890"
+    },
+    "admin.single-select-field": {
+      "source": "b18f70e5",
+      "example": "d2d36330"
     },
     "admin.pagination": {
       "source": "a5d0b061",
@@ -83,7 +91,7 @@
     },
     "pattern.form-controls": {
       "source": "811c9dc5",
-      "example": "037c5fc8"
+      "example": "75a66bfc"
     },
     "pattern.selection-controls": {
       "source": "811c9dc5",

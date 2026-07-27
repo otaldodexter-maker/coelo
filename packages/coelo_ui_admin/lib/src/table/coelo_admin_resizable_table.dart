@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'coelo_admin_table_column.dart';
+import 'coelo_admin_table_controller.dart';
 
 final class CoeloAdminResizableTable<T> extends StatefulWidget {
   const CoeloAdminResizableTable({
@@ -15,6 +16,7 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
     required this.rowHeight,
     this.onRowPressed,
     this.isSelected,
+    this.controller,
     super.key,
   });
 
@@ -26,6 +28,7 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
   final double rowHeight;
   final ValueChanged<T>? onRowPressed;
   final bool Function(T item)? isSelected;
+  final CoeloAdminTableController? controller;
 
   @override
   State<CoeloAdminResizableTable<T>> createState() => _CoeloAdminResizableTableState<T>();
@@ -33,7 +36,9 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
 
 final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableTable<T>> {
   final ScrollController _scrollController = ScrollController();
+  final Map<Object, FocusNode> _rowFocusNodes = {};
   Object? _hoveredRowKey;
+  Object? _focusedRowKey;
   late Map<String, double> _widths = {
     for (final column in _allColumns) column.id: column.initialWidth,
   };
@@ -41,8 +46,20 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
   List<CoeloAdminTableColumn<T>> get _allColumns => [widget.pinnedColumn, ...widget.columns];
 
   @override
+  void initState() {
+    super.initState();
+    widget.controller?.attach(_focusRow);
+    _reconcileRowFocusNodes();
+  }
+
+  @override
   void didUpdateWidget(covariant CoeloAdminResizableTable<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      oldWidget.controller?.detach(_focusRow);
+      widget.controller?.attach(_focusRow);
+    }
+    _reconcileRowFocusNodes();
     _widths = {
       for (final column in _allColumns)
         column.id: (_widths[column.id] ?? column.initialWidth)
@@ -53,6 +70,10 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
 
   @override
   void dispose() {
+    widget.controller?.detach(_focusRow);
+    for (final focusNode in _rowFocusNodes.values) {
+      focusNode.dispose();
+    }
     _scrollController.dispose();
     super.dispose();
   }
@@ -200,6 +221,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
     return Semantics(
       key: _rowElementKey(key),
       selected: widget.isSelected?.call(item),
+      button: widget.onRowPressed != null,
       child: MouseRegion(
         onEnter: (_) => setState(() => _hoveredRowKey = key),
         onExit: (_) {
@@ -210,13 +232,17 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
         child: Material(
           color: Colors.transparent,
           child: InkWell(
+            focusNode: _rowFocusNodes[key],
+            onFocusChange: (focused) {
+              setState(() => _focusedRowKey = focused ? key : null);
+            },
             overlayColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primaryContainer),
             onTap: widget.onRowPressed == null ? null : () => widget.onRowPressed!(item),
             child: Container(
               key: Key('coelo-admin-table-row-background-$key'),
               height: widget.rowHeight + 1,
               decoration: BoxDecoration(
-                color: widget.isSelected?.call(item) ?? false
+                color: (widget.isSelected?.call(item) ?? false) || _focusedRowKey == key
                     ? Theme.of(context).colorScheme.primaryContainer
                     : null,
                 border: Border(
@@ -270,7 +296,30 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
   }
 
   bool _isHighlighted(T item) {
-    return _hoveredRowKey == widget.rowKey(item) || (widget.isSelected?.call(item) ?? false);
+    final key = widget.rowKey(item);
+    return _hoveredRowKey == key ||
+        _focusedRowKey == key ||
+        (widget.isSelected?.call(item) ?? false);
+  }
+
+  void _reconcileRowFocusNodes() {
+    final rowKeys = widget.items.map(widget.rowKey).toSet();
+    for (final key in _rowFocusNodes.keys.where((key) => !rowKeys.contains(key)).toList()) {
+      _rowFocusNodes.remove(key)?.dispose();
+    }
+    for (final key in rowKeys) {
+      _rowFocusNodes.putIfAbsent(key, () => FocusNode(debugLabel: 'coelo-admin-table-row-$key'));
+    }
+  }
+
+  bool _focusRow(Object rowKey) {
+    final focusNode = _rowFocusNodes[rowKey];
+    if (!mounted || focusNode == null || !focusNode.canRequestFocus) {
+      return false;
+    }
+    setState(() => _focusedRowKey = rowKey);
+    focusNode.requestFocus();
+    return true;
   }
 
   void _resize(CoeloAdminTableColumn<T> column, double delta) {

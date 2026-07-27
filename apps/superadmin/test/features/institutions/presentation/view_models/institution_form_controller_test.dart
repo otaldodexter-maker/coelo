@@ -32,8 +32,8 @@ void main() {
 
     controller.continueFromCurrentStep();
 
-    expect(controller.currentStep, InstitutionFormStep.location);
-    expect(controller.statusOf(InstitutionFormStep.profile), InstitutionFormStepStatus.error);
+    expect(controller.currentStep, InstitutionFormStep.profile);
+    expect(controller.statusOf(InstitutionFormStep.branding), InstitutionFormStepStatus.error);
   });
 
   test('trial subscriptions require an end date only at completion', () {

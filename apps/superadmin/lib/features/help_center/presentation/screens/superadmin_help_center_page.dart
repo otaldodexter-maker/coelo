@@ -25,6 +25,7 @@ class _SuperadminHelpCenterPageState extends State<SuperadminHelpCenterPage> {
   final _conversations = <HelpCenterConversation>[];
   String? _selectedId;
   int _nextId = 1;
+  bool _historyCollapsed = false;
 
   HelpCenterConversation? get _selectedConversation {
     for (final conversation in _conversations) {
@@ -116,6 +117,8 @@ class _SuperadminHelpCenterPageState extends State<SuperadminHelpCenterPage> {
         onNewConversation: _startConversation,
         onConversationSelected: _selectConversation,
         onSend: _send,
+        historyCollapsed: _historyCollapsed,
+        onHistoryCollapsedChanged: (collapsed) => setState(() => _historyCollapsed = collapsed),
       ),
     );
   }
@@ -129,6 +132,8 @@ class _HelpCenterBody extends StatelessWidget {
     required this.onNewConversation,
     required this.onConversationSelected,
     required this.onSend,
+    required this.historyCollapsed,
+    required this.onHistoryCollapsedChanged,
   });
 
   final List<HelpCenterConversation> conversations;
@@ -137,6 +142,8 @@ class _HelpCenterBody extends StatelessWidget {
   final VoidCallback onNewConversation;
   final ValueChanged<String> onConversationSelected;
   final VoidCallback onSend;
+  final bool historyCollapsed;
+  final ValueChanged<bool> onHistoryCollapsedChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +164,11 @@ class _HelpCenterBody extends StatelessWidget {
     }
 
     final isExpanded = viewportWidth >= CoeloBreakpoints.expanded.minWidth;
+    final collapseForTextScale = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+    final showCollapsedHistory = historyCollapsed || collapseForTextScale;
     return Row(
       children: [
-        if (isExpanded)
+        if (isExpanded && !showCollapsedHistory)
           SizedBox(
             key: const Key('superadmin-help-history-panel'),
             width: 296,
@@ -168,6 +177,19 @@ class _HelpCenterBody extends StatelessWidget {
               selectedId: selectedConversation?.id,
               onNewConversation: onNewConversation,
               onConversationSelected: onConversationSelected,
+              onCollapse: () => onHistoryCollapsedChanged(true),
+            ),
+          )
+        else if (isExpanded)
+          SizedBox(
+            key: const Key('superadmin-help-history-collapsed'),
+            width: 88,
+            child: _HistoryRail(
+              conversations: conversations,
+              selectedId: selectedConversation?.id,
+              onNewConversation: onNewConversation,
+              onConversationSelected: onConversationSelected,
+              onExpand: () => onHistoryCollapsedChanged(false),
             ),
           )
         else
@@ -202,27 +224,44 @@ class _HistoryPanel extends StatelessWidget {
     required this.selectedId,
     required this.onNewConversation,
     required this.onConversationSelected,
+    required this.onCollapse,
   });
 
   final List<HelpCenterConversation> conversations;
   final String? selectedId;
   final VoidCallback onNewConversation;
   final ValueChanged<String> onConversationSelected;
+  final VoidCallback onCollapse;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Tooltip(
-            message: 'Nova conversa',
-            child: FilledButton.tonalIcon(
-              onPressed: onNewConversation,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Nova conversa'),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Tooltip(
+                  message: 'Nova conversa',
+                  child: FilledButton.tonalIcon(
+                    onPressed: onNewConversation,
+                    style: _brandFilledButtonStyle(colors),
+                    icon: const Icon(Icons.add_rounded),
+                    label: const Text('Nova conversa'),
+                  ),
+                ),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              IconButton(
+                tooltip: 'Recolher histórico',
+                onPressed: onCollapse,
+                style: _discreteIconButtonStyle(colors),
+                icon: const Icon(Icons.keyboard_double_arrow_left_rounded),
+              ),
+            ],
           ),
           const SizedBox(height: CoeloSpacing.space5),
           Text('Conversas', style: Theme.of(context).textTheme.labelLarge),
@@ -260,22 +299,35 @@ class _HistoryRail extends StatelessWidget {
     required this.selectedId,
     required this.onNewConversation,
     required this.onConversationSelected,
+    this.onExpand,
   });
 
   final List<HelpCenterConversation> conversations;
   final String? selectedId;
   final VoidCallback onNewConversation;
   final ValueChanged<String> onConversationSelected;
+  final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
       child: Column(
         children: [
+          if (onExpand != null) ...[
+            IconButton(
+              tooltip: 'Expandir histórico',
+              onPressed: onExpand,
+              style: _discreteIconButtonStyle(colors),
+              icon: const Icon(Icons.keyboard_double_arrow_right_rounded),
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+          ],
           IconButton.filledTonal(
             tooltip: 'Nova conversa',
             onPressed: onNewConversation,
+            style: _tonalIconButtonStyle(colors),
             icon: const Icon(Icons.add_rounded),
           ),
           const SizedBox(height: CoeloSpacing.space3),
@@ -320,6 +372,7 @@ class _StackedHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final selected = conversations
         .where((conversation) => conversation.id == selectedId)
         .firstOrNull;
@@ -366,6 +419,7 @@ class _StackedHistory extends StatelessWidget {
             IconButton(
               tooltip: 'Nova conversa',
               onPressed: onNewConversation,
+              style: _discreteIconButtonStyle(colors),
               icon: const Icon(Icons.add_rounded),
             ),
           ],
@@ -504,6 +558,14 @@ class _HelpEmptyState extends StatelessWidget {
                     ActionChip(
                       avatar: const Icon(Icons.arrow_outward_rounded, size: 18),
                       label: Text(suggestion),
+                      backgroundColor: colors.primaryContainer,
+                      side: BorderSide(color: colors.outlineVariant),
+                      color: WidgetStatePropertyAll(colors.primaryContainer),
+                      labelStyle: theme.textTheme.labelLarge?.copyWith(
+                        color: colors.onPrimaryContainer,
+                      ),
+                      iconTheme: IconThemeData(color: colors.primary),
+                      surfaceTintColor: Colors.transparent,
                       onPressed: () {
                         controller.text = suggestion;
                         controller.selection = TextSelection.collapsed(
@@ -648,45 +710,99 @@ class _HelpComposerState extends State<_HelpComposer> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 760),
-            child: Material(
-              color: colors.surface,
-              elevation: 2,
-              shadowColor: colors.shadow.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(CoeloRadius.xl),
-              child: Focus(
-                onKeyEvent: (node, event) {
-                  if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
-                    if (HardwareKeyboard.instance.isShiftPressed) {
-                      _insertNewLine();
-                    } else {
-                      widget.onSend();
-                    }
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: TextField(
-                  key: const Key('superadmin-help-composer-field'),
-                  controller: widget.controller,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  decoration: InputDecoration(
-                    hintText: 'Pergunte sobre o Coelo',
-                    prefixIcon: const Icon(Icons.auto_awesome_outlined),
-                    suffixIcon: IconButton.filled(
-                      tooltip: 'Enviar pergunta',
-                      onPressed: canSend ? widget.onSend : null,
-                      icon: const Icon(Icons.arrow_upward_rounded),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Material(
+                    color: colors.surface,
+                    elevation: 2,
+                    shadowColor: colors.shadow.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                    child: Focus(
+                      onKeyEvent: (node, event) {
+                        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+                          if (HardwareKeyboard.instance.isShiftPressed) {
+                            _insertNewLine();
+                          } else {
+                            widget.onSend();
+                          }
+                          return KeyEventResult.handled;
+                        }
+                        return KeyEventResult.ignored;
+                      },
+                      child: TextField(
+                        key: const Key('superadmin-help-composer-field'),
+                        controller: widget.controller,
+                        minLines: 1,
+                        maxLines: 5,
+                        textInputAction: TextInputAction.newline,
+                        decoration: InputDecoration(
+                          hintText: 'Pergunte sobre o Coelo',
+                          prefixIcon: const Icon(Icons.auto_awesome_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                          ),
+                        ),
+                      ),
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(CoeloRadius.xl)),
                   ),
                 ),
-              ),
+                const SizedBox(width: CoeloSpacing.space2),
+                IconButton.filled(
+                  tooltip: 'Enviar pergunta',
+                  onPressed: canSend ? widget.onSend : null,
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size.square(CoeloSize.touchMin),
+                    fixedSize: const Size.square(CoeloSize.touchMin),
+                    padding: EdgeInsets.zero,
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    disabledBackgroundColor: colors.primaryContainer,
+                    disabledForegroundColor: colors.onPrimaryContainer,
+                    overlayColor: Colors.transparent,
+                  ),
+                  icon: const SizedBox.square(
+                    dimension: CoeloSize.iconMd,
+                    child: Center(child: Icon(Icons.send_rounded)),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
+}
+
+ButtonStyle _brandFilledButtonStyle(ColorScheme colors) {
+  return FilledButton.styleFrom(
+    backgroundColor: colors.primary,
+    foregroundColor: colors.onPrimary,
+    disabledBackgroundColor: colors.surfaceContainer,
+    disabledForegroundColor: colors.onSurfaceVariant,
+    overlayColor: Colors.transparent,
+  );
+}
+
+ButtonStyle _tonalIconButtonStyle(ColorScheme colors) {
+  return IconButton.styleFrom(
+    backgroundColor: colors.primaryContainer,
+    foregroundColor: colors.onPrimaryContainer,
+    hoverColor: colors.primaryContainer,
+    focusColor: colors.primaryContainer,
+    highlightColor: colors.primaryContainer,
+    disabledBackgroundColor: colors.surfaceContainer,
+    disabledForegroundColor: colors.onSurfaceVariant,
+  );
+}
+
+ButtonStyle _discreteIconButtonStyle(ColorScheme colors) {
+  return IconButton.styleFrom(
+    foregroundColor: colors.onSurfaceVariant,
+    hoverColor: colors.primaryContainer,
+    focusColor: colors.primaryContainer,
+    highlightColor: colors.primaryContainer,
+  );
 }

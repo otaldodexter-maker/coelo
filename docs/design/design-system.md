@@ -471,6 +471,40 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 | Date/time | Usar formato local pt-BR; exibir timezone quando relevante. |
 | Upload | Mostrar tipo, tamanho, progresso, erro e política de privacidade. |
 
+## Padrão de formulário de cadastro e edição
+
+- Usar `CoeloFormTextField` para entrada textual em autenticação, cadastro e
+  edição. O componente preserva label flutuante, ícone inicial, hint
+  contextual, hover, foco, erro e disabled sem estilos locais concorrentes.
+- Em largura compacta, usar uma coluna. A partir de `breakpoint.medium`, usar
+  até duas colunas, com `spacing.3` (12 px) horizontal e `spacing.4` (16 px)
+  vertical. Grupos e cabeçalhos usam `spacing.5` (20 px). Esses valores
+  pertencem à escala oficial e reproduzem a densidade dos campos de login sem
+  colar bordas ou controles.
+- Rodapé de fluxo usa `spacing.3` interno, `radius.lg`, borda
+  `outlineVariant` e `surfaceContainer`. Em compact, a ação primária ocupa a
+  largura e precede cancelar/anterior; em medium ou maior, cancelar fica à
+  esquerda e navegação/continuidade à direita.
+- Single-select administrativo usa `CoeloAdminSingleSelectField`: opções
+  contínuas de pelo menos 48 px, superfície neutra, e
+  `primaryContainer`/`primary` para seleção, hover e foco. Não usar o menu
+  cinza nativo como composição final. O painel acompanha exatamente a largura
+  do campo e não usa check ou checkbox.
+- Popup, dialog, menu e overlay usam `color.surface` sem tint. Laranja aparece
+  em ação, foco, seleção ou aviso contextual, nunca como fundo-base da
+  superfície. O popup de bug, o submenu do sino e a importação de arquivo são
+  referências canônicas.
+- Formulários não usam faixas `surfaceContainer` ou cinza apenas para preencher
+  espaço. Agrupamento vem de espaçamento, borda e hierarquia; aviso informativo
+  pode usar `primaryContainer` quando seu significado justificar o destaque.
+- Foto de perfil institucional aceita PNG, JPG ou WebP quadrado de até 2 MB.
+  O quadrado evita recorte ambíguo no avatar circular; 2 MB preserva qualidade
+  para exibição em alta densidade sem transferência excessiva. Rejeitar antes
+  do upload e explicar formato, proporção e limite junto ao controle.
+- Cor institucional aceita hexadecimal `#RRGGBB` e seleção visual por área
+  bidimensional de saturação/valor com controle de matiz. A amostra nunca
+  substitui o valor textual, para manter precisão e acessibilidade.
+
 ## Anatomia do campo
 
 | Parte | Token / regra |

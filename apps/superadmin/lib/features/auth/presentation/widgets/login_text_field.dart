@@ -1,6 +1,7 @@
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-class LoginTextField extends StatefulWidget {
+class LoginTextField extends StatelessWidget {
   const LoginTextField({
     required this.fieldKey,
     required this.controller,
@@ -39,48 +40,24 @@ class LoginTextField extends StatefulWidget {
   final ValueChanged<String>? onFieldSubmitted;
 
   @override
-  State<LoginTextField> createState() => _LoginTextFieldState();
-}
-
-class _LoginTextFieldState extends State<LoginTextField> {
-  bool _isHovered = false;
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final fillColor = switch ((theme.brightness, _isHovered)) {
-      (Brightness.light, false) => colors.surfaceContainerLowest,
-      (Brightness.light, true) => colors.surfaceContainerLow,
-      (Brightness.dark, false) => colors.surfaceContainer,
-      (Brightness.dark, true) => colors.surfaceContainerHigh,
-    };
-
-    return MouseRegion(
-      cursor: widget.enabled ? SystemMouseCursors.text : SystemMouseCursors.basic,
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: TextFormField(
-        key: widget.fieldKey,
-        controller: widget.controller,
-        focusNode: widget.focusNode,
-        enabled: widget.enabled,
-        keyboardType: widget.keyboardType,
-        textInputAction: widget.textInputAction,
-        autofillHints: widget.autofillHints,
-        obscureText: widget.obscureText,
-        enableSuggestions: widget.enableSuggestions,
-        autocorrect: widget.autocorrect,
-        decoration: InputDecoration(
-          labelText: widget.labelText,
-          hintText: widget.hintText,
-          fillColor: fillColor,
-          prefixIcon: Icon(widget.prefixIcon),
-          suffixIcon: widget.suffixIcon,
-        ),
-        validator: widget.validator,
-        onFieldSubmitted: widget.onFieldSubmitted,
-      ),
+    return CoeloFormTextField(
+      fieldKey: fieldKey,
+      controller: controller,
+      focusNode: focusNode,
+      enabled: enabled,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      autofillHints: autofillHints,
+      obscureText: obscureText,
+      enableSuggestions: enableSuggestions,
+      autocorrect: autocorrect,
+      labelText: labelText,
+      hintText: hintText,
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }

@@ -33,6 +33,11 @@ IA, API ou persistência.
 - A primeira pergunta define o título da conversa.
 - A resposta deixa explícito que a Central ainda é uma demonstração.
 - `Enter` envia, `Shift+Enter` cria nova linha e conteúdo vazio não é enviado.
+- No desktop, o painel de conversas pode ser recolhido para um rail de 88 px e
+  expandido novamente sem perder o estado da sessão.
+- A ação de envio usa o ícone padrão de Conversas, fica fora da caixa de texto,
+  permanece neutra quando desabilitada e recebe o fundo primário Coelo quando
+  houver conteúdo válido.
 
 ## Responsividade
 

@@ -26,12 +26,12 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
     ),
     'pattern.form-controls': CatalogFoundation(
       id: 'pattern.form-controls',
-      referencedComponentIds: const ['core.search-field'],
+      referencedComponentIds: const ['core.form-text-field', 'core.search-field'],
       builder: (_) => const _FormControlsFoundation(),
     ),
     'pattern.selection-controls': CatalogFoundation(
       id: 'pattern.selection-controls',
-      referencedComponentIds: const ['admin.multi-select-filter'],
+      referencedComponentIds: const ['admin.single-select-field', 'admin.multi-select-filter'],
       builder: (_) => const _SelectionControlsFoundation(),
     ),
     'pattern.status-feedback': CatalogFoundation(
@@ -100,7 +100,6 @@ final class _FormControlsFoundation extends StatefulWidget {
 
 final class _FormControlsFoundationState extends State<_FormControlsFoundation> {
   final _controller = TextEditingController();
-  var _query = '';
 
   @override
   void dispose() {
@@ -114,20 +113,17 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Label, hint, apoio, validação, foco e autofill pertencem ao contrato '
-          'do campo. Ainda não existe um campo genérico Coelo aprovado; não use '
-          'o componente de busca para forçar equivalência com formulários.',
+          'Cadastro, edição e autenticação usam o mesmo campo-base com label '
+          'persistente, ícone, hint, hover, foco, erro e autofill.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        CoeloSearchField(
-          key: const Key('foundation-real-core-search-field'),
+        CoeloFormTextField(
+          key: const Key('foundation-real-core-form-text-field'),
           controller: _controller,
-          onChanged: (value) => setState(() => _query = value),
-          semanticLabel: 'Buscar na referência de campos',
-          hintText: 'Busca pública aprovada',
+          labelText: 'E-mail',
+          hintText: 'seu.email@coelo.me',
+          prefixIcon: Icons.mail_outline_rounded,
         ),
-        const SizedBox(height: CoeloSpacing.space2),
-        Text(_query.isEmpty ? 'Digite para testar a busca.' : 'Busca: $_query'),
       ],
     );
   }
@@ -142,6 +138,7 @@ final class _SelectionControlsFoundation extends StatefulWidget {
 
 final class _SelectionControlsFoundationState extends State<_SelectionControlsFoundation> {
   Set<String> _selected = const {'Ativa'};
+  var _single = 'Rascunho';
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +148,14 @@ final class _SelectionControlsFoundationState extends State<_SelectionControlsFo
         const Text(
           'Seleção precisa declarar se é única ou múltipla, quando aplica a '
           'mudança e como representa selecionado, indisponível e vazio.',
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloAdminSingleSelectField<String>(
+          label: 'Status operacional',
+          value: _single,
+          options: const ['Rascunho', 'Em implantação', 'Ativa'],
+          optionLabel: (value) => value,
+          onChanged: (value) => setState(() => _single = value),
         ),
         const SizedBox(height: CoeloSpacing.space4),
         SizedBox(

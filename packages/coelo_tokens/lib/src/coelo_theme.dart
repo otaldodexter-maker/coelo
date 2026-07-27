@@ -191,7 +191,7 @@ abstract final class CoeloTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: colorScheme.surface,
-        surfaceTintColor: colorScheme.surfaceTint,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.xl)),
         titleTextStyle: CoeloTypography.textTheme(
           primaryText: colorScheme.onSurface,

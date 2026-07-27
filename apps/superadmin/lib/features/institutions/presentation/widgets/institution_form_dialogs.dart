@@ -16,21 +16,17 @@ Future<bool> showInstitutionExitDialog(BuildContext context) async {
   return result ?? false;
 }
 
-Future<String?> showInstitutionSubscriptionDialog(
+Future<bool> showInstitutionSubscriptionDialog(
   BuildContext context, {
   required String title,
   required String message,
-  required bool requiresJustification,
-}) {
-  return showDialog<String>(
-    context: context,
-    barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-    builder: (context) => _SubscriptionDialog(
-      title: title,
-      message: message,
-      requiresJustification: requiresJustification,
-    ),
-  );
+}) async {
+  return await showDialog<bool>(
+        context: context,
+        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+        builder: (context) => _SubscriptionDialog(title: title, message: message),
+      ) ??
+      false;
 }
 
 final class _InstitutionDialog extends StatelessWidget {
@@ -71,18 +67,20 @@ final class _InstitutionDialog extends StatelessWidget {
               const SizedBox(height: CoeloSpacing.space4),
               Text(message),
               const SizedBox(height: CoeloSpacing.space5),
-              Wrap(
-                alignment: WrapAlignment.end,
-                spacing: CoeloSpacing.space2,
-                runSpacing: CoeloSpacing.space2,
+              Row(
                 children: [
-                  OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text('Continuar editando'),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Continuar editando'),
+                    ),
                   ),
-                  FilledButton(
-                    onPressed: () => Navigator.of(context).pop(confirmValue),
-                    child: Text(confirmLabel),
+                  const SizedBox(width: CoeloSpacing.space3),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.of(context).pop(confirmValue),
+                      child: Text(confirmLabel),
+                    ),
                   ),
                 ],
               ),
@@ -95,33 +93,19 @@ final class _InstitutionDialog extends StatelessWidget {
 }
 
 final class _SubscriptionDialog extends StatefulWidget {
-  const _SubscriptionDialog({
-    required this.title,
-    required this.message,
-    required this.requiresJustification,
-  });
+  const _SubscriptionDialog({required this.title, required this.message});
 
   final String title;
   final String message;
-  final bool requiresJustification;
 
   @override
   State<_SubscriptionDialog> createState() => _SubscriptionDialogState();
 }
 
 final class _SubscriptionDialogState extends State<_SubscriptionDialog> {
-  final _justificationController = TextEditingController();
-
-  @override
-  void dispose() {
-    _justificationController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final valid = !widget.requiresJustification || _justificationController.text.trim().isNotEmpty;
     return Dialog(
       key: const Key('institution-subscription-dialog'),
       backgroundColor: colors.surface,
@@ -141,22 +125,6 @@ final class _SubscriptionDialogState extends State<_SubscriptionDialog> {
               _DialogHeader(title: widget.title),
               const SizedBox(height: CoeloSpacing.space4),
               Text(widget.message),
-              if (widget.requiresJustification) ...[
-                const SizedBox(height: CoeloSpacing.space4),
-                TextFormField(
-                  key: const Key('institution-subscription-justification'),
-                  controller: _justificationController,
-                  autofocus: true,
-                  minLines: 3,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    labelText: 'Justificativa',
-                    helperText: 'Explique o motivo para manter o histórico compreensível.',
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  onChanged: (_) => setState(() {}),
-                ),
-              ],
               const SizedBox(height: CoeloSpacing.space5),
               Wrap(
                 alignment: WrapAlignment.end,
@@ -169,9 +137,7 @@ final class _SubscriptionDialogState extends State<_SubscriptionDialog> {
                   ),
                   FilledButton(
                     key: const Key('institution-subscription-confirm'),
-                    onPressed: valid
-                        ? () => Navigator.of(context).pop(_justificationController.text.trim())
-                        : null,
+                    onPressed: () => Navigator.of(context).pop(true),
                     child: const Text('Confirmar'),
                   ),
                 ],
