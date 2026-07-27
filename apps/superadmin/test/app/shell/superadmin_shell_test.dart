@@ -236,6 +236,49 @@ void main() {
     expect(expand.onPressed, isNull);
   });
 
+  testWidgets('keeps a bottom-right content action clickable below the global launcher', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    for (final (index, width) in [375.0, 768.0, 1440.0].indexed) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: SuperadminShell(
+            key: ValueKey(width),
+            logout: () async => const LogoutResult.success(),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                key: const Key('bottom-right-content-action'),
+                tooltip: 'Ação inferior direita',
+                onPressed: () => taps += 1,
+                icon: const Icon(Icons.arrow_forward),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+      if (width == 1440) {
+        expect(
+          tester.getBottomRight(find.byKey(const Key('superadmin-floating-content'))).dy,
+          900 - CoeloSpacing.space3,
+        );
+      }
+      await tester.tap(find.byKey(const Key('bottom-right-content-action')));
+      await tester.pump();
+
+      expect(taps, index + 1);
+      expect(tester.takeException(), isNull, reason: 'viewport $width');
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
   testWidgets('expands through the specific conversations capability', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));

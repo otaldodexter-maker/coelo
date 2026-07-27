@@ -22,6 +22,7 @@ const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
+const _chatLauncherClearance = CoeloSize.touchMin + CoeloSpacing.space8;
 const _compactProfileMenuWidth = 176.0;
 const _compactProfileTriggerWidth = 52.0;
 const _coeloMotionCurve = Curves.easeInOut;
@@ -120,7 +121,11 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    final pageBody = widget.child ?? const SizedBox.expand();
+    final pageBody = Padding(
+      key: const Key('superadmin-chat-launcher-clearance'),
+      padding: const EdgeInsets.only(bottom: _chatLauncherClearance),
+      child: widget.child ?? const SizedBox.expand(),
+    );
     return LayoutBuilder(
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;

@@ -259,7 +259,10 @@ void main() {
     await tester.pumpWidget(_app(SuperadminChatPage(logout: _logout, onBack: () => backs++)));
     await tester.pumpAndSettle();
 
-    expect(tester.getBottomLeft(find.text('Voltar à tela anterior')).dy, greaterThan(800));
+    expect(
+      tester.getBottomLeft(find.text('Voltar à tela anterior')).dy,
+      lessThanOrEqualTo(900 - CoeloSize.touchMin - CoeloSpacing.space8),
+    );
     await tester.tap(find.text('Voltar à tela anterior'));
     expect(backs, 1);
     for (final id in ['concept', 'institution', 'unit', 'group', 'activity', 'child']) {

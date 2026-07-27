@@ -832,6 +832,17 @@ void main() {
     expect(find.byType(Scrollbar), findsOneWidget);
 
     final scrollable = find.byKey(const Key('coelo-admin-table-scroll'));
+    await tester.scrollUntilVisible(
+      scrollable,
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('institution-directory-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     final before = tester
         .getTopLeft(find.byKey(const Key('coelo-admin-table-header-institution')))
         .dx;
