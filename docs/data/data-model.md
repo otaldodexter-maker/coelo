@@ -555,7 +555,7 @@ Este aditivo projeta o modelo físico aprovado para a próxima etapa. Ele não d
 - Conversas devem guardar escopo institucional, de unidade, grupo ou atividade.
 - Participantes são pessoas reais; o contexto de exibição deve preservar nome, papel exercido e zero, uma ou várias crianças relacionadas no momento da mensagem.
 - A caixa `Conversas` é somente uma query agregada. Cada conversa mantém participantes, policies e revogação contextuais independentes no banco.
-- Encerrado o vínculo institucional da criança, módulos operacionais desaparecem e conversas históricas ficam somente leitura conforme retenção aplicável.
+- Encerrado o vínculo institucional da criança, módulos operacionais desaparecem. O histórico do contexto revogado fica disponível apenas por consulta histórica separada e somente leitura; se a política de retenção aplicável negar a preservação, nenhum histórico é retornado.
 
 ## 29.5 Assiduidade
 

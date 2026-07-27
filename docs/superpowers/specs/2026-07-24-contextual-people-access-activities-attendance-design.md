@@ -708,7 +708,7 @@ Eventos relevantes incluem:
   operacionais e bloqueia novas mensagens, comandos e assinaturas.
 - Historico elegivel aparece somente por consulta separada e somente leitura,
   condicionado a politica de retencao ainda adiada; nunca restaura contexto,
-  participantes, mensagens, Realtime ou outros modulos.
+  participantes, novas mensagens, Realtime ou outros modulos.
 - Aviso de ausencia preenche a lista como pendencia, nao como oficial.
 - Somente `Gerenciar presenca` confirma ou corrige presenca.
 - Dashboards nao tratam pendencias como presenca ou falta oficial.

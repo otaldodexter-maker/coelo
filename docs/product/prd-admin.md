@@ -193,7 +193,9 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 
 - Antes de criar, o sistema busca possível correspondência sem revelar dados completos de outro tenant.
 
-- @username faz parte da identidade; regras detalhadas ficam no PRD Auth.
+- A descoberta global por `@username` no MVP é restrita a adultos, instituições
+  e unidades; regras detalhadas ficam no PRD Auth. A criança mantém identidade
+  global privada, mas não exige `@username` nem login no MVP.
 
 ## 9.2 Criança, instituições e responsáveis
 
