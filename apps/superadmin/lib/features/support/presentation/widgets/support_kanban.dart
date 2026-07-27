@@ -7,7 +7,9 @@ import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 import 'support_assignee_view.dart';
 
-typedef SupportTicketOpenCallback = void Function(SupportTicket ticket, FocusNode originFocusNode);
+typedef SupportFocusRestoreCallback = bool Function();
+typedef SupportTicketOpenCallback =
+    void Function(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus);
 typedef SupportStatusChangeCallback =
     Future<void> Function(SupportTicket ticket, SupportTicketStatus status);
 typedef SupportOwnerChangeCallback = void Function(SupportTicket ticket, String? memberId);
@@ -57,6 +59,7 @@ final class _SupportKanbanState extends State<SupportKanban> {
     for (final focusNode in _cardFocusNodes.values) {
       focusNode.dispose();
     }
+    _cardFocusNodes.clear();
     super.dispose();
   }
 
@@ -65,6 +68,17 @@ final class _SupportKanbanState extends State<SupportKanban> {
       ticket.id,
       () => FocusNode(debugLabel: 'support-card-${ticket.id}'),
     );
+  }
+
+  bool _restoreCardFocus(String ticketId, FocusNode focusNode) {
+    if (!mounted || !identical(_cardFocusNodes[ticketId], focusNode)) {
+      return false;
+    }
+    if (!focusNode.canRequestFocus) {
+      return false;
+    }
+    focusNode.requestFocus();
+    return true;
   }
 
   @override
@@ -250,7 +264,9 @@ final class _SupportKanbanState extends State<SupportKanban> {
       child: InkWell(
         key: feedback ? null : Key('support-card-${ticket.id}'),
         focusNode: focusNode,
-        onTap: feedback ? null : () => widget.onTicketPressed(ticket, focusNode!),
+        onTap: feedback
+            ? null
+            : () => widget.onTicketPressed(ticket, () => _restoreCardFocus(ticket.id, focusNode!)),
         onHover: feedback
             ? null
             : (value) => setState(() => _highlightedTicketId = value ? ticket.id : null),
@@ -286,6 +302,16 @@ final class _SupportKanbanState extends State<SupportKanban> {
                 ),
               ),
               const SizedBox(height: CoeloSpacing.space2),
+              Text(
+                ticket.description,
+                key: feedback ? null : Key('support-card-description-${ticket.id}'),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+              ),
+              const SizedBox(height: CoeloSpacing.space2),
               Text(ticket.requester, maxLines: 1, overflow: TextOverflow.ellipsis),
               if (breadcrumb.isNotEmpty) ...[
                 const SizedBox(height: CoeloSpacing.space1),
@@ -301,6 +327,16 @@ final class _SupportKanbanState extends State<SupportKanban> {
               const SizedBox(height: CoeloSpacing.space2),
               Text(
                 '${ticket.menu} > ${ticket.screen}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+              ),
+              const SizedBox(height: CoeloSpacing.space1),
+              Text(
+                'Atualizado em ${_dateTime(ticket.updatedAt)}',
+                key: feedback ? null : Key('support-card-updated-${ticket.id}'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(
@@ -347,16 +383,46 @@ final class _SupportKanbanState extends State<SupportKanban> {
   }
 }
 
-final class _CardMenu extends StatelessWidget {
+final class _CardMenu extends StatefulWidget {
   const _CardMenu({required this.ticket, required this.widget});
 
   final SupportTicket ticket;
   final SupportKanban widget;
 
   @override
+  State<_CardMenu> createState() => _CardMenuState();
+}
+
+final class _CardMenuState extends State<_CardMenu> {
+  final _menuFocusNode = FocusNode(debugLabel: 'support-card-menu');
+  final _ownerMenuFocusNode = FocusNode(debugLabel: 'support-owner-menu');
+  var _focusOwnerWhenOpened = false;
+
+  @override
+  void dispose() {
+    _menuFocusNode.dispose();
+    _ownerMenuFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final ticket = widget.ticket;
+    final supportKanban = widget.widget;
     return MenuAnchor(
+      childFocusNode: _menuFocusNode,
+      onOpen: () {
+        if (!_focusOwnerWhenOpened) {
+          return;
+        }
+        _focusOwnerWhenOpened = false;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _ownerMenuFocusNode.canRequestFocus) {
+            _ownerMenuFocusNode.requestFocus();
+          }
+        });
+      },
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
         elevation: const WidgetStatePropertyAll(6),
@@ -369,50 +435,78 @@ final class _CardMenu extends StatelessWidget {
       ),
       menuChildren: [
         SubmenuButton(
+          focusNode: _ownerMenuFocusNode,
+          style: _menuItemStyle(colors),
           menuChildren: [
-            for (final member in widget.teamMembers)
-              MenuItemButton(
-                leadingIcon: ticket.ownerId == member.id
-                    ? const Icon(Icons.check_rounded)
-                    : const SizedBox(width: CoeloSpacing.space6),
-                onPressed: () => widget.onOwnerChanged(ticket, member.id),
-                child: Text(_memberLabel(member)),
+            for (final member in supportKanban.teamMembers)
+              Semantics(
+                key: Key('support-owner-option-${ticket.id}-${member.id}'),
+                selected: ticket.ownerId == member.id,
+                child: MenuItemButton(
+                  style: _menuItemStyle(colors, selected: ticket.ownerId == member.id),
+                  leadingIcon: ExcludeSemantics(
+                    child: ticket.ownerId == member.id
+                        ? const Icon(Icons.check_rounded)
+                        : const SizedBox(width: CoeloSpacing.space6),
+                  ),
+                  onPressed: () => supportKanban.onOwnerChanged(ticket, member.id),
+                  child: Text(_memberLabel(member)),
+                ),
               ),
           ],
           child: const Text('Atribuir responsável'),
         ),
         SubmenuButton(
+          style: _menuItemStyle(colors),
           menuChildren: [
-            for (final member in widget.teamMembers)
-              MenuItemButton(
-                closeOnActivate: false,
-                leadingIcon: Icon(
-                  ticket.collaboratorIds.contains(member.id)
-                      ? Icons.check_box_rounded
-                      : Icons.check_box_outline_blank_rounded,
+            for (final member in supportKanban.teamMembers)
+              Semantics(
+                key: Key('support-collaborator-option-${ticket.id}-${member.id}'),
+                checked: ticket.collaboratorIds.contains(member.id),
+                child: MenuItemButton(
+                  closeOnActivate: false,
+                  style: _menuItemStyle(
+                    colors,
+                    checked: ticket.collaboratorIds.contains(member.id),
+                  ),
+                  leadingIcon: ExcludeSemantics(
+                    child: Icon(
+                      ticket.collaboratorIds.contains(member.id)
+                          ? Icons.check_box_rounded
+                          : Icons.check_box_outline_blank_rounded,
+                    ),
+                  ),
+                  onPressed: () {
+                    final collaborators = Set<String>.of(ticket.collaboratorIds);
+                    if (!collaborators.add(member.id)) {
+                      collaborators.remove(member.id);
+                    }
+                    supportKanban.onCollaboratorsChanged(ticket, collaborators);
+                  },
+                  child: Text(_memberLabel(member)),
                 ),
-                onPressed: () {
-                  final collaborators = Set<String>.of(ticket.collaboratorIds);
-                  if (!collaborators.add(member.id)) {
-                    collaborators.remove(member.id);
-                  }
-                  widget.onCollaboratorsChanged(ticket, collaborators);
-                },
-                child: Text(_memberLabel(member)),
               ),
           ],
           child: const Text('Colaboradores'),
         ),
         const Divider(height: 1),
         SubmenuButton(
+          style: _menuItemStyle(colors),
           menuChildren: [
             for (final status in SupportTicketStatus.values)
-              MenuItemButton(
-                leadingIcon: ticket.status == status
-                    ? const Icon(Icons.check_rounded)
-                    : const SizedBox(width: CoeloSpacing.space6),
-                onPressed: () => widget.onStatusChanged(ticket, status),
-                child: Text(_statusLabel(status)),
+              Semantics(
+                key: Key('support-status-option-${ticket.id}-${status.name}'),
+                selected: ticket.status == status,
+                child: MenuItemButton(
+                  style: _menuItemStyle(colors, selected: ticket.status == status),
+                  leadingIcon: ExcludeSemantics(
+                    child: ticket.status == status
+                        ? const Icon(Icons.check_rounded)
+                        : const SizedBox(width: CoeloSpacing.space6),
+                  ),
+                  onPressed: () => supportKanban.onStatusChanged(ticket, status),
+                  child: Text(_statusLabel(status)),
+                ),
               ),
           ],
           child: const Text('Mover para'),
@@ -420,14 +514,69 @@ final class _CardMenu extends StatelessWidget {
       ],
       builder: (context, controller, child) => IconButton(
         key: Key('support-card-menu-${ticket.id}'),
+        focusNode: _menuFocusNode,
         tooltip: 'Ações de ${ticket.id}',
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+        onPressed: () {
+          if (controller.isOpen) {
+            controller.close();
+            return;
+          }
+          _focusOwnerWhenOpened = _menuFocusNode.hasFocus;
+          controller.open();
+        },
         icon: const Icon(Icons.more_horiz_rounded),
-        visualDensity: VisualDensity.compact,
-        style: const ButtonStyle(overlayColor: WidgetStatePropertyAll(Colors.transparent)),
+        constraints: const BoxConstraints.tightFor(
+          width: CoeloSize.touchMin,
+          height: CoeloSize.touchMin,
+        ),
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed);
+            return highlighted ? colors.primary : colors.onSurfaceVariant;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+            return highlighted ? colors.primaryContainer : Colors.transparent;
+          }),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+          ),
+        ),
       ),
     );
   }
+}
+
+ButtonStyle _menuItemStyle(ColorScheme colors, {bool selected = false, bool checked = false}) {
+  return MenuItemButton.styleFrom(minimumSize: const Size.fromHeight(CoeloSize.touchMin)).copyWith(
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return selected || checked || highlighted ? colors.primary : colors.onSurface;
+    }),
+    iconColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      return selected || checked || highlighted ? colors.primary : colors.onSurfaceVariant;
+    }),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+      if (highlighted || selected) {
+        return colors.primaryContainer;
+      }
+      return Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+    ),
+  );
 }
 
 (Color, Color) _statusColors(BuildContext context, SupportTicketStatus status) {
@@ -455,3 +604,9 @@ String _roleLabel(SupportTeamRole role) => switch (role) {
   SupportTeamRole.customerSuccess => 'Sucesso do cliente',
   SupportTeamRole.qualityAssurance => 'Qualidade',
 };
+
+String _dateTime(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/'
+    '${value.month.toString().padLeft(2, '0')} '
+    '${value.hour.toString().padLeft(2, '0')}:'
+    '${value.minute.toString().padLeft(2, '0')}';

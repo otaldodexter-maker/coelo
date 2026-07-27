@@ -32,14 +32,14 @@ final class SupportPage extends StatefulWidget {
 
 class _SupportPageState extends State<SupportPage> {
   final _search = TextEditingController();
-  final _tableFocusNode = FocusNode(debugLabel: 'support-ticket-table');
-  FocusNode? _detailOriginFocusNode;
+  final _readFilterFocusScopeNode = FocusScopeNode(debugLabel: 'support-read-filter');
+  SupportFocusRestoreCallback? _restoreDetailOriginFocus;
   SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
 
   @override
   void dispose() {
     _search.dispose();
-    _tableFocusNode.dispose();
+    _readFilterFocusScopeNode.dispose();
     super.dispose();
   }
 
@@ -70,6 +70,7 @@ class _SupportPageState extends State<SupportPage> {
             searchController: _search,
             displayMode: _displayMode,
             onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
+            readFilterFocusScopeNode: _readFilterFocusScopeNode,
           ),
           const SizedBox(height: CoeloSpacing.space3),
           Expanded(
@@ -92,20 +93,12 @@ class _SupportPageState extends State<SupportPage> {
 
   Widget _listing(List<SupportTicket> tickets) {
     if (_displayMode == SupportDisplayMode.table) {
-      return Focus(
-        focusNode: _tableFocusNode,
-        child: SupportTicketTable(
-          tickets: tickets,
-          teamMembers: widget.controller.teamMembers,
-          selectedTicketId: widget.controller.selectedTicket?.id,
-          onTicketPressed: (ticket) => _open(
-            ticket,
-            _tableFocusNode.hasFocus
-                ? FocusManager.instance.primaryFocus ?? _tableFocusNode
-                : _tableFocusNode,
-          ),
-          statusBuilder: _statusMenu,
-        ),
+      return SupportTicketTable(
+        tickets: tickets,
+        teamMembers: widget.controller.teamMembers,
+        selectedTicketId: widget.controller.selectedTicket?.id,
+        onTicketPressed: _open,
+        statusBuilder: _statusMenu,
       );
     }
     return SupportKanban(
@@ -120,8 +113,8 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-  void _open(SupportTicket ticket, FocusNode originFocusNode) {
-    _detailOriginFocusNode = originFocusNode;
+  void _open(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus) {
+    _restoreDetailOriginFocus = restoreFocus;
     widget.controller.selectTicket(ticket.id);
     if (MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth) {
       showDialog<void>(
@@ -165,10 +158,14 @@ class _SupportPageState extends State<SupportPage> {
       Navigator.of(context).pop();
     }
     widget.controller.selectTicket(null);
-    final originFocusNode = _detailOriginFocusNode;
+    final restoreFocus = _restoreDetailOriginFocus;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && originFocusNode?.canRequestFocus == true) {
-        originFocusNode!.requestFocus();
+      if (!mounted) {
+        return;
+      }
+      final restored = restoreFocus?.call() ?? false;
+      if (!restored && widget.controller.filters.unreadOnly) {
+        _readFilterFocusScopeNode.requestFocus();
       }
     });
   }

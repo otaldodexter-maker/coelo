@@ -16,6 +16,7 @@ final class SupportFilterToolbar extends StatelessWidget {
     required this.searchController,
     required this.displayMode,
     required this.onDisplayModeChanged,
+    required this.readFilterFocusScopeNode,
     super.key,
   });
 
@@ -23,6 +24,7 @@ final class SupportFilterToolbar extends StatelessWidget {
   final TextEditingController searchController;
   final SupportDisplayMode displayMode;
   final ValueChanged<SupportDisplayMode> onDisplayModeChanged;
+  final FocusScopeNode readFilterFocusScopeNode;
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +92,19 @@ final class SupportFilterToolbar extends StatelessWidget {
             ),
             SizedBox(
               width: filterWidth,
-              child: CoeloAdminMultiSelectFilter<SupportReadFilter>(
-                key: const Key('support-read-filter'),
-                label: 'Leitura',
-                options: SupportReadFilter.values,
-                selectedValues: controller.filters.unreadOnly
-                    ? const {SupportReadFilter.unread}
-                    : const {},
-                optionLabel: (_) => 'Não lidas',
-                onChanged: (values) =>
-                    _update(unreadOnly: values.contains(SupportReadFilter.unread)),
+              child: FocusScope(
+                node: readFilterFocusScopeNode,
+                child: CoeloAdminMultiSelectFilter<SupportReadFilter>(
+                  key: const Key('support-read-filter'),
+                  label: 'Leitura',
+                  options: SupportReadFilter.values,
+                  selectedValues: controller.filters.unreadOnly
+                      ? const {SupportReadFilter.unread}
+                      : const {},
+                  optionLabel: (_) => 'Não lidas',
+                  onChanged: (values) =>
+                      _update(unreadOnly: values.contains(SupportReadFilter.unread)),
+                ),
               ),
             ),
             if (selectedMenus.isNotEmpty)

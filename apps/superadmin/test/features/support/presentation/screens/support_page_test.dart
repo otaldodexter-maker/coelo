@@ -1,3 +1,5 @@
+import 'dart:ui' show CheckedState, Tristate;
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/support/domain/support_ticket.dart';
 import 'package:coelo_superadmin/features/support/presentation/screens/support_page.dart';
@@ -21,6 +23,16 @@ void main() {
     expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
     expect(find.text('Camila Rocha'), findsWidgets);
     expect(find.textContaining('Centro Horizonte > Unidade Cambui'), findsWidgets);
+    final description = tester.widget<Text>(
+      find.byKey(const Key('support-card-description-SUP-001')),
+    );
+    expect(description.data, 'O salvamento nao conclui.');
+    expect(description.maxLines, 2);
+    expect(description.overflow, TextOverflow.ellipsis);
+    expect(
+      find.text('Atualizado em ${_dateTime(controller.tickets.first.updatedAt)}'),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('support-search')), findsOneWidget);
     expect(find.byKey(const Key('support-status-filter')), findsOneWidget);
     expect(find.byKey(const Key('support-menu-filter')), findsOneWidget);
@@ -86,6 +98,110 @@ void main() {
     expect(ticket.status, SupportTicketStatus.inProgress);
   });
 
+  testWidgets('keeps status new while owner picker is open and after cancel', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    await tester.tap(find.byKey(const Key('support-card-menu-SUP-001')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mover para').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Em andamento'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Escolha o responsável'), findsOneWidget);
+    expect(controller.tickets.first.status, SupportTicketStatus.newRequest);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Escolha o responsável'), findsNothing);
+    expect(controller.tickets.first.status, SupportTicketStatus.newRequest);
+    expect(controller.tickets.first.ownerId, isNull);
+  });
+
+  testWidgets('card menu is accessible and assigns owner with keyboard', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    final menuFinder = find.byKey(const Key('support-card-menu-SUP-001'));
+    final menuButton = tester.widget<IconButton>(menuFinder);
+    expect(menuButton.constraints?.minWidth, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(menuButton.constraints?.minHeight, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(
+      menuButton.style?.backgroundColor?.resolve({WidgetState.focused}),
+      CoeloTheme.light.colorScheme.primaryContainer,
+    );
+    expect(
+      menuButton.style?.foregroundColor?.resolve({WidgetState.focused}),
+      CoeloTheme.light.colorScheme.primary,
+    );
+
+    menuButton.focusNode!.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    expect(controller.tickets.first.ownerId, 'member-support');
+  });
+
+  testWidgets('card menu exposes owner status and collaborator semantics', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    controller.assignOwner('SUP-001', 'member-support');
+    controller.setCollaborators('SUP-001', {'member-dev'});
+    await _pump(tester, controller, const Size(1280, 900));
+
+    final menuFinder = find.byKey(const Key('support-card-menu-SUP-001'));
+    await tester.tap(menuFinder);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Atribuir responsável').last);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .getSemantics(find.byKey(const Key('support-owner-option-SUP-001-member-support')))
+          .flagsCollection
+          .isSelected,
+      Tristate.isTrue,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    await tester.tap(menuFinder);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Colaboradores').last);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .getSemantics(find.byKey(const Key('support-collaborator-option-SUP-001-member-dev')))
+          .flagsCollection
+          .isChecked,
+      CheckedState.isTrue,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    await tester.tap(menuFinder);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mover para').last);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .getSemantics(find.byKey(const Key('support-status-option-SUP-001-newRequest')))
+          .flagsCollection
+          .isSelected,
+      Tristate.isTrue,
+    );
+  });
+
   testWidgets('keeps table columns and status menu synchronized', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
@@ -115,6 +231,54 @@ void main() {
       controller.tickets.singleWhere((ticket) => ticket.id == 'SUP-001').status,
       SupportTicketStatus.inProgress,
     );
+  });
+
+  testWidgets('restores focus to the exact table row that opened detail', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    await tester.tap(find.byTooltip('Exibir como tabela'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('coelo-admin-table-row-background-SUP-001')).first);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    final rowFocus = tester.widgetList<Focus>(
+      find.byKey(const Key('support-table-row-focus-SUP-001')),
+    );
+    expect(rowFocus.any((focus) => focus.focusNode?.hasFocus ?? false), isTrue);
+  });
+
+  testWidgets('falls back to read filter when opening marks card filtered out', (tester) async {
+    final controller = SupportPrototypeController();
+    addTearDown(controller.dispose);
+    await _pump(tester, controller, const Size(1280, 900));
+
+    await tester.tap(find.byKey(const Key('support-read-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Não lidas').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar').last);
+    await tester.pumpAndSettle();
+    expect(controller.filters.unreadOnly, isTrue);
+    expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('support-card-SUP-001')), findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    final readFilterButton = tester.widget<OutlinedButton>(
+      find.descendant(
+        of: find.byKey(const Key('support-read-filter')),
+        matching: find.byType(OutlinedButton),
+      ),
+    );
+    expect(readFilterButton.focusNode?.hasFocus, isTrue);
   });
 
   testWidgets('keeps the principal assignee before collaborators in semantics', (tester) async {
@@ -238,3 +402,9 @@ Future<void> _pump(WidgetTester tester, SupportPrototypeController controller, S
   );
   await tester.pumpAndSettle();
 }
+
+String _dateTime(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/'
+    '${value.month.toString().padLeft(2, '0')} '
+    '${value.hour.toString().padLeft(2, '0')}:'
+    '${value.minute.toString().padLeft(2, '0')}';

@@ -5,7 +5,10 @@ import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 import 'support_assignee_view.dart';
 
-final class SupportTicketTable extends StatelessWidget {
+typedef SupportTableTicketOpenCallback =
+    void Function(SupportTicket ticket, bool Function() restoreFocus);
+
+final class SupportTicketTable extends StatefulWidget {
   const SupportTicketTable({
     required this.tickets,
     required this.teamMembers,
@@ -18,8 +21,57 @@ final class SupportTicketTable extends StatelessWidget {
   final List<SupportTicket> tickets;
   final List<SupportTeamMember> teamMembers;
   final String? selectedTicketId;
-  final ValueChanged<SupportTicket> onTicketPressed;
+  final SupportTableTicketOpenCallback onTicketPressed;
   final Widget Function(SupportTicket ticket) statusBuilder;
+
+  @override
+  State<SupportTicketTable> createState() => _SupportTicketTableState();
+}
+
+final class _SupportTicketTableState extends State<SupportTicketTable> {
+  final _rowFocusNodes = <String, FocusNode>{};
+
+  @override
+  void didUpdateWidget(covariant SupportTicketTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final ticketIds = widget.tickets.map((ticket) => ticket.id).toSet();
+    for (final ticketId in _rowFocusNodes.keys.where((id) => !ticketIds.contains(id)).toList()) {
+      _rowFocusNodes.remove(ticketId)?.dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final focusNode in _rowFocusNodes.values) {
+      focusNode.dispose();
+    }
+    _rowFocusNodes.clear();
+    super.dispose();
+  }
+
+  FocusNode _focusNodeFor(SupportTicket ticket) {
+    return _rowFocusNodes.putIfAbsent(
+      ticket.id,
+      () => FocusNode(debugLabel: 'support-table-row-${ticket.id}'),
+    );
+  }
+
+  bool _restoreRowFocus(String ticketId, FocusNode focusNode) {
+    if (!mounted || !identical(_rowFocusNodes[ticketId], focusNode)) {
+      return false;
+    }
+    if (!focusNode.canRequestFocus) {
+      return false;
+    }
+    focusNode.requestFocus();
+    return true;
+  }
+
+  void _openTicket(SupportTicket ticket) {
+    final focusNode = _focusNodeFor(ticket);
+    focusNode.requestFocus();
+    widget.onTicketPressed(ticket, () => _restoreRowFocus(ticket.id, focusNode));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +109,7 @@ final class SupportTicketTable extends StatelessWidget {
         cellBuilder: (_, ticket) => SupportAssigneeView(
           ownerId: ticket.ownerId,
           collaboratorIds: ticket.collaboratorIds,
-          teamMembers: teamMembers,
+          teamMembers: widget.teamMembers,
         ),
       ),
       CoeloAdminTableColumn<SupportTicket>(
@@ -66,7 +118,7 @@ final class SupportTicketTable extends StatelessWidget {
         initialWidth: 190,
         minWidth: 160,
         maxWidth: 220,
-        cellBuilder: (_, ticket) => statusBuilder(ticket),
+        cellBuilder: (_, ticket) => widget.statusBuilder(ticket),
       ),
       CoeloAdminTableColumn<SupportTicket>(
         id: 'attachments',
@@ -95,30 +147,34 @@ final class SupportTicketTable extends StatelessWidget {
     ];
     return CoeloAdminResizableTable<SupportTicket>(
       key: const Key('support-ticket-table'),
-      items: tickets,
+      items: widget.tickets,
       rowKey: (ticket) => ticket.id,
       headerHeight: 56,
       rowHeight: 64,
       pinnedColumn: ticketColumn,
       columns: columns,
-      onRowPressed: onTicketPressed,
-      isSelected: (ticket) => ticket.id == selectedTicketId,
+      onRowPressed: _openTicket,
+      isSelected: (ticket) => ticket.id == widget.selectedTicketId,
     );
   }
 
   Widget _ticketCell(BuildContext context, SupportTicket ticket) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(ticket.id, maxLines: 1, overflow: TextOverflow.ellipsis),
-        Text(
-          ticket.subject,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
+    return Focus(
+      key: Key('support-table-row-focus-${ticket.id}'),
+      focusNode: _focusNodeFor(ticket),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(ticket.id, maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(
+            ticket.subject,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
     );
   }
 
