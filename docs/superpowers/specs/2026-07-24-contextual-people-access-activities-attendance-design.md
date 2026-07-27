@@ -1,7 +1,7 @@
 ---
 title: "Pessoas, Acessos Contextuais, Atividades, Chat E Assiduidade"
 source: "AGENTS.md; docs/product/prd-master.md; docs/product/prd-admin.md; docs/product/prd-app.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; decisions/0012-contextual-experiences-and-conversation-history.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; validacoes do usuario e auditoria Supabase em 2026-07-24"
-status: "draft-for-written-review"
+status: "approved-design"
 generated_at: "2026-07-24"
 ---
 

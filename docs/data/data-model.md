@@ -178,7 +178,7 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | guardian_links | Relação familiar global. | guardian_person_id, child_person_id, relation, status. |
 | guardian_context_permissions | Acesso familiar por tenant. | guardian_link_id, child_context_id, permissions/status. |
 | trusted_people | Pessoa de confiança privada do responsável. | guardian_person_id, dados protegidos, status; reutilizável sem exposição a tenants. |
-| trusted_person_authorizations | Autorização operacional contextual. | institution_id, child_context_id, unit_id, trusted_person_id, tipo, validade e status independentes. |
+| trusted_person_authorizations | Autorização operacional contextual. | institution_id, child_context_id, unit_id, trusted_person_id, snapshot operacional mínimo, tipo, validade e status independentes. |
 
 Interpretação oficial de D1: a criança é uma pessoa global. Cada instituição
 valida e possui seu `child_context`, cria primeiro o `child_unit_link` e pode
@@ -186,7 +186,10 @@ criar o `child_group_link` durante a aprovação ou depois. O responsável
 enxerga apenas os contextos em que `guardian_context_permissions` estiver
 ativo. A pessoa de confiança permanece privada ao responsável; cada uso gera
 autorização independente por instituição, contexto infantil e unidade, nunca
-por turma.
+por turma. Cada autorização guarda o snapshot operacional mínimo necessário
+para a instituição executar a decisão. O tenant consulta esse snapshot e não
+precisa nem pode receber acesso à linha privada reutilizável em
+`trusted_people`.
 
 # 9. Superadmin e planos
 

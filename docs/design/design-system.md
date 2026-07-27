@@ -1,12 +1,13 @@
 ---
 title: "Coelo Design System Oficial v1"
+source: "Coelo Design System Oficial v1.docx; docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
 source_file: "Coelo Design System Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Design System Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Design/Coelo Design System Oficial v1.docx"
 supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-06-22"
+generated_at: "2026-07-24"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->

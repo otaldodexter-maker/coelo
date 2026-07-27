@@ -204,9 +204,12 @@ analise futura sem alterar silenciosamente o catalogo.
 - `guardian_link_requested`
 - `guardian_link_reviewed`
 - `child_context_validated`
-- `authorized_person_created`
-- `authorized_person_changed`
-- `authorized_person_suspended`
+- `trusted_person_created`
+- `trusted_person_changed`
+- `trusted_person_authorization_created`
+- `trusted_person_authorization_changed`
+- `trusted_person_authorization_suspended`
+- `trusted_person_authorization_revoked`
 - `child_transfer_requested`
 - `child_transfer_decided`
 - `professional_scope_changed`

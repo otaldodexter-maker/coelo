@@ -1,5 +1,6 @@
 ---
 title: "Perguntas abertas e conflitos"
+source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-07-24"
 ---

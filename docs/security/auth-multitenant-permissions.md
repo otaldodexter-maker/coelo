@@ -256,6 +256,10 @@ pode localizar exatamente instituição/unidade por `@`, e-mail, link ou QR e
 solicitar vínculo; a solicitação continua sem acesso até validação
 institucional.
 
+A busca exata por e-mail institucional ou `@identificador` tem rate limit,
+gera trilha de auditoria e retorna somente os dados públicos institucionais
+mínimos necessários para confirmar o destino da solicitação.
+
 # 14. Fluxos principais
 
 | Fluxo | Passos | Critério de aceite |

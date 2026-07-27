@@ -352,7 +352,7 @@ guardian limits open/deferred.
 - [ ] **Step 6: Run the documentation consistency checks**
 
 ```powershell
-rg -n "29 tabelas" specs docs decisions
+rg -n "29 tabelas" decisions/0015-contextual-people-authorizations-attendance.md specs/015-contextual-people-access-attendance.md docs/data/data-model.md docs/security/auth-multitenant-permissions.md docs/product/prd-app.md docs/product/prd-admin.md docs/open-questions.md docs/design/design-system.md
 rg -n "30 tabelas" specs/015-contextual-people-access-attendance.md docs/data/data-model.md docs/security/auth-multitenant-permissions.md
 rg -n "TBD|TODO|FIXME" decisions/0015-contextual-people-authorizations-attendance.md specs/015-contextual-people-access-attendance.md docs/data/data-model.md docs/security/auth-multitenant-permissions.md docs/product/prd-app.md docs/product/prd-admin.md docs/open-questions.md docs/design/design-system.md
 git diff --check -- decisions specs docs
