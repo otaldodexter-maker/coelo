@@ -38,7 +38,7 @@ class SuperadminShell extends StatefulWidget {
     this.currentDestination = 'institutions',
     this.onDestinationSelected,
     this.onBugReportSubmitted,
-    this.showChatLauncher = false,
+    this.showChatLauncher = true,
     super.key,
   });
 
@@ -52,6 +52,8 @@ class SuperadminShell extends StatefulWidget {
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+
+  /// Kept for source compatibility. The global launcher is always rendered.
   final bool showChatLauncher;
 
   @override
@@ -256,9 +258,6 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
   }
 
   Widget _withChatLauncher(Widget child) {
-    if (!widget.showChatLauncher) {
-      return child;
-    }
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -267,9 +266,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
           right: CoeloSpacing.space4,
           bottom: CoeloSpacing.space4,
           child: SuperadminChatLauncher(
-            onExpand: widget.onDestinationSelected == null
-                ? null
-                : () => widget.onDestinationSelected!('conversations'),
+            onExpand: () => widget.onDestinationSelected?.call('conversations'),
           ),
         ),
       ],

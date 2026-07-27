@@ -82,7 +82,6 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     return SuperadminShell(
       logout: widget.logout,
       activityController: _activityController,
-      showChatLauncher: widget.onConversationsOpen != null,
       onBugReportSubmitted: widget.onBugReportSubmitted,
       onDestinationSelected: (destination) {
         if (destination == 'home') {

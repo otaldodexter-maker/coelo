@@ -216,20 +216,46 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('keeps the chat launcher when full-page navigation is unavailable', (tester) async {
+  testWidgets('shows the global chat launcher without full-page navigation', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(_shellApp(showChatLauncher: true));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell(
+          logout: () async => const LogoutResult.success(),
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
 
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
     await tester.tap(find.text('Mensagens'));
     await tester.pumpAndSettle();
 
-    expect(
-      tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full)).onPressed,
-      isNull,
+    final expand = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full));
+    expect(expand.onPressed, isNotNull);
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.open_in_full));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the legacy visibility flag without hiding the global launcher', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell(
+          logout: () async => const LogoutResult.success(),
+          showChatLauncher: false,
+          child: const SizedBox.expand(),
+        ),
+      ),
     );
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
   });
 
   testWidgets('starts Home with Structure collapsed and opens the active section contextually', (
@@ -1536,7 +1562,6 @@ Widget _shellApp({
   TextScaler textScaler = TextScaler.noScaling,
   String currentDestination = 'institutions',
   ValueChanged<String>? onDestinationSelected,
-  bool showChatLauncher = false,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -1553,7 +1578,6 @@ Widget _shellApp({
           onBugReportSubmitted: onBugReportSubmitted,
           currentDestination: currentDestination,
           onDestinationSelected: onDestinationSelected,
-          showChatLauncher: showChatLauncher,
           child: const SizedBox.expand(),
         ),
       ),

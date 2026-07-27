@@ -42,7 +42,6 @@ final class CatalogHostPage extends StatelessWidget {
       subtitle: 'Consulte fundamentos, componentes e padrões aprovados.',
       logout: logout,
       currentDestination: 'catalog',
-      showChatLauncher: onConversationsOpen != null,
       onBugReportSubmitted: onBugReportSubmitted,
       onDestinationSelected: (destination) {
         if (destination == 'home') {

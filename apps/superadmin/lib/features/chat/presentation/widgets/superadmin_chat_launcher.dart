@@ -15,7 +15,7 @@ enum _LauncherView { inbox, thread }
 final class SuperadminChatLauncher extends StatefulWidget {
   const SuperadminChatLauncher({required this.onExpand, super.key});
 
-  final VoidCallback? onExpand;
+  final VoidCallback onExpand;
 
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
@@ -26,7 +26,8 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   final _searchController = TextEditingController();
   final _scopeSelections = <SuperadminChatScopeKind, String>{};
   var _open = false;
-  var _highlighted = false;
+  var _hovered = false;
+  var _focused = false;
   var _view = _LauncherView.inbox;
   var _selectedIndex = 0;
 
@@ -86,10 +87,15 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     if (!_open) {
       return _CollapsedLauncher(
         focusNode: _launcherFocusNode,
-        highlighted: _highlighted,
-        onHighlightChanged: (value) {
-          if (_highlighted != value) {
-            setState(() => _highlighted = value);
+        highlighted: _hovered || _focused,
+        onFocusChanged: (value) {
+          if (_focused != value) {
+            setState(() => _focused = value);
+          }
+        },
+        onHoverChanged: (value) {
+          if (_hovered != value) {
+            setState(() => _hovered = value);
           }
         },
         onPressed: () => setState(() => _open = true),
@@ -282,13 +288,15 @@ final class _CollapsedLauncher extends StatelessWidget {
   const _CollapsedLauncher({
     required this.focusNode,
     required this.highlighted,
-    required this.onHighlightChanged,
+    required this.onFocusChanged,
+    required this.onHoverChanged,
     required this.onPressed,
   });
 
   final FocusNode focusNode;
   final bool highlighted;
-  final ValueChanged<bool> onHighlightChanged;
+  final ValueChanged<bool> onFocusChanged;
+  final ValueChanged<bool> onHoverChanged;
   final VoidCallback onPressed;
 
   @override
@@ -326,8 +334,8 @@ final class _CollapsedLauncher extends StatelessWidget {
                 borderRadius: BorderRadius.circular(CoeloRadius.full),
                 child: InkWell(
                   focusNode: focusNode,
-                  onFocusChange: onHighlightChanged,
-                  onHover: onHighlightChanged,
+                  onFocusChange: onFocusChanged,
+                  onHover: onHoverChanged,
                   onTap: onPressed,
                   overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                   borderRadius: BorderRadius.circular(CoeloRadius.full),
@@ -427,7 +435,7 @@ final class _LauncherHeader extends StatelessWidget {
   final String? subtitle;
   final Widget? avatar;
   final VoidCallback? onBack;
-  final VoidCallback? onExpand;
+  final VoidCallback onExpand;
   final VoidCallback onClose;
 
   @override

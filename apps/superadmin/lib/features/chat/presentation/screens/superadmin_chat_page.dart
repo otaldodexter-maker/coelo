@@ -28,6 +28,7 @@ final class SuperadminChatPage extends StatefulWidget {
 }
 
 final class _SuperadminChatPageState extends State<SuperadminChatPage> {
+  final _expandInboxFocusNode = FocusNode(debugLabel: 'Expandir conversas');
   var _selectedIndex = 0;
   var _mobileThreadOpen = false;
   var _inboxCollapsed = false;
@@ -37,6 +38,12 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   List<SuperadminChatConversation> get _filteredConversations => superadminChatConversations
       .where((conversation) => matchesSuperadminChatScope(conversation, _scopeSelections))
       .toList(growable: false);
+
+  @override
+  void dispose() {
+    _expandInboxFocusNode.dispose();
+    super.dispose();
+  }
 
   void _selectConversation(int index, {required bool mobile}) {
     setState(() {
@@ -51,6 +58,15 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _scopeSelections
         ..clear()
         ..addAll(next);
+    });
+  }
+
+  void _collapseInbox() {
+    setState(() => _inboxCollapsed = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _expandInboxFocusNode.requestFocus();
+      }
     });
   }
 
@@ -119,6 +135,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                         onNewConversation: _openNewConversation,
                         onBack: widget.onBack,
                         onExpand: () => setState(() => _inboxCollapsed = false),
+                        expandFocusNode: _expandInboxFocusNode,
                       )
                     else
                       SizedBox(
@@ -130,7 +147,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                           onSelected: (index) => _selectConversation(index, mobile: false),
                           onNewConversation: _openNewConversation,
                           onBack: widget.onBack,
-                          onCollapse: () => setState(() => _inboxCollapsed = true),
+                          onCollapse: _collapseInbox,
                         ),
                       ),
                     const VerticalDivider(width: 1),
@@ -492,6 +509,7 @@ final class _ConversationRail extends StatelessWidget {
     required this.onNewConversation,
     this.onBack,
     this.onExpand,
+    this.expandFocusNode,
     super.key,
   });
 
@@ -501,6 +519,7 @@ final class _ConversationRail extends StatelessWidget {
   final VoidCallback onNewConversation;
   final VoidCallback? onBack;
   final VoidCallback? onExpand;
+  final FocusNode? expandFocusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -514,6 +533,7 @@ final class _ConversationRail extends StatelessWidget {
               child: IconButton(
                 tooltip: 'Expandir conversas',
                 onPressed: onExpand,
+                focusNode: expandFocusNode,
                 icon: const Icon(Icons.chevron_right),
               ),
             ),
@@ -530,20 +550,41 @@ final class _ConversationRail extends StatelessWidget {
             child: ListView(
               children: [
                 for (final conversation in conversations)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
-                    child: Center(
-                      child: CoeloChatAvatar(
-                        label: conversation.title,
-                        initials: conversation.initials,
-                        nowState: conversation.nowState,
-                        presence: conversation.presence,
-                        onProfilePressed: () =>
-                            onSelected(superadminChatConversations.indexOf(conversation)),
-                        onNowPressed: () =>
-                            onSelected(superadminChatConversations.indexOf(conversation)),
-                      ),
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final sourceIndex = superadminChatConversations.indexOf(conversation);
+                      final selected = sourceIndex == selectedIndex;
+                      final colors = Theme.of(context).colorScheme;
+                      return Semantics(
+                        key: Key('superadmin-chat-rail-conversation-${conversation.id}'),
+                        container: true,
+                        selected: selected,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                          child: Center(
+                            child: Container(
+                              key: Key(
+                                'superadmin-chat-rail-conversation-${conversation.id}-surface',
+                              ),
+                              padding: const EdgeInsets.all(CoeloSpacing.spaceHalf),
+                              decoration: BoxDecoration(
+                                color: selected ? colors.primaryContainer : Colors.transparent,
+                                shape: BoxShape.circle,
+                                border: selected ? Border.all(color: colors.primary) : null,
+                              ),
+                              child: CoeloChatAvatar(
+                                label: conversation.title,
+                                initials: conversation.initials,
+                                nowState: conversation.nowState,
+                                presence: conversation.presence,
+                                onProfilePressed: () => onSelected(sourceIndex),
+                                onNowPressed: () => onSelected(sourceIndex),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
               ],
             ),

@@ -44,6 +44,7 @@ void main() {
   testWidgets('groups the desktop inbox and preserves the thread while collapsing it', (
     tester,
   ) async {
+    final semantics = tester.ensureSemantics();
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -67,6 +68,31 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-inbox-rail')), findsOne);
     expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
     expect(
+      tester
+          .widget<IconButton>(find.widgetWithIcon(IconButton, Icons.chevron_right))
+          .focusNode
+          ?.hasPrimaryFocus,
+      isTrue,
+    );
+    final selectedRailConversation = find.byKey(
+      const Key('superadmin-chat-rail-conversation-cambui'),
+    );
+    expect(selectedRailConversation, findsOne);
+    expect(
+      tester.getSemantics(selectedRailConversation).flagsCollection.isSelected,
+      Tristate.isTrue,
+    );
+    expect(
+      (tester
+                  .widget<Container>(
+                    find.byKey(const Key('superadmin-chat-rail-conversation-cambui-surface')),
+                  )
+                  .decoration!
+              as BoxDecoration)
+          .color,
+      CoeloTheme.light.colorScheme.primaryContainer,
+    );
+    expect(
       find.descendant(
         of: find.byKey(const Key('superadmin-chat-thread')),
         matching: find.text('Unidade Cambuí'),
@@ -78,6 +104,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-chat-inbox')), findsOne);
     expect(find.byKey(const Key('superadmin-chat-conversation-girassol')), findsNothing);
+    semantics.dispose();
   });
 
   testWidgets('opens contextual profile and hierarchical conversation creation', (tester) async {
@@ -152,6 +179,10 @@ void main() {
         .widget<InkWell>(find.descendant(of: launcherSurface, matching: find.byType(InkWell)))
         .focusNode!
         .requestFocus();
+    await tester.pump();
+    await mouse.moveTo(tester.getCenter(launcherSurface));
+    await tester.pump();
+    await mouse.moveTo(Offset.zero);
     await tester.pump();
     expect(
       (tester.widget<Container>(launcherSurface).decoration as BoxDecoration).color,
