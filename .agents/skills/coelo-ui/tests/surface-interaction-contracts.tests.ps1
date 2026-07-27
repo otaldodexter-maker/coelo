@@ -28,7 +28,20 @@ foreach ($expected in @(
   'CoeloSpacing.spaceHalf',
   'colorScheme.errorContainer',
   'CoeloRadius.full',
-  'CoeloAdminMultiSelectFilter'
+  'CoeloAdminMultiSelectFilter',
+  'É proibido usar `colorScheme.primaryContainer` como fundo-base',
+  'O overlay ou splash adicional é transparente',
+  'filtros e tabelas densas são linhas contínuas',
+  'Icons.close_rounded',
+  '`colorScheme.error` no ícone em repouso',
+  'Hover e foco visível usam `colorScheme.errorContainer`',
+  'forma circular',
+  '48 px',
+  'tooltip contextual',
+  'single-select usa `colorScheme.primaryContainer` no estado selecionado, hover e foco',
+  'busca interna é limpa ao reabrir',
+  'multi-select selecionado usa texto e checkbox em `colorScheme.primary`',
+  'fundo transparente até hover ou foco'
 )) {
   Assert-Contains -Content $reference -Expected $expected -Source $referencePath -Label 'Surface interaction reference'
 }

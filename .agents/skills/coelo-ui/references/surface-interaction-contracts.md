@@ -12,9 +12,9 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
 
 ## Popup, modal, dialog e overlay
 
-- A superfície-base é `colorScheme.surface` em light e dark; nunca usar
-  `colorScheme.primaryContainer`, laranja-claro ou tonalidade de marca como
-  fundo integral do contêiner.
+- A superfície-base é `colorScheme.surface` em light e dark.
+- É proibido usar `colorScheme.primaryContainer` como fundo-base, assim como
+  laranja-claro ou outra tonalidade de marca, do contêiner.
 - Usar barreira preta translúcida, conteúdo contextual e ação primária quando
   aplicável. A barreira preserva o contraste.
 - O painel de filtro usa `colorScheme.surface`, `CoeloRadius.lg`, borda
@@ -30,7 +30,7 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   vertical `CoeloSpacing.spaceHalf` entre itens.
 - O overlay ou splash adicional é transparente; não sobrepor camada cinza. O
   estado desabilitado não recebe hover.
-- Opções de filtro e tabelas densas são exceção de linha contínua: usam
+- Opções em filtros e tabelas densas são linhas contínuas: usam
   `colorScheme.primaryContainer` no hover e foco, mas não recebem raio ou
   espaçamento entre linhas.
 - O menu lateral do Superadmin é a referência de item discreto.
@@ -56,8 +56,12 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   `colorScheme.primary`. As opções têm altura mínima de 48 px, são contínuas e
   não recebem camada cinza adicional.
 - Multi-select mantém rascunho até `Aplicar`, possui busca interna com vazio e
-  rodapé persistente com `Limpar` e `Aplicar`. O checkbox não recebe hover,
-  splash ou fundo próprio; single-select não usa checkbox.
+  rodapé persistente com `Limpar` e `Aplicar`. A busca interna é limpa ao reabrir.
+- O multi-select selecionado usa texto e checkbox em `colorScheme.primary` e
+  fundo transparente até hover ou foco. O checkbox não recebe hover, splash ou
+  fundo próprio.
+- O single-select usa `colorScheme.primaryContainer` no estado selecionado, hover e foco,
+  com conteúdo em `colorScheme.primary`; não usa checkbox.
 - Reutilizar `CoeloAdminMultiSelectFilter` como referência de implementação do
   multi-select administrativo. Instituições é a referência de comportamento do
   multi-select; o popup de Bug é a referência do single-select.

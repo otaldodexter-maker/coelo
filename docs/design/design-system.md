@@ -683,9 +683,9 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 
 ### Popups, modais, diálogos e painéis
 
-- A superfície-base usa `colorScheme.surface` em light e dark. Não usar
+- A superfície-base usa `colorScheme.surface` em light e dark. É proibido usar
   `colorScheme.primaryContainer`, laranja-claro ou outra tonalidade de marca
-  como fundo integral do contêiner.
+  como fundo-base do contêiner.
 - A anatomia contém barreira preta translúcida, contêiner de superfície, conteúdo
   contextual, ação primária quando aplicável e ação de fechamento. A barreira
   deve preservar o contraste do conteúdo.
@@ -731,9 +731,13 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 - O gatilho aberto usa `colorScheme.primaryContainer`; texto e seta ativos usam
   `colorScheme.primary`. As opções têm altura mínima de 48 px, são linhas
   contínuas e usam hover/foco sem camada adicional cinza.
-- Multi-select mantém alterações em rascunho até `Aplicar`, checkbox sem hover,
-  splash ou fundo próprio, busca interna com estado vazio e rodapé persistente
-  com `Limpar` e `Aplicar`. O single-select não usa checkbox.
+- Multi-select mantém alterações em rascunho até `Aplicar`, busca interna com
+  estado vazio e rodapé persistente com `Limpar` e `Aplicar`; a busca interna é
+  limpa ao reabrir. No estado selecionado, texto e checkbox usam
+  `colorScheme.primary`, mantendo fundo transparente até hover ou foco. O
+  checkbox não recebe hover, splash ou fundo próprio.
+- Single-select não usa checkbox; seleção, hover e foco usam
+  `colorScheme.primaryContainer` no fundo e `colorScheme.primary` no conteúdo.
 - `CoeloAdminMultiSelectFilter` é a referência de implementação para o
   multi-select administrativo; a tela de Instituições é a referência canônica
   de comportamento e o popup de Bug é a referência do single-select.
