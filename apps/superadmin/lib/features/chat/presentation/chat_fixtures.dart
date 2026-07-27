@@ -14,6 +14,8 @@ final class SuperadminChatConversation {
     this.unit,
     this.group,
     this.activity,
+    this.state,
+    this.personRole,
     this.children = const [],
     this.unreadCount = 0,
     this.nowState = CoeloNowState.none,
@@ -31,6 +33,8 @@ final class SuperadminChatConversation {
   final String? unit;
   final String? group;
   final String? activity;
+  final String? state;
+  final String? personRole;
   final List<String> children;
   final int unreadCount;
   final CoeloNowState nowState;
@@ -47,6 +51,8 @@ const superadminChatConversations = [
     context: 'Centro Horizonte · Unidade Cambuí',
     institution: 'Centro Horizonte',
     targetKind: CoeloAdminContextKind.group,
+    state: 'CE',
+    personRole: 'Professores',
     unit: 'Unidade Cambuí',
     group: 'Turma Girassol',
     children: ['Lia'],
@@ -63,6 +69,8 @@ const superadminChatConversations = [
     context: 'Centro Horizonte',
     institution: 'Centro Horizonte',
     targetKind: CoeloAdminContextKind.unit,
+    state: 'CE',
+    personRole: 'Outros',
     unit: 'Unidade Cambuí',
   ),
   SuperadminChatConversation(
@@ -74,6 +82,8 @@ const superadminChatConversations = [
     context: 'Turma Girassol · Lia',
     institution: 'Centro Horizonte',
     targetKind: CoeloAdminContextKind.activity,
+    state: 'CE',
+    personRole: 'Respons\u00e1veis',
     unit: 'Unidade Cambuí',
     group: 'Turma Girassol',
     activity: 'Natação',
@@ -89,6 +99,8 @@ const superadminChatConversations = [
     context: 'Instituto Aurora · Unidade Jardins',
     institution: 'Instituto Aurora',
     targetKind: CoeloAdminContextKind.institution,
+    state: 'SP',
+    personRole: 'Crian\u00e7as',
     unit: 'Unidade Jardins',
     group: 'Grupo Azul',
     activity: 'Arte',

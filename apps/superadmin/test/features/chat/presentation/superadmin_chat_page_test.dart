@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
+import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_scope_filters.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_thread_body.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -168,6 +169,29 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-conversation-girassol')), findsNothing);
     expect(find.byIcon(Icons.call_outlined), findsNothing);
     expect(find.byIcon(Icons.videocam_outlined), findsNothing);
+  });
+
+  testWidgets('opens scope filters with a canonical menu surface and hover state', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SegmentedButton<SuperadminChatScopeDomain>), findsOne);
+    await tester.tap(find.byKey(const Key('superadmin-chat-filter-state')));
+    await tester.pumpAndSettle();
+
+    final colors = CoeloTheme.light.colorScheme;
+    final menu = tester.widget<MenuAnchor>(find.byType(MenuAnchor).last);
+    expect(menu.style?.backgroundColor?.resolve({}), colors.surface);
+
+    final option = find.widgetWithText(MenuItemButton, 'CE');
+    final item = tester.widget<MenuItemButton>(option);
+    expect(tester.getSize(option).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(item.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
   });
 
   testWidgets('simulates audio recording and media loading locally', (tester) async {

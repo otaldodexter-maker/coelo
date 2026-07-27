@@ -4,18 +4,38 @@ import 'package:flutter/material.dart';
 
 import '../chat_fixtures.dart';
 
-enum SuperadminChatScopeKind { concept, institution, unit, group, activity, child }
+enum SuperadminChatScopeDomain { contexts, people }
+
+extension SuperadminChatScopeDomainLabel on SuperadminChatScopeDomain {
+  String get label => switch (this) {
+    SuperadminChatScopeDomain.contexts => 'Contextos',
+    SuperadminChatScopeDomain.people => 'Pessoas',
+  };
+}
+
+enum SuperadminChatScopeKind {
+  concept,
+  state,
+  institution,
+  unit,
+  group,
+  activity,
+  child,
+  personRole,
+}
 
 extension SuperadminChatScopeKindLabel on SuperadminChatScopeKind {
   String get id => name;
 
   String get label => switch (this) {
     SuperadminChatScopeKind.concept => 'Todas',
+    SuperadminChatScopeKind.state => 'UF',
     SuperadminChatScopeKind.institution => 'Instituição',
     SuperadminChatScopeKind.unit => 'Unidade',
     SuperadminChatScopeKind.group => 'Grupo/Turma',
     SuperadminChatScopeKind.activity => 'Atividade',
     SuperadminChatScopeKind.child => 'Criança',
+    SuperadminChatScopeKind.personRole => 'Pessoa',
   };
 }
 
@@ -26,38 +46,72 @@ const _conceptLabels = <String, String>{
   'activities': 'Atividades',
 };
 
-final class SuperadminChatScopeFilters extends StatelessWidget {
+final class SuperadminChatScopeFilters extends StatefulWidget {
   const SuperadminChatScopeFilters({required this.selections, required this.onChanged, super.key});
 
   final Map<SuperadminChatScopeKind, String> selections;
   final void Function(SuperadminChatScopeKind kind, String? value) onChanged;
 
   @override
+  State<SuperadminChatScopeFilters> createState() => _SuperadminChatScopeFiltersState();
+}
+
+final class _SuperadminChatScopeFiltersState extends State<SuperadminChatScopeFilters> {
+  var _domain = SuperadminChatScopeDomain.contexts;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-      child: Wrap(
-        spacing: CoeloSpacing.space2,
-        runSpacing: CoeloSpacing.space2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final kind in SuperadminChatScopeKind.values)
-            _ScopeFilterButton(
-              key: Key('superadmin-chat-filter-${kind.id}'),
-              label: selections[kind] == null
-                  ? kind.label
-                  : superadminChatScopeOptionLabel(kind, selections[kind]!),
-              semanticLabel: selections[kind] == null
-                  ? 'Filtrar por ${kind.label}'
-                  : '${kind.label}: ${superadminChatScopeOptionLabel(kind, selections[kind]!)}',
-              selectedValue: selections[kind],
-              options: superadminChatScopeOptions(kind, selections),
-              optionLabel: (value) => superadminChatScopeOptionLabel(kind, value),
-              onSelected: (value) => onChanged(kind, value),
-            ),
+          SegmentedButton<SuperadminChatScopeDomain>(
+            segments: [
+              for (final domain in SuperadminChatScopeDomain.values)
+                ButtonSegment(value: domain, label: Text(domain.label)),
+            ],
+            selected: {_domain},
+            onSelectionChanged: (selection) => setState(() => _domain = selection.first),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              for (final kind in _visibleFilters)
+                _ScopeFilterButton(
+                  key: Key('superadmin-chat-filter-${kind.id}'),
+                  label: widget.selections[kind] == null
+                      ? kind.label
+                      : superadminChatScopeOptionLabel(kind, widget.selections[kind]!),
+                  semanticLabel: widget.selections[kind] == null
+                      ? 'Filtrar por ${kind.label}'
+                      : '${kind.label}: ${superadminChatScopeOptionLabel(kind, widget.selections[kind]!)}',
+                  selectedValue: widget.selections[kind],
+                  options: superadminChatScopeOptions(kind, widget.selections),
+                  optionLabel: (value) => superadminChatScopeOptionLabel(kind, value),
+                  onSelected: (value) => widget.onChanged(kind, value),
+                ),
+            ],
+          ),
         ],
       ),
     );
   }
+
+  List<SuperadminChatScopeKind> get _visibleFilters => switch (_domain) {
+    SuperadminChatScopeDomain.contexts => const [
+      SuperadminChatScopeKind.concept,
+      SuperadminChatScopeKind.state,
+      SuperadminChatScopeKind.institution,
+      SuperadminChatScopeKind.unit,
+      SuperadminChatScopeKind.group,
+      SuperadminChatScopeKind.activity,
+      SuperadminChatScopeKind.child,
+    ],
+    SuperadminChatScopeDomain.people => const [SuperadminChatScopeKind.personRole],
+  };
 }
 
 final class _ScopeFilterButton extends StatefulWidget {
@@ -95,18 +149,37 @@ final class _ScopeFilterButtonState extends State<_ScopeFilterButton> {
       alignmentOffset: const Offset(0, CoeloSpacing.spaceHalf),
       onOpen: () => setState(() => _open = true),
       onClose: () => setState(() => _open = false),
-      menuChildren: [
-        MenuItemButton(
-          onPressed: () => widget.onSelected(null),
-          style: _menuItemStyle(context, widget.selectedValue == null),
-          child: const Text('Todos'),
-        ),
-        for (final option in widget.options)
-          MenuItemButton(
-            onPressed: () => widget.onSelected(option),
-            style: _menuItemStyle(context, widget.selectedValue == option),
-            child: Text(widget.optionLabel(option)),
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(colors.surface),
+        elevation: const WidgetStatePropertyAll(6),
+        padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            side: BorderSide(color: colors.outlineVariant),
           ),
+        ),
+      ),
+      menuChildren: [
+        SizedBox(
+          width: 224,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MenuItemButton(
+                onPressed: () => widget.onSelected(null),
+                style: _menuItemStyle(context, widget.selectedValue == null),
+                child: const Text('Todos'),
+              ),
+              for (final option in widget.options)
+                MenuItemButton(
+                  onPressed: () => widget.onSelected(option),
+                  style: _menuItemStyle(context, widget.selectedValue == option),
+                  child: Text(widget.optionLabel(option)),
+                ),
+            ],
+          ),
+        ),
       ],
       builder: (context, controller, _) {
         return Semantics(
@@ -165,14 +238,13 @@ final class _ScopeFilterButtonState extends State<_ScopeFilterButton> {
     return ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(224, CoeloSize.touchMin)),
       foregroundColor: WidgetStatePropertyAll(selected ? colors.primary : colors.onSurface),
-      backgroundColor: WidgetStatePropertyAll(
-        selected ? colors.primaryContainer : Colors.transparent,
-      ),
-      overlayColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+      backgroundColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            selected || states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
             ? colors.primaryContainer
             : Colors.transparent,
       ),
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
       shape: const WidgetStatePropertyAll(RoundedRectangleBorder()),
     );
   }
@@ -199,20 +271,26 @@ List<String> superadminChatScopeOptions(
     }
 
     return switch (kind) {
-      SuperadminChatScopeKind.institution => true,
-      SuperadminChatScopeKind.unit => matches(
-        SuperadminChatScopeKind.institution,
-        conversation.institution,
+      SuperadminChatScopeKind.state || SuperadminChatScopeKind.personRole => true,
+      SuperadminChatScopeKind.institution => matches(
+        SuperadminChatScopeKind.state,
+        conversation.state,
       ),
+      SuperadminChatScopeKind.unit =>
+        matches(SuperadminChatScopeKind.state, conversation.state) &&
+            matches(SuperadminChatScopeKind.institution, conversation.institution),
       SuperadminChatScopeKind.group =>
-        matches(SuperadminChatScopeKind.institution, conversation.institution) &&
+        matches(SuperadminChatScopeKind.state, conversation.state) &&
+            matches(SuperadminChatScopeKind.institution, conversation.institution) &&
             matches(SuperadminChatScopeKind.unit, conversation.unit),
       SuperadminChatScopeKind.activity =>
-        matches(SuperadminChatScopeKind.institution, conversation.institution) &&
+        matches(SuperadminChatScopeKind.state, conversation.state) &&
+            matches(SuperadminChatScopeKind.institution, conversation.institution) &&
             matches(SuperadminChatScopeKind.unit, conversation.unit) &&
             matches(SuperadminChatScopeKind.group, conversation.group),
       SuperadminChatScopeKind.child =>
-        matches(SuperadminChatScopeKind.institution, conversation.institution) &&
+        matches(SuperadminChatScopeKind.state, conversation.state) &&
+            matches(SuperadminChatScopeKind.institution, conversation.institution) &&
             matches(SuperadminChatScopeKind.unit, conversation.unit) &&
             matches(SuperadminChatScopeKind.group, conversation.group) &&
             matches(SuperadminChatScopeKind.activity, conversation.activity),
@@ -223,6 +301,8 @@ List<String> superadminChatScopeOptions(
   final values = <String>{};
   for (final conversation in compatible) {
     switch (kind) {
+      case SuperadminChatScopeKind.state:
+        if (conversation.state case final value?) values.add(value);
       case SuperadminChatScopeKind.institution:
         values.add(conversation.institution);
       case SuperadminChatScopeKind.unit:
@@ -233,6 +313,8 @@ List<String> superadminChatScopeOptions(
         if (conversation.activity case final value?) values.add(value);
       case SuperadminChatScopeKind.child:
         values.addAll(conversation.children);
+      case SuperadminChatScopeKind.personRole:
+        if (conversation.personRole case final value?) values.add(value);
       case SuperadminChatScopeKind.concept:
         break;
     }
@@ -253,6 +335,13 @@ Map<SuperadminChatScopeKind, String> updatedSuperadminChatScope(
   }
   final descendants = switch (kind) {
     SuperadminChatScopeKind.concept => const <SuperadminChatScopeKind>[],
+    SuperadminChatScopeKind.state => const [
+      SuperadminChatScopeKind.institution,
+      SuperadminChatScopeKind.unit,
+      SuperadminChatScopeKind.group,
+      SuperadminChatScopeKind.activity,
+      SuperadminChatScopeKind.child,
+    ],
     SuperadminChatScopeKind.institution => const [
       SuperadminChatScopeKind.unit,
       SuperadminChatScopeKind.group,
@@ -269,7 +358,8 @@ Map<SuperadminChatScopeKind, String> updatedSuperadminChatScope(
       SuperadminChatScopeKind.child,
     ],
     SuperadminChatScopeKind.activity => const [SuperadminChatScopeKind.child],
-    SuperadminChatScopeKind.child => const <SuperadminChatScopeKind>[],
+    SuperadminChatScopeKind.child ||
+    SuperadminChatScopeKind.personRole => const <SuperadminChatScopeKind>[],
   };
   for (final descendant in descendants) {
     next.remove(descendant);
@@ -291,11 +381,13 @@ bool matchesSuperadminChatScope(
         'activities' => conversation.targetKind == CoeloAdminContextKind.activity,
         _ => true,
       },
+      SuperadminChatScopeKind.state => conversation.state == entry.value,
       SuperadminChatScopeKind.institution => conversation.institution == entry.value,
       SuperadminChatScopeKind.unit => conversation.unit == entry.value,
       SuperadminChatScopeKind.group => conversation.group == entry.value,
       SuperadminChatScopeKind.activity => conversation.activity == entry.value,
       SuperadminChatScopeKind.child => conversation.children.contains(entry.value),
+      SuperadminChatScopeKind.personRole => conversation.personRole == entry.value,
     };
     if (!matches) return false;
   }
