@@ -99,6 +99,93 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   });
 
+  testWidgets('collapses and expands the desktop conversation history', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1024, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-help-history-panel')), findsOne);
+    await tester.tap(find.byTooltip('Recolher histórico'));
+    await tester.pumpAndSettle();
+
+    final collapsed = find.byKey(const Key('superadmin-help-history-collapsed'));
+    expect(collapsed, findsOne);
+    expect(tester.getSize(collapsed).width, 88);
+
+    await tester.tap(find.byTooltip('Expandir histórico'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-help-history-panel')), findsOne);
+  });
+
+  testWidgets('keeps the standard send action outside the writing field', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1024, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final field = find.byKey(const Key('superadmin-help-composer-field'));
+    final send = find.ancestor(
+      of: find.byIcon(Icons.send_rounded),
+      matching: find.byType(IconButton),
+    );
+    final colors = Theme.of(tester.element(field)).colorScheme;
+    var button = tester.widget<IconButton>(send);
+
+    expect(button.onPressed, isNull);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.disabled}), colors.primaryContainer);
+    expect(
+      button.style?.foregroundColor?.resolve({WidgetState.disabled}),
+      colors.onPrimaryContainer,
+    );
+    expect(tester.getRect(send).left, greaterThan(tester.getRect(field).right));
+
+    await tester.enterText(field, 'Como funciona o Coelo?');
+    await tester.pump();
+    button = tester.widget<IconButton>(send);
+    expect(button.onPressed, isNotNull);
+    expect(button.style?.backgroundColor?.resolve({}), colors.primary);
+    expect(
+      tester.widget<Icon>(find.descendant(of: send, matching: find.byType(Icon))).icon,
+      Icons.send_rounded,
+    );
+  });
+
+  testWidgets('keeps brand colors on hover without a gray overlay', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1024, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final colors = Theme.of(
+      tester.element(find.byKey(const Key('superadmin-help-composer-field'))),
+    ).colorScheme;
+    final newConversation = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Nova conversa'),
+    );
+    expect(newConversation.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primary);
+    expect(newConversation.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+
+    final suggestion = tester.widget<ActionChip>(
+      find.ancestor(
+        of: find.text('Como cadastro uma instituição?'),
+        matching: find.byType(ActionChip),
+      ),
+    );
+    expect(suggestion.color?.resolve({WidgetState.hovered}), colors.primaryContainer);
+
+    final send = tester.widget<IconButton>(
+      find.ancestor(of: find.byIcon(Icons.send_rounded), matching: find.byType(IconButton)),
+    );
+    expect(send.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+  });
+
   testWidgets('supports dark theme, 200% text and reduced motion without overflow', (tester) async {
     for (final configuration in [
       (size: const Size(1440, 900), mode: ThemeMode.dark, scaler: TextScaler.noScaling),
@@ -115,7 +202,14 @@ void main() {
       );
       await tester.pump();
       expect(find.text('Como podemos ajudar?'), findsOne);
-      expect(tester.takeException(), isNull);
+      final exception = tester.takeException();
+      expect(
+        exception,
+        isNull,
+        reason:
+            '${configuration.size}: '
+            '${exception is FlutterError ? exception.toStringDeep() : exception}',
+      );
     }
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);

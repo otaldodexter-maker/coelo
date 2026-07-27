@@ -223,8 +223,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                                   child: _FloatingSurface(
                                     key: const Key('superadmin-floating-sidebar'),
                                     child: _SidebarTransition(
-                                      collapsed: _sidebarCollapsed,
-                                      reduceMotion: _reduceMotion,
+                                      progress: _sidebarController.value,
                                       currentDestination: widget.currentDestination,
                                       onDestinationSelected: widget.onDestinationSelected,
                                     ),
@@ -240,6 +239,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                           top: CoeloSpacing.space5,
                           child: _SidebarToggle(
                             collapsed: _sidebarCollapsed,
+                            progress: _sidebarController.value,
                             onPressed: _toggleSidebar,
                           ),
                         ),
@@ -277,31 +277,24 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
 
 class _SidebarTransition extends StatelessWidget {
   const _SidebarTransition({
-    required this.collapsed,
-    required this.reduceMotion,
+    required this.progress,
     required this.currentDestination,
     required this.onDestinationSelected,
   });
 
-  final bool collapsed;
-  final bool reduceMotion;
+  final double progress;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
 
   @override
   Widget build(BuildContext context) {
+    final collapsed = progress >= 0.5;
+    final distanceFromMidpoint = ((progress - 0.5).abs() * 2).clamp(0.0, 1.0);
+    final opacity = Curves.easeInOut.transform(distanceFromMidpoint);
     return ClipRect(
-      child: AnimatedSwitcher(
-        duration: reduceMotion ? Duration.zero : _sidebarMotionDuration,
-        switchInCurve: _sidebarMotionCurve,
-        switchOutCurve: _sidebarMotionCurve,
-        layoutBuilder: (currentChild, previousChildren) => Stack(
-          alignment: AlignmentDirectional.topStart,
-          fit: StackFit.expand,
-          children: [...previousChildren, ?currentChild],
-        ),
+      child: Opacity(
+        opacity: opacity,
         child: SizedBox.expand(
-          key: ValueKey(collapsed),
           child: Align(
             alignment: AlignmentDirectional.topStart,
             child: SizedBox(
@@ -465,9 +458,10 @@ class _BrandHeader extends StatelessWidget {
 }
 
 class _SidebarToggle extends StatelessWidget {
-  const _SidebarToggle({required this.collapsed, required this.onPressed});
+  const _SidebarToggle({required this.collapsed, required this.progress, required this.onPressed});
 
   final bool collapsed;
+  final double progress;
   final VoidCallback onPressed;
 
   @override
@@ -501,9 +495,10 @@ class _SidebarToggle extends StatelessWidget {
           ),
           child: SizedBox.square(
             dimension: CoeloSpacing.space6,
-            child: Icon(
-              collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
-              size: CoeloSpacing.space4,
+            child: Transform.rotate(
+              key: const Key('superadmin-sidebar-collapse-chevron'),
+              angle: math.pi * progress,
+              child: const Icon(Icons.chevron_left_rounded, size: CoeloSpacing.space4),
             ),
           ),
         ),
@@ -1740,16 +1735,16 @@ class _NavigationItemState extends State<_NavigationItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final visual = theme.extension<CoeloVisualColors>()!;
+    final hoverColor = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
     final background = widget.isActive
         ? _highlighted
-              ? visual.navigationActiveHover
-              : visual.navigationActive
+              ? hoverColor
+              : colors.primary
         : _highlighted
         ? colors.primaryContainer
         : colors.primaryContainer.withValues(alpha: 0);
     final foreground = widget.isActive
-        ? colors.primary
+        ? colors.onPrimary
         : _highlighted
         ? colors.primary
         : colors.onSurfaceVariant;

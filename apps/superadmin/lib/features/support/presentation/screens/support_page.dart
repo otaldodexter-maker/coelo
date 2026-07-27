@@ -1,7 +1,9 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/support_team_member.dart';
@@ -58,35 +60,26 @@ class _SupportPageState extends State<SupportPage> {
     child: AnimatedBuilder(animation: widget.controller, builder: (_, _) => _content(context)),
   );
   Widget _content(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= CoeloBreakpoints.expanded.minWidth;
     final tickets = widget.controller.filteredTickets;
     return Padding(
       key: const Key('support-page-content'),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Column(
-        children: [
-          SupportFilterToolbar(
+      child: CoeloAdminWorkspaceLayout(
+        toolbar: Padding(
+          padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+          child: SupportFilterToolbar(
             controller: widget.controller,
             searchController: _search,
             displayMode: _displayMode,
             onDisplayModeChanged: (displayMode) => setState(() => _displayMode = displayMode),
             readFilterFocusScopeNode: _readFilterFocusScopeNode,
+            onExportCsv: () => _showExportPrototype('CSV'),
+            onExportXlsx: () => _showExportPrototype('XLSX'),
           ),
-          const SizedBox(height: CoeloSpacing.space3),
-          Expanded(
-            child: wide
-                ? Row(
-                    children: [
-                      Expanded(child: _listing(tickets)),
-                      if (widget.controller.selectedTicket != null) ...[
-                        const SizedBox(width: CoeloSpacing.space3),
-                        SizedBox(width: 400, child: _details()),
-                      ],
-                    ],
-                  )
-                : _listing(tickets),
-          ),
-        ],
+        ),
+        body: _listing(tickets),
+        detail: _details(),
+        detailVisible: widget.controller.selectedTicket != null,
       ),
     );
   }
@@ -106,6 +99,7 @@ class _SupportPageState extends State<SupportPage> {
       teamMembers: widget.controller.teamMembers,
       selectedTicketId: widget.controller.selectedTicket?.id,
       onTicketPressed: _open,
+      onTicketDoublePressed: _openFullscreen,
       onStatusChanged: _requestStatus,
       onOwnerChanged: (ticket, memberId) => widget.controller.assignOwner(ticket.id, memberId),
       onCollaboratorsChanged: (ticket, memberIds) =>
@@ -116,20 +110,23 @@ class _SupportPageState extends State<SupportPage> {
   void _open(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus) {
     _restoreDetailOriginFocus = restoreFocus;
     widget.controller.selectTicket(ticket.id);
-    if (MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth) {
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-        builder: (_) => AnimatedBuilder(
-          animation: widget.controller,
-          builder: (context, _) => Dialog.fullscreen(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            child: SafeArea(child: _details(compact: true)),
-          ),
+  }
+
+  void _openFullscreen(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus) {
+    _restoreDetailOriginFocus = restoreFocus;
+    widget.controller.selectTicket(ticket.id);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (_) => AnimatedBuilder(
+        animation: widget.controller,
+        builder: (context, _) => Dialog.fullscreen(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: SafeArea(child: _details(compact: true)),
         ),
-      );
-    }
+      ),
+    );
   }
 
   Widget _details({bool compact = false}) {
@@ -198,6 +195,14 @@ class _SupportPageState extends State<SupportPage> {
             ),
         ],
       ),
+    );
+  }
+
+  void _showExportPrototype(String format) {
+    showSuperadminNotice(
+      context,
+      'Exportação $format da lista filtrada preparada para a futura integração.',
+      icon: Icons.download_outlined,
     );
   }
 

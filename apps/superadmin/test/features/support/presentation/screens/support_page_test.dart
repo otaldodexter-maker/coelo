@@ -16,15 +16,17 @@ void main() {
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
 
-    expect(find.byKey(const Key('support-kanban-newRequest')), findsOneWidget);
-    expect(find.byKey(const Key('support-kanban-inProgress')), findsOneWidget);
-    expect(find.byKey(const Key('support-kanban-waitingRequester')), findsOneWidget);
-    expect(find.byKey(const Key('support-kanban-completed')), findsOneWidget);
+    for (final status in SupportTicketStatus.values) {
+      expect(_laneFinder(status), findsOneWidget);
+    }
     expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
     expect(find.text('Camila Rocha'), findsWidgets);
     expect(find.textContaining('Centro Horizonte > Unidade Cambui'), findsWidgets);
     final description = tester.widget<Text>(
-      find.byKey(const Key('support-card-description-SUP-001')),
+      find.descendant(
+        of: find.byKey(const Key('support-card-SUP-001')),
+        matching: find.text('O salvamento nao conclui.'),
+      ),
     );
     expect(description.data, 'O salvamento nao conclui.');
     expect(description.maxLines, 2);
@@ -81,7 +83,7 @@ void main() {
     await _pump(tester, controller, const Size(1280, 900));
 
     final card = find.byKey(const Key('support-card-SUP-001'));
-    final target = find.byKey(const Key('support-kanban-inProgress'));
+    final target = _laneFinder(SupportTicketStatus.inProgress);
     final gesture = await tester.startGesture(tester.getCenter(card));
     await tester.pump(kLongPressTimeout + const Duration(milliseconds: 50));
     await gesture.moveTo(tester.getCenter(target));
@@ -288,6 +290,7 @@ void main() {
     expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pump(kDoubleTapTimeout);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('support-card-SUP-001')), findsNothing);
 
@@ -327,6 +330,7 @@ void main() {
     await _pump(tester, controller, const Size(1280, 900));
 
     await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pump(kDoubleTapTimeout);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('support-detail-panel')), findsOneWidget);
     expect(find.text('Camila Rocha'), findsWidgets);
@@ -385,13 +389,19 @@ void main() {
     await _pump(tester, controller, const Size(1280, 900));
 
     await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pump(kDoubleTapTimeout);
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
 
     expect(controller.selectedTicket, isNull);
     expect(find.byKey(const Key('support-detail-panel')), findsNothing);
-    final card = tester.widget<InkWell>(find.byKey(const Key('support-card-SUP-001')));
+    final card = tester.widget<InkWell>(
+      find.descendant(
+        of: find.byKey(const Key('support-card-SUP-001')),
+        matching: find.byType(InkWell),
+      ),
+    );
     expect(card.focusNode?.hasFocus, isTrue);
   });
 
@@ -400,9 +410,9 @@ void main() {
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(375, 800));
 
-    expect(find.byKey(const Key('support-compact-status')), findsOneWidget);
-    expect(find.byKey(const Key('support-kanban-newRequest')), findsOneWidget);
-    expect(find.byKey(const Key('support-kanban-inProgress')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-kanban-status-selector')), findsOneWidget);
+    expect(_laneFinder(SupportTicketStatus.newRequest), findsOneWidget);
+    expect(_laneFinder(SupportTicketStatus.inProgress), findsNothing);
   });
 }
 
@@ -430,3 +440,7 @@ String _dateTime(DateTime value) =>
     '${value.month.toString().padLeft(2, '0')} '
     '${value.hour.toString().padLeft(2, '0')}:'
     '${value.minute.toString().padLeft(2, '0')}';
+
+Finder _laneFinder(SupportTicketStatus status) => find.byKey(
+  ValueKey<(String, SupportTicketStatus)>(('coelo-admin-kanban-lane', status)),
+);

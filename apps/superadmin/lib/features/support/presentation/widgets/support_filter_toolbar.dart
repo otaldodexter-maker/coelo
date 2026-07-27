@@ -17,6 +17,8 @@ final class SupportFilterToolbar extends StatelessWidget {
     required this.displayMode,
     required this.onDisplayModeChanged,
     required this.readFilterFocusScopeNode,
+    required this.onExportCsv,
+    required this.onExportXlsx,
     super.key,
   });
 
@@ -25,6 +27,8 @@ final class SupportFilterToolbar extends StatelessWidget {
   final SupportDisplayMode displayMode;
   final ValueChanged<SupportDisplayMode> onDisplayModeChanged;
   final FocusScopeNode readFilterFocusScopeNode;
+  final VoidCallback onExportCsv;
+  final VoidCallback onExportXlsx;
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +156,23 @@ final class SupportFilterToolbar extends StatelessWidget {
                 showSelectedIcon: false,
                 onSelectionChanged: (selection) => onDisplayModeChanged(selection.single),
               ),
+            ),
+            CoeloAdminFileActions(
+              compact: compact,
+              actions: [
+                CoeloAdminFileAction(
+                  key: const Key('support-files-export-csv'),
+                  label: 'Exportar CSV',
+                  icon: Icons.table_rows_outlined,
+                  onPressed: onExportCsv,
+                ),
+                CoeloAdminFileAction(
+                  key: const Key('support-files-export-xlsx'),
+                  label: 'Exportar XLSX',
+                  icon: Icons.grid_on_outlined,
+                  onPressed: onExportXlsx,
+                ),
+              ],
             ),
           ],
         );

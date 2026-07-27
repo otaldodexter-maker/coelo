@@ -18,6 +18,7 @@ final class CoeloAdminWorkItemCard<T extends Object> extends StatefulWidget {
     this.trailingMenu,
     this.dragData,
     this.dragFeedback,
+    this.focusNode,
     this.selected = false,
     super.key,
   });
@@ -33,6 +34,7 @@ final class CoeloAdminWorkItemCard<T extends Object> extends StatefulWidget {
   final Widget? trailingMenu;
   final T? dragData;
   final Widget? dragFeedback;
+  final FocusNode? focusNode;
   final bool selected;
 
   @override
@@ -83,6 +85,7 @@ final class _CoeloAdminWorkItemCardState<T extends Object>
             side: BorderSide(color: highlighted ? colors.primary : colors.outlineVariant),
           ),
           child: InkWell(
+            focusNode: interactive ? widget.focusNode : null,
             onTap: interactive ? widget.onTap : null,
             onDoubleTap: interactive ? widget.onDoubleTap : null,
             onFocusChange: interactive ? (value) => setState(() => _focused = value) : null,

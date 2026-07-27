@@ -60,6 +60,7 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
               SizedBox(
                 height: CoeloSize.touchMin,
                 child: DropdownButton<S>(
+                  key: const Key('coelo-admin-kanban-status-selector'),
                   value: selected,
                   isExpanded: true,
                   items: [

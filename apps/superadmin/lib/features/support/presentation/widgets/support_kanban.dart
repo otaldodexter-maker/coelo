@@ -1,6 +1,5 @@
-import 'dart:math' as math;
-
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/support_team_member.dart';
@@ -22,6 +21,7 @@ final class SupportKanban extends StatefulWidget {
     required this.teamMembers,
     required this.selectedTicketId,
     required this.onTicketPressed,
+    required this.onTicketDoublePressed,
     required this.onStatusChanged,
     required this.onOwnerChanged,
     required this.onCollaboratorsChanged,
@@ -32,6 +32,7 @@ final class SupportKanban extends StatefulWidget {
   final List<SupportTeamMember> teamMembers;
   final String? selectedTicketId;
   final SupportTicketOpenCallback onTicketPressed;
+  final SupportTicketOpenCallback onTicketDoublePressed;
   final SupportStatusChangeCallback onStatusChanged;
   final SupportOwnerChangeCallback onOwnerChanged;
   final SupportCollaboratorsChangeCallback onCollaboratorsChanged;
@@ -43,7 +44,6 @@ final class SupportKanban extends StatefulWidget {
 final class _SupportKanbanState extends State<SupportKanban> {
   final _cardFocusNodes = <String, FocusNode>{};
   SupportTicketStatus _compactStatus = SupportTicketStatus.newRequest;
-  String? _highlightedTicketId;
 
   @override
   void didUpdateWidget(covariant SupportKanban oldWidget) {
@@ -83,302 +83,77 @@ final class _SupportKanbanState extends State<SupportKanban> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
-          return Column(
-            children: [
-              DropdownButton<SupportTicketStatus>(
-                key: const Key('support-compact-status'),
-                value: _compactStatus,
-                isExpanded: true,
-                items: [
-                  for (final status in SupportTicketStatus.values)
-                    DropdownMenuItem(value: status, child: Text(_statusLabel(status))),
-                ],
-                onChanged: (status) {
-                  if (status != null) {
-                    setState(() => _compactStatus = status);
-                  }
-                },
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              Expanded(child: _lane(_compactStatus)),
-            ],
-          );
-        }
-
-        const laneWidth = 280.0;
-        final boardWidth =
-            SupportTicketStatus.values.length * laneWidth +
-            (SupportTicketStatus.values.length - 1) * CoeloSpacing.space2;
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: math.max(boardWidth, constraints.maxWidth),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var index = 0; index < SupportTicketStatus.values.length; index++) ...[
-                  SizedBox(width: laneWidth, child: _lane(SupportTicketStatus.values[index])),
-                  if (index != SupportTicketStatus.values.length - 1)
-                    const SizedBox(width: CoeloSpacing.space2),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _lane(SupportTicketStatus status) {
-    final items = widget.tickets.where((ticket) => ticket.status == status).toList(growable: false);
-    final statusColors = _statusColors(context, status);
-    return DragTarget<SupportTicket>(
-      key: Key('support-kanban-${status.name}'),
-      onWillAcceptWithDetails: (details) => details.data.status != status,
-      onAcceptWithDetails: (details) => widget.onStatusChanged(details.data, status),
-      builder: (context, candidates, rejected) {
-        final colors = Theme.of(context).colorScheme;
-        final highlighted = candidates.isNotEmpty;
-        return Semantics(
-          container: true,
-          label: '${_statusLabel(status)}, ${items.length} chamados',
-          child: AnimatedContainer(
-            duration: CoeloMotion.fast,
-            decoration: BoxDecoration(
-              color: highlighted ? colors.primaryContainer : colors.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(CoeloRadius.lg),
-              border: Border.all(
-                color: highlighted ? colors.primary : colors.outlineVariant,
-                width: highlighted ? 2 : 1,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  height: CoeloSpacing.space1,
-                  decoration: BoxDecoration(
-                    color: statusColors.$2,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(CoeloRadius.lg)),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(CoeloSpacing.space3),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _statusLabel(status),
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      Container(
-                        constraints: const BoxConstraints(minWidth: CoeloSpacing.space6),
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: CoeloSpacing.space2,
-                          vertical: CoeloSpacing.space1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: statusColors.$1,
-                          borderRadius: BorderRadius.circular(CoeloRadius.full),
-                        ),
-                        child: Text(
-                          '${items.length}',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelMedium?.copyWith(color: statusColors.$2),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: items.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(CoeloSpacing.space4),
-                            child: Text(
-                              'Nenhum chamado',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                            ),
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(
-                            CoeloSpacing.space2,
-                            0,
-                            CoeloSpacing.space2,
-                            CoeloSpacing.space2,
-                          ),
-                          itemCount: items.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space2),
-                          itemBuilder: (context, index) => _draggableCard(items[index]),
-                        ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _draggableCard(SupportTicket ticket) {
-    return LongPressDraggable<SupportTicket>(
-      data: ticket,
-      feedback: Material(
-        color: Colors.transparent,
-        child: SizedBox(width: 264, child: _ticketCard(ticket, feedback: true)),
+    return CoeloAdminKanbanBoard<SupportTicket, SupportTicketStatus>(
+      key: const Key('support-kanban'),
+      statuses: SupportTicketStatus.values,
+      statusLabel: _statusLabel,
+      selectedStatus: _compactStatus,
+      onSelectedStatusChanged: (status) => setState(() => _compactStatus = status),
+      itemsForStatus: (status) =>
+          widget.tickets.where((ticket) => ticket.status == status).toList(growable: false),
+      itemBuilder: (context, ticket) => _ticketCard(ticket),
+      onItemAccepted: (ticket, status) => widget.onStatusChanged(ticket, status),
+      emptyLaneBuilder: (context, status) => Center(
+        child: Text(
+          'Nenhum chamado',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
       ),
-      childWhenDragging: Opacity(opacity: 0.35, child: _ticketCard(ticket)),
-      child: _ticketCard(ticket),
     );
   }
 
-  Widget _ticketCard(SupportTicket ticket, {bool feedback = false}) {
-    final colors = Theme.of(context).colorScheme;
-    final selected = widget.selectedTicketId == ticket.id;
-    final highlighted = _highlightedTicketId == ticket.id;
+  Widget _ticketCard(SupportTicket ticket) {
     final breadcrumb = ticket.requesterContext?.breadcrumb ?? '';
     final unreadCount = ticket.messages
         .where(
           (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
         )
         .length;
-    final focusNode = feedback ? null : _focusNodeFor(ticket);
-
-    return Material(
-      color: selected || highlighted ? colors.primaryContainer : colors.surface,
-      elevation: feedback ? 6 : 0,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-        side: BorderSide(color: selected ? colors.primary : colors.outlineVariant),
-      ),
-      child: InkWell(
-        key: feedback ? null : Key('support-card-${ticket.id}'),
-        focusNode: focusNode,
-        onTap: feedback
-            ? null
-            : () => widget.onTicketPressed(ticket, () => _restoreCardFocus(ticket.id, focusNode!)),
-        onHover: feedback
-            ? null
-            : (value) => setState(() => _highlightedTicketId = value ? ticket.id : null),
-        onFocusChange: feedback
-            ? null
-            : (value) => setState(() => _highlightedTicketId = value ? ticket.id : null),
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      ticket.id,
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: highlighted ? colors.primary : colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  if (!feedback) _CardMenu(ticket: ticket, widget: widget),
-                ],
-              ),
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(
-                ticket.subject,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: highlighted ? colors.primary : colors.onSurface,
-                ),
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(
-                ticket.description,
-                key: feedback ? null : Key('support-card-description-${ticket.id}'),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(ticket.requester, maxLines: 1, overflow: TextOverflow.ellipsis),
-              if (breadcrumb.isNotEmpty) ...[
-                const SizedBox(height: CoeloSpacing.space1),
-                Text(
-                  breadcrumb,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                ),
-              ],
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(
-                '${ticket.menu} > ${ticket.screen}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-              ),
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(
-                'Atualizado em ${_dateTime(ticket.updatedAt)}',
-                key: feedback ? null : Key('support-card-updated-${ticket.id}'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: SupportAssigneeView(
-                        ownerId: ticket.ownerId,
-                        collaboratorIds: ticket.collaboratorIds,
-                        teamMembers: widget.teamMembers,
-                      ),
-                    ),
-                  ),
-                  if (ticket.attachments.isNotEmpty) ...[
-                    Icon(
-                      Icons.attach_file_rounded,
-                      size: CoeloSpacing.space4,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    Text('${ticket.attachments.length}'),
-                  ],
-                  if (unreadCount > 0) ...[
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Icon(
-                      Icons.mark_chat_unread_outlined,
-                      size: CoeloSpacing.space4,
-                      color: colors.primary,
-                    ),
-                    Text('$unreadCount'),
-                  ],
-                ],
-              ),
-            ],
+    final focusNode = _focusNodeFor(ticket);
+    final indicators = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (ticket.attachments.isNotEmpty) ...[
+          const Icon(Icons.attach_file_rounded, size: CoeloSpacing.space4),
+          Text('${ticket.attachments.length}'),
+        ],
+        if (unreadCount > 0) ...[
+          const SizedBox(width: CoeloSpacing.space2),
+          Icon(
+            Icons.mark_chat_unread_outlined,
+            size: CoeloSpacing.space4,
+            color: Theme.of(context).colorScheme.primary,
           ),
-        ),
+          Text('$unreadCount'),
+        ],
+      ],
+    );
+
+    return CoeloAdminWorkItemCard<SupportTicket>(
+      key: Key('support-card-${ticket.id}'),
+      focusNode: focusNode,
+      eyebrow: '${ticket.id} · ${ticket.menu} > ${ticket.screen}',
+      title: ticket.subject,
+      summary: ticket.description,
+      metadata: [
+        ticket.requester,
+        if (breadcrumb.isNotEmpty) breadcrumb,
+        'Atualizado em ${_dateTime(ticket.updatedAt)}',
+      ],
+      assignees: SupportAssigneeView(
+        ownerId: ticket.ownerId,
+        collaboratorIds: ticket.collaboratorIds,
+        teamMembers: widget.teamMembers,
       ),
+      indicators: indicators,
+      trailingMenu: _CardMenu(ticket: ticket, widget: widget),
+      selected: widget.selectedTicketId == ticket.id,
+      dragData: ticket,
+      onTap: () => widget.onTicketPressed(ticket, () => _restoreCardFocus(ticket.id, focusNode)),
+      onDoubleTap: () =>
+          widget.onTicketDoublePressed(ticket, () => _restoreCardFocus(ticket.id, focusNode)),
     );
   }
 }
@@ -577,16 +352,6 @@ ButtonStyle _menuItemStyle(ColorScheme colors, {bool selected = false, bool chec
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
     ),
   );
-}
-
-(Color, Color) _statusColors(BuildContext context, SupportTicketStatus status) {
-  final colors = Theme.of(context).extension<CoeloStatusColors>()!;
-  return switch (status) {
-    SupportTicketStatus.newRequest => (colors.infoContainer, colors.onInfoContainer),
-    SupportTicketStatus.inProgress => (colors.warningContainer, colors.onWarningContainer),
-    SupportTicketStatus.waitingRequester => (colors.errorContainer, colors.onErrorContainer),
-    SupportTicketStatus.completed => (colors.successContainer, colors.onSuccessContainer),
-  };
 }
 
 String _statusLabel(SupportTicketStatus status) => switch (status) {

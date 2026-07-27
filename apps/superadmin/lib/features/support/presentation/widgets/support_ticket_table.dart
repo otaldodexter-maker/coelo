@@ -1,7 +1,5 @@
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
@@ -31,49 +29,11 @@ final class SupportTicketTable extends StatefulWidget {
 }
 
 final class _SupportTicketTableState extends State<SupportTicketTable> {
-  final _rowFocusNodes = <String, FocusNode>{};
-  String? _focusedTicketId;
-
-  @override
-  void didUpdateWidget(covariant SupportTicketTable oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final ticketIds = widget.tickets.map((ticket) => ticket.id).toSet();
-    for (final ticketId in _rowFocusNodes.keys.where((id) => !ticketIds.contains(id)).toList()) {
-      _rowFocusNodes.remove(ticketId)?.dispose();
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final focusNode in _rowFocusNodes.values) {
-      focusNode.dispose();
-    }
-    _rowFocusNodes.clear();
-    super.dispose();
-  }
-
-  FocusNode _focusNodeFor(SupportTicket ticket) {
-    return _rowFocusNodes.putIfAbsent(
-      ticket.id,
-      () => FocusNode(debugLabel: 'support-table-row-${ticket.id}'),
-    );
-  }
-
-  bool _restoreRowFocus(String ticketId, FocusNode focusNode) {
-    if (!mounted || !identical(_rowFocusNodes[ticketId], focusNode)) {
-      return false;
-    }
-    if (!focusNode.canRequestFocus) {
-      return false;
-    }
-    focusNode.requestFocus();
-    return true;
-  }
+  final _tableController = CoeloAdminTableController();
 
   void _openTicket(SupportTicket ticket) {
-    final focusNode = _focusNodeFor(ticket);
-    focusNode.requestFocus();
-    widget.onTicketPressed(ticket, () => _restoreRowFocus(ticket.id, focusNode));
+    _tableController.focusRow(ticket.id);
+    widget.onTicketPressed(ticket, () => _tableController.focusRow(ticket.id));
   }
 
   @override
@@ -156,6 +116,7 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
       rowHeight: 64,
       pinnedColumn: ticketColumn,
       columns: columns,
+      controller: _tableController,
       onRowPressed: _openTicket,
       isSelected: (ticket) => ticket.id == widget.selectedTicketId,
     );
@@ -178,52 +139,7 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
   }
 
   Widget _originCell(BuildContext context, SupportTicket ticket) {
-    final colors = Theme.of(context).colorScheme;
-    final focused = _focusedTicketId == ticket.id;
-    return FocusableActionDetector(
-      key: Key('support-table-row-restore-${ticket.id}'),
-      focusNode: _focusNodeFor(ticket),
-      shortcuts: const <ShortcutActivator, Intent>{
-        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-        SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-      },
-      actions: <Type, Action<Intent>>{
-        ActivateIntent: CallbackAction<ActivateIntent>(
-          onInvoke: (_) {
-            _openTicket(ticket);
-            return null;
-          },
-        ),
-      },
-      onShowFocusHighlight: (focused) {
-        setState(() => _focusedTicketId = focused ? ticket.id : null);
-      },
-      child: Semantics(
-        label: 'Abrir chamado ${ticket.id}',
-        button: true,
-        excludeSemantics: true,
-        onTap: () => _openTicket(ticket),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => _openTicket(ticket),
-          child: AnimatedContainer(
-            key: Key('support-table-row-focus-surface-${ticket.id}'),
-            duration: CoeloMotion.short,
-            curve: Curves.easeOut,
-            alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-              color: focused ? colors.primaryContainer : Colors.transparent,
-            ),
-            child: Text(
-              '${ticket.menu} > ${ticket.screen}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: focused ? colors.primary : colors.onSurface),
-            ),
-          ),
-        ),
-      ),
-    );
+    return Text('${ticket.menu} > ${ticket.screen}', maxLines: 1, overflow: TextOverflow.ellipsis);
   }
 
   Widget _requesterCell(BuildContext context, SupportTicket ticket) {
