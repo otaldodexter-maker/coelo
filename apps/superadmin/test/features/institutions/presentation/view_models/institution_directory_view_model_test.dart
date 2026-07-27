@@ -61,16 +61,35 @@ void main() {
     expect(repository.queries.last.page, 0);
   });
 
-  test('changes page size and restarts pagination', () async {
+  test('changes page size, preserves filters, and restarts pagination in one load', () async {
     final repository = _StubRepository();
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
     addTearDown(viewModel.dispose);
 
-    await viewModel.goToPage(1);
+    await viewModel.setStatuses({InstitutionStatus.active});
+    await viewModel.goToPage(3);
+    final requestsBeforePageSizeChange = repository.queries.length;
     await viewModel.setPageSize(50);
 
+    expect(viewModel.query.statuses, {InstitutionStatus.active});
+    expect(viewModel.query.page, 0);
+    expect(viewModel.query.pageSize, 50);
+    expect(repository.queries, hasLength(requestsBeforePageSizeChange + 1));
     expect(repository.queries.last.page, 0);
     expect(repository.queries.last.pageSize, 50);
+  });
+
+  test('ignores unsupported page sizes', () async {
+    final repository = _StubRepository();
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load();
+    final requestsBeforeChange = repository.queries.length;
+    await viewModel.setPageSize(25);
+
+    expect(viewModel.query.pageSize, InstitutionDirectoryQuery.defaultPageSize);
+    expect(repository.queries, hasLength(requestsBeforeChange));
   });
 
   test('cascades UF, municipality, and district filters', () async {

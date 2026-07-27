@@ -12,11 +12,11 @@ final class InstitutionDirectoryPagination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final page = viewModel.page;
-    final totalPages = (page.totalCount / page.pageSize).ceil();
+    final totalPages = (page.totalCount / viewModel.query.pageSize).ceil();
     return CoeloAdminPagination(
       currentPage: page.page + 1,
       totalPages: totalPages,
-      pageSize: page.pageSize,
+      pageSize: viewModel.query.pageSize,
       pageSizeOptions: InstitutionDirectoryQuery.allowedPageSizes,
       onPageSelected: (value) => viewModel.goToPage(value - 1),
       onPageSizeChanged: viewModel.setPageSize,

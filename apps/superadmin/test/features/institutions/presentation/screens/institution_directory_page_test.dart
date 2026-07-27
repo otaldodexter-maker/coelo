@@ -904,6 +904,136 @@ void main() {
     expect(find.text('Instituição 11'), findsOneWidget);
   });
 
+  testWidgets('uses the same paginated records in cards and table views', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _RecordingDirectoryRepository(
+      FakeInstitutionDirectoryRepository(
+        items: List.generate(
+          11,
+          (index) => InstitutionDirectoryItem(
+            id: 'institution-$index',
+            publicName: 'Institution ${(index + 1).toString().padLeft(2, '0')}',
+            tradeName: null,
+            legalName: null,
+            primaryDomain: null,
+            status: InstitutionStatus.active,
+            typeId: null,
+            typeName: null,
+            city: null,
+            state: null,
+            planId: null,
+            planName: null,
+            unitsCount: 0,
+            groupsCount: 0,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
+    for (var index = 0; index < 10; index += 1) {
+      expect(find.byKey(Key('institution-card-institution-$index')), findsOneWidget);
+    }
+    expect(find.byKey(const Key('institution-card-institution-10')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    for (var index = 0; index < 10; index += 1) {
+      expect(find.byKey(Key('institution-table-row-institution-$index')), findsOneWidget);
+    }
+    expect(find.byKey(const Key('institution-table-row-institution-10')), findsNothing);
+
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('coelo-pagination-page-2')),
+      600,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('institution-directory-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.ensureVisible(find.byKey(const Key('coelo-pagination-page-2')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('coelo-pagination-page-2')));
+    await tester.pumpAndSettle();
+
+    expect(repository.queries.last.page, 1);
+    expect(repository.queries.last.pageSize, 10);
+    expect(find.byKey(const Key('institution-table-row-institution-10')), findsOneWidget);
+
+    final requestsBeforeSwitch = repository.queries.length;
+    await tester.tap(find.byKey(const Key('institution-view-cards')));
+    await tester.pumpAndSettle();
+    expect(repository.queries, hasLength(requestsBeforeSwitch));
+    expect(find.byKey(const Key('institution-card-institution-10')), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('coelo-pagination-page-size')),
+      600,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('institution-directory-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.tap(find.byKey(const Key('coelo-pagination-page-size')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('50').last);
+    await tester.pumpAndSettle();
+
+    expect(repository.queries.last.page, 0);
+    expect(repository.queries.last.pageSize, 50);
+    expect(find.byKey(const Key('institution-card-institution-10')), findsOneWidget);
+  });
+
+  testWidgets('keeps the page-size selector for a non-empty single-page result', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      _app(
+        repository: FakeInstitutionDirectoryRepository(
+          items: demoInstitutionDirectoryItems.take(1).toList(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-pagination-page-size')), findsOneWidget);
+  });
+
+  testWidgets('hides the page-size selector for empty and no-results states', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app(repository: FakeInstitutionDirectoryRepository(items: [])));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('coelo-pagination-page-size')), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      _app(
+        repository: FakeInstitutionDirectoryRepository(
+          items: demoInstitutionDirectoryItems.take(1).toList(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('coelo-pagination-page-size')), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'no matches');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('coelo-pagination-page-size')), findsNothing);
+  });
+
   testWidgets('supports requested widths in light and dark themes without layout exceptions', (
     tester,
   ) async {
@@ -1120,5 +1250,26 @@ final class _PendingFilterOptionsRepository implements InstitutionDirectoryRepos
     if (!_options.isCompleted) {
       _options.complete(InstitutionDirectoryFilterOptions.empty);
     }
+  }
+}
+
+final class _RecordingDirectoryRepository implements InstitutionDirectoryRepository {
+  _RecordingDirectoryRepository(this._delegate);
+
+  final InstitutionDirectoryRepository _delegate;
+  final queries = <InstitutionDirectoryQuery>[];
+
+  @override
+  Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) {
+    queries.add(query);
+    return _delegate.fetchPage(query);
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) {
+    return _delegate.fetchFilterOptions(states: states, cities: cities);
   }
 }

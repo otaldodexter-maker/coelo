@@ -99,6 +99,9 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   }
 
   Future<void> setPageSize(int value) {
+    if (!InstitutionDirectoryQuery.allowedPageSizes.contains(value)) {
+      return Future<void>.value();
+    }
     return _replaceAndLoad(_queryWith(pageSize: value));
   }
 
