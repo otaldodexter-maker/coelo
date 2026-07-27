@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +34,7 @@ class _SupportPageState extends State<SupportPage> {
   SupportTicketStatus _compactStatus = SupportTicketStatus.newRequest;
   String? _highlightedTicketId;
   SupportDisplayMode _displayMode = SupportDisplayMode.kanban;
+  bool _table = false;
   @override
   void dispose() {
     _search.dispose();
