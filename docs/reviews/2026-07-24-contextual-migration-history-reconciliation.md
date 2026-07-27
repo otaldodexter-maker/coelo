@@ -1,14 +1,16 @@
 ---
 title: "Contextual Migration History Reconciliation"
-source: "Supabase project evvbomzejfijozbtgvpt; packages/coelo_database/migrations; Supabase CLI 2.109.1"
-status: "phase-2-no-go"
+source: "Supabase project evvbomzejfijozbtgvpt; packages/coelo_database/migrations; packages/coelo_database/tests; Supabase CLI 2.109.1"
+status: "phase-2-go"
 generated_at: "2026-07-27"
 ---
 
 # Escopo
 
-Reconciliar somente o ledger de migrations. Nenhuma estrutura ou dado de
-produto pode mudar.
+Reconciliar o ledger de migrations e validar o baseline contextual. A
+remediacao posterior ficou limitada ao catalogo interno
+`public.schema_columns`; nenhuma estrutura de produto ou dado operacional
+foi alterado.
 
 Este documento registra o estado remoto anterior a qualquer reparacao. A
 coleta foi somente leitura: listagem de projeto e migrations, consultas
@@ -418,6 +420,42 @@ npx.cmd supabase@2.109.1 db push --dry-run --linked --workdir packages/coelo_dat
 retornou `Remote database is up to date.` e declarou explicitamente
 `DRY RUN: migrations will not be pushed to the database.`.
 
+# Remediacao Do Catalogo De Colunas
+
+O teste
+`2026-06-23-schema-boundaries-catalog-validation.sql` foi tornado assertivo,
+mantendo as consultas diagnosticas deterministicas. Antes de existir SQL de
+migration, a execucao remota encerrou com `P0001` e confirmou:
+
+- zero tabelas ativas ausentes;
+- exatamente 26 colunas ativas ausentes;
+- as ausencias restritas a `activity_definitions`,
+  `activity_group_links`, `conversations`, `guardian_links`, `invitations` e
+  `messages`.
+
+A Supabase CLI `2.109.1` gerou oficialmente:
+
+```text
+20260727130433_remediate_schema_column_catalog_completeness.sql
+```
+
+A migration faz um unico UPSERT idempotente em
+`public.schema_columns`, limitado aos 26 pares verificados. O
+`schema_table_id` e derivado de `public.schema_tables` ativas; tipos,
+nulabilidade e posicao sao derivados do catalogo PostgreSQL, seguindo as
+mesmas convencoes da migration original de catalogo.
+
+Depois de sincronizar e verificar o mirror com 19 migrations, o projeto foi
+vinculado explicitamente a `evvbomzejfijozbtgvpt`. O dry-run listou somente
+a nova migration. O `db push` oficial aplicou essa unica migration. Um aviso
+posterior informou que o cache local opcional do `pg-delta` nao foi exportado
+porque Docker Desktop nao estava disponivel; a aplicacao remota e o registro
+no ledger ja haviam concluido e foram confirmados independentemente.
+
+Ao final, `migration list --linked` retornou 19 linhas com `LOCAL` e `REMOTE`
+iguais, e um novo `db push --dry-run` retornou
+`Remote database is up to date.`.
+
 # Testes E Advisors Depois
 
 Em `2026-07-27`, os 11 scripts existentes foram lidos integralmente e
@@ -429,7 +467,7 @@ usuarios de autenticacao e zero instituicoes correspondentes as fixtures.
 | Ordem | Validacao | Resultado |
 | ---: | --- | --- |
 | 1 | `2026-06-23-superadmin-foundation-validation.sql` | PASS |
-| 2 | `2026-06-23-schema-boundaries-catalog-validation.sql` | FAIL; 26 colunas ausentes do catalogo |
+| 2 | `2026-06-23-schema-boundaries-catalog-validation.sql` | PASS; zero tabelas e colunas ausentes |
 | 3 | `2026-07-17-institution-directory-validation.sql` | PASS; rollback confirmado |
 | 4 | `2026-07-20-institution-contact-directory-validation.sql` | PASS; rollback confirmado |
 | 5 | `2026-07-20-people-context-foundation-validation.sql` | PASS; rollback confirmado |
@@ -440,15 +478,13 @@ usuarios de autenticacao e zero instituicoes correspondentes as fixtures.
 | 10 | `2026-07-24-contextual-chat-validation.sql` | PASS; rollback confirmado |
 | 11 | `2026-07-24-attendance-assiduity-validation.sql` | PASS; rollback confirmado |
 
-O segundo script e somente leitura e concluiu sem erro de transporte, mas sua
-consulta de delta retornou 26 colunas presentes no schema e ainda ausentes de
-`public.schema_columns`. Um resultado nao vazio nessa consulta e falha
-logica, portanto o resultado correto e 10/11, nao 11/11.
+O resultado correto e 11/11. A verificacao independente retornou zero deltas
+de tabelas e colunas ativas e confirmou as 26 entradas remediadas.
 
 O fingerprint estrutural permaneceu igual porque cobre definicoes de
 columns, constraints, policies e functions. Ele nao cobre o conteudo das
 tabelas de catalogo `public.schema_tables` e `public.schema_columns`; por isso,
-o valor inalterado nao contradiz nem elimina as 26 ausencias encontradas.
+o DML de catalogo nao altera o valor esperado.
 
 ## Contagens Estruturais
 
@@ -476,39 +512,30 @@ Nenhum advisor foi corrigido nesta tarefa.
 
 - projeto `coelo`, ref `evvbomzejfijozbtgvpt`, permaneceu
   `ACTIVE_HEALTHY`;
-- o ledger permaneceu com as mesmas 18 versions e nomes canonicos;
+- o ledger passou a 19 versions e nomes canonicos, todos alinhados entre
+  `LOCAL` e `REMOTE`;
 - o fingerprint permaneceu em 1840 itens e
   `15dbd25272e225eafb2b9fd84507043a`;
-- 10 dos 11 scripts passaram;
-- `2026-06-23-schema-boundaries-catalog-validation.sql` falhou logicamente
-  ao retornar 26 colunas nao catalogadas;
+- os 11 scripts passaram;
+- o teste assertivo retornou zero tabelas e colunas ativas ausentes;
+- as 26 entradas-alvo estao ativas em `public.schema_columns`;
 - as fixtures dos seis scripts que inserem dados nao permaneceram no banco;
 - os totais e codigos dos advisors permaneceram inalterados;
-- nenhum DDL de produto, DML persistente, migration, migration repair,
-  `apply_migration`, `db reset` ou `db push` real foi executado.
+- nenhum DDL de produto ou DML operacional foi executado;
+- o unico DML persistente foi o UPSERT de catalogo da migration
+  `20260727130433`;
+- nenhum `migration repair`, `apply_migration` ou `db reset` foi executado.
 
-## Bloqueador E Remediacao
+## Bloqueador Removido
 
-A Fase 2 permanece bloqueada pela divergencia entre as colunas fisicas e
-`public.schema_columns`. A remediacao deve:
-
-1. tornar a validacao de schema boundaries assertiva, para que qualquer linha
-   ausente encerre o script com erro;
-2. criar uma nova migration canonica que adicione ao catalogo as 26 entradas
-   ausentes, sem reescrever migrations ja aplicadas;
-3. aplicar essa migration pelo fluxo aprovado;
-4. reexecutar os 11 testes, os advisors, as contagens estruturais, o ledger, o
-   status do projeto e o fingerprint;
-5. liberar a Fase 2 somente quando os 11 testes passarem logicamente e todos
-   os demais gates permanecerem validos.
-
-Nenhuma dessas correcoes foi executada nesta tarefa documental.
+A divergencia entre as colunas fisicas e `public.schema_columns` foi removida
+sem reescrever migrations existentes. Todos os gates exigidos para liberar a
+Fase 2 foram reexecutados e aprovados.
 
 # Resultado
 
-**NO-GO para iniciar a Fase 2.**
+**GO para iniciar a Fase 2.**
 
-O historico remoto continua reconciliado com as 18 versions e nomes canonicos
-locais e o fingerprint estrutural permanece identico, mas apenas 10 dos 11
-testes passaram. As 26 colunas ausentes de `schema_columns` sao um bloqueador
-explicito ate a remediacao e a revalidacao completa.
+O historico remoto esta alinhado com as 19 versions e nomes canonicos locais,
+o fingerprint estrutural permanece identico, os advisors nao apresentaram
+delta, as fixtures nao persistiram e os 11 testes passaram.
