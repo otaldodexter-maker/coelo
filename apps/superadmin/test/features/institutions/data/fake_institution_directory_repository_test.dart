@@ -101,20 +101,44 @@ void main() {
     expect(cityOptions.districts.map((option) => option.label), [_items.first.district, 'Centro']);
   });
 
-  test('paginates twenty institutions and reports the server total', () async {
+  test('paginates every supported page size and reports the server total', () async {
     final items = List.generate(
-      25,
-      (index) => _item(id: 'institution-$index', publicName: 'Instituição $index'),
+      120,
+      (index) => _item(
+        id: 'institution-${index.toString().padLeft(3, '0')}',
+        publicName: 'Instituição ${index.toString().padLeft(3, '0')}',
+      ),
     );
     final repository = FakeInstitutionDirectoryRepository(items: items);
 
-    final result = await repository.fetchPage(InstitutionDirectoryQuery(page: 1));
+    final pageOfTen = await repository.fetchPage(InstitutionDirectoryQuery(page: 11, pageSize: 10));
+    final pageOfFifty = await repository.fetchPage(
+      InstitutionDirectoryQuery(page: 1, pageSize: 50),
+    );
+    final pageOfOneHundred = await repository.fetchPage(
+      InstitutionDirectoryQuery(page: 1, pageSize: 100),
+    );
+    final pageOfFiveHundred = await repository.fetchPage(InstitutionDirectoryQuery(pageSize: 500));
 
-    expect(result.items, hasLength(5));
-    expect(result.totalCount, 25);
-    expect(result.page, 1);
-    expect(result.hasPrevious, isTrue);
-    expect(result.hasNext, isFalse);
+    expect(pageOfTen.items.map((item) => item.id), [
+      for (var index = 110; index < 120; index++) 'institution-${index.toString().padLeft(3, '0')}',
+    ]);
+    expect(pageOfTen.totalCount, 120);
+    expect(pageOfTen.hasPrevious, isTrue);
+    expect(pageOfTen.hasNext, isFalse);
+
+    expect(pageOfFifty.items.map((item) => item.id).first, 'institution-050');
+    expect(pageOfFifty.items.map((item) => item.id).last, 'institution-099');
+    expect(pageOfFifty.items, hasLength(50));
+    expect(pageOfFifty.hasNext, isTrue);
+
+    expect(pageOfOneHundred.items.map((item) => item.id).first, 'institution-100');
+    expect(pageOfOneHundred.items.map((item) => item.id).last, 'institution-119');
+    expect(pageOfOneHundred.items, hasLength(20));
+    expect(pageOfOneHundred.hasNext, isFalse);
+
+    expect(pageOfFiveHundred.items, hasLength(120));
+    expect(pageOfFiveHundred.hasNext, isFalse);
   });
 }
 

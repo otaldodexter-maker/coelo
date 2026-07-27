@@ -70,11 +70,12 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
     }).toList()..sort((first, second) => first.publicName.compareTo(second.publicName));
 
     final start = query.offset.clamp(0, filtered.length);
-    final end = (start + InstitutionDirectoryQuery.pageSize).clamp(start, filtered.length);
+    final end = (start + query.pageSize).clamp(start, filtered.length);
     return InstitutionDirectoryPage(
       items: List.unmodifiable(filtered.sublist(start, end)),
       totalCount: filtered.length,
       page: query.page,
+      pageSize: query.pageSize,
     );
   }
 

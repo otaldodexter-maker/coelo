@@ -10,14 +10,17 @@ final class InstitutionDirectoryQuery {
     Set<String> districts = const {},
     Set<String> typeIds = const {},
     this.page = 0,
+    this.pageSize = defaultPageSize,
   }) : assert(page >= 0),
+       assert(allowedPageSizes.contains(pageSize)),
        statuses = Set.unmodifiable(statuses),
        states = Set.unmodifiable(states),
        cities = Set.unmodifiable(cities),
        districts = Set.unmodifiable(districts),
        typeIds = Set.unmodifiable(typeIds);
 
-  static const pageSize = 20;
+  static const defaultPageSize = 10;
+  static const allowedPageSizes = <int>[10, 50, 100, 500];
 
   final String search;
   final Set<InstitutionStatus> statuses;
@@ -27,6 +30,7 @@ final class InstitutionDirectoryQuery {
   final Set<String> districts;
   final Set<String> typeIds;
   final int page;
+  final int pageSize;
 
   int get offset => page * pageSize;
 
@@ -49,7 +53,8 @@ final class InstitutionDirectoryQuery {
         _setsEqual(other.cities, cities) &&
         _setsEqual(other.districts, districts) &&
         _setsEqual(other.typeIds, typeIds) &&
-        other.page == page;
+        other.page == page &&
+        other.pageSize == pageSize;
   }
 
   @override
@@ -62,6 +67,7 @@ final class InstitutionDirectoryQuery {
     Object.hashAllUnordered(districts),
     Object.hashAllUnordered(typeIds),
     page,
+    pageSize,
   );
 }
 
