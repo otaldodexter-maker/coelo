@@ -92,6 +92,20 @@ contorno mais forte na pagina selecionada.
 ## Commit
 
 - `fc85bdd` - `fix(ui): harden numbered pagination`
+- `8a46f4c` - `fix(superadmin): remove stale institution import`
+
+## Follow-up da verificacao raiz
+
+A verificacao raiz encontrou um unico warning em arquivo afetado:
+`institution_directory_page.dart` ainda importava
+`institution_directory_query.dart` sem uso. O import foi removido sem mudanca
+de comportamento.
+
+- `dart format lib/features/institutions/presentation/screens/institution_directory_page.dart`:
+  arquivo formatado.
+- `dart analyze lib/features/institutions test/features/institutions`: nenhum
+  problema.
+- `flutter test test/features/institutions`: 100/100 testes aprovados.
 
 ## Gate de memoria
 
