@@ -5,108 +5,238 @@ final class CoeloAdminPagination extends StatelessWidget {
   const CoeloAdminPagination({
     required this.currentPage,
     required this.totalPages,
-    required this.onPrevious,
-    required this.onNext,
+    required this.pageSize,
+    required this.pageSizeOptions,
+    required this.onPageSelected,
+    required this.onPageSizeChanged,
+    this.onPrevious,
+    this.onNext,
     super.key,
   }) : assert(currentPage > 0),
        assert(totalPages > 0),
-       assert(currentPage <= totalPages);
+       assert(currentPage <= totalPages),
+       assert(pageSize > 0);
 
   final int currentPage;
   final int totalPages;
+  final int pageSize;
+  final List<int> pageSizeOptions;
+  final ValueChanged<int> onPageSelected;
+  final ValueChanged<int> onPageSizeChanged;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
 
   @override
   Widget build(BuildContext context) {
-    return _CoeloAdminPaginationContent(
-      currentPage: currentPage,
-      totalPages: totalPages,
-      onPrevious: onPrevious,
-      onNext: onNext,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final entries = _paginationEntries(
+          currentPage: currentPage,
+          totalPages: totalPages,
+          compact: constraints.maxWidth < 600,
+        );
+        final previousAction = currentPage > 1 ? onPrevious : null;
+        final nextAction = currentPage < totalPages ? onNext : null;
+
+        return Wrap(
+          alignment: WrapAlignment.end,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            _PageSizeDropdown(
+              pageSize: pageSize,
+              pageSizeOptions: pageSizeOptions,
+              onChanged: onPageSizeChanged,
+            ),
+            _NavigationButton(
+              label: 'Anterior',
+              semanticLabel: 'Página anterior',
+              icon: Icons.chevron_left,
+              onPressed: previousAction,
+            ),
+            ...entries.map(
+              (entry) => switch (entry) {
+                _PageEntry(:final page) => _PageButton(
+                  page: page,
+                  isCurrent: page == currentPage,
+                  onPressed: page == currentPage ? null : () => onPageSelected(page),
+                ),
+                _EllipsisEntry() => const _PaginationEllipsis(),
+              },
+            ),
+            _NavigationButton(
+              label: 'Próxima',
+              semanticLabel: 'Próxima página',
+              icon: Icons.chevron_right,
+              onPressed: nextAction,
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
-class _CoeloAdminPaginationContent extends StatefulWidget {
-  const _CoeloAdminPaginationContent({
-    required this.currentPage,
-    required this.totalPages,
-    required this.onPrevious,
-    required this.onNext,
+class _PageSizeDropdown extends StatelessWidget {
+  const _PageSizeDropdown({
+    required this.pageSize,
+    required this.pageSizeOptions,
+    required this.onChanged,
   });
 
-  final int currentPage;
-  final int totalPages;
-  final VoidCallback? onPrevious;
-  final VoidCallback? onNext;
+  final int pageSize;
+  final List<int> pageSizeOptions;
+  final ValueChanged<int> onChanged;
 
   @override
-  State<_CoeloAdminPaginationContent> createState() => _CoeloAdminPaginationContentState();
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 180,
+      child: DropdownButtonFormField<int>(
+        key: const Key('coelo-pagination-page-size'),
+        initialValue: pageSize,
+        decoration: const InputDecoration(labelText: 'Itens por página'),
+        items: pageSizeOptions
+            .map((size) => DropdownMenuItem<int>(value: size, child: Text('$size')))
+            .toList(),
+        onChanged: (size) {
+          if (size != null) {
+            onChanged(size);
+          }
+        },
+      ),
+    );
+  }
 }
 
-class _CoeloAdminPaginationContentState extends State<_CoeloAdminPaginationContent> {
-  final FocusNode _previousFocusNode = FocusNode();
-  final FocusNode _nextFocusNode = FocusNode();
+class _NavigationButton extends StatefulWidget {
+  const _NavigationButton({
+    required this.label,
+    required this.semanticLabel,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String label;
+  final String semanticLabel;
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  @override
+  State<_NavigationButton> createState() => _NavigationButtonState();
+}
+
+class _NavigationButtonState extends State<_NavigationButton> {
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
-    _previousFocusNode.dispose();
-    _nextFocusNode.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final previousCallback = widget.currentPage > 1 ? widget.onPrevious : null;
-    final nextCallback = widget.currentPage < widget.totalPages ? widget.onNext : null;
-    final previousAction = previousCallback == null
+    final action = widget.onPressed == null
         ? null
         : () {
-            _previousFocusNode.requestFocus();
-            previousCallback();
-          };
-    final nextAction = nextCallback == null
-        ? null
-        : () {
-            _nextFocusNode.requestFocus();
-            nextCallback();
+            _focusNode.requestFocus();
+            widget.onPressed!();
           };
 
-    return Wrap(
-      alignment: WrapAlignment.end,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: CoeloSpacing.space2,
-      runSpacing: CoeloSpacing.space2,
-      children: [
-        Semantics(
-          label: 'Página anterior',
-          button: true,
-          enabled: previousCallback != null,
-          onTap: previousAction,
-          excludeSemantics: true,
-          child: OutlinedButton.icon(
-            focusNode: _previousFocusNode,
-            onPressed: previousAction,
-            icon: const Icon(Icons.chevron_left),
-            label: const Text('Anterior'),
-          ),
-        ),
-        Text('Página ${widget.currentPage} de ${widget.totalPages}'),
-        Semantics(
-          label: 'Próxima página',
-          button: true,
-          enabled: nextCallback != null,
-          onTap: nextAction,
-          excludeSemantics: true,
-          child: OutlinedButton.icon(
-            focusNode: _nextFocusNode,
-            onPressed: nextAction,
-            icon: const Icon(Icons.chevron_right),
-            label: const Text('Próxima'),
-          ),
-        ),
-      ],
+    return Semantics(
+      label: widget.semanticLabel,
+      button: true,
+      enabled: action != null,
+      excludeSemantics: true,
+      child: OutlinedButton.icon(
+        focusNode: _focusNode,
+        onPressed: action,
+        icon: Icon(widget.icon),
+        label: Text(widget.label),
+        style: _paginationButtonStyle,
+      ),
     );
   }
+}
+
+class _PageButton extends StatelessWidget {
+  const _PageButton({required this.page, required this.isCurrent, required this.onPressed});
+
+  final int page;
+  final bool isCurrent;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: isCurrent ? 'Página $page, atual' : 'Página $page',
+      button: true,
+      enabled: !isCurrent,
+      selected: isCurrent,
+      excludeSemantics: true,
+      child: OutlinedButton(
+        key: Key('coelo-pagination-page-$page'),
+        onPressed: onPressed,
+        style: _paginationButtonStyle,
+        child: Text('$page'),
+      ),
+    );
+  }
+}
+
+class _PaginationEllipsis extends StatelessWidget {
+  const _PaginationEllipsis();
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Páginas omitidas',
+      child: const ExcludeSemantics(child: Text('…')),
+    );
+  }
+}
+
+final _paginationButtonStyle = OutlinedButton.styleFrom(
+  minimumSize: const Size(48, 48),
+  padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+);
+
+sealed class _PaginationEntry {
+  const _PaginationEntry();
+}
+
+final class _PageEntry extends _PaginationEntry {
+  const _PageEntry(this.page);
+
+  final int page;
+}
+
+final class _EllipsisEntry extends _PaginationEntry {
+  const _EllipsisEntry();
+}
+
+List<_PaginationEntry> _paginationEntries({
+  required int currentPage,
+  required int totalPages,
+  required bool compact,
+}) {
+  final nearbyPageCount = compact ? 1 : 2;
+  final pages = <int>{
+    1,
+    totalPages,
+    for (var page = currentPage - nearbyPageCount; page <= currentPage + nearbyPageCount; page += 1)
+      if (page > 0 && page <= totalPages) page,
+  }.toList()..sort();
+
+  final entries = <_PaginationEntry>[];
+  for (var index = 0; index < pages.length; index += 1) {
+    final page = pages[index];
+    if (index > 0 && page - pages[index - 1] > 1) {
+      entries.add(const _EllipsisEntry());
+    }
+    entries.add(_PageEntry(page));
+  }
+  return entries;
 }
