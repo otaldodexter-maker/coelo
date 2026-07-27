@@ -524,7 +524,9 @@ Nenhum advisor foi corrigido nesta tarefa.
 - nenhum DDL de produto ou DML operacional foi executado;
 - o unico DML persistente foi o UPSERT de catalogo da migration
   `20260727130433`;
-- nenhum `migration repair`, `apply_migration` ou `db reset` foi executado.
+- durante a remediacao da Task 6, nenhum novo `migration repair`,
+  `apply_migration` ou `db reset` foi executado; os repairs da Task 4 permanecem
+  documentados acima.
 
 ## Bloqueador Removido
 

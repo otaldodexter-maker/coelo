@@ -46,11 +46,12 @@ foram geradas pelo Supabase CLI e cobrem:
 - avisos familiares, presenca oficial, revisoes e agregados de assiduidade;
 - compatibilidade, indices de FKs e endurecimento de policies/triggers.
 
-O historico remoto usa o timestamp efetivo de cada chamada MCP. Por isso, os
-prefixos remotos das migrations novas diferem dos nomes locais gerados antes
-da aplicacao; o nome semantico e a ordem sao equivalentes. Migrations antigas
-tambem possuem drift historico de prefixo e nao foram renomeadas ou reparadas
-destrutivamente.
+O historico remoto foi reconciliado em 2026-07-27 pelo fluxo oficial de
+`supabase migration repair`. As 19 versoes e nomes remotos agora coincidem com
+as migrations canonicas locais, e `supabase db push --dry-run` informa que o
+banco remoto esta atualizado. O repair alterou somente o ledger interno de
+migrations; detalhes e fingerprints antes/depois estao em
+`docs/reviews/2026-07-24-contextual-migration-history-reconciliation.md`.
 
 ## Fluxo Oficial Do Supabase CLI
 

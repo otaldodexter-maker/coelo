@@ -134,7 +134,10 @@ O Coelo deve ser tratado internamente como produto de risco moderado-alto/elevad
 
 - Nenhuma funcionalidade deve depender de perfil público infantil.
 
-- @username infantil é global por decisão do produto, mas a pesquisa é restrita a instituições autorizadas.
+- `@username` infantil não é necessário no MVP. Um eventual identificador e
+  login infantil pertencem a uma especificação futura e nunca criam perfil
+  público, busca aberta ou autorização por si próprios. Esta regra foi alinhada
+  em 2026-07-24 com a ADR 0015, a spec 015 e o PRD de Auth.
 
 - A autorização institucional para pesquisa/vínculo deve ser definida e testada antes do piloto.
 
