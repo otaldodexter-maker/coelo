@@ -30,6 +30,7 @@ final class SuperadminChatPage extends StatefulWidget {
 final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   var _selectedIndex = 0;
   var _mobileThreadOpen = false;
+  var _inboxCollapsed = false;
   final _scopeSelections = <SuperadminChatScopeKind, String>{};
 
   SuperadminChatConversation get _selected => superadminChatConversations[_selectedIndex];
@@ -109,17 +110,29 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
                 return Row(
                   children: [
-                    SizedBox(
-                      width: 336,
-                      child: _ConversationInbox(
-                        key: const Key('superadmin-chat-inbox'),
+                    if (_inboxCollapsed)
+                      _ConversationRail(
+                        key: const Key('superadmin-chat-inbox-rail'),
                         conversations: _filteredConversations,
                         selectedIndex: _selectedIndex,
                         onSelected: (index) => _selectConversation(index, mobile: false),
                         onNewConversation: _openNewConversation,
                         onBack: widget.onBack,
+                        onExpand: () => setState(() => _inboxCollapsed = false),
+                      )
+                    else
+                      SizedBox(
+                        width: 336,
+                        child: _ConversationInbox(
+                          key: const Key('superadmin-chat-inbox'),
+                          conversations: _filteredConversations,
+                          selectedIndex: _selectedIndex,
+                          onSelected: (index) => _selectConversation(index, mobile: false),
+                          onNewConversation: _openNewConversation,
+                          onBack: widget.onBack,
+                          onCollapse: () => setState(() => _inboxCollapsed = true),
+                        ),
                       ),
-                    ),
                     const VerticalDivider(width: 1),
                     Expanded(
                       child: _ChatThread(
@@ -303,6 +316,7 @@ final class _ConversationInbox extends StatefulWidget {
     required this.onSelected,
     required this.onNewConversation,
     this.onBack,
+    this.onCollapse,
     super.key,
   });
 
@@ -311,6 +325,7 @@ final class _ConversationInbox extends StatefulWidget {
   final ValueChanged<int> onSelected;
   final VoidCallback onNewConversation;
   final VoidCallback? onBack;
+  final VoidCallback? onCollapse;
 
   @override
   State<_ConversationInbox> createState() => _ConversationInboxState();
@@ -346,6 +361,14 @@ final class _ConversationInboxState extends State<_ConversationInbox> {
                 onPressed: widget.onNewConversation,
                 icon: const Icon(Icons.edit_outlined),
               ),
+              if (widget.onCollapse != null) ...[
+                const SizedBox(width: CoeloSpacing.space1),
+                IconButton(
+                  tooltip: 'Recolher conversas',
+                  onPressed: widget.onCollapse,
+                  icon: const Icon(Icons.chevron_left),
+                ),
+              ],
             ],
           ),
         ),
@@ -356,32 +379,35 @@ final class _ConversationInboxState extends State<_ConversationInbox> {
                   message: 'Ajuste os filtros para ver outros vínculos autorizados.',
                   icon: Icons.filter_alt_off_outlined,
                 )
-              : ListView.builder(
+              : ListView(
                   padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-                  itemCount: _visibleConversations.length,
-                  itemBuilder: (context, index) {
-                    final conversation = _visibleConversations[index];
-                    final sourceIndex = superadminChatConversations.indexOf(conversation);
-                    return CoeloConversationTile(
-                      key: Key('superadmin-chat-conversation-${conversation.id}'),
-                      avatar: CoeloChatAvatar(
-                        label: conversation.title,
-                        initials: conversation.initials,
-                        nowState: conversation.nowState,
-                        presence: conversation.presence,
-                      ),
-                      title: conversation.title,
-                      preview: conversation.preview,
-                      timestamp: conversation.timestamp,
-                      unreadCount: conversation.unreadCount,
-                      selected: sourceIndex == widget.selectedIndex,
-                      onPressed: () => widget.onSelected(sourceIndex),
-                    );
-                  },
+                  children: [
+                    _ConversationInboxSection(
+                      title: 'Grupos',
+                      conversations: _visibleConversations
+                          .where(
+                            (conversation) =>
+                                conversation.targetKind == CoeloAdminContextKind.group,
+                          )
+                          .toList(growable: false),
+                      selectedIndex: widget.selectedIndex,
+                      onSelected: widget.onSelected,
+                    ),
+                    _ConversationInboxSection(
+                      title: 'Pessoas',
+                      conversations: _visibleConversations
+                          .where(
+                            (conversation) =>
+                                conversation.targetKind != CoeloAdminContextKind.group,
+                          )
+                          .toList(growable: false),
+                      selectedIndex: widget.selectedIndex,
+                      onSelected: widget.onSelected,
+                    ),
+                  ],
                 ),
         ),
         if (widget.onBack != null) ...[
-          const Divider(height: 1),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -413,6 +439,51 @@ final class _ConversationInboxState extends State<_ConversationInbox> {
   }
 }
 
+final class _ConversationInboxSection extends StatelessWidget {
+  const _ConversationInboxSection({
+    required this.title,
+    required this.conversations,
+    required this.selectedIndex,
+    required this.onSelected,
+  });
+
+  final String title;
+  final List<SuperadminChatConversation> conversations;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: ExpansionTile(
+        key: PageStorageKey(title),
+        initiallyExpanded: true,
+        maintainState: true,
+        title: Text(title),
+        children: [
+          for (final conversation in conversations)
+            CoeloConversationTile(
+              key: Key('superadmin-chat-conversation-${conversation.id}'),
+              avatar: CoeloChatAvatar(
+                label: conversation.title,
+                initials: conversation.initials,
+                nowState: conversation.nowState,
+                presence: conversation.presence,
+              ),
+              title: conversation.title,
+              preview: conversation.preview,
+              timestamp: conversation.timestamp,
+              unreadCount: conversation.unreadCount,
+              selected: superadminChatConversations.indexOf(conversation) == selectedIndex,
+              onPressed: () => onSelected(superadminChatConversations.indexOf(conversation)),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 final class _ConversationRail extends StatelessWidget {
   const _ConversationRail({
     required this.conversations,
@@ -420,6 +491,7 @@ final class _ConversationRail extends StatelessWidget {
     required this.onSelected,
     required this.onNewConversation,
     this.onBack,
+    this.onExpand,
     super.key,
   });
 
@@ -428,6 +500,7 @@ final class _ConversationRail extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final VoidCallback onNewConversation;
   final VoidCallback? onBack;
+  final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context) {
@@ -435,8 +508,17 @@ final class _ConversationRail extends StatelessWidget {
       width: 80,
       child: Column(
         children: [
+          if (onExpand != null)
+            Padding(
+              padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+              child: IconButton(
+                tooltip: 'Expandir conversas',
+                onPressed: onExpand,
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+            padding: EdgeInsets.only(top: onExpand == null ? CoeloSpacing.space2 : 0),
             child: IconButton(
               tooltip: 'Nova conversa',
               onPressed: onNewConversation,

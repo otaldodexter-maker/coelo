@@ -216,6 +216,22 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('keeps the chat launcher when full-page navigation is unavailable', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp(showChatLauncher: true));
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    await tester.tap(find.text('Mensagens'));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full)).onPressed,
+      isNull,
+    );
+  });
+
   testWidgets('starts Home with Structure collapsed and opens the active section contextually', (
     tester,
   ) async {
@@ -1520,6 +1536,7 @@ Widget _shellApp({
   TextScaler textScaler = TextScaler.noScaling,
   String currentDestination = 'institutions',
   ValueChanged<String>? onDestinationSelected,
+  bool showChatLauncher = false,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -1536,6 +1553,7 @@ Widget _shellApp({
           onBugReportSubmitted: onBugReportSubmitted,
           currentDestination: currentDestination,
           onDestinationSelected: onDestinationSelected,
+          showChatLauncher: showChatLauncher,
           child: const SizedBox.expand(),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,7 @@ enum _LauncherView { inbox, thread }
 final class SuperadminChatLauncher extends StatefulWidget {
   const SuperadminChatLauncher({required this.onExpand, super.key});
 
-  final VoidCallback onExpand;
+  final VoidCallback? onExpand;
 
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
@@ -135,6 +136,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
 
   Widget _buildInbox(BuildContext context) {
     return Column(
+      key: const Key('superadmin-chat-launcher-inbox'),
       children: [
         _LauncherHeader(title: 'Conversas', onExpand: widget.onExpand, onClose: _close),
         const Divider(height: 1),
@@ -172,33 +174,41 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
                   message: 'Ajuste a busca ou os filtros contextuais.',
                   icon: Icons.filter_alt_off_outlined,
                 )
-              : ListView.builder(
+              : ListView(
                   padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-                  itemCount: _visibleConversations.length,
-                  itemBuilder: (context, index) {
-                    final conversation = _visibleConversations[index];
-                    return CoeloConversationTile(
-                      avatar: CoeloChatAvatar(
-                        label: conversation.title,
-                        initials: conversation.initials,
-                        size: CoeloSize.avatarMd,
-                        nowState: conversation.nowState,
-                        presence: conversation.presence,
-                      ),
-                      title: conversation.title,
-                      preview: conversation.preview,
-                      timestamp: conversation.timestamp,
-                      unreadCount: conversation.unreadCount,
-                      onPressed: () => setState(() {
-                        _selectedIndex = superadminChatConversations.indexOf(conversation);
-                        _view = _LauncherView.thread;
-                      }),
-                    );
-                  },
+                  children: [
+                    _LauncherConversationSection(
+                      title: 'Grupos',
+                      conversations: _visibleConversations
+                          .where(
+                            (conversation) =>
+                                conversation.targetKind == CoeloAdminContextKind.group,
+                          )
+                          .toList(growable: false),
+                      onSelected: _openConversation,
+                    ),
+                    _LauncherConversationSection(
+                      title: 'Pessoas',
+                      conversations: _visibleConversations
+                          .where(
+                            (conversation) =>
+                                conversation.targetKind != CoeloAdminContextKind.group,
+                          )
+                          .toList(growable: false),
+                      onSelected: _openConversation,
+                    ),
+                  ],
                 ),
         ),
       ],
     );
+  }
+
+  void _openConversation(SuperadminChatConversation conversation) {
+    setState(() {
+      _selectedIndex = superadminChatConversations.indexOf(conversation);
+      _view = _LauncherView.thread;
+    });
   }
 
   Widget _buildThread(BuildContext context) {
@@ -226,6 +236,48 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   }
 }
 
+final class _LauncherConversationSection extends StatelessWidget {
+  const _LauncherConversationSection({
+    required this.title,
+    required this.conversations,
+    required this.onSelected,
+  });
+
+  final String title;
+  final List<SuperadminChatConversation> conversations;
+  final ValueChanged<SuperadminChatConversation> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: ExpansionTile(
+        key: PageStorageKey(title),
+        initiallyExpanded: true,
+        maintainState: true,
+        title: Text(title),
+        children: [
+          for (final conversation in conversations)
+            CoeloConversationTile(
+              avatar: CoeloChatAvatar(
+                label: conversation.title,
+                initials: conversation.initials,
+                size: CoeloSize.avatarMd,
+                nowState: conversation.nowState,
+                presence: conversation.presence,
+              ),
+              title: conversation.title,
+              preview: conversation.preview,
+              timestamp: conversation.timestamp,
+              unreadCount: conversation.unreadCount,
+              onPressed: () => onSelected(conversation),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 final class _CollapsedLauncher extends StatelessWidget {
   const _CollapsedLauncher({
     required this.focusNode,
@@ -242,15 +294,16 @@ final class _CollapsedLauncher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final foreground = highlighted ? colors.onPrimary : colors.onSurface;
     return Semantics(
       label: 'Mensagens, 3 não lidas',
       button: true,
       child: Container(
         key: const Key('superadmin-chat-launcher-surface'),
         decoration: BoxDecoration(
-          color: highlighted ? colors.primaryContainer : colors.surface,
+          color: highlighted ? colors.primary : colors.surface,
           borderRadius: BorderRadius.circular(CoeloRadius.full),
-          border: Border.all(color: colors.outlineVariant),
+          border: Border.all(color: highlighted ? colors.onPrimary : colors.outlineVariant),
           boxShadow: [
             BoxShadow(
               color: colors.shadow.withValues(alpha: 0.14),
@@ -259,38 +312,56 @@ final class _CollapsedLauncher extends StatelessWidget {
             ),
           ],
         ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(CoeloRadius.full),
-          child: InkWell(
-            focusNode: focusNode,
-            onFocusChange: onHighlightChanged,
-            onHover: onHighlightChanged,
-            onTap: onPressed,
-            borderRadius: BorderRadius.circular(CoeloRadius.full),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CoeloSpacing.space3,
-                  vertical: CoeloSpacing.space1,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Badge(label: Text('3'), child: Icon(Icons.send_outlined)),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    const Text('Mensagens'),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    const _LauncherAvatarStack(),
-                    const SizedBox(width: CoeloSpacing.space1),
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: colors.surfaceContainerHighest,
-                      foregroundColor: colors.onSurfaceVariant,
-                      child: const Icon(Icons.more_horiz, size: CoeloSize.iconSm),
+        child: IconTheme(
+          data: IconThemeData(color: foreground),
+          child: DefaultTextStyle.merge(
+            style: TextStyle(color: foreground),
+            child: BadgeTheme(
+              data: BadgeThemeData(
+                backgroundColor: highlighted ? Colors.transparent : colors.primary,
+                textColor: colors.onPrimary,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(CoeloRadius.full),
+                child: InkWell(
+                  focusNode: focusNode,
+                  onFocusChange: onHighlightChanged,
+                  onHover: onHighlightChanged,
+                  onTap: onPressed,
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  borderRadius: BorderRadius.circular(CoeloRadius.full),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CoeloSpacing.space3,
+                        vertical: CoeloSpacing.space1,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Badge(
+                            label: Text('3', style: TextStyle(color: foreground)),
+                            child: Icon(Icons.send_outlined, color: foreground),
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                          Text('Mensagens', style: TextStyle(color: foreground)),
+                          const SizedBox(width: CoeloSpacing.space2),
+                          _LauncherAvatarStack(highlighted: highlighted),
+                          const SizedBox(width: CoeloSpacing.space1),
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: highlighted
+                                ? Colors.transparent
+                                : colors.surfaceContainerHighest,
+                            foregroundColor: foreground,
+                            child: const Icon(Icons.more_horiz, size: CoeloSize.iconSm),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -302,7 +373,9 @@ final class _CollapsedLauncher extends StatelessWidget {
 }
 
 final class _LauncherAvatarStack extends StatelessWidget {
-  const _LauncherAvatarStack();
+  const _LauncherAvatarStack({required this.highlighted});
+
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -317,15 +390,19 @@ final class _LauncherAvatarStack extends StatelessWidget {
               left: index * 18,
               child: CircleAvatar(
                 radius: 15,
-                backgroundColor: colors.surface,
+                backgroundColor: highlighted ? colors.onPrimary : colors.surface,
                 child: CircleAvatar(
                   radius: 13,
-                  backgroundColor: index == 0
+                  backgroundColor: highlighted
+                      ? colors.primary
+                      : index == 0
                       ? colors.primaryContainer
                       : colors.surfaceContainerHighest,
                   child: Text(
                     superadminChatConversations[index].initials,
-                    style: Theme.of(context).textTheme.labelSmall,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: highlighted ? colors.onPrimary : colors.onSurface,
+                    ),
                   ),
                 ),
               ),
@@ -350,7 +427,7 @@ final class _LauncherHeader extends StatelessWidget {
   final String? subtitle;
   final Widget? avatar;
   final VoidCallback? onBack;
-  final VoidCallback onExpand;
+  final VoidCallback? onExpand;
   final VoidCallback onClose;
 
   @override
@@ -360,7 +437,7 @@ final class _LauncherHeader extends StatelessWidget {
       key: const Key('superadmin-chat-launcher-header'),
       color: colors.primary,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 64),
+        constraints: const BoxConstraints(minHeight: CoeloSize.touchMin + CoeloSpacing.space6),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
           child: Row(
@@ -384,7 +461,7 @@ final class _LauncherHeader extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(
                         context,
-                      ).textTheme.titleSmall?.copyWith(color: colors.onPrimary),
+                      ).textTheme.titleMedium?.copyWith(color: colors.onPrimary),
                     ),
                     if (subtitle case final value?)
                       Text(

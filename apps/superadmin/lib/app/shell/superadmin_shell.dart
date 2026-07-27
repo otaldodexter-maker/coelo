@@ -256,7 +256,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
   }
 
   Widget _withChatLauncher(Widget child) {
-    if (!widget.showChatLauncher || widget.onDestinationSelected == null) {
+    if (!widget.showChatLauncher) {
       return child;
     }
     return Stack(
@@ -267,7 +267,9 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
           right: CoeloSpacing.space4,
           bottom: CoeloSpacing.space4,
           child: SuperadminChatLauncher(
-            onExpand: () => widget.onDestinationSelected!('conversations'),
+            onExpand: widget.onDestinationSelected == null
+                ? null
+                : () => widget.onDestinationSelected!('conversations'),
           ),
         ),
       ],

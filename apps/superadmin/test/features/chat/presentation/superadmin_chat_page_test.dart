@@ -41,6 +41,45 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   });
 
+  testWidgets('groups the desktop inbox and preserves the thread while collapsing it', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+
+    final inbox = find.byKey(const Key('superadmin-chat-inbox'));
+    expect(find.descendant(of: inbox, matching: find.text('Grupos')), findsOne);
+    expect(find.descendant(of: inbox, matching: find.text('Pessoas')), findsOne);
+    await tester.tap(find.descendant(of: inbox, matching: find.text('Grupos')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-chat-conversation-girassol')), findsNothing);
+    await tester.tap(find.descendant(of: inbox, matching: find.text('Unidade Cambuí')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Recolher conversas'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-chat-inbox-rail')), findsOne);
+    expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-chat-thread')),
+        matching: find.text('Unidade Cambuí'),
+      ),
+      findsWidgets,
+    );
+
+    await tester.tap(find.byTooltip('Expandir conversas'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-chat-inbox')), findsOne);
+    expect(find.byKey(const Key('superadmin-chat-conversation-girassol')), findsNothing);
+  });
+
   testWidgets('opens contextual profile and hierarchical conversation creation', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1024, 900);
@@ -96,12 +135,47 @@ void main() {
     await tester.pump();
     expect(
       (tester.widget<Container>(launcherSurface).decoration as BoxDecoration).color,
-      CoeloTheme.light.colorScheme.primaryContainer,
+      CoeloTheme.light.colorScheme.primary,
+    );
+    expect(
+      tester.widget<Text>(find.text('Mensagens')).style?.color,
+      CoeloTheme.light.colorScheme.onPrimary,
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(Icons.send_outlined)).color,
+      CoeloTheme.light.colorScheme.onPrimary,
+    );
+
+    await mouse.moveTo(Offset.zero);
+    await tester.pump();
+    tester
+        .widget<InkWell>(find.descendant(of: launcherSurface, matching: find.byType(InkWell)))
+        .focusNode!
+        .requestFocus();
+    await tester.pump();
+    expect(
+      (tester.widget<Container>(launcherSurface).decoration as BoxDecoration).color,
+      CoeloTheme.light.colorScheme.primary,
+    );
+    expect(
+      tester.widget<Text>(find.text('Mensagens')).style?.color,
+      CoeloTheme.light.colorScheme.onPrimary,
     );
 
     await tester.tap(find.text('Mensagens'));
     await tester.pumpAndSettle();
     expect(find.text('Conversas'), findsOne);
+    final launcherHeader = find.byKey(const Key('superadmin-chat-launcher-header'));
+    expect(tester.getSize(launcherHeader).height, greaterThanOrEqualTo(72));
+    final launcherInbox = find.byKey(const Key('superadmin-chat-launcher-inbox'));
+    expect(
+      find.descendant(of: launcherInbox, matching: find.widgetWithText(ExpansionTile, 'Grupos')),
+      findsOne,
+    );
+    expect(
+      find.descendant(of: launcherInbox, matching: find.widgetWithText(ExpansionTile, 'Pessoas')),
+      findsOne,
+    );
     for (final label in [
       'Todas',
       'Instituição',
