@@ -39,7 +39,8 @@ Result: exit code 0; `00:00 +7: All tests passed!`. The final run followed forma
 
 ## Commit
 
-`feat(superadmin): add support prototype state` — Task 1 commit containing the implementation, specification, open-question entry, tests, and this report only.
+- `98d57eff821f71f110a5c50d93c35d03fc66735c` `feat(superadmin): add support prototype state` — Task 1 implementation, specification, open-question entry, tests and report.
+- `517636f6c4116947ad052297d31cf053434eb85c` `fix(superadmin): harden support prototype state` — review fixes for deterministic session ids, filter hashing, tests, specification and report.
 
 ## Self-review
 
