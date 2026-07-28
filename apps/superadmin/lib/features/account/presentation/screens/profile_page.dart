@@ -37,17 +37,28 @@ class _ProfilePageState extends State<ProfilePage> {
   AccountAvatar? _avatar;
   String? _imageError;
   String? _saveError;
+  var _hasHydratedInitialProfile = false;
 
   @override
   void initState() {
     super.initState();
-    final profile = widget.controller.profile;
-    _firstName = TextEditingController(text: profile?.firstName);
-    _lastName = TextEditingController(text: profile?.lastName);
-    _email = TextEditingController(text: profile?.email);
-    _mobilePhone = TextEditingController(text: profile?.mobilePhone);
-    _initials = TextEditingController(text: profile?.avatar.initials);
-    _avatar = profile?.avatar;
+    _firstName = TextEditingController();
+    _lastName = TextEditingController();
+    _email = TextEditingController();
+    _mobilePhone = TextEditingController();
+    _initials = TextEditingController();
+    _hydrateInitialProfile(widget.controller.profile);
+  }
+
+  void _hydrateInitialProfile(AccountProfile? profile) {
+    if (profile == null || _hasHydratedInitialProfile) return;
+    _firstName.text = profile.firstName;
+    _lastName.text = profile.lastName;
+    _email.text = profile.email;
+    _mobilePhone.text = profile.mobilePhone;
+    _initials.text = profile.avatar.initials;
+    _avatar = profile.avatar;
+    _hasHydratedInitialProfile = true;
   }
 
   @override
@@ -156,6 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
       listenable: widget.controller,
       builder: (context, child) {
         final profile = widget.controller.profile;
+        _hydrateInitialProfile(profile);
         if (profile == null || _avatar == null) {
           return const Center(child: CircularProgressIndicator());
         }

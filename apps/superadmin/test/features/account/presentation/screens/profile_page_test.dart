@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
@@ -27,7 +28,80 @@ final class _FailsOnceProfileRepository implements AccountProfileRepository {
   }
 }
 
+final class _DeferredProfileRepository implements AccountProfileRepository {
+  final Completer<AccountProfile> _load = Completer<AccountProfile>();
+
+  void completeLoad(AccountProfile profile) => _load.complete(profile);
+
+  @override
+  Future<AccountProfile> load() => _load.future;
+
+  @override
+  Future<void> save(AccountProfile profile) async {}
+}
+
 void main() {
+  testWidgets('hydrates the form once when a profile arrives after the page mounts', (
+    tester,
+  ) async {
+    final repository = _DeferredProfileRepository();
+    final activities = SuperadminActivityController();
+    final controller = AccountController(repository: repository, activities: activities);
+    final load = controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ProfilePage(controller: controller, logout: () async => const LogoutResult.success()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byKey(const Key('account-mobile-phone-field')), findsNothing);
+
+    repository.completeLoad(
+      AccountProfile.prototype().copyWith(
+        firstName: 'Maria',
+        lastName: 'Silva',
+        mobilePhone: '+55 11 98888-7777',
+        avatar: const AccountAvatar(
+          mode: AccountAvatarMode.initials,
+          initials: 'MS',
+          backgroundColor: Colors.teal,
+        ),
+      ),
+    );
+    await load;
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Maria');
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 11 98888-7777');
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('account-avatar-initials')),
+        matching: find.text('MS'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Rascunho');
+    await controller.changePassword(
+      currentPassword: 'coelo-demo',
+      newPassword: 'NovaSenha123!',
+      confirmation: 'NovaSenha123!',
+    );
+    await tester.pump();
+
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Rascunho');
+  });
+
   testWidgets('shows personal data, access and security cards', (tester) async {
     final activities = SuperadminActivityController();
     final controller = AccountController(
@@ -341,6 +415,11 @@ void main() {
     expect(tester.getSize(submit).width, greaterThan(200));
   });
 }
+
+String _fieldValue(WidgetTester tester, Key key) => tester
+    .widget<EditableText>(find.descendant(of: find.byKey(key), matching: find.byType(EditableText)))
+    .controller
+    .text;
 
 Future<void> _pumpProfilePage(WidgetTester tester, AccountController controller) async {
   await tester.pumpWidget(
