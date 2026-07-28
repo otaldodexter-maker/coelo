@@ -4,6 +4,23 @@ import 'package:coelo_superadmin/features/account/domain/account_profile.dart';
 import 'package:coelo_superadmin/features/account/presentation/account_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+final class _FailsOnceAccountProfileRepository implements AccountProfileRepository {
+  AccountProfile _profile = AccountProfile.prototype();
+  bool _failsNextSave = true;
+
+  @override
+  Future<AccountProfile> load() async => _profile;
+
+  @override
+  Future<void> save(AccountProfile profile) async {
+    if (_failsNextSave) {
+      _failsNextSave = false;
+      throw StateError('save failed');
+    }
+    _profile = profile;
+  }
+}
+
 void main() {
   late InMemoryAccountProfileRepository repository;
   late SuperadminActivityController activities;
@@ -46,6 +63,41 @@ void main() {
     );
 
     expect(controller.profile!.mobilePhone, '+55 11 98888-7777');
+  });
+
+  test('save failure keeps the draft state and permits a retry', () async {
+    final failingRepository = _FailsOnceAccountProfileRepository();
+    final failingActivities = SuperadminActivityController();
+    final failingController = AccountController(
+      repository: failingRepository,
+      activities: failingActivities,
+    );
+    await failingController.load();
+
+    Future<void> saveDraft() => failingController.saveProfile(
+      firstName: 'Maria',
+      lastName: 'Silva',
+      email: 'maria@coelo.me',
+      mobilePhone: '+55 11 98888-7777',
+      avatar: failingController.profile!.avatar,
+    );
+
+    await expectLater(saveDraft(), throwsA(isA<StateError>()));
+
+    expect(failingController.busy, isFalse);
+    expect(failingController.profile!.firstName, 'Owner');
+    expect(failingController.profile!.emailChange, isNull);
+    expect(failingActivities.activities, isEmpty);
+
+    await saveDraft();
+
+    expect(failingController.busy, isFalse);
+    expect(failingController.profile!.firstName, 'Maria');
+    expect(failingController.profile!.emailChange?.requestedEmail, 'maria@coelo.me');
+    expect(failingActivities.activities, hasLength(1));
+
+    failingController.dispose();
+    failingActivities.dispose();
   });
 
   test('approval applies the pending email and updates the activity', () async {

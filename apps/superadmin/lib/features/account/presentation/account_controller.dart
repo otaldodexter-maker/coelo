@@ -42,17 +42,23 @@ final class AccountController extends ChangeNotifier {
       avatar: avatar,
     );
     final normalizedEmail = email.trim().toLowerCase();
-    if (normalizedEmail != current.email) {
+    final requestsEmailChange = normalizedEmail != current.email;
+    if (requestsEmailChange) {
       next = next.requestEmailChange(normalizedEmail);
-      if (_emailActivityId != null) activities.removeActivity(_emailActivityId!);
-      _emailActivityId = activities.addEmailApproval(requestedEmail: normalizedEmail);
-      _message = 'Solicitação enviada para aprovação.';
-    } else {
-      _message = 'Perfil atualizado.';
     }
-    await repository.save(next);
-    _profile = next;
-    _setBusy(false);
+    try {
+      await repository.save(next);
+      _profile = next;
+      if (requestsEmailChange) {
+        if (_emailActivityId != null) activities.removeActivity(_emailActivityId!);
+        _emailActivityId = activities.addEmailApproval(requestedEmail: normalizedEmail);
+        _message = 'Solicitação enviada para aprovação.';
+      } else {
+        _message = 'Perfil atualizado.';
+      }
+    } finally {
+      _setBusy(false);
+    }
   }
 
   Future<void> cancelEmailChange() async {
