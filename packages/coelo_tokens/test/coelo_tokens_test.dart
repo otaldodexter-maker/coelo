@@ -55,16 +55,6 @@ void main() {
       expect(status?.infoContainer, const Color(0xFFE6F4FA));
     });
 
-    test('exposes solid Now ring colors without a gradient', () {
-      final light = CoeloTheme.light.extension<CoeloChatColors>()!;
-      final dark = CoeloTheme.dark.extension<CoeloChatColors>()!;
-
-      expect(light.nowRingPrimary, CoeloPalette.orange500);
-      expect(light.nowRingSecondary, CoeloPalette.orange300);
-      expect(dark.nowRingPrimary, CoeloPalette.orange300);
-      expect(dark.nowRingSecondary, CoeloPalette.orange500);
-    });
-
     test('exposes approved action and overlay aliases in light and dark themes', () {
       final lightActions = CoeloTheme.light.extension<CoeloActionColors>()!;
       final darkActions = CoeloTheme.dark.extension<CoeloActionColors>()!;
@@ -165,7 +155,6 @@ void main() {
       expect(CoeloRadius.md, 12);
       expect(CoeloMotion.standard, const Duration(milliseconds: 220));
       expect(CoeloSize.touchMin, 48);
-      expect(CoeloSize.avatarXl, 64);
       expect(CoeloBreakpoints.compact.maxWidth, 599);
       expect(CoeloBreakpoints.expanded.columns, 12);
     });

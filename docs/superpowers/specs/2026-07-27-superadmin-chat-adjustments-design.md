@@ -1,7 +1,8 @@
 ---
 source: "Solicitação aprovada em 2026-07-27 e decisão aprovada em 2026-07-28; docs/design/design-system.md; specs/013-ui-packages-componentization.md"
-status: "approved"
+status: "superseded"
 generated_at: "2026-07-28"
+superseded_by: "docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md"
 ---
 
 # Ajustes do chat do Superadmin

@@ -19,6 +19,7 @@ final class SupportPage extends StatefulWidget {
     required this.onInstitutionsOpen,
     required this.onCatalogOpen,
     this.onHomeOpen,
+    this.onConversationsOpen,
     super.key,
   });
   final SupportPrototypeController controller;
@@ -26,6 +27,7 @@ final class SupportPage extends StatefulWidget {
   final VoidCallback onInstitutionsOpen;
   final VoidCallback onCatalogOpen;
   final VoidCallback? onHomeOpen;
+  final VoidCallback? onConversationsOpen;
   @override
   State<SupportPage> createState() => _SupportPageState();
 }
@@ -54,6 +56,7 @@ class _SupportPageState extends State<SupportPage> {
       if (d == 'home') widget.onHomeOpen?.call();
       if (d == 'institutions') widget.onInstitutionsOpen();
       if (d == 'catalog') widget.onCatalogOpen();
+      if (d == 'conversations') widget.onConversationsOpen?.call();
     },
     child: AnimatedBuilder(animation: widget.controller, builder: (_, _) => _content(context)),
   );

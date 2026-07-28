@@ -216,32 +216,28 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('keeps expansion disabled for a partial generic navigation callback', (tester) async {
+  testWidgets('opens conversations through the generic navigation callback', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final destinations = <String>[];
 
     final shell = SuperadminShell(
       logout: () async => const LogoutResult.success(),
-      onDestinationSelected: (_) {},
+      onDestinationSelected: destinations.add,
       child: const SizedBox.expand(),
     );
     await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
 
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
-    await tester.tap(find.text('Mensagens'));
+    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
 
-    final expand = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full));
-    expect(expand.tooltip, 'Expandir conversas indisponível nesta tela');
-    expect(expand.onPressed, isNull);
+    await tester.tap(find.text('Abrir tela'));
+    expect(destinations, ['conversations']);
   });
 
-  testWidgets('keeps a bottom-right content action clickable below the global launcher', (
-    tester,
-  ) async {
-    var taps = 0;
-
-    for (final (index, width) in [375.0, 768.0, 1440.0].indexed) {
+  testWidgets('does not reserve global bottom clearance for the launcher', (tester) async {
+    for (final width in [375.0, 768.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
       await tester.pumpWidget(
         MaterialApp(
@@ -254,7 +250,7 @@ void main() {
               child: IconButton(
                 key: const Key('bottom-right-content-action'),
                 tooltip: 'Ação inferior direita',
-                onPressed: () => taps += 1,
+                onPressed: () {},
                 icon: const Icon(Icons.arrow_forward),
               ),
             ),
@@ -264,16 +260,13 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-chat-launcher-clearance')), findsNothing);
       if (width == 1440) {
         expect(
           tester.getBottomRight(find.byKey(const Key('superadmin-floating-content'))).dy,
           900 - CoeloSpacing.space3,
         );
       }
-      await tester.tap(find.byKey(const Key('bottom-right-content-action')));
-      await tester.pump();
-
-      expect(taps, index + 1);
       expect(tester.takeException(), isNull, reason: 'viewport $width');
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -292,40 +285,22 @@ void main() {
     );
     await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
 
-    await tester.tap(find.text('Mensagens'));
+    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
 
-    final expand = tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.open_in_full));
-    expect(expand.tooltip, 'Expandir conversas');
-    expect(expand.onPressed, isNotNull);
-    await tester.tap(find.widgetWithIcon(IconButton, Icons.open_in_full));
+    await tester.tap(find.text('Abrir tela'));
     expect(expansions, 1);
   });
 
-  testWidgets('keeps the legacy visibility default false', (tester) async {
+  testWidgets('hides the global launcher on the conversations route', (tester) async {
     final shell = SuperadminShell(
       logout: () async => const LogoutResult.success(),
+      currentDestination: 'conversations',
       child: const SizedBox.expand(),
     );
-
-    // ignore: deprecated_member_use_from_same_package
-    expect(shell.showChatLauncher, isFalse);
-  });
-
-  testWidgets('keeps the legacy visibility flag without hiding the global launcher', (
-    tester,
-  ) async {
-    // ignore: deprecated_member_use_from_same_package
-    final shell = SuperadminShell(
-      logout: () async => const LogoutResult.success(),
-      showChatLauncher: false,
-      child: const SizedBox.expand(),
-    );
-    // ignore: deprecated_member_use_from_same_package
-    expect(shell.showChatLauncher, isFalse);
     await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
 
-    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
   });
 
   testWidgets('starts Home with Structure collapsed and opens the active section contextually', (

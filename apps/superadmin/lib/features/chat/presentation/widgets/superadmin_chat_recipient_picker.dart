@@ -1,225 +1,175 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
-final class SuperadminChatRecipientSelection {
-  SuperadminChatRecipientSelection({required List<CoeloAdminContextOption> path})
-    : assert(path.isNotEmpty),
-      path = List.unmodifiable(path);
-
-  final List<CoeloAdminContextOption> path;
-
-  CoeloAdminContextOption get recipient => path.last;
-  String get pathLabel => path.map((option) => option.label).join(' / ');
-}
+import '../chat_controller.dart';
+import '../chat_models.dart';
 
 final class SuperadminChatRecipientPicker extends StatefulWidget {
   const SuperadminChatRecipientPicker({
+    required this.controller,
     required this.options,
     required this.onConfirmed,
     super.key,
   });
 
-  final List<CoeloAdminContextOption> options;
-  final ValueChanged<List<SuperadminChatRecipientSelection>> onConfirmed;
+  final SuperadminChatController controller;
+  final List<SuperadminChatContextOption> options;
+  final ValueChanged<Set<String>> onConfirmed;
 
   @override
   State<SuperadminChatRecipientPicker> createState() => _SuperadminChatRecipientPickerState();
 }
 
 final class _SuperadminChatRecipientPickerState extends State<SuperadminChatRecipientPicker> {
-  final _reviewFocusNode = FocusNode(debugLabel: 'Revisar envio em massa');
-  final _selectedIds = <String>{};
-
-  List<SuperadminChatRecipientSelection> get _recipients => _flattenOptions(widget.options);
-
-  @override
-  void dispose() {
-    _reviewFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _toggle(SuperadminChatRecipientSelection selection, {required bool selected}) {
-    setState(() {
-      if (selected) {
-        _selectedIds.add(selection.recipient.id);
-      } else {
-        _selectedIds.remove(selection.recipient.id);
-      }
-    });
-  }
-
-  void _selectAll() {
-    setState(() {
-      _selectedIds
-        ..clear()
-        ..addAll(_recipients.map((selection) => selection.recipient.id));
-    });
-  }
-
-  Future<void> _review() async {
-    final selected = _recipients
-        .where((selection) => _selectedIds.contains(selection.recipient.id))
-        .toList(growable: false);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        final colors = Theme.of(dialogContext).colorScheme;
-        return AlertDialog(
-          backgroundColor: colors.surface,
-          surfaceTintColor: Colors.transparent,
-          scrollable: true,
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Expanded(child: Text('Revisar envio em massa')),
-              IconButton(
-                tooltip: 'Fechar revisão',
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                style:
-                    IconButton.styleFrom(
-                      foregroundColor: colors.error,
-                      minimumSize: const Size.square(CoeloSize.touchMin),
-                      maximumSize: const Size.square(CoeloSize.touchMin),
-                      shape: const CircleBorder(),
-                    ).copyWith(
-                      backgroundColor: WidgetStateProperty.resolveWith(
-                        (states) =>
-                            states.contains(WidgetState.hovered) ||
-                                states.contains(WidgetState.focused)
-                            ? colors.errorContainer
-                            : Colors.transparent,
-                      ),
-                      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                    ),
-                icon: const Icon(Icons.close_rounded),
-              ),
-            ],
+  late final List<_Recipient> _recipients = [
+    ..._flatten(widget.options),
+    ...widget.controller.conversations
+        .where((item) => item.kind == ChatContextKind.person)
+        .map(
+          (item) => _Recipient(
+            id: item.id,
+            label: item.title,
+            detail: 'Pessoa · ${item.context}',
+            icon: Icons.person_outline_rounded,
           ),
-          content: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: CoeloSize.touchMin * 9),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('Demonstração local', style: Theme.of(dialogContext).textTheme.titleMedium),
-                const SizedBox(height: CoeloSpacing.space2),
-                const Text('Nenhuma mensagem será enviada fora deste protótipo.'),
-                const SizedBox(height: CoeloSpacing.space3),
-                Text(_selectionLabel(selected.length)),
-                const SizedBox(height: CoeloSpacing.space2),
-                for (final selection in selected)
-                  ListTile(
-                    minTileHeight: CoeloSize.touchMin,
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(selection.recipient.kind.icon),
-                    title: Text(selection.recipient.label),
-                    subtitle: Text(selection.pathLabel),
-                  ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Confirmar demonstração'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (!mounted) {
-      return;
-    }
-    if (confirmed == true) {
-      widget.onConfirmed(List.unmodifiable(selected));
-      return;
-    }
-    _reviewFocusNode.requestFocus();
-  }
+        ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final recipients = _recipients;
-    final allSelected = recipients.isNotEmpty && _selectedIds.length == recipients.length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: CoeloSpacing.space3,
-          runSpacing: CoeloSpacing.space1,
+    final selected = widget.controller.selectedRecipientIds;
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: CoeloSize.touchMin * 9),
+        child: Column(
           children: [
-            Text(
-              _selectionLabel(_selectedIds.length),
-              style: Theme.of(context).textTheme.titleSmall,
+            Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Nova mensagem', style: Theme.of(context).textTheme.titleLarge),
+                        Text(
+                          'Envio em massa · demonstração local',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Fechar destinatários',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
             ),
-            TextButton(
-              onPressed: allSelected ? null : _selectAll,
-              child: const Text('Selecionar todos'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${selected.length} destinatários selecionados',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      widget.controller.selectAllRecipients(_recipients.map((item) => item.id));
+                      setState(() {});
+                    },
+                    child: const Text('Selecionar todos'),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _recipients.length,
+                itemBuilder: (context, index) {
+                  final recipient = _recipients[index];
+                  return CheckboxListTile(
+                    key: Key('superadmin-chat-recipient-${recipient.id}'),
+                    value: selected.contains(recipient.id),
+                    onChanged: (_) {
+                      widget.controller.toggleRecipient(recipient.id);
+                      setState(() {});
+                    },
+                    secondary: Icon(recipient.icon),
+                    title: Text(recipient.label),
+                    subtitle: Text(recipient.detail),
+                    controlAffinity: ListTileControlAffinity.leading,
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space4),
+              child: FilledButton.icon(
+                onPressed: selected.isEmpty
+                    ? null
+                    : () => widget.onConfirmed(Set.unmodifiable(selected)),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(CoeloSize.touchMin),
+                ),
+                icon: const Icon(Icons.arrow_forward_rounded),
+                label: const Text('Revisar envio'),
+              ),
             ),
           ],
         ),
-        const SizedBox(height: CoeloSpacing.space2),
-        Expanded(
-          child: ListView.separated(
-            itemCount: recipients.length,
-            separatorBuilder: (_, _) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final selection = recipients[index];
-              final option = selection.recipient;
-              final selected = _selectedIds.contains(option.id);
-              return CheckboxListTile(
-                key: Key('superadmin-chat-recipient-${option.id}'),
-                value: selected,
-                onChanged: (value) => _toggle(selection, selected: value ?? false),
-                minTileHeight: CoeloSize.touchMin,
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsetsDirectional.only(
-                  start: CoeloSpacing.space3 + (selection.path.length - 1) * CoeloSpacing.space4,
-                  end: CoeloSpacing.space3,
-                ),
-                title: Text(option.label),
-                subtitle: Text(
-                  [
-                    option.kind.label,
-                    if (option.subtitle case final subtitle? when subtitle.isNotEmpty) subtitle,
-                  ].join(' · '),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: CoeloSpacing.space3),
-        FilledButton(
-          focusNode: _reviewFocusNode,
-          onPressed: _selectedIds.isEmpty ? null : _review,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(CoeloSize.touchMin)),
-          child: const Text('Revisar envio'),
-        ),
-      ],
+      ),
     );
   }
 }
 
-List<SuperadminChatRecipientSelection> _flattenOptions(
-  List<CoeloAdminContextOption> options, {
-  List<CoeloAdminContextOption> path = const [],
-}) {
+final class _Recipient {
+  const _Recipient({
+    required this.id,
+    required this.label,
+    required this.detail,
+    required this.icon,
+  });
+
+  final String id;
+  final String label;
+  final String detail;
+  final IconData icon;
+}
+
+List<_Recipient> _flatten(List<SuperadminChatContextOption> options, {String parent = ''}) {
   return [
     for (final option in options) ...[
-      SuperadminChatRecipientSelection(path: [...path, option]),
-      ..._flattenOptions(option.children, path: [...path, option]),
+      _Recipient(
+        id: option.id,
+        label: option.label,
+        detail: [_kindLabel(option.kind), if (parent.isNotEmpty) parent].join(' · '),
+        icon: _kindIcon(option.kind),
+      ),
+      ..._flatten(
+        option.children,
+        parent: parent.isEmpty ? option.label : '$parent / ${option.label}',
+      ),
     ],
   ];
 }
 
-String _selectionLabel(int count) =>
-    count == 1 ? '1 destinatário selecionado' : '$count destinatários selecionados';
+String _kindLabel(ChatContextKind kind) => switch (kind) {
+  ChatContextKind.institution => 'Instituição',
+  ChatContextKind.unit => 'Unidade',
+  ChatContextKind.group => 'Grupo/Turma',
+  ChatContextKind.activity => 'Atividade',
+  ChatContextKind.person => 'Pessoa',
+};
+
+IconData _kindIcon(ChatContextKind kind) => switch (kind) {
+  ChatContextKind.institution => Icons.account_balance_outlined,
+  ChatContextKind.unit => Icons.apartment_outlined,
+  ChatContextKind.group => Icons.groups_outlined,
+  ChatContextKind.activity => Icons.local_activity_outlined,
+  ChatContextKind.person => Icons.person_outline_rounded,
+};

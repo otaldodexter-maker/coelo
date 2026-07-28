@@ -22,12 +22,9 @@ const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
-const _chatLauncherClearance = CoeloSize.touchMin + CoeloSpacing.space8;
 const _compactProfileMenuWidth = 176.0;
 const _compactProfileTriggerWidth = 52.0;
 const _coeloMotionCurve = Curves.easeInOut;
-
-void _noOp() {}
 
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
@@ -42,7 +39,6 @@ class SuperadminShell extends StatefulWidget {
     this.onDestinationSelected,
     this.onOpenConversations,
     this.onBugReportSubmitted,
-    @Deprecated('O launcher de mensagens agora é global.') this.showChatLauncher = false,
     super.key,
   });
 
@@ -57,9 +53,6 @@ class SuperadminShell extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final VoidCallback? onOpenConversations;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
-
-  @Deprecated('O launcher de mensagens agora é global.')
-  final bool showChatLauncher;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
@@ -121,11 +114,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    final pageBody = Padding(
-      key: const Key('superadmin-chat-launcher-clearance'),
-      padding: const EdgeInsets.only(bottom: _chatLauncherClearance),
-      child: widget.child ?? const SizedBox.expand(),
-    );
+    final pageBody = widget.child ?? const SizedBox.expand();
     return LayoutBuilder(
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
@@ -165,17 +154,19 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
               body: SuperadminNoticeHost(
                 child: Column(
                   children: [
-                    _PageHeader(
-                      title: widget.title,
-                      subtitle: widget.subtitle,
-                      actions: widget.actions,
-                      compactActions: widget.compactActions,
-                      onLogout: _handleLogout,
-                      activityController: _activityController,
-                      compact: true,
-                      onBugReportSubmitted: widget.onBugReportSubmitted,
-                    ),
-                    const _InsetDivider(key: Key('superadmin-page-divider')),
+                    if (widget.currentDestination != 'conversations') ...[
+                      _PageHeader(
+                        title: widget.title,
+                        subtitle: widget.subtitle,
+                        actions: widget.actions,
+                        compactActions: widget.compactActions,
+                        onLogout: _handleLogout,
+                        activityController: _activityController,
+                        compact: true,
+                        onBugReportSubmitted: widget.onBugReportSubmitted,
+                      ),
+                      const _InsetDivider(key: Key('superadmin-page-divider')),
+                    ],
                     Expanded(child: pageBody),
                   ],
                 ),
@@ -267,16 +258,18 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
   }
 
   Widget _withChatLauncher(Widget child) {
+    if (widget.currentDestination == 'conversations') return child;
     return Stack(
       fit: StackFit.expand,
       children: [
         child,
         Positioned(
           right: CoeloSpacing.space4,
-          bottom: CoeloSpacing.space4,
+          bottom: CoeloSize.touchMin * 2 + CoeloSpacing.space5,
           child: SuperadminChatLauncher(
-            onExpand: widget.onOpenConversations ?? _noOp,
-            canExpand: widget.onOpenConversations != null,
+            onOpenConversations:
+                widget.onOpenConversations ??
+                () => widget.onDestinationSelected?.call('conversations'),
           ),
         ),
       ],

@@ -1,49 +1,58 @@
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'chat_models.dart';
 
-final class SuperadminChatConversation {
-  const SuperadminChatConversation({
-    required this.id,
-    required this.title,
-    required this.initials,
-    required this.preview,
-    required this.timestamp,
-    required this.context,
-    required this.institution,
-    required this.targetKind,
-    required this.metrics,
-    this.unit,
-    this.group,
-    this.activity,
-    this.state,
-    this.personRole,
-    this.children = const [],
-    this.localInitialMessage,
-    this.unreadCount = 0,
-    this.nowState = CoeloNowState.none,
-    this.presence = CoeloChatPresence.none,
-  });
-
-  final String id;
-  final String title;
-  final String initials;
-  final String preview;
-  final String timestamp;
-  final String context;
-  final String institution;
-  final CoeloAdminContextKind targetKind;
-  final List<CoeloAdminChatMetric> metrics;
-  final String? unit;
-  final String? group;
-  final String? activity;
-  final String? state;
-  final String? personRole;
-  final List<String> children;
-  final String? localInitialMessage;
-  final int unreadCount;
-  final CoeloNowState nowState;
-  final CoeloChatPresence presence;
-}
+const _messages = [
+  SuperadminChatMessage(
+    id: 'message-1',
+    author: 'Marina · Professora',
+    context: 'Turma Girassol · Lia',
+    body: 'A atividade terminou e correu tudo bem.',
+    time: '10:32',
+    sentByMe: false,
+  ),
+  SuperadminChatMessage(
+    id: 'message-2',
+    author: 'Superadmin',
+    context: 'Contexto histórico · Lia',
+    body: 'Obrigada. A família já foi avisada.',
+    time: '10:34',
+    sentByMe: true,
+    delivery: ChatDeliveryState.read,
+  ),
+  SuperadminChatMessage(
+    id: 'message-3',
+    author: 'Marina · Professora',
+    context: 'Turma Girassol',
+    body: 'Perfeito. Também compartilhei o registro da atividade com os responsáveis.',
+    time: '10:36',
+    sentByMe: false,
+  ),
+  SuperadminChatMessage(
+    id: 'message-4',
+    author: 'Superadmin',
+    context: 'Turma Girassol',
+    body: 'Ótimo. O registro ficará disponível para acompanhamento da instituição.',
+    time: '10:40',
+    sentByMe: true,
+    delivery: ChatDeliveryState.read,
+  ),
+  SuperadminChatMessage(
+    id: 'message-5',
+    author: 'Marina · Professora',
+    context: 'Turma Girassol',
+    body: 'Combinado. Se houver alguma atualização, aviso por aqui.',
+    time: '10:42',
+    sentByMe: false,
+  ),
+  SuperadminChatMessage(
+    id: 'message-6',
+    author: 'Superadmin',
+    context: 'Demonstração local',
+    body: 'Obrigada, Marina.',
+    time: '10:43',
+    sentByMe: true,
+    delivery: ChatDeliveryState.delivered,
+  ),
+];
 
 const superadminChatConversations = [
   SuperadminChatConversation(
@@ -54,21 +63,20 @@ const superadminChatConversations = [
     timestamp: '2 min',
     context: 'Centro Horizonte · Unidade Cambuí',
     institution: 'Centro Horizonte',
-    targetKind: CoeloAdminContextKind.group,
+    kind: ChatContextKind.group,
     metrics: [
-      CoeloAdminChatMetric('Professores', 3),
-      CoeloAdminChatMetric('Crianças', 18),
-      CoeloAdminChatMetric('Responsáveis', 27),
-      CoeloAdminChatMetric('Atividades', 4),
+      SuperadminChatMetric('Professores', 3),
+      SuperadminChatMetric('Crianças', 18),
+      SuperadminChatMetric('Responsáveis', 27),
+      SuperadminChatMetric('Atividades', 4),
     ],
+    messages: _messages,
     state: 'CE',
-    personRole: 'Professores',
+    role: 'Professores',
     unit: 'Unidade Cambuí',
     group: 'Turma Girassol',
-    children: ['Lia'],
     unreadCount: 3,
-    nowState: CoeloNowState.unseen,
-    presence: CoeloChatPresence.available,
+    isGroup: true,
   ),
   SuperadminChatConversation(
     id: 'cambui',
@@ -78,15 +86,15 @@ const superadminChatConversations = [
     timestamp: '1 h',
     context: 'Centro Horizonte',
     institution: 'Centro Horizonte',
-    targetKind: CoeloAdminContextKind.unit,
+    kind: ChatContextKind.unit,
     metrics: [
-      CoeloAdminChatMetric('Grupos', 8),
-      CoeloAdminChatMetric('Funcionários', 34),
-      CoeloAdminChatMetric('Crianças', 126),
-      CoeloAdminChatMetric('Atividades', 12),
+      SuperadminChatMetric('Grupos', 8),
+      SuperadminChatMetric('Funcionários', 34),
+      SuperadminChatMetric('Crianças', 126),
     ],
+    messages: _messages,
     state: 'CE',
-    personRole: 'Outros',
+    role: 'Outros',
     unit: 'Unidade Cambuí',
   ),
   SuperadminChatConversation(
@@ -97,20 +105,37 @@ const superadminChatConversations = [
     timestamp: 'Ontem',
     context: 'Turma Girassol · Lia',
     institution: 'Centro Horizonte',
-    targetKind: CoeloAdminContextKind.activity,
+    kind: ChatContextKind.activity,
     metrics: [
-      CoeloAdminChatMetric('Grupos', 2),
-      CoeloAdminChatMetric('Professores', 2),
-      CoeloAdminChatMetric('Crianças', 14),
-      CoeloAdminChatMetric('Responsáveis', 20),
+      SuperadminChatMetric('Turmas', 2),
+      SuperadminChatMetric('Crianças', 14),
+      SuperadminChatMetric('Responsáveis', 20),
     ],
+    messages: _messages,
     state: 'CE',
-    personRole: 'Respons\u00e1veis',
+    role: 'Responsáveis',
     unit: 'Unidade Cambuí',
     group: 'Turma Girassol',
-    activity: 'Natação',
-    children: ['Lia'],
-    nowState: CoeloNowState.seen,
+  ),
+  SuperadminChatConversation(
+    id: 'marina',
+    title: 'Marina Alves',
+    initials: 'MA',
+    preview: 'Obrigada pelo retorno.',
+    timestamp: '3 h',
+    context: 'Professora · Turma Girassol',
+    institution: 'Centro Horizonte',
+    kind: ChatContextKind.person,
+    metrics: [
+      SuperadminChatMetric('Instituições', 1),
+      SuperadminChatMetric('Turmas', 2),
+      SuperadminChatMetric('Crianças', 18),
+    ],
+    messages: _messages,
+    state: 'CE',
+    role: 'Professores',
+    unit: 'Unidade Cambuí',
+    group: 'Turma Girassol',
   ),
   SuperadminChatConversation(
     id: 'aurora',
@@ -118,53 +143,39 @@ const superadminChatConversations = [
     initials: 'IA',
     preview: 'A coordenação enviou um aviso.',
     timestamp: '2 d',
-    context: 'Instituto Aurora · Unidade Jardins',
+    context: 'Unidade Jardins',
     institution: 'Instituto Aurora',
-    targetKind: CoeloAdminContextKind.institution,
+    kind: ChatContextKind.institution,
     metrics: [
-      CoeloAdminChatMetric('Unidades', 3),
-      CoeloAdminChatMetric('Grupos', 14),
-      CoeloAdminChatMetric('Atividades', 21),
-      CoeloAdminChatMetric('Pessoas', 284),
+      SuperadminChatMetric('Unidades', 3),
+      SuperadminChatMetric('Grupos', 14),
+      SuperadminChatMetric('Pessoas', 284),
     ],
+    messages: _messages,
     state: 'SP',
-    personRole: 'Crian\u00e7as',
     unit: 'Unidade Jardins',
-    group: 'Grupo Azul',
-    activity: 'Arte',
-    children: ['Miguel'],
   ),
 ];
 
 const superadminChatContextOptions = [
-  CoeloAdminContextOption(
+  SuperadminChatContextOption(
     id: 'centro-horizonte',
     label: 'Centro Horizonte',
-    kind: CoeloAdminContextKind.institution,
+    kind: ChatContextKind.institution,
     subtitle: 'Instituição ativa',
     children: [
-      CoeloAdminContextOption(
+      SuperadminChatContextOption(
         id: 'cambui',
         label: 'Unidade Cambuí',
-        kind: CoeloAdminContextKind.unit,
+        kind: ChatContextKind.unit,
         children: [
-          CoeloAdminContextOption(
+          SuperadminChatContextOption(
             id: 'girassol',
             label: 'Turma Girassol',
-            kind: CoeloAdminContextKind.group,
-            children: [
-              CoeloAdminContextOption(
-                id: 'natacao',
-                label: 'Natação',
-                kind: CoeloAdminContextKind.activity,
-                subtitle: 'Terças e quintas',
-              ),
-            ],
+            kind: ChatContextKind.group,
           ),
         ],
       ),
     ],
   ),
 ];
-
-const superadminChatInstitutionStateById = {'centro-horizonte': 'CE'};

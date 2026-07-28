@@ -1,385 +1,158 @@
-import 'dart:math' as math;
-
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
+import '../chat_controller.dart';
 import '../chat_fixtures.dart';
-import 'superadmin_chat_scope_filters.dart';
-import 'superadmin_chat_thread_body.dart';
-
-enum _LauncherView { inbox, thread }
+import '../chat_models.dart';
+import 'superadmin_chat_avatar.dart';
+import 'superadmin_chat_composer.dart';
+import 'superadmin_chat_message_bubble.dart';
 
 final class SuperadminChatLauncher extends StatefulWidget {
-  const SuperadminChatLauncher({required this.onExpand, this.canExpand = true, super.key});
+  const SuperadminChatLauncher({required this.onOpenConversations, super.key});
 
-  final VoidCallback onExpand;
-  final bool canExpand;
+  final VoidCallback onOpenConversations;
 
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
 }
 
 final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
-  final _launcherFocusNode = FocusNode(debugLabel: 'Mensagens');
-  final _searchController = TextEditingController();
-  final _scopeSelections = <SuperadminChatScopeKind, String>{};
-  var _open = false;
+  late final SuperadminChatController _controller;
+  final _layerLink = LayerLink();
+  final _focusNode = FocusNode(debugLabel: 'Launcher de conversas');
+  OverlayEntry? _entry;
   var _hovered = false;
   var _focused = false;
-  var _view = _LauncherView.inbox;
-  var _selectedIndex = 0;
+  var _compactSheetOpen = false;
 
-  SuperadminChatConversation get _selected => superadminChatConversations[_selectedIndex];
+  @override
+  void initState() {
+    super.initState();
+    _controller = SuperadminChatController(superadminChatConversations);
+    _focusNode.addListener(_handleFocus);
+  }
 
   @override
   void dispose() {
-    _launcherFocusNode.dispose();
-    _searchController.dispose();
+    _entry?.remove();
+    _focusNode
+      ..removeListener(_handleFocus)
+      ..dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  void _close() {
-    setState(() {
-      _open = false;
-      _view = _LauncherView.inbox;
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _launcherFocusNode.requestFocus();
-      }
-    });
-  }
+  void _handleFocus() => setState(() => _focused = _focusNode.hasFocus);
 
-  void _handleEscape() {
-    if (_view == _LauncherView.thread) {
-      setState(() => _view = _LauncherView.inbox);
-    } else {
-      _close();
-    }
-  }
-
-  void _updateScope(SuperadminChatScopeKind kind, String? value) {
-    final next = updatedSuperadminChatScope(_scopeSelections, kind, value);
-    setState(() {
-      _scopeSelections
-        ..clear()
-        ..addAll(next);
-    });
-  }
-
-  List<SuperadminChatConversation> get _visibleConversations {
-    final query = _searchController.text.trim().toLowerCase();
-    return superadminChatConversations
-        .where(
-          (conversation) =>
-              matchesSuperadminChatScope(conversation, _scopeSelections) &&
-              (query.isEmpty ||
-                  conversation.title.toLowerCase().contains(query) ||
-                  conversation.context.toLowerCase().contains(query)),
-        )
-        .toList(growable: false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_open) {
-      return _CollapsedLauncher(
-        focusNode: _launcherFocusNode,
-        highlighted: _hovered || _focused,
-        onFocusChanged: (value) {
-          if (_focused != value) {
-            setState(() => _focused = value);
-          }
-        },
-        onHoverChanged: (value) {
-          if (_hovered != value) {
-            setState(() => _hovered = value);
-          }
-        },
-        onPressed: () => setState(() => _open = true),
+  Future<void> _open() async {
+    if (MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth) {
+      setState(() => _compactSheetOpen = true);
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (_) => FractionallySizedBox(
+          heightFactor: 0.72,
+          child: _CompactLauncherContent(
+            controller: _controller,
+            onOpenConversations: widget.onOpenConversations,
+          ),
+        ),
       );
+      if (mounted) setState(() => _compactSheetOpen = false);
+      return;
     }
-
-    final viewport = MediaQuery.sizeOf(context);
-    final width = math.min(460.0, math.max(0.0, viewport.width - 32));
-    final height = math.min(600.0, math.max(0.0, viewport.height - 96));
-    final colors = Theme.of(context).colorScheme;
-    return CallbackShortcuts(
-      bindings: {const SingleActivator(LogicalKeyboardKey.escape): _handleEscape},
-      child: Focus(
-        autofocus: true,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(CoeloRadius.xl),
-            boxShadow: [
-              BoxShadow(
-                color: colors.shadow.withValues(alpha: 0.14),
-                blurRadius: 18,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Material(
-            elevation: 0,
-            color: colors.surface,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(CoeloRadius.xl),
-              side: BorderSide(color: colors.outlineVariant),
-            ),
-            child: SizedBox(
-              width: width,
-              height: height,
-              child: _view == _LauncherView.inbox ? _buildInbox(context) : _buildThread(context),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInbox(BuildContext context) {
-    return Column(
-      key: const Key('superadmin-chat-launcher-inbox'),
-      children: [
-        _LauncherHeader(
-          title: 'Conversas',
-          onExpand: widget.onExpand,
-          canExpand: widget.canExpand,
-          onClose: _close,
-        ),
-        const Divider(height: 1),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CoeloSpacing.space3,
-            CoeloSpacing.space3,
-            CoeloSpacing.space3,
-            CoeloSpacing.space2,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: CoeloSearchField(
-                  controller: _searchController,
-                  onChanged: (_) => setState(() {}),
-                  semanticLabel: 'Buscar conversas no popup',
+    if (_entry != null) {
+      _closeOverlay();
+      return;
+    }
+    _entry = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: Stack(
+          children: [
+            GestureDetector(behavior: HitTestBehavior.translucent, onTap: _closeOverlay),
+            CompositedTransformFollower(
+              link: _layerLink,
+              targetAnchor: Alignment.topRight,
+              followerAnchor: Alignment.bottomRight,
+              offset: const Offset(0, -CoeloSpacing.space2),
+              child: Material(
+                key: const Key('superadmin-chat-launcher-panel'),
+                elevation: 4,
+                shadowColor: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.16),
+                clipBehavior: Clip.antiAlias,
+                borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                child: SizedBox(
+                  width: CoeloSize.touchMin * 8,
+                  height: CoeloSize.touchMin * 11,
+                  child: _CompactLauncherContent(
+                    controller: _controller,
+                    onOpenConversations: widget.onOpenConversations,
+                  ),
                 ),
               ),
-              const SizedBox(width: CoeloSpacing.space2),
-              IconButton(
-                tooltip: 'Nova conversa',
-                onPressed: widget.onExpand,
-                icon: const Icon(Icons.edit_outlined),
-              ),
-            ],
-          ),
-        ),
-        SuperadminChatScopeFilters(selections: _scopeSelections, onChanged: _updateScope),
-        const SizedBox(height: CoeloSpacing.space1),
-        Expanded(
-          child: _visibleConversations.isEmpty
-              ? const CoeloStatePanel(
-                  title: 'Nenhuma conversa',
-                  message: 'Ajuste a busca ou os filtros contextuais.',
-                  icon: Icons.filter_alt_off_outlined,
-                )
-              : ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-                  children: [
-                    _LauncherConversationSection(
-                      title: 'Grupos',
-                      conversations: _visibleConversations
-                          .where(
-                            (conversation) =>
-                                conversation.targetKind == CoeloAdminContextKind.group,
-                          )
-                          .toList(growable: false),
-                      onSelected: _openConversation,
-                    ),
-                    _LauncherConversationSection(
-                      title: 'Pessoas',
-                      conversations: _visibleConversations
-                          .where(
-                            (conversation) =>
-                                conversation.targetKind != CoeloAdminContextKind.group,
-                          )
-                          .toList(growable: false),
-                      onSelected: _openConversation,
-                    ),
-                  ],
-                ),
-        ),
-      ],
-    );
-  }
-
-  void _openConversation(SuperadminChatConversation conversation) {
-    setState(() {
-      _selectedIndex = superadminChatConversations.indexOf(conversation);
-      _view = _LauncherView.thread;
-    });
-  }
-
-  Widget _buildThread(BuildContext context) {
-    return Column(
-      key: const Key('superadmin-chat-launcher-thread'),
-      children: [
-        _LauncherHeader(
-          title: _selected.title,
-          subtitle: _selected.context,
-          avatar: CoeloChatAvatar(
-            label: _selected.title,
-            initials: _selected.initials,
-            size: CoeloSize.avatarMd,
-            nowState: _selected.nowState,
-            presence: _selected.presence,
-          ),
-          onBack: () => setState(() => _view = _LauncherView.inbox),
-          onExpand: widget.onExpand,
-          canExpand: widget.canExpand,
-          onClose: _close,
-        ),
-        const Divider(height: 1),
-        Expanded(child: SuperadminChatThreadBody(conversation: _selected, compact: true)),
-      ],
-    );
-  }
-}
-
-final class _LauncherConversationSection extends StatelessWidget {
-  const _LauncherConversationSection({
-    required this.title,
-    required this.conversations,
-    required this.onSelected,
-  });
-
-  final String title;
-  final List<SuperadminChatConversation> conversations;
-  final ValueChanged<SuperadminChatConversation> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: ExpansionTile(
-        key: PageStorageKey(title),
-        initiallyExpanded: true,
-        maintainState: true,
-        title: Text(title),
-        children: [
-          for (final conversation in conversations)
-            CoeloConversationTile(
-              avatar: CoeloChatAvatar(
-                label: conversation.title,
-                initials: conversation.initials,
-                size: CoeloSize.avatarMd,
-                nowState: conversation.nowState,
-                presence: conversation.presence,
-              ),
-              title: conversation.title,
-              preview: conversation.preview,
-              timestamp: conversation.timestamp,
-              unreadCount: conversation.unreadCount,
-              onPressed: () => onSelected(conversation),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-final class _CollapsedLauncher extends StatelessWidget {
-  const _CollapsedLauncher({
-    required this.focusNode,
-    required this.highlighted,
-    required this.onFocusChanged,
-    required this.onHoverChanged,
-    required this.onPressed,
-  });
-
-  final FocusNode focusNode;
-  final bool highlighted;
-  final ValueChanged<bool> onFocusChanged;
-  final ValueChanged<bool> onHoverChanged;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final foreground = highlighted ? colors.onPrimary : colors.onSurface;
-    return Semantics(
-      label: 'Mensagens, 3 não lidas',
-      button: true,
-      child: Container(
-        key: const Key('superadmin-chat-launcher-surface'),
-        decoration: BoxDecoration(
-          color: highlighted ? colors.primary : colors.surface,
-          borderRadius: BorderRadius.circular(CoeloRadius.full),
-          border: Border.all(color: highlighted ? colors.onPrimary : colors.outlineVariant),
-          boxShadow: [
-            BoxShadow(
-              color: colors.shadow.withValues(alpha: 0.14),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: IconTheme(
-          data: IconThemeData(color: foreground),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(color: foreground),
-            child: BadgeTheme(
-              data: BadgeThemeData(
-                backgroundColor: highlighted ? Colors.transparent : colors.primary,
-                textColor: colors.onPrimary,
-              ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.full),
-                child: InkWell(
-                  focusNode: focusNode,
-                  onFocusChange: onFocusChanged,
-                  onHover: onHoverChanged,
-                  onTap: onPressed,
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  borderRadius: BorderRadius.circular(CoeloRadius.full),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: CoeloSpacing.space3,
-                        vertical: CoeloSpacing.space1,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Badge(
-                            label: Text('3', style: TextStyle(color: foreground)),
-                            child: Icon(Icons.send_outlined, color: foreground),
-                          ),
-                          const SizedBox(width: CoeloSpacing.space2),
-                          Text('Mensagens', style: TextStyle(color: foreground)),
-                          const SizedBox(width: CoeloSpacing.space2),
-                          _LauncherAvatarStack(highlighted: highlighted),
-                          const SizedBox(width: CoeloSpacing.space1),
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: highlighted
-                                ? Colors.transparent
-                                : colors.surfaceContainerHighest,
-                            foregroundColor: foreground,
-                            child: const Icon(Icons.more_horiz, size: CoeloSize.iconSm),
-                          ),
-                        ],
-                      ),
+      ),
+    );
+    Overlay.of(context).insert(_entry!);
+  }
+
+  void _closeOverlay() {
+    _entry?.remove();
+    _entry = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_compactSheetOpen) return const SizedBox.shrink();
+    final colors = Theme.of(context).colorScheme;
+    final highlighted = _hovered || _focused;
+    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
+    final style = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
+      fixedSize: compact ? const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)) : null,
+      shape: compact ? const WidgetStatePropertyAll(CircleBorder()) : null,
+      backgroundColor: WidgetStatePropertyAll(
+        highlighted ? colors.primary : colors.surfaceContainerHighest,
+      ),
+      foregroundColor: WidgetStatePropertyAll(highlighted ? colors.onPrimary : colors.onSurface),
+    );
+    final icon = Icon(
+      Icons.forum_outlined,
+      color: highlighted ? colors.onPrimary : colors.onSurface,
+    );
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: Tooltip(
+          message: 'Abrir conversas',
+          child: Semantics(
+            button: true,
+            label: 'Abrir conversas',
+            child: compact
+                ? FilledButton.tonal(
+                    key: const Key('superadmin-chat-launcher-surface'),
+                    focusNode: _focusNode,
+                    onPressed: _open,
+                    style: style,
+                    child: icon,
+                  )
+                : FilledButton.tonalIcon(
+                    key: const Key('superadmin-chat-launcher-surface'),
+                    focusNode: _focusNode,
+                    onPressed: _open,
+                    style: style,
+                    icon: icon,
+                    label: Text(
+                      'Mensagens',
+                      style: TextStyle(color: highlighted ? colors.onPrimary : colors.onSurface),
                     ),
                   ),
-                ),
-              ),
-            ),
           ),
         ),
       ),
@@ -387,134 +160,120 @@ final class _CollapsedLauncher extends StatelessWidget {
   }
 }
 
-final class _LauncherAvatarStack extends StatelessWidget {
-  const _LauncherAvatarStack({required this.highlighted});
+final class _CompactLauncherContent extends StatefulWidget {
+  const _CompactLauncherContent({required this.controller, required this.onOpenConversations});
 
-  final bool highlighted;
+  final SuperadminChatController controller;
+  final VoidCallback onOpenConversations;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: 64,
-      height: 30,
-      child: Stack(
-        children: [
-          for (var index = 0; index < 3; index++)
-            Positioned(
-              left: index * 18,
-              child: CircleAvatar(
-                radius: 15,
-                backgroundColor: highlighted ? colors.onPrimary : colors.surface,
-                child: CircleAvatar(
-                  radius: 13,
-                  backgroundColor: highlighted
-                      ? colors.primary
-                      : index == 0
-                      ? colors.primaryContainer
-                      : colors.surfaceContainerHighest,
-                  child: Text(
-                    superadminChatConversations[index].initials,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: highlighted ? colors.onPrimary : colors.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
+  State<_CompactLauncherContent> createState() => _CompactLauncherContentState();
 }
 
-final class _LauncherHeader extends StatelessWidget {
-  const _LauncherHeader({
-    required this.title,
-    required this.onExpand,
-    required this.canExpand,
-    required this.onClose,
-    this.subtitle,
-    this.avatar,
-    this.onBack,
-  });
+final class _CompactLauncherContentState extends State<_CompactLauncherContent> {
+  final _composer = TextEditingController();
+  String? _threadId;
 
-  final String title;
-  final String? subtitle;
-  final Widget? avatar;
-  final VoidCallback? onBack;
-  final VoidCallback onExpand;
-  final bool canExpand;
-  final VoidCallback onClose;
+  @override
+  void dispose() {
+    _composer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return ColoredBox(
-      key: const Key('superadmin-chat-launcher-header'),
-      color: colors.primary,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: CoeloSize.touchMin + CoeloSpacing.space6),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-          child: Row(
-            children: [
-              if (onBack != null)
-                IconButton(
-                  tooltip: 'Voltar para conversas',
-                  onPressed: onBack,
-                  color: colors.onPrimary,
-                  icon: const Icon(Icons.arrow_back),
-                ),
-              if (avatar != null) ...[avatar!, const SizedBox(width: CoeloSpacing.space2)],
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleMedium?.copyWith(color: colors.onPrimary),
+    return AnimatedBuilder(
+      animation: widget.controller,
+      builder: (context, _) {
+        final thread = _threadId == null
+            ? null
+            : widget.controller.conversations.where((item) => item.id == _threadId).firstOrNull;
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                CoeloSpacing.space4,
+                CoeloSpacing.space3,
+                CoeloSpacing.space2,
+                CoeloSpacing.space2,
+              ),
+              child: Row(
+                children: [
+                  if (thread != null)
+                    IconButton(
+                      tooltip: 'Voltar para conversas',
+                      onPressed: () => setState(() => _threadId = null),
+                      icon: const Icon(Icons.arrow_back_rounded),
                     ),
-                    if (subtitle case final value?)
-                      Text(
-                        value,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: colors.onPrimary),
-                      ),
-                  ],
-                ),
+                  Expanded(
+                    child: Text(
+                      thread?.title ?? 'Conversas',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: widget.onOpenConversations,
+                    child: const Text('Abrir tela'),
+                  ),
+                ],
               ),
-              IconButton(
-                tooltip: canExpand
-                    ? 'Expandir conversas'
-                    : 'Expandir conversas indisponível nesta tela',
-                onPressed: canExpand ? onExpand : null,
-                color: colors.onPrimary,
-                icon: const Icon(Icons.open_in_full),
-              ),
-              IconButton(
-                tooltip: 'Fechar conversas',
-                onPressed: onClose,
-                style: IconButton.styleFrom(
-                  foregroundColor: colors.error,
-                  backgroundColor: colors.surface,
-                  hoverColor: colors.errorContainer,
-                  focusColor: colors.errorContainer,
-                ),
-                icon: const Icon(Icons.close_rounded),
-              ),
+            ),
+            Expanded(child: thread == null ? _inbox() : _thread(thread)),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _inbox() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(CoeloSpacing.space2),
+      itemCount: widget.controller.conversations.take(4).length,
+      itemBuilder: (context, index) {
+        final conversation = widget.controller.conversations[index];
+        return ListTile(
+          minTileHeight: CoeloSize.touchMin + CoeloSpacing.space2,
+          leading: SuperadminChatAvatar(
+            label: conversation.title,
+            initials: conversation.initials,
+            size: CoeloSize.avatarMd,
+          ),
+          title: Text(conversation.title),
+          subtitle: Text(conversation.preview, maxLines: 1, overflow: TextOverflow.ellipsis),
+          trailing: Text(conversation.timestamp),
+          onTap: () {
+            widget.controller.selectConversation(conversation.id);
+            setState(() => _threadId = conversation.id);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _thread(SuperadminChatConversation conversation) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            children: [
+              for (final message in conversation.messages.take(3))
+                SuperadminChatMessageBubble(message: message),
             ],
           ),
         ),
-      ),
+        SuperadminChatComposer(
+          controller: _composer,
+          compact: true,
+          onSend: () {
+            widget.controller.sendText(_composer.text);
+            _composer.clear();
+          },
+          onEmoji: () => widget.controller.sendEmoji('🙂'),
+          onAudio: () => widget.controller.sendAttachment(ChatMessageKind.audio),
+          onImage: () => widget.controller.sendAttachment(ChatMessageKind.image),
+        ),
+      ],
     );
   }
 }

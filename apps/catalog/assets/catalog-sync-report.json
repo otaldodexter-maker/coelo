@@ -77,50 +77,6 @@
     "governance.component-lifecycle": {
       "source": "811c9dc5",
       "example": "d994ba96"
-    },
-    "core.chat-avatar": {
-      "source": "aea84c7d",
-      "example": "a3a690c7"
-    },
-    "core.conversation-tile": {
-      "source": "f05cdf0b",
-      "example": "ca16ec27"
-    },
-    "core.conversation-header": {
-      "source": "cea055eb",
-      "example": "9ac720e0"
-    },
-    "core.message-bubble": {
-      "source": "ab52b73c",
-      "example": "daf99f06"
-    },
-    "core.chat-composer": {
-      "source": "c9c6c320",
-      "example": "7a5b1274"
-    },
-    "admin.context-picker": {
-      "source": "1593029d",
-      "example": "86295c46"
-    },
-    "admin.chat-context-summary": {
-      "source": "cc7fb0f3",
-      "example": "9555e949"
-    },
-    "pattern.chat-admin": {
-      "source": "811c9dc5",
-      "example": "b162ed73"
-    },
-    "pattern.chat-principal-mobile": {
-      "source": "811c9dc5",
-      "example": "ef3af268"
-    },
-    "pattern.chat-principal-web": {
-      "source": "811c9dc5",
-      "example": "a19c55c0"
-    },
-    "pattern.chat-states": {
-      "source": "811c9dc5",
-      "example": "69e24d41"
     }
   }
 }

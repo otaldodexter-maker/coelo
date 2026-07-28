@@ -55,9 +55,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Mensagens'));
+    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Expandir conversas'));
+    await tester.tap(find.text('Abrir tela'));
 
     expect(conversationsOpened, 1);
   });

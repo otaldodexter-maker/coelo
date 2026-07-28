@@ -1,15 +1,26 @@
-import 'dart:async';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../chat_fixtures.dart';
+import '../chat_controller.dart';
+import '../chat_models.dart';
+import 'superadmin_chat_avatar.dart';
+import 'superadmin_chat_composer.dart';
+import 'superadmin_chat_message_bubble.dart';
 
 final class SuperadminChatThreadBody extends StatefulWidget {
-  const SuperadminChatThreadBody({required this.conversation, this.compact = false, super.key});
+  const SuperadminChatThreadBody({
+    required this.controller,
+    required this.conversation,
+    required this.onOpenContext,
+    this.onBack,
+    this.compact = false,
+    super.key,
+  });
 
+  final SuperadminChatController controller;
   final SuperadminChatConversation conversation;
+  final VoidCallback onOpenContext;
+  final VoidCallback? onBack;
   final bool compact;
 
   @override
@@ -17,266 +28,200 @@ final class SuperadminChatThreadBody extends StatefulWidget {
 }
 
 final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBody> {
-  final _composerController = TextEditingController();
-  final _timers = <Timer>[];
-  late List<_SimulatedMessage> _messages;
-  String? _activityLabel;
-  bool get _localDemo => widget.conversation.localInitialMessage != null;
-
-  @override
-  void initState() {
-    super.initState();
-    _messages = _initialMessages();
-  }
-
-  @override
-  void didUpdateWidget(covariant SuperadminChatThreadBody oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.conversation.id != widget.conversation.id) {
-      _cancelTimers();
-      _composerController.clear();
-      _messages = _initialMessages();
-      _activityLabel = null;
-    }
-  }
+  final _composer = TextEditingController();
 
   @override
   void dispose() {
-    _cancelTimers();
-    _composerController.dispose();
+    _composer.dispose();
     super.dispose();
   }
 
-  void _cancelTimers() {
-    for (final timer in _timers) {
-      timer.cancel();
-    }
-    _timers.clear();
+  void _send() {
+    widget.controller.sendText(_composer.text);
+    _composer.clear();
   }
 
-  List<_SimulatedMessage> _initialMessages() {
-    if (widget.conversation.localInitialMessage case final message?) {
-      return [
-        _SimulatedMessage(
-          direction: CoeloMessageDirection.sent,
-          contextLabel: 'Demonstração local',
-          body: message,
-          timestamp: 'Agora',
-        ),
-      ];
-    }
-    return [
-      const _SimulatedMessage(
-        direction: CoeloMessageDirection.received,
-        authorLabel: 'Marina · Professora',
-        contextLabel: 'Turma Girassol',
-        body: 'A atividade terminou e correu tudo bem.',
-        timestamp: '10:32',
-        childLabels: ['Lia'],
-      ),
-      const _SimulatedMessage(
-        direction: CoeloMessageDirection.sent,
-        contextLabel: 'Superadmin · contexto histórico',
-        body: 'Obrigada. A família já foi avisada.',
-        timestamp: '10:34',
-        childLabels: ['Lia'],
-        deliveryState: CoeloMessageDeliveryState.read,
-      ),
-    ];
-  }
-
-  void _sendText() {
-    final body = _composerController.text.trim();
-    if (body.isEmpty) return;
-    setState(() {
-      _messages.add(
-        _SimulatedMessage(
-          direction: CoeloMessageDirection.sent,
-          body: body,
-          timestamp: 'Agora',
-          deliveryState: _localDemo
-              ? CoeloMessageDeliveryState.none
-              : CoeloMessageDeliveryState.delivered,
-        ),
-      );
-      _composerController.clear();
-      _activityLabel = _localDemo ? null : 'Enviando mensagem…';
-    });
-    if (_localDemo) {
-      return;
-    }
-    _timers.add(
-      Timer(const Duration(milliseconds: 300), () {
-        if (mounted) setState(() => _activityLabel = 'Marina está digitando…');
-      }),
-    );
-    _timers.add(
-      Timer(const Duration(milliseconds: 1300), () {
-        if (!mounted) return;
-        setState(() {
-          _messages.add(
-            const _SimulatedMessage(
-              direction: CoeloMessageDirection.received,
-              authorLabel: 'Marina · Professora',
-              contextLabel: 'Turma Girassol',
-              body: 'Recebi sua mensagem. Vou verificar e retorno por aqui.',
-              timestamp: 'Agora',
-            ),
-          );
-          _activityLabel = null;
-        });
-      }),
-    );
-  }
-
-  void _recordAudio() {
-    if (_localDemo) {
-      setState(() {
-        _messages.add(
-          const _SimulatedMessage(
-            direction: CoeloMessageDirection.sent,
-            contextLabel: 'Demonstração local',
-            body: 'Demonstração local · mensagem de áudio · 0:08',
-            timestamp: 'Agora',
-          ),
-        );
-      });
-      return;
-    }
-    setState(() => _activityLabel = 'Gravando áudio…');
-    _timers.add(
-      Timer(const Duration(milliseconds: 900), () {
-        if (mounted) setState(() => _activityLabel = 'Enviando áudio…');
-      }),
-    );
-    _timers.add(
-      Timer(const Duration(milliseconds: 1700), () {
-        if (!mounted) return;
-        setState(() {
-          _messages.add(
-            const _SimulatedMessage(
-              direction: CoeloMessageDirection.sent,
-              body: 'Mensagem de áudio · 0:08',
-              timestamp: 'Agora',
-              deliveryState: CoeloMessageDeliveryState.delivered,
-            ),
-          );
-          _activityLabel = null;
-        });
-      }),
-    );
-  }
-
-  void _attachMedia() {
-    if (_localDemo) {
-      setState(() {
-        _messages.add(
-          const _SimulatedMessage(
-            direction: CoeloMessageDirection.sent,
-            contextLabel: 'Demonstração local',
-            body: 'Demonstração local · imagem anexada',
-            timestamp: 'Agora',
-          ),
-        );
-      });
-      return;
-    }
-    setState(() => _activityLabel = 'Carregando mídia… 48%');
-    _timers.add(
-      Timer(const Duration(milliseconds: 900), () {
-        if (mounted) setState(() => _activityLabel = 'Enviando mídia…');
-      }),
-    );
-    _timers.add(
-      Timer(const Duration(milliseconds: 1700), () {
-        if (!mounted) return;
-        setState(() {
-          _messages.add(
-            const _SimulatedMessage(
-              direction: CoeloMessageDirection.sent,
-              body: 'Imagem anexada · demonstração local',
-              timestamp: 'Agora',
-              deliveryState: CoeloMessageDeliveryState.delivered,
-            ),
-          );
-          _activityLabel = null;
-        });
-      }),
-    );
+  void _feedback(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(widget.compact ? CoeloSpacing.space3 : CoeloSpacing.space4),
-            itemCount: _messages.length,
-            itemBuilder: (context, index) {
-              final message = _messages[index];
-              return CoeloMessageBubble(
-                direction: message.direction,
-                body: message.body,
-                timestamp: message.timestamp,
-                authorLabel: message.authorLabel,
-                contextLabel: message.contextLabel,
-                childLabels: message.childLabels,
-                deliveryState: message.deliveryState,
-              );
-            },
+    final colors = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: colors.surfaceContainerLowest,
+      child: Column(
+        children: [
+          _ThreadHeader(
+            conversation: widget.conversation,
+            onBack: widget.onBack,
+            onOpenContext: widget.onOpenContext,
+            onDelete: () => _confirmDelete(context),
           ),
-        ),
-        Semantics(
-          liveRegion: true,
-          child: SizedBox(
-            height: 32,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: _activityLabel == null
-                  ? null
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                      child: Text(
-                        _activityLabel!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
+          Expanded(
+            child: ListView(
+              key: const Key('superadmin-chat-history'),
+              padding: EdgeInsets.symmetric(
+                horizontal: widget.compact ? CoeloSpacing.space3 : CoeloSpacing.space5,
+                vertical: CoeloSpacing.space4,
+              ),
+              children: [
+                Center(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(CoeloRadius.full),
                     ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: CoeloSpacing.space3,
+                        vertical: CoeloSpacing.space1,
+                      ),
+                      child: Text('Hoje'),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                for (final message in widget.conversation.messages)
+                  SuperadminChatMessageBubble(message: message),
+              ],
             ),
           ),
-        ),
-        CoeloChatComposer(
-          controller: _composerController,
-          onSend: _sendText,
-          showAudioAction: true,
-          showMediaAction: true,
-          onAudioPressed: _recordAudio,
-          onMediaPressed: _attachMedia,
-        ),
-      ],
+          SuperadminChatComposer(
+            controller: _composer,
+            compact: widget.compact,
+            onSend: _send,
+            onEmoji: () {
+              widget.controller.sendEmoji('🙂');
+              _feedback('Emoji adicionado à conversa simulada.');
+            },
+            onAudio: () {
+              widget.controller.sendAttachment(ChatMessageKind.audio);
+              _feedback('Áudio simulado adicionado.');
+            },
+            onImage: () {
+              widget.controller.sendAttachment(ChatMessageKind.image);
+              _feedback('Imagem simulada adicionada.');
+            },
+          ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Excluir conversa?'),
+        content: const Text('Esta ação afeta somente os dados simulados deste protótipo.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) widget.controller.deleteConversation(widget.conversation.id);
   }
 }
 
-final class _SimulatedMessage {
-  const _SimulatedMessage({
-    required this.direction,
-    required this.body,
-    required this.timestamp,
-    this.authorLabel,
-    this.contextLabel,
-    this.childLabels = const [],
-    this.deliveryState = CoeloMessageDeliveryState.none,
+final class _ThreadHeader extends StatelessWidget {
+  const _ThreadHeader({
+    required this.conversation,
+    required this.onOpenContext,
+    required this.onDelete,
+    this.onBack,
   });
 
-  final CoeloMessageDirection direction;
-  final String body;
-  final String timestamp;
-  final String? authorLabel;
-  final String? contextLabel;
-  final List<String> childLabels;
-  final CoeloMessageDeliveryState deliveryState;
+  final SuperadminChatConversation conversation;
+  final VoidCallback onOpenContext;
+  final VoidCallback onDelete;
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space3,
+          vertical: CoeloSpacing.space2,
+        ),
+        child: Row(
+          children: [
+            if (onBack != null)
+              IconButton(
+                tooltip: 'Voltar para conversas',
+                onPressed: onBack,
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
+            SuperadminChatAvatar(
+              label: conversation.title,
+              initials: conversation.initials,
+              size: CoeloSize.avatarMd,
+              online: conversation.kind == ChatContextKind.person,
+            ),
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(CoeloRadius.md),
+                onTap: onOpenContext,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        conversation.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        conversation.context,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Ver contexto',
+              onPressed: onOpenContext,
+              icon: const Icon(Icons.info_outline_rounded),
+            ),
+            PopupMenuButton<String>(
+              tooltip: 'Ações da conversa',
+              onSelected: (value) {
+                if (value == 'delete') onDelete();
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: 'delete',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.delete_outline_rounded),
+                    title: Text('Excluir conversa'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

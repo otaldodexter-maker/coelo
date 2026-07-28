@@ -1,8 +1,9 @@
 ---
 title: "Sistema Visual Compartilhado De Chat"
 source: "Referências visuais fornecidas pelo usuário; docs/design/design-system.md; decisions/0012-contextual-experiences-and-conversation-history.md; decisions/0015-contextual-people-authorizations-attendance.md"
-status: "approved"
+status: "superseded"
 generated_at: "2026-07-27"
+superseded_by: "docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md"
 ---
 
 # Sistema Visual Compartilhado De Chat

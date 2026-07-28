@@ -16,10 +16,6 @@ abstract final class CoeloTheme {
       actionLink: CoeloSemanticColors.lightActionLink,
       focusRing: CoeloPalette.orange500,
     ),
-    chatColors: const CoeloChatColors(
-      nowRingPrimary: CoeloPalette.orange500,
-      nowRingSecondary: CoeloPalette.orange300,
-    ),
     secondaryText: CoeloSemanticColors.lightTextSecondary,
     visualColors: CoeloVisualColors(
       brandMarkBackground: CoeloPalette.orange500,
@@ -46,10 +42,6 @@ abstract final class CoeloTheme {
       actionLink: CoeloSemanticColors.darkActionLink,
       focusRing: CoeloPalette.orange300,
     ),
-    chatColors: const CoeloChatColors(
-      nowRingPrimary: CoeloPalette.orange300,
-      nowRingSecondary: CoeloPalette.orange500,
-    ),
     secondaryText: CoeloSemanticColors.darkTextSecondary,
     visualColors: CoeloVisualColors(
       brandMarkBackground: CoeloPalette.neutral0,
@@ -71,7 +63,6 @@ abstract final class CoeloTheme {
     required Color scaffoldBackgroundColor,
     required CoeloStatusColors statusColors,
     required CoeloActionColors actionColors,
-    required CoeloChatColors chatColors,
     required Color secondaryText,
     required CoeloVisualColors visualColors,
   }) {
@@ -94,7 +85,6 @@ abstract final class CoeloTheme {
       extensions: <ThemeExtension<dynamic>>[
         statusColors,
         actionColors,
-        chatColors,
         overlayColors,
         CoeloSurfaceColors(
           background: scaffoldBackgroundColor,
@@ -563,32 +553,6 @@ final class CoeloOverlayColors extends ThemeExtension<CoeloOverlayColors> {
     }
 
     return CoeloOverlayColors(scrim: Color.lerp(scrim, other.scrim, t)!);
-  }
-}
-
-final class CoeloChatColors extends ThemeExtension<CoeloChatColors> {
-  const CoeloChatColors({required this.nowRingPrimary, required this.nowRingSecondary});
-
-  final Color nowRingPrimary;
-  final Color nowRingSecondary;
-
-  @override
-  CoeloChatColors copyWith({Color? nowRingPrimary, Color? nowRingSecondary}) {
-    return CoeloChatColors(
-      nowRingPrimary: nowRingPrimary ?? this.nowRingPrimary,
-      nowRingSecondary: nowRingSecondary ?? this.nowRingSecondary,
-    );
-  }
-
-  @override
-  CoeloChatColors lerp(ThemeExtension<CoeloChatColors>? other, double t) {
-    if (other is! CoeloChatColors) {
-      return this;
-    }
-    return CoeloChatColors(
-      nowRingPrimary: Color.lerp(nowRingPrimary, other.nowRingPrimary, t)!,
-      nowRingSecondary: Color.lerp(nowRingSecondary, other.nowRingSecondary, t)!,
-    );
   }
 }
 

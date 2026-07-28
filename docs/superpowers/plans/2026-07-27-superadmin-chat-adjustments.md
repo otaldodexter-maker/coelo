@@ -1,7 +1,8 @@
 ---
 source: "docs/superpowers/specs/2026-07-27-superadmin-chat-adjustments-design.md; decisão aprovada em 2026-07-28"
-status: "ready"
+status: "superseded"
 generated_at: "2026-07-28"
+superseded_by: "docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md"
 ---
 
 # Superadmin Chat Adjustments Implementation Plan

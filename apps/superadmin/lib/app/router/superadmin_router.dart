@@ -74,7 +74,13 @@ GoRouter createSuperadminRouter({
     },
     routes: [
       ShellRoute(
-        builder: (context, state, child) => DevMenuOverlay(onNavigate: context.go, child: child),
+        builder: (context, state, child) => DevMenuOverlay(
+          onNavigate: context.go,
+          showTrigger:
+              state.matchedLocation != SuperadminRoutes.conversations &&
+              state.matchedLocation != SuperadminRoutes.devConversations,
+          child: child,
+        ),
         routes: [
           GoRoute(
             path: SuperadminRoutes.login,
@@ -120,6 +126,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.supportName);
+                } else if (destination == 'conversations') {
+                  context.goNamed(SuperadminRoutes.conversationsName);
                 }
               },
             ),
@@ -165,6 +173,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.supportName);
+                } else if (destination == 'conversations') {
+                  context.goNamed(SuperadminRoutes.conversationsName);
                 }
               },
             ),
@@ -218,6 +228,10 @@ GoRouter createSuperadminRouter({
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'support'},
+              ),
             ),
           ),
           GoRoute(
@@ -287,6 +301,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
+                } else if (destination == 'conversations') {
+                  context.goNamed(SuperadminRoutes.devConversationsName);
                 }
               },
             ),
@@ -330,6 +346,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
+                } else if (destination == 'conversations') {
+                  context.goNamed(SuperadminRoutes.devConversationsName);
                 }
               },
             ),
@@ -365,6 +383,10 @@ GoRouter createSuperadminRouter({
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.devInstitutionsName),
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.devConversationsName,
+                queryParameters: const {'from': 'support'},
+              ),
             ),
           ),
           GoRoute(

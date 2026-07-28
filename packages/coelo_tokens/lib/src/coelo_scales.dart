@@ -51,5 +51,4 @@ abstract final class CoeloSize {
   static const double avatarSm = 32;
   static const double avatarMd = 40;
   static const double avatarLg = 48;
-  static const double avatarXl = 64;
 }
