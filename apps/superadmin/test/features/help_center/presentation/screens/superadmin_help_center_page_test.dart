@@ -259,6 +259,49 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   });
 
+  testWidgets('uses approved brand states for stacked new conversation action in both themes', (
+    tester,
+  ) async {
+    for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(375, 900);
+      await tester.pumpWidget(_app(themeMode: themeMode));
+      await tester.pumpAndSettle();
+
+      final theme = Theme.of(
+        tester.element(find.byKey(const Key('superadmin-help-composer-field'))),
+      );
+      final colors = theme.colorScheme;
+      final actionColors = theme.extension<CoeloActionColors>()!;
+      final newConversationFinder = find.byWidgetPredicate(
+        (widget) => widget is IconButton && widget.tooltip == 'Nova conversa',
+      );
+      final newConversation = tester.widget<IconButton>(newConversationFinder);
+
+      expect(tester.getSize(newConversationFinder), const Size.square(CoeloSize.touchMin));
+      expect(newConversation.style?.backgroundColor?.resolve({}), colors.primary);
+      expect(
+        newConversation.style?.backgroundColor?.resolve({WidgetState.hovered}),
+        actionColors.primaryHover,
+      );
+      expect(
+        newConversation.style?.backgroundColor?.resolve({WidgetState.focused}),
+        actionColors.primaryHover,
+      );
+      expect(
+        newConversation.style?.backgroundColor?.resolve({WidgetState.pressed}),
+        actionColors.primaryPressed,
+      );
+      expect(newConversation.style?.foregroundColor?.resolve({}), colors.onPrimary);
+      expect(
+        newConversation.style?.overlayColor?.resolve({WidgetState.hovered}),
+        Colors.transparent,
+      );
+    }
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+  });
+
   testWidgets('keeps tonal suggestions and the send icon free of a gray overlay', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1024, 900);

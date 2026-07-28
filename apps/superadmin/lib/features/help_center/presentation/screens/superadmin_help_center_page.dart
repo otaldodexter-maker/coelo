@@ -388,7 +388,9 @@ class _StackedHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>()!;
     final selected = conversations
         .where((conversation) => conversation.id == selectedId)
         .firstOrNull;
@@ -435,7 +437,7 @@ class _StackedHistory extends StatelessWidget {
             IconButton(
               tooltip: 'Nova conversa',
               onPressed: onNewConversation,
-              style: _discreteIconButtonStyle(colors),
+              style: _brandIconButtonStyle(colors, actionColors),
               icon: const Icon(Icons.add_rounded),
             ),
           ],
