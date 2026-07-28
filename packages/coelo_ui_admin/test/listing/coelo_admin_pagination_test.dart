@@ -113,8 +113,109 @@ void main() {
 
     await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('50').last);
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size-50')));
+    await tester.pumpAndSettle();
     expect(selectedPageSize, 50);
+  });
+
+  testWidgets('centers the pagination content and wrapped runs', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(520, 220));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: const Scaffold(
+          body: CoeloAdminPagination(
+            currentPage: 5,
+            totalPages: 10,
+            onPrevious: _noop,
+            onNext: _noop,
+            pageSize: 20,
+            pageSizeOptions: [11, 20, 50, 100],
+          ),
+        ),
+      ),
+    );
+
+    final content = tester.widget<Wrap>(find.byKey(const Key('coelo-admin-pagination-content')));
+    expect(content.alignment, WrapAlignment.center);
+  });
+
+  testWidgets('uses the approved compact single-select surface', (tester) async {
+    var selectedPageSize = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminPagination(
+            currentPage: 1,
+            totalPages: 2,
+            onPrevious: null,
+            onNext: _noop,
+            pageSize: 20,
+            pageSizeOptions: const [11, 20, 50, 100],
+            onPageSizeChanged: (value) => selectedPageSize = value,
+          ),
+        ),
+      ),
+    );
+
+    final trigger = find.byKey(const Key('coelo-admin-pagination-page-size'));
+    expect(find.byType(DropdownButton<int>), findsNothing);
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+
+    final anchor = tester.widget<MenuAnchor>(
+      find.byKey(const Key('coelo-admin-pagination-page-size-anchor')),
+    );
+    final triggerWidth = tester.getSize(trigger).width;
+    expect(anchor.crossAxisUnconstrained, isFalse);
+    expect(anchor.style!.backgroundColor!.resolve({}), CoeloTheme.light.colorScheme.surface);
+    expect(anchor.style!.surfaceTintColor!.resolve({}), Colors.transparent);
+    expect(anchor.style!.minimumSize!.resolve({})!.width, triggerWidth);
+    expect(anchor.style!.maximumSize!.resolve({})!.width, triggerWidth);
+    expect(find.byType(Checkbox), findsNothing);
+    expect(find.byIcon(Icons.check_rounded), findsNothing);
+
+    final selected = tester.widget<MenuItemButton>(
+      find.byKey(const Key('coelo-admin-pagination-page-size-20')),
+    );
+    expect(
+      selected.style!.backgroundColor!.resolve({}),
+      CoeloTheme.light.colorScheme.primaryContainer,
+    );
+
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size-50')));
+    await tester.pumpAndSettle();
+    expect(selectedPageSize, 50);
+  });
+
+  testWidgets('closes the page-size menu with Escape and returns focus', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminPagination(
+            currentPage: 1,
+            totalPages: 2,
+            onPrevious: null,
+            onNext: _noop,
+            pageSize: 20,
+            pageSizeOptions: const [11, 20, 50, 100],
+            onPageSizeChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final trigger = find.byKey(const Key('coelo-admin-pagination-page-size'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MenuItemButton), findsNothing);
+    expect(tester.widget<OutlinedButton>(trigger).focusNode!.hasFocus, isTrue);
   });
 
   test('requires page-size options when page size is provided', () {

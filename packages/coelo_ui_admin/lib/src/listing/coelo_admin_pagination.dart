@@ -97,35 +97,17 @@ class _CoeloAdminPaginationContentState extends State<_CoeloAdminPaginationConte
           };
 
     return Wrap(
-      alignment: WrapAlignment.end,
+      key: const Key('coelo-admin-pagination-content'),
+      alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
       children: [
         if (widget.pageSize case final pageSize?)
-          Semantics(
-            label: 'Quantidade de itens por página',
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Itens por página'),
-                const SizedBox(width: CoeloSpacing.space2),
-                DropdownButton<int>(
-                  key: const Key('coelo-admin-pagination-page-size'),
-                  value: pageSize,
-                  items: widget.pageSizeOptions
-                      .map((option) => DropdownMenuItem<int>(value: option, child: Text('$option')))
-                      .toList(growable: false),
-                  onChanged: widget.onPageSizeChanged == null
-                      ? null
-                      : (value) {
-                          if (value != null) {
-                            widget.onPageSizeChanged!(value);
-                          }
-                        },
-                ),
-              ],
-            ),
+          _PageSizeSelector(
+            value: pageSize,
+            options: widget.pageSizeOptions,
+            onChanged: widget.onPageSizeChanged,
           ),
         Semantics(
           label: 'Página anterior',
@@ -171,6 +153,152 @@ class _CoeloAdminPaginationContentState extends State<_CoeloAdminPaginationConte
           ),
         ),
       ],
+    );
+  }
+}
+
+final class _PageSizeSelector extends StatefulWidget {
+  const _PageSizeSelector({required this.value, required this.options, required this.onChanged});
+
+  final int value;
+  final List<int> options;
+  final ValueChanged<int>? onChanged;
+
+  @override
+  State<_PageSizeSelector> createState() => _PageSizeSelectorState();
+}
+
+final class _PageSizeSelectorState extends State<_PageSizeSelector> {
+  static const _width = CoeloSpacing.space20;
+  final _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final enabled = widget.onChanged != null;
+    return Semantics(
+      label: 'Quantidade de itens por página',
+      value: '${widget.value}',
+      enabled: enabled,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Itens por p\u00e1gina'),
+          const SizedBox(width: CoeloSpacing.space2),
+          MenuAnchor(
+            key: const Key('coelo-admin-pagination-page-size-anchor'),
+            childFocusNode: _focusNode,
+            crossAxisUnconstrained: false,
+            alignmentOffset: const Offset(0, CoeloSpacing.space1),
+            onClose: _focusNode.requestFocus,
+            style: MenuStyle(
+              backgroundColor: WidgetStatePropertyAll(colors.surface),
+              surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+              elevation: const WidgetStatePropertyAll(CoeloElevation.level3),
+              padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+              minimumSize: const WidgetStatePropertyAll(Size(_width, 0)),
+              maximumSize: const WidgetStatePropertyAll(Size(_width, double.infinity)),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                  side: BorderSide(color: colors.outlineVariant),
+                ),
+              ),
+            ),
+            menuChildren: [
+              for (final option in widget.options)
+                SizedBox(
+                  width: _width,
+                  child: MenuItemButton(
+                    key: Key('coelo-admin-pagination-page-size-$option'),
+                    onPressed: enabled ? () => widget.onChanged!(option) : null,
+                    style: ButtonStyle(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size.fromHeight(CoeloSize.touchMin),
+                      ),
+                      shape: const WidgetStatePropertyAll(RoundedRectangleBorder()),
+                      foregroundColor: WidgetStateProperty.resolveWith(
+                        (states) =>
+                            option == widget.value ||
+                                states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused)
+                            ? colors.primary
+                            : colors.onSurface,
+                      ),
+                      backgroundColor: WidgetStateProperty.resolveWith(
+                        (states) =>
+                            option == widget.value ||
+                                states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused)
+                            ? colors.primaryContainer
+                            : colors.surface,
+                      ),
+                      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                    ),
+                    child: Text('$option'),
+                  ),
+                ),
+            ],
+            builder: (context, menu, child) {
+              final active = menu.isOpen;
+              return OutlinedButton(
+                key: const Key('coelo-admin-pagination-page-size'),
+                focusNode: _focusNode,
+                onPressed: enabled ? () => active ? menu.close() : menu.open() : null,
+                style: ButtonStyle(
+                  fixedSize: const WidgetStatePropertyAll(Size(_width, CoeloSize.touchMin)),
+                  padding: const WidgetStatePropertyAll(
+                    EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+                  ),
+                  shape: const WidgetStatePropertyAll(StadiumBorder()),
+                  foregroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        active ||
+                            states.contains(WidgetState.hovered) ||
+                            states.contains(WidgetState.focused)
+                        ? colors.primary
+                        : colors.onSurfaceVariant,
+                  ),
+                  backgroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        active ||
+                            states.contains(WidgetState.hovered) ||
+                            states.contains(WidgetState.focused)
+                        ? colors.primaryContainer
+                        : colors.surface,
+                  ),
+                  side: WidgetStateProperty.resolveWith(
+                    (states) => BorderSide(
+                      color:
+                          active ||
+                              states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused)
+                          ? colors.primary
+                          : colors.outlineVariant,
+                    ),
+                  ),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${widget.value}'),
+                    Icon(
+                      active ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
