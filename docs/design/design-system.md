@@ -585,7 +585,7 @@ catálogo.
 | Resumo contextual recolhido | 64 px | Combina alvo de 48 px e 16 px de padding. |
 | Launcher | Máximo de 460 × 600 px | Preserva 16 px nas bordas e 96 px de respiro inferior. |
 | Avatar de inbox/cabeçalho | Máximo de 48 × 48 px | Usa `CoeloSize.avatarLg`. |
-| Foto contextual | 1:1, máximo de 64 × 64 px | Usa `CoeloSize.avatarXl`; o recorte não autoriza exibição de mídia privada. |
+| Foto contextual | 1:1, máximo de 64 × 64 px | Usa `CoeloSize.avatarXl`; é anunciada pelo título do contexto e o recorte não autoriza exibição de mídia privada. |
 
 O resumo contextual identifica o destinatário e apresenta de duas a seis
 métricas textuais adequadas à granularidade recebida. O componente visual não
@@ -605,6 +605,20 @@ dispositivo. Recolher laterais preserva conversa selecionada e foco. O
 compositor envia por botão ou `Enter`, usa `Shift+Enter` para nova linha e
 mantém o contexto ativo textual. O launcher e o conteúdo reservam espaço entre
 si para não encobrir ações.
+
+Em larguras abaixo de `large`, o launcher abre como modal com barreira,
+margem mínima de 16 px e máximo de 460 × 600 px. Em `large`, abre numa faixa
+irmã reservada de 460 px; inbox e resumo passam respectivamente para rail de
+80 px e variante recolhida de 64 px enquanto a faixa estiver aberta. O botão
+flutuante usa superfície neutra em repouso e `primary` com `onPrimary` em hover
+ou foco. A ação de fechar usa `close_rounded`, alvo mínimo de 48 px, `error` em
+repouso e `errorContainer` em hover ou foco.
+
+Filtros administrativos usam superfície neutra em repouso. Seleção, hover e
+foco usam `primaryContainer`, conteúdo e contorno `primary`, contorno de 2 px e
+overlay transparente. Fotos fornecidas ao resumo contextual são anunciadas
+como `Imagem de contexto de {título}`, com a semântica interna da imagem
+excluída para evitar leitura duplicada.
 
 ### Caixa De Conversas E Estado Do Avatar
 

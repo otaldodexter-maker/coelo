@@ -51,10 +51,17 @@ void main() {
   }
 
   testWidgets('keeps the optional context image square and capped at avatarXl', (tester) async {
+    final semantics = tester.ensureSemantics();
     await tester.pumpWidget(_app(image: const ColoredBox(color: Colors.blue)));
 
-    final size = tester.getSize(find.byKey(const Key('coelo-admin-chat-context-image')));
+    final imageFinder = find.byKey(const Key('coelo-admin-chat-context-image'));
+    final size = tester.getSize(imageFinder);
     expect(size, const Size.square(CoeloSize.avatarXl));
+    expect(
+      tester.getSemantics(imageFinder),
+      matchesSemantics(label: 'Imagem de contexto de Centro Horizonte', isImage: true),
+    );
+    semantics.dispose();
   });
 
   testWidgets('exposes a focusable toggle and the collapsed state', (tester) async {

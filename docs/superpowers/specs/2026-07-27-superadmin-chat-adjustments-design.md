@@ -91,6 +91,18 @@ usa superfície neutra. Hover e foco usam `colorScheme.primary`; texto, ícones
 e elementos internos usam `colorScheme.onPrimary`. A mudança de estado não
 altera dimensões ou posição.
 
+Na referência executável do catálogo, larguras abaixo de `large` abrem o
+launcher como modal com barreira, margem mínima de 16 px e limite de
+460 × 600 px. A partir de `large`, ele ocupa uma faixa irmã reservada de 460 px,
+sem sobrepor fio ou contexto; enquanto aberto, a inbox usa rail de 80 px e o
+resumo contextual usa a variante recolhida de 64 px. A ação de fechar usa
+`close_rounded`, alvo mínimo de 48 px, `error` em repouso e
+`errorContainer` em hover ou foco.
+
+Os filtros administrativos usam superfície neutra em repouso. Seleção, hover
+e foco usam `primaryContainer`, conteúdo e contorno `primary`, com contorno de
+2 px e overlay transparente.
+
 ### Inbox esquerda
 
 A inbox organiza conversas em seções como `Grupos`, `Pessoas` e contextos
@@ -112,6 +124,10 @@ semânticas e não comprimem o cabeçalho ou o compositor.
 
 O painel identifica o destinatário e mostra de dois a seis indicadores simples
 e relevantes à sua granularidade. Ele também pode ser recolhido.
+
+Quando houver foto contextual, o recorte permanece 1:1 e limitado a 64 px. A
+imagem é anunciada como `Imagem de contexto de {título}` e exclui a semântica
+interna do widget visual, sem adicionar parâmetro ou classe à API pública.
 
 Exemplos:
 

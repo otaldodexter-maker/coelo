@@ -166,6 +166,138 @@ void main() {
     expect(find.byTooltip('Fechar conversas'), findsOne);
   });
 
+  testWidgets('launcher and filters expose canonical default hover and focus styles', (
+    tester,
+  ) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    final colors = CoeloTheme.light.colorScheme;
+    final launcher = tester.widget<FilledButton>(
+      find.byKey(const Key('catalog-admin-chat-launcher')),
+    );
+    expect(launcher.style?.backgroundColor?.resolve({}), colors.surface);
+    expect(launcher.style?.foregroundColor?.resolve({}), colors.onSurface);
+    for (final state in [WidgetState.hovered, WidgetState.focused]) {
+      expect(launcher.style?.backgroundColor?.resolve({state}), colors.primary);
+      expect(launcher.style?.foregroundColor?.resolve({state}), colors.onPrimary);
+    }
+    expect(launcher.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+
+    final selected = tester.widget<OutlinedButton>(
+      find.byKey(const Key('catalog-admin-filter-Todas')),
+    );
+    final idle = tester.widget<OutlinedButton>(
+      find.byKey(const Key('catalog-admin-filter-Pessoas')),
+    );
+    expect(selected.style?.backgroundColor?.resolve({}), colors.primaryContainer);
+    expect(selected.style?.foregroundColor?.resolve({}), colors.primary);
+    expect(idle.style?.backgroundColor?.resolve({}), colors.surface);
+    for (final state in [WidgetState.hovered, WidgetState.focused]) {
+      expect(idle.style?.backgroundColor?.resolve({state}), colors.primaryContainer);
+      expect(idle.style?.foregroundColor?.resolve({state}), colors.primary);
+      expect(idle.style?.side?.resolve({state})?.width, 2);
+      expect(idle.style?.side?.resolve({state})?.color, colors.primary);
+    }
+    expect(idle.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+  });
+
+  testWidgets('docks the launcher at 1440 without intersecting chat panes', (tester) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    await tester.tap(find.byKey(const Key('catalog-admin-chat-launcher')));
+    await tester.pump();
+
+    expect(
+      find.byWidgetPredicate((widget) => widget is ModalBarrier && widget.dismissible),
+      findsNothing,
+    );
+    final dock = tester.getRect(find.byKey(const Key('catalog-admin-chat-launcher-dock')));
+    final thread = tester.getRect(find.byKey(const Key('catalog-admin-chat-thread')));
+    final context = tester.getRect(
+      find.byKey(const Key('coelo-admin-chat-context-summary-collapsed')),
+    );
+    expect(dock.overlaps(thread), isFalse);
+    expect(dock.overlaps(context), isFalse);
+    expect(find.byKey(const Key('catalog-admin-chat-rail')), findsOne);
+  });
+
+  for (final width in [375.0, 768.0, 1024.0]) {
+    testWidgets('opens a modal launcher with blocked background at ${width.toInt()}', (
+      tester,
+    ) async {
+      final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 760);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+      await tester.tap(find.byKey(const Key('catalog-admin-chat-launcher')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byWidgetPredicate((widget) => widget is ModalBarrier && widget.dismissible),
+        findsOne,
+      );
+      final preview = find.byKey(const Key('catalog-admin-chat-launcher-preview'));
+      final rect = tester.getRect(preview);
+      expect(rect.width, lessThanOrEqualTo(460));
+      expect(rect.height, lessThanOrEqualTo(600));
+      expect(rect.left, greaterThanOrEqualTo(CoeloSpacing.space4));
+      expect(rect.right, lessThanOrEqualTo(width - CoeloSpacing.space4));
+
+      await tester.tap(find.byKey(const Key('catalog-admin-filter-Pessoas')), warnIfMissed: false);
+      await tester.pump();
+      final backgroundFilter = tester.widget<OutlinedButton>(
+        find.byKey(const Key('catalog-admin-filter-Pessoas')),
+      );
+      expect(
+        backgroundFilter.style?.backgroundColor?.resolve({}),
+        CoeloTheme.light.colorScheme.surface,
+      );
+    });
+  }
+
+  testWidgets('launcher close follows the canonical dismiss style', (tester) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 760);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    await tester.tap(find.byKey(const Key('catalog-admin-chat-launcher')));
+    await tester.pumpAndSettle();
+
+    final close = tester.widget<IconButton>(
+      find.byKey(const Key('catalog-admin-chat-launcher-close')),
+    );
+    final colors = CoeloTheme.light.colorScheme;
+    expect((close.icon as Icon).icon, Icons.close_rounded);
+    expect(close.style?.foregroundColor?.resolve({}), colors.error);
+    expect(close.style?.backgroundColor?.resolve({}), Colors.transparent);
+    for (final state in [WidgetState.hovered, WidgetState.focused]) {
+      expect(close.style?.backgroundColor?.resolve({state}), colors.errorContainer);
+      expect(close.style?.foregroundColor?.resolve({state}), colors.error);
+    }
+    expect(close.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(
+      tester.getSize(find.byKey(const Key('catalog-admin-chat-launcher-close'))).width,
+      greaterThanOrEqualTo(CoeloSize.touchMin),
+    );
+    expect(find.byTooltip('Fechar conversas'), findsOne);
+  });
+
   testWidgets('golden administrative chat mobile light', (tester) async {
     final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
     tester.view.devicePixelRatio = 1;
@@ -188,6 +320,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(_app(Builder(builder: foundation.builder), theme: CoeloTheme.dark));
+    await tester.tap(find.byKey(const Key('catalog-admin-chat-launcher')));
+    await tester.pumpAndSettle();
     await expectLater(
       find.byType(Scaffold),
       matchesGoldenFile('goldens/chat_admin_desktop_dark.png'),

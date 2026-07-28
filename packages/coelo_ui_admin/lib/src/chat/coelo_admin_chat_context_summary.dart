@@ -109,10 +109,15 @@ final class _ExpandedSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (image != null) ...[
-                  ClipRRect(
+                  Semantics(
                     key: const Key('coelo-admin-chat-context-image'),
-                    borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                    child: SizedBox.square(dimension: CoeloSize.avatarXl, child: image),
+                    image: true,
+                    label: 'Imagem de contexto de $title',
+                    excludeSemantics: true,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                      child: SizedBox.square(dimension: CoeloSize.avatarXl, child: image),
+                    ),
                   ),
                   const SizedBox(width: CoeloSpacing.space3),
                 ],

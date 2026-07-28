@@ -86,6 +86,7 @@ final class _AdministrativeChatFoundationState extends State<_AdministrativeChat
           final width = constraints.maxWidth;
           final conversation = catalogChatConversations[_selected];
           final content = _buildResponsiveContent(width: width, conversation: conversation);
+          final launcherDocked = width >= CoeloBreakpoints.large.minWidth && _launcherOpen;
           return Stack(
             children: [
               Column(
@@ -98,24 +99,12 @@ final class _AdministrativeChatFoundationState extends State<_AdministrativeChat
                   Expanded(child: content),
                 ],
               ),
-              Positioned(
-                right: _launcherRightInset(width),
-                bottom: CoeloSpacing.space24,
-                child: _launcherOpen
-                    ? _AdministrativeLauncherPreview(
-                        maxWidth: width,
-                        selected: _selected,
-                        onSelected: _selectConversation,
-                        onClose: () => setState(() => _launcherOpen = false),
-                        onNewConversation: _openContextPicker,
-                      )
-                    : FilledButton.icon(
-                        key: const Key('catalog-admin-chat-launcher'),
-                        onPressed: () => setState(() => _launcherOpen = true),
-                        icon: const Icon(Icons.chat_bubble_outline),
-                        label: const Text('Mensagens 3'),
-                      ),
-              ),
+              if (!launcherDocked)
+                Positioned(
+                  right: _launcherRightInset(width),
+                  bottom: CoeloSpacing.space24,
+                  child: _AdministrativeLauncherButton(onPressed: () => _openLauncher(width)),
+                ),
             ],
           );
         },
@@ -170,12 +159,15 @@ final class _AdministrativeChatFoundationState extends State<_AdministrativeChat
       );
     }
 
-    final contextCollapsed = _contextCollapsed ?? width < CoeloBreakpoints.large.minWidth;
+    final launcherDocked = width >= CoeloBreakpoints.large.minWidth && _launcherOpen;
+    final inboxCollapsed = launcherDocked || _inboxCollapsed;
+    final contextCollapsed =
+        launcherDocked || (_contextCollapsed ?? width < CoeloBreakpoints.large.minWidth);
     return Row(
       children: [
         SizedBox(
-          width: _inboxCollapsed ? CoeloSpacing.space20 : 336,
-          child: _inboxCollapsed
+          width: inboxCollapsed ? CoeloSpacing.space20 : 336,
+          child: inboxCollapsed
               ? _AdministrativeConversationRail(
                   selected: _selected,
                   onSelected: _selectConversation,
@@ -196,6 +188,25 @@ final class _AdministrativeChatFoundationState extends State<_AdministrativeChat
             compact: false,
           ),
         ),
+        if (launcherDocked) ...[
+          VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          SizedBox(
+            key: const Key('catalog-admin-chat-launcher-dock'),
+            width: 460,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                height: 600,
+                child: _AdministrativeLauncherPreview(
+                  selected: _selected,
+                  onSelected: (index) => setState(() => _selected = index),
+                  onClose: () => setState(() => _launcherOpen = false),
+                  onNewConversation: _openContextPicker,
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -214,6 +225,51 @@ final class _AdministrativeChatFoundationState extends State<_AdministrativeChat
       onSelected: _selectConversation,
       onNewConversation: _openContextPicker,
       onCollapse: onCollapse,
+    );
+  }
+
+  Future<void> _openLauncher(double width) async {
+    if (width >= CoeloBreakpoints.large.minWidth) {
+      setState(() => _launcherOpen = true);
+      return;
+    }
+    final overlay = Theme.of(context).extension<CoeloOverlayColors>()!;
+    await showDialog<void>(
+      context: context,
+      barrierColor: overlay.scrim,
+      builder: (dialogContext) {
+        final colors = Theme.of(dialogContext).colorScheme;
+        return Dialog(
+          key: const Key('catalog-admin-chat-launcher-dialog'),
+          insetPadding: const EdgeInsets.all(CoeloSpacing.space4),
+          backgroundColor: colors.surface,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            side: BorderSide(color: colors.outlineVariant),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 460, maxHeight: 600),
+            child: SizedBox(
+              width: 460,
+              height: 600,
+              child: _AdministrativeLauncherPreview(
+                selected: _selected,
+                onSelected: (index) {
+                  _selectConversation(index);
+                  Navigator.of(dialogContext).pop();
+                },
+                onClose: () => Navigator.of(dialogContext).pop(),
+                onNewConversation: () {
+                  Navigator.of(dialogContext).pop();
+                  _openContextPicker();
+                },
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -324,52 +380,82 @@ final class _AdministrativeFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    bool isEmphasized(Set<WidgetState> states) =>
+        selected || states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
     return Semantics(
       selected: selected,
       button: true,
-      child: Material(
-        color: selected ? colors.primaryContainer : colors.surface,
-        shape: StadiumBorder(
-          side: BorderSide(
-            color: selected ? colors.primary : colors.outlineVariant,
-            width: selected ? 2 : 1,
+      child: OutlinedButton(
+        key: Key('catalog-admin-filter-$label'),
+        onPressed: onPressed,
+        style: ButtonStyle(
+          minimumSize: const WidgetStatePropertyAll(Size(0, CoeloSize.touchMin)),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
           ),
-        ),
-        child: InkWell(
-          key: Key('catalog-admin-filter-$label'),
-          customBorder: const StadiumBorder(),
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          onTap: onPressed,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-              child: Center(
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: selected ? colors.primary : colors.onSurface,
-                  ),
-                ),
-              ),
+          shape: const WidgetStatePropertyAll(StadiumBorder()),
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => isEmphasized(states) ? colors.primaryContainer : colors.surface,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => isEmphasized(states) ? colors.primary : colors.onSurface,
+          ),
+          side: WidgetStateProperty.resolveWith(
+            (states) => BorderSide(
+              color: isEmphasized(states) ? colors.primary : colors.outlineVariant,
+              width: isEmphasized(states) ? 2 : 1,
             ),
           ),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         ),
+        child: Text(label),
       ),
+    );
+  }
+}
+
+final class _AdministrativeLauncherButton extends StatelessWidget {
+  const _AdministrativeLauncherButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    bool isEmphasized(Set<WidgetState> states) =>
+        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+    return FilledButton.icon(
+      key: const Key('catalog-admin-chat-launcher'),
+      onPressed: onPressed,
+      style: ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (states) => isEmphasized(states) ? colors.primary : colors.surface,
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith(
+          (states) => isEmphasized(states) ? colors.onPrimary : colors.onSurface,
+        ),
+        side: WidgetStateProperty.resolveWith(
+          (states) =>
+              BorderSide(color: isEmphasized(states) ? colors.primary : colors.outlineVariant),
+        ),
+        shape: const WidgetStatePropertyAll(StadiumBorder()),
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      ),
+      icon: const Icon(Icons.chat_bubble_outline),
+      label: const Text('Mensagens 3'),
     );
   }
 }
 
 final class _AdministrativeLauncherPreview extends StatelessWidget {
   const _AdministrativeLauncherPreview({
-    required this.maxWidth,
     required this.selected,
     required this.onSelected,
     required this.onClose,
     required this.onNewConversation,
   });
 
-  final double maxWidth;
   final int selected;
   final ValueChanged<int> onSelected;
   final VoidCallback onClose;
@@ -383,15 +469,11 @@ final class _AdministrativeLauncherPreview extends StatelessWidget {
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(CoeloRadius.lg),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: maxWidth < 492 ? maxWidth - CoeloSpacing.space8 : 460,
-        height: 560,
-        child: _ConversationInbox(
-          selected: selected,
-          onSelected: onSelected,
-          onClose: onClose,
-          onNewConversation: onNewConversation,
-        ),
+      child: _ConversationInbox(
+        selected: selected,
+        onSelected: onSelected,
+        onClose: onClose,
+        onNewConversation: onNewConversation,
       ),
     );
   }
@@ -656,8 +738,21 @@ final class _ConversationInbox extends StatelessWidget {
                 ),
               if (onClose != null)
                 IconButton(
+                  key: const Key('catalog-admin-chat-launcher-close'),
                   tooltip: 'Fechar conversas',
                   onPressed: onClose,
+                  style: ButtonStyle(
+                    minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
+                    foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.error),
+                    backgroundColor: WidgetStateProperty.resolveWith(
+                      (states) =>
+                          states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused)
+                          ? Theme.of(context).colorScheme.errorContainer
+                          : Colors.transparent,
+                    ),
+                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  ),
                   icon: const Icon(Icons.close_rounded),
                 ),
             ],
@@ -719,41 +814,44 @@ final class _ConversationThread extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = conversation ?? catalogChatConversations[1];
-    return Column(
-      children: [
-        CoeloConversationHeader(
-          avatar: CoeloChatAvatar(
-            label: selected.title,
-            initials: selected.initials,
-            size: CoeloSize.avatarLg,
+    return Container(
+      key: const Key('catalog-admin-chat-thread'),
+      child: Column(
+        children: [
+          CoeloConversationHeader(
+            avatar: CoeloChatAvatar(
+              label: selected.title,
+              initials: selected.initials,
+              size: CoeloSize.avatarLg,
+            ),
+            title: selected.title,
+            subtitle: selected.context,
+            onProfilePressed: () => _showAuthorizedRelationships(context),
+            actions: [
+              if (onBack != null)
+                IconButton(
+                  tooltip: 'Voltar para conversas',
+                  onPressed: onBack,
+                  icon: const Icon(Icons.arrow_back),
+                ),
+              if (showAdministrativeActions)
+                IconButton(
+                  tooltip: 'Ver vínculos',
+                  onPressed: () => _showAuthorizedRelationships(context),
+                  icon: const Icon(Icons.account_tree_outlined),
+                ),
+              if (onContext != null)
+                IconButton(
+                  tooltip: 'Ver contexto',
+                  onPressed: onContext,
+                  icon: const Icon(Icons.info_outline),
+                ),
+            ],
           ),
-          title: selected.title,
-          subtitle: selected.context,
-          onProfilePressed: () => _showAuthorizedRelationships(context),
-          actions: [
-            if (onBack != null)
-              IconButton(
-                tooltip: 'Voltar para conversas',
-                onPressed: onBack,
-                icon: const Icon(Icons.arrow_back),
-              ),
-            if (showAdministrativeActions)
-              IconButton(
-                tooltip: 'Ver vínculos',
-                onPressed: () => _showAuthorizedRelationships(context),
-                icon: const Icon(Icons.account_tree_outlined),
-              ),
-            if (onContext != null)
-              IconButton(
-                tooltip: 'Ver contexto',
-                onPressed: onContext,
-                icon: const Icon(Icons.info_outline),
-              ),
-          ],
-        ),
-        const Expanded(child: _MessageHistory()),
-        const _CatalogComposer(),
-      ],
+          const Expanded(child: _MessageHistory()),
+          const _CatalogComposer(),
+        ],
+      ),
     );
   }
 
