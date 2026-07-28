@@ -30,9 +30,14 @@ canônico `packages/coelo_database/migrations`.
 - `institution_legal_representatives`
   - relação normalizada com instituição, pessoa e membership;
   - FK composta que impede membership/pessoa de outro tenant;
-  - validação de pessoa adulta, data de nascimento conhecida e membership ativo;
+  - validação de pessoa adulta na data `starts_on`, data de nascimento conhecida
+    e membership ativo;
   - estado, vigência, representante principal e auditoria temporal;
-  - índices de consultas e unicidade ativa.
+  - índices de consultas e FKs, unicidade ativa por pessoa e no máximo um
+    representante principal ativo por instituição;
+  - fechamento automático do vínculo quando a membership é revogada/inativada
+    ou quando a pessoa deixa de cumprir a elegibilidade jurídica;
+  - atualização automática de `updated_at`.
 
 Não foram criadas tabelas paralelas de pessoa, administrador, papel ou convite.
 `people`, `institution_memberships`, `institution_roles`,
@@ -40,6 +45,12 @@ Não foram criadas tabelas paralelas de pessoa, administrador, papel ou convite.
 Também não houve seed de novos papéis/permissões administrativos: o mapeamento
 de permissões da UI ainda não é canônico e permanece como risco para a rodada
 que conectar o formulário ao banco.
+
+Nesta rodada, qualquer `institution_membership` ativa e não revogada pode
+fundamentar o vínculo de representante legal. Ainda não existe um papel jurídico
+canônico específico; a autorização administrativa continua separada em
+`institution_role_assignments`. Essa decisão evita criar papel ou permissão
+paralela antes da definição canônica.
 
 Nenhum byte, bucket ou nova FK de mídia foi criado. As referências existentes
 de logo/capa continuam aguardando o gateway R2.
@@ -54,7 +65,8 @@ de logo/capa continuam aguardando o gateway R2.
 - Funções auxiliares são `SECURITY INVOKER`, têm `search_path` vazio e grants
   mínimos explícitos.
 - Catálogos `schema_tables` e `schema_columns` são preenchidos para as três
-  superfícies afetadas.
+  superfícies afetadas; `is_required` segue `NOT NULL` sem default e updates
+  preservam o valor existente de `is_importable`.
 
 ## TDD e verificações
 
@@ -65,6 +77,10 @@ de logo/capa continuam aguardando o gateway R2.
 - Adicionados:
   - teste SQL transacional de constraints, grants, RLS, catálogo, adulto e
     bloqueio cross-tenant;
+  - testes RLS reais com JWT/`SET LOCAL ROLE`: `platform.read` lê, ator sem
+    permissão lê zero linhas, `anon` não lê e `authenticated` não escreve;
+  - testes de idade em `starts_on`, revogação/correção sem bloqueio, bio
+    220/221, quatro links, chaves extras, URLs sem host e membership revogada;
   - suíte pgTAP para estrutura, policy, grants, constraint cross-tenant e
     catálogo.
 - `Sync-SupabaseCliMigrations.ps1 -Mode Prepare`: passou, 20 migrations.
@@ -75,6 +91,11 @@ de logo/capa continuam aguardando o gateway R2.
 O ambiente local não possui Docker nem Podman no `PATH`. Por isso `db reset`,
 `test db`, `db lint` e advisors locais não puderam executar. A migration não foi
 aplicada ao projeto remoto, conforme instrução.
+
+O preflight remoto somente leitura executado pelo coordenador encontrou zero
+linhas em `institution_branding` e zero cores legadas inválidas. Portanto, os
+novos checks imediatos de cor são seguros no estado remoto observado. Nenhuma
+migration foi aplicada remotamente.
 
 ## Gate de conhecimento
 

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(19);
 
 select has_column(
   'public', 'institution_branding', 'profile_links',
@@ -68,6 +68,36 @@ select has_check(
   'institution_contacts',
   'institution_contacts_whatsapp_number_e164_check',
   'WhatsApp number uses E.164'
+);
+select has_index(
+  'public',
+  'institution_legal_representatives',
+  'institution_legal_representatives_created_by_idx',
+  'created_by foreign key is indexed'
+);
+select has_index(
+  'public',
+  'institution_legal_representatives',
+  'institution_legal_representatives_primary_active_uidx',
+  'only one active primary representative is allowed per institution'
+);
+select has_trigger(
+  'public',
+  'institution_memberships',
+  'institution_memberships_close_legal_representatives',
+  'membership revocation closes legal representative links'
+);
+select has_trigger(
+  'public',
+  'people',
+  'people_close_incompatible_legal_representatives',
+  'person eligibility changes close incompatible representative links'
+);
+select has_trigger(
+  'public',
+  'institution_legal_representatives',
+  'institution_legal_representatives_touch_updated_at',
+  'legal representative updates refresh updated_at'
 );
 select ok(
   not has_table_privilege(

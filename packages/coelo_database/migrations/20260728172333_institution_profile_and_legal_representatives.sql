@@ -28,7 +28,7 @@ begin
        or pg_catalog.btrim(entry.value ->> 'url') = ''
        or pg_catalog.char_length(entry.value ->> 'url') > 2048
        or pg_catalog.btrim(entry.value ->> 'url')
-            !~* '^https?://[^[:space:]]+$'
+            !~* '^https?://[[:alnum:]]([[:alnum:].-]*[[:alnum:]])?(:[0-9]{1,5})?([/?#][^[:space:]]*)?$'
        or exists (
          select 1
          from pg_catalog.jsonb_object_keys(entry.value) as object_key(key)
@@ -94,7 +94,8 @@ alter table public.institution_contacts
   add constraint institution_contacts_website_url_shape
     check (
       website_url is null
-      or pg_catalog.btrim(website_url) ~* '^https?://[^[:space:]]+$'
+      or pg_catalog.btrim(website_url)
+        ~* '^https?://[[:alnum:]]([[:alnum:].-]*[[:alnum:]])?(:[0-9]{1,5})?([/?#][^[:space:]]*)?$'
     ),
   add constraint institution_contacts_website_url_length_check
     check (
@@ -164,6 +165,16 @@ create index institution_legal_representatives_institution_status_idx
 create index institution_legal_representatives_person_status_idx
   on public.institution_legal_representatives(person_id, status);
 
+create index institution_legal_representatives_created_by_idx
+  on public.institution_legal_representatives(created_by)
+  where created_by is not null;
+
+create unique index institution_legal_representatives_primary_active_uidx
+  on public.institution_legal_representatives(institution_id)
+  where is_primary
+    and status = 'active'
+    and ends_on is null;
+
 create or replace function
   app_private.validate_institution_legal_representative()
 returns trigger
@@ -184,7 +195,7 @@ begin
      or representative.person_type <> 'adult'
      or representative.date_of_birth is null
      or representative.date_of_birth > (
-       current_date - interval '18 years'
+       new.starts_on - interval '18 years'
      )::date then
     raise check_violation using
       message = 'legal representative must be an adult with a known birth date';
@@ -214,10 +225,123 @@ grant execute on function
 to service_role;
 
 create trigger institution_legal_representatives_validate
-before insert or update of person_id, membership_id, institution_id
+before insert or update of
+  person_id,
+  membership_id,
+  institution_id,
+  starts_on
 on public.institution_legal_representatives
 for each row
 execute function app_private.validate_institution_legal_representative();
+
+create or replace function
+  app_private.touch_institution_legal_representative_updated_at()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  new.updated_at := pg_catalog.now();
+  return new;
+end;
+$$;
+
+revoke all on function
+  app_private.touch_institution_legal_representative_updated_at()
+from public, anon, authenticated;
+grant execute on function
+  app_private.touch_institution_legal_representative_updated_at()
+to service_role;
+
+create trigger institution_legal_representatives_touch_updated_at
+before update
+on public.institution_legal_representatives
+for each row
+execute function
+  app_private.touch_institution_legal_representative_updated_at();
+
+create or replace function
+  app_private.close_legal_representatives_for_membership()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if new.status <> 'active' or new.revoked_at is not null then
+    update public.institution_legal_representatives
+    set
+      status = 'inactive',
+      ends_on = coalesce(ends_on, current_date)
+    where membership_id = new.id
+      and status = 'active';
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function
+  app_private.close_legal_representatives_for_membership()
+from public, anon, authenticated;
+grant execute on function
+  app_private.close_legal_representatives_for_membership()
+to service_role;
+
+create trigger institution_memberships_close_legal_representatives
+after update of status, revoked_at
+on public.institution_memberships
+for each row
+when (
+  old.status is distinct from new.status
+  or old.revoked_at is distinct from new.revoked_at
+)
+execute function app_private.close_legal_representatives_for_membership();
+
+create or replace function
+  app_private.close_incompatible_legal_representatives_for_person()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  update public.institution_legal_representatives representative_link
+  set
+    status = 'inactive',
+    ends_on = coalesce(representative_link.ends_on, current_date)
+  where representative_link.person_id = new.id
+    and representative_link.status = 'active'
+    and (
+      new.person_type <> 'adult'
+      or new.date_of_birth is null
+      or new.date_of_birth > (
+        representative_link.starts_on - interval '18 years'
+      )::date
+    );
+
+  return new;
+end;
+$$;
+
+revoke all on function
+  app_private.close_incompatible_legal_representatives_for_person()
+from public, anon, authenticated;
+grant execute on function
+  app_private.close_incompatible_legal_representatives_for_person()
+to service_role;
+
+create trigger people_close_incompatible_legal_representatives
+after update of person_type, date_of_birth
+on public.people
+for each row
+when (
+  old.person_type is distinct from new.person_type
+  or old.date_of_birth is distinct from new.date_of_birth
+)
+execute function
+  app_private.close_incompatible_legal_representatives_for_person();
 
 alter table public.institution_branding enable row level security;
 alter table public.institution_contacts enable row level security;
@@ -313,7 +437,10 @@ catalog_columns as (
         then column_info.udt_schema || '.' || column_info.udt_name
       else column_info.data_type
     end as column_type,
-    column_info.is_nullable = 'NO' as is_required,
+    (
+      column_info.is_nullable = 'NO'
+      and column_info.column_default is null
+    ) as is_required,
     column_info.is_nullable = 'YES' as is_nullable,
     exists (
       select 1
@@ -381,7 +508,6 @@ on conflict (schema_table_id, column_name) do update set
   is_nullable = excluded.is_nullable,
   is_unique = excluded.is_unique,
   is_filterable = excluded.is_filterable,
-  is_importable = excluded.is_importable,
   is_active = excluded.is_active,
   position = excluded.position,
   updated_at = excluded.updated_at;
