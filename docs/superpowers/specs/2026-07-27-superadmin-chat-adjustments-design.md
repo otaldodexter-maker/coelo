@@ -1,7 +1,7 @@
 ---
-source: "Solicitação aprovada em 2026-07-27; docs/design/design-system.md; specs/013-ui-packages-componentization.md"
+source: "Solicitação aprovada em 2026-07-27 e decisão aprovada em 2026-07-28; docs/design/design-system.md; specs/013-ui-packages-componentization.md"
 status: "approved"
-generated_at: "2026-07-27"
+generated_at: "2026-07-28"
 ---
 
 # Ajustes do chat do Superadmin
@@ -31,6 +31,8 @@ destinatário e composição de mensagens operável por mouse e teclado.
 - exibir o contexto ativo no rodapé do compositor;
 - padronizar menus, hover, foco, modal e fechamento pelos contratos Coelo;
 - preservar funcionamento responsivo em 375, 768, 1024 e 1440 px.
+- promover o padrão-base administrativo de chat e apenas as APIs públicas
+  neutras aprovadas nesta decisão.
 
 ## Fora de escopo
 
@@ -38,8 +40,46 @@ destinatário e composição de mensagens operável por mouse e teclado.
 - envio real, fila, notificações ou integração com backend;
 - criação de autorização, RLS, RPC, Edge Function ou trilha de auditoria real;
 - chamadas e videochamadas;
-- promoção de novos componentes públicos ou tokens;
+- um `CoeloAdminChatLayout` monolítico;
+- promoção de filtros, recipient picker ou regras de envio para pacote público;
 - alteração da experiência social do app Principal.
+
+## Decisão aprovada: padrão institucional de chat administrativo
+
+Em 2026-07-28, `pattern.chat-admin` foi aprovado como padrão-base de chat
+institucional administrativo para Admin e Superadmin. Sua anatomia é: launcher
+global, toolbar e filtros, inbox ou rail, fio, resumo contextual e compositor.
+O catálogo é a referência executável dessa composição; ele demonstra o padrão,
+mas não é importado pelos apps consumidores.
+
+As variantes responsivas aprovadas são:
+
+- compact: navegação empilhada entre inbox, fio e contexto;
+- medium: rail e fio, com contexto aberto sob demanda;
+- expanded/large: laterais recolhíveis e três áreas quando houver espaço.
+
+As medidas do padrão são inbox de 336 px, rail de 80 px, contexto expandido de
+288 px, contexto recolhido de 64 px, launcher com máximo de 460 × 600 px,
+avatar de inbox/cabeçalho de até 48 px e foto contextual 1:1 de até 64 × 64
+px. A inbox aproxima os 339–340 px dos anexos e equivale a sete alvos de 48
+px. O rail usa `CoeloSpacing.space20`; o contexto expandido usa seis alvos de
+48 px; o recolhido combina alvo de 48 px com 16 px de padding. O launcher
+preserva margens de 16 px e respiro inferior de 96 px. A foto de 64 px passa a
+usar `CoeloSize.avatarXl`, pertencente à escala oficial de avatares.
+
+O pacote público mínimo é limitado a `CoeloAdminChatMetric` (`label` e
+`value`), `CoeloAdminChatContextSummary` e `CoeloSize.avatarXl = 64`. O painel
+contextual local do Superadmin migra para `CoeloAdminChatContextSummary`.
+Não se promove um layout monolítico, filtros, recipient picker ou regra de
+envio: esses elementos continuam no feature enquanto dependerem de domínio e
+autorização.
+
+A implementação atualiza o Design System e seu índice, e registra
+`pattern.chat-admin` no catálogo como referência executável. A cobertura inclui
+API pública, widget, foco, semântica, duas a seis métricas, texto a 200%, temas
+claro/escuro, 375/768/1024/1440 px e goldens mobile claro e desktop escuro.
+Depois de atualizar esta spec e o Design System, a memória durável é projetada
+para `team`, sem dados identificáveis.
 
 ## Composição
 
@@ -162,10 +202,11 @@ rolagem horizontal não intencional.
 ## Arquitetura e fronteiras
 
 As mudanças reutilizam `CoeloChatComposer`, componentes de chat existentes,
-tokens e padrões administrativos. Composição de domínio, fixtures, agrupamento
-e painel contextual permanecem locais ao feature de chat do Superadmin.
-Nenhuma nova dependência será adicionada e nenhum componente será promovido
-para pacote público sem aprovação separada.
+tokens e padrões administrativos. `CoeloAdminChatMetric`,
+`CoeloAdminChatContextSummary` e `CoeloSize.avatarXl` são a superfície pública
+mínima aprovada. Composição de domínio, fixtures, agrupamento, filtros,
+destinatários e regras de envio permanecem locais ao feature de chat do
+Superadmin. Nenhuma nova dependência será adicionada.
 
 ## Testes exigidos
 
@@ -175,10 +216,13 @@ para pacote público sem aprovação separada.
 - widget test de `Enter`, `Shift+Enter` e botão Enviar;
 - widget test de seleção individual, seleção total, revisão e confirmação local;
 - widget tests do painel contextual por tipo;
+- testes de API pública, widget, foco e semântica de
+  `CoeloAdminChatContextSummary`, incluindo duas a seis métricas;
 - widget tests de menus e modal com tokens canônicos;
 - verificação em 375, 768, 1024 e 1440 px e texto a 200%;
 - análise estática e formatação apenas dos arquivos afetados;
-- validação visual em temas claro e escuro.
+- validação visual em temas claro e escuro, com goldens mobile claro e desktop
+  escuro.
 
 ## Riscos e limites
 
@@ -199,5 +243,8 @@ para pacote público sem aprovação separada.
 - o compositor envia por botão ou `Enter`, aceita nova linha por `Shift+Enter`
   e mostra o contexto ativo;
 - superfícies, menus e modais respeitam os contratos Coelo;
+- `pattern.chat-admin` demonstra a anatomia e variantes aprovadas no catálogo;
+- o painel contextual do Superadmin usa a API pública mínima aprovada, sem
+  promover layout, filtros, destinatários ou regras de envio;
 - não existe persistência, envio real ou nova dependência;
 - testes focados, análise estática e validação responsiva passam.

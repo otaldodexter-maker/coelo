@@ -1,16 +1,16 @@
 ---
-source: "docs/superpowers/specs/2026-07-27-superadmin-chat-adjustments-design.md"
+source: "docs/superpowers/specs/2026-07-27-superadmin-chat-adjustments-design.md; decisão aprovada em 2026-07-28"
 status: "ready"
-generated_at: "2026-07-27"
+generated_at: "2026-07-28"
 ---
 
 # Superadmin Chat Adjustments Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ajustar o chat do Superadmin com launcher global, filtros contextuais, inbox e painel recolhíveis, compositor por teclado e envio em massa local simulado.
+**Goal:** Ajustar o chat do Superadmin com launcher global, filtros contextuais, inbox e painel recolhíveis, compositor por teclado e envio em massa local simulado; promover `pattern.chat-admin` como padrão institucional administrativo com a API pública mínima aprovada.
 
-**Architecture:** Reutilizar os componentes e fixtures existentes. Manter regras e composição específicas no feature de chat; alterar `CoeloChatComposer` apenas para o comportamento neutro reutilizável de teclado, contexto e destaque do envio. Adaptar a composição com `LayoutBuilder`, sem dependências novas ou persistência.
+**Architecture:** Reutilizar os componentes e fixtures existentes. Manter regras e composição específicas no feature de chat; alterar `CoeloChatComposer` apenas para o comportamento neutro reutilizável de teclado, contexto e destaque do envio. Adaptar a composição com `LayoutBuilder`, sem dependências novas ou persistência. Promover somente `CoeloAdminChatMetric`, `CoeloAdminChatContextSummary` e `CoeloSize.avatarXl`; filtros, destinatários, envio e layout completo permanecem locais.
 
 **Tech Stack:** Flutter, Dart, `flutter_test`, `coelo_tokens`, `coelo_ui_core`, `coelo_ui_admin`.
 
@@ -19,7 +19,8 @@ generated_at: "2026-07-27"
 - O Design System Coelo prevalece sobre recomendações genéricas.
 - Usar somente tokens semânticos; não adicionar HEX, `Color(0x...)` ou tipografia local.
 - Nenhuma persistência, integração, autorização ou auditoria real.
-- Nenhuma dependência nova e nenhuma promoção de API pública sem aprovação.
+- Nenhuma dependência nova; a promoção pública limita-se à API aprovada na
+  spec, sem criar um `CoeloAdminChatLayout` monolítico.
 - `Enter` envia; `Shift+Enter` insere nova linha.
 - Layouts-alvo: 375, 768, 1024 e 1440 px, além de texto a 200%.
 - Preservar mudanças preexistentes não relacionadas no worktree.
@@ -355,7 +356,68 @@ git add apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_r
 git commit -m "feat(superadmin): simulate bulk chat recipients"
 ```
 
-### Task 6: Integração visual, catálogo e verificação
+### Task 6: Promover o padrão institucional de chat
+
+**Files:**
+- Modify: `packages/coelo_tokens/lib/src/coelo_scales.dart`
+- Modify: `packages/coelo_ui_admin/lib/coelo_ui_admin.dart`
+- Create: `packages/coelo_ui_admin/lib/src/chat/coelo_admin_chat_context_summary.dart`
+- Create: `packages/coelo_ui_admin/test/chat/coelo_admin_chat_context_summary_test.dart`
+- Modify: `apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_context_panel.dart`
+- Modify: `apps/superadmin/test/features/chat/presentation/superadmin_chat_context_panel_test.dart`
+- Modify: `docs/design/design-system.md`
+- Modify: `apps/catalog/assets/coelo-ui.index.jsonl`
+- Modify: `apps/catalog/lib/catalog/chat_catalog_foundations.dart`
+- Modify: `apps/catalog/test/catalog/chat_catalog_test.dart`
+- Modify/Create: goldens de chat administrativo no catálogo
+- Modify if durable and approved: `docs/knowledge/team/chat.md`
+
+**Interfaces:**
+- Produces: `CoeloSize.avatarXl = 64`, `CoeloAdminChatMetric(label, value)` e
+  `CoeloAdminChatContextSummary`.
+- Does not produce: `CoeloAdminChatLayout`, filtro, recipient picker ou regra
+  de envio públicos.
+
+- [ ] **Step 1: Escrever testes RED para token e API pública**
+
+Adicionar cobertura do token e da API exportada pelo barrel público. O widget
+deve aceitar duas a seis métricas, expor foco e semântica equivalentes e manter
+foto contextual 1:1 com máximo de 64 px. Cobrir também tema claro/escuro,
+texto a 200% e as variantes compact, medium e expanded/large em
+375/768/1024/1440 px.
+
+- [ ] **Step 2: Implementar o mínimo e confirmar GREEN**
+
+Adicionar somente `CoeloSize.avatarXl = 64`,
+`CoeloAdminChatMetric(label, value)` e
+`CoeloAdminChatContextSummary` a `coelo_ui_admin`; não criar um layout
+monolítico. Executar os testes focados de `coelo_tokens` e
+`coelo_ui_admin` até ficarem verdes.
+
+- [ ] **Step 3: Migrar o painel local do Superadmin**
+
+Substituir a apresentação neutra local por
+`CoeloAdminChatContextSummary`, preservando no feature a resolução de
+domínio, fixtures, filtros, destinatários e envio. Confirmar que as métricas
+continuam entre duas e seis, que recolhimento preserva seleção/foco e que não
+há importação de catálogo pelo Superadmin.
+
+- [ ] **Step 4: Evoluir Design System, índice e catálogo**
+
+Documentar a anatomia (launcher global, toolbar/filtros, inbox/rail, fio,
+resumo e compositor), medidas e variantes aprovadas no Design System. Atualizar
+o índice e tornar `pattern.chat-admin` a referência executável de composição
+no catálogo, com testes e goldens mobile claro e desktop escuro. Não registrar
+as medidas como tokens globais além de `avatarXl`.
+
+- [ ] **Step 5: Executar o gate de conhecimento**
+
+Atualizar primeiro esta spec e o Design System; somente então projetar para
+`docs/knowledge/team/chat.md` conhecimento durável, aprovado e sem dados
+identificáveis. Executar `Test-CoeloKnowledge.ps1` e seus testes. Registrar
+`no-op` se não houver conteúdo adicional reutilizável.
+
+### Task 7: Integração visual, catálogo e verificação
 
 **Files:**
 - Modify: `apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_thread_body.dart`
@@ -385,10 +447,10 @@ Usar um menu local curto de emojis somente se puder ser feito com widgets
 Flutter existentes; caso contrário, manter o ícone desabilitado com tooltip,
 sem adicionar dependência.
 
-- [ ] **Step 2: Atualizar catálogo e testes**
+- [ ] **Step 2: Atualizar integração final do catálogo e testes**
 
-Representar os estados amplo, recolhido e envio local no catálogo, sem promover
-componente público.
+Integrar os estados amplo, recolhido e envio local à referência executável já
+promovida na Task 6, sem promover componente público adicional.
 
 - [ ] **Step 3: Formatar arquivos afetados**
 
