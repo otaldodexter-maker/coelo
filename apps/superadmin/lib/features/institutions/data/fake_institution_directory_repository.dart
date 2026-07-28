@@ -70,7 +70,11 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
               (query.typeIds.isEmpty || query.typeIds.contains(item.typeId));
         }).toList()..sort((first, second) {
           final comparison = _compareItems(first, second, query.sortColumn);
-          return query.sortAscending ? comparison : -comparison;
+          if (comparison != 0) {
+            return query.sortAscending ? comparison : -comparison;
+          }
+          final nameComparison = first.publicName.compareTo(second.publicName);
+          return nameComparison != 0 ? nameComparison : first.id.compareTo(second.id);
         });
 
     final start = query.offset.clamp(0, filtered.length);
@@ -173,7 +177,7 @@ int _compareItems(
     InstitutionDirectorySortColumn.city => _compareNullable(first.city, second.city),
     InstitutionDirectorySortColumn.state => _compareNullable(first.state, second.state),
   };
-  return comparison == 0 ? first.publicName.compareTo(second.publicName) : comparison;
+  return comparison;
 }
 
 int _compareNullable<T extends Comparable<T>>(T? first, T? second) {
@@ -408,23 +412,6 @@ InstitutionRecord _record({
         name: unitIndex == 0 && firstUnitName != null
             ? firstUnitName
             : 'Unidade ${(unitIndex + 1).toString().padLeft(2, '0')}',
-        slug: '$slug-unidade-${unitIndex + 1}',
-        typeId: 'demo-type-${type.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}',
-        typeName: type,
-        postalCode: postalCode ?? '${(slug.length * 137).toString().padLeft(5, '0')}-000',
-        state: state,
-        city: city,
-        district: district,
-        street: street,
-        addressNumber: number,
-        complement: complement ?? '',
-        contactEmail: 'unidade${unitIndex + 1}@$slug.coelo.me',
-        contactPhone: contactPhone ?? '+55 11 3333-0000',
-        contactMobilePhone: contactMobilePhone ?? '+55 11 99999-0000',
-        brandDisplayName: unitIndex == 0 && firstUnitName != null
-            ? firstUnitName
-            : 'Unidade ${(unitIndex + 1).toString().padLeft(2, '0')}',
-        activitiesCount: (unitGroupCounts[unitIndex] / 3).ceil(),
         groups: [
           for (var groupIndex = 0; groupIndex < unitGroupCounts[unitIndex]; groupIndex++)
             InstitutionGroup(

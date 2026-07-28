@@ -149,7 +149,9 @@ void main() {
       ),
     );
 
-    expect(capturedRequest!.url.queryParameters['order'], startsWith('units_count.desc'));
+    final order = capturedRequest!.url.queryParameters['order'];
+    expect(order, startsWith('units_count.desc'));
+    expect(order, contains('id.asc'));
     expect(capturedRequest!.url.queryParameters['offset'], '9');
     expect(capturedRequest!.url.queryParameters['limit'], '9');
   });

@@ -137,6 +137,29 @@ void main() {
     expect(secondPage.items.map((item) => item.publicName), ['Alpha']);
     expect(firstPage.hasNext, isTrue);
   });
+
+  test('breaks equal sort values by public name and then id', () async {
+    final repository = FakeInstitutionDirectoryRepository(
+      items: [
+        _item(id: 'institution-z', publicName: 'Alpha'),
+        _item(id: 'institution-b', publicName: 'Beta'),
+        _item(id: 'institution-a', publicName: 'Alpha'),
+      ],
+    );
+
+    final result = await repository.fetchPage(
+      InstitutionDirectoryQuery(
+        sortColumn: InstitutionDirectorySortColumn.unitsCount,
+        sortAscending: false,
+      ),
+    );
+
+    expect(result.items.map((item) => item.id), [
+      'institution-a',
+      'institution-z',
+      'institution-b',
+    ]);
+  });
 }
 
 final _items = [

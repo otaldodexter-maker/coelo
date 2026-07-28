@@ -126,10 +126,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
               top: 0,
               width: _widths[widget.pinnedColumn.id],
               height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
-              child: IgnorePointer(
-                key: const Key('coelo-admin-table-pinned-column'),
-                child: ExcludeSemantics(child: _pinnedColumn(context)),
-              ),
+              child: _pinnedColumn(context),
             ),
           ],
         ),
@@ -141,12 +138,22 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
     return ColoredBox(
       color: Theme.of(context).colorScheme.surfaceContainer,
       child: Row(
-        children: _allColumns.map((column) => _headerCell(context, column)).toList(growable: false),
+        children: _allColumns
+            .map(
+              (column) =>
+                  _headerCell(context, column, interactive: column.id != widget.pinnedColumn.id),
+            )
+            .toList(growable: false),
       ),
     );
   }
 
-  Widget _headerCell(BuildContext context, CoeloAdminTableColumn<T> column, {bool pinned = false}) {
+  Widget _headerCell(
+    BuildContext context,
+    CoeloAdminTableColumn<T> column, {
+    bool pinned = false,
+    bool interactive = true,
+  }) {
     final colors = Theme.of(context).colorScheme;
     final sorted = widget.sortColumnId == column.id;
     final label = sorted
@@ -177,17 +184,20 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
         ),
       ),
     );
-    return SizedBox(
+    final cell = SizedBox(
       key: Key('coelo-admin-table-header-${column.id}${pinned ? '-pinned' : ''}'),
       width: _widths[column.id],
       height: widget.headerHeight,
       child: Stack(
         children: [
           Positioned.fill(
-            child: column.sortable && !pinned
+            child: column.sortable && interactive
                 ? _SortableHeader(
                     label: label,
                     onPressed: widget.onSort == null ? null : () => widget.onSort!(column.id),
+                    backgroundKey: Key(
+                      'coelo-admin-table-sort-background-${column.id}${pinned ? '-pinned' : ''}',
+                    ),
                     child: content,
                   )
                 : content,
@@ -196,36 +206,55 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
             right: 0,
             top: 0,
             bottom: 0,
-            child: pinned
-                ? _ColumnResizeIndicator(
-                    indicatorKey: Key('coelo-admin-table-resizer-indicator-${column.id}-pinned'),
-                    color: colors.outlineVariant,
-                  )
-                : _ColumnResizeHandle(
-                    indicatorKey: Key('coelo-admin-table-resizer-indicator-${column.id}'),
+            child: interactive
+                ? _ColumnResizeHandle(
+                    indicatorKey: Key(
+                      'coelo-admin-table-resizer-indicator-${column.id}${pinned ? '-pinned' : ''}',
+                    ),
                     label: 'Redimensionar coluna ${column.label}',
                     idleColor: colors.outlineVariant,
                     focusColor: Theme.of(context).extension<CoeloActionColors>()!.focusRing,
                     onResize: (delta) => _resize(column, delta),
+                  )
+                : _ColumnResizeIndicator(
+                    indicatorKey: Key('coelo-admin-table-resizer-indicator-${column.id}'),
+                    color: colors.outlineVariant,
                   ),
           ),
         ],
       ),
     );
+    return interactive ? cell : ExcludeSemantics(child: IgnorePointer(child: cell));
   }
 
   Widget _pinnedColumn(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return ColoredBox(
-      color: colors.surface,
+    return KeyedSubtree(
+      key: const Key('coelo-admin-table-pinned-column'),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ColoredBox(
-            color: colors.surfaceContainer,
-            child: _headerCell(context, widget.pinnedColumn, pinned: true),
+          Semantics(
+            container: true,
+            explicitChildNodes: true,
+            child: ColoredBox(
+              color: colors.surfaceContainer,
+              child: _headerCell(context, widget.pinnedColumn, pinned: true),
+            ),
           ),
-          ...widget.items.map((item) => _pinnedRow(context, item)),
+          IgnorePointer(
+            child: ExcludeSemantics(
+              child: ColoredBox(
+                color: colors.surface,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: widget.items
+                      .map((item) => _pinnedRow(context, item))
+                      .toList(growable: false),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -364,10 +393,16 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
 }
 
 final class _SortableHeader extends StatefulWidget {
-  const _SortableHeader({required this.label, required this.onPressed, required this.child});
+  const _SortableHeader({
+    required this.label,
+    required this.onPressed,
+    required this.backgroundKey,
+    required this.child,
+  });
 
   final String label;
   final VoidCallback? onPressed;
+  final Key backgroundKey;
   final Widget child;
 
   @override
@@ -376,6 +411,7 @@ final class _SortableHeader extends StatefulWidget {
 
 final class _SortableHeaderState extends State<_SortableHeader> {
   final _focusNode = FocusNode();
+  bool _focused = false;
 
   @override
   void dispose() {
@@ -385,28 +421,21 @@ final class _SortableHeaderState extends State<_SortableHeader> {
 
   @override
   Widget build(BuildContext context) {
-    void activate() {
-      _focusNode.requestFocus();
-      widget.onPressed?.call();
-    }
-
     return Semantics(
       label: widget.label,
       button: true,
       enabled: widget.onPressed != null,
       excludeSemantics: true,
-      child: Focus(
+      child: InkWell(
         focusNode: _focusNode,
-        onKeyEvent: (_, event) {
-          if (event is KeyDownEvent &&
-              (event.logicalKey == LogicalKeyboardKey.enter ||
-                  event.logicalKey == LogicalKeyboardKey.space)) {
-            activate();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: InkWell(onTap: widget.onPressed == null ? null : activate, child: widget.child),
+        onFocusChange: (focused) => setState(() => _focused = focused),
+        onTap: widget.onPressed,
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+        child: ColoredBox(
+          key: widget.backgroundKey,
+          color: _focused ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
+          child: widget.child,
+        ),
       ),
     );
   }

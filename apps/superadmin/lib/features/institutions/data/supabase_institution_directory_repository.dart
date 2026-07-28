@@ -42,6 +42,7 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
 
       final response = await request
           .order(query.sortColumn.databaseColumn, ascending: query.sortAscending)
+          .order('id', ascending: true)
           .range(query.offset, query.offset + query.pageSize - 1)
           .count(CountOption.exact);
       final rows = response.data;

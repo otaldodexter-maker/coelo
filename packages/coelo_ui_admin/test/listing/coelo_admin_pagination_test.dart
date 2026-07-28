@@ -116,6 +116,46 @@ void main() {
     await tester.tap(find.text('50').last);
     expect(selectedPageSize, 50);
   });
+
+  test('requires page-size options when page size is provided', () {
+    expect(
+      () => CoeloAdminPagination(
+        currentPage: 1,
+        totalPages: 1,
+        onPrevious: null,
+        onNext: null,
+        pageSize: 20,
+      ),
+      throwsAssertionError,
+    );
+  });
+
+  test('requires the selected page size to be one of the options', () {
+    expect(
+      () => CoeloAdminPagination(
+        currentPage: 1,
+        totalPages: 1,
+        onPrevious: null,
+        onNext: null,
+        pageSize: 20,
+        pageSizeOptions: const [11, 50],
+      ),
+      throwsAssertionError,
+    );
+  });
+
+  test('requires page size when a page-size callback is provided', () {
+    expect(
+      () => CoeloAdminPagination(
+        currentPage: 1,
+        totalPages: 1,
+        onPrevious: null,
+        onNext: null,
+        onPageSizeChanged: (_) {},
+      ),
+      throwsAssertionError,
+    );
+  });
 }
 
 OutlinedButton _button(WidgetTester tester, String label) {

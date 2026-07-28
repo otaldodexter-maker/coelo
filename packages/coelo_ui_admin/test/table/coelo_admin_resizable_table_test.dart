@@ -193,9 +193,9 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const Key('coelo-admin-table-pinned-column')),
-        matching: find.byType(Focus),
+        matching: handle,
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       tester.getSemantics(handle).getSemanticsData().hasAction(SemanticsAction.increase),
@@ -209,7 +209,7 @@ void main() {
     await tester.tap(handle);
     await tester.pump();
     final focusIndicator = tester.widget<Container>(
-      find.byKey(const Key('coelo-admin-table-resizer-indicator-name')),
+      find.byKey(const Key('coelo-admin-table-resizer-indicator-name-pinned')),
     );
     expect(
       (focusIndicator.decoration! as BoxDecoration).color,
@@ -360,7 +360,7 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byKey(const Key('coelo-admin-table-pinned-column')),
+        of: find.byKey(const Key('coelo-admin-table-pinned-row-background-row-2')),
         matching: find.byType(Focus),
       ),
       findsNothing,
@@ -412,14 +412,100 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final header = find.byKey(const Key('coelo-admin-table-header-name'));
+    final header = find.byKey(const Key('coelo-admin-table-header-name-pinned'));
     expect(find.bySemanticsLabel('Nome, ordenado crescente'), findsOneWidget);
     expect(find.byIcon(Icons.arrow_upward_rounded), findsWidgets);
 
     await tester.tap(header);
     await tester.pump();
+    final inkWell = tester.widget<InkWell>(
+      find.descendant(of: header, matching: find.byType(InkWell)),
+    );
+    for (var index = 0; index < 8 && !inkWell.focusNode!.hasFocus; index++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(inkWell.focusNode!.hasFocus, isTrue);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
 
+    expect(sortedColumns, ['name', 'name']);
+  });
+
+  testWidgets('uses the visible pinned header as the only sort target after scrolling', (
+    tester,
+  ) async {
+    final sortedColumns = <String>[];
+    await _pumpSortableTable(tester, sortedColumns.add);
+
+    await tester.drag(find.byKey(const Key('coelo-admin-table-scroll')), const Offset(-180, 0));
+    await tester.pumpAndSettle();
+
+    final pinnedHeader = find.byKey(const Key('coelo-admin-table-header-name-pinned'));
+    final underlyingHeader = find.byKey(const Key('coelo-admin-table-header-name'));
+    expect(
+      find.descendant(
+        of: pinnedHeader,
+        matching: find.bySemanticsLabel('Nome, ordenado crescente'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: underlyingHeader,
+        matching: find.bySemanticsLabel('Nome, ordenado crescente'),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(pinnedHeader);
+    await tester.pump();
+
+    expect(sortedColumns, ['name']);
+  });
+
+  testWidgets('uses one InkWell focus stop with visible focus and native keyboard activation', (
+    tester,
+  ) async {
+    final sortedColumns = <String>[];
+    await _pumpSortableTable(tester, sortedColumns.add);
+
+    final pinnedHeader = find.byKey(const Key('coelo-admin-table-header-name-pinned'));
+    final sortInkWell = find.descendant(of: pinnedHeader, matching: find.byType(InkWell));
+    expect(sortInkWell, findsOneWidget);
+
+    final inkWell = tester.widget<InkWell>(sortInkWell);
+    expect(inkWell.focusNode, isNotNull);
+    expect(inkWell.overlayColor?.resolve({WidgetState.focused}), Colors.transparent);
+
+    for (var index = 0; index < 8 && !inkWell.focusNode!.hasFocus; index++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(inkWell.focusNode!.hasFocus, isTrue);
+    expect(
+      tester
+          .widget<ColoredBox>(
+            find.byKey(const Key('coelo-admin-table-sort-background-name-pinned')),
+          )
+          .color,
+      CoeloColorSchemes.light.primaryContainer,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(sortedColumns, ['name']);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(inkWell.focusNode!.hasFocus, isFalse);
+
+    for (var index = 0; index < 8 && !inkWell.focusNode!.hasFocus; index++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(inkWell.focusNode!.hasFocus, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
     expect(sortedColumns, ['name', 'name']);
   });
 }
@@ -467,6 +553,39 @@ Future<void> _pumpTable(
                   valueListenable: rowsListenable,
                   builder: (context, currentRows, child) => table(currentRows),
                 ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+Future<void> _pumpSortableTable(WidgetTester tester, ValueChanged<String> onSort) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(
+        body: SizedBox(
+          width: 300,
+          child: CoeloAdminResizableTable<TestRow>(
+            items: const [TestRow('row-1', 'Alpha', 'Ativa')],
+            rowKey: (row) => row.id,
+            pinnedColumn: const CoeloAdminTableColumn<TestRow>(
+              id: 'name',
+              label: 'Nome',
+              initialWidth: 160,
+              minWidth: 120,
+              maxWidth: 200,
+              sortable: true,
+              cellBuilder: _nameCell,
+            ),
+            columns: const [_statusColumn, _cityColumn],
+            headerHeight: 56,
+            rowHeight: 64,
+            sortColumnId: 'name',
+            sortAscending: true,
+            onSort: onSort,
+          ),
         ),
       ),
     ),
