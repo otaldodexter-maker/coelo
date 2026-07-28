@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 Future<Color?> showSuperadminAdvancedColorPicker(
   BuildContext context, {
@@ -69,6 +70,12 @@ final class _SuperadminAdvancedColorPickerDialogState
               final picker = _ColorVisualPicker(
                 color: color,
                 onSelect: _select,
+                onSaturationValueAdjusted: (saturationDelta, valueDelta) => setState(() {
+                  color = color
+                      .withSaturation((color.saturation + saturationDelta).clamp(0, 1))
+                      .withValue((color.value + valueDelta).clamp(0, 1));
+                  hexController.text = _colorHex(color.toColor());
+                }),
                 onHueChanged: (hue) => setState(() {
                   color = color.withHue(hue);
                   hexController.text = _colorHex(color.toColor());
@@ -131,16 +138,78 @@ final class _SuperadminAdvancedColorPickerDialogState
   }
 }
 
-final class _ColorVisualPicker extends StatelessWidget {
+final class _ColorVisualPicker extends StatefulWidget {
   const _ColorVisualPicker({
     required this.color,
     required this.onSelect,
+    required this.onSaturationValueAdjusted,
     required this.onHueChanged,
   });
 
   final HSVColor color;
   final void Function(Offset position, Size size) onSelect;
+  final void Function(double saturationDelta, double valueDelta) onSaturationValueAdjusted;
   final ValueChanged<double> onHueChanged;
+
+  @override
+  State<_ColorVisualPicker> createState() => _ColorVisualPickerState();
+}
+
+final class _ColorVisualPickerState extends State<_ColorVisualPicker> {
+  static const _keyboardStep = 0.05;
+  static const _hueKeyboardStep = 5.0;
+  late final FocusNode _areaFocusNode;
+  late final FocusNode _hueFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _areaFocusNode = FocusNode(debugLabel: 'SaturaÃ§Ã£o e valor');
+    _hueFocusNode = FocusNode(debugLabel: 'Matiz');
+  }
+
+  @override
+  void dispose() {
+    _areaFocusNode.dispose();
+    _hueFocusNode.dispose();
+    super.dispose();
+  }
+
+  KeyEventResult _handleAreaKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    switch (event.logicalKey) {
+      case LogicalKeyboardKey.arrowLeft:
+        widget.onSaturationValueAdjusted(-_keyboardStep, 0);
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.arrowRight:
+        widget.onSaturationValueAdjusted(_keyboardStep, 0);
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.arrowDown:
+        widget.onSaturationValueAdjusted(0, -_keyboardStep);
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.arrowUp:
+        widget.onSaturationValueAdjusted(0, _keyboardStep);
+        return KeyEventResult.handled;
+      default:
+        return KeyEventResult.ignored;
+    }
+  }
+
+  KeyEventResult _handleHueKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    switch (event.logicalKey) {
+      case LogicalKeyboardKey.arrowLeft:
+      case LogicalKeyboardKey.arrowDown:
+        widget.onHueChanged((widget.color.hue - _hueKeyboardStep).clamp(0, 360));
+        return KeyEventResult.handled;
+      case LogicalKeyboardKey.arrowRight:
+      case LogicalKeyboardKey.arrowUp:
+        widget.onHueChanged((widget.color.hue + _hueKeyboardStep).clamp(0, 360));
+        return KeyEventResult.handled;
+      default:
+        return KeyEventResult.ignored;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,32 +218,79 @@ final class _ColorVisualPicker extends StatelessWidget {
       children: [
         AspectRatio(
           aspectRatio: 1,
-          child: LayoutBuilder(
-            builder: (context, constraints) => GestureDetector(
-              onPanDown: (details) => onSelect(details.localPosition, constraints.biggest),
-              onPanUpdate: (details) => onSelect(details.localPosition, constraints.biggest),
-              child: CustomPaint(
-                key: const Key('advanced-color-picker-area'),
-                painter: _ColorAreaPainter(hue: color.hue, color: color),
+          child: Focus(
+            key: const Key('advanced-color-picker-area'),
+            focusNode: _areaFocusNode,
+            onKeyEvent: _handleAreaKey,
+            child: Semantics(
+              label: 'SaturaÃ§Ã£o e valor',
+              value:
+                  'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${(widget.color.value * 100).round()}%',
+              increasedValue:
+                  'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value + _keyboardStep).clamp(0, 1) * 100).round()}%',
+              decreasedValue:
+                  'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value - _keyboardStep).clamp(0, 1) * 100).round()}%',
+              slider: true,
+              enabled: true,
+              onIncrease: () => widget.onSaturationValueAdjusted(0, _keyboardStep),
+              onDecrease: () => widget.onSaturationValueAdjusted(0, -_keyboardStep),
+              child: LayoutBuilder(
+                builder: (context, constraints) => GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onPanDown: (details) {
+                    _areaFocusNode.requestFocus();
+                    widget.onSelect(details.localPosition, constraints.biggest);
+                  },
+                  onPanUpdate: (details) =>
+                      widget.onSelect(details.localPosition, constraints.biggest),
+                  child: CustomPaint(
+                    painter: _ColorAreaPainter(hue: widget.color.hue, color: widget.color),
+                  ),
+                ),
               ),
             ),
           ),
         ),
         const SizedBox(height: CoeloSpacing.space3),
         SizedBox(
-          height: CoeloSpacing.space6,
-          child: LayoutBuilder(
-            builder: (context, constraints) => GestureDetector(
-              onTapDown: (details) => onHueChanged(
-                (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
-              ),
-              onHorizontalDragUpdate: (details) => onHueChanged(
-                (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
-              ),
-              child: CustomPaint(
-                key: const Key('advanced-color-picker-hue'),
-                painter: _HueBarPainter(hue: color.hue),
-                child: const SizedBox.expand(),
+          height: CoeloSize.touchMin,
+          child: Focus(
+            key: const Key('advanced-color-picker-hue'),
+            focusNode: _hueFocusNode,
+            onKeyEvent: _handleHueKey,
+            child: Semantics(
+              label: 'Matiz',
+              value: '${widget.color.hue.round()} graus',
+              increasedValue:
+                  '${(widget.color.hue + _hueKeyboardStep).clamp(0, 360).round()} graus',
+              decreasedValue:
+                  '${(widget.color.hue - _hueKeyboardStep).clamp(0, 360).round()} graus',
+              slider: true,
+              enabled: true,
+              onIncrease: () =>
+                  widget.onHueChanged((widget.color.hue + _hueKeyboardStep).clamp(0, 360)),
+              onDecrease: () =>
+                  widget.onHueChanged((widget.color.hue - _hueKeyboardStep).clamp(0, 360)),
+              child: LayoutBuilder(
+                builder: (context, constraints) => GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (details) {
+                    _hueFocusNode.requestFocus();
+                    widget.onHueChanged(
+                      (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
+                    );
+                  },
+                  onHorizontalDragUpdate: (details) => widget.onHueChanged(
+                    (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
+                  ),
+                  child: Center(
+                    child: SizedBox(
+                      height: CoeloSpacing.space6,
+                      width: double.infinity,
+                      child: CustomPaint(painter: _HueBarPainter(hue: widget.color.hue)),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

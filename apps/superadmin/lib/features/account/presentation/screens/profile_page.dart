@@ -36,6 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late final TextEditingController _initials;
   AccountAvatar? _avatar;
   String? _imageError;
+  String? _saveError;
 
   @override
   void initState() {
@@ -115,14 +116,20 @@ class _ProfilePageState extends State<ProfilePage> {
       text: normalizedInitials,
       selection: TextSelection.collapsed(offset: normalizedInitials.length),
     );
-    await widget.controller.saveProfile(
-      firstName: _firstName.text,
-      lastName: _lastName.text,
-      email: _email.text,
-      mobilePhone: _mobilePhone.text,
-      avatar: _avatar!.copyWith(initials: normalizedInitials),
-    );
-    if (mounted) setState(() {});
+    try {
+      await widget.controller.saveProfile(
+        firstName: _firstName.text,
+        lastName: _lastName.text,
+        email: _email.text,
+        mobilePhone: _mobilePhone.text,
+        avatar: _avatar!.copyWith(initials: normalizedInitials),
+      );
+      if (mounted) setState(() => _saveError = null);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _saveError = 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
+      }
+    }
   }
 
   void _reset() {
@@ -163,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (widget.controller.message case final message?)
+                    if (widget.controller.message ?? _saveError case final message?)
                       Padding(
                         padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
                         child: MaterialBanner(

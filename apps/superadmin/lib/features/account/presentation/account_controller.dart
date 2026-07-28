@@ -34,6 +34,7 @@ final class AccountController extends ChangeNotifier {
   }) async {
     final current = _profile;
     if (current == null || _busy) return;
+    _message = null;
     _setBusy(true);
     var next = current.copyWith(
       firstName: firstName.trim(),
@@ -56,6 +57,8 @@ final class AccountController extends ChangeNotifier {
       } else {
         _message = 'Perfil atualizado.';
       }
+    } catch (_) {
+      _message = 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.';
     } finally {
       _setBusy(false);
     }

@@ -10,6 +10,23 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+final class _FailsOnceProfileRepository implements AccountProfileRepository {
+  AccountProfile _profile = AccountProfile.prototype();
+  var _failsNextSave = true;
+
+  @override
+  Future<AccountProfile> load() async => _profile;
+
+  @override
+  Future<void> save(AccountProfile profile) async {
+    if (_failsNextSave) {
+      _failsNextSave = false;
+      throw StateError('save failed');
+    }
+    _profile = profile;
+  }
+}
+
 void main() {
   testWidgets('shows personal data, access and security cards', (tester) async {
     final activities = SuperadminActivityController();
@@ -64,6 +81,39 @@ void main() {
     await tester.pump();
 
     expect(find.text('Use uma ou duas letras.'), findsOneWidget);
+  });
+
+  testWidgets('keeps the profile draft and shows recoverable feedback when save fails', (
+    tester,
+  ) async {
+    final activities = SuperadminActivityController();
+    final controller = AccountController(
+      repository: _FailsOnceProfileRepository(),
+      activities: activities,
+    );
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+
+    await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Maria');
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.'), findsOneWidget);
+    expect(find.text('Maria'), findsOneWidget);
+    expect(controller.profile!.firstName, 'Owner');
+
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+
+    expect(controller.profile!.firstName, 'Maria');
+    expect(find.text('Perfil atualizado.'), findsOneWidget);
   });
 
   testWidgets('resets a photo avatar as a draft and saves the derived initials', (tester) async {

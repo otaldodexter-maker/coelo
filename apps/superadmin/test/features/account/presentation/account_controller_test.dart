@@ -21,6 +21,23 @@ final class _FailsOnceAccountProfileRepository implements AccountProfileReposito
   }
 }
 
+final class _FailOnDemandAccountProfileRepository implements AccountProfileRepository {
+  AccountProfile _profile = AccountProfile.prototype();
+  bool failNextSave = false;
+
+  @override
+  Future<AccountProfile> load() async => _profile;
+
+  @override
+  Future<void> save(AccountProfile profile) async {
+    if (failNextSave) {
+      failNextSave = false;
+      throw StateError('save failed');
+    }
+    _profile = profile;
+  }
+}
+
 void main() {
   late InMemoryAccountProfileRepository repository;
   late SuperadminActivityController activities;
@@ -65,7 +82,7 @@ void main() {
     expect(controller.profile!.mobilePhone, '+55 11 98888-7777');
   });
 
-  test('save failure keeps the draft state and permits a retry', () async {
+  test('save failure reports an error, clears prior success and permits a retry', () async {
     final failingRepository = _FailsOnceAccountProfileRepository();
     final failingActivities = SuperadminActivityController();
     final failingController = AccountController(
@@ -82,12 +99,13 @@ void main() {
       avatar: failingController.profile!.avatar,
     );
 
-    await expectLater(saveDraft(), throwsA(isA<StateError>()));
+    await saveDraft();
 
     expect(failingController.busy, isFalse);
     expect(failingController.profile!.firstName, 'Owner');
     expect(failingController.profile!.emailChange, isNull);
     expect(failingActivities.activities, isEmpty);
+    expect(failingController.message, 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
 
     await saveDraft();
 
@@ -98,6 +116,41 @@ void main() {
 
     failingController.dispose();
     failingActivities.dispose();
+  });
+
+  test('a save failure replaces a previous success message', () async {
+    final failingRepository = _FailOnDemandAccountProfileRepository();
+    final failingActivities = SuperadminActivityController();
+    final failingController = AccountController(
+      repository: failingRepository,
+      activities: failingActivities,
+    );
+    await failingController.load();
+    addTearDown(() {
+      failingController.dispose();
+      failingActivities.dispose();
+    });
+
+    await failingController.saveProfile(
+      firstName: 'Maria',
+      lastName: 'Silva',
+      email: 'owner@coelo.me',
+      mobilePhone: '+55 11 98888-7777',
+      avatar: failingController.profile!.avatar,
+    );
+    expect(failingController.message, 'Perfil atualizado.');
+
+    failingRepository.failNextSave = true;
+    await failingController.saveProfile(
+      firstName: 'Ana',
+      lastName: 'Lima',
+      email: 'owner@coelo.me',
+      mobilePhone: '+55 11 97777-6666',
+      avatar: failingController.profile!.avatar,
+    );
+
+    expect(failingController.profile!.firstName, 'Maria');
+    expect(failingController.message, 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
   });
 
   test('approval applies the pending email and updates the activity', () async {
