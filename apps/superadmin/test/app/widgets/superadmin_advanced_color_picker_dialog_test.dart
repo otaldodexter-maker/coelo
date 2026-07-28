@@ -78,6 +78,7 @@ void main() {
 
     await tester.tap(find.text('Abrir seletor'));
     await tester.pumpAndSettle();
+    final semantics = tester.ensureSemantics();
 
     final area = find.byKey(const Key('advanced-color-picker-area'));
     final hue = find.byKey(const Key('advanced-color-picker-hue'));
@@ -116,8 +117,16 @@ void main() {
       ),
     );
 
+    expect(_focusRing(tester, 'advanced-color-picker-area-focus-ring').color, Colors.transparent);
+    expect(_focusRing(tester, 'advanced-color-picker-hue-focus-ring').color, Colors.transparent);
+
     await tester.tap(area);
+    await tester.pump();
     expect(tester.widget<Focus>(area).focusNode!.hasFocus, isTrue);
+    expect(
+      _focusRing(tester, 'advanced-color-picker-area-focus-ring'),
+      BorderSide(color: Theme.of(tester.element(area)).colorScheme.primary, width: 2),
+    );
     final areaHex = tester.widget<TextField>(find.byType(TextField)).controller!.text;
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
@@ -125,10 +134,30 @@ void main() {
 
     await tester.ensureVisible(hue);
     await tester.tap(hue);
+    await tester.pump();
     expect(tester.widget<Focus>(hue).focusNode!.hasFocus, isTrue);
+    expect(_focusRing(tester, 'advanced-color-picker-area-focus-ring').color, Colors.transparent);
+    expect(
+      _focusRing(tester, 'advanced-color-picker-hue-focus-ring'),
+      BorderSide(color: Theme.of(tester.element(hue)).colorScheme.primary, width: 2),
+    );
     final hueHex = tester.widget<TextField>(find.byType(TextField)).controller!.text;
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
     expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, isNot(hueHex));
+
+    final semanticHueHex = tester.widget<TextField>(find.byType(TextField)).controller!.text;
+    tester.semantics.increase(find.semantics.byLabel('Matiz'));
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      isNot(semanticHueHex),
+    );
+    semantics.dispose();
   });
+}
+
+BorderSide _focusRing(WidgetTester tester, String key) {
+  final decoration = tester.widget<DecoratedBox>(find.byKey(Key(key))).decoration as BoxDecoration;
+  return (decoration.border! as Border).top;
 }

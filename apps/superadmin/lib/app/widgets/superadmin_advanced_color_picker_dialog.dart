@@ -211,6 +211,23 @@ final class _ColorVisualPickerState extends State<_ColorVisualPicker> {
     }
   }
 
+  Widget _focusRing({required Key key, required FocusNode focusNode, required Widget child}) {
+    return AnimatedBuilder(
+      animation: focusNode,
+      builder: (context, child) => DecoratedBox(
+        key: key,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: focusNode.hasFocus ? Theme.of(context).colorScheme.primary : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: child,
+      ),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -222,29 +239,33 @@ final class _ColorVisualPickerState extends State<_ColorVisualPicker> {
             key: const Key('advanced-color-picker-area'),
             focusNode: _areaFocusNode,
             onKeyEvent: _handleAreaKey,
-            child: Semantics(
-              label: 'SaturaÃ§Ã£o e valor',
-              value:
-                  'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${(widget.color.value * 100).round()}%',
-              increasedValue:
-                  'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value + _keyboardStep).clamp(0, 1) * 100).round()}%',
-              decreasedValue:
-                  'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value - _keyboardStep).clamp(0, 1) * 100).round()}%',
-              slider: true,
-              enabled: true,
-              onIncrease: () => widget.onSaturationValueAdjusted(0, _keyboardStep),
-              onDecrease: () => widget.onSaturationValueAdjusted(0, -_keyboardStep),
-              child: LayoutBuilder(
-                builder: (context, constraints) => GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onPanDown: (details) {
-                    _areaFocusNode.requestFocus();
-                    widget.onSelect(details.localPosition, constraints.biggest);
-                  },
-                  onPanUpdate: (details) =>
-                      widget.onSelect(details.localPosition, constraints.biggest),
-                  child: CustomPaint(
-                    painter: _ColorAreaPainter(hue: widget.color.hue, color: widget.color),
+            child: _focusRing(
+              key: const Key('advanced-color-picker-area-focus-ring'),
+              focusNode: _areaFocusNode,
+              child: Semantics(
+                label: 'SaturaÃ§Ã£o e valor',
+                value:
+                    'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${(widget.color.value * 100).round()}%',
+                increasedValue:
+                    'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value + _keyboardStep).clamp(0, 1) * 100).round()}%',
+                decreasedValue:
+                    'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value - _keyboardStep).clamp(0, 1) * 100).round()}%',
+                slider: true,
+                enabled: true,
+                onIncrease: () => widget.onSaturationValueAdjusted(0, _keyboardStep),
+                onDecrease: () => widget.onSaturationValueAdjusted(0, -_keyboardStep),
+                child: LayoutBuilder(
+                  builder: (context, constraints) => GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanDown: (details) {
+                      _areaFocusNode.requestFocus();
+                      widget.onSelect(details.localPosition, constraints.biggest);
+                    },
+                    onPanUpdate: (details) =>
+                        widget.onSelect(details.localPosition, constraints.biggest),
+                    child: CustomPaint(
+                      painter: _ColorAreaPainter(hue: widget.color.hue, color: widget.color),
+                    ),
                   ),
                 ),
               ),
@@ -258,36 +279,40 @@ final class _ColorVisualPickerState extends State<_ColorVisualPicker> {
             key: const Key('advanced-color-picker-hue'),
             focusNode: _hueFocusNode,
             onKeyEvent: _handleHueKey,
-            child: Semantics(
-              label: 'Matiz',
-              value: '${widget.color.hue.round()} graus',
-              increasedValue:
-                  '${(widget.color.hue + _hueKeyboardStep).clamp(0, 360).round()} graus',
-              decreasedValue:
-                  '${(widget.color.hue - _hueKeyboardStep).clamp(0, 360).round()} graus',
-              slider: true,
-              enabled: true,
-              onIncrease: () =>
-                  widget.onHueChanged((widget.color.hue + _hueKeyboardStep).clamp(0, 360)),
-              onDecrease: () =>
-                  widget.onHueChanged((widget.color.hue - _hueKeyboardStep).clamp(0, 360)),
-              child: LayoutBuilder(
-                builder: (context, constraints) => GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: (details) {
-                    _hueFocusNode.requestFocus();
-                    widget.onHueChanged(
+            child: _focusRing(
+              key: const Key('advanced-color-picker-hue-focus-ring'),
+              focusNode: _hueFocusNode,
+              child: Semantics(
+                label: 'Matiz',
+                value: '${widget.color.hue.round()} graus',
+                increasedValue:
+                    '${(widget.color.hue + _hueKeyboardStep).clamp(0, 360).round()} graus',
+                decreasedValue:
+                    '${(widget.color.hue - _hueKeyboardStep).clamp(0, 360).round()} graus',
+                slider: true,
+                enabled: true,
+                onIncrease: () =>
+                    widget.onHueChanged((widget.color.hue + _hueKeyboardStep).clamp(0, 360)),
+                onDecrease: () =>
+                    widget.onHueChanged((widget.color.hue - _hueKeyboardStep).clamp(0, 360)),
+                child: LayoutBuilder(
+                  builder: (context, constraints) => GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTapDown: (details) {
+                      _hueFocusNode.requestFocus();
+                      widget.onHueChanged(
+                        (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
+                      );
+                    },
+                    onHorizontalDragUpdate: (details) => widget.onHueChanged(
                       (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
-                    );
-                  },
-                  onHorizontalDragUpdate: (details) => widget.onHueChanged(
-                    (details.localPosition.dx / constraints.maxWidth * 360).clamp(0, 360),
-                  ),
-                  child: Center(
-                    child: SizedBox(
-                      height: CoeloSpacing.space6,
-                      width: double.infinity,
-                      child: CustomPaint(painter: _HueBarPainter(hue: widget.color.hue)),
+                    ),
+                    child: Center(
+                      child: SizedBox(
+                        height: CoeloSpacing.space6,
+                        width: double.infinity,
+                        child: CustomPaint(painter: _HueBarPainter(hue: widget.color.hue)),
+                      ),
                     ),
                   ),
                 ),
