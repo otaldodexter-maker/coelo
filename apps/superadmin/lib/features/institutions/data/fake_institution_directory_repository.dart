@@ -73,8 +73,7 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
           if (comparison != 0) {
             return query.sortAscending ? comparison : -comparison;
           }
-          final nameComparison = first.publicName.compareTo(second.publicName);
-          return nameComparison != 0 ? nameComparison : first.id.compareTo(second.id);
+          return first.id.compareTo(second.id);
         });
 
     final start = query.offset.clamp(0, filtered.length);
@@ -143,7 +142,9 @@ int _compareItems(
     InstitutionDirectorySortColumn.unitsCount => first.unitsCount.compareTo(second.unitsCount),
     InstitutionDirectorySortColumn.groupsCount => first.groupsCount.compareTo(second.groupsCount),
     InstitutionDirectorySortColumn.planName => _compareNullable(first.planName, second.planName),
-    InstitutionDirectorySortColumn.status => first.status.label.compareTo(second.status.label),
+    InstitutionDirectorySortColumn.status => first.status.databaseValue.compareTo(
+      second.status.databaseValue,
+    ),
     InstitutionDirectorySortColumn.contactEmail => _compareNullable(
       first.contactEmail,
       second.contactEmail,

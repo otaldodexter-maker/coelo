@@ -130,18 +130,36 @@ void main() {
     );
   });
 
-  test('requires the selected page size to be one of the options', () {
-    expect(
-      () => CoeloAdminPagination(
-        currentPage: 1,
-        totalPages: 1,
-        onPrevious: null,
-        onNext: null,
-        pageSize: 20,
-        pageSizeOptions: const [11, 50],
+  testWidgets('requires the selected page size to be one of the options while building', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CoeloAdminPagination(
+          currentPage: 1,
+          totalPages: 1,
+          onPrevious: null,
+          onNext: null,
+          pageSize: 20,
+          pageSizeOptions: const [11, 50],
+        ),
       ),
-      throwsAssertionError,
     );
+
+    expect(tester.takeException(), isAssertionError);
+  });
+
+  test('preserves const construction', () {
+    const pagination = CoeloAdminPagination(
+      currentPage: 1,
+      totalPages: 1,
+      onPrevious: null,
+      onNext: null,
+      pageSize: 11,
+      pageSizeOptions: [11, 20],
+    );
+
+    expect(pagination.pageSize, 11);
   });
 
   test('requires page size when a page-size callback is provided', () {

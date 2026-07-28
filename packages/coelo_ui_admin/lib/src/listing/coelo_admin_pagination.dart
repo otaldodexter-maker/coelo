@@ -2,7 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 final class CoeloAdminPagination extends StatelessWidget {
-  CoeloAdminPagination({
+  const CoeloAdminPagination({
     required this.currentPage,
     required this.totalPages,
     required this.onPrevious,
@@ -15,8 +15,7 @@ final class CoeloAdminPagination extends StatelessWidget {
   }) : assert(currentPage > 0),
        assert(totalPages > 0),
        assert(currentPage <= totalPages),
-       assert(pageSize == null || pageSizeOptions.isNotEmpty),
-       assert(pageSize == null || pageSizeOptions.contains(pageSize)),
+       assert(pageSize == null || pageSizeOptions != const <int>[]),
        assert(onPageSizeChanged == null || pageSize != null);
 
   final int currentPage;
@@ -30,6 +29,7 @@ final class CoeloAdminPagination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(pageSize == null || pageSizeOptions.contains(pageSize));
     return _CoeloAdminPaginationContent(
       currentPage: currentPage,
       totalPages: totalPages,

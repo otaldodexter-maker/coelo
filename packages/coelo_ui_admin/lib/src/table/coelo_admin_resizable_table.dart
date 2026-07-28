@@ -412,6 +412,7 @@ final class _SortableHeader extends StatefulWidget {
 final class _SortableHeaderState extends State<_SortableHeader> {
   final _focusNode = FocusNode();
   bool _focused = false;
+  bool _hovered = false;
 
   @override
   void dispose() {
@@ -429,11 +430,14 @@ final class _SortableHeaderState extends State<_SortableHeader> {
       child: InkWell(
         focusNode: _focusNode,
         onFocusChange: (focused) => setState(() => _focused = focused),
+        onHover: (hovered) => setState(() => _hovered = hovered),
         onTap: widget.onPressed,
         overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         child: ColoredBox(
           key: widget.backgroundKey,
-          color: _focused ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
+          color: _focused || _hovered
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Colors.transparent,
           child: widget.child,
         ),
       ),

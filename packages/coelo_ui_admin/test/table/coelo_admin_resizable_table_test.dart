@@ -508,6 +508,39 @@ void main() {
     await tester.pump();
     expect(sortedColumns, ['name', 'name']);
   });
+
+  testWidgets('uses primary container for sortable-header hover and focus in light and dark', (
+    tester,
+  ) async {
+    for (final (theme, colors) in [
+      (CoeloTheme.light, CoeloColorSchemes.light),
+      (CoeloTheme.dark, CoeloColorSchemes.dark),
+    ]) {
+      await _pumpSortableTable(tester, (_) {}, theme: theme);
+
+      final pinnedHeader = find.byKey(const Key('coelo-admin-table-header-name-pinned'));
+      final background = find.byKey(const Key('coelo-admin-table-sort-background-name-pinned'));
+      final inkWell = tester.widget<InkWell>(
+        find.descendant(of: pinnedHeader, matching: find.byType(InkWell)),
+      );
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: tester.getCenter(pinnedHeader));
+      await tester.pump();
+
+      expect(tester.widget<ColoredBox>(background).color, colors.primaryContainer);
+      expect(inkWell.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+
+      await mouse.removePointer();
+      await tester.pump();
+      for (var index = 0; index < 8 && !inkWell.focusNode!.hasFocus; index++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+      }
+
+      expect(inkWell.focusNode!.hasFocus, isTrue);
+      expect(tester.widget<ColoredBox>(background).color, colors.primaryContainer);
+    }
+  });
 }
 
 Color? _decorationColor(WidgetTester tester, Key key) {
@@ -560,10 +593,14 @@ Future<void> _pumpTable(
   await tester.pumpAndSettle();
 }
 
-Future<void> _pumpSortableTable(WidgetTester tester, ValueChanged<String> onSort) async {
+Future<void> _pumpSortableTable(
+  WidgetTester tester,
+  ValueChanged<String> onSort, {
+  ThemeData? theme,
+}) async {
   await tester.pumpWidget(
     MaterialApp(
-      theme: CoeloTheme.light,
+      theme: theme ?? CoeloTheme.light,
       home: Scaffold(
         body: SizedBox(
           width: 300,

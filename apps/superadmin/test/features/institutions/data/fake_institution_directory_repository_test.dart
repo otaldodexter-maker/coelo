@@ -138,7 +138,7 @@ void main() {
     expect(firstPage.hasNext, isTrue);
   });
 
-  test('breaks equal sort values by public name and then id', () async {
+  test('breaks equal sort values directly by id', () async {
     final repository = FakeInstitutionDirectoryRepository(
       items: [
         _item(id: 'institution-z', publicName: 'Alpha'),
@@ -156,9 +156,24 @@ void main() {
 
     expect(result.items.map((item) => item.id), [
       'institution-a',
-      'institution-z',
       'institution-b',
+      'institution-z',
     ]);
+  });
+
+  test('sorts status by its persisted database value', () async {
+    final repository = FakeInstitutionDirectoryRepository(
+      items: [
+        _item(id: 'institution-archived', publicName: 'Alpha', status: InstitutionStatus.archived),
+        _item(id: 'institution-active', publicName: 'Zulu', status: InstitutionStatus.active),
+      ],
+    );
+
+    final result = await repository.fetchPage(
+      InstitutionDirectoryQuery(sortColumn: InstitutionDirectorySortColumn.status),
+    );
+
+    expect(result.items.map((item) => item.id), ['institution-active', 'institution-archived']);
   });
 }
 
