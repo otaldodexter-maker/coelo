@@ -633,92 +633,104 @@ class _PasswordDialogState extends State<_PasswordDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    title: Row(
-      children: [
-        const Expanded(child: Text('Alterar senha')),
-        IconButton(
-          key: const Key('account-password-close'),
-          tooltip: 'Fechar alteração de senha',
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.close_rounded),
-          color: Theme.of(context).colorScheme.error,
-          style: IconButton.styleFrom(
-            minimumSize: const Size.square(CoeloSize.touchMin),
-            hoverColor: Theme.of(context).colorScheme.errorContainer,
-            focusColor: Theme.of(context).colorScheme.errorContainer,
-            highlightColor: Colors.transparent,
+  Widget build(BuildContext context) {
+    final compact =
+        MediaQuery.sizeOf(context).width < 600 || MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final cancelButton = OutlinedButton(
+      key: const Key('account-password-cancel'),
+      onPressed: Navigator.of(context).pop,
+      child: const Text('Cancelar'),
+    );
+    final submitButton = FilledButton(
+      key: const Key('account-password-submit'),
+      onPressed: () async {
+        final result = await widget.controller.changePassword(
+          currentPassword: current.text,
+          newPassword: next.text,
+          confirmation: confirmation.text,
+        );
+        if (!context.mounted) return;
+        if (result == null) {
+          Navigator.of(context).pop();
+        } else {
+          setState(() => error = result);
+        }
+      },
+      child: const Text('Alterar senha'),
+    );
+    return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      surfaceTintColor: Colors.transparent,
+      scrollable: true,
+      title: Row(
+        children: [
+          const Expanded(child: Text('Alterar senha')),
+          IconButton(
+            key: const Key('account-password-close'),
+            tooltip: 'Fechar alteração de senha',
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close_rounded),
+            color: Theme.of(context).colorScheme.error,
+            style: IconButton.styleFrom(
+              minimumSize: const Size.square(CoeloSize.touchMin),
+              hoverColor: Theme.of(context).colorScheme.errorContainer,
+              focusColor: Theme.of(context).colorScheme.errorContainer,
+              highlightColor: Colors.transparent,
+            ),
           ),
+        ],
+      ),
+      content: SizedBox(
+        width: 440,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CoeloFormTextField(
+              controller: current,
+              labelText: 'Senha atual',
+              prefixIcon: Icons.lock_outline,
+              obscureText: true,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloFormTextField(
+              controller: next,
+              labelText: 'Nova senha',
+              prefixIcon: Icons.password_rounded,
+              obscureText: true,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloFormTextField(
+              controller: confirmation,
+              labelText: 'Confirmar nova senha',
+              prefixIcon: Icons.password_rounded,
+              obscureText: true,
+              errorText: error,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            const Text('Senha atual do protótipo: coelo-demo'),
+          ],
         ),
+      ),
+      actions: [
+        compact
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  cancelButton,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  submitButton,
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: cancelButton),
+                  const SizedBox(width: CoeloSpacing.space3),
+                  Expanded(child: submitButton),
+                ],
+              ),
       ],
-    ),
-    content: SizedBox(
-      width: 440,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CoeloFormTextField(
-            controller: current,
-            labelText: 'Senha atual',
-            prefixIcon: Icons.lock_outline,
-            obscureText: true,
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloFormTextField(
-            controller: next,
-            labelText: 'Nova senha',
-            prefixIcon: Icons.password_rounded,
-            obscureText: true,
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloFormTextField(
-            controller: confirmation,
-            labelText: 'Confirmar nova senha',
-            prefixIcon: Icons.password_rounded,
-            obscureText: true,
-            errorText: error,
-          ),
-          const SizedBox(height: CoeloSpacing.space2),
-          const Text('Senha atual do protótipo: coelo-demo'),
-        ],
-      ),
-    ),
-    actions: [
-      Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              key: const Key('account-password-cancel'),
-              onPressed: Navigator.of(context).pop,
-              child: const Text('Cancelar'),
-            ),
-          ),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: FilledButton(
-              key: const Key('account-password-submit'),
-              onPressed: () async {
-                final result = await widget.controller.changePassword(
-                  currentPassword: current.text,
-                  newPassword: next.text,
-                  confirmation: confirmation.text,
-                );
-                if (!context.mounted) return;
-                if (result == null) {
-                  Navigator.of(context).pop();
-                } else {
-                  setState(() => error = result);
-                }
-              },
-              child: const Text('Alterar senha'),
-            ),
-          ),
-        ],
-      ),
-    ],
-  );
+    );
+  }
 }
 
 class _AvatarCropDialog extends StatefulWidget {

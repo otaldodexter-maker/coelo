@@ -245,6 +245,51 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('account-password-close')), findsNothing);
   });
+
+  testWidgets('stacks password actions at 200 percent text on compact screens', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final activities = SuperadminActivityController();
+    final controller = AccountController(
+      repository: InMemoryAccountProfileRepository(),
+      activities: activities,
+    );
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: ProfilePage(controller: controller, logout: () async => const LogoutResult.success()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final changePassword = find.descendant(
+      of: find.byKey(const Key('account-security-card')),
+      matching: find.byType(OutlinedButton),
+    );
+    await tester.ensureVisible(changePassword);
+    await tester.tap(changePassword);
+    await tester.pumpAndSettle();
+
+    final cancel = find.byKey(const Key('account-password-cancel'));
+    final submit = find.byKey(const Key('account-password-submit'));
+    expect(tester.takeException(), isNull);
+    expect(cancel, findsOneWidget);
+    expect(submit, findsOneWidget);
+    expect(tester.getSize(cancel).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(tester.getSize(submit).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(tester.getSize(cancel).width, greaterThan(200));
+    expect(tester.getSize(submit).width, greaterThan(200));
+  });
 }
 
 Future<void> _pumpProfilePage(WidgetTester tester, AccountController controller) async {
