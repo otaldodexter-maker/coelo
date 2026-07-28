@@ -55,6 +55,67 @@ void main() {
     });
   }
 
+  for (final width in [1024.0, 768.0, 375.0]) {
+    testWidgets('transfers context panel focus at ${width.toInt()}px', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 900);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+      await tester.pumpAndSettle();
+
+      if (width == 375) {
+        await tester.tap(find.text('Turma Girassol').first);
+        await tester.pumpAndSettle();
+      }
+
+      final collapsedButton = tester.widget<IconButton>(
+        find.byKey(const Key('superadmin-chat-context-toggle-collapsed')),
+      );
+      expect(collapsedButton.focusNode, isNotNull);
+      collapsedButton.focusNode!.requestFocus();
+      await tester.pump();
+      expect(collapsedButton.focusNode!.hasPrimaryFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      final expandedButton = tester.widget<IconButton>(
+        find.byKey(const Key('superadmin-chat-context-toggle-expanded')),
+      );
+      expect(expandedButton.focusNode, isNotNull);
+      expect(expandedButton.focusNode!.hasPrimaryFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      final restoredButton = tester.widget<IconButton>(
+        find.byKey(const Key('superadmin-chat-context-toggle-collapsed')),
+      );
+      expect(restoredButton.focusNode, same(collapsedButton.focusNode));
+      expect(restoredButton.focusNode!.hasPrimaryFocus, isTrue);
+    });
+  }
+
+  testWidgets('updates contextual metrics when the selected granularity changes', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+
+    final panel = find.byKey(const Key('superadmin-chat-context-panel'));
+    expect(find.descendant(of: panel, matching: find.text('Professores')), findsOne);
+    expect(find.descendant(of: panel, matching: find.text('Funcionários')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-conversation-cambui')));
+    await tester.pumpAndSettle();
+
+    expect(find.descendant(of: panel, matching: find.text('Funcionários')), findsOne);
+    expect(find.descendant(of: panel, matching: find.text('Professores')), findsNothing);
+  });
+
   testWidgets('groups the desktop inbox and preserves the thread while collapsing it', (
     tester,
   ) async {

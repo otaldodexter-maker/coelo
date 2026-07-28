@@ -8,12 +8,14 @@ final class SuperadminChatContextPanel extends StatelessWidget {
     required this.conversation,
     required this.collapsed,
     required this.onToggle,
+    this.toggleFocusNode,
     super.key,
   });
 
   final SuperadminChatConversation conversation;
   final bool collapsed;
   final VoidCallback onToggle;
+  final FocusNode? toggleFocusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ final class SuperadminChatContextPanel extends StatelessWidget {
             conversation: conversation,
             horizontal: constraints.maxWidth > constraints.maxHeight,
             onToggle: onToggle,
+            toggleFocusNode: toggleFocusNode,
           );
         }
 
@@ -70,7 +73,9 @@ final class SuperadminChatContextPanel extends StatelessWidget {
                     ),
                     const SizedBox(width: CoeloSpacing.space2),
                     IconButton(
+                      key: const Key('superadmin-chat-context-toggle-expanded'),
                       tooltip: compact ? 'Voltar para a conversa' : 'Recolher painel contextual',
+                      focusNode: toggleFocusNode,
                       onPressed: onToggle,
                       icon: Icon(compact ? Icons.arrow_back : Icons.chevron_right),
                     ),
@@ -132,16 +137,20 @@ final class _CollapsedContextPanel extends StatelessWidget {
     required this.conversation,
     required this.horizontal,
     required this.onToggle,
+    required this.toggleFocusNode,
   });
 
   final SuperadminChatConversation conversation;
   final bool horizontal;
   final VoidCallback onToggle;
+  final FocusNode? toggleFocusNode;
 
   @override
   Widget build(BuildContext context) {
     final action = IconButton(
+      key: const Key('superadmin-chat-context-toggle-collapsed'),
       tooltip: 'Mostrar detalhes do contexto',
+      focusNode: toggleFocusNode,
       onPressed: onToggle,
       icon: const Icon(Icons.info_outline),
     );

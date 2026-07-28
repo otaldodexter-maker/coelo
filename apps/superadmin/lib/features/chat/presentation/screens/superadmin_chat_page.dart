@@ -30,6 +30,8 @@ final class SuperadminChatPage extends StatefulWidget {
 
 final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   final _expandInboxFocusNode = FocusNode(debugLabel: 'Expandir conversas');
+  final _collapsedContextPanelFocusNode = FocusNode(debugLabel: 'Mostrar detalhes do contexto');
+  final _expandedContextPanelFocusNode = FocusNode(debugLabel: 'Recolher painel contextual');
   var _selectedIndex = 0;
   var _mobileThreadOpen = false;
   var _inboxCollapsed = false;
@@ -44,6 +46,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   @override
   void dispose() {
     _expandInboxFocusNode.dispose();
+    _collapsedContextPanelFocusNode.dispose();
+    _expandedContextPanelFocusNode.dispose();
     super.dispose();
   }
 
@@ -78,6 +82,15 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   void _toggleContextPanel(bool collapsed) {
     setState(() => _contextPanelCollapsedOverride = !collapsed);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final successor = collapsed
+          ? _expandedContextPanelFocusNode
+          : _collapsedContextPanelFocusNode;
+      successor.requestFocus();
+    });
   }
 
   @override
@@ -112,6 +125,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                     return SuperadminChatContextPanel(
                       conversation: _selected,
                       collapsed: false,
+                      toggleFocusNode: _expandedContextPanelFocusNode,
                       onToggle: () => _toggleContextPanel(contextPanelCollapsed),
                     );
                   }
@@ -131,6 +145,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                         child: SuperadminChatContextPanel(
                           conversation: _selected,
                           collapsed: true,
+                          toggleFocusNode: _collapsedContextPanelFocusNode,
                           onToggle: () => _toggleContextPanel(contextPanelCollapsed),
                         ),
                       ),
@@ -165,6 +180,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                         child: SuperadminChatContextPanel(
                           conversation: _selected,
                           collapsed: contextPanelCollapsed,
+                          toggleFocusNode: contextPanelCollapsed
+                              ? _collapsedContextPanelFocusNode
+                              : _expandedContextPanelFocusNode,
                           onToggle: () => _toggleContextPanel(contextPanelCollapsed),
                         ),
                       ),
@@ -214,6 +232,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                       child: SuperadminChatContextPanel(
                         conversation: _selected,
                         collapsed: contextPanelCollapsed,
+                        toggleFocusNode: contextPanelCollapsed
+                            ? _collapsedContextPanelFocusNode
+                            : _expandedContextPanelFocusNode,
                         onToggle: () => _toggleContextPanel(contextPanelCollapsed),
                       ),
                     ),
