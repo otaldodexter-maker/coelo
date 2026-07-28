@@ -262,26 +262,28 @@ final class _FormFooter extends StatelessWidget {
       onPressed: controller.isSaving ? null : controller.previousStep,
       child: const Text('Anterior'),
     );
-    final primaryButton = FilledButton(
-      key: last ? const Key('institution-form-save') : const Key('institution-form-continue'),
-      onPressed: controller.isSaving
-          ? null
-          : last
-          ? onSave
-          : controller.continueFromCurrentStep,
-      child: controller.isSaving
-          ? const SizedBox.square(
-              dimension: CoeloSize.iconSm,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(
-              last
-                  ? controller.isEditing
-                        ? 'Salvar alterações'
-                        : 'Criar instituição'
-                  : 'Continuar',
-            ),
-    );
+    final primaryLabel = last
+        ? controller.isEditing
+              ? 'Salvar alterações'
+              : 'Criar instituição'
+        : 'Continuar';
+    final primaryKey = last
+        ? const Key('institution-form-save')
+        : const Key('institution-form-continue');
+    final primaryAction = controller.isSaving
+        ? null
+        : last
+        ? onSave
+        : controller.continueFromCurrentStep;
+    final primaryChild = controller.isSaving
+        ? const SizedBox.square(
+            dimension: CoeloSize.iconSm,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : Text(primaryLabel);
+    final Widget primaryButton = controller.isEditing && !last
+        ? OutlinedButton(key: primaryKey, onPressed: primaryAction, child: primaryChild)
+        : FilledButton(key: primaryKey, onPressed: primaryAction, child: primaryChild);
     final saveCurrentButton = FilledButton(
       key: const Key('institution-form-save-current'),
       onPressed: controller.isSaving ? null : onSave,
@@ -308,11 +310,11 @@ final class _FormFooter extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  primaryButton,
                   if (controller.isEditing && !last) ...[
-                    const SizedBox(height: CoeloSpacing.space2),
                     saveCurrentButton,
+                    const SizedBox(height: CoeloSpacing.space2),
                   ],
+                  primaryButton,
                   const SizedBox(height: CoeloSpacing.space2),
                   Row(
                     children: [
@@ -331,10 +333,12 @@ final class _FormFooter extends StatelessWidget {
                 if (controller.currentStep.index > 0) previousButton,
                 const SizedBox(width: CoeloSpacing.space2),
                 if (controller.isEditing && !last) ...[
-                  saveCurrentButton,
+                  primaryButton,
                   const SizedBox(width: CoeloSpacing.space2),
+                  saveCurrentButton,
+                ] else ...[
+                  primaryButton,
                 ],
-                primaryButton,
               ],
             );
           },

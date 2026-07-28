@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:coelo_superadmin/features/institutions/data/institution_location_service.dart';
@@ -64,6 +65,55 @@ void main() {
 
     expect(
       () => service.lookupPostalCode('01310100'),
+      throwsA(
+        isA<InstitutionLocationException>().having(
+          (error) => error.type,
+          'type',
+          InstitutionLocationErrorType.network,
+        ),
+      ),
+    );
+  });
+
+  test('malformed JSON shapes never leak type errors', () async {
+    final postalService = InstitutionLocationService(
+      client: MockClient((_) async => http.Response('[]', 200)),
+    );
+    final municipalitiesService = InstitutionLocationService(
+      client: MockClient((_) async => http.Response('{}', 200)),
+    );
+
+    await expectLater(
+      postalService.lookupPostalCode('01310100'),
+      throwsA(
+        isA<InstitutionLocationException>().having(
+          (error) => error.type,
+          'type',
+          InstitutionLocationErrorType.network,
+        ),
+      ),
+    );
+    await expectLater(
+      municipalitiesService.loadMunicipalities('SP'),
+      throwsA(
+        isA<InstitutionLocationException>().having(
+          (error) => error.type,
+          'type',
+          InstitutionLocationErrorType.network,
+        ),
+      ),
+    );
+  });
+
+  test('request timeout is injectable and maps to the network state', () async {
+    final pendingResponse = Completer<http.Response>();
+    final service = InstitutionLocationService(
+      client: MockClient((_) => pendingResponse.future),
+      requestTimeout: const Duration(milliseconds: 10),
+    );
+
+    await expectLater(
+      service.lookupPostalCode('01310100'),
       throwsA(
         isA<InstitutionLocationException>().having(
           (error) => error.type,

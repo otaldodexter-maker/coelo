@@ -114,6 +114,12 @@ final class InstitutionFormController extends ChangeNotifier {
     if (field == InstitutionFormField.profileBio && value.length > 220) {
       value = value.substring(0, 220);
     }
+    if (field == InstitutionFormField.postalCode && userInitiated) {
+      value = value.replaceAll(RegExp(r'\D'), '');
+      if (value.length > 8) {
+        value = value.substring(0, 8);
+      }
+    }
     if (field == InstitutionFormField.slug && userInitiated) {
       _slugManuallyEdited = true;
     }
@@ -289,6 +295,9 @@ final class InstitutionFormController extends ChangeNotifier {
     final value = text(field);
     if (_requiredFields.contains(field) && value.isEmpty) {
       return 'Preencha este campo para concluir o cadastro.';
+    }
+    if (field == InstitutionFormField.postalCode && !RegExp(r'^\d{8}$').hasMatch(value)) {
+      return 'Informe um CEP com exatamente 8 dígitos.';
     }
     if ({InstitutionFormField.contactEmail, InstitutionFormField.ownerEmail}.contains(field) &&
         value.isNotEmpty &&
@@ -556,7 +565,7 @@ Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
   InstitutionFormField.primaryDomain: record?.primaryDomain ?? '',
   InstitutionFormField.locale: record?.locale ?? 'pt-BR',
   InstitutionFormField.timezone: record?.timezone ?? 'America/Sao_Paulo',
-  InstitutionFormField.postalCode: record?.postalCode ?? '',
+  InstitutionFormField.postalCode: record?.postalCode.replaceAll(RegExp(r'\D'), '') ?? '',
   InstitutionFormField.country: record?.country ?? 'Brasil',
   InstitutionFormField.state: record?.state ?? '',
   InstitutionFormField.city: record?.city ?? '',

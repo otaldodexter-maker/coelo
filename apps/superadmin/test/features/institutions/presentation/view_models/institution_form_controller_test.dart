@@ -79,4 +79,52 @@ void main() {
 
     expect(controller.trialEndError, 'A data final não pode ser anterior à data de início.');
   });
+
+  test('postal code accepts exactly eight digits', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+
+    for (final invalidValue in ['123', '01310-100', 'CEP 01310100']) {
+      controller.setText(InstitutionFormField.postalCode, invalidValue);
+      expect(
+        controller.errorForForced(InstitutionFormField.postalCode),
+        'Informe um CEP com exatamente 8 dígitos.',
+        reason: invalidValue,
+      );
+    }
+
+    controller.setText(InstitutionFormField.postalCode, '01310100');
+    expect(controller.errorForForced(InstitutionFormField.postalCode), isNull);
+  });
+
+  test('profile bio accepts 220 characters and clips the 221st', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    final exactlyAtLimit = List.filled(220, 'a').join();
+
+    controller.setText(InstitutionFormField.profileBio, exactlyAtLimit);
+    expect(controller.text(InstitutionFormField.profileBio), exactlyAtLimit);
+
+    controller.setText(InstitutionFormField.profileBio, '${exactlyAtLimit}b');
+    expect(controller.text(InstitutionFormField.profileBio), exactlyAtLimit);
+  });
+
+  test('profile links require a complete pair and persist a valid URL', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+
+    controller.setText(InstitutionFormField.link1Label, 'Portal');
+    expect(controller.errorForForced(InstitutionFormField.link1Url), isNotNull);
+
+    controller.setText(InstitutionFormField.link1Url, 'portal.example');
+    expect(controller.errorForForced(InstitutionFormField.link1Url), contains('http://'));
+
+    controller.setText(InstitutionFormField.link1Url, 'https://portal.example');
+    expect(controller.errorForForced(InstitutionFormField.link1Url), isNull);
+
+    final saved = controller.toRecord(id: 'new-institution');
+    expect(saved.profileLinks, hasLength(1));
+    expect(saved.profileLinks.single.label, 'Portal');
+    expect(saved.profileLinks.single.url, 'https://portal.example');
+  });
 }

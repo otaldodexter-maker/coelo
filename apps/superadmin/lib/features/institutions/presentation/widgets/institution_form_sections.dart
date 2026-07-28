@@ -115,18 +115,28 @@ final class _LocationSectionState extends State<_LocationSection> {
   String? _postalCodeError;
   String? _municipalityError;
   List<String> _municipalities = const [];
+  var _municipalityRequestVersion = 0;
 
   InstitutionFormController get controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialState = controller.text(InstitutionFormField.state);
+    if (initialState.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _loadMunicipalities(initialState);
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final state = controller.text(InstitutionFormField.state);
     final municipality = controller.text(InstitutionFormField.city);
-    final municipalityOptions = [
-      '',
-      if (municipality.isNotEmpty && !_municipalities.contains(municipality)) municipality,
-      ..._municipalities,
-    ];
+    final municipalityOptions = ['', ..._municipalities];
     return _Section(
       title: 'Localização e contato',
       description: 'Organize o endereço principal e os canais institucionais.',
@@ -168,6 +178,10 @@ final class _LocationSectionState extends State<_LocationSection> {
                 onChanged: (value) =>
                     controller.setText(InstitutionFormField.city, value, userInitiated: true),
                 prefixIcon: Icons.location_city_rounded,
+                enabled: !_loadingMunicipalities && state.isNotEmpty,
+                isLoading: _loadingMunicipalities,
+                errorText: _municipalityError,
+                searchHintText: 'Buscar município',
               ),
               _dropdown<String>(
                 key: const Key('institution-state-select'),
@@ -181,17 +195,18 @@ final class _LocationSectionState extends State<_LocationSection> {
               _field(controller, InstitutionFormField.country, 'País', enabled: false),
             ],
           ),
-          if (_loadingMunicipalities) ...[
-            const SizedBox(height: CoeloSpacing.space2),
-            const LinearProgressIndicator(key: Key('institution-municipalities-loading')),
-          ],
           if (_municipalityError != null) ...[
             const SizedBox(height: CoeloSpacing.space2),
-            Text(
-              _municipalityError!,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                key: const Key('institution-municipalities-retry'),
+                onPressed: _loadingMunicipalities
+                    ? null
+                    : () => _loadMunicipalities(controller.text(InstitutionFormField.state)),
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Tentar novamente'),
+              ),
             ),
           ],
           const SizedBox(height: CoeloSpacing.space5),
@@ -265,32 +280,40 @@ final class _LocationSectionState extends State<_LocationSection> {
   }
 
   Future<void> _loadMunicipalities(String state) async {
+    final requestVersion = ++_municipalityRequestVersion;
     if (state.isEmpty) {
       setState(() {
         _municipalities = const [];
         _municipalityError = null;
+        _loadingMunicipalities = false;
       });
       return;
     }
     setState(() {
       _loadingMunicipalities = true;
       _municipalityError = null;
+      _municipalities = const [];
     });
     try {
       final municipalities = await widget.locationService.loadMunicipalities(state);
-      if (!mounted) return;
-      setState(() => _municipalities = municipalities);
-    } on InstitutionLocationException {
-      if (!mounted) return;
+      if (!_isCurrentMunicipalityRequest(requestVersion, state)) return;
       setState(() {
-        _municipalityError = 'Não foi possível carregar os municípios do IBGE. Tente novamente.';
+        _municipalities = municipalities;
+        _loadingMunicipalities = false;
       });
-    } finally {
-      if (mounted) {
-        setState(() => _loadingMunicipalities = false);
-      }
+    } on InstitutionLocationException {
+      if (!_isCurrentMunicipalityRequest(requestVersion, state)) return;
+      setState(() {
+        _municipalityError = 'Não foi possível carregar os municípios do IBGE.';
+        _loadingMunicipalities = false;
+      });
     }
   }
+
+  bool _isCurrentMunicipalityRequest(int requestVersion, String state) =>
+      mounted &&
+      requestVersion == _municipalityRequestVersion &&
+      controller.text(InstitutionFormField.state) == state;
 }
 
 final class _OwnerSection extends StatelessWidget {
@@ -1598,6 +1621,10 @@ Widget _dropdown<T>({
   required String Function(T value) labelOf,
   required ValueChanged<T> onChanged,
   IconData prefixIcon = Icons.tune_rounded,
+  bool enabled = true,
+  bool isLoading = false,
+  String? errorText,
+  String? searchHintText,
 }) {
   return CoeloAdminSingleSelectField<T>(
     key: key,
@@ -1607,6 +1634,10 @@ Widget _dropdown<T>({
     optionLabel: labelOf,
     onChanged: onChanged,
     prefixIcon: prefixIcon,
+    enabled: enabled,
+    isLoading: isLoading,
+    errorText: errorText,
+    searchHintText: searchHintText,
   );
 }
 

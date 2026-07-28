@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/institutions/data/institution_location
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_form_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
@@ -209,6 +210,218 @@ void main() {
     );
   });
 
+  testWidgets('loads IBGE municipalities on entry when edit mode already has a UF', (tester) async {
+    await _useDesktopSurface(tester);
+    var ibgeRequests = 0;
+    final service = InstitutionLocationService(
+      client: MockClient((request) async {
+        expect(request.url.path, endsWith('/estados/SP/municipios'));
+        ibgeRequests += 1;
+        return http.Response(
+          jsonEncode([
+            {'nome': 'Campinas'},
+            {'nome': 'São Paulo'},
+          ]),
+          200,
+        );
+      }),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+
+    expect(ibgeRequests, 1);
+    expect(_municipalitySelect(tester).options, contains('Campinas'));
+  });
+
+  testWidgets('IBGE error keeps the municipality coherent and retries the same UF', (tester) async {
+    await _useDesktopSurface(tester);
+    var ibgeRequests = 0;
+    final service = InstitutionLocationService(
+      client: MockClient((request) async {
+        ibgeRequests += 1;
+        if (ibgeRequests == 1) {
+          throw http.ClientException('offline', request.url);
+        }
+        return http.Response(
+          jsonEncode([
+            {'nome': 'Campinas'},
+            {'nome': 'São Paulo'},
+          ]),
+          200,
+        );
+      }),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+
+    final failedSelect = _municipalitySelect(tester);
+    expect(failedSelect.value, isNotEmpty);
+    expect(failedSelect.errorText, isNotNull);
+    expect(failedSelect.isLoading, isFalse);
+    expect(find.byKey(const Key('institution-municipalities-retry')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-municipalities-retry')));
+    await tester.pumpAndSettle();
+
+    expect(ibgeRequests, 2);
+    expect(_municipalitySelect(tester).options, contains('Campinas'));
+    expect(_municipalitySelect(tester).errorText, isNull);
+  });
+
+  testWidgets('late IBGE response for a previous UF cannot replace the current list', (
+    tester,
+  ) async {
+    await _useDesktopSurface(tester);
+    final spResponse = Completer<http.Response>();
+    final service = InstitutionLocationService(
+      client: MockClient((request) async {
+        if (request.url.host == 'viacep.com.br') {
+          return http.Response(
+            jsonEncode({
+              'logradouro': 'Rua do Catete',
+              'bairro': 'Catete',
+              'localidade': 'Rio de Janeiro',
+              'uf': 'RJ',
+            }),
+            200,
+          );
+        }
+        if (request.url.path.contains('/estados/SP/')) {
+          return spResponse.future;
+        }
+        return http.Response(
+          jsonEncode([
+            {'nome': 'Rio de Janeiro'},
+          ]),
+          200,
+        );
+      }),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pump();
+    await tester.pump();
+    expect(_municipalitySelect(tester).isLoading, isTrue);
+
+    await tester.enterText(find.byKey(const Key('institution-field-postalCode')), '22220000');
+    await tester.tap(find.byTooltip('Buscar CEP'));
+    await tester.pumpAndSettle();
+    expect(_municipalitySelect(tester).options, contains('Rio de Janeiro'));
+
+    spResponse.complete(
+      http.Response(
+        jsonEncode([
+          {'nome': 'Campinas'},
+        ]),
+        200,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(_municipalitySelect(tester).options, contains('Rio de Janeiro'));
+    expect(_municipalitySelect(tester).options, isNot(contains('Campinas')));
+  });
+
+  testWidgets('starting a new UF request clears incompatible municipality options', (tester) async {
+    await _useDesktopSurface(tester);
+    final rjResponse = Completer<http.Response>();
+    final service = InstitutionLocationService(
+      client: MockClient((request) async {
+        if (request.url.host == 'viacep.com.br') {
+          return http.Response(
+            jsonEncode({
+              'logradouro': 'Rua do Catete',
+              'bairro': 'Catete',
+              'localidade': 'Rio de Janeiro',
+              'uf': 'RJ',
+            }),
+            200,
+          );
+        }
+        if (request.url.path.contains('/estados/RJ/')) {
+          return rjResponse.future;
+        }
+        return http.Response(
+          jsonEncode([
+            {'nome': 'Campinas'},
+          ]),
+          200,
+        );
+      }),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+    expect(_municipalitySelect(tester).options, contains('Campinas'));
+
+    await tester.enterText(find.byKey(const Key('institution-field-postalCode')), '22220000');
+    await tester.tap(find.byTooltip('Buscar CEP'));
+    await tester.pump();
+
+    final loadingSelect = _municipalitySelect(tester);
+    expect(loadingSelect.isLoading, isTrue);
+    expect(loadingSelect.enabled, isFalse);
+    expect(loadingSelect.options, isNot(contains('Campinas')));
+
+    rjResponse.complete(
+      http.Response(
+        jsonEncode([
+          {'nome': 'Rio de Janeiro'},
+        ]),
+        200,
+      ),
+    );
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('unknown CEP and network failure preserve manually entered address', (tester) async {
     final service = InstitutionLocationService(
       client: MockClient((_) async => http.Response('{"erro": true}', 200)),
@@ -247,6 +460,81 @@ void main() {
     );
   });
 
+  testWidgets('actual ViaCEP network error preserves the manual address', (tester) async {
+    await _useDesktopSurface(tester);
+    final service = InstitutionLocationService(
+      client: MockClient((request) async {
+        if (request.url.host == 'viacep.com.br') {
+          throw http.ClientException('offline', request.url);
+        }
+        return http.Response('[]', 200);
+      }),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('institution-field-street')),
+      'Rua digitada manualmente',
+    );
+    await tester.enterText(find.byKey(const Key('institution-field-postalCode')), '01310100');
+    await tester.tap(find.byTooltip('Buscar CEP'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Não foi possível consultar o CEP. Tente novamente.'), findsOneWidget);
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('institution-field-street')))
+          .controller!
+          .text,
+      'Rua digitada manualmente',
+    );
+  });
+
+  testWidgets('CEP field keeps digits only and blocks save when it is incomplete', (tester) async {
+    await _useDesktopSurface(tester);
+    final repository = FakeInstitutionDirectoryRepository();
+    final service = InstitutionLocationService(
+      client: MockClient((_) async => http.Response('[]', 200)),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: repository,
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+
+    final postalCodeField = find.byKey(const Key('institution-field-postalCode'));
+    await tester.enterText(postalCodeField, 'ABC 01310-100 XYZ');
+    expect(tester.widget<TextFormField>(postalCodeField).controller!.text, '01310100');
+
+    await tester.enterText(postalCodeField, '123');
+    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Informe um CEP com exatamente 8 dígitos.'), findsOneWidget);
+    expect(repository.findById('demo-institution-aurora')!.postalCode, isNot('123'));
+  });
+
   testWidgets('edit mode saves locally on the current step and remains there', (tester) async {
     final repository = FakeInstitutionDirectoryRepository();
     var savedCallbackCalls = 0;
@@ -277,6 +565,52 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-form-cancel')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsNothing);
+  });
+
+  testWidgets('edit footer keeps save as the only primary action at both widths', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    final save = find.byKey(const Key('institution-form-save-current'));
+    final continueAction = find.byKey(const Key('institution-form-continue'));
+    expect(tester.widget<Widget>(save), isA<FilledButton>());
+    expect(tester.widget<Widget>(continueAction), isA<OutlinedButton>());
+    expect(tester.getCenter(save).dx, greaterThan(tester.getCenter(continueAction).dx));
+
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Widget>(save), isA<FilledButton>());
+    expect(tester.widget<Widget>(continueAction), isA<OutlinedButton>());
+    expect(tester.getTopLeft(save).dy, lessThan(tester.getTopLeft(continueAction).dy));
+  });
+
+  testWidgets('creation footer keeps Continue as its primary action', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    final continueAction = find.byKey(const Key('institution-form-continue'));
+    expect(tester.widget<Widget>(continueAction), isA<FilledButton>());
+    expect(find.byKey(const Key('institution-form-save-current')), findsNothing);
   });
 
   testWidgets('trial dates are suggested and calendar uses pt-BR Coelo surface', (tester) async {
@@ -567,6 +901,28 @@ void main() {
       if (width == 375) {
         expect(find.text('Etapa 1 de 6'), findsOneWidget);
       }
+
+      for (var step = 0; step < 2; step++) {
+        await tester.tap(find.byKey(const Key('institution-form-continue')));
+        await tester.pumpAndSettle();
+      }
+      expect(
+        find.byKey(const Key('institution-field-postalCode')),
+        findsOneWidget,
+        reason: 'location at ${width.toInt()} px',
+      );
+      expect(tester.takeException(), isNull, reason: 'location overflow at ${width.toInt()} px');
+
+      for (var step = 0; step < 2; step++) {
+        await tester.tap(find.byKey(const Key('institution-form-continue')));
+        await tester.pumpAndSettle();
+      }
+      expect(
+        find.byKey(const Key('institution-plan-essential')),
+        findsOneWidget,
+        reason: 'plan at ${width.toInt()} px',
+      );
+      expect(tester.takeException(), isNull, reason: 'plan overflow at ${width.toInt()} px');
     }
     addTearDown(tester.view.reset);
   });
@@ -669,6 +1025,16 @@ Widget _app(
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
+
+Future<void> _useDesktopSurface(WidgetTester tester) async {
+  await tester.binding.setSurfaceSize(const Size(1440, 1100));
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+}
+
+CoeloAdminSingleSelectField<String> _municipalitySelect(WidgetTester tester) =>
+    tester.widget<CoeloAdminSingleSelectField<String>>(
+      find.byKey(const Key('institution-municipality-select')),
+    );
 
 String _dateLabel(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
