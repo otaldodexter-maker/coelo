@@ -57,16 +57,24 @@ select ok(
   ),
   'branding profile links are protected by a check constraint'
 );
-select has_check(
-  'public',
-  'institution_contacts',
-  'institution_contacts_website_url_length_check',
+select ok(
+  exists (
+    select 1
+    from pg_constraint
+    where conrelid = 'public.institution_contacts'::regclass
+      and conname = 'institution_contacts_website_url_length_check'
+      and contype = 'c'
+  ),
   'website URL is length constrained'
 );
-select has_check(
-  'public',
-  'institution_contacts',
-  'institution_contacts_whatsapp_number_e164_check',
+select ok(
+  exists (
+    select 1
+    from pg_constraint
+    where conrelid = 'public.institution_contacts'::regclass
+      and conname = 'institution_contacts_whatsapp_number_e164_check'
+      and contype = 'c'
+  ),
   'WhatsApp number uses E.164'
 );
 select has_index(

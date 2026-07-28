@@ -1,6 +1,6 @@
 ---
 source: ".superpowers/sdd/superadmin-corrections-task-3c-brief.md"
-status: "done_with_concerns"
+status: "done"
 generated_at: "2026-07-28"
 ---
 
@@ -8,7 +8,7 @@ generated_at: "2026-07-28"
 
 ## Resultado
 
-`DONE_WITH_CONCERNS`
+`DONE`
 
 A migration `20260728172333_institution_profile_and_legal_representatives.sql`
 foi criada pelo Supabase CLI e movida, preservando o timestamp, para o diretório
@@ -99,13 +99,29 @@ de logo/capa continuam aguardando o gateway R2.
 - `git diff --check`: passou.
 
 O ambiente local não possui Docker nem Podman no `PATH`. Por isso `db reset`,
-`test db`, `db lint` e advisors locais não puderam executar. A migration não foi
-aplicada ao projeto remoto, conforme instrução.
+`test db`, `db lint` e advisors locais não puderam executar.
 
 O preflight remoto somente leitura executado pelo coordenador encontrou zero
 linhas em `institution_branding` e zero cores legadas inválidas. Portanto, os
-novos checks imediatos de cor são seguros no estado remoto observado. Nenhuma
-migration foi aplicada remotamente.
+novos checks imediatos de cor eram seguros no estado remoto observado.
+
+## Implantação remota
+
+- Projeto: `coelo` (`evvbomzejfijozbtgvpt`).
+- Migration principal aplicada: `20260728172333`.
+- A validação SQL funcional completa executou sem erro e fez `ROLLBACK`.
+- A suíte pgTAP remota passou com 21/21 verificações. O teste de checks foi
+  tornado compatível com a versão remota do pgTAP por consulta a
+  `pg_constraint`.
+- O advisor identificou a FK composta de membership sem índice de cobertura.
+  A migration corretiva `20260728203000` substituiu o índice simples por
+  `(membership_id, institution_id, person_id)` e foi aplicada remotamente.
+- O advisor de segurança não apontou finding novo desta migration. Permanecem
+  dois avisos preexistentes do projeto: RLS sem policy em `person_auth_links` e
+  proteção contra senhas vazadas desabilitada.
+- O advisor de desempenho não aponta mais FK sem cobertura na nova tabela.
+  Os índices novos aparecem como ainda não utilizados porque a tabela remota
+  está vazia; não foram removidos.
 
 ## Gate de conhecimento
 
