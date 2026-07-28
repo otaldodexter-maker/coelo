@@ -36,7 +36,8 @@ canônico `packages/coelo_database/migrations`.
   - índices de consultas e FKs, unicidade ativa por pessoa e no máximo um
     representante principal ativo por instituição;
   - fechamento automático do vínculo quando a membership é revogada/inativada
-    ou quando a pessoa deixa de cumprir a elegibilidade jurídica;
+    ou quando a pessoa deixa de cumprir a elegibilidade jurídica, inclusive
+    vínculos com início futuro (`ends_on` nunca antecede `starts_on`);
   - atualização automática de `updated_at`.
 
 Não foram criadas tabelas paralelas de pessoa, administrador, papel ou convite.
@@ -51,6 +52,12 @@ fundamentar o vínculo de representante legal. Ainda não existe um papel juríd
 canônico específico; a autorização administrativa continua separada em
 `institution_role_assignments`. Essa decisão evita criar papel ou permissão
 paralela antes da definição canônica.
+
+As invariantes de adulto e membership ativa são exigidas sempre que o vínculo
+fica `active`, inclusive em reativação e alteração de `ends_on`. Atualizações
+automáticas para `inactive` permanecem permitidas para não bloquear revogações
+ou correções. As unicidades consideram toda linha `active`, mesmo com
+`ends_on` futuro.
 
 Nenhum byte, bucket ou nova FK de mídia foi criado. As referências existentes
 de logo/capa continuam aguardando o gateway R2.
@@ -80,7 +87,10 @@ de logo/capa continuam aguardando o gateway R2.
   - testes RLS reais com JWT/`SET LOCAL ROLE`: `platform.read` lê, ator sem
     permissão lê zero linhas, `anon` não lê e `authenticated` não escreve;
   - testes de idade em `starts_on`, revogação/correção sem bloqueio, bio
-    220/221, quatro links, chaves extras, URLs sem host e membership revogada;
+    220/221, quatro links, chaves extras, URLs sem host, membership revogada,
+    início futuro, reativação proibida, unicidade funcional de principal e
+    efeito de `updated_at`;
+  - fluxo real de leitura/escrita sob `SET LOCAL ROLE service_role`;
   - suíte pgTAP para estrutura, policy, grants, constraint cross-tenant e
     catálogo.
 - `Sync-SupabaseCliMigrations.ps1 -Mode Prepare`: passou, 20 migrations.
