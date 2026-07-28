@@ -241,6 +241,7 @@ final class _PaginationExample extends StatefulWidget {
 
 final class _PaginationExampleState extends State<_PaginationExample> {
   var _page = 1;
+  var _pageSize = 20;
 
   @override
   Widget build(BuildContext context) {
@@ -249,6 +250,12 @@ final class _PaginationExampleState extends State<_PaginationExample> {
       totalPages: 4,
       onPrevious: _page == 1 ? null : () => setState(() => _page--),
       onNext: _page == 4 ? null : () => setState(() => _page++),
+      pageSize: _pageSize,
+      pageSizeOptions: const [11, 20, 50, 100],
+      onPageSizeChanged: (value) => setState(() {
+        _pageSize = value;
+        _page = 1;
+      }),
     );
   }
 }

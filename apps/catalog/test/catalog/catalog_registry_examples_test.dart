@@ -8,6 +8,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('pagination example exposes the approved page-size selector', (tester) async {
+    final example = buildCatalogRegistry()['admin.pagination']!;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: _ExampleHost(example: example)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+    expect(find.text('Itens por página'), findsOneWidget);
+  });
+
   testWidgets('builds every implemented index component from the real package registry', (
     tester,
   ) async {
