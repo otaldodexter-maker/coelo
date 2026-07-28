@@ -38,3 +38,13 @@ Consumers: Admin and Superadmin.
 Task 1 Home: complete (commits d42e89b..0abc0f4, review clean; 11 focused tests and focused analysis passed before an unrelated concurrent Activity Center compile break; golden baselines intentionally pending visual approval).
 Task 2 Institutions listing: complete (commits 0abc0f4..001bbbb, review clean; 62 shared-package tests and 27 independent institution tests passed; integrated page test pending resolution of unrelated concurrent shell compile work).
 Task 3A Institution profile form: complete (commits 001bbbb..360d764, review clean; enriched local branding/profile/address/contact/trial/edit-save flow, ViaCEP/IBGE hardening, focused widget/service tests and analysis passed; visual candidates remain pending integrated approval).
+
+# Superadmin Profile and Settings Refinement
+
+Plan: `docs/superpowers/plans/2026-07-28-superadmin-profile-settings-refinement.md`
+Task 1: complete (commits bfeeeee..814fec3, review clean; 14 domain/controller tests plus failure-retry coverage and focused analysis passed).
+Task 2: complete (commits 814fec3..50b73f8, review clean; shared advanced color picker, Institutions/Units integration, 3 focused tests and analysis passed).
+Task 3: complete (commits 50b73f8..51921fb, review clean; phone field, draft reset, aligned responsive layout, 200% text fix, 6 focused tests and analysis passed). Minor: update Task 3 report commit reference from 45ae56e to 51921fb during final bookkeeping. Cross-task: update account goldens in Task 5.
+Task 4: complete (commits 51921fb..099c1fa, review clean; canonical password close, neutral accessibility row, wide 50/50 actions, compact/200% stacked actions, 10 focused tests and analysis passed).
+Task 5: complete (commit c6623f7, review approved; 34 account tests, 8 golden cases, full analysis and knowledge validators passed; unrelated pre-existing Institutions test failure at institution_form_page_test.dart:812 remains documented).
+Final review fixes: complete (commits f2ef952, fb7cccb and a9e1ad4, re-review approved; recoverable save errors, accessible SV/hue controls with visible focus, keyboard and semantics, and delayed profile hydration without draft loss; 88 relevant tests and full analysis passed).
