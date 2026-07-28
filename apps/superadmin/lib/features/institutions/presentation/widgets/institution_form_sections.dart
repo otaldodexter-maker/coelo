@@ -153,6 +153,7 @@ final class _LocationSectionState extends State<_LocationSection> {
                 'CEP',
                 wide: true,
                 errorText: _postalCodeError,
+                onChanged: _updatePostalCode,
                 suffixIcon: IconButton(
                   tooltip: 'Buscar CEP',
                   onPressed: _lookingUpPostalCode ? null : _lookupPostalCode,
@@ -180,7 +181,9 @@ final class _LocationSectionState extends State<_LocationSection> {
                 prefixIcon: Icons.location_city_rounded,
                 enabled: !_loadingMunicipalities && state.isNotEmpty,
                 isLoading: _loadingMunicipalities,
-                errorText: _municipalityError,
+                errorText:
+                    _municipalityError ??
+                    controller.errorFor(InstitutionFormField.city),
                 searchHintText: 'Buscar município',
               ),
               _dropdown<String>(
@@ -191,6 +194,7 @@ final class _LocationSectionState extends State<_LocationSection> {
                 labelOf: (value) => value.isEmpty ? 'Selecione' : value,
                 onChanged: _changeState,
                 prefixIcon: Icons.map_outlined,
+                errorText: controller.errorFor(InstitutionFormField.state),
               ),
               _field(controller, InstitutionFormField.country, 'País', enabled: false),
             ],
@@ -233,6 +237,17 @@ final class _LocationSectionState extends State<_LocationSection> {
           ),
         ],
       ),
+    );
+  }
+
+  void _updatePostalCode(String value) {
+    if (_postalCodeError != null) {
+      setState(() => _postalCodeError = null);
+    }
+    controller.setText(
+      InstitutionFormField.postalCode,
+      value,
+      userInitiated: true,
     );
   }
 
@@ -1549,6 +1564,7 @@ Widget _field(
   Widget? suffixIcon,
   String? errorText,
   bool enabled = true,
+  ValueChanged<String>? onChanged,
 }) {
   final fieldWidget = CoeloFormTextField(
     controller: controller.controllerOf(field),
@@ -1562,7 +1578,9 @@ Widget _field(
     maxLines: maxLines,
     errorText: errorText ?? controller.errorFor(field),
     enabled: enabled,
-    onChanged: (value) => controller.setText(field, value, userInitiated: true),
+    onChanged:
+        onChanged ??
+        (value) => controller.setText(field, value, userInitiated: true),
   );
   return wide ? _WideField(child: fieldWidget) : fieldWidget;
 }

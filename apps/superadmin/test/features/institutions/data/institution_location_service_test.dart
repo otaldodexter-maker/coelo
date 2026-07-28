@@ -105,6 +105,30 @@ void main() {
     );
   });
 
+  test('non-empty IBGE payload without a valid municipality is rejected', () async {
+    final service = InstitutionLocationService(
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode([
+            {'nome': 123},
+          ]),
+          200,
+        ),
+      ),
+    );
+
+    await expectLater(
+      service.loadMunicipalities('SP'),
+      throwsA(
+        isA<InstitutionLocationException>().having(
+          (error) => error.type,
+          'type',
+          InstitutionLocationErrorType.network,
+        ),
+      ),
+    );
+  });
+
   test('request timeout is injectable and maps to the network state', () async {
     final pendingResponse = Completer<http.Response>();
     final service = InstitutionLocationService(

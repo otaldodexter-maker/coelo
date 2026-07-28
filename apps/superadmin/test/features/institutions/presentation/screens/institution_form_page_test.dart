@@ -135,6 +135,111 @@ void main() {
     expect(find.byKey(const Key('institution-field-websiteUrl')), findsOneWidget);
   });
 
+  testWidgets('empty creation associates required errors with UF and municipality selects', (
+    tester,
+  ) async {
+    await _useDesktopSurface(tester);
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          locationService: InstitutionLocationService(
+            client: MockClient((_) async => http.Response('[]', 200)),
+          ),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.byKey(const Key('institution-form-continue')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(const Key('institution-step-location-error')));
+    await tester.pumpAndSettle();
+
+    const requiredError = 'Preencha este campo para concluir o cadastro.';
+    final stateFinder = find.byKey(const Key('institution-state-select'));
+    final municipalityFinder = find.byKey(
+      const Key('institution-municipality-select'),
+    );
+    expect(
+      tester.widget<CoeloAdminSingleSelectField<String>>(stateFinder).errorText,
+      requiredError,
+    );
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<String>>(municipalityFinder)
+          .errorText,
+      requiredError,
+    );
+    expect(
+      tester
+          .widgetList<Semantics>(
+            find.descendant(of: stateFinder, matching: find.byType(Semantics)),
+          )
+          .map((widget) => widget.properties.hint),
+      contains(requiredError),
+    );
+    expect(
+      tester
+          .widgetList<Semantics>(
+            find.descendant(
+              of: municipalityFinder,
+              matching: find.byType(Semantics),
+            ),
+          )
+          .map((widget) => widget.properties.hint),
+      contains(requiredError),
+    );
+  });
+
+  testWidgets('editing CEP clears lookup error and reveals current validation', (
+    tester,
+  ) async {
+    await _useDesktopSurface(tester);
+    final service = InstitutionLocationService(
+      client: MockClient((_) async => http.Response('{"erro": true}', 200)),
+    );
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.byKey(const Key('institution-form-continue')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(const Key('institution-step-location-error')));
+    await tester.pumpAndSettle();
+
+    final postalCodeField = find.byKey(
+      const Key('institution-field-postalCode'),
+    );
+    await tester.enterText(postalCodeField, '00000000');
+    await tester.tap(find.byTooltip('Buscar CEP'));
+    await tester.pumpAndSettle();
+    expect(find.text('CEP não encontrado.'), findsOneWidget);
+
+    await tester.enterText(postalCodeField, '123');
+    await tester.pump();
+
+    expect(find.text('CEP não encontrado.'), findsNothing);
+    expect(
+      find.text('Informe um CEP com exatamente 8 dígitos.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('ViaCEP shows loading and fills address without locking manual edits', (
     tester,
   ) async {
