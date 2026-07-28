@@ -215,33 +215,36 @@ final class _PageSizeSelectorState extends State<_PageSizeSelector> {
               for (final option in widget.options)
                 SizedBox(
                   width: _width,
-                  child: MenuItemButton(
-                    key: Key('coelo-admin-pagination-page-size-$option'),
-                    onPressed: enabled ? () => widget.onChanged!(option) : null,
-                    style: ButtonStyle(
-                      minimumSize: const WidgetStatePropertyAll(
-                        Size.fromHeight(CoeloSize.touchMin),
+                  child: Semantics(
+                    selected: option == widget.value,
+                    child: MenuItemButton(
+                      key: Key('coelo-admin-pagination-page-size-$option'),
+                      onPressed: enabled ? () => widget.onChanged!(option) : null,
+                      style: ButtonStyle(
+                        minimumSize: const WidgetStatePropertyAll(
+                          Size.fromHeight(CoeloSize.touchMin),
+                        ),
+                        shape: const WidgetStatePropertyAll(RoundedRectangleBorder()),
+                        foregroundColor: WidgetStateProperty.resolveWith(
+                          (states) =>
+                              option == widget.value ||
+                                  states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.focused)
+                              ? colors.primary
+                              : colors.onSurface,
+                        ),
+                        backgroundColor: WidgetStateProperty.resolveWith(
+                          (states) =>
+                              option == widget.value ||
+                                  states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.focused)
+                              ? colors.primaryContainer
+                              : colors.surface,
+                        ),
+                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                       ),
-                      shape: const WidgetStatePropertyAll(RoundedRectangleBorder()),
-                      foregroundColor: WidgetStateProperty.resolveWith(
-                        (states) =>
-                            option == widget.value ||
-                                states.contains(WidgetState.hovered) ||
-                                states.contains(WidgetState.focused)
-                            ? colors.primary
-                            : colors.onSurface,
-                      ),
-                      backgroundColor: WidgetStateProperty.resolveWith(
-                        (states) =>
-                            option == widget.value ||
-                                states.contains(WidgetState.hovered) ||
-                                states.contains(WidgetState.focused)
-                            ? colors.primaryContainer
-                            : colors.surface,
-                      ),
-                      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                      child: Text('$option'),
                     ),
-                    child: Text('$option'),
                   ),
                 ),
             ],

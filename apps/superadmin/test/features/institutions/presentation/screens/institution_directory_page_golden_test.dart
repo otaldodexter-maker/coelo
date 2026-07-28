@@ -79,7 +79,7 @@ void main() {
     }
   });
 
-  testWidgets('matches no-results and disabled pagination references', (tester) async {
+  testWidgets('matches the no-results reference', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -94,10 +94,20 @@ void main() {
       find.byKey(const Key('institution-directory-golden-root')),
       matchesGoldenFile('goldens/institution_directory_no_results_light_1440.png'),
     );
+  });
+
+  testWidgets('matches disabled pagination references', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(
-      _goldenApp(repository: FakeInstitutionDirectoryRepository(items: _paginationItems())),
+      _goldenApp(
+        repository: FakeInstitutionDirectoryRepository(items: _paginationItems()),
+        onConversationsOpen: () {},
+      ),
     );
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
@@ -193,6 +203,7 @@ void main() {
 Widget _goldenApp({
   Brightness brightness = Brightness.light,
   InstitutionDirectoryRepository? repository,
+  VoidCallback? onConversationsOpen,
 }) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -212,6 +223,7 @@ Widget _goldenApp({
     home: InstitutionDirectoryPage(
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: _logout,
+      onConversationsOpen: onConversationsOpen,
     ),
   );
 }

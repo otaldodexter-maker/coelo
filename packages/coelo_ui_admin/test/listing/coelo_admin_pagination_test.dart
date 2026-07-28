@@ -1,4 +1,4 @@
-import 'dart:ui' show SemanticsAction;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -227,6 +227,28 @@ void main() {
     expect(
       selected.style!.backgroundColor!.resolve({}),
       CoeloTheme.light.colorScheme.primaryContainer,
+    );
+    final selectedOption = find.byWidgetPredicate(
+      (widget) =>
+          widget is Semantics &&
+          widget.properties.selected == true &&
+          widget.child is MenuItemButton &&
+          widget.child?.key == const Key('coelo-admin-pagination-page-size-20'),
+    );
+    final unselectedOption = find.byWidgetPredicate(
+      (widget) =>
+          widget is Semantics &&
+          widget.properties.selected == false &&
+          widget.child is MenuItemButton &&
+          widget.child?.key == const Key('coelo-admin-pagination-page-size-50'),
+    );
+    expect(
+      tester.getSemantics(selectedOption).getSemanticsData().flagsCollection.isSelected,
+      Tristate.isTrue,
+    );
+    expect(
+      tester.getSemantics(unselectedOption).getSemanticsData().flagsCollection.isSelected,
+      Tristate.isFalse,
     );
 
     await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size-50')));
