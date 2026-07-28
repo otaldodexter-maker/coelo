@@ -115,6 +115,12 @@ void main() {
       find.byKey(const Key('institution-directory-golden-root')),
       matchesGoldenFile('goldens/institution_directory_pagination_disabled_light_1440.png'),
     );
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_pagination_page_size_open_light_1440.png'),
+    );
   });
 
   testWidgets('matches hover, focus, and selected filter references', (tester) async {

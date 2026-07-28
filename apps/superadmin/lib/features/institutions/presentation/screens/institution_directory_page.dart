@@ -241,14 +241,11 @@ class _InstitutionDirectoryResults extends StatelessWidget {
             ),
             if (viewModel.state == InstitutionDirectoryLoadState.success) ...[
               const SizedBox(height: CoeloSpacing.space4),
-              Align(
-                alignment: Alignment.centerRight,
-                child: InstitutionDirectoryPagination(
-                  viewModel: viewModel,
-                  pageSizeOptions: display == InstitutionDirectoryDisplay.cards
-                      ? const [11, 20, 50, 100]
-                      : const [9, 20, 50, 100],
-                ),
+              InstitutionDirectoryPagination(
+                viewModel: viewModel,
+                pageSizeOptions: display == InstitutionDirectoryDisplay.cards
+                    ? const [11, 20, 50, 100]
+                    : const [9, 20, 50, 100],
               ),
             ],
           ],

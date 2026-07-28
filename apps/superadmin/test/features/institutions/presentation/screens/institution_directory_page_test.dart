@@ -919,6 +919,74 @@ void main() {
     expect(find.text('Instituição 21'), findsOneWidget);
   });
 
+  testWidgets('centers pagination below cards and table', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        repository: FakeInstitutionDirectoryRepository(
+          items: List.generate(
+            21,
+            (index) => InstitutionDirectoryItem(
+              id: 'centered-institution-$index',
+              publicName: 'Instituição ${index + 1}',
+              tradeName: null,
+              legalName: null,
+              primaryDomain: null,
+              status: InstitutionStatus.active,
+              typeId: null,
+              typeName: null,
+              city: null,
+              state: null,
+              planId: null,
+              planName: null,
+              unitsCount: 0,
+              groupsCount: 0,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final pagination = find.byKey(const Key('coelo-admin-pagination-content'));
+    await tester.scrollUntilVisible(
+      pagination,
+      600,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('institution-directory-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(
+      tester.getCenter(pagination).dx,
+      closeTo(tester.getCenter(find.byKey(const Key('institution-card-grid'))).dx, 1),
+    );
+
+    await tester.ensureVisible(find.byKey(const Key('institution-view-table')));
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      pagination,
+      600,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('institution-directory-content-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(
+      tester.getCenter(pagination).dx,
+      closeTo(
+        tester.getCenter(find.byKey(const Key('institution-directory-table-viewport'))).dx,
+        1,
+      ),
+    );
+  });
+
   testWidgets('supports requested widths in light and dark themes without layout exceptions', (
     tester,
   ) async {
