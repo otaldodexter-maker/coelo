@@ -123,12 +123,34 @@ Natação, a mensagem inicial local, a ausência de Marina/Girassol e de
 read/delivery, o composer local e a compatibilidade com todos os filtros
 ancestrais.
 
+### Correção P1 — áudio e mídia locais
+
+A revisão posterior encontrou um caminho restante que ainda comunicava envio
+externo: áudio e mídia usavam os timers e o `deliveryState.delivered` das
+conversas normais mesmo dentro de uma conversa de demonstração local.
+
+Dois testes foram escritos antes da correção. O RED confirmou, separadamente,
+que as bolhas locais de áudio e mídia não eram criadas imediatamente. Os ramos
+`_localDemo` agora:
+
+- criam imediatamente conteúdo com o prefixo `Demonstração local`;
+- preservam `deliveryState.none`;
+- não exibem estados `Gravando`, `Carregando` ou `Enviando`;
+- não agendam timers nem respostas externas;
+- não alteram o ciclo temporizado das conversas normais.
+
+O GREEN isolado executou **2 testes, 0 falhas**. O arquivo completo
+`superadmin_chat_page_test.dart` executou **22 testes, 0 falhas**, incluindo o
+teste preexistente que preserva o comportamento normal de áudio e mídia.
+
 ## Verificação
 
 - `dart format` nos quatro arquivos Dart afetados: concluído.
 - `dart analyze` em `apps/superadmin`: `No issues found!` antes do
   endurecimento final; a análise focada dos seis arquivos corrigidos também
   terminou com `No issues found!` depois dele.
+- Após a correção P1, `dart analyze` focado no thread e no teste da página:
+  `No issues found!`.
 - `git diff --check`: sem erros antes do relatório.
 - Busca por HEX, `Color(0x...)`, `TextStyle` local, orientação e tipo de
   dispositivo: nenhuma ocorrência nos arquivos de produção afetados.

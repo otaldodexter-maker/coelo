@@ -130,6 +130,19 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
   }
 
   void _recordAudio() {
+    if (_localDemo) {
+      setState(() {
+        _messages.add(
+          const _SimulatedMessage(
+            direction: CoeloMessageDirection.sent,
+            contextLabel: 'Demonstração local',
+            body: 'Demonstração local · mensagem de áudio · 0:08',
+            timestamp: 'Agora',
+          ),
+        );
+      });
+      return;
+    }
     setState(() => _activityLabel = 'Gravando áudio…');
     _timers.add(
       Timer(const Duration(milliseconds: 900), () {
@@ -155,6 +168,19 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
   }
 
   void _attachMedia() {
+    if (_localDemo) {
+      setState(() {
+        _messages.add(
+          const _SimulatedMessage(
+            direction: CoeloMessageDirection.sent,
+            contextLabel: 'Demonstração local',
+            body: 'Demonstração local · imagem anexada',
+            timestamp: 'Agora',
+          ),
+        );
+      });
+      return;
+    }
     setState(() => _activityLabel = 'Carregando mídia… 48%');
     _timers.add(
       Timer(const Duration(milliseconds: 900), () {

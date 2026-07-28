@@ -8,6 +8,7 @@ import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_c
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_scope_filters.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_thread_body.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -605,6 +606,52 @@ void main() {
     expect(find.text('Imagem anexada · demonstração local'), findsOne);
   });
 
+  testWidgets('adds local-demo audio immediately without sending or delivery state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(const Scaffold(body: SuperadminChatThreadBody(conversation: _localDemoConversation))),
+    );
+
+    await tester.tap(find.byTooltip('Gravar áudio'));
+    await tester.pump();
+
+    expect(find.text('Demonstração local · mensagem de áudio · 0:08'), findsOne);
+    expect(find.textContaining('Enviando'), findsNothing);
+    expect(find.text('Gravando áudio…'), findsNothing);
+    final bubbles = tester.widgetList<CoeloMessageBubble>(find.byType(CoeloMessageBubble)).toList();
+    expect(bubbles, hasLength(2));
+    expect(bubbles.last.deliveryState, CoeloMessageDeliveryState.none);
+    expect(bubbles.last.authorLabel, isNull);
+
+    await tester.pump(const Duration(milliseconds: 1800));
+    expect(find.byType(CoeloMessageBubble), findsNWidgets(2));
+    expect(find.text('Marina · Professora'), findsNothing);
+  });
+
+  testWidgets('adds local-demo media immediately without sending or delivery state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(const Scaffold(body: SuperadminChatThreadBody(conversation: _localDemoConversation))),
+    );
+
+    await tester.tap(find.byTooltip('Adicionar mídia'));
+    await tester.pump();
+
+    expect(find.text('Demonstração local · imagem anexada'), findsOne);
+    expect(find.textContaining('Enviando'), findsNothing);
+    expect(find.text('Carregando mídia… 48%'), findsNothing);
+    final bubbles = tester.widgetList<CoeloMessageBubble>(find.byType(CoeloMessageBubble)).toList();
+    expect(bubbles, hasLength(2));
+    expect(bubbles.last.deliveryState, CoeloMessageDeliveryState.none);
+    expect(bubbles.last.authorLabel, isNull);
+
+    await tester.pump(const Duration(milliseconds: 1800));
+    expect(find.byType(CoeloMessageBubble), findsNWidgets(2));
+    expect(find.text('Marina · Professora'), findsNothing);
+  });
+
   testWidgets('keeps approved viewports usable at 200 percent text', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -632,6 +679,19 @@ void main() {
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
+
+const _localDemoConversation = SuperadminChatConversation(
+  id: 'local-demo',
+  title: 'Natação',
+  initials: 'NA',
+  preview: 'Demonstração local',
+  timestamp: 'Agora',
+  context: 'Centro Horizonte · Demonstração local',
+  institution: 'Centro Horizonte',
+  targetKind: CoeloAdminContextKind.activity,
+  metrics: [SuperadminChatMetric('Mensagens', 1)],
+  localInitialMessage: 'Demonstração local · nenhum envio real foi realizado.',
+);
 
 Widget _app(Widget child) {
   return MaterialApp(theme: CoeloTheme.light, home: child);
