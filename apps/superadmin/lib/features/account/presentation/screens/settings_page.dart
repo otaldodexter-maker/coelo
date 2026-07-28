@@ -68,10 +68,13 @@ class SettingsPage extends StatelessWidget {
                     title: 'Acessibilidade',
                     description: 'Reduza transições e movimentos não essenciais.',
                     child: Material(
+                      key: const Key('settings-reduce-motion-row'),
                       color: Colors.transparent,
                       child: SwitchListTile.adaptive(
                         key: const Key('settings-reduce-motion'),
                         contentPadding: EdgeInsets.zero,
+                        hoverColor: Colors.transparent,
+                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                         title: const Text('Reduzir animações'),
                         subtitle: const Text(
                           'Também respeitamos a preferência de movimento do sistema.',

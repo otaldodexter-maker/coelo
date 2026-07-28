@@ -200,6 +200,51 @@ void main() {
     expect(find.byKey(const Key('account-reset-profile')), findsOneWidget);
     expect(find.byKey(const Key('account-save-profile')), findsOneWidget);
   });
+
+  testWidgets('uses a canonical close action and balanced footer in the password dialog', (
+    tester,
+  ) async {
+    final activities = SuperadminActivityController();
+    final controller = AccountController(
+      repository: InMemoryAccountProfileRepository(),
+      activities: activities,
+    );
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+
+    final changePassword = find.descendant(
+      of: find.byKey(const Key('account-security-card')),
+      matching: find.byType(OutlinedButton),
+    );
+    await tester.ensureVisible(changePassword);
+    await tester.tap(changePassword);
+    await tester.pumpAndSettle();
+
+    final close = find.byKey(const Key('account-password-close'));
+    expect(close, findsOneWidget);
+    final closeButton = tester.widget<IconButton>(close);
+    expect(closeButton.tooltip, 'Fechar alteração de senha');
+    expect(closeButton.color, Theme.of(tester.element(close)).colorScheme.error);
+    expect(
+      tester.widget<Icon>(find.descendant(of: close, matching: find.byType(Icon))).icon,
+      Icons.close_rounded,
+    );
+    expect(tester.getSize(close), const Size.square(CoeloSize.touchMin));
+
+    final cancel = find.byKey(const Key('account-password-cancel'));
+    final submit = find.byKey(const Key('account-password-submit'));
+    expect(cancel, findsOneWidget);
+    expect(submit, findsOneWidget);
+    expect(tester.getSize(cancel).width, tester.getSize(submit).width);
+
+    await tester.tap(close);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('account-password-close')), findsNothing);
+  });
 }
 
 Future<void> _pumpProfilePage(WidgetTester tester, AccountController controller) async {

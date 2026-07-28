@@ -636,7 +636,24 @@ class _PasswordDialogState extends State<_PasswordDialog> {
   Widget build(BuildContext context) => AlertDialog(
     backgroundColor: Theme.of(context).colorScheme.surface,
     surfaceTintColor: Colors.transparent,
-    title: const Text('Alterar senha'),
+    title: Row(
+      children: [
+        const Expanded(child: Text('Alterar senha')),
+        IconButton(
+          key: const Key('account-password-close'),
+          tooltip: 'Fechar alteração de senha',
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.close_rounded),
+          color: Theme.of(context).colorScheme.error,
+          style: IconButton.styleFrom(
+            minimumSize: const Size.square(CoeloSize.touchMin),
+            hoverColor: Theme.of(context).colorScheme.errorContainer,
+            focusColor: Theme.of(context).colorScheme.errorContainer,
+            highlightColor: Colors.transparent,
+          ),
+        ),
+      ],
+    ),
     content: SizedBox(
       width: 440,
       child: Column(
@@ -669,22 +686,36 @@ class _PasswordDialogState extends State<_PasswordDialog> {
       ),
     ),
     actions: [
-      OutlinedButton(onPressed: Navigator.of(context).pop, child: const Text('Cancelar')),
-      FilledButton(
-        onPressed: () async {
-          final result = await widget.controller.changePassword(
-            currentPassword: current.text,
-            newPassword: next.text,
-            confirmation: confirmation.text,
-          );
-          if (!context.mounted) return;
-          if (result == null) {
-            Navigator.of(context).pop();
-          } else {
-            setState(() => error = result);
-          }
-        },
-        child: const Text('Alterar senha'),
+      Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              key: const Key('account-password-cancel'),
+              onPressed: Navigator.of(context).pop,
+              child: const Text('Cancelar'),
+            ),
+          ),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(
+            child: FilledButton(
+              key: const Key('account-password-submit'),
+              onPressed: () async {
+                final result = await widget.controller.changePassword(
+                  currentPassword: current.text,
+                  newPassword: next.text,
+                  confirmation: confirmation.text,
+                );
+                if (!context.mounted) return;
+                if (result == null) {
+                  Navigator.of(context).pop();
+                } else {
+                  setState(() => error = result);
+                }
+              },
+              child: const Text('Alterar senha'),
+            ),
+          ),
+        ],
       ),
     ],
   );
