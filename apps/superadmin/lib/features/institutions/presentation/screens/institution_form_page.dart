@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../data/fake_institution_directory_repository.dart';
+import '../../data/institution_location_service.dart';
 import '../view_models/institution_form_controller.dart';
 import '../widgets/institution_form_dialogs.dart';
 import '../widgets/institution_form_navigation.dart';
@@ -21,12 +22,14 @@ final class InstitutionFormPage extends StatefulWidget {
     required this.onCancel,
     required this.onSaved,
     this.institutionId,
+    this.locationService,
     this.onDestinationSelected,
     super.key,
   });
 
   final FakeInstitutionDirectoryRepository repository;
   final String? institutionId;
+  final InstitutionLocationService? locationService;
   final LogoutAction logout;
   final VoidCallback onCancel;
   final ValueChanged<InstitutionFormSaveResult> onSaved;
@@ -38,11 +41,13 @@ final class InstitutionFormPage extends StatefulWidget {
 
 final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   InstitutionFormController? _controller;
+  late final InstitutionLocationService _locationService;
   bool _missingInstitution = false;
 
   @override
   void initState() {
     super.initState();
+    _locationService = widget.locationService ?? InstitutionLocationService();
     final id = widget.institutionId;
     final record = id == null ? null : widget.repository.findById(id);
     _missingInstitution = id != null && record == null;
@@ -54,6 +59,9 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   @override
   void dispose() {
     _controller?.dispose();
+    if (widget.locationService == null) {
+      _locationService.close();
+    }
     super.dispose();
   }
 
@@ -66,7 +74,8 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
 
   Future<void> _save() async {
     final controller = _controller!;
-    if (!controller.validateAll()) {
+    final creating = widget.institutionId == null;
+    if (!(creating ? controller.validateAll() : controller.validateCurrentStep())) {
       return;
     }
     controller.setSaving(true);
@@ -76,7 +85,6 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
     if (!mounted) {
       return;
     }
-    final creating = widget.institutionId == null;
     final id =
         widget.institutionId ??
         widget.repository.createId(controller.text(InstitutionFormField.slug));
@@ -85,9 +93,14 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
       return;
     }
     controller.setSaving(false);
-    widget.onSaved(
-      creating ? InstitutionFormSaveResult.created : InstitutionFormSaveResult.updated,
-    );
+    if (!creating) {
+      controller.markSaved();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Alterações salvas localmente.')));
+      return;
+    }
+    widget.onSaved(InstitutionFormSaveResult.created);
   }
 
   Future<void> _selectDestination(String destination) async {
@@ -122,6 +135,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
                 controller: _controller!,
                 onCancel: _requestExit,
                 onSave: _save,
+                locationService: _locationService,
                 desktopNavigation: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
               ),
       ),
@@ -134,12 +148,14 @@ final class _FormBody extends StatelessWidget {
     required this.controller,
     required this.onCancel,
     required this.onSave,
+    required this.locationService,
     required this.desktopNavigation,
   });
 
   final InstitutionFormController controller;
   final VoidCallback onCancel;
   final VoidCallback onSave;
+  final InstitutionLocationService locationService;
   final bool desktopNavigation;
 
   @override
@@ -157,6 +173,11 @@ final class _FormBody extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final desktop = desktopNavigation;
+              final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                  ? CoeloSpacing.space10
+                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                  ? CoeloSpacing.space6
+                  : CoeloSpacing.space4;
               final navigation = InstitutionFormNavigation(controller: controller);
               final content = Expanded(
                 child: Column(
@@ -185,7 +206,10 @@ final class _FormBody extends StatelessWidget {
                               ),
                               child: KeyedSubtree(
                                 key: ValueKey(controller.currentStep),
-                                child: InstitutionFormSection(controller: controller),
+                                child: InstitutionFormSection(
+                                  controller: controller,
+                                  locationService: locationService,
+                                ),
                               ),
                             ),
                           ),
@@ -198,10 +222,10 @@ final class _FormBody extends StatelessWidget {
               );
               return Padding(
                 padding: EdgeInsets.fromLTRB(
-                  desktop ? CoeloSpacing.space5 : CoeloSpacing.space3,
+                  contentInset,
+                  contentInset,
+                  contentInset,
                   CoeloSpacing.space4,
-                  desktop ? CoeloSpacing.space5 : CoeloSpacing.space3,
-                  CoeloSpacing.space3,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,6 +282,16 @@ final class _FormFooter extends StatelessWidget {
                   : 'Continuar',
             ),
     );
+    final saveCurrentButton = FilledButton(
+      key: const Key('institution-form-save-current'),
+      onPressed: controller.isSaving ? null : onSave,
+      child: controller.isSaving
+          ? const SizedBox.square(
+              dimension: CoeloSize.iconSm,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Text('Salvar alterações'),
+    );
     return SafeArea(
       top: false,
       child: Container(
@@ -275,6 +309,10 @@ final class _FormFooter extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   primaryButton,
+                  if (controller.isEditing && !last) ...[
+                    const SizedBox(height: CoeloSpacing.space2),
+                    saveCurrentButton,
+                  ],
                   const SizedBox(height: CoeloSpacing.space2),
                   Row(
                     children: [
@@ -292,6 +330,10 @@ final class _FormFooter extends StatelessWidget {
                 const Spacer(),
                 if (controller.currentStep.index > 0) previousButton,
                 const SizedBox(width: CoeloSpacing.space2),
+                if (controller.isEditing && !last) ...[
+                  saveCurrentButton,
+                  const SizedBox(width: CoeloSpacing.space2),
+                ],
                 primaryButton,
               ],
             );

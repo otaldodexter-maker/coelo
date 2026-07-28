@@ -1,12 +1,11 @@
 import 'dart:ui' as ui;
-import 'dart:convert';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import '../../data/institution_location_service.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
 import '../view_models/institution_form_controller.dart';
@@ -14,15 +13,23 @@ import 'institution_form_dialogs.dart';
 import 'institution_logo_picker.dart';
 
 final class InstitutionFormSection extends StatelessWidget {
-  const InstitutionFormSection({required this.controller, super.key});
+  const InstitutionFormSection({
+    required this.controller,
+    required this.locationService,
+    super.key,
+  });
 
   final InstitutionFormController controller;
+  final InstitutionLocationService locationService;
 
   @override
   Widget build(BuildContext context) {
     return switch (controller.currentStep) {
       InstitutionFormStep.profile => _ProfileSection(controller: controller),
-      InstitutionFormStep.location => _LocationSection(controller: controller),
+      InstitutionFormStep.location => _LocationSection(
+        controller: controller,
+        locationService: locationService,
+      ),
       InstitutionFormStep.owner => _OwnerSection(controller: controller),
       InstitutionFormStep.plan => _PlanSection(controller: controller),
       InstitutionFormStep.branding => _BrandingSection(controller: controller),
@@ -40,99 +47,247 @@ final class _ProfileSection extends StatelessWidget {
     return _Section(
       title: 'Perfil da instituição',
       description: 'Identifique a instituição e defina como ela funcionará no Coelo.',
-      child: _FieldGrid(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _field(controller, InstitutionFormField.publicName, 'Nome público'),
-          _field(controller, InstitutionFormField.tradeName, 'Nome fantasia'),
-          _field(controller, InstitutionFormField.legalName, 'Razão social', wide: true),
-          _field(controller, InstitutionFormField.typeName, 'Tipo de instituição'),
-          _field(controller, InstitutionFormField.documentType, 'Tipo de documento'),
-          _field(controller, InstitutionFormField.document, 'CNPJ/documento'),
-          _field(controller, InstitutionFormField.primaryDomain, 'Domínio principal'),
-          _dropdown<InstitutionStatus>(
-            label: 'Status operacional',
-            value: controller.status,
-            values: InstitutionStatus.values,
-            labelOf: (value) => value.label,
-            onChanged: controller.setStatus,
+          _FieldGrid(
+            children: [
+              _field(controller, InstitutionFormField.publicName, 'Nome público'),
+              _field(controller, InstitutionFormField.tradeName, 'Nome fantasia'),
+              _field(controller, InstitutionFormField.legalName, 'Razão social', wide: true),
+              _field(controller, InstitutionFormField.typeName, 'Tipo de instituição'),
+              _field(controller, InstitutionFormField.documentType, 'Tipo de documento'),
+              _field(controller, InstitutionFormField.document, 'CNPJ/documento'),
+              _field(controller, InstitutionFormField.primaryDomain, 'Domínio principal'),
+              _dropdown<InstitutionStatus>(
+                label: 'Status operacional',
+                value: controller.status,
+                values: InstitutionStatus.values,
+                labelOf: (value) => value.label,
+                onChanged: controller.setStatus,
+              ),
+              _field(controller, InstitutionFormField.locale, 'Idioma/locale'),
+              _field(controller, InstitutionFormField.timezone, 'Fuso horário'),
+            ],
           ),
-          _field(controller, InstitutionFormField.locale, 'Idioma/locale'),
-          _field(controller, InstitutionFormField.timezone, 'Fuso horário'),
+          const SizedBox(height: CoeloSpacing.space5),
+          _BioField(controller: controller),
+          const SizedBox(height: CoeloSpacing.space5),
+          Text('Links personalizados', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space4),
+          _FieldGrid(
+            children: [
+              for (final fields in const [
+                (InstitutionFormField.link1Label, InstitutionFormField.link1Url),
+                (InstitutionFormField.link2Label, InstitutionFormField.link2Url),
+                (InstitutionFormField.link3Label, InstitutionFormField.link3Url),
+              ]) ...[
+                _field(controller, fields.$1, 'Rótulo do link'),
+                _field(
+                  controller,
+                  fields.$2,
+                  'URL do link',
+                  inputType: TextInputType.url,
+                  hint: 'https://',
+                ),
+              ],
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-final class _LocationSection extends StatelessWidget {
-  const _LocationSection({required this.controller});
+final class _LocationSection extends StatefulWidget {
+  const _LocationSection({required this.controller, required this.locationService});
+
   final InstitutionFormController controller;
+  final InstitutionLocationService locationService;
+
+  @override
+  State<_LocationSection> createState() => _LocationSectionState();
+}
+
+final class _LocationSectionState extends State<_LocationSection> {
+  var _lookingUpPostalCode = false;
+  var _loadingMunicipalities = false;
+  String? _postalCodeError;
+  String? _municipalityError;
+  List<String> _municipalities = const [];
+
+  InstitutionFormController get controller => widget.controller;
 
   @override
   Widget build(BuildContext context) {
+    final state = controller.text(InstitutionFormField.state);
+    final municipality = controller.text(InstitutionFormField.city);
+    final municipalityOptions = [
+      '',
+      if (municipality.isNotEmpty && !_municipalities.contains(municipality)) municipality,
+      ..._municipalities,
+    ];
     return _Section(
       title: 'Localização e contato',
       description: 'Organize o endereço principal e os canais institucionais.',
-      child: _FieldGrid(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _field(
-            controller,
-            InstitutionFormField.postalCode,
-            'CEP',
-            suffixIcon: IconButton(
-              tooltip: 'Buscar CEP',
-              onPressed: () => _lookupPostalCode(context),
-              icon: const Icon(Icons.travel_explore_rounded),
+          Text('Endereço', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space4),
+          _FieldGrid(
+            children: [
+              _field(
+                controller,
+                InstitutionFormField.postalCode,
+                'CEP',
+                wide: true,
+                errorText: _postalCodeError,
+                suffixIcon: IconButton(
+                  tooltip: 'Buscar CEP',
+                  onPressed: _lookingUpPostalCode ? null : _lookupPostalCode,
+                  icon: _lookingUpPostalCode
+                      ? const SizedBox.square(
+                          key: Key('institution-postal-code-loading'),
+                          dimension: CoeloSize.iconMd,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.travel_explore_rounded),
+                ),
+              ),
+              _field(controller, InstitutionFormField.street, 'Logradouro', wide: true),
+              _field(controller, InstitutionFormField.addressNumber, 'Número'),
+              _field(controller, InstitutionFormField.complement, 'Complemento'),
+              _field(controller, InstitutionFormField.district, 'Bairro', wide: true),
+              _dropdown<String>(
+                key: const Key('institution-municipality-select'),
+                label: 'Município',
+                value: municipality,
+                values: municipalityOptions,
+                labelOf: (value) => value.isEmpty ? 'Selecione' : value,
+                onChanged: (value) =>
+                    controller.setText(InstitutionFormField.city, value, userInitiated: true),
+                prefixIcon: Icons.location_city_rounded,
+              ),
+              _dropdown<String>(
+                key: const Key('institution-state-select'),
+                label: 'UF',
+                value: state,
+                values: _brazilianStates,
+                labelOf: (value) => value.isEmpty ? 'Selecione' : value,
+                onChanged: _changeState,
+                prefixIcon: Icons.map_outlined,
+              ),
+              _field(controller, InstitutionFormField.country, 'País', enabled: false),
+            ],
+          ),
+          if (_loadingMunicipalities) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            const LinearProgressIndicator(key: Key('institution-municipalities-loading')),
+          ],
+          if (_municipalityError != null) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(
+              _municipalityError!,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
+          ],
+          const SizedBox(height: CoeloSpacing.space5),
+          Text('Contato básico', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space4),
+          _FieldGrid(
+            children: [
+              _field(
+                controller,
+                InstitutionFormField.contactEmail,
+                'E-mail institucional',
+                inputType: TextInputType.emailAddress,
+              ),
+              _field(controller, InstitutionFormField.contactPhone, 'Telefone'),
+              _field(controller, InstitutionFormField.whatsappNumber, 'WhatsApp'),
+              _field(
+                controller,
+                InstitutionFormField.websiteUrl,
+                'Site institucional',
+                inputType: TextInputType.url,
+                hint: 'https://',
+              ),
+            ],
           ),
-          _field(controller, InstitutionFormField.country, 'País'),
-          _field(controller, InstitutionFormField.state, 'Estado'),
-          _field(controller, InstitutionFormField.city, 'Cidade'),
-          _field(controller, InstitutionFormField.district, 'Bairro'),
-          _field(controller, InstitutionFormField.street, 'Logradouro', wide: true),
-          _field(controller, InstitutionFormField.addressNumber, 'Número'),
-          _field(controller, InstitutionFormField.complement, 'Complemento'),
-          _field(
-            controller,
-            InstitutionFormField.contactEmail,
-            'E-mail institucional',
-            inputType: TextInputType.emailAddress,
-            wide: true,
-          ),
-          _field(controller, InstitutionFormField.contactPhone, 'Telefone'),
-          _field(controller, InstitutionFormField.contactMobilePhone, 'Celular institucional'),
         ],
       ),
     );
   }
 
-  Future<void> _lookupPostalCode(BuildContext context) async {
-    final postalCode = controller
-        .text(InstitutionFormField.postalCode)
-        .replaceAll(RegExp(r'\D'), '');
-    if (postalCode.length != 8) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Informe um CEP com 8 números.')));
-      return;
-    }
+  Future<void> _lookupPostalCode() async {
+    setState(() {
+      _lookingUpPostalCode = true;
+      _postalCodeError = null;
+    });
     try {
-      final response = await http.get(Uri.https('viacep.com.br', '/ws/$postalCode/json/'));
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-      if (response.statusCode != 200 || data['erro'] == true) {
-        throw const FormatException();
-      }
+      final address = await widget.locationService.lookupPostalCode(
+        controller.text(InstitutionFormField.postalCode),
+      );
+      if (!mounted) return;
       controller
         ..setText(InstitutionFormField.country, 'Brasil')
-        ..setText(InstitutionFormField.state, data['uf'] as String? ?? '')
-        ..setText(InstitutionFormField.city, data['localidade'] as String? ?? '')
-        ..setText(InstitutionFormField.district, data['bairro'] as String? ?? '')
-        ..setText(InstitutionFormField.street, data['logradouro'] as String? ?? '');
-    } on Exception {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Não foi possível buscar este CEP.')));
+        ..setText(InstitutionFormField.state, address.state)
+        ..setText(InstitutionFormField.city, address.municipality)
+        ..setText(InstitutionFormField.district, address.district)
+        ..setText(InstitutionFormField.street, address.street);
+      await _loadMunicipalities(address.state);
+    } on InstitutionLocationException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _postalCodeError = switch (error.type) {
+          InstitutionLocationErrorType.invalidPostalCode =>
+            'Informe um CEP com exatamente 8 números.',
+          InstitutionLocationErrorType.postalCodeNotFound => 'CEP não encontrado.',
+          InstitutionLocationErrorType.network =>
+            'Não foi possível consultar o CEP. Tente novamente.',
+        };
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _lookingUpPostalCode = false);
+      }
+    }
+  }
+
+  void _changeState(String state) {
+    if (state == controller.text(InstitutionFormField.state)) return;
+    controller
+      ..setText(InstitutionFormField.state, state, userInitiated: true)
+      ..setText(InstitutionFormField.city, '', userInitiated: true);
+    _loadMunicipalities(state);
+  }
+
+  Future<void> _loadMunicipalities(String state) async {
+    if (state.isEmpty) {
+      setState(() {
+        _municipalities = const [];
+        _municipalityError = null;
+      });
+      return;
+    }
+    setState(() {
+      _loadingMunicipalities = true;
+      _municipalityError = null;
+    });
+    try {
+      final municipalities = await widget.locationService.loadMunicipalities(state);
+      if (!mounted) return;
+      setState(() => _municipalities = municipalities);
+    } on InstitutionLocationException {
+      if (!mounted) return;
+      setState(() {
+        _municipalityError = 'Não foi possível carregar os municípios do IBGE. Tente novamente.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _loadingMunicipalities = false);
       }
     }
   }
@@ -254,12 +409,14 @@ final class _PlanSection extends StatelessWidget {
                 onChanged: (value) => _changeSubscription(context, value),
               ),
               _DateControl(
+                controlKey: const Key('institution-subscription-start-date'),
                 label: 'Data de início',
                 value: controller.subscriptionStart,
                 onChanged: controller.setSubscriptionStart,
               ),
               if (controller.subscriptionStatus == InstitutionSubscriptionStatus.trial)
                 _DateControl(
+                  controlKey: const Key('institution-trial-end-date'),
                   label: 'Término do período de teste',
                   value: controller.trialEnd,
                   onChanged: controller.setTrialEnd,
@@ -331,6 +488,8 @@ final class _BrandingSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _LogoPicker(controller: controller, accent: accent),
+          const SizedBox(height: CoeloSpacing.space4),
+          _CoverPicker(controller: controller, accent: accent),
           const SizedBox(height: CoeloSpacing.space5),
           _FieldGrid(
             children: [
@@ -349,12 +508,37 @@ final class _BrandingSection extends StatelessWidget {
               _ColorField(
                 controller: controller,
                 field: InstitutionFormField.accentColor,
-                label: 'Cor principal',
+                label: 'Cor principal da marca',
               ),
               _ColorField(
                 controller: controller,
                 field: InstitutionFormField.secondaryColor,
-                label: 'Cor secundária',
+                label: 'Cor secundária da marca',
+              ),
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.tertiaryColor,
+                label: 'Cor terciária da marca',
+              ),
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.textColor,
+                label: 'Cor principal do texto',
+              ),
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.secondaryTextColor,
+                label: 'Cor secundária do texto',
+              ),
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.tertiaryTextColor,
+                label: 'Cor terciária do texto',
+              ),
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.surfaceColor,
+                label: 'Cor de superfície',
               ),
             ],
           ),
@@ -376,6 +560,12 @@ final class _BrandingSection extends StatelessWidget {
                     height: CoeloSize.touchMin,
                     decoration: BoxDecoration(
                       color: accent.withValues(alpha: 0.18),
+                      image: controller.coverBytes == null
+                          ? null
+                          : DecorationImage(
+                              image: MemoryImage(controller.coverBytes!),
+                              fit: BoxFit.cover,
+                            ),
                       borderRadius: BorderRadius.circular(CoeloRadius.md),
                     ),
                   ),
@@ -445,6 +635,34 @@ final class _ColorSwatch extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+final class _BioField extends StatelessWidget {
+  const _BioField({required this.controller});
+
+  final InstitutionFormController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final value = controller.controllerOf(InstitutionFormField.profileBio).text;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _field(
+          controller,
+          InstitutionFormField.profileBio,
+          'Bio / descrição curta',
+          maxLines: 4,
+          hint: 'Conte brevemente o propósito da instituição.',
+        ),
+        const SizedBox(height: CoeloSpacing.space1),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text('${value.length}/220', style: Theme.of(context).textTheme.bodySmall),
+        ),
+      ],
     );
   }
 }
@@ -536,6 +754,104 @@ final class _LogoPicker extends StatelessWidget {
                     ),
                     if (controller.hasSimulatedLogo)
                       TextButton(onPressed: controller.removeLogo, child: const Text('Remover')),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+final class _CoverPicker extends StatelessWidget {
+  const _CoverPicker({required this.controller, required this.accent});
+
+  static const maxBytes = 2 * 1024 * 1024;
+  final InstitutionFormController controller;
+  final Color accent;
+
+  Future<void> _pick(BuildContext context) async {
+    final file = await pickInstitutionLogo();
+    if (file == null || !context.mounted) {
+      return;
+    }
+    if (file.bytes.lengthInBytes > maxBytes) {
+      controller.setCoverError('A imagem deve ter no máximo 2 MB.');
+      return;
+    }
+    try {
+      final codec = await ui.instantiateImageCodec(file.bytes);
+      final frame = await codec.getNextFrame();
+      frame.image.dispose();
+      codec.dispose();
+      controller.setCover(bytes: file.bytes, fileName: file.name);
+    } on Exception {
+      controller.setCoverError('Não foi possível ler essa imagem.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Wrap(
+        spacing: CoeloSpacing.space4,
+        runSpacing: CoeloSpacing.space3,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Container(
+            width: CoeloSize.touchMin * 3,
+            height: CoeloSize.touchMin * 2,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.16),
+              image: controller.coverBytes == null
+                  ? null
+                  : DecorationImage(image: MemoryImage(controller.coverBytes!), fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(CoeloRadius.md),
+              border: Border.all(color: colors.outlineVariant),
+            ),
+            child: controller.coverBytes == null
+                ? Icon(Icons.panorama_outlined, color: colors.primary)
+                : null,
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Foto de capa', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: CoeloSpacing.spaceHalf),
+                Text(
+                  controller.coverFileName ?? 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                if (controller.coverError != null) ...[
+                  const SizedBox(height: CoeloSpacing.space1),
+                  Text(
+                    controller.coverError!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.error),
+                  ),
+                ],
+                const SizedBox(height: CoeloSpacing.space2),
+                Wrap(
+                  spacing: CoeloSpacing.space2,
+                  children: [
+                    OutlinedButton.icon(
+                      key: const Key('institution-cover-picker'),
+                      onPressed: () => _pick(context),
+                      icon: const Icon(Icons.upload_rounded),
+                      label: Text(controller.hasSimulatedCover ? 'Trocar capa' : 'Escolher capa'),
+                    ),
+                    if (controller.hasSimulatedCover)
+                      TextButton(onPressed: controller.removeCover, child: const Text('Remover')),
                   ],
                 ),
               ],
@@ -1104,11 +1420,13 @@ final class _PlanCard extends StatelessWidget {
 
 final class _DateControl extends StatelessWidget {
   const _DateControl({
+    required this.controlKey,
     required this.label,
     required this.value,
     required this.onChanged,
     this.errorText,
   });
+  final Key controlKey;
   final String label;
   final DateTime? value;
   final ValueChanged<DateTime> onChanged;
@@ -1117,12 +1435,31 @@ final class _DateControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      key: controlKey,
       onTap: () async {
+        final colors = Theme.of(context).colorScheme;
         final selected = await showDatePicker(
           context: context,
-          initialDate: value ?? DateTime(2026, 7, 27),
+          locale: const Locale('pt', 'BR'),
+          initialDate: value ?? DateUtils.dateOnly(DateTime.now()),
           firstDate: DateTime(2020),
           lastDate: DateTime(2035),
+          builder: (context, child) => Theme(
+            data: Theme.of(context).copyWith(
+              datePickerTheme: DatePickerThemeData(
+                backgroundColor: colors.surface,
+                surfaceTintColor: Colors.transparent,
+                headerBackgroundColor: colors.surface,
+                headerForegroundColor: colors.onSurface,
+                dividerColor: colors.outlineVariant,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                  side: BorderSide(color: colors.outlineVariant),
+                ),
+              ),
+            ),
+            child: child!,
+          ),
         );
         if (selected != null) {
           onChanged(selected);
@@ -1187,6 +1524,8 @@ Widget _field(
   String? hint,
   String? prefixText,
   Widget? suffixIcon,
+  String? errorText,
+  bool enabled = true,
 }) {
   final fieldWidget = CoeloFormTextField(
     controller: controller.controllerOf(field),
@@ -1198,7 +1537,8 @@ Widget _field(
     suffixIcon: suffixIcon,
     keyboardType: inputType,
     maxLines: maxLines,
-    errorText: controller.errorFor(field),
+    errorText: errorText ?? controller.errorFor(field),
+    enabled: enabled,
     onChanged: (value) => controller.setText(field, value, userInitiated: true),
   );
   return wide ? _WideField(child: fieldWidget) : fieldWidget;
@@ -1208,11 +1548,19 @@ IconData _iconFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.publicName ||
   InstitutionFormField.tradeName ||
   InstitutionFormField.legalName ||
-  InstitutionFormField.brandDisplayName => Icons.apartment_rounded,
+  InstitutionFormField.brandDisplayName ||
+  InstitutionFormField.profileBio => Icons.apartment_rounded,
   InstitutionFormField.typeName || InstitutionFormField.documentType => Icons.category_outlined,
   InstitutionFormField.document => Icons.badge_outlined,
   InstitutionFormField.slug => Icons.alternate_email_rounded,
   InstitutionFormField.primaryDomain => Icons.language_rounded,
+  InstitutionFormField.websiteUrl ||
+  InstitutionFormField.link1Url ||
+  InstitutionFormField.link2Url ||
+  InstitutionFormField.link3Url => Icons.link_rounded,
+  InstitutionFormField.link1Label ||
+  InstitutionFormField.link2Label ||
+  InstitutionFormField.link3Label => Icons.label_outline_rounded,
   InstitutionFormField.locale => Icons.translate_rounded,
   InstitutionFormField.timezone => Icons.schedule_rounded,
   InstitutionFormField.postalCode => Icons.markunread_mailbox_outlined,
@@ -1227,29 +1575,71 @@ IconData _iconFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.ownerEmail => Icons.mail_outline_rounded,
   InstitutionFormField.contactPhone ||
   InstitutionFormField.contactMobilePhone ||
+  InstitutionFormField.whatsappNumber ||
   InstitutionFormField.ownerMobilePhone => Icons.phone_outlined,
   InstitutionFormField.ownerFirstName ||
   InstitutionFormField.ownerLastName ||
   InstitutionFormField.ownerDisplayName => Icons.person_outline_rounded,
   InstitutionFormField.subscriptionJustification => Icons.notes_rounded,
-  InstitutionFormField.accentColor || InstitutionFormField.secondaryColor => Icons.palette_outlined,
+  InstitutionFormField.accentColor ||
+  InstitutionFormField.secondaryColor ||
+  InstitutionFormField.tertiaryColor ||
+  InstitutionFormField.textColor ||
+  InstitutionFormField.secondaryTextColor ||
+  InstitutionFormField.tertiaryTextColor ||
+  InstitutionFormField.surfaceColor => Icons.palette_outlined,
 };
 
 Widget _dropdown<T>({
+  Key? key,
   required String label,
   required T value,
   required List<T> values,
   required String Function(T value) labelOf,
   required ValueChanged<T> onChanged,
+  IconData prefixIcon = Icons.tune_rounded,
 }) {
   return CoeloAdminSingleSelectField<T>(
+    key: key,
     label: label,
     value: value,
     options: values,
     optionLabel: labelOf,
     onChanged: onChanged,
+    prefixIcon: prefixIcon,
   );
 }
+
+const _brazilianStates = [
+  '',
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
+];
 
 String _date(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';

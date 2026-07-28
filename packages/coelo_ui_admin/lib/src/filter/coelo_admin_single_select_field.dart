@@ -25,6 +25,7 @@ final class CoeloAdminSingleSelectField<T> extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) => MenuAnchor(
         crossAxisUnconstrained: false,
+        alignmentOffset: const Offset(0, CoeloSpacing.space1),
         style: MenuStyle(
           backgroundColor: WidgetStatePropertyAll(colors.surface),
           elevation: const WidgetStatePropertyAll(CoeloElevation.level3),

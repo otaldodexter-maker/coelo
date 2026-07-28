@@ -40,6 +40,8 @@ enum InstitutionFormField {
   contactEmail,
   contactPhone,
   contactMobilePhone,
+  whatsappNumber,
+  websiteUrl,
   ownerFirstName,
   ownerLastName,
   ownerDisplayName,
@@ -47,8 +49,20 @@ enum InstitutionFormField {
   ownerMobilePhone,
   subscriptionJustification,
   brandDisplayName,
+  profileBio,
+  link1Label,
+  link1Url,
+  link2Label,
+  link2Url,
+  link3Label,
+  link3Url,
   accentColor,
   secondaryColor,
+  tertiaryColor,
+  textColor,
+  secondaryTextColor,
+  tertiaryTextColor,
+  surfaceColor,
 }
 
 final class InstitutionFormController extends ChangeNotifier {
@@ -71,7 +85,7 @@ final class InstitutionFormController extends ChangeNotifier {
   final InstitutionRecord? original;
   final Map<InstitutionFormField, TextEditingController> _controllers = {};
   final Set<InstitutionFormStep> _attemptedSteps = {};
-  late final String _initialSignature;
+  late String _initialSignature;
   bool _slugManuallyEdited = false;
 
   InstitutionFormStep currentStep = InstitutionFormStep.branding;
@@ -86,6 +100,9 @@ final class InstitutionFormController extends ChangeNotifier {
   Uint8List? logoBytes;
   String? logoFileName;
   String? logoError;
+  Uint8List? coverBytes;
+  String? coverFileName;
+  String? coverError;
 
   bool get isEditing => original != null;
   bool get isDirty => _signature != _initialSignature;
@@ -94,6 +111,9 @@ final class InstitutionFormController extends ChangeNotifier {
   String text(InstitutionFormField field) => controllerOf(field).text.trim();
 
   void setText(InstitutionFormField field, String value, {bool userInitiated = false}) {
+    if (field == InstitutionFormField.profileBio && value.length > 220) {
+      value = value.substring(0, 220);
+    }
     if (field == InstitutionFormField.slug && userInitiated) {
       _slugManuallyEdited = true;
     }
@@ -148,6 +168,12 @@ final class InstitutionFormController extends ChangeNotifier {
   }
 
   void setSubscriptionStatus(InstitutionSubscriptionStatus value) {
+    if (value == InstitutionSubscriptionStatus.trial &&
+        subscriptionStatus != InstitutionSubscriptionStatus.trial) {
+      final now = DateTime.now();
+      subscriptionStart = DateTime(now.year, now.month, now.day);
+      trialEnd = subscriptionStart.add(const Duration(days: 30));
+    }
     subscriptionStatus = value;
     notifyListeners();
   }
@@ -193,9 +219,42 @@ final class InstitutionFormController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCover({required Uint8List bytes, required String fileName}) {
+    coverBytes = bytes;
+    coverFileName = fileName;
+    coverError = null;
+    hasSimulatedCover = true;
+    notifyListeners();
+  }
+
+  void setCoverError(String value) {
+    coverError = value;
+    notifyListeners();
+  }
+
+  void removeCover() {
+    coverBytes = null;
+    coverFileName = null;
+    coverError = null;
+    hasSimulatedCover = false;
+    notifyListeners();
+  }
+
   void setSaving(bool value) {
     isSaving = value;
     notifyListeners();
+  }
+
+  void markSaved() {
+    _initialSignature = _signature;
+    notifyListeners();
+  }
+
+  bool validateCurrentStep() {
+    _attemptedSteps.add(currentStep);
+    final valid = _isStepValid(currentStep);
+    notifyListeners();
+    return valid;
   }
 
   bool validateAll() {
@@ -236,26 +295,41 @@ final class InstitutionFormController extends ChangeNotifier {
         !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
       return 'Informe um e-mail válido, como nome@dominio.com.';
     }
-    if ({InstitutionFormField.accentColor, InstitutionFormField.secondaryColor}.contains(field) &&
+    if (_colorFields.contains(field) &&
         value.isNotEmpty &&
         !RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(value)) {
       return 'Use uma cor hexadecimal no formato #RRGGBB.';
     }
-    if (field == InstitutionFormField.contactMobilePhone &&
-        text(InstitutionFormField.contactPhone).isEmpty &&
-        value.isEmpty) {
-      return 'Informe pelo menos um telefone ou celular institucional.';
+    if (_urlFields.contains(field) && value.isNotEmpty && !_isWebUrl(value)) {
+      return 'Informe uma URL completa iniciada por http:// ou https://.';
+    }
+    final pairedField = _pairedLinkField[field];
+    if (pairedField != null && value.isEmpty && text(pairedField).isNotEmpty) {
+      return field.name.endsWith('Label')
+          ? 'Informe um rótulo para este link.'
+          : 'Informe a URL deste link.';
+    }
+    if (field == InstitutionFormField.contactPhone &&
+        value.isEmpty &&
+        text(InstitutionFormField.whatsappNumber).isEmpty) {
+      return 'Informe pelo menos um telefone ou WhatsApp institucional.';
     }
     return null;
   }
 
   String? get trialEndError {
     if (!_attemptedSteps.contains(InstitutionFormStep.plan) ||
-        subscriptionStatus != InstitutionSubscriptionStatus.trial ||
-        trialEnd != null) {
+        subscriptionStatus != InstitutionSubscriptionStatus.trial) {
       return null;
     }
-    return 'Selecione quando o período de teste termina.';
+    final end = trialEnd;
+    if (end == null) {
+      return 'Selecione quando o período de teste termina.';
+    }
+    if (end.isBefore(subscriptionStart)) {
+      return 'A data final não pode ser anterior à data de início.';
+    }
+    return null;
   }
 
   InstitutionRecord toRecord({required String id}) {
@@ -293,6 +367,8 @@ final class InstitutionFormController extends ChangeNotifier {
       contactEmail: text(InstitutionFormField.contactEmail),
       contactPhone: text(InstitutionFormField.contactPhone),
       contactMobilePhone: text(InstitutionFormField.contactMobilePhone),
+      whatsappNumber: text(InstitutionFormField.whatsappNumber),
+      websiteUrl: text(InstitutionFormField.websiteUrl),
       ownerFirstName: text(InstitutionFormField.ownerFirstName),
       ownerLastName: text(InstitutionFormField.ownerLastName),
       ownerDisplayName: text(InstitutionFormField.ownerDisplayName),
@@ -308,6 +384,17 @@ final class InstitutionFormController extends ChangeNotifier {
       hasSimulatedCover: hasSimulatedCover,
       accentColor: text(InstitutionFormField.accentColor),
       secondaryColor: text(InstitutionFormField.secondaryColor),
+      tertiaryColor: text(InstitutionFormField.tertiaryColor),
+      textColor: text(InstitutionFormField.textColor),
+      secondaryTextColor: text(InstitutionFormField.secondaryTextColor),
+      tertiaryTextColor: text(InstitutionFormField.tertiaryTextColor),
+      surfaceColor: text(InstitutionFormField.surfaceColor),
+      profileBio: text(InstitutionFormField.profileBio),
+      profileLinks: [
+        for (final pair in _linkFieldPairs)
+          if (text(pair.$1).isNotEmpty || text(pair.$2).isNotEmpty)
+            InstitutionProfileLink(label: text(pair.$1), url: text(pair.$2)),
+      ],
       units: units,
     );
   }
@@ -318,7 +405,7 @@ final class InstitutionFormController extends ChangeNotifier {
     }
     if (step == InstitutionFormStep.plan &&
         subscriptionStatus == InstitutionSubscriptionStatus.trial &&
-        trialEnd == null) {
+        (trialEnd == null || trialEnd!.isBefore(subscriptionStart))) {
       return false;
     }
     final fields = InstitutionFormField.values.where((field) => _stepFor(field) == step);
@@ -345,6 +432,7 @@ final class InstitutionFormController extends ChangeNotifier {
     '$hasSimulatedLogo',
     logoFileName ?? '',
     '$hasSimulatedCover',
+    coverFileName ?? '',
   ].join('|');
 
   @override
@@ -378,6 +466,38 @@ const _requiredFields = {
   InstitutionFormField.ownerMobilePhone,
 };
 
+const _colorFields = {
+  InstitutionFormField.accentColor,
+  InstitutionFormField.secondaryColor,
+  InstitutionFormField.tertiaryColor,
+  InstitutionFormField.textColor,
+  InstitutionFormField.secondaryTextColor,
+  InstitutionFormField.tertiaryTextColor,
+  InstitutionFormField.surfaceColor,
+};
+
+const _urlFields = {
+  InstitutionFormField.websiteUrl,
+  InstitutionFormField.link1Url,
+  InstitutionFormField.link2Url,
+  InstitutionFormField.link3Url,
+};
+
+const _linkFieldPairs = [
+  (InstitutionFormField.link1Label, InstitutionFormField.link1Url),
+  (InstitutionFormField.link2Label, InstitutionFormField.link2Url),
+  (InstitutionFormField.link3Label, InstitutionFormField.link3Url),
+];
+
+const _pairedLinkField = {
+  InstitutionFormField.link1Label: InstitutionFormField.link1Url,
+  InstitutionFormField.link1Url: InstitutionFormField.link1Label,
+  InstitutionFormField.link2Label: InstitutionFormField.link2Url,
+  InstitutionFormField.link2Url: InstitutionFormField.link2Label,
+  InstitutionFormField.link3Label: InstitutionFormField.link3Url,
+  InstitutionFormField.link3Url: InstitutionFormField.link3Label,
+};
+
 InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.publicName ||
   InstitutionFormField.tradeName ||
@@ -387,7 +507,14 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.document ||
   InstitutionFormField.primaryDomain ||
   InstitutionFormField.locale ||
-  InstitutionFormField.timezone => InstitutionFormStep.profile,
+  InstitutionFormField.timezone ||
+  InstitutionFormField.profileBio ||
+  InstitutionFormField.link1Label ||
+  InstitutionFormField.link1Url ||
+  InstitutionFormField.link2Label ||
+  InstitutionFormField.link2Url ||
+  InstitutionFormField.link3Label ||
+  InstitutionFormField.link3Url => InstitutionFormStep.profile,
   InstitutionFormField.postalCode ||
   InstitutionFormField.country ||
   InstitutionFormField.state ||
@@ -398,7 +525,9 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.complement ||
   InstitutionFormField.contactEmail ||
   InstitutionFormField.contactPhone ||
-  InstitutionFormField.contactMobilePhone => InstitutionFormStep.location,
+  InstitutionFormField.contactMobilePhone ||
+  InstitutionFormField.whatsappNumber ||
+  InstitutionFormField.websiteUrl => InstitutionFormStep.location,
   InstitutionFormField.ownerFirstName ||
   InstitutionFormField.ownerLastName ||
   InstitutionFormField.ownerDisplayName ||
@@ -408,7 +537,12 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.brandDisplayName ||
   InstitutionFormField.slug ||
   InstitutionFormField.accentColor ||
-  InstitutionFormField.secondaryColor => InstitutionFormStep.branding,
+  InstitutionFormField.secondaryColor ||
+  InstitutionFormField.tertiaryColor ||
+  InstitutionFormField.textColor ||
+  InstitutionFormField.secondaryTextColor ||
+  InstitutionFormField.tertiaryTextColor ||
+  InstitutionFormField.surfaceColor => InstitutionFormStep.branding,
 };
 
 Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
@@ -433,6 +567,8 @@ Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
   InstitutionFormField.contactEmail: record?.contactEmail ?? '',
   InstitutionFormField.contactPhone: record?.contactPhone ?? '',
   InstitutionFormField.contactMobilePhone: record?.contactMobilePhone ?? '',
+  InstitutionFormField.whatsappNumber: record?.whatsappNumber ?? '',
+  InstitutionFormField.websiteUrl: record?.websiteUrl ?? '',
   InstitutionFormField.ownerFirstName: record?.ownerFirstName ?? '',
   InstitutionFormField.ownerLastName: record?.ownerLastName ?? '',
   InstitutionFormField.ownerDisplayName: record?.ownerDisplayName ?? '',
@@ -440,9 +576,26 @@ Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
   InstitutionFormField.ownerMobilePhone: record?.ownerMobilePhone ?? '',
   InstitutionFormField.subscriptionJustification: record?.subscriptionJustification ?? '',
   InstitutionFormField.brandDisplayName: record?.brandDisplayName ?? '',
+  InstitutionFormField.profileBio: record?.profileBio ?? '',
+  InstitutionFormField.link1Label: record?.profileLinks.elementAtOrNull(0)?.label ?? '',
+  InstitutionFormField.link1Url: record?.profileLinks.elementAtOrNull(0)?.url ?? '',
+  InstitutionFormField.link2Label: record?.profileLinks.elementAtOrNull(1)?.label ?? '',
+  InstitutionFormField.link2Url: record?.profileLinks.elementAtOrNull(1)?.url ?? '',
+  InstitutionFormField.link3Label: record?.profileLinks.elementAtOrNull(2)?.label ?? '',
+  InstitutionFormField.link3Url: record?.profileLinks.elementAtOrNull(2)?.url ?? '',
   InstitutionFormField.accentColor: record?.accentColor ?? '#D63C00',
   InstitutionFormField.secondaryColor: record?.secondaryColor ?? '#3F4549',
+  InstitutionFormField.tertiaryColor: record?.tertiaryColor ?? '#D63C00',
+  InstitutionFormField.textColor: record?.textColor ?? '#3F4549',
+  InstitutionFormField.secondaryTextColor: record?.secondaryTextColor ?? '#3F4549',
+  InstitutionFormField.tertiaryTextColor: record?.tertiaryTextColor ?? '#3F4549',
+  InstitutionFormField.surfaceColor: record?.surfaceColor ?? '#FFFFFF',
 };
+
+bool _isWebUrl(String value) {
+  final uri = Uri.tryParse(value);
+  return uri != null && (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
+}
 
 String _slugify(String value) {
   var normalized = value.toLowerCase();

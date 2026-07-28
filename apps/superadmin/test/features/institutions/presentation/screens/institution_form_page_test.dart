@@ -1,11 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/institutions/data/institution_location_service.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_form_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 void main() {
   testWidgets('uses the same empty form for institution creation', (tester) async {
@@ -65,6 +72,259 @@ void main() {
       find.byKey(const Key('institution-field-brandDisplayName')),
     );
     expect(field.controller!.text, 'Instituto Aurora');
+  });
+
+  testWidgets('offers cover, complete palette, bio, and three custom links', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('institution-cover-picker')), findsOneWidget);
+    expect(find.text('Cor principal da marca'), findsOneWidget);
+    expect(find.text('Cor secundária da marca'), findsOneWidget);
+    expect(find.text('Cor terciária da marca'), findsOneWidget);
+    expect(find.text('Cor principal do texto'), findsOneWidget);
+    expect(find.text('Cor secundária do texto'), findsOneWidget);
+    expect(find.text('Cor terciária do texto'), findsOneWidget);
+    expect(find.text('Cor de superfície'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-form-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('institution-field-profileBio')), findsOneWidget);
+    expect(find.text('0/220'), findsOneWidget);
+    for (var index = 1; index <= 3; index++) {
+      expect(find.byKey(Key('institution-field-link${index}Label')), findsOneWidget);
+      expect(find.byKey(Key('institution-field-link${index}Url')), findsOneWidget);
+    }
+  });
+
+  testWidgets('separates address from basic contact with the approved fields', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Endereço'), findsOneWidget);
+    expect(find.text('Contato básico'), findsOneWidget);
+    expect(find.text('UF'), findsOneWidget);
+    expect(find.text('Município'), findsOneWidget);
+    expect(find.byKey(const Key('institution-field-whatsappNumber')), findsOneWidget);
+    expect(find.byKey(const Key('institution-field-websiteUrl')), findsOneWidget);
+  });
+
+  testWidgets('ViaCEP shows loading and fills address without locking manual edits', (
+    tester,
+  ) async {
+    final viaCep = Completer<http.Response>();
+    final service = InstitutionLocationService(
+      client: MockClient((request) {
+        if (request.url.host == 'viacep.com.br') {
+          return viaCep.future;
+        }
+        return Future.value(
+          http.Response(
+            jsonEncode([
+              {'nome': 'São Paulo'},
+            ]),
+            200,
+          ),
+        );
+      }),
+    );
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('institution-field-postalCode')), '01310100');
+    await tester.tap(find.byTooltip('Buscar CEP'));
+    await tester.pump();
+
+    expect(find.byKey(const Key('institution-postal-code-loading')), findsOneWidget);
+
+    viaCep.complete(
+      http.Response(
+        jsonEncode({
+          'logradouro': 'Avenida Paulista',
+          'bairro': 'Bela Vista',
+          'localidade': 'São Paulo',
+          'uf': 'SP',
+        }),
+        200,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('institution-field-street')))
+          .controller!
+          .text,
+      'Avenida Paulista',
+    );
+    expect(find.text('São Paulo'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('institution-field-street')),
+      'Avenida Paulista, bloco B',
+    );
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('institution-field-street')))
+          .controller!
+          .text,
+      'Avenida Paulista, bloco B',
+    );
+  });
+
+  testWidgets('unknown CEP and network failure preserve manually entered address', (tester) async {
+    final service = InstitutionLocationService(
+      client: MockClient((_) async => http.Response('{"erro": true}', 200)),
+    );
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          locationService: service,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.text('Localização e contato'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('institution-field-street')),
+      'Rua digitada manualmente',
+    );
+    await tester.enterText(find.byKey(const Key('institution-field-postalCode')), '00000000');
+    await tester.tap(find.byTooltip('Buscar CEP'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('CEP não encontrado.'), findsOneWidget);
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('institution-field-street')))
+          .controller!
+          .text,
+      'Rua digitada manualmente',
+    );
+  });
+
+  testWidgets('edit mode saves locally on the current step and remains there', (tester) async {
+    final repository = FakeInstitutionDirectoryRepository();
+    var savedCallbackCalls = 0;
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: repository,
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) => savedCallbackCalls++,
+        ),
+      ),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('institution-field-brandDisplayName')),
+      'Aurora atualizado',
+    );
+    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('institution-field-brandDisplayName')), findsOneWidget);
+    expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
+    expect(savedCallbackCalls, 0);
+    await tester.tap(find.byKey(const Key('institution-form-cancel')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsNothing);
+  });
+
+  testWidgets('trial dates are suggested and calendar uses pt-BR Coelo surface', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    for (var step = 0; step < 4; step++) {
+      await tester.tap(find.byKey(const Key('institution-form-continue')));
+      await tester.pumpAndSettle();
+    }
+    await tester.scrollUntilVisible(
+      find.text('Rascunho'),
+      180,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('institution-form-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.tap(find.text('Rascunho'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Período de teste'));
+    await tester.pumpAndSettle();
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final end = today.add(const Duration(days: 30));
+    expect(find.text(_dateLabel(today)), findsOneWidget);
+    expect(find.text(_dateLabel(end)), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-subscription-start-date')));
+    await tester.pumpAndSettle();
+
+    final calendarContext = tester.element(find.byType(CalendarDatePicker));
+    final calendarTheme = Theme.of(calendarContext);
+    expect(Localizations.localeOf(calendarContext), const Locale('pt', 'BR'));
+    expect(calendarTheme.datePickerTheme.backgroundColor, calendarTheme.colorScheme.surface);
+    expect(calendarTheme.datePickerTheme.surfaceTintColor, Colors.transparent);
   });
 
   testWidgets('color picker uses the neutral advanced color surface', (tester) async {
@@ -393,6 +653,13 @@ Widget _app(
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
     themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+    locale: const Locale('pt', 'BR'),
+    supportedLocales: const [Locale('pt', 'BR')],
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
     builder: (context, child) => MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaler: textScaler),
       child: child!,
@@ -402,3 +669,6 @@ Widget _app(
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
+
+String _dateLabel(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';

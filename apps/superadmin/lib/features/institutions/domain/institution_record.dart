@@ -38,6 +38,13 @@ final class InstitutionUnit {
   final List<InstitutionGroup> groups;
 }
 
+final class InstitutionProfileLink {
+  const InstitutionProfileLink({required this.label, required this.url});
+
+  final String label;
+  final String url;
+}
+
 final class InstitutionRecord {
   const InstitutionRecord({
     required this.id,
@@ -80,6 +87,15 @@ final class InstitutionRecord {
     required this.accentColor,
     required this.secondaryColor,
     required this.units,
+    this.tertiaryColor = '#D63C00',
+    this.textColor = '#3F4549',
+    this.secondaryTextColor = '#3F4549',
+    this.tertiaryTextColor = '#3F4549',
+    this.surfaceColor = '#FFFFFF',
+    this.profileBio = '',
+    this.profileLinks = const [],
+    this.websiteUrl = '',
+    this.whatsappNumber = '',
   });
 
   factory InstitutionRecord.fromDirectoryItem(InstitutionDirectoryItem item) {
@@ -181,6 +197,15 @@ final class InstitutionRecord {
   final String accentColor;
   final String secondaryColor;
   final List<InstitutionUnit> units;
+  final String tertiaryColor;
+  final String textColor;
+  final String secondaryTextColor;
+  final String tertiaryTextColor;
+  final String surfaceColor;
+  final String profileBio;
+  final List<InstitutionProfileLink> profileLinks;
+  final String websiteUrl;
+  final String whatsappNumber;
 
   InstitutionDirectoryItem get directoryItem => InstitutionDirectoryItem(
     id: id,
@@ -249,6 +274,15 @@ final class InstitutionRecord {
     String? accentColor,
     String? secondaryColor,
     List<InstitutionUnit>? units,
+    String? tertiaryColor,
+    String? textColor,
+    String? secondaryTextColor,
+    String? tertiaryTextColor,
+    String? surfaceColor,
+    String? profileBio,
+    List<InstitutionProfileLink>? profileLinks,
+    String? websiteUrl,
+    String? whatsappNumber,
   }) {
     return InstitutionRecord(
       id: id ?? this.id,
@@ -291,6 +325,15 @@ final class InstitutionRecord {
       accentColor: accentColor ?? this.accentColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
       units: units ?? this.units,
+      tertiaryColor: tertiaryColor ?? this.tertiaryColor,
+      textColor: textColor ?? this.textColor,
+      secondaryTextColor: secondaryTextColor ?? this.secondaryTextColor,
+      tertiaryTextColor: tertiaryTextColor ?? this.tertiaryTextColor,
+      surfaceColor: surfaceColor ?? this.surfaceColor,
+      profileBio: profileBio ?? this.profileBio,
+      profileLinks: profileLinks ?? this.profileLinks,
+      websiteUrl: websiteUrl ?? this.websiteUrl,
+      whatsappNumber: whatsappNumber ?? this.whatsappNumber,
     );
   }
 }

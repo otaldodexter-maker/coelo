@@ -29,6 +29,7 @@ void main() {
     final triggerWidth = tester.getSize(find.byType(InputDecorator)).width;
     final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
     expect(anchor.crossAxisUnconstrained, isFalse);
+    expect(anchor.alignmentOffset, const Offset(0, CoeloSpacing.space1));
     expect(anchor.style!.minimumSize!.resolve({})!.width, triggerWidth);
     expect(anchor.style!.maximumSize!.resolve({})!.width, triggerWidth);
     expect(

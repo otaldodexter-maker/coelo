@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/config/superadmin_app_config.dart';
@@ -81,6 +82,13 @@ class _SuperadminAppState extends State<SuperadminApp> {
     return MaterialApp.router(
       title: SuperadminAppConfig.appName,
       debugShowCheckedModeBanner: false,
+      locale: const Locale('pt', 'BR'),
+      supportedLocales: const [Locale('pt', 'BR')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: CoeloTheme.light,
       darkTheme: CoeloTheme.dark,
       themeMode: _themeMode,
