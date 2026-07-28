@@ -19,6 +19,10 @@ abstract final class SuperadminRoutes {
   static const supportName = 'support';
   static const conversations = '/communication/conversations';
   static const conversationsName = 'conversations';
+  static const profile = '/profile';
+  static const profileName = 'profile';
+  static const settings = '/settings';
+  static const settingsName = 'settings';
   static const login = '/login';
   static const loginName = 'login';
   static const forgotPassword = '/forgot-password';
@@ -39,14 +43,22 @@ abstract final class SuperadminRoutes {
   static const devInstitutionCreateName = 'dev-institution-create';
   static const devInstitutionEdit = '/dev/institutions/:institutionId/edit';
   static const devInstitutionEditName = 'dev-institution-edit';
-  static const devSupport = '/dev/support';
-  static const devSupportName = 'dev-support';
-  static const devConversations = '/dev/conversations';
-  static const devConversationsName = 'dev-conversations';
   static const devUnits = '/dev/units';
   static const devUnitsName = 'dev-units';
   static const devUnitCreate = '/dev/units/new';
   static const devUnitCreateName = 'dev-unit-create';
   static const devUnitEdit = '/dev/units/:unitId/edit';
   static const devUnitEditName = 'dev-unit-edit';
+  static const devSupport = '/dev/support';
+  static const devSupportName = 'dev-support';
+  static const devConversations = '/dev/conversations';
+  static const devConversationsName = 'dev-conversations';
+  static const devProfile = '/dev/profile';
+  static const devProfileName = 'dev-profile';
+  static const devSettings = '/dev/settings';
+  static const devSettingsName = 'dev-settings';
+  static const devError = '/dev/errors/:code';
+  static const devErrorName = 'dev-error';
+
+  static String devErrorLocation(String code) => '/dev/errors/$code';
 }

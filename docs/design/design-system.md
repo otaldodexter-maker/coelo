@@ -698,6 +698,29 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 | Ilustração | Opcional, simples e pequena; nunca maior que a mensagem. |
 | Tom | Calmo e útil; não culpar o usuário. |
 
+## Páginas fullscreen de erro
+
+Páginas globais de erro interrompem a navegação e não são substitutas de
+`CoeloStatePanel`. O painel continua sendo usado para loading, vazio, bloqueio
+ou falha dentro de uma superfície existente; a página fullscreen é reservada
+para falhas de rota, permissão ou disponibilidade que ocupam toda a janela.
+
+| Parte | Padrão canônico |
+| --- | --- |
+| Códigos | 403, 404, 500 e 503. O 401 redireciona para autenticação e o 429 permanece contextual. |
+| Superfície | Tela limpa, sem shell, menu ou cabeçalho, em `colorScheme.primaryContainer` com conteúdo em `onPrimaryContainer`. Não usar vermelho como fundo: o erro é comunicado também por código e texto. |
+| Anatomia | Código, divisor e mensagem centralizados, seguidos por uma única ação contextual. Não adicionar ilustração, logo ou ícone sem nova aprovação. |
+| Conteúdo | 403: “Você não tem permissão para acessar esta área.”; 404: “Não encontramos a página que você procura.”; 500: “Não foi possível concluir esta ação.”; 503: “O Coelo está temporariamente indisponível.” |
+| Ação | “Voltar ao início” em 403/404; “Tentar novamente” em 500/503. O destino ou retry é delegado ao app. |
+| Responsividade | Em janela ampla, código, divisor e mensagem ficam em linha. Em compact ou com texto ampliado, passam para coluna. Usar `LayoutBuilder`, largura de leitura limitada, `SafeArea` e scroll vertical. |
+| Acessibilidade | Anunciar “Erro {código}. {mensagem}” como uma única informação, sem duplicar os filhos. A ação mantém foco visível, teclado e alvo mínimo do tema. |
+| QA | Validar 375, 768, 1024 e 1440 px, light/dark, texto a 200%, ausência de overflow e goldens das quatro variantes. |
+
+A primeira referência implementada é o Superadmin, documentada em
+`docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md`. Admin e
+Principal só adotam a composição quando suas specs consumidoras confirmarem
+destino, navegação e contexto; não compartilhar telas entre apps.
+
 # 17. Admin, Superadmin, tabelas e dados
 
 Os painéis administrativos devem ser mais densos que o App, mas não mais confusos. Densidade vem de tipografia e layout, não de reduzir alvos ou esconder labels.

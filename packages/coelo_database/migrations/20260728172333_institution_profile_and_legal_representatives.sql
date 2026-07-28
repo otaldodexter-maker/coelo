@@ -154,7 +154,7 @@ create table public.institution_legal_representatives (
 create unique index
   institution_legal_representatives_active_person_uidx
 on public.institution_legal_representatives(institution_id, person_id)
-where status = 'active' and ends_on is null;
+where status = 'active';
 
 create index institution_legal_representatives_membership_idx
   on public.institution_legal_representatives(membership_id);
@@ -172,8 +172,7 @@ create index institution_legal_representatives_created_by_idx
 create unique index institution_legal_representatives_primary_active_uidx
   on public.institution_legal_representatives(institution_id)
   where is_primary
-    and status = 'active'
-    and ends_on is null;
+    and status = 'active';
 
 create or replace function
   app_private.validate_institution_legal_representative()
@@ -186,31 +185,34 @@ declare
   representative public.people%rowtype;
   representative_membership public.institution_memberships%rowtype;
 begin
-  select *
-    into representative
-  from public.people
-  where id = new.person_id;
+  if new.status = 'active' then
+    select *
+      into representative
+    from public.people
+    where id = new.person_id;
 
-  if representative.id is null
-     or representative.person_type <> 'adult'
-     or representative.date_of_birth is null
-     or representative.date_of_birth > (
-       new.starts_on - interval '18 years'
-     )::date then
-    raise check_violation using
-      message = 'legal representative must be an adult with a known birth date';
-  end if;
+    if representative.id is null
+       or representative.person_type <> 'adult'
+       or representative.date_of_birth is null
+       or representative.date_of_birth > (
+         new.starts_on - interval '18 years'
+       )::date then
+      raise check_violation using
+        message =
+          'active legal representative must be an adult at starts_on';
+    end if;
 
-  select *
-    into representative_membership
-  from public.institution_memberships
-  where id = new.membership_id;
+    select *
+      into representative_membership
+    from public.institution_memberships
+    where id = new.membership_id;
 
-  if representative_membership.id is null
-     or representative_membership.status <> 'active'
-     or representative_membership.revoked_at is not null then
-    raise check_violation using
-      message = 'legal representative membership must be active';
+    if representative_membership.id is null
+       or representative_membership.status <> 'active'
+       or representative_membership.revoked_at is not null then
+      raise check_violation using
+        message = 'active legal representative membership must be active';
+    end if;
   end if;
 
   return new;
@@ -229,7 +231,9 @@ before insert or update of
   person_id,
   membership_id,
   institution_id,
-  starts_on
+  starts_on,
+  status,
+  ends_on
 on public.institution_legal_representatives
 for each row
 execute function app_private.validate_institution_legal_representative();
@@ -273,7 +277,7 @@ begin
     update public.institution_legal_representatives
     set
       status = 'inactive',
-      ends_on = coalesce(ends_on, current_date)
+      ends_on = coalesce(ends_on, greatest(current_date, starts_on))
     where membership_id = new.id
       and status = 'active';
   end if;
@@ -310,7 +314,10 @@ begin
   update public.institution_legal_representatives representative_link
   set
     status = 'inactive',
-    ends_on = coalesce(representative_link.ends_on, current_date)
+    ends_on = coalesce(
+      representative_link.ends_on,
+      greatest(current_date, representative_link.starts_on)
+    )
   where representative_link.person_id = new.id
     and representative_link.status = 'active'
     and (

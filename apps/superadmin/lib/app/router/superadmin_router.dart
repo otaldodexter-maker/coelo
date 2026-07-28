@@ -1,7 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/guards/superadmin_session.dart';
+import '../activity/superadmin_activity.dart';
+import '../../features/account/data/account_profile_repository.dart';
+import '../../features/account/data/user_preferences_repository.dart';
+import '../../features/account/presentation/account_controller.dart';
+import '../../features/account/presentation/screens/profile_page.dart';
+import '../../features/account/presentation/screens/settings_page.dart';
+import '../../features/account/presentation/user_preferences_controller.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
@@ -11,6 +20,7 @@ import '../../features/auth/presentation/screens/superadmin_login_screen.dart';
 import '../../features/auth/presentation/screens/superadmin_reset_password_screen.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
+import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
@@ -40,9 +50,21 @@ GoRouter createSuperadminRouter({
   ),
   ValueChanged<Uri>? openExternalCatalog,
   SupportPrototypeController? supportController,
+  UserPreferencesController? userPreferencesController,
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
   final sessionSupportController = supportController ?? SupportPrototypeController();
+  final accountActivities = SuperadminActivityController();
+  final accountController = AccountController(
+    repository: InMemoryAccountProfileRepository(),
+    activities: accountActivities,
+  );
+  final preferencesController =
+      userPreferencesController ?? UserPreferencesController(InMemoryUserPreferencesRepository());
+  unawaited(accountController.load());
+  if (!preferencesController.loaded) {
+    unawaited(preferencesController.load());
+  }
   final prototypeRepository = institutionDirectoryRepository is FakeInstitutionDirectoryRepository
       ? institutionDirectoryRepository
       : FakeInstitutionDirectoryRepository();
@@ -66,6 +88,10 @@ GoRouter createSuperadminRouter({
   return GoRouter(
     initialLocation: SuperadminRoutes.login,
     refreshListenable: session,
+    errorBuilder: (context, state) => SuperadminErrorScreen(
+      kind: SuperadminErrorKind.notFound,
+      onAction: () => context.goNamed(SuperadminRoutes.homeName),
+    ),
     redirect: (context, state) {
       final location = state.matchedLocation;
       if (location.startsWith('/dev/')) {
@@ -325,10 +351,30 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.homeName);
                 } else if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
                 } else if (destination == 'catalog') {
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 }
               },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.profile,
+            name: SuperadminRoutes.profileName,
+            builder: (context, state) => ProfilePage(
+              controller: accountController,
+              logout: logout,
+              onDestinationSelected: (destination) => _navigateFromAccount(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.settings,
+            name: SuperadminRoutes.settingsName,
+            builder: (context, state) => SettingsPage(
+              controller: preferencesController,
+              logout: logout,
+              onDestinationSelected: (destination) => _navigateFromAccount(context, destination),
             ),
           ),
           GoRoute(
@@ -418,6 +464,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devHomeName);
                 } else if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
                 }
@@ -540,14 +588,101 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devHomeName);
                 } else if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
                 }
               },
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devProfile,
+            name: SuperadminRoutes.devProfileName,
+            builder: (context, state) => ProfilePage(
+              controller: accountController,
+              logout: _previewLogout,
+              onDestinationSelected: (destination) =>
+                  _navigateFromAccount(context, destination, developmentPreview: true),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devSettings,
+            name: SuperadminRoutes.devSettingsName,
+            builder: (context, state) => SettingsPage(
+              controller: preferencesController,
+              logout: _previewLogout,
+              onDestinationSelected: (destination) =>
+                  _navigateFromAccount(context, destination, developmentPreview: true),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devError,
+            name: SuperadminRoutes.devErrorName,
+            builder: (context, state) {
+              final kind = SuperadminErrorKind.fromCode(state.pathParameters['code']);
+              return SuperadminErrorScreen(
+                kind: kind,
+                onAction: switch (kind) {
+                  SuperadminErrorKind.forbidden || SuperadminErrorKind.notFound =>
+                    () => context.goNamed(SuperadminRoutes.devHomeName),
+                  SuperadminErrorKind.internal || SuperadminErrorKind.unavailable => () {},
+                },
+              );
+            },
           ),
         ],
       ),
     ],
   );
+}
+
+void _navigateFromAccount(
+  BuildContext context,
+  String destination, {
+  bool developmentPreview = false,
+}) {
+  if (developmentPreview) {
+    switch (destination) {
+      case 'home':
+        context.goNamed(SuperadminRoutes.devHomeName);
+      case 'institutions':
+        context.goNamed(SuperadminRoutes.devInstitutionsName);
+      case 'units':
+        context.goNamed(SuperadminRoutes.devUnitsName);
+      case 'support':
+        context.goNamed(SuperadminRoutes.devSupportName);
+      case 'conversations':
+        context.goNamed(
+          SuperadminRoutes.devConversationsName,
+          queryParameters: const {'from': 'profile'},
+        );
+      case 'profile':
+        context.goNamed(SuperadminRoutes.devProfileName);
+      case 'settings':
+        context.goNamed(SuperadminRoutes.devSettingsName);
+    }
+    return;
+  }
+  switch (destination) {
+    case 'home':
+      context.goNamed(SuperadminRoutes.homeName);
+    case 'institutions':
+      context.goNamed(SuperadminRoutes.institutionsName);
+    case 'units':
+      context.goNamed(SuperadminRoutes.unitsName);
+    case 'catalog':
+      context.goNamed(SuperadminRoutes.governanceCatalogName);
+    case 'support':
+      context.goNamed(SuperadminRoutes.supportName);
+    case 'conversations':
+      context.goNamed(
+        SuperadminRoutes.conversationsName,
+        queryParameters: const {'from': 'profile'},
+      );
+    case 'profile':
+      context.goNamed(SuperadminRoutes.profileName);
+    case 'settings':
+      context.goNamed(SuperadminRoutes.settingsName);
+  }
 }
 
 Future<LogoutResult> _previewLogout() async => const LogoutResult.success();

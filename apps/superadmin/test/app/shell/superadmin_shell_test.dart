@@ -251,15 +251,16 @@ void main() {
     expect(find.text('Unidades'), findsOneWidget);
     expect(find.text('Grupos'), findsOneWidget);
     expect(
-      tester.widget<Container>(find.byKey(const Key('superadmin-navigation-institutions'))).decoration,
-      isA<BoxDecoration>()
-          .having(
-            (decoration) => decoration.color,
-            'color',
-            Theme.of(
-              tester.element(find.byKey(const Key('superadmin-navigation-institutions'))),
-            ).colorScheme.primary,
-          ),
+      tester
+          .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
+          .decoration,
+      isA<BoxDecoration>().having(
+        (decoration) => decoration.color,
+        'color',
+        Theme.of(
+          tester.element(find.byKey(const Key('superadmin-navigation-institutions'))),
+        ).colorScheme.primary,
+      ),
     );
   });
 
@@ -930,7 +931,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-settings-action')));
     await tester.pumpAndSettle();
-    expect(find.text('Configurações será implementado em breve.'), findsOneWidget);
+    expect(find.text('Configurações será implementado em breve.'), findsNothing);
   });
 
   testWidgets('keeps a completion unread when a breakpoint replaces an open center', (

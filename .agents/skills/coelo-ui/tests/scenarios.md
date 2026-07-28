@@ -342,3 +342,34 @@ teclado, foco, semântica e goldens mobile light e desktop dark.
 
 Resultado GREEN: o contrato completo foi recuperado sem contexto desta
 conversa e sem alteração de arquivos.
+
+## Páginas fullscreen de erro — RED/GREEN, 2026-07-28
+
+### Baseline sem a referência dedicada — RED
+
+Prompt: “Preciso criar uma página Flutter fullscreen de erro 404 no Coelo.
+Qual padrão visual, tokens, responsividade, mensagens e referência de catálogo
+devo seguir?”
+
+Resultado real: o agente encontrou `core.state-panel` como candidato mais
+próximo e só localizou a tela implementada do Superadmin por busca documental
+ampla. Não havia entrada de catálogo para fullscreen 403/404/500/503, a
+distinção entre página global e painel interno ficou ambígua e não foi possível
+citar uma referência interativa.
+
+### Reexecução com a skill — GREEN
+
+O mesmo cenário foi repetido em agente novo, somente leitura, com uso explícito
+da skill atualizada. O agente anunciou primeiro a consulta ao índice, recuperou
+diretamente `pattern.error-pages`, leu o contrato dedicado e citou o exemplo
+interativo do catálogo.
+
+Recuperou mensagens, ações, `primaryContainer`/`onPrimaryContainer`,
+responsividade por constraints, semântica única, matriz 375/768/1024/1440,
+light/dark e texto a 200%. Recusou `CoeloStatePanel` para falha global, vermelho
+fullscreen, logo/ilustração não aprovados, autorização no cliente e
+compartilhamento da tela entre apps. Preservou o Superadmin como primeiro
+consumidor e exigiu spec própria para Admin ou Principal.
+
+Resultado GREEN: o padrão completo foi localizado pelo índice sem depender do
+contexto desta conversa e nenhum arquivo foi alterado pelo agente de teste.

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'catalog_foundation.dart';
 import 'chat_catalog_foundations.dart';
+import 'error_page_catalog_foundation.dart';
 import 'surface_interaction_catalog_foundations.dart';
 
 const showroomContentDestinations = <String, String>{
@@ -51,6 +52,7 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
       id: 'foundation.themes',
       builder: (_) => const _ThemesFoundation(),
     ),
+    ...buildErrorPageFoundationRegistry(),
     ...buildChatFoundationRegistry(),
     ...buildSurfaceInteractionFoundationRegistry(),
   };

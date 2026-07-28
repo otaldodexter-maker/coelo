@@ -20,11 +20,13 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  file_picker: ^10.3.10
   flutter_svg: 2.2.3
   flutter_web_plugins:
     sdk: flutter
   go_router: ^16.0.0
   http: 1.6.0
+  shared_preferences: ^2.5.4
   supabase_flutter: 2.16.0
 
 dev_dependencies:

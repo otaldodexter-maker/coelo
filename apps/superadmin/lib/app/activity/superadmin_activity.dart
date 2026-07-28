@@ -3,9 +3,11 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
-enum SuperadminActivityKind { import, export, announcement }
+enum SuperadminActivityKind { import, export, announcement, emailApproval }
 
 enum SuperadminActivityStatus { inProgress, succeeded, partial, failed }
+
+enum SuperadminActivityActionStatus { pending, approved, rejected }
 
 enum SuperadminExportFormat { csv, xlsx }
 
@@ -21,6 +23,8 @@ class SuperadminActivity {
     this.fileName,
     this.progress,
     this.isRead = false,
+    this.actionStatus,
+    this.requestedEmail,
   });
 
   factory SuperadminActivity.announcement({
@@ -50,6 +54,8 @@ class SuperadminActivity {
   final String? fileName;
   final int? progress;
   final bool isRead;
+  final SuperadminActivityActionStatus? actionStatus;
+  final String? requestedEmail;
 
   bool get isComplete => status != SuperadminActivityStatus.inProgress;
 
@@ -58,6 +64,7 @@ class SuperadminActivity {
     String? summary,
     int? progress,
     bool? isRead,
+    SuperadminActivityActionStatus? actionStatus,
   }) {
     return SuperadminActivity(
       id: id,
@@ -69,6 +76,8 @@ class SuperadminActivity {
       fileName: fileName,
       progress: progress ?? this.progress,
       isRead: isRead ?? this.isRead,
+      actionStatus: actionStatus ?? this.actionStatus,
+      requestedEmail: requestedEmail,
     );
   }
 }
@@ -91,6 +100,7 @@ class SuperadminActivityController extends ChangeNotifier {
   final DateTime Function() _now;
   final List<SuperadminActivity> _activities = [];
   final List<Timer> _timers = [];
+  Future<void> Function(String id, {required bool approved})? onEmailApprovalDecision;
   var _nextId = 0;
   var _centerOpen = false;
   var _disposed = false;
@@ -99,6 +109,52 @@ class SuperadminActivityController extends ChangeNotifier {
 
   int get unreadCount =>
       _activities.where((activity) => activity.isComplete && !activity.isRead).length;
+
+  String addEmailApproval({required String requestedEmail}) {
+    final id = 'email-approval-${_nextId++}';
+    _activities.insert(
+      0,
+      SuperadminActivity(
+        id: id,
+        kind: SuperadminActivityKind.emailApproval,
+        status: SuperadminActivityStatus.succeeded,
+        subject: 'Alteração de e-mail',
+        summary: 'Aprovação solicitada para $requestedEmail',
+        requestedEmail: requestedEmail,
+        actionStatus: SuperadminActivityActionStatus.pending,
+        createdAt: _now(),
+        isRead: _centerOpen,
+      ),
+    );
+    notifyListeners();
+    return id;
+  }
+
+  void resolveEmailApproval(String id, {required bool approved}) {
+    final index = _activities.indexWhere((activity) => activity.id == id);
+    if (index < 0) return;
+    final activity = _activities[index];
+    _activities[index] = activity.copyWith(
+      actionStatus: approved
+          ? SuperadminActivityActionStatus.approved
+          : SuperadminActivityActionStatus.rejected,
+      summary: approved ? 'Alteração de e-mail aprovada' : 'Alteração de e-mail recusada',
+      isRead: _centerOpen,
+    );
+    notifyListeners();
+  }
+
+  Future<void> decideEmailApproval(String id, {required bool approved}) async {
+    await onEmailApprovalDecision?.call(id, approved: approved);
+  }
+
+  void removeActivity(String id) {
+    final previousLength = _activities.length;
+    _activities.removeWhere((activity) => activity.id == id);
+    if (_activities.length != previousLength) {
+      notifyListeners();
+    }
+  }
 
   void startDemoImport() {
     final id = 'demo-import-${_nextId++}';

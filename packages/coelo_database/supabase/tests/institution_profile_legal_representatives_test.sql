@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(21);
 
 select has_column(
   'public', 'institution_branding', 'profile_links',
@@ -80,6 +80,28 @@ select has_index(
   'institution_legal_representatives',
   'institution_legal_representatives_primary_active_uidx',
   'only one active primary representative is allowed per institution'
+);
+select ok(
+  exists (
+    select 1 from pg_indexes
+    where schemaname = 'public'
+      and tablename = 'institution_legal_representatives'
+      and indexname =
+        'institution_legal_representatives_active_person_uidx'
+      and indexdef not like '%ends_on IS NULL%'
+  ),
+  'active representative uniqueness includes future-ended rows'
+);
+select ok(
+  exists (
+    select 1 from pg_indexes
+    where schemaname = 'public'
+      and tablename = 'institution_legal_representatives'
+      and indexname =
+        'institution_legal_representatives_primary_active_uidx'
+      and indexdef not like '%ends_on IS NULL%'
+  ),
+  'active primary uniqueness includes future-ended rows'
 );
 select has_trigger(
   'public',

@@ -86,6 +86,10 @@
       "source": "811c9dc5",
       "example": "e7abbf4d"
     },
+    "pattern.error-pages": {
+      "source": "811c9dc5",
+      "example": "746d521d"
+    },
     "foundation.semantic-colors": {
       "source": "811c9dc5",
       "example": "7ce7e89f"

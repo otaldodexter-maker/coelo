@@ -280,6 +280,8 @@ declare
   borderline_membership uuid;
   source_person uuid;
   source_membership uuid;
+  primary_person uuid;
+  primary_membership uuid;
   representative_id uuid;
   candidate_url text;
   rejected boolean;
@@ -335,6 +337,75 @@ begin
     raise exception 'an arbitrary active membership role was not accepted';
   end if;
 
+  update public.institution_legal_representatives
+  set
+    is_primary = true,
+    ends_on = current_date + 30
+  where id = representative_id;
+
+  begin
+    insert into public.institution_legal_representatives(
+      institution_id,
+      person_id,
+      membership_id,
+      ends_on
+    ) values (
+      institution_a,
+      adult_person,
+      membership_a,
+      current_date + 60
+    );
+    rejected := false;
+  exception when unique_violation then
+    rejected := true;
+  end;
+  if not rejected then
+    raise exception 'duplicate active representative with future end was accepted';
+  end if;
+
+  insert into public.people(
+    person_type, first_name, last_name, display_name, date_of_birth
+  ) values (
+    'adult', 'Pessoa', 'Principal', 'Pessoa Principal',
+    current_date - interval '32 years'
+  ) returning id into primary_person;
+
+  insert into public.institution_memberships(
+    person_id, institution_id, role_code
+  ) values (primary_person, institution_a, 'any_active_primary_role')
+  returning id into primary_membership;
+
+  begin
+    insert into public.institution_legal_representatives(
+      institution_id,
+      person_id,
+      membership_id,
+      is_primary
+    ) values (
+      institution_a,
+      primary_person,
+      primary_membership,
+      true
+    );
+    rejected := false;
+  exception when unique_violation then
+    rejected := true;
+  end;
+  if not rejected then
+    raise exception 'second active primary representative was accepted';
+  end if;
+
+  update public.institution_legal_representatives
+  set updated_at = '2000-01-01 00:00:00+00'
+  where id = representative_id;
+  if exists (
+    select 1 from public.institution_legal_representatives
+    where id = representative_id
+      and updated_at = '2000-01-01 00:00:00+00'
+  ) then
+    raise exception 'updated_at trigger did not refresh the timestamp';
+  end if;
+
   begin
     insert into public.institution_legal_representatives(
       institution_id, person_id, membership_id
@@ -379,7 +450,10 @@ begin
   insert into public.institution_legal_representatives(
     institution_id, person_id, membership_id, starts_on
   ) values (
-    institution_b, borderline_person, borderline_membership, current_date
+    institution_b,
+    borderline_person,
+    borderline_membership,
+    current_date + 30
   ) returning id into representative_id;
 
   begin
@@ -402,9 +476,22 @@ begin
     select 1 from public.institution_legal_representatives
     where id = representative_id
       and status = 'inactive'
-      and ends_on is not null
+      and ends_on = starts_on
   ) then
-    raise exception 'membership revocation did not close the representative link';
+    raise exception
+      'membership revocation did not coherently close a future link';
+  end if;
+
+  begin
+    update public.institution_legal_representatives
+    set status = 'active', ends_on = null
+    where id = representative_id;
+    rejected := false;
+  exception when check_violation then
+    rejected := true;
+  end;
+  if not rejected then
+    raise exception 'representative with revoked membership was reactivated';
   end if;
 
   begin
@@ -432,8 +519,13 @@ begin
   returning id into source_membership;
 
   insert into public.institution_legal_representatives(
-    institution_id, person_id, membership_id
-  ) values (institution_b, source_person, source_membership)
+    institution_id, person_id, membership_id, starts_on
+  ) values (
+    institution_b,
+    source_person,
+    source_membership,
+    current_date + 30
+  )
   returning id into representative_id;
 
   update public.people
@@ -444,9 +536,10 @@ begin
     select 1 from public.institution_legal_representatives
     where id = representative_id
       and status = 'inactive'
-      and ends_on is not null
+      and ends_on = starts_on
   ) then
-    raise exception 'person eligibility change did not close the representative link';
+    raise exception
+      'person eligibility change did not coherently close a future link';
   end if;
 
   begin
@@ -590,6 +683,10 @@ declare
   unprivileged_person uuid;
   reader_role uuid;
   unprivileged_role uuid;
+  service_institution uuid;
+  service_person uuid;
+  service_membership uuid;
+  service_representative uuid;
   visible_rows integer;
   rejected boolean;
 begin
@@ -648,6 +745,42 @@ begin
   values
     (reader_person, reader_role, 'active'),
     (unprivileged_person, unprivileged_role, 'active');
+
+  insert into public.institutions(public_name, legal_name, slug)
+  values (
+    'Service Role Representatives',
+    'Service Role Representatives LTDA',
+    'service-role-representatives-validation'
+  ) returning id into service_institution;
+
+  insert into public.people(
+    person_type, first_name, last_name, display_name, date_of_birth
+  ) values (
+    'adult', 'Service', 'Representative', 'Service Representative',
+    current_date - interval '40 years'
+  ) returning id into service_person;
+
+  insert into public.institution_memberships(
+    person_id, institution_id, role_code
+  ) values (service_person, service_institution, 'service_role_test')
+  returning id into service_membership;
+
+  execute 'set local role service_role';
+  insert into public.institution_legal_representatives(
+    institution_id, person_id, membership_id
+  ) values (service_institution, service_person, service_membership)
+  returning id into service_representative;
+  update public.institution_legal_representatives
+  set is_primary = true
+  where id = service_representative;
+  if not exists (
+    select 1 from public.institution_legal_representatives
+    where id = service_representative
+      and is_primary
+  ) then
+    raise exception 'service_role could not write/read legal representatives';
+  end if;
+  execute 'reset role';
 
   execute 'set local role authenticated';
   perform set_config('request.jwt.claim.sub', auth_platform_reader::text, true);

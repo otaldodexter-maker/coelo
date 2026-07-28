@@ -68,6 +68,42 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
   });
 
+  testWidgets('keeps profile and settings inside the development preview', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    router.go(SuperadminRoutes.devInstitutions);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-profile-action')));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/dev/profile');
+
+    router.go(SuperadminRoutes.devInstitutions);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-settings-action')));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/dev/settings');
+  });
+
   testWidgets('redirects authenticated sessions from login to Home', (tester) async {
     final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
@@ -106,6 +142,8 @@ void main() {
     addTearDown(session.dispose);
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
     await tester.pumpAndSettle();

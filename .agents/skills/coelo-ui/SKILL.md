@@ -2,9 +2,9 @@
 name: coelo-ui
 description: Use when creating, changing, or reviewing Coelo UI in Flutter or future Astro surfaces, including screens, widgets, components, tokens, themes, states, responsiveness, accessibility, catalog examples, and visual regressions.
 metadata:
-  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md"
+  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
   status: "active"
-  generated_at: "2026-07-27"
+  generated_at: "2026-07-28"
 ---
 
 # Coelo UI
@@ -25,6 +25,12 @@ silenciosamente.
    `pattern.form-controls`, `pattern.selection-controls`, a seção “Formulários
    e entradas” do Design System e os exemplos do catálogo. Comparar com
    Instituições e autenticação.
+   Quando mencionar página de erro, error page, fullscreen error, 403, 404,
+   500, 503, rota não encontrada, acesso negado ou indisponibilidade, consultar
+   `pattern.error-pages` e ler obrigatoriamente o
+   [contrato de páginas de erro](references/error-page-contracts.md). Não
+   substituir esse padrão por `CoeloStatePanel`: o painel é feedback dentro de
+   uma superfície existente.
 2. Consultar primeiro o índice com
    `scripts/query-index.ps1 -Query "<termo>"`. Informar ao usuário:
    `Consultei o índice Coelo UI para <contexto>.`

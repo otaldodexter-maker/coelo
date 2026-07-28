@@ -9,6 +9,8 @@ import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
 import '../features/auth/domain/reset_password_action.dart';
+import '../features/account/data/user_preferences_repository.dart';
+import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
 import 'router/superadmin_router.dart';
@@ -22,6 +24,7 @@ class SuperadminApp extends StatefulWidget {
     this.requestPasswordRecovery = unavailableSuperadminPasswordRecovery,
     this.resetPassword = unavailableResetPassword,
     this.institutionDirectoryRepository = const UnavailableInstitutionDirectoryRepository(),
+    this.userPreferencesRepository,
     super.key,
   });
 
@@ -31,6 +34,7 @@ class SuperadminApp extends StatefulWidget {
   final PasswordRecoveryAction requestPasswordRecovery;
   final ResetPasswordAction resetPassword;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
+  final UserPreferencesRepository? userPreferencesRepository;
 
   @override
   State<SuperadminApp> createState() => _SuperadminAppState();
@@ -40,13 +44,17 @@ class _SuperadminAppState extends State<SuperadminApp> {
   late final SuperadminSession _session;
   late final GoRouter _router;
   late final bool _ownsSession;
-  ThemeMode _themeMode = ThemeMode.system;
+  late final UserPreferencesController _preferencesController;
 
   @override
   void initState() {
     super.initState();
     _ownsSession = widget.session == null;
     _session = widget.session ?? SuperadminSession();
+    _preferencesController = UserPreferencesController(
+      widget.userPreferencesRepository ?? SharedPreferencesUserPreferencesRepository(),
+    )..addListener(_preferencesChanged);
+    _preferencesController.load();
     _router = createSuperadminRouter(
       session: _session,
       login: widget.login,
@@ -54,22 +62,25 @@ class _SuperadminAppState extends State<SuperadminApp> {
       requestPasswordRecovery: widget.requestPasswordRecovery,
       resetPassword: widget.resetPassword,
       institutionDirectoryRepository: widget.institutionDirectoryRepository,
+      userPreferencesController: _preferencesController,
       onThemeModeChanged: _setThemeMode,
     );
   }
 
   void _setThemeMode(ThemeMode mode) {
-    if (_themeMode == mode) {
-      return;
-    }
-    setState(() {
-      _themeMode = mode;
-    });
+    _preferencesController.setThemeMode(mode);
+  }
+
+  void _preferencesChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     _router.dispose();
+    _preferencesController
+      ..removeListener(_preferencesChanged)
+      ..dispose();
     if (_ownsSession) {
       _session.dispose();
     }
@@ -78,7 +89,9 @@ class _SuperadminAppState extends State<SuperadminApp> {
 
   @override
   Widget build(BuildContext context) {
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        (MediaQuery.maybeOf(context)?.disableAnimations ?? false) ||
+        _preferencesController.preferences.reduceMotion;
     return MaterialApp.router(
       title: SuperadminAppConfig.appName,
       debugShowCheckedModeBanner: false,
@@ -91,15 +104,24 @@ class _SuperadminAppState extends State<SuperadminApp> {
       ],
       theme: CoeloTheme.light,
       darkTheme: CoeloTheme.dark,
-      themeMode: _themeMode,
+      themeMode: _preferencesController.preferences.themeMode,
       themeAnimationStyle: reduceMotion
           ? AnimationStyle.noAnimation
           : const AnimationStyle(duration: Duration(milliseconds: 420), curve: Curves.easeInOut),
-      builder: (context, child) => SuperadminThemeModeScope(
-        mode: _themeMode,
-        onChanged: _setThemeMode,
-        child: child ?? const SizedBox.shrink(),
-      ),
+      builder: (context, child) {
+        final inherited = MediaQuery.of(context);
+        return SuperadminThemeModeScope(
+          mode: _preferencesController.preferences.themeMode,
+          onChanged: _setThemeMode,
+          child: MediaQuery(
+            data: inherited.copyWith(
+              disableAnimations:
+                  inherited.disableAnimations || _preferencesController.preferences.reduceMotion,
+            ),
+            child: child ?? const SizedBox.shrink(),
+          ),
+        );
+      },
       routerConfig: _router,
     );
   }

@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:go_router/go_router.dart';
 
 import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
@@ -123,6 +124,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
             Scaffold(
               appBar: _CompactAppBar(
                 onLogout: _handleLogout,
+                onDestinationSelected: widget.onDestinationSelected,
                 activityController: _activityController,
                 currentScreen: widget.title,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
@@ -160,6 +162,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                       actions: widget.actions,
                       compactActions: widget.compactActions,
                       onLogout: _handleLogout,
+                      onDestinationSelected: widget.onDestinationSelected,
                       activityController: _activityController,
                       compact: true,
                       onBugReportSubmitted: widget.onBugReportSubmitted,
@@ -185,6 +188,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
                   actions: widget.actions,
                   compactActions: widget.compactActions,
                   onLogout: _handleLogout,
+                  onDestinationSelected: widget.onDestinationSelected,
                   activityController: _activityController,
                   onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
@@ -1817,12 +1821,14 @@ class _NavigationItemState extends State<_NavigationItem> {
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _CompactAppBar({
     required this.onLogout,
+    required this.onDestinationSelected,
     required this.activityController,
     required this.currentScreen,
     this.onBugReportSubmitted,
   });
 
   final VoidCallback onLogout;
+  final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
   final String currentScreen;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
@@ -1851,7 +1857,11 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
           currentScreen: currentScreen,
           onBugReportSubmitted: onBugReportSubmitted,
         ),
-        _ProfileSummary(onLogout: onLogout, compact: true),
+        _ProfileSummary(
+          onLogout: onLogout,
+          onDestinationSelected: onDestinationSelected,
+          compact: true,
+        ),
         const SizedBox(width: CoeloSpacing.space2),
       ],
     );
@@ -1865,6 +1875,7 @@ class _PageHeader extends StatelessWidget {
     required this.actions,
     required this.compactActions,
     required this.onLogout,
+    required this.onDestinationSelected,
     required this.activityController,
     this.onBugReportSubmitted,
     this.compact = false,
@@ -1875,6 +1886,7 @@ class _PageHeader extends StatelessWidget {
   final List<Widget> actions;
   final List<Widget> compactActions;
   final VoidCallback onLogout;
+  final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool compact;
@@ -1927,7 +1939,11 @@ class _PageHeader extends StatelessWidget {
                     onBugReportSubmitted: onBugReportSubmitted,
                   ),
                   const SizedBox(width: CoeloSpacing.space2),
-                  _ProfileSummary(onLogout: onLogout, compact: compactProfile),
+                  _ProfileSummary(
+                    onLogout: onLogout,
+                    onDestinationSelected: onDestinationSelected,
+                    compact: compactProfile,
+                  ),
                 ],
               ],
             ),
@@ -1939,9 +1955,14 @@ class _PageHeader extends StatelessWidget {
 }
 
 class _ProfileSummary extends StatelessWidget {
-  const _ProfileSummary({required this.onLogout, required this.compact});
+  const _ProfileSummary({
+    required this.onLogout,
+    required this.onDestinationSelected,
+    required this.compact,
+  });
 
   final VoidCallback onLogout;
+  final ValueChanged<String>? onDestinationSelected;
   final bool compact;
 
   @override
@@ -1996,12 +2017,14 @@ class _ProfileSummary extends StatelessWidget {
           key: Key('superadmin-${destination.id}-action'),
           style: standardItemStyle,
           leadingIcon: Icon(destination.icon),
-          onPressed: () => _showMessage(
-            context,
-            destination.id == 'profile'
-                ? 'O perfil será implementado em breve.'
-                : 'Configurações será implementado em breve.',
-          ),
+          onPressed: () {
+            onDestinationSelected?.call(destination.id);
+            final router = GoRouter.maybeOf(context);
+            final isDevelopmentPreview =
+                router?.routeInformationProvider.value.uri.path.startsWith('/dev/') ?? false;
+            final prefix = isDevelopmentPreview ? '/dev' : '';
+            router?.go('$prefix/${destination.id}');
+          },
           child: Text(destination.label),
         ),
       const Padding(

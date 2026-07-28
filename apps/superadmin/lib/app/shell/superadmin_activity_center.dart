@@ -243,8 +243,10 @@ class _ActivityPanelState extends State<_ActivityPanel> {
                     padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space5),
                     child: const Divider(height: 1),
                   ),
-                  itemBuilder: (context, index) =>
-                      _ActivityTile(activity: widget.controller.activities[index]),
+                  itemBuilder: (context, index) => _ActivityTile(
+                    activity: widget.controller.activities[index],
+                    controller: widget.controller,
+                  ),
                 ),
               ),
             ),
@@ -255,9 +257,10 @@ class _ActivityPanelState extends State<_ActivityPanel> {
 }
 
 class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({required this.activity});
+  const _ActivityTile({required this.activity, required this.controller});
 
   final SuperadminActivity activity;
+  final SuperadminActivityController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -352,6 +355,27 @@ class _ActivityTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                       ),
+                      if (activity.kind == SuperadminActivityKind.emailApproval &&
+                          activity.actionStatus == SuperadminActivityActionStatus.pending) ...[
+                        const SizedBox(height: CoeloSpacing.space2),
+                        Wrap(
+                          spacing: CoeloSpacing.space2,
+                          children: [
+                            OutlinedButton(
+                              key: Key('email-change-reject-${activity.id}'),
+                              onPressed: () =>
+                                  controller.decideEmailApproval(activity.id, approved: false),
+                              child: const Text('Recusar'),
+                            ),
+                            FilledButton(
+                              key: Key('email-change-approve-${activity.id}'),
+                              onPressed: () =>
+                                  controller.decideEmailApproval(activity.id, approved: true),
+                              child: const Text('Aprovar'),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: CoeloSpacing.space1),
                       Text(
                         _formatActivityTimestamp(activity.createdAt),
@@ -497,12 +521,14 @@ String _activityKindLabel(SuperadminActivityKind kind) => switch (kind) {
   SuperadminActivityKind.import => 'Importação',
   SuperadminActivityKind.export => 'Exportação',
   SuperadminActivityKind.announcement => 'Novidade',
+  SuperadminActivityKind.emailApproval => 'Aprovação',
 };
 
 IconData _activityIcon(SuperadminActivityKind kind) => switch (kind) {
   SuperadminActivityKind.import => Icons.upload_file_outlined,
   SuperadminActivityKind.export => Icons.download_outlined,
   SuperadminActivityKind.announcement => Icons.campaign_outlined,
+  SuperadminActivityKind.emailApproval => Icons.mark_email_read_outlined,
 };
 
 String _activityStatusLabel(SuperadminActivityStatus status) => switch (status) {
