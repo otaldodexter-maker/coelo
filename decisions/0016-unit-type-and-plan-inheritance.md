@@ -46,3 +46,4 @@ instituições, unidades e contagens.
 A persistência futura precisa de spec própria para adicionar tipo e override de
 plano, além de diretório agregado, migration, RLS, RPCs, auditoria e testes de
 isolamento entre tenants. Esta decisão não autoriza alteração do banco.
+

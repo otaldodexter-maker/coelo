@@ -30,3 +30,4 @@ Esta implementação é um protótipo local no repositório fake. O Supabase atu
 já contém as tabelas de unidade, endereço, contato, branding, grupos e vínculo
 de atividades, mas ainda não possui tipo nem override de plano por unidade.
 Persistência, RLS, RPC, auditoria e diretório agregado exigem spec posterior.
+
