@@ -10,6 +10,7 @@ final class CoeloAdminTableColumn<T> {
     required this.minWidth,
     required this.maxWidth,
     required this.cellBuilder,
+    this.sortable = false,
   });
 
   final String id;
@@ -18,4 +19,5 @@ final class CoeloAdminTableColumn<T> {
   final double minWidth;
   final double maxWidth;
   final CoeloAdminCellBuilder<T> cellBuilder;
+  final bool sortable;
 }

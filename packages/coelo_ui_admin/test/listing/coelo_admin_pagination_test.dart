@@ -71,6 +71,51 @@ void main() {
       isA<StatelessWidget>(),
     );
   });
+
+  testWidgets('shows adaptive numbered pages with ellipses around the current page', (
+    tester,
+  ) async {
+    await _pumpPagination(tester, currentPage: 5, totalPages: 10);
+
+    for (final page in [1, 4, 5, 6, 10]) {
+      expect(find.text('$page'), findsOneWidget);
+    }
+    for (final hiddenPage in [2, 3, 7, 8, 9]) {
+      expect(find.text('$hiddenPage'), findsNothing);
+    }
+    expect(find.text('…'), findsNWidgets(2));
+  });
+
+  testWidgets('selects a numbered page and changes the accessible page size', (tester) async {
+    var selectedPage = 0;
+    var selectedPageSize = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminPagination(
+            currentPage: 2,
+            totalPages: 10,
+            onPrevious: _noop,
+            onNext: _noop,
+            onPageSelected: (page) => selectedPage = page,
+            pageSize: 20,
+            pageSizeOptions: const [11, 20, 50, 100],
+            onPageSizeChanged: (pageSize) => selectedPageSize = pageSize,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-5')));
+    expect(selectedPage, 5);
+    expect(find.text('Itens por página'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('50').last);
+    expect(selectedPageSize, 50);
+  });
 }
 
 OutlinedButton _button(WidgetTester tester, String label) {

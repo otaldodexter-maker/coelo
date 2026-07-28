@@ -34,6 +34,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     items: [],
     totalCount: 0,
     page: 0,
+    pageSize: 11,
   );
   InstitutionDirectoryFilterOptions _filterOptions = InstitutionDirectoryFilterOptions.empty;
   InstitutionDirectoryLoadState _state = InstitutionDirectoryLoadState.initial;
@@ -56,7 +57,13 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
 
   Future<void> retry() => _load(_query);
 
-  Future<void> clearFilters() => _replaceAndLoad(InstitutionDirectoryQuery());
+  Future<void> clearFilters() => _replaceAndLoad(
+    InstitutionDirectoryQuery(
+      pageSize: _query.pageSize,
+      sortColumn: _query.sortColumn,
+      sortAscending: _query.sortAscending,
+    ),
+  );
 
   void setSearch(String value) {
     _query = _queryWith(search: value);
@@ -90,6 +97,21 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     return _replaceAndLoad(_queryWith(typeIds: values));
   }
 
+  Future<void> setPageSize(int value, {bool resetSort = false}) {
+    return _replaceAndLoad(
+      _queryWith(
+        pageSize: value,
+        sortColumn: resetSort ? InstitutionDirectorySortColumn.publicName : _query.sortColumn,
+        sortAscending: resetSort ? true : _query.sortAscending,
+      ),
+    );
+  }
+
+  Future<void> setSort(InstitutionDirectorySortColumn column) {
+    final ascending = _query.sortColumn == column ? !_query.sortAscending : true;
+    return _replaceAndLoad(_queryWith(sortColumn: column, sortAscending: ascending));
+  }
+
   Future<void> goToPage(int value) {
     if (value < 0) {
       return Future<void>.value();
@@ -106,6 +128,9 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     Set<String>? districts,
     Set<String>? typeIds,
     int page = 0,
+    int? pageSize,
+    InstitutionDirectorySortColumn? sortColumn,
+    bool? sortAscending,
   }) {
     return InstitutionDirectoryQuery(
       search: search ?? _query.search,
@@ -116,6 +141,9 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       districts: districts ?? _query.districts,
       typeIds: typeIds ?? _query.typeIds,
       page: page,
+      pageSize: pageSize ?? _query.pageSize,
+      sortColumn: sortColumn ?? _query.sortColumn,
+      sortAscending: sortAscending ?? _query.sortAscending,
     );
   }
 
@@ -195,6 +223,9 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       districts: supported(value.districts, options.districts),
       typeIds: value.typeIds,
       page: value.page,
+      pageSize: value.pageSize,
+      sortColumn: value.sortColumn,
+      sortAscending: value.sortAscending,
     );
   }
 

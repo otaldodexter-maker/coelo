@@ -41,15 +41,20 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       }
 
       final response = await request
-          .order('public_name')
-          .range(query.offset, query.offset + InstitutionDirectoryQuery.pageSize - 1)
+          .order(query.sortColumn.databaseColumn, ascending: query.sortAscending)
+          .range(query.offset, query.offset + query.pageSize - 1)
           .count(CountOption.exact);
       final rows = response.data;
       final items = rows
           .map((row) => InstitutionDirectoryItem.fromJson(Map<String, dynamic>.from(row)))
           .toList(growable: false);
 
-      return InstitutionDirectoryPage(items: items, totalCount: response.count, page: query.page);
+      return InstitutionDirectoryPage(
+        items: items,
+        totalCount: response.count,
+        page: query.page,
+        pageSize: query.pageSize,
+      );
     } on PostgrestException catch (error) {
       if (error.code == '42501' || error.code == 'PGRST301') {
         throw const InstitutionDirectoryUnauthorizedException();

@@ -378,6 +378,50 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     expect(controller.focusRow('row-2'), isFalse);
   });
+
+  testWidgets('sorts a header by touch and keyboard with semantic direction', (tester) async {
+    final sortedColumns = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 300,
+            child: CoeloAdminResizableTable<TestRow>(
+              items: const [TestRow('row-1', 'Alpha', 'Ativa')],
+              rowKey: (row) => row.id,
+              pinnedColumn: const CoeloAdminTableColumn<TestRow>(
+                id: 'name',
+                label: 'Nome',
+                initialWidth: 160,
+                minWidth: 120,
+                maxWidth: 200,
+                sortable: true,
+                cellBuilder: _nameCell,
+              ),
+              columns: const [_statusColumn],
+              headerHeight: 56,
+              rowHeight: 64,
+              sortColumnId: 'name',
+              sortAscending: true,
+              onSort: sortedColumns.add,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final header = find.byKey(const Key('coelo-admin-table-header-name'));
+    expect(find.bySemanticsLabel('Nome, ordenado crescente'), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_upward_rounded), findsWidgets);
+
+    await tester.tap(header);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+
+    expect(sortedColumns, ['name', 'name']);
+  });
 }
 
 Color? _decorationColor(WidgetTester tester, Key key) {

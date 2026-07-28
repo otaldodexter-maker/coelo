@@ -61,6 +61,27 @@ void main() {
     expect(repository.queries.last.page, 0);
   });
 
+  test('changes page size and toggles sort while restarting pagination', () async {
+    final repository = _StubRepository();
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    expect(viewModel.query.pageSize, 11);
+    await viewModel.goToPage(1);
+    await viewModel.setPageSize(20);
+    expect(viewModel.query.page, 0);
+    expect(viewModel.query.pageSize, 20);
+
+    await viewModel.goToPage(1);
+    await viewModel.setSort(InstitutionDirectorySortColumn.unitsCount);
+    expect(viewModel.query.page, 0);
+    expect(viewModel.query.sortColumn, InstitutionDirectorySortColumn.unitsCount);
+    expect(viewModel.query.sortAscending, isTrue);
+
+    await viewModel.setSort(InstitutionDirectorySortColumn.unitsCount);
+    expect(viewModel.query.sortAscending, isFalse);
+  });
+
   test('cascades UF, municipality, and district filters', () async {
     final repository = _StubRepository();
     final viewModel = InstitutionDirectoryViewModel(repository: repository);

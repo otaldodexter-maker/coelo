@@ -121,4 +121,36 @@ void main() {
       allOf(startsWith('in.('), contains('Cambuí'), contains('Batel')),
     );
   });
+
+  test('uses allowlisted sort and query page size in PostgREST', () async {
+    Request? capturedRequest;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        capturedRequest = request;
+        return Response(
+          '[]',
+          200,
+          headers: {'content-range': '*/0', 'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseInstitutionDirectoryRepository(client);
+
+    await repository.fetchPage(
+      InstitutionDirectoryQuery(
+        page: 1,
+        pageSize: 9,
+        sortColumn: InstitutionDirectorySortColumn.unitsCount,
+        sortAscending: false,
+      ),
+    );
+
+    expect(capturedRequest!.url.queryParameters['order'], startsWith('units_count.desc'));
+    expect(capturedRequest!.url.queryParameters['offset'], '9');
+    expect(capturedRequest!.url.queryParameters['limit'], '9');
+  });
 }

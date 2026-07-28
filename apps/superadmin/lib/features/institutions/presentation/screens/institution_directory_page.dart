@@ -6,7 +6,6 @@ import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
-import '../../domain/institution_directory_query.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_directory_view_model.dart';
 import '../widgets/institution_directory_cards.dart';
@@ -51,6 +50,17 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   late final SuperadminActivityController _activityController;
   InstitutionDirectoryDisplay _display = InstitutionDirectoryDisplay.cards;
   bool _noticeShown = false;
+
+  void _changeDisplay(InstitutionDirectoryDisplay display) {
+    if (display == _display) {
+      return;
+    }
+    setState(() => _display = display);
+    _viewModel.setPageSize(
+      display == InstitutionDirectoryDisplay.cards ? 11 : 9,
+      resetSort: display == InstitutionDirectoryDisplay.cards,
+    );
+  }
 
   @override
   void initState() {
@@ -111,7 +121,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
             activityController: _activityController,
             searchController: _searchController,
             display: _display,
-            onDisplayChanged: (display) => setState(() => _display = display),
+            onDisplayChanged: _changeDisplay,
             onCreate: widget.onCreate ?? () {},
             onEdit: widget.onEdit ?? (_) {},
             onClearFilters: () {
@@ -215,6 +225,9 @@ class _InstitutionDirectoryResults extends StatelessWidget {
                       items: viewModel.page.items,
                       createAction: InstitutionCreateBanner(onPressed: onCreate),
                       onEdit: (item) => onEdit(item.id),
+                      sortColumn: viewModel.query.sortColumn,
+                      sortAscending: viewModel.query.sortAscending,
+                      onSort: viewModel.setSort,
                     )
                   : InstitutionDirectoryCards(
                       items: viewModel.page.items,
@@ -222,12 +235,16 @@ class _InstitutionDirectoryResults extends StatelessWidget {
                       onEdit: (item) => onEdit(item.id),
                     ),
             ),
-            if (viewModel.state == InstitutionDirectoryLoadState.success &&
-                (viewModel.page.totalCount / InstitutionDirectoryQuery.pageSize).ceil() > 1) ...[
+            if (viewModel.state == InstitutionDirectoryLoadState.success) ...[
               const SizedBox(height: CoeloSpacing.space4),
               Align(
                 alignment: Alignment.centerRight,
-                child: InstitutionDirectoryPagination(viewModel: viewModel),
+                child: InstitutionDirectoryPagination(
+                  viewModel: viewModel,
+                  pageSizeOptions: display == InstitutionDirectoryDisplay.cards
+                      ? const [11, 20, 50, 100]
+                      : const [9, 20, 50, 100],
+                ),
               ),
             ],
           ],

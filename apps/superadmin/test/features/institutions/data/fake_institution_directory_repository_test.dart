@@ -108,13 +108,34 @@ void main() {
     );
     final repository = FakeInstitutionDirectoryRepository(items: items);
 
-    final result = await repository.fetchPage(InstitutionDirectoryQuery(page: 1));
+    final result = await repository.fetchPage(InstitutionDirectoryQuery(page: 1, pageSize: 20));
 
     expect(result.items, hasLength(5));
     expect(result.totalCount, 25);
     expect(result.page, 1);
     expect(result.hasPrevious, isTrue);
     expect(result.hasNext, isFalse);
+  });
+
+  test('sorts before slicing with the page size from the query', () async {
+    final repository = FakeInstitutionDirectoryRepository(
+      items: [
+        _item(id: 'institution-a', publicName: 'Alpha'),
+        _item(id: 'institution-b', publicName: 'Beta'),
+        _item(id: 'institution-c', publicName: 'Charlie'),
+      ],
+    );
+
+    final firstPage = await repository.fetchPage(
+      InstitutionDirectoryQuery(pageSize: 2, sortAscending: false),
+    );
+    final secondPage = await repository.fetchPage(
+      InstitutionDirectoryQuery(page: 1, pageSize: 2, sortAscending: false),
+    );
+
+    expect(firstPage.items.map((item) => item.publicName), ['Charlie', 'Beta']);
+    expect(secondPage.items.map((item) => item.publicName), ['Alpha']);
+    expect(firstPage.hasNext, isTrue);
   });
 }
 

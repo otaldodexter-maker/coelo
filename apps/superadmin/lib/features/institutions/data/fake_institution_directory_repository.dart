@@ -52,29 +52,34 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
   @override
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
     final search = query.search.trim().toLowerCase();
-    final filtered = _records.map((record) => record.directoryItem).where((item) {
-      final matchesSearch =
-          search.isEmpty ||
-          [
-            item.publicName,
-            item.tradeName,
-            item.legalName,
-          ].whereType<String>().any((name) => name.toLowerCase().contains(search));
-      return matchesSearch &&
-          (query.statuses.isEmpty || query.statuses.contains(item.status)) &&
-          (query.planId == null || item.planId == query.planId) &&
-          (query.states.isEmpty || query.states.contains(item.state)) &&
-          (query.cities.isEmpty || query.cities.contains(item.city)) &&
-          (query.districts.isEmpty || query.districts.contains(item.district)) &&
-          (query.typeIds.isEmpty || query.typeIds.contains(item.typeId));
-    }).toList()..sort((first, second) => first.publicName.compareTo(second.publicName));
+    final filtered =
+        _records.map((record) => record.directoryItem).where((item) {
+          final matchesSearch =
+              search.isEmpty ||
+              [
+                item.publicName,
+                item.tradeName,
+                item.legalName,
+              ].whereType<String>().any((name) => name.toLowerCase().contains(search));
+          return matchesSearch &&
+              (query.statuses.isEmpty || query.statuses.contains(item.status)) &&
+              (query.planId == null || item.planId == query.planId) &&
+              (query.states.isEmpty || query.states.contains(item.state)) &&
+              (query.cities.isEmpty || query.cities.contains(item.city)) &&
+              (query.districts.isEmpty || query.districts.contains(item.district)) &&
+              (query.typeIds.isEmpty || query.typeIds.contains(item.typeId));
+        }).toList()..sort((first, second) {
+          final comparison = _compareItems(first, second, query.sortColumn);
+          return query.sortAscending ? comparison : -comparison;
+        });
 
     final start = query.offset.clamp(0, filtered.length);
-    final end = (start + InstitutionDirectoryQuery.pageSize).clamp(start, filtered.length);
+    final end = (start + query.pageSize).clamp(start, filtered.length);
     return InstitutionDirectoryPage(
       items: List.unmodifiable(filtered.sublist(start, end)),
       totalCount: filtered.length,
       page: query.page,
+      pageSize: query.pageSize,
     );
   }
 
@@ -121,6 +126,63 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
       districts: options(districtOptions),
     );
   }
+}
+
+int _compareItems(
+  InstitutionDirectoryItem first,
+  InstitutionDirectoryItem second,
+  InstitutionDirectorySortColumn column,
+) {
+  final comparison = switch (column) {
+    InstitutionDirectorySortColumn.publicName => first.publicName.compareTo(second.publicName),
+    InstitutionDirectorySortColumn.typeName => _compareNullable(first.typeName, second.typeName),
+    InstitutionDirectorySortColumn.unitsCount => first.unitsCount.compareTo(second.unitsCount),
+    InstitutionDirectorySortColumn.groupsCount => first.groupsCount.compareTo(second.groupsCount),
+    InstitutionDirectorySortColumn.planName => _compareNullable(first.planName, second.planName),
+    InstitutionDirectorySortColumn.status => first.status.label.compareTo(second.status.label),
+    InstitutionDirectorySortColumn.contactEmail => _compareNullable(
+      first.contactEmail,
+      second.contactEmail,
+    ),
+    InstitutionDirectorySortColumn.contactPhone => _compareNullable(
+      first.contactPhone,
+      second.contactPhone,
+    ),
+    InstitutionDirectorySortColumn.contactMobilePhone => _compareNullable(
+      first.contactMobilePhone,
+      second.contactMobilePhone,
+    ),
+    InstitutionDirectorySortColumn.primaryDomain => _compareNullable(
+      first.primaryDomain,
+      second.primaryDomain,
+    ),
+    InstitutionDirectorySortColumn.street => _compareNullable(first.street, second.street),
+    InstitutionDirectorySortColumn.postalCode => _compareNullable(
+      first.postalCode,
+      second.postalCode,
+    ),
+    InstitutionDirectorySortColumn.addressNumber => _compareNullable(
+      first.addressNumber,
+      second.addressNumber,
+    ),
+    InstitutionDirectorySortColumn.complement => _compareNullable(
+      first.complement,
+      second.complement,
+    ),
+    InstitutionDirectorySortColumn.district => _compareNullable(first.district, second.district),
+    InstitutionDirectorySortColumn.city => _compareNullable(first.city, second.city),
+    InstitutionDirectorySortColumn.state => _compareNullable(first.state, second.state),
+  };
+  return comparison == 0 ? first.publicName.compareTo(second.publicName) : comparison;
+}
+
+int _compareNullable<T extends Comparable<T>>(T? first, T? second) {
+  return switch ((first, second)) {
+    (null, null) => 0,
+    (null, _) => 1,
+    (_, null) => -1,
+    (final first?, final second?) => first.compareTo(second),
+  };
 }
 
 final demoInstitutionRecords = List<InstitutionRecord>.unmodifiable([
@@ -346,6 +408,23 @@ InstitutionRecord _record({
         name: unitIndex == 0 && firstUnitName != null
             ? firstUnitName
             : 'Unidade ${(unitIndex + 1).toString().padLeft(2, '0')}',
+        slug: '$slug-unidade-${unitIndex + 1}',
+        typeId: 'demo-type-${type.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}',
+        typeName: type,
+        postalCode: postalCode ?? '${(slug.length * 137).toString().padLeft(5, '0')}-000',
+        state: state,
+        city: city,
+        district: district,
+        street: street,
+        addressNumber: number,
+        complement: complement ?? '',
+        contactEmail: 'unidade${unitIndex + 1}@$slug.coelo.me',
+        contactPhone: contactPhone ?? '+55 11 3333-0000',
+        contactMobilePhone: contactMobilePhone ?? '+55 11 99999-0000',
+        brandDisplayName: unitIndex == 0 && firstUnitName != null
+            ? firstUnitName
+            : 'Unidade ${(unitIndex + 1).toString().padLeft(2, '0')}',
+        activitiesCount: (unitGroupCounts[unitIndex] / 3).ceil(),
         groups: [
           for (var groupIndex = 0; groupIndex < unitGroupCounts[unitIndex]; groupIndex++)
             InstitutionGroup(

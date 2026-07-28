@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../domain/institution_directory_item.dart';
+import '../../domain/institution_directory_query.dart';
 import 'institution_status_presentation.dart';
 
 class InstitutionDirectoryTable extends StatelessWidget {
@@ -11,12 +12,18 @@ class InstitutionDirectoryTable extends StatelessWidget {
     required this.items,
     required this.createAction,
     required this.onEdit,
+    required this.sortColumn,
+    required this.sortAscending,
+    required this.onSort,
     super.key,
   });
 
   final List<InstitutionDirectoryItem> items;
   final Widget createAction;
   final ValueChanged<InstitutionDirectoryItem> onEdit;
+  final InstitutionDirectorySortColumn sortColumn;
+  final bool sortAscending;
+  final ValueChanged<InstitutionDirectorySortColumn> onSort;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +45,13 @@ class InstitutionDirectoryTable extends StatelessWidget {
                 headerHeight: 56,
                 rowHeight: 64,
                 onRowPressed: onEdit,
+                sortColumnId: _InstitutionColumn.values
+                    .firstWhere((column) => column.sortColumn == sortColumn)
+                    .id,
+                sortAscending: sortAscending,
+                onSort: (id) => onSort(
+                  _InstitutionColumn.values.firstWhere((column) => column.id == id).sortColumn!,
+                ),
               ),
             ),
           ],
@@ -73,6 +87,7 @@ class InstitutionDirectoryTable extends StatelessWidget {
       initialWidth: column.initialWidth,
       minWidth: column.minimumWidth,
       maxWidth: 600,
+      sortable: column.sortColumn != null,
       cellBuilder: (context, item) => switch (column) {
         _InstitutionColumn.institution => _institutionCell(context, item),
         _InstitutionColumn.type => _cellText(item.typeName ?? 'Não informado'),
@@ -177,28 +192,35 @@ class _CopyValueButton extends StatelessWidget {
 }
 
 enum _InstitutionColumn {
-  institution('institution', 'Instituição', 220, 180),
-  type('type', 'Tipo', 190, 140),
-  units('units', 'Unidades', 100, 88),
-  groups('groups', 'Grupos', 100, 88),
-  plan('plan', 'Plano', 150, 120),
-  status('status', 'Status', 150, 120),
-  email('email', 'E-mail', 240, 180),
-  phone('phone', 'Telefone', 200, 160),
-  mobile('mobile', 'Celular', 200, 160),
-  domain('domain', 'Domínio', 220, 170),
-  street('street', 'Logradouro', 220, 160),
-  number('number', 'Número', 110, 88),
-  complement('complement', 'Complemento', 170, 130),
-  district('district', 'Bairro', 150, 120),
-  postalCode('postal-code', 'CEP', 130, 110),
-  city('city', 'Município', 170, 130),
-  state('state', 'UF', 80, 64);
+  institution('institution', 'Instituição', 220, 180, InstitutionDirectorySortColumn.publicName),
+  type('type', 'Tipo', 190, 140, InstitutionDirectorySortColumn.typeName),
+  units('units', 'Unidades', 100, 88, InstitutionDirectorySortColumn.unitsCount),
+  groups('groups', 'Grupos', 100, 88, InstitutionDirectorySortColumn.groupsCount),
+  plan('plan', 'Plano', 150, 120, InstitutionDirectorySortColumn.planName),
+  status('status', 'Status', 150, 120, InstitutionDirectorySortColumn.status),
+  email('email', 'E-mail', 240, 180, InstitutionDirectorySortColumn.contactEmail),
+  phone('phone', 'Telefone', 200, 160, InstitutionDirectorySortColumn.contactPhone),
+  mobile('mobile', 'Celular', 200, 160, InstitutionDirectorySortColumn.contactMobilePhone),
+  domain('domain', 'Domínio', 220, 170, InstitutionDirectorySortColumn.primaryDomain),
+  street('street', 'Logradouro', 220, 160, InstitutionDirectorySortColumn.street),
+  number('number', 'Número', 110, 88, InstitutionDirectorySortColumn.addressNumber),
+  complement('complement', 'Complemento', 170, 130, InstitutionDirectorySortColumn.complement),
+  district('district', 'Bairro', 150, 120, InstitutionDirectorySortColumn.district),
+  postalCode('postal-code', 'CEP', 130, 110, InstitutionDirectorySortColumn.postalCode),
+  city('city', 'Município', 170, 130, InstitutionDirectorySortColumn.city),
+  state('state', 'UF', 80, 64, InstitutionDirectorySortColumn.state);
 
-  const _InstitutionColumn(this.id, this.label, this.initialWidth, this.minimumWidth);
+  const _InstitutionColumn(
+    this.id,
+    this.label,
+    this.initialWidth,
+    this.minimumWidth,
+    this.sortColumn,
+  );
 
   final String id;
   final String label;
   final double initialWidth;
   final double minimumWidth;
+  final InstitutionDirectorySortColumn? sortColumn;
 }

@@ -11,6 +11,7 @@ void main() {
       cities: {'Campinas', 'Curitiba'},
       districts: {'Cambuí', 'Batel'},
       page: 2,
+      pageSize: 20,
     );
 
     expect(query.statuses, {InstitutionStatus.active, InstitutionStatus.onboarding});
@@ -28,6 +29,7 @@ void main() {
         cities: {'Curitiba', 'Campinas'},
         districts: {'Batel', 'Cambuí'},
         page: 2,
+        pageSize: 20,
       ),
     );
     expect(
@@ -39,6 +41,7 @@ void main() {
         cities: {'Curitiba', 'Campinas'},
         districts: {'Batel', 'Cambuí'},
         page: 2,
+        pageSize: 20,
       ).hashCode,
     );
     expect(() => query.states.add('RJ'), throwsUnsupportedError);
@@ -53,5 +56,28 @@ void main() {
     expect(query.cities, isEmpty);
     expect(query.districts, isEmpty);
     expect(query.hasActiveFilters, isFalse);
+  });
+
+  test('uses query page size and sort state when calculating the offset', () {
+    final query = InstitutionDirectoryQuery(
+      page: 2,
+      pageSize: 11,
+      sortColumn: InstitutionDirectorySortColumn.unitsCount,
+      sortAscending: false,
+    );
+
+    expect(query.offset, 22);
+    expect(query.pageSize, 11);
+    expect(query.sortColumn, InstitutionDirectorySortColumn.unitsCount);
+    expect(query.sortAscending, isFalse);
+    expect(
+      query,
+      InstitutionDirectoryQuery(
+        page: 2,
+        pageSize: 11,
+        sortColumn: InstitutionDirectorySortColumn.unitsCount,
+        sortAscending: false,
+      ),
+    );
   });
 }

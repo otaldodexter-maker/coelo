@@ -65,6 +65,21 @@ void main() {
     expect(createRequested, isTrue);
   });
 
+  testWidgets('starts with eleven card items and switches to nine table rows', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(_institutionCards(), findsNWidgets(11));
+    expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+
+    expect(_institutionTableRows(), findsNWidgets(9));
+  });
+
   testWidgets('reveals municipality and district filters after their parents', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -1071,6 +1086,20 @@ BoxDecoration _renderedDecoration(WidgetTester tester, Finder finder) {
   }
   final rendered = find.descendant(of: finder, matching: find.byType(Container)).first;
   return tester.widget<Container>(rendered).decoration! as BoxDecoration;
+}
+
+Finder _institutionCards() {
+  return find.byWidgetPredicate((widget) {
+    final key = widget.key;
+    return key is ValueKey<String> && key.value.startsWith('institution-card-demo-institution-');
+  });
+}
+
+Finder _institutionTableRows() {
+  return find.byWidgetPredicate((widget) {
+    final key = widget.key;
+    return key is ValueKey<String> && key.value.startsWith('institution-table-row-');
+  });
 }
 
 Widget _app({

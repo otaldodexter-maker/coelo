@@ -17,6 +17,9 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
     this.onRowPressed,
     this.isSelected,
     this.controller,
+    this.sortColumnId,
+    this.sortAscending = true,
+    this.onSort,
     super.key,
   });
 
@@ -29,6 +32,9 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
   final ValueChanged<T>? onRowPressed;
   final bool Function(T item)? isSelected;
   final CoeloAdminTableController? controller;
+  final String? sortColumnId;
+  final bool sortAscending;
+  final ValueChanged<String>? onSort;
 
   @override
   State<CoeloAdminResizableTable<T>> createState() => _CoeloAdminResizableTableState<T>();
@@ -142,16 +148,17 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
 
   Widget _headerCell(BuildContext context, CoeloAdminTableColumn<T> column, {bool pinned = false}) {
     final colors = Theme.of(context).colorScheme;
-    return SizedBox(
-      key: Key('coelo-admin-table-header-${column.id}${pinned ? '-pinned' : ''}'),
-      width: _widths[column.id],
-      height: widget.headerHeight,
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-            child: Align(
-              alignment: Alignment.centerLeft,
+    final sorted = widget.sortColumnId == column.id;
+    final label = sorted
+        ? '${column.label}, ordenado ${widget.sortAscending ? 'crescente' : 'decrescente'}'
+        : '${column.label}, não ordenado';
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Row(
+          children: [
+            Flexible(
               child: Text(
                 column.label,
                 maxLines: 1,
@@ -159,6 +166,31 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                 style: Theme.of(context).dataTableTheme.headingTextStyle,
               ),
             ),
+            if (sorted) ...[
+              const SizedBox(width: CoeloSpacing.space1),
+              Icon(
+                widget.sortAscending ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                size: CoeloSize.iconSm,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+    return SizedBox(
+      key: Key('coelo-admin-table-header-${column.id}${pinned ? '-pinned' : ''}'),
+      width: _widths[column.id],
+      height: widget.headerHeight,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: column.sortable && !pinned
+                ? _SortableHeader(
+                    label: label,
+                    onPressed: widget.onSort == null ? null : () => widget.onSort!(column.id),
+                    child: content,
+                  )
+                : content,
           ),
           Positioned(
             right: 0,
@@ -328,6 +360,55 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
           .clamp(column.minWidth, column.maxWidth)
           .toDouble();
     });
+  }
+}
+
+final class _SortableHeader extends StatefulWidget {
+  const _SortableHeader({required this.label, required this.onPressed, required this.child});
+
+  final String label;
+  final VoidCallback? onPressed;
+  final Widget child;
+
+  @override
+  State<_SortableHeader> createState() => _SortableHeaderState();
+}
+
+final class _SortableHeaderState extends State<_SortableHeader> {
+  final _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void activate() {
+      _focusNode.requestFocus();
+      widget.onPressed?.call();
+    }
+
+    return Semantics(
+      label: widget.label,
+      button: true,
+      enabled: widget.onPressed != null,
+      excludeSemantics: true,
+      child: Focus(
+        focusNode: _focusNode,
+        onKeyEvent: (_, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            activate();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: InkWell(onTap: widget.onPressed == null ? null : activate, child: widget.child),
+      ),
+    );
   }
 }
 
