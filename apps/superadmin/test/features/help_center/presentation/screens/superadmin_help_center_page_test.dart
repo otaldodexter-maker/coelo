@@ -99,6 +99,26 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   });
 
+  testWidgets('uses the institution responsive content insets', (tester) async {
+    for (final configuration in [
+      (width: 375.0, inset: CoeloSpacing.space4),
+      (width: 768.0, inset: CoeloSpacing.space6),
+      (width: 1600.0, inset: CoeloSpacing.space10),
+    ]) {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(configuration.width, 900);
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+
+      final contentInsets = tester.widget<Padding>(
+        find.byKey(const Key('superadmin-help-content-insets')),
+      );
+      expect(contentInsets.padding, EdgeInsets.all(configuration.inset));
+    }
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+  });
+
   testWidgets('collapses and expands the desktop conversation history', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1024, 900);
@@ -155,7 +175,76 @@ void main() {
     );
   });
 
-  testWidgets('keeps brand colors on hover without a gray overlay', (tester) async {
+  testWidgets('uses approved brand states for the expanded new conversation action', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1024, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final theme = Theme.of(tester.element(find.byKey(const Key('superadmin-help-composer-field'))));
+    final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>()!;
+    final newConversation = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Nova conversa'),
+    );
+    expect(newConversation.style?.backgroundColor?.resolve({}), colors.primary);
+    expect(
+      newConversation.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      actionColors.primaryHover,
+    );
+    expect(
+      newConversation.style?.backgroundColor?.resolve({WidgetState.focused}),
+      actionColors.primaryHover,
+    );
+    expect(
+      newConversation.style?.backgroundColor?.resolve({WidgetState.pressed}),
+      actionColors.primaryPressed,
+    );
+    expect(newConversation.style?.foregroundColor?.resolve({}), colors.onPrimary);
+    expect(newConversation.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+  });
+
+  testWidgets('uses the approved brand states for collapsed new conversation action', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(768, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final theme = Theme.of(tester.element(find.byKey(const Key('superadmin-help-composer-field'))));
+    final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>()!;
+    final newConversationFinder = find.byWidgetPredicate(
+      (widget) => widget is IconButton && widget.tooltip == 'Nova conversa',
+    );
+    final newConversation = tester.widget<IconButton>(newConversationFinder);
+
+    expect(tester.getSize(newConversationFinder), const Size.square(CoeloSize.touchMin));
+    expect(newConversation.style?.backgroundColor?.resolve({}), colors.primary);
+    expect(
+      newConversation.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      actionColors.primaryHover,
+    );
+    expect(
+      newConversation.style?.backgroundColor?.resolve({WidgetState.focused}),
+      actionColors.primaryHover,
+    );
+    expect(
+      newConversation.style?.backgroundColor?.resolve({WidgetState.pressed}),
+      actionColors.primaryPressed,
+    );
+    expect(newConversation.style?.foregroundColor?.resolve({}), colors.onPrimary);
+    expect(newConversation.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+  });
+
+  testWidgets('keeps tonal suggestions and the send icon free of a gray overlay', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1024, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -166,11 +255,6 @@ void main() {
     final colors = Theme.of(
       tester.element(find.byKey(const Key('superadmin-help-composer-field'))),
     ).colorScheme;
-    final newConversation = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Nova conversa'),
-    );
-    expect(newConversation.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primary);
-    expect(newConversation.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
 
     final suggestion = tester.widget<ActionChip>(
       find.ancestor(
@@ -178,12 +262,20 @@ void main() {
         matching: find.byType(ActionChip),
       ),
     );
+    expect(suggestion.color?.resolve({}), colors.primaryContainer);
     expect(suggestion.color?.resolve({WidgetState.hovered}), colors.primaryContainer);
+    expect(suggestion.color?.resolve({WidgetState.focused}), colors.primaryContainer);
+    expect(suggestion.labelStyle?.color, colors.onPrimaryContainer);
 
-    final send = tester.widget<IconButton>(
-      find.ancestor(of: find.byIcon(Icons.send_rounded), matching: find.byType(IconButton)),
+    final sendFinder = find.ancestor(
+      of: find.byIcon(Icons.send_rounded),
+      matching: find.byType(IconButton),
     );
+    final send = tester.widget<IconButton>(sendFinder);
     expect(send.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(tester.getSize(sendFinder), const Size.square(CoeloSize.touchMin));
+    expect(tester.getSize(find.byIcon(Icons.send_rounded)), const Size.square(CoeloSize.iconMd));
+    expect(find.descendant(of: sendFinder, matching: find.byType(Transform)), findsNothing);
   });
 
   testWidgets('supports dark theme, 200% text and reduced motion without overflow', (tester) async {

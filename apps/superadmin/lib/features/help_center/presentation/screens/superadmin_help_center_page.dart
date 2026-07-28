@@ -147,65 +147,77 @@ class _HelpCenterBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    if (viewportWidth < CoeloBreakpoints.medium.minWidth) {
-      return Column(
-        key: const Key('superadmin-help-history-stacked'),
-        children: [
-          _StackedHistory(
-            conversations: conversations,
-            selectedId: selectedConversation?.id,
-            onNewConversation: onNewConversation,
-            onConversationSelected: onConversationSelected,
-          ),
-          Expanded(child: _thread()),
-        ],
-      );
-    }
-
-    final isExpanded = viewportWidth >= CoeloBreakpoints.expanded.minWidth;
-    final collapseForTextScale = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-    final showCollapsedHistory = historyCollapsed || collapseForTextScale;
-    return Row(
-      children: [
-        if (isExpanded && !showCollapsedHistory)
-          SizedBox(
-            key: const Key('superadmin-help-history-panel'),
-            width: 296,
-            child: _HistoryPanel(
-              conversations: conversations,
-              selectedId: selectedConversation?.id,
-              onNewConversation: onNewConversation,
-              onConversationSelected: onConversationSelected,
-              onCollapse: () => onHistoryCollapsedChanged(true),
-            ),
-          )
-        else if (isExpanded)
-          SizedBox(
-            key: const Key('superadmin-help-history-collapsed'),
-            width: 88,
-            child: _HistoryRail(
-              conversations: conversations,
-              selectedId: selectedConversation?.id,
-              onNewConversation: onNewConversation,
-              onConversationSelected: onConversationSelected,
-              onExpand: () => onHistoryCollapsedChanged(false),
-            ),
-          )
-        else
-          SizedBox(
-            key: const Key('superadmin-help-history-rail'),
-            width: 88,
-            child: _HistoryRail(
-              conversations: conversations,
-              selectedId: selectedConversation?.id,
-              onNewConversation: onNewConversation,
-              onConversationSelected: onConversationSelected,
-            ),
-          ),
-        VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
-        Expanded(child: _thread()),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+            ? CoeloSpacing.space10
+            : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+            ? CoeloSpacing.space6
+            : CoeloSpacing.space4;
+        final viewportWidth = MediaQuery.sizeOf(context).width;
+        final isExpanded = viewportWidth >= CoeloBreakpoints.expanded.minWidth;
+        final collapseForTextScale = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+        final showCollapsedHistory = historyCollapsed || collapseForTextScale;
+        final content = viewportWidth < CoeloBreakpoints.medium.minWidth
+            ? Column(
+                key: const Key('superadmin-help-history-stacked'),
+                children: [
+                  _StackedHistory(
+                    conversations: conversations,
+                    selectedId: selectedConversation?.id,
+                    onNewConversation: onNewConversation,
+                    onConversationSelected: onConversationSelected,
+                  ),
+                  Expanded(child: _thread()),
+                ],
+              )
+            : Row(
+                children: [
+                  if (isExpanded && !showCollapsedHistory)
+                    SizedBox(
+                      key: const Key('superadmin-help-history-panel'),
+                      width: 296,
+                      child: _HistoryPanel(
+                        conversations: conversations,
+                        selectedId: selectedConversation?.id,
+                        onNewConversation: onNewConversation,
+                        onConversationSelected: onConversationSelected,
+                        onCollapse: () => onHistoryCollapsedChanged(true),
+                      ),
+                    )
+                  else if (isExpanded)
+                    SizedBox(
+                      key: const Key('superadmin-help-history-collapsed'),
+                      width: 88,
+                      child: _HistoryRail(
+                        conversations: conversations,
+                        selectedId: selectedConversation?.id,
+                        onNewConversation: onNewConversation,
+                        onConversationSelected: onConversationSelected,
+                        onExpand: () => onHistoryCollapsedChanged(false),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      key: const Key('superadmin-help-history-rail'),
+                      width: 88,
+                      child: _HistoryRail(
+                        conversations: conversations,
+                        selectedId: selectedConversation?.id,
+                        onNewConversation: onNewConversation,
+                        onConversationSelected: onConversationSelected,
+                      ),
+                    ),
+                  VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                  Expanded(child: _thread()),
+                ],
+              );
+        return Padding(
+          key: const Key('superadmin-help-content-insets'),
+          padding: EdgeInsets.all(contentInset),
+          child: content,
+        );
+      },
     );
   }
 
@@ -235,7 +247,9 @@ class _HistoryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>();
     return Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: Column(
@@ -248,7 +262,7 @@ class _HistoryPanel extends StatelessWidget {
                   message: 'Nova conversa',
                   child: FilledButton.tonalIcon(
                     onPressed: onNewConversation,
-                    style: _brandFilledButtonStyle(colors),
+                    style: _brandFilledButtonStyle(colors, actionColors),
                     icon: const Icon(Icons.add_rounded),
                     label: const Text('Nova conversa'),
                   ),
@@ -310,7 +324,9 @@ class _HistoryRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
       child: Column(
@@ -324,10 +340,10 @@ class _HistoryRail extends StatelessWidget {
             ),
             const SizedBox(height: CoeloSpacing.space2),
           ],
-          IconButton.filledTonal(
+          IconButton.filled(
             tooltip: 'Nova conversa',
             onPressed: onNewConversation,
-            style: _tonalIconButtonStyle(colors),
+            style: _brandIconButtonStyle(colors, actionColors),
             icon: const Icon(Icons.add_rounded),
           ),
           const SizedBox(height: CoeloSpacing.space3),
@@ -776,27 +792,44 @@ class _HelpComposerState extends State<_HelpComposer> {
   }
 }
 
-ButtonStyle _brandFilledButtonStyle(ColorScheme colors) {
+ButtonStyle _brandFilledButtonStyle(ColorScheme colors, CoeloActionColors? actionColors) {
   return FilledButton.styleFrom(
     backgroundColor: colors.primary,
     foregroundColor: colors.onPrimary,
     disabledBackgroundColor: colors.surfaceContainer,
     disabledForegroundColor: colors.onSurfaceVariant,
     overlayColor: Colors.transparent,
-  );
+  ).copyWith(backgroundColor: _brandBackgroundColor(colors, actionColors));
 }
 
-ButtonStyle _tonalIconButtonStyle(ColorScheme colors) {
+ButtonStyle _brandIconButtonStyle(ColorScheme colors, CoeloActionColors? actionColors) {
   return IconButton.styleFrom(
-    backgroundColor: colors.primaryContainer,
-    foregroundColor: colors.onPrimaryContainer,
-    hoverColor: colors.primaryContainer,
-    focusColor: colors.primaryContainer,
-    highlightColor: colors.primaryContainer,
+    minimumSize: const Size.square(CoeloSize.touchMin),
+    fixedSize: const Size.square(CoeloSize.touchMin),
+    padding: EdgeInsets.zero,
+    backgroundColor: colors.primary,
+    foregroundColor: colors.onPrimary,
     disabledBackgroundColor: colors.surfaceContainer,
     disabledForegroundColor: colors.onSurfaceVariant,
-  );
+    overlayColor: Colors.transparent,
+  ).copyWith(backgroundColor: _brandBackgroundColor(colors, actionColors));
 }
+
+WidgetStateProperty<Color?> _brandBackgroundColor(
+  ColorScheme colors,
+  CoeloActionColors? actionColors,
+) => WidgetStateProperty.resolveWith((states) {
+  if (states.contains(WidgetState.disabled)) {
+    return colors.surfaceContainer;
+  }
+  if (states.contains(WidgetState.pressed)) {
+    return actionColors?.primaryPressed ?? colors.primary;
+  }
+  if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+    return actionColors?.primaryHover ?? colors.primary;
+  }
+  return colors.primary;
+});
 
 ButtonStyle _discreteIconButtonStyle(ColorScheme colors) {
   return IconButton.styleFrom(
