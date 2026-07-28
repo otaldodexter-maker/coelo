@@ -1,4 +1,5 @@
 import 'institution_directory_item.dart';
+import '../../units/domain/unit_status.dart';
 
 enum InstitutionSubscriptionStatus {
   draft('Rascunho'),
@@ -31,11 +32,115 @@ final class InstitutionGroup {
 }
 
 final class InstitutionUnit {
-  const InstitutionUnit({required this.id, required this.name, required this.groups});
+  const InstitutionUnit({
+    required this.id,
+    required this.name,
+    required this.groups,
+    this.slug = '',
+    this.status = UnitStatus.active,
+    this.typeId = '',
+    this.typeName = '',
+    this.postalCode = '',
+    this.country = 'Brasil',
+    this.state = '',
+    this.city = '',
+    this.district = '',
+    this.street = '',
+    this.addressNumber = '',
+    this.complement = '',
+    this.contactEmail = '',
+    this.contactPhone = '',
+    this.contactMobilePhone = '',
+    this.planOverride,
+    this.inheritInstitutionBranding = true,
+    this.brandDisplayName = '',
+    this.hasSimulatedLogo = false,
+    this.accentColor = '#D63C00',
+    this.secondaryColor = '#3F4549',
+    this.activitiesCount = 0,
+  });
 
   final String id;
   final String name;
   final List<InstitutionGroup> groups;
+  final String slug;
+  final UnitStatus status;
+  final String typeId;
+  final String typeName;
+  final String postalCode;
+  final String country;
+  final String state;
+  final String city;
+  final String district;
+  final String street;
+  final String addressNumber;
+  final String complement;
+  final String contactEmail;
+  final String contactPhone;
+  final String contactMobilePhone;
+  final InstitutionPlan? planOverride;
+  final bool inheritInstitutionBranding;
+  final String brandDisplayName;
+  final bool hasSimulatedLogo;
+  final String accentColor;
+  final String secondaryColor;
+  final int activitiesCount;
+
+  InstitutionUnit copyWith({
+    String? id,
+    String? name,
+    String? slug,
+    UnitStatus? status,
+    String? typeId,
+    String? typeName,
+    String? postalCode,
+    String? country,
+    String? state,
+    String? city,
+    String? district,
+    String? street,
+    String? addressNumber,
+    String? complement,
+    String? contactEmail,
+    String? contactPhone,
+    String? contactMobilePhone,
+    InstitutionPlan? planOverride,
+    bool clearPlanOverride = false,
+    bool? inheritInstitutionBranding,
+    String? brandDisplayName,
+    bool? hasSimulatedLogo,
+    String? accentColor,
+    String? secondaryColor,
+    int? activitiesCount,
+  }) {
+    return InstitutionUnit(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      groups: groups,
+      slug: slug ?? this.slug,
+      status: status ?? this.status,
+      typeId: typeId ?? this.typeId,
+      typeName: typeName ?? this.typeName,
+      postalCode: postalCode ?? this.postalCode,
+      country: country ?? this.country,
+      state: state ?? this.state,
+      city: city ?? this.city,
+      district: district ?? this.district,
+      street: street ?? this.street,
+      addressNumber: addressNumber ?? this.addressNumber,
+      complement: complement ?? this.complement,
+      contactEmail: contactEmail ?? this.contactEmail,
+      contactPhone: contactPhone ?? this.contactPhone,
+      contactMobilePhone: contactMobilePhone ?? this.contactMobilePhone,
+      planOverride: clearPlanOverride ? null : planOverride ?? this.planOverride,
+      inheritInstitutionBranding: inheritInstitutionBranding ?? this.inheritInstitutionBranding,
+      brandDisplayName: brandDisplayName ?? this.brandDisplayName,
+      hasSimulatedLogo: hasSimulatedLogo ?? this.hasSimulatedLogo,
+      accentColor: accentColor ?? this.accentColor,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      activitiesCount: activitiesCount ?? this.activitiesCount,
+    );
+  }
 }
 
 final class InstitutionProfileLink {

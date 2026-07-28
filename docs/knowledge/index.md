@@ -16,6 +16,7 @@ review_owner: Coelo Owner
 | Audiência | Superfície | Artigo | Status | Fonte |
 | --- | --- | --- | --- | --- |
 | team | Superadmin / Home | [Central de ajuda do Superadmin](team/superadmin-help-center.md) | validated | `docs/superpowers/specs/2026-07-27-superadmin-help-center-home-design.md` |
+| team | Superadmin / Unidades | [Diretório de unidades do Superadmin](team/superadmin-unit-directory.md) | validated | `decisions/0016-unit-type-and-plan-inheritance.md` |
 
 As pastas `admin/` e `users/` serão criadas somente quando houver conteúdo
 válido e aprovado para essas audiências.

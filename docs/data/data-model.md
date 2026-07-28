@@ -3,7 +3,7 @@ title: "Coelo PRD Modelo de Dados Master Oficial v1"
 source_file: "Coelo PRD Modelo de Dados Master Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Modelo de Dados Master Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Modelo de Dados Master Oficial v1.docx"
-supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0016-unit-type-and-plan-inheritance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
 contextual_access_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 status: "derived-from-official-docx"
 version: "v1"
@@ -169,7 +169,7 @@ O ponto central é separar pessoa global de dados contextuais. Uma criança pode
 | Entidade | Responsabilidade | Campos/relacionamentos |
 | --- | --- | --- |
 | institutions | Tenant. | id, status, settings, plan reference, branding, document_ref. |
-| units | Unidade. | institution_id. |
+| units | Unidade. | institution_id obrigatório; tipo próprio no catálogo compartilhado; plano efetivo herdado da instituição com override opcional. |
 | groups | Grupo/turma/equipe. | institution_id, unit_id, type. |
 | memberships | Pessoa–contexto–papel. | person_id, institution_id, unit_id/group_id opcionais, role, status, dates. |
 | child_contexts | Contexto infantil pertencente à instituição. | person_id + institution_id; dados locais e status. |

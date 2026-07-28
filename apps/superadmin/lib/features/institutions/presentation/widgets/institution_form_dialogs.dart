@@ -1,14 +1,17 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
-Future<bool> showInstitutionExitDialog(BuildContext context) async {
+Future<bool> showInstitutionExitDialog(
+  BuildContext context, {
+  String entityLabel = 'instituição',
+}) async {
   final result = await showDialog<bool>(
     context: context,
     barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-    builder: (context) => const _InstitutionDialog(
+    builder: (context) => _InstitutionDialog(
       dialogKey: Key('institution-confirm-exit-dialog'),
       title: 'Sair sem salvar?',
-      message: 'As alterações feitas nesta instituição serão descartadas.',
+      message: 'As alterações feitas nesta $entityLabel serão descartadas.',
       confirmLabel: 'Sair sem salvar',
       confirmValue: true,
     ),

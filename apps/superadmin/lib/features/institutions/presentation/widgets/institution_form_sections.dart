@@ -184,9 +184,7 @@ final class _LocationSectionState extends State<_LocationSection> {
                 prefixIcon: Icons.location_city_rounded,
                 enabled: !_loadingMunicipalities && state.isNotEmpty,
                 isLoading: _loadingMunicipalities,
-                errorText:
-                    _municipalityError ??
-                    controller.errorFor(InstitutionFormField.city),
+                errorText: _municipalityError ?? controller.errorFor(InstitutionFormField.city),
                 searchHintText: 'Buscar município',
               ),
               _dropdown<String>(
@@ -247,11 +245,7 @@ final class _LocationSectionState extends State<_LocationSection> {
     if (_postalCodeError != null) {
       setState(() => _postalCodeError = null);
     }
-    controller.setText(
-      InstitutionFormField.postalCode,
-      value,
-      userInitiated: true,
-    );
+    controller.setText(InstitutionFormField.postalCode, value, userInitiated: true);
   }
 
   Future<void> _lookupPostalCode() async {
@@ -1464,9 +1458,11 @@ final class _ColorField extends StatelessWidget {
         key: Key('institution-color-picker-${field.name}'),
         tooltip: 'Selecionar $label',
         onPressed: () async {
-          final selected = await showDialog<Color>(
+          final selected = await showCoeloAdminColorPicker(
             context: context,
-            builder: (context) => _ColorPickerDialog(initialColor: color, title: label),
+            initialColor: color,
+            title: label,
+            keyPrefix: 'institution',
           );
           if (selected != null) {
             controller.setText(
@@ -1488,11 +1484,29 @@ final class _ColorField extends StatelessWidget {
   }
 }
 
+Future<Color?> showCoeloAdminColorPicker({
+  required BuildContext context,
+  required Color initialColor,
+  required String title,
+  required String keyPrefix,
+}) {
+  return showDialog<Color>(
+    context: context,
+    builder: (context) =>
+        _ColorPickerDialog(initialColor: initialColor, title: title, keyPrefix: keyPrefix),
+  );
+}
+
 final class _ColorPickerDialog extends StatefulWidget {
-  const _ColorPickerDialog({required this.initialColor, required this.title});
+  const _ColorPickerDialog({
+    required this.initialColor,
+    required this.title,
+    required this.keyPrefix,
+  });
 
   final Color initialColor;
   final String title;
+  final String keyPrefix;
 
   @override
   State<_ColorPickerDialog> createState() => _ColorPickerDialogState();
@@ -1537,6 +1551,7 @@ final class _ColorPickerDialogState extends State<_ColorPickerDialog> {
           builder: (context, constraints) {
             final compact = constraints.maxWidth < 520;
             final picker = _ColorVisualPicker(
+              keyPrefix: widget.keyPrefix,
               color: color,
               onSelect: _select,
               onHueChanged: (hue) => setState(() {
@@ -1545,6 +1560,7 @@ final class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               }),
             );
             final values = _ColorValues(
+              keyPrefix: widget.keyPrefix,
               color: color,
               original: widget.initialColor,
               hexController: hexController,
@@ -1588,11 +1604,13 @@ final class _ColorPickerDialogState extends State<_ColorPickerDialog> {
 
 final class _ColorVisualPicker extends StatelessWidget {
   const _ColorVisualPicker({
+    required this.keyPrefix,
     required this.color,
     required this.onSelect,
     required this.onHueChanged,
   });
 
+  final String keyPrefix;
   final HSVColor color;
   final void Function(Offset position, Size size) onSelect;
   final ValueChanged<double> onHueChanged;
@@ -1609,7 +1627,7 @@ final class _ColorVisualPicker extends StatelessWidget {
               onPanDown: (details) => onSelect(details.localPosition, constraints.biggest),
               onPanUpdate: (details) => onSelect(details.localPosition, constraints.biggest),
               child: CustomPaint(
-                key: const Key('institution-color-area'),
+                key: Key('$keyPrefix-color-area'),
                 painter: _ColorAreaPainter(hue: color.hue, color: color),
               ),
             ),
@@ -1640,12 +1658,14 @@ final class _ColorVisualPicker extends StatelessWidget {
 
 final class _ColorValues extends StatelessWidget {
   const _ColorValues({
+    required this.keyPrefix,
     required this.color,
     required this.original,
     required this.hexController,
     required this.onHexChanged,
   });
 
+  final String keyPrefix;
   final HSVColor color;
   final Color original;
   final TextEditingController hexController;
@@ -1679,7 +1699,7 @@ final class _ColorValues extends StatelessWidget {
         _ColorValue(label: 'B', value: '${(selected.b * 255).round()}'),
         const SizedBox(height: CoeloSpacing.space3),
         TextField(
-          key: const Key('institution-color-hex'),
+          key: Key('$keyPrefix-color-hex'),
           controller: hexController,
           decoration: const InputDecoration(
             labelText: 'Hexadecimal',
@@ -2133,9 +2153,7 @@ Widget _field(
     maxLines: maxLines,
     errorText: errorText ?? controller.errorFor(field),
     enabled: enabled,
-    onChanged:
-        onChanged ??
-        (value) => controller.setText(field, value, userInitiated: true),
+    onChanged: onChanged ?? (value) => controller.setText(field, value, userInitiated: true),
   );
   return wide ? _WideField(child: fieldWidget) : fieldWidget;
 }

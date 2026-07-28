@@ -413,6 +413,23 @@ InstitutionRecord _record({
         name: unitIndex == 0 && firstUnitName != null
             ? firstUnitName
             : 'Unidade ${(unitIndex + 1).toString().padLeft(2, '0')}',
+        slug: '$slug-unidade-${unitIndex + 1}',
+        typeId: 'demo-type-${type.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}',
+        typeName: type,
+        postalCode: postalCode ?? '${(slug.length * 137).toString().padLeft(5, '0')}-000',
+        state: state,
+        city: city,
+        district: district,
+        street: street,
+        addressNumber: number,
+        complement: complement ?? '',
+        contactEmail: 'unidade${unitIndex + 1}@$slug.coelo.me',
+        contactPhone: contactPhone ?? '+55 11 3333-0000',
+        contactMobilePhone: contactMobilePhone ?? '+55 11 99999-0000',
+        brandDisplayName: unitIndex == 0 && firstUnitName != null
+            ? firstUnitName
+            : 'Unidade ${(unitIndex + 1).toString().padLeft(2, '0')}',
+        activitiesCount: (unitGroupCounts[unitIndex] / 3).ceil(),
         groups: [
           for (var groupIndex = 0; groupIndex < unitGroupCounts[unitIndex]; groupIndex++)
             InstitutionGroup(

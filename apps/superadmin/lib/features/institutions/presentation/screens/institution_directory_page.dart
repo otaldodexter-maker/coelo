@@ -19,6 +19,7 @@ class InstitutionDirectoryPage extends StatefulWidget {
     required this.repository,
     required this.logout,
     this.onHomeOpen,
+    this.onUnitsOpen,
     this.onCatalogOpen,
     this.onSupportOpen,
     this.onBugReportSubmitted,
@@ -32,6 +33,7 @@ class InstitutionDirectoryPage extends StatefulWidget {
   final InstitutionDirectoryRepository repository;
   final LogoutAction logout;
   final VoidCallback? onHomeOpen;
+  final VoidCallback? onUnitsOpen;
   final VoidCallback? onCatalogOpen;
   final VoidCallback? onSupportOpen;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
@@ -97,6 +99,8 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       onDestinationSelected: (destination) {
         if (destination == 'home') {
           widget.onHomeOpen?.call();
+        } else if (destination == 'units') {
+          widget.onUnitsOpen?.call();
         } else if (destination == 'catalog') {
           widget.onCatalogOpen?.call();
         } else if (destination == 'support') {

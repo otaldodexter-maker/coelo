@@ -20,6 +20,9 @@ import '../../features/institutions/presentation/screens/institution_directory_p
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
+import '../../features/units/data/fake_unit_directory_repository.dart';
+import '../../features/units/presentation/unit_directory_page.dart';
+import '../../features/units/presentation/unit_form_page.dart';
 import '../dev_menu/dev_menu_overlay.dart';
 import 'superadmin_routes.dart';
 
@@ -43,10 +46,19 @@ GoRouter createSuperadminRouter({
   final prototypeRepository = institutionDirectoryRepository is FakeInstitutionDirectoryRepository
       ? institutionDirectoryRepository
       : FakeInstitutionDirectoryRepository();
+  final unitRepository = FakeUnitDirectoryRepository(prototypeRepository);
   String? successMessage(Object? extra) {
     return switch (extra) {
       InstitutionFormSaveResult.created => 'Instituição criada com sucesso.',
       InstitutionFormSaveResult.updated => 'Alterações salvas com sucesso.',
+      _ => null,
+    };
+  }
+
+  String? unitSuccessMessage(Object? extra) {
+    return switch (extra) {
+      UnitFormSaveResult.created => 'Unidade criada com sucesso.',
+      UnitFormSaveResult.updated => 'Alterações da unidade salvas com sucesso.',
       _ => null,
     };
   }
@@ -112,6 +124,8 @@ GoRouter createSuperadminRouter({
               onDestinationSelected: (destination) {
                 if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
                 } else if (destination == 'catalog') {
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
@@ -132,6 +146,7 @@ GoRouter createSuperadminRouter({
               repository: prototypeRepository,
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
+              onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
               successMessage: successMessage(state.extra),
               onCreate: () => context.goNamed(SuperadminRoutes.institutionCreateName),
               onEdit: (id) => context.goNamed(
@@ -162,6 +177,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.homeName);
                 } else if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
                 } else if (destination == 'catalog') {
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
@@ -185,10 +202,76 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.homeName);
                 } else if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
                 } else if (destination == 'catalog') {
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.supportName);
+                }
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.units,
+            name: SuperadminRoutes.unitsName,
+            builder: (context, state) => UnitDirectoryPage(
+              repository: unitRepository,
+              logout: logout,
+              successMessage: unitSuccessMessage(state.extra),
+              onCreate: () => context.goNamed(SuperadminRoutes.unitCreateName),
+              onEdit: (id) =>
+                  context.goNamed(SuperadminRoutes.unitEditName, pathParameters: {'unitId': id}),
+              onDestinationSelected: (destination) {
+                if (destination == 'home') {
+                  context.goNamed(SuperadminRoutes.homeName);
+                } else if (destination == 'institutions') {
+                  context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
+                } else if (destination == 'support') {
+                  context.goNamed(SuperadminRoutes.supportName);
+                }
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitCreate,
+            name: SuperadminRoutes.unitCreateName,
+            builder: (context, state) => UnitFormPage(
+              institutions: prototypeRepository,
+              repository: unitRepository,
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
+              onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
+              onDestinationSelected: (destination) {
+                if (destination == 'home') {
+                  context.goNamed(SuperadminRoutes.homeName);
+                } else if (destination == 'institutions') {
+                  context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
+                }
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.unitEdit,
+            name: SuperadminRoutes.unitEditName,
+            builder: (context, state) => UnitFormPage(
+              institutions: prototypeRepository,
+              repository: unitRepository,
+              unitId: state.pathParameters['unitId'],
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
+              onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
+              onDestinationSelected: (destination) {
+                if (destination == 'home') {
+                  context.goNamed(SuperadminRoutes.homeName);
+                } else if (destination == 'institutions') {
+                  context.goNamed(SuperadminRoutes.institutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.unitsName);
                 }
               },
             ),
@@ -201,6 +284,7 @@ GoRouter createSuperadminRouter({
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
+              onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
               onSupportOpen: () => context.goNamed(SuperadminRoutes.supportName),
               onBugReportSubmitted: sessionSupportController.submitReport,
               onConversationsOpen: () => context.goNamed(
@@ -217,6 +301,7 @@ GoRouter createSuperadminRouter({
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
+              onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
             ),
@@ -282,6 +367,8 @@ GoRouter createSuperadminRouter({
               onDestinationSelected: (destination) {
                 if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
                 } else if (destination == 'conversations') {
@@ -300,6 +387,7 @@ GoRouter createSuperadminRouter({
               repository: prototypeRepository,
               logout: _previewLogout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.devHomeName),
+              onUnitsOpen: () => context.goNamed(SuperadminRoutes.devUnitsName),
               successMessage: successMessage(state.extra),
               onCreate: () => context.goNamed(SuperadminRoutes.devInstitutionCreateName),
               onEdit: (id) => context.goNamed(
@@ -351,8 +439,74 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devHomeName);
                 } else if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
+                }
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devUnits,
+            name: SuperadminRoutes.devUnitsName,
+            builder: (context, state) => UnitDirectoryPage(
+              repository: unitRepository,
+              logout: _previewLogout,
+              successMessage: unitSuccessMessage(state.extra),
+              onCreate: () => context.goNamed(SuperadminRoutes.devUnitCreateName),
+              onEdit: (id) =>
+                  context.goNamed(SuperadminRoutes.devUnitEditName, pathParameters: {'unitId': id}),
+              onDestinationSelected: (destination) {
+                if (destination == 'home') {
+                  context.goNamed(SuperadminRoutes.devHomeName);
+                } else if (destination == 'institutions') {
+                  context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
+                } else if (destination == 'support') {
+                  context.goNamed(SuperadminRoutes.devSupportName);
+                }
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devUnitCreate,
+            name: SuperadminRoutes.devUnitCreateName,
+            builder: (context, state) => UnitFormPage(
+              institutions: prototypeRepository,
+              repository: unitRepository,
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devUnitsName),
+              onSaved: (result) => context.goNamed(SuperadminRoutes.devUnitsName, extra: result),
+              onDestinationSelected: (destination) {
+                if (destination == 'home') {
+                  context.goNamed(SuperadminRoutes.devHomeName);
+                } else if (destination == 'institutions') {
+                  context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
+                }
+              },
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devUnitEdit,
+            name: SuperadminRoutes.devUnitEditName,
+            builder: (context, state) => UnitFormPage(
+              institutions: prototypeRepository,
+              repository: unitRepository,
+              unitId: state.pathParameters['unitId'],
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devUnitsName),
+              onSaved: (result) => context.goNamed(SuperadminRoutes.devUnitsName, extra: result),
+              onDestinationSelected: (destination) {
+                if (destination == 'home') {
+                  context.goNamed(SuperadminRoutes.devHomeName);
+                } else if (destination == 'institutions') {
+                  context.goNamed(SuperadminRoutes.devInstitutionsName);
+                } else if (destination == 'units') {
+                  context.goNamed(SuperadminRoutes.devUnitsName);
                 }
               },
             ),
@@ -365,6 +519,7 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.devHomeName),
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.devInstitutionsName),
+              onUnitsOpen: () => context.goNamed(SuperadminRoutes.devUnitsName),
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
             ),

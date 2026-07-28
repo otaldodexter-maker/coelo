@@ -355,23 +355,28 @@ class _FloatingSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final decoration = BoxDecoration(
-      color: colors.surface,
+    final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(CoeloRadius.xl),
-      border: Border.all(color: colors.outlineVariant),
-      boxShadow: [
-        BoxShadow(
-          color: colors.shadow.withValues(alpha: 0.06),
-          blurRadius: CoeloSpacing.space3,
-          offset: const Offset(0, CoeloSpacing.space1),
-        ),
-      ],
+      side: BorderSide(color: colors.outlineVariant),
     );
     return DecoratedBox(
-      decoration: decoration,
-      child: clip
-          ? ClipRRect(borderRadius: BorderRadius.circular(CoeloRadius.xl), child: child)
-          : child,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(CoeloRadius.xl),
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withValues(alpha: 0.06),
+            blurRadius: CoeloSpacing.space3,
+            offset: const Offset(0, CoeloSpacing.space1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: colors.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: shape,
+        clipBehavior: clip ? Clip.antiAlias : Clip.none,
+        child: child,
+      ),
     );
   }
 }

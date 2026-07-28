@@ -19,6 +19,7 @@ final class CatalogHostPage extends StatelessWidget {
     required this.catalogUrl,
     required this.logout,
     required this.onInstitutionsOpen,
+    this.onUnitsOpen,
     this.onHomeOpen,
     this.onSupportOpen,
     this.onBugReportSubmitted,
@@ -29,6 +30,7 @@ final class CatalogHostPage extends StatelessWidget {
   final String catalogUrl;
   final LogoutAction logout;
   final VoidCallback onInstitutionsOpen;
+  final VoidCallback? onUnitsOpen;
   final VoidCallback? onHomeOpen;
   final VoidCallback? onSupportOpen;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
@@ -49,6 +51,8 @@ final class CatalogHostPage extends StatelessWidget {
           onHomeOpen?.call();
         } else if (destination == 'institutions') {
           onInstitutionsOpen();
+        } else if (destination == 'units') {
+          onUnitsOpen?.call();
         } else if (destination == 'support') {
           onSupportOpen?.call();
         } else if (destination == 'conversations') {
