@@ -21,6 +21,7 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
   final _timers = <Timer>[];
   late List<_SimulatedMessage> _messages;
   String? _activityLabel;
+  bool get _localDemo => widget.conversation.localInitialMessage != null;
 
   @override
   void initState() {
@@ -54,6 +55,16 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
   }
 
   List<_SimulatedMessage> _initialMessages() {
+    if (widget.conversation.localInitialMessage case final message?) {
+      return [
+        _SimulatedMessage(
+          direction: CoeloMessageDirection.sent,
+          contextLabel: 'Demonstração local',
+          body: message,
+          timestamp: 'Agora',
+        ),
+      ];
+    }
     return [
       const _SimulatedMessage(
         direction: CoeloMessageDirection.received,
@@ -83,12 +94,17 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
           direction: CoeloMessageDirection.sent,
           body: body,
           timestamp: 'Agora',
-          deliveryState: CoeloMessageDeliveryState.delivered,
+          deliveryState: _localDemo
+              ? CoeloMessageDeliveryState.none
+              : CoeloMessageDeliveryState.delivered,
         ),
       );
       _composerController.clear();
-      _activityLabel = 'Enviando mensagem…';
+      _activityLabel = _localDemo ? null : 'Enviando mensagem…';
     });
+    if (_localDemo) {
+      return;
+    }
     _timers.add(
       Timer(const Duration(milliseconds: 300), () {
         if (mounted) setState(() => _activityLabel = 'Marina está digitando…');

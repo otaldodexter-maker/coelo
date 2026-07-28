@@ -8,6 +8,7 @@ import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_c
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_scope_filters.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_thread_body.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -271,14 +272,17 @@ void main() {
     );
     expect(launcherButton.focusNode!.hasPrimaryFocus, isTrue);
 
+    await _selectScopeOption(tester, filterId: 'state', option: 'CE');
+    await _selectScopeOption(tester, filterId: 'institution', option: 'Centro Horizonte');
+    expect(find.byKey(const Key('superadmin-chat-conversation-bulk-local-1')), findsOne);
     await tester.tap(find.byKey(const Key('superadmin-chat-conversation-bulk-local-1')));
     await tester.pumpAndSettle();
     expect(
       find.descendant(
         of: find.byKey(const Key('superadmin-chat-thread')),
-        matching: find.textContaining('Demonstração local'),
+        matching: find.text('Centro Horizonte · 4 destinatários · Demonstração local'),
       ),
-      findsWidgets,
+      findsOne,
     );
     expect(tester.takeException(), isNull);
   });
@@ -309,6 +313,81 @@ void main() {
     expect(find.byType(SuperadminChatRecipientPicker), findsNothing);
     expect(find.byKey(const Key('superadmin-chat-conversation-bulk-local-1')), findsNothing);
     expect(launcherButton.focusNode!.hasPrimaryFocus, isTrue);
+  });
+
+  testWidgets('opens a local activity conversation with its own unread-free message', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+    await _createLocalActivityConversation(tester);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-conversation-bulk-local-1')));
+    await tester.pumpAndSettle();
+
+    final thread = find.byKey(const Key('superadmin-chat-thread'));
+    final bubbles = find.descendant(of: thread, matching: find.byType(CoeloMessageBubble));
+    expect(bubbles, findsOne);
+    final bubble = tester.widget<CoeloMessageBubble>(bubbles);
+    expect(
+      bubble.body,
+      'Demonstração local · mensagem preparada para Natação; nenhum envio real foi realizado.',
+    );
+    expect(bubble.direction, CoeloMessageDirection.sent);
+    expect(bubble.contextLabel, 'Demonstração local');
+    expect(bubble.authorLabel, isNull);
+    expect(bubble.childLabels, isEmpty);
+    expect(bubble.deliveryState, CoeloMessageDeliveryState.none);
+    expect(find.descendant(of: thread, matching: find.text('Marina · Professora')), findsNothing);
+    expect(find.descendant(of: thread, matching: find.text('Turma Girassol')), findsNothing);
+
+    await tester.enterText(
+      find.descendant(of: thread, matching: find.byType(TextField)),
+      'Outra nota local',
+    );
+    await tester.pump();
+    await tester.tap(find.descendant(of: thread, matching: find.byTooltip('Enviar mensagem')));
+    await tester.pump(const Duration(milliseconds: 1400));
+
+    final updatedBubbles = tester.widgetList<CoeloMessageBubble>(
+      find.descendant(of: thread, matching: find.byType(CoeloMessageBubble)),
+    );
+    expect(updatedBubbles, hasLength(2));
+    expect(
+      updatedBubbles.every((message) => message.deliveryState == CoeloMessageDeliveryState.none),
+      isTrue,
+    );
+    expect(find.descendant(of: thread, matching: find.text('Marina · Professora')), findsNothing);
+  });
+
+  testWidgets('keeps a local activity visible under compatible ancestor filters', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+    await _createLocalActivityConversation(tester);
+
+    const localConversation = Key('superadmin-chat-conversation-bulk-local-1');
+    expect(find.byKey(localConversation), findsOne);
+    for (final (filterId, option) in [
+      ('concept', 'Atividades'),
+      ('state', 'CE'),
+      ('institution', 'Centro Horizonte'),
+      ('unit', 'Unidade Cambuí'),
+      ('group', 'Turma Girassol'),
+      ('activity', 'Natação'),
+    ]) {
+      await _selectScopeOption(tester, filterId: filterId, option: option);
+      expect(find.byKey(localConversation), findsOne, reason: '$filterId: $option');
+    }
   });
 
   testWidgets('launcher opens compact inbox and expands through its callback', (tester) async {
@@ -556,4 +635,27 @@ Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 Widget _app(Widget child) {
   return MaterialApp(theme: CoeloTheme.light, home: child);
+}
+
+Future<void> _createLocalActivityConversation(WidgetTester tester) async {
+  await tester.tap(find.byTooltip('Nova conversa'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.widgetWithText(CheckboxListTile, 'Natação'));
+  await tester.pump();
+  await tester.tap(find.text('Revisar envio'));
+  await tester.pumpAndSettle();
+  expect(find.text('Centro Horizonte / Unidade Cambuí / Turma Girassol / Natação'), findsOne);
+  await tester.tap(find.widgetWithText(FilledButton, 'Confirmar demonstração'));
+  await tester.pumpAndSettle();
+}
+
+Future<void> _selectScopeOption(
+  WidgetTester tester, {
+  required String filterId,
+  required String option,
+}) async {
+  await tester.tap(find.byKey(Key('superadmin-chat-filter-$filterId')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.widgetWithText(MenuItemButton, option));
+  await tester.pumpAndSettle();
 }

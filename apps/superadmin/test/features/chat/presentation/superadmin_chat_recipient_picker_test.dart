@@ -68,7 +68,7 @@ void main() {
   testWidgets('selects all recipients, reviews the quantity and confirms a local result', (
     tester,
   ) async {
-    List<CoeloAdminContextOption>? confirmed;
+    List<SuperadminChatRecipientSelection>? confirmed;
     await _pumpPicker(tester, onConfirmed: (selection) => confirmed = selection);
 
     await tester.tap(find.text('Selecionar todos'));
@@ -92,12 +92,34 @@ void main() {
 
     expect(confirmed, isNotNull);
     expect(confirmed, hasLength(4));
-    expect(confirmed!.map((option) => option.id), [
+    expect(confirmed!.map((selection) => selection.recipient.id), [
       'centro-horizonte',
       'cambui',
       'girassol',
       'natacao',
     ]);
+  });
+
+  testWidgets('reviews and returns the complete hierarchy for Natação', (tester) async {
+    List<SuperadminChatRecipientSelection>? confirmed;
+    await _pumpPicker(tester, onConfirmed: (selection) => confirmed = selection);
+
+    await tester.tap(find.widgetWithText(CheckboxListTile, 'Natação'));
+    await tester.pump();
+    await tester.tap(find.text('Revisar envio'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Centro Horizonte / Unidade Cambuí / Turma Girassol / Natação'), findsOne);
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirmar demonstração'));
+    await tester.pumpAndSettle();
+
+    expect(confirmed!.single.path.map((option) => option.id), [
+      'centro-horizonte',
+      'cambui',
+      'girassol',
+      'natacao',
+    ]);
+    expect(confirmed!.single.recipient.kind, CoeloAdminContextKind.activity);
   });
 
   for (final brightness in Brightness.values) {
@@ -126,7 +148,7 @@ void main() {
 
 Future<void> _pumpPicker(
   WidgetTester tester, {
-  ValueChanged<List<CoeloAdminContextOption>>? onConfirmed,
+  ValueChanged<List<SuperadminChatRecipientSelection>>? onConfirmed,
   ThemeData? theme,
   TextScaler textScaler = TextScaler.noScaling,
 }) {

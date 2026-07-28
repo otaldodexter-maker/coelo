@@ -261,7 +261,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   }
 
   Future<void> _openNewConversation() async {
-    final selectedRecipients = await showDialog<List<CoeloAdminContextOption>>(
+    final selectedRecipients = await showDialog<List<SuperadminChatRecipientSelection>>(
       context: context,
       builder: (dialogContext) {
         return Dialog(
@@ -342,22 +342,42 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     });
   }
 
-  void _addLocalBulkConversation(List<CoeloAdminContextOption> recipients) {
+  void _addLocalBulkConversation(List<SuperadminChatRecipientSelection> recipients) {
     final count = recipients.length;
-    final title = count == 1 ? recipients.single.label : 'Envio em massa · $count destinatários';
+    final commonPath = _commonRecipientPath(recipients);
+    final recipient = count == 1 ? recipients.single.recipient : null;
+    final title = recipient?.label ?? 'Envio em massa · $count destinatários';
+    final institution = _pathOption(commonPath, CoeloAdminContextKind.institution);
+    final unit = _pathOption(commonPath, CoeloAdminContextKind.unit);
+    final group = _pathOption(commonPath, CoeloAdminContextKind.group);
+    final activity = _pathOption(commonPath, CoeloAdminContextKind.activity);
+    final state = _commonInstitutionState(recipients);
+    final pathLabel = commonPath.map((option) => option.label).join(' / ');
+    final localInitialMessage = count == 1
+        ? 'Demonstração local · mensagem preparada para ${recipient!.label}; nenhum envio real foi realizado.'
+        : 'Demonstração local · mensagem preparada para $count destinatários; nenhum envio real foi realizado.';
     final conversation = SuperadminChatConversation(
       id: 'bulk-local-${++_bulkSequence}',
       title: title,
-      initials: count == 1 ? _initials(recipients.single.label) : 'EM',
-      preview: 'Demonstração local · nenhum envio real foi realizado.',
+      initials: count == 1 ? _initials(recipient!.label) : 'EM',
+      preview: localInitialMessage,
       timestamp: 'Agora',
-      context: 'Demonstração local · $count destinatários selecionados',
-      institution: recipients.first.label,
-      targetKind: count == 1 ? recipients.single.kind : CoeloAdminContextKind.institution,
+      context: [
+        if (pathLabel.isNotEmpty) pathLabel,
+        if (count > 1) '$count destinatários',
+        'Demonstração local',
+      ].join(' · '),
+      institution: institution?.label ?? 'Múltiplas instituições',
+      targetKind: commonPath.isEmpty ? CoeloAdminContextKind.institution : commonPath.last.kind,
       metrics: [
         SuperadminChatMetric('Destinatários', count),
         const SuperadminChatMetric('Mensagens', 1),
       ],
+      state: state,
+      unit: unit?.label,
+      group: group?.label,
+      activity: activity?.label,
+      localInitialMessage: localInitialMessage,
     );
 
     setState(() {
@@ -841,4 +861,51 @@ final class _ChatThread extends StatelessWidget {
 String _initials(String label) {
   final words = label.trim().split(RegExp(r'\s+'));
   return words.take(2).where((word) => word.isNotEmpty).map((word) => word[0].toUpperCase()).join();
+}
+
+List<CoeloAdminContextOption> _commonRecipientPath(
+  List<SuperadminChatRecipientSelection> recipients,
+) {
+  if (recipients.isEmpty) {
+    return const [];
+  }
+  final shortestLength = recipients
+      .map((selection) => selection.path.length)
+      .reduce((first, second) => first < second ? first : second);
+  final common = <CoeloAdminContextOption>[];
+  for (var index = 0; index < shortestLength; index++) {
+    final candidate = recipients.first.path[index];
+    if (recipients.every((selection) => selection.path[index].id == candidate.id)) {
+      common.add(candidate);
+    } else {
+      break;
+    }
+  }
+  return List.unmodifiable(common);
+}
+
+CoeloAdminContextOption? _pathOption(
+  List<CoeloAdminContextOption> path,
+  CoeloAdminContextKind kind,
+) {
+  for (final option in path) {
+    if (option.kind == kind) {
+      return option;
+    }
+  }
+  return null;
+}
+
+String? _commonInstitutionState(List<SuperadminChatRecipientSelection> recipients) {
+  final states = recipients
+      .map((selection) {
+        final institution = _pathOption(selection.path, CoeloAdminContextKind.institution);
+        return institution == null ? null : superadminChatInstitutionStateById[institution.id];
+      })
+      .toList(growable: false);
+  if (states.any((state) => state == null)) {
+    return null;
+  }
+  final distinctStates = states.whereType<String>().toSet();
+  return distinctStates.length == 1 ? distinctStates.single : null;
 }

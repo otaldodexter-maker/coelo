@@ -77,7 +77,8 @@ Após o fluxo principal ficar verde, dois testes específicos exigiram
 
 ### GREEN
 
-O comando focado final executou **22 testes, 0 falhas**. A cobertura inclui:
+Os comandos focados finais executaram **29 testes, 0 falhas**: 5 do picker,
+20 da página e 4 dos filtros de escopo. A cobertura inclui:
 
 - seleção individual;
 - seleção total dos quatro destinatários;
@@ -90,10 +91,44 @@ O comando focado final executou **22 testes, 0 falhas**. A cobertura inclui:
 - light/dark e texto a 200%;
 - matriz preexistente de 375, 768, 1024 e 1440 px das Tasks 1–4.
 
+### Correção após revisão
+
+A revisão identificou três lacunas concretas e elas foram tratadas com novo
+ciclo RED/GREEN:
+
+- o resultado do picker agora usa `SuperadminChatRecipientSelection` e preserva
+  todo o caminho de `CoeloAdminContextOption`, incluindo IDs, labels, kinds e
+  subtítulos;
+- a revisão mostra o caminho completo. Para Natação:
+  `Centro Horizonte / Unidade Cambuí / Turma Girassol / Natação`;
+- uma seleção única deriva estado, instituição, unidade, grupo, atividade e
+  `targetKind` do caminho selecionado;
+- uma seleção múltipla usa o ancestral comum mais profundo, de forma
+  determinística. Os quatro destinatários atuais produzem o contexto da
+  instituição `Centro Horizonte`, no estado `CE`;
+- `child` e `personRole` permanecem vazios porque não existem esses tipos no
+  caminho atual; nenhum dado foi inventado;
+- a conversa criada permanece visível sob filtros ancestrais compatíveis;
+- a conversa local carrega sua própria mensagem inicial, marcada somente como
+  demonstração local, sem Marina, sem conteúdo herdado de Turma Girassol e sem
+  estado fictício de entrega/leitura;
+- novas mensagens digitadas nessa conversa também permanecem locais, não
+  recebem confirmação de entrega e não disparam a resposta automática da
+  Marina.
+
+O RED do picker falhou pela ausência do novo tipo e do caminho completo. O RED
+do thread local falhou com três bolhas, pois a resposta automática da Marina
+ainda era criada. Depois da implementação, os testes validam a hierarquia de
+Natação, a mensagem inicial local, a ausência de Marina/Girassol e de
+read/delivery, o composer local e a compatibilidade com todos os filtros
+ancestrais.
+
 ## Verificação
 
 - `dart format` nos quatro arquivos Dart afetados: concluído.
-- `dart analyze` em `apps/superadmin`: `No issues found!`.
+- `dart analyze` em `apps/superadmin`: `No issues found!` antes do
+  endurecimento final; a análise focada dos seis arquivos corrigidos também
+  terminou com `No issues found!` depois dele.
 - `git diff --check`: sem erros antes do relatório.
 - Busca por HEX, `Color(0x...)`, `TextStyle` local, orientação e tipo de
   dispositivo: nenhuma ocorrência nos arquivos de produção afetados.
@@ -128,6 +163,7 @@ para outra audiência. Gate de memória: **no-op**.
   painel contextual da Task 4.
 - O picker não foi promovido, e a Task 6 permanece não implementada.
 - `task-1-report.md` não foi alterado nesta tarefa e será excluído do commit.
+- A Task 6 continua intocada.
 
 ## Preocupações
 

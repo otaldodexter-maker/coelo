@@ -25,6 +25,7 @@ final class SuperadminChatConversation {
     this.state,
     this.personRole,
     this.children = const [],
+    this.localInitialMessage,
     this.unreadCount = 0,
     this.nowState = CoeloNowState.none,
     this.presence = CoeloChatPresence.none,
@@ -45,6 +46,7 @@ final class SuperadminChatConversation {
   final String? state;
   final String? personRole;
   final List<String> children;
+  final String? localInitialMessage;
   final int unreadCount;
   final CoeloNowState nowState;
   final CoeloChatPresence presence;
@@ -171,3 +173,5 @@ const superadminChatContextOptions = [
     ],
   ),
 ];
+
+const superadminChatInstitutionStateById = {'centro-horizonte': 'CE'};

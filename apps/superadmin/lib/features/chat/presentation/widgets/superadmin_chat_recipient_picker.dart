@@ -2,6 +2,17 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
+final class SuperadminChatRecipientSelection {
+  SuperadminChatRecipientSelection({required List<CoeloAdminContextOption> path})
+    : assert(path.isNotEmpty),
+      path = List.unmodifiable(path);
+
+  final List<CoeloAdminContextOption> path;
+
+  CoeloAdminContextOption get recipient => path.last;
+  String get pathLabel => path.map((option) => option.label).join(' / ');
+}
+
 final class SuperadminChatRecipientPicker extends StatefulWidget {
   const SuperadminChatRecipientPicker({
     required this.options,
@@ -10,7 +21,7 @@ final class SuperadminChatRecipientPicker extends StatefulWidget {
   });
 
   final List<CoeloAdminContextOption> options;
-  final ValueChanged<List<CoeloAdminContextOption>> onConfirmed;
+  final ValueChanged<List<SuperadminChatRecipientSelection>> onConfirmed;
 
   @override
   State<SuperadminChatRecipientPicker> createState() => _SuperadminChatRecipientPickerState();
@@ -20,8 +31,7 @@ final class _SuperadminChatRecipientPickerState extends State<SuperadminChatReci
   final _reviewFocusNode = FocusNode(debugLabel: 'Revisar envio em massa');
   final _selectedIds = <String>{};
 
-  List<({int depth, CoeloAdminContextOption option})> get _recipients =>
-      _flattenOptions(widget.options);
+  List<SuperadminChatRecipientSelection> get _recipients => _flattenOptions(widget.options);
 
   @override
   void dispose() {
@@ -29,12 +39,12 @@ final class _SuperadminChatRecipientPickerState extends State<SuperadminChatReci
     super.dispose();
   }
 
-  void _toggle(CoeloAdminContextOption option, {required bool selected}) {
+  void _toggle(SuperadminChatRecipientSelection selection, {required bool selected}) {
     setState(() {
       if (selected) {
-        _selectedIds.add(option.id);
+        _selectedIds.add(selection.recipient.id);
       } else {
-        _selectedIds.remove(option.id);
+        _selectedIds.remove(selection.recipient.id);
       }
     });
   }
@@ -43,14 +53,13 @@ final class _SuperadminChatRecipientPickerState extends State<SuperadminChatReci
     setState(() {
       _selectedIds
         ..clear()
-        ..addAll(_recipients.map((recipient) => recipient.option.id));
+        ..addAll(_recipients.map((selection) => selection.recipient.id));
     });
   }
 
   Future<void> _review() async {
     final selected = _recipients
-        .map((recipient) => recipient.option)
-        .where((option) => _selectedIds.contains(option.id))
+        .where((selection) => _selectedIds.contains(selection.recipient.id))
         .toList(growable: false);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -99,13 +108,13 @@ final class _SuperadminChatRecipientPickerState extends State<SuperadminChatReci
                 const SizedBox(height: CoeloSpacing.space3),
                 Text(_selectionLabel(selected.length)),
                 const SizedBox(height: CoeloSpacing.space2),
-                for (final option in selected)
+                for (final selection in selected)
                   ListTile(
                     minTileHeight: CoeloSize.touchMin,
                     contentPadding: EdgeInsets.zero,
-                    leading: Icon(option.kind.icon),
-                    title: Text(option.label),
-                    subtitle: Text(option.kind.label),
+                    leading: Icon(selection.recipient.kind.icon),
+                    title: Text(selection.recipient.label),
+                    subtitle: Text(selection.pathLabel),
                   ),
               ],
             ),
@@ -164,17 +173,17 @@ final class _SuperadminChatRecipientPickerState extends State<SuperadminChatReci
             itemCount: recipients.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
-              final recipient = recipients[index];
-              final option = recipient.option;
+              final selection = recipients[index];
+              final option = selection.recipient;
               final selected = _selectedIds.contains(option.id);
               return CheckboxListTile(
                 key: Key('superadmin-chat-recipient-${option.id}'),
                 value: selected,
-                onChanged: (value) => _toggle(option, selected: value ?? false),
+                onChanged: (value) => _toggle(selection, selected: value ?? false),
                 minTileHeight: CoeloSize.touchMin,
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsetsDirectional.only(
-                  start: CoeloSpacing.space3 + recipient.depth * CoeloSpacing.space4,
+                  start: CoeloSpacing.space3 + (selection.path.length - 1) * CoeloSpacing.space4,
                   end: CoeloSpacing.space3,
                 ),
                 title: Text(option.label),
@@ -200,14 +209,14 @@ final class _SuperadminChatRecipientPickerState extends State<SuperadminChatReci
   }
 }
 
-List<({int depth, CoeloAdminContextOption option})> _flattenOptions(
+List<SuperadminChatRecipientSelection> _flattenOptions(
   List<CoeloAdminContextOption> options, {
-  int depth = 0,
+  List<CoeloAdminContextOption> path = const [],
 }) {
   return [
     for (final option in options) ...[
-      (depth: depth, option: option),
-      ..._flattenOptions(option.children, depth: depth + 1),
+      SuperadminChatRecipientSelection(path: [...path, option]),
+      ..._flattenOptions(option.children, path: [...path, option]),
     ],
   ];
 }
