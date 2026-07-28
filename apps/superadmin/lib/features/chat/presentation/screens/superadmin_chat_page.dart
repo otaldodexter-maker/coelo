@@ -370,8 +370,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       institution: institution?.label ?? 'Múltiplas instituições',
       targetKind: commonPath.isEmpty ? CoeloAdminContextKind.institution : commonPath.last.kind,
       metrics: [
-        SuperadminChatMetric('Destinatários', count),
-        const SuperadminChatMetric('Mensagens', 1),
+        CoeloAdminChatMetric('Destinatários', count),
+        const CoeloAdminChatMetric('Mensagens', 1),
       ],
       state: state,
       unit: unit?.label,

@@ -1,13 +1,6 @@
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 
-final class SuperadminChatMetric {
-  const SuperadminChatMetric(this.label, this.value);
-
-  final String label;
-  final int value;
-}
-
 final class SuperadminChatConversation {
   const SuperadminChatConversation({
     required this.id,
@@ -39,7 +32,7 @@ final class SuperadminChatConversation {
   final String context;
   final String institution;
   final CoeloAdminContextKind targetKind;
-  final List<SuperadminChatMetric> metrics;
+  final List<CoeloAdminChatMetric> metrics;
   final String? unit;
   final String? group;
   final String? activity;
@@ -63,10 +56,10 @@ const superadminChatConversations = [
     institution: 'Centro Horizonte',
     targetKind: CoeloAdminContextKind.group,
     metrics: [
-      SuperadminChatMetric('Professores', 3),
-      SuperadminChatMetric('Crianças', 18),
-      SuperadminChatMetric('Responsáveis', 27),
-      SuperadminChatMetric('Atividades', 4),
+      CoeloAdminChatMetric('Professores', 3),
+      CoeloAdminChatMetric('Crianças', 18),
+      CoeloAdminChatMetric('Responsáveis', 27),
+      CoeloAdminChatMetric('Atividades', 4),
     ],
     state: 'CE',
     personRole: 'Professores',
@@ -87,10 +80,10 @@ const superadminChatConversations = [
     institution: 'Centro Horizonte',
     targetKind: CoeloAdminContextKind.unit,
     metrics: [
-      SuperadminChatMetric('Grupos', 8),
-      SuperadminChatMetric('Funcionários', 34),
-      SuperadminChatMetric('Crianças', 126),
-      SuperadminChatMetric('Atividades', 12),
+      CoeloAdminChatMetric('Grupos', 8),
+      CoeloAdminChatMetric('Funcionários', 34),
+      CoeloAdminChatMetric('Crianças', 126),
+      CoeloAdminChatMetric('Atividades', 12),
     ],
     state: 'CE',
     personRole: 'Outros',
@@ -106,10 +99,10 @@ const superadminChatConversations = [
     institution: 'Centro Horizonte',
     targetKind: CoeloAdminContextKind.activity,
     metrics: [
-      SuperadminChatMetric('Grupos', 2),
-      SuperadminChatMetric('Professores', 2),
-      SuperadminChatMetric('Crianças', 14),
-      SuperadminChatMetric('Responsáveis', 20),
+      CoeloAdminChatMetric('Grupos', 2),
+      CoeloAdminChatMetric('Professores', 2),
+      CoeloAdminChatMetric('Crianças', 14),
+      CoeloAdminChatMetric('Responsáveis', 20),
     ],
     state: 'CE',
     personRole: 'Respons\u00e1veis',
@@ -129,10 +122,10 @@ const superadminChatConversations = [
     institution: 'Instituto Aurora',
     targetKind: CoeloAdminContextKind.institution,
     metrics: [
-      SuperadminChatMetric('Unidades', 3),
-      SuperadminChatMetric('Grupos', 14),
-      SuperadminChatMetric('Atividades', 21),
-      SuperadminChatMetric('Pessoas', 284),
+      CoeloAdminChatMetric('Unidades', 3),
+      CoeloAdminChatMetric('Grupos', 14),
+      CoeloAdminChatMetric('Atividades', 21),
+      CoeloAdminChatMetric('Pessoas', 284),
     ],
     state: 'SP',
     personRole: 'Crian\u00e7as',

@@ -28,7 +28,7 @@ void main() {
         expect(find.byKey(const Key('superadmin-chat-inbox')), findsOne);
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
         expect(find.byKey(const Key('superadmin-chat-context-panel')), findsOne);
-        expect(find.byKey(const Key('chat-context-metric')), findsNWidgets(4));
+        expect(find.byKey(const Key('coelo-admin-chat-context-metric')), findsNWidgets(4));
       } else if (width >= CoeloBreakpoints.medium.minWidth) {
         expect(find.byKey(const Key('superadmin-chat-rail')), findsOne);
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
@@ -72,7 +72,7 @@ void main() {
       }
 
       final collapsedButton = tester.widget<IconButton>(
-        find.byKey(const Key('superadmin-chat-context-toggle-collapsed')),
+        find.byKey(const Key('coelo-admin-chat-context-toggle-collapsed')),
       );
       expect(collapsedButton.focusNode, isNotNull);
       collapsedButton.focusNode!.requestFocus();
@@ -83,7 +83,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final expandedButton = tester.widget<IconButton>(
-        find.byKey(const Key('superadmin-chat-context-toggle-expanded')),
+        find.byKey(const Key('coelo-admin-chat-context-toggle-expanded')),
       );
       expect(expandedButton.focusNode, isNotNull);
       expect(expandedButton.focusNode!.hasPrimaryFocus, isTrue);
@@ -92,7 +92,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final restoredButton = tester.widget<IconButton>(
-        find.byKey(const Key('superadmin-chat-context-toggle-collapsed')),
+        find.byKey(const Key('coelo-admin-chat-context-toggle-collapsed')),
       );
       expect(restoredButton.focusNode, same(collapsedButton.focusNode));
       expect(restoredButton.focusNode!.hasPrimaryFocus, isTrue);
@@ -689,7 +689,7 @@ const _localDemoConversation = SuperadminChatConversation(
   context: 'Centro Horizonte · Demonstração local',
   institution: 'Centro Horizonte',
   targetKind: CoeloAdminContextKind.activity,
-  metrics: [SuperadminChatMetric('Mensagens', 1)],
+  metrics: [CoeloAdminChatMetric('Mensagens', 1)],
   localInitialMessage: 'Demonstração local · nenhum envio real foi realizado.',
 );
 

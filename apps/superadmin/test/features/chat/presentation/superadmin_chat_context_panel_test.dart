@@ -30,7 +30,7 @@ void main() {
       await tester.pumpWidget(_app(testCase.conversation));
 
       expect(
-        find.byKey(const Key('chat-context-metric')),
+        find.byKey(const Key('coelo-admin-chat-context-metric')),
         findsNWidgets(testCase.labels.length),
         reason: testCase.conversation.title,
       );
@@ -131,10 +131,10 @@ const _personConversation = SuperadminChatConversation(
   institution: 'Instituição simulada',
   targetKind: CoeloAdminContextKind.institution,
   metrics: [
-    SuperadminChatMetric('Instituições', 2),
-    SuperadminChatMetric('Unidades', 3),
-    SuperadminChatMetric('Turmas', 2),
-    SuperadminChatMetric('Crianças', 2),
+    CoeloAdminChatMetric('Instituições', 2),
+    CoeloAdminChatMetric('Unidades', 3),
+    CoeloAdminChatMetric('Turmas', 2),
+    CoeloAdminChatMetric('Crianças', 2),
   ],
 );
 

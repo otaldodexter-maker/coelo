@@ -4,7 +4,7 @@ source: "Coelo Design System Oficial v1.docx; docs/superpowers/specs/2026-07-24-
 source_file: "Coelo Design System Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Design System Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Design/Coelo Design System Oficial v1.docx"
-supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md"
+supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/superpowers/specs/2026-07-27-superadmin-chat-adjustments-design.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -569,6 +569,43 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 
 - Anexos mostram tipo, tamanho, origem e disponibilidade; falha de upload deve ser recuperável.
 
+### Padrão institucional administrativo
+
+`pattern.chat-admin` é a referência para chat institucional em Admin e
+Superadmin. Sua anatomia combina launcher global, toolbar e filtros, inbox ou
+rail, fio, resumo contextual e compositor. O catálogo mantém a referência
+executável; apps consumidores compõem os componentes públicos sem importar o
+catálogo.
+
+| Área | Medida aprovada | Justificativa |
+| --- | --- | --- |
+| Inbox expandida | 336 px | Aproxima os 339–340 px das referências visuais e equivale a sete alvos de 48 px. |
+| Rail | 80 px | Usa `CoeloSpacing.space20` e comporta alvos de 48 px com respiro. |
+| Resumo contextual expandido | 288 px | Equivale a seis alvos de 48 px. |
+| Resumo contextual recolhido | 64 px | Combina alvo de 48 px e 16 px de padding. |
+| Launcher | Máximo de 460 × 600 px | Preserva 16 px nas bordas e 96 px de respiro inferior. |
+| Avatar de inbox/cabeçalho | Máximo de 48 × 48 px | Usa `CoeloSize.avatarLg`. |
+| Foto contextual | 1:1, máximo de 64 × 64 px | Usa `CoeloSize.avatarXl`; o recorte não autoriza exibição de mídia privada. |
+
+O resumo contextual identifica o destinatário e apresenta de duas a seis
+métricas textuais adequadas à granularidade recebida. O componente visual não
+calcula métricas, autorização, seleção ou envio. Filtros, recipient picker,
+fixtures e regras de mensagem permanecem na feature enquanto dependerem de
+domínio.
+
+| Classe de largura | Composição |
+| --- | --- |
+| Compact, 0–599 px | Fluxo empilhado entre inbox, fio e contexto. |
+| Medium, 600–839 px | Rail de 80 px e fio; contexto abre sob demanda. |
+| Expanded, 840–1199 px | Fio com laterais recolhíveis; o contexto pode iniciar recolhido. |
+| Large, 1200 px ou mais | Inbox, fio e resumo contextual simultâneos quando houver constraints suficientes. |
+
+As trocas dependem de `LayoutBuilder` e das constraints do pai, nunca do tipo de
+dispositivo. Recolher laterais preserva conversa selecionada e foco. O
+compositor envia por botão ou `Enter`, usa `Shift+Enter` para nova linha e
+mantém o contexto ativo textual. O launcher e o conteúdo reservam espaço entre
+si para não encobrir ações.
+
 ### Caixa De Conversas E Estado Do Avatar
 
 - `Conversas` é uma única caixa de entrada visual; `Todas` é a visão padrão.
@@ -862,7 +899,7 @@ A nomenclatura separa três camadas: primitive (valor físico), semantic (funç�
 | Radius | xs, sm, md, lg, xl, full. |
 | Elevation | 0, 1, 2, 3. |
 | Motion | instant, fast, short, standard, enter, emphasized. |
-| Size | touchMin 48, iconSm 20, iconMd 24, avatarSm 32, avatarMd 40, avatarLg 48. |
+| Size | touchMin 48, iconSm 20, iconMd 24, avatarSm 32, avatarMd 40, avatarLg 48, avatarXl 64. |
 
 ## 21.3 Flutter/Dart
 

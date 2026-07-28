@@ -17,7 +17,11 @@ Map<String, CatalogFoundation> buildChatFoundationRegistry() {
   return {
     'pattern.chat-admin': CatalogFoundation(
       id: 'pattern.chat-admin',
-      referencedComponentIds: const [...coreIds, 'admin.context-picker'],
+      referencedComponentIds: const [
+        ...coreIds,
+        'admin.context-picker',
+        'admin.chat-context-summary',
+      ],
       builder: (_) => const _AdministrativeChatFoundation(),
     ),
     'pattern.chat-principal-mobile': CatalogFoundation(
@@ -47,6 +51,11 @@ final class _AdministrativeChatFoundation extends StatefulWidget {
 
 final class _AdministrativeChatFoundationState extends State<_AdministrativeChatFoundation> {
   var _selected = 1;
+  var _selectedFilter = 'Todas';
+  var _inboxCollapsed = false;
+  bool? _contextCollapsed;
+  var _compactPane = _AdministrativeChatPane.inbox;
+  var _launcherOpen = false;
 
   Future<void> _openContextPicker() {
     return showDialog<void>(
@@ -70,25 +79,385 @@ final class _AdministrativeChatFoundationState extends State<_AdministrativeChat
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      key: const Key('catalog-admin-chat-pattern'),
       height: 700,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final inbox = _ConversationInbox(
-            selected: _selected,
-            onSelected: (index) => setState(() => _selected = index),
-            onNewConversation: _openContextPicker,
-          );
-          if (constraints.maxWidth < 720) {
-            return inbox;
-          }
-          return Row(
+          final width = constraints.maxWidth;
+          final conversation = catalogChatConversations[_selected];
+          final content = _buildResponsiveContent(width: width, conversation: conversation);
+          return Stack(
             children: [
-              SizedBox(width: 320, child: inbox),
-              const VerticalDivider(width: 1),
-              const Expanded(child: _ConversationThread(showAdministrativeActions: true)),
+              Column(
+                children: [
+                  _AdministrativeChatToolbar(
+                    selectedFilter: _selectedFilter,
+                    onSelected: (filter) => setState(() => _selectedFilter = filter),
+                  ),
+                  Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                  Expanded(child: content),
+                ],
+              ),
+              Positioned(
+                right: _launcherRightInset(width),
+                bottom: CoeloSpacing.space24,
+                child: _launcherOpen
+                    ? _AdministrativeLauncherPreview(
+                        maxWidth: width,
+                        selected: _selected,
+                        onSelected: _selectConversation,
+                        onClose: () => setState(() => _launcherOpen = false),
+                        onNewConversation: _openContextPicker,
+                      )
+                    : FilledButton.icon(
+                        key: const Key('catalog-admin-chat-launcher'),
+                        onPressed: () => setState(() => _launcherOpen = true),
+                        icon: const Icon(Icons.chat_bubble_outline),
+                        label: const Text('Mensagens 3'),
+                      ),
+              ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildResponsiveContent({
+    required double width,
+    required CatalogChatConversation conversation,
+  }) {
+    if (width < CoeloBreakpoints.medium.minWidth) {
+      return switch (_compactPane) {
+        _AdministrativeChatPane.inbox => _buildInbox(),
+        _AdministrativeChatPane.thread => _ConversationThread(
+          conversation: conversation,
+          showAdministrativeActions: true,
+          onBack: () => setState(() => _compactPane = _AdministrativeChatPane.inbox),
+          onContext: () => setState(() => _compactPane = _AdministrativeChatPane.context),
+        ),
+        _AdministrativeChatPane.context => _buildContextSummary(
+          conversation: conversation,
+          collapsed: false,
+          compact: true,
+        ),
+      };
+    }
+
+    if (width < CoeloBreakpoints.expanded.minWidth) {
+      return Row(
+        children: [
+          SizedBox(
+            width: CoeloSpacing.space20,
+            child: _AdministrativeConversationRail(
+              selected: _selected,
+              onSelected: _selectConversation,
+              onExpand: () {},
+              onNewConversation: _openContextPicker,
+            ),
+          ),
+          VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          Expanded(
+            child: _compactPane == _AdministrativeChatPane.context
+                ? _buildContextSummary(conversation: conversation, collapsed: false, compact: true)
+                : _ConversationThread(
+                    conversation: conversation,
+                    showAdministrativeActions: true,
+                    onContext: () => setState(() => _compactPane = _AdministrativeChatPane.context),
+                  ),
+          ),
+        ],
+      );
+    }
+
+    final contextCollapsed = _contextCollapsed ?? width < CoeloBreakpoints.large.minWidth;
+    return Row(
+      children: [
+        SizedBox(
+          width: _inboxCollapsed ? CoeloSpacing.space20 : 336,
+          child: _inboxCollapsed
+              ? _AdministrativeConversationRail(
+                  selected: _selected,
+                  onSelected: _selectConversation,
+                  onExpand: () => setState(() => _inboxCollapsed = false),
+                  onNewConversation: _openContextPicker,
+                )
+              : _buildInbox(onCollapse: () => setState(() => _inboxCollapsed = true)),
+        ),
+        VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
+        Expanded(
+          child: _ConversationThread(conversation: conversation, showAdministrativeActions: true),
+        ),
+        SizedBox(
+          width: contextCollapsed ? CoeloSize.avatarXl : 288,
+          child: _buildContextSummary(
+            conversation: conversation,
+            collapsed: contextCollapsed,
+            compact: false,
+          ),
+        ),
+      ],
+    );
+  }
+
+  double _launcherRightInset(double width) {
+    if (width < CoeloBreakpoints.expanded.minWidth) {
+      return CoeloSpacing.space4;
+    }
+    final contextCollapsed = _contextCollapsed ?? width < CoeloBreakpoints.large.minWidth;
+    return (contextCollapsed ? CoeloSize.avatarXl : 288) + CoeloSpacing.space4;
+  }
+
+  Widget _buildInbox({VoidCallback? onCollapse}) {
+    return _ConversationInbox(
+      selected: _selected,
+      onSelected: _selectConversation,
+      onNewConversation: _openContextPicker,
+      onCollapse: onCollapse,
+    );
+  }
+
+  Widget _buildContextSummary({
+    required CatalogChatConversation conversation,
+    required bool collapsed,
+    required bool compact,
+  }) {
+    return CoeloAdminChatContextSummary(
+      title: conversation.title,
+      subtitle: conversation.context,
+      metrics: _catalogContextMetrics,
+      collapsed: collapsed,
+      onToggle: () => setState(() {
+        if (compact) {
+          _compactPane = _AdministrativeChatPane.thread;
+        } else {
+          _contextCollapsed = !collapsed;
+        }
+      }),
+      expandedToggleIcon: compact ? Icons.arrow_back : Icons.chevron_right,
+      expandedToggleTooltip: compact ? 'Voltar para a conversa' : 'Recolher painel contextual',
+      image: CoeloChatAvatar(
+        label: conversation.title,
+        initials: conversation.initials,
+        size: CoeloSize.avatarXl,
+      ),
+      footer: Row(
+        children: [
+          Icon(
+            Icons.science_outlined,
+            size: CoeloSize.iconSm,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: CoeloSpacing.space2),
+          const Expanded(child: Text('Dados simulados')),
+        ],
+      ),
+    );
+  }
+
+  void _selectConversation(int index) {
+    setState(() {
+      _selected = index;
+      _compactPane = _AdministrativeChatPane.thread;
+      _launcherOpen = false;
+    });
+  }
+}
+
+enum _AdministrativeChatPane { inbox, thread, context }
+
+const _catalogContextMetrics = [
+  CoeloAdminChatMetric('Professores', 3),
+  CoeloAdminChatMetric('Crianças', 18),
+  CoeloAdminChatMetric('Responsáveis', 27),
+  CoeloAdminChatMetric('Atividades', 4),
+];
+
+final class _AdministrativeChatToolbar extends StatelessWidget {
+  const _AdministrativeChatToolbar({required this.selectedFilter, required this.onSelected});
+
+  final String selectedFilter;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space3),
+      child: Row(
+        children: [
+          Text('Conversas', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(width: CoeloSpacing.space4),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final filter in const ['Todas', 'Instituição', 'Unidade', 'Pessoas']) ...[
+                    _AdministrativeFilter(
+                      label: filter,
+                      selected: selectedFilter == filter,
+                      onPressed: () => onSelected(filter),
+                    ),
+                    const SizedBox(width: CoeloSpacing.space2),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+final class _AdministrativeFilter extends StatelessWidget {
+  const _AdministrativeFilter({
+    required this.label,
+    required this.selected,
+    required this.onPressed,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: Material(
+        color: selected ? colors.primaryContainer : colors.surface,
+        shape: StadiumBorder(
+          side: BorderSide(
+            color: selected ? colors.primary : colors.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: InkWell(
+          key: Key('catalog-admin-filter-$label'),
+          customBorder: const StadiumBorder(),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          onTap: onPressed,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
+              child: Center(
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: selected ? colors.primary : colors.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _AdministrativeLauncherPreview extends StatelessWidget {
+  const _AdministrativeLauncherPreview({
+    required this.maxWidth,
+    required this.selected,
+    required this.onSelected,
+    required this.onClose,
+    required this.onNewConversation,
+  });
+
+  final double maxWidth;
+  final int selected;
+  final ValueChanged<int> onSelected;
+  final VoidCallback onClose;
+  final VoidCallback onNewConversation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      key: const Key('catalog-admin-chat-launcher-preview'),
+      elevation: CoeloElevation.level3,
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        width: maxWidth < 492 ? maxWidth - CoeloSpacing.space8 : 460,
+        height: 560,
+        child: _ConversationInbox(
+          selected: selected,
+          onSelected: onSelected,
+          onClose: onClose,
+          onNewConversation: onNewConversation,
+        ),
+      ),
+    );
+  }
+}
+
+final class _AdministrativeConversationRail extends StatelessWidget {
+  const _AdministrativeConversationRail({
+    required this.selected,
+    required this.onSelected,
+    required this.onExpand,
+    required this.onNewConversation,
+  });
+
+  final int selected;
+  final ValueChanged<int> onSelected;
+  final VoidCallback onExpand;
+  final VoidCallback onNewConversation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      key: const Key('catalog-admin-chat-rail'),
+      color: Theme.of(context).colorScheme.surface,
+      child: Column(
+        children: [
+          IconButton(
+            tooltip: 'Expandir conversas',
+            onPressed: onExpand,
+            icon: const Icon(Icons.chevron_right),
+          ),
+          IconButton(
+            tooltip: 'Nova conversa',
+            onPressed: onNewConversation,
+            icon: const Icon(Icons.edit_square),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: catalogChatConversations.length,
+              itemBuilder: (context, index) {
+                final conversation = catalogChatConversations[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                  child: Semantics(
+                    selected: selected == index,
+                    button: true,
+                    label: conversation.title,
+                    child: IconButton(
+                      tooltip: conversation.title,
+                      onPressed: () => onSelected(index),
+                      icon: CoeloChatAvatar(
+                        label: conversation.title,
+                        initials: conversation.initials,
+                        size: CoeloSize.avatarLg,
+                        nowState: conversation.nowState,
+                        presence: conversation.presence,
+                        presenceLabel: conversation.presence == CoeloChatPresence.available
+                            ? 'Equipe disponível'
+                            : null,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -251,12 +620,14 @@ final class _ConversationInbox extends StatelessWidget {
     required this.onSelected,
     required this.onNewConversation,
     this.onClose,
+    this.onCollapse,
   });
 
   final int selected;
   final ValueChanged<int> onSelected;
   final VoidCallback onNewConversation;
   final VoidCallback? onClose;
+  final VoidCallback? onCollapse;
 
   @override
   Widget build(BuildContext context) {
@@ -277,11 +648,17 @@ final class _ConversationInbox extends StatelessWidget {
                 onPressed: onNewConversation,
                 icon: const Icon(Icons.edit_square),
               ),
+              if (onCollapse != null)
+                IconButton(
+                  tooltip: 'Recolher conversas',
+                  onPressed: onCollapse,
+                  icon: const Icon(Icons.chevron_left),
+                ),
               if (onClose != null)
                 IconButton(
                   tooltip: 'Fechar conversas',
                   onPressed: onClose,
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.close_rounded),
                 ),
             ],
           ),
@@ -327,25 +704,50 @@ final class _ConversationInbox extends StatelessWidget {
 }
 
 final class _ConversationThread extends StatelessWidget {
-  const _ConversationThread({this.showAdministrativeActions = false});
+  const _ConversationThread({
+    this.conversation,
+    this.showAdministrativeActions = false,
+    this.onBack,
+    this.onContext,
+  });
 
+  final CatalogChatConversation? conversation;
   final bool showAdministrativeActions;
+  final VoidCallback? onBack;
+  final VoidCallback? onContext;
 
   @override
   Widget build(BuildContext context) {
+    final selected = conversation ?? catalogChatConversations[1];
     return Column(
       children: [
         CoeloConversationHeader(
-          avatar: const CoeloChatAvatar(label: 'Turma Girassol', initials: 'TG'),
-          title: 'Turma Girassol',
-          subtitle: 'Centro Horizonte · Unidade Cambuí',
+          avatar: CoeloChatAvatar(
+            label: selected.title,
+            initials: selected.initials,
+            size: CoeloSize.avatarLg,
+          ),
+          title: selected.title,
+          subtitle: selected.context,
           onProfilePressed: () => _showAuthorizedRelationships(context),
           actions: [
+            if (onBack != null)
+              IconButton(
+                tooltip: 'Voltar para conversas',
+                onPressed: onBack,
+                icon: const Icon(Icons.arrow_back),
+              ),
             if (showAdministrativeActions)
               IconButton(
                 tooltip: 'Ver vínculos',
                 onPressed: () => _showAuthorizedRelationships(context),
                 icon: const Icon(Icons.account_tree_outlined),
+              ),
+            if (onContext != null)
+              IconButton(
+                tooltip: 'Ver contexto',
+                onPressed: onContext,
+                icon: const Icon(Icons.info_outline),
               ),
           ],
         ),

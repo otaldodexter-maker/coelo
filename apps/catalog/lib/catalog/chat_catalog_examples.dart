@@ -78,8 +78,32 @@ Map<String, WidgetBuilder> buildChatCatalogExamples() {
         ],
       ),
     ),
+    'admin.chat-context-summary': (_) => SizedBox(
+      width: 288,
+      height: 640,
+      child: CoeloAdminChatContextSummary(
+        title: 'Turma Girassol',
+        subtitle: 'Centro Horizonte · Unidade Cambuí',
+        metrics: const [
+          CoeloAdminChatMetric('Professores', 3),
+          CoeloAdminChatMetric('Crianças', 18),
+          CoeloAdminChatMetric('Responsáveis', 27),
+          CoeloAdminChatMetric('Atividades', 4),
+        ],
+        collapsed: false,
+        onToggle: _noop,
+        image: const CoeloChatAvatar(
+          label: 'Turma Girassol',
+          initials: 'TG',
+          size: CoeloSize.avatarXl,
+        ),
+        footer: const Text('Dados simulados'),
+      ),
+    ),
   };
 }
+
+void _noop() {}
 
 Future<void> _showCatalogDialog(BuildContext context, String title) {
   return showDialog<void>(

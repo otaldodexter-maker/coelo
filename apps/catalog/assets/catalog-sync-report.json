@@ -19,8 +19,8 @@
       "example": "662f920e"
     },
     "admin.multi-select-filter": {
-      "source": "25ed64ab",
-      "example": "42ee4890"
+      "source": "05433b24",
+      "example": "0db00339"
     },
     "admin.pagination": {
       "source": "4733e35e",
@@ -79,32 +79,36 @@
       "example": "d994ba96"
     },
     "core.chat-avatar": {
-      "source": "59ad7342",
-      "example": "1bc8a0e6"
+      "source": "aea84c7d",
+      "example": "a3a690c7"
     },
     "core.conversation-tile": {
-      "source": "5c6057e3",
-      "example": "ba64d0cf"
+      "source": "f05cdf0b",
+      "example": "ca16ec27"
     },
     "core.conversation-header": {
-      "source": "3d4ecad7",
-      "example": "ee715d65"
+      "source": "cea055eb",
+      "example": "9ac720e0"
     },
     "core.message-bubble": {
-      "source": "eae407c5",
-      "example": "c54c61a9"
+      "source": "ab52b73c",
+      "example": "daf99f06"
     },
     "core.chat-composer": {
-      "source": "5e15d5b4",
-      "example": "126598b5"
+      "source": "c9c6c320",
+      "example": "7a5b1274"
     },
     "admin.context-picker": {
-      "source": "6c80616b",
-      "example": "387967e3"
+      "source": "1593029d",
+      "example": "86295c46"
+    },
+    "admin.chat-context-summary": {
+      "source": "67bd6d3d",
+      "example": "1e57d528"
     },
     "pattern.chat-admin": {
       "source": "811c9dc5",
-      "example": "c8ceee16"
+      "example": "b162ed73"
     },
     "pattern.chat-principal-mobile": {
       "source": "811c9dc5",

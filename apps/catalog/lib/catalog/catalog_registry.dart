@@ -24,7 +24,8 @@ const catalogRegistryManifestJson = r'''
   "admin.pagination": [],
   "admin.create-action": [],
   "admin.resizable-table": [],
-  "admin.context-picker": []
+  "admin.context-picker": [],
+  "admin.chat-context-summary": ["expanded", "collapsed"]
 }
 ''';
 

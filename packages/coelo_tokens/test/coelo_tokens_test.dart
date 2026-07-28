@@ -165,6 +165,7 @@ void main() {
       expect(CoeloRadius.md, 12);
       expect(CoeloMotion.standard, const Duration(milliseconds: 220));
       expect(CoeloSize.touchMin, 48);
+      expect(CoeloSize.avatarXl, 64);
       expect(CoeloBreakpoints.compact.maxWidth, 599);
       expect(CoeloBreakpoints.expanded.columns, 12);
     });

@@ -2,6 +2,7 @@ import 'package:coelo_catalog/catalog/catalog_foundations.dart';
 import 'package:coelo_catalog/catalog/catalog_registry.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,6 +16,7 @@ void main() {
       'core.message-bubble',
       'core.chat-composer',
       'admin.context-picker',
+      'admin.chat-context-summary',
     ];
 
     expect(registry.keys, containsAll(ids));
@@ -101,11 +103,101 @@ void main() {
     expect(find.byTooltip('Áudio · Em breve'), findsNothing);
     expect(find.byTooltip('Mídia · Em breve'), findsNothing);
   });
+
+  testWidgets('adapts the administrative chat at 375 768 1024 and 1440', (tester) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    tester.view.physicalSize = const Size(375, 760);
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    expect(find.byKey(const Key('catalog-admin-chat-rail')), findsNothing);
+    expect(find.text('Turma Girassol'), findsOne);
+    await tester.tap(find.text('Turma Girassol'));
+    await tester.pump();
+    expect(find.byType(CoeloChatComposer), findsOne);
+    await tester.tap(find.byTooltip('Ver contexto'));
+    await tester.pump();
+    expect(find.byType(CoeloAdminChatContextSummary), findsOne);
+    expect(find.text('Dados simulados'), findsOne);
+    await tester.tap(find.byTooltip('Voltar para a conversa'));
+    await tester.pump();
+
+    tester.view.physicalSize = const Size(768, 760);
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    expect(find.byKey(const Key('catalog-admin-chat-rail')), findsOne);
+    expect(find.byType(CoeloChatComposer), findsOne);
+    await tester.tap(find.byTooltip('Ver contexto'));
+    await tester.pump();
+    expect(find.byType(CoeloAdminChatContextSummary), findsOne);
+    await tester.tap(find.byTooltip('Voltar para a conversa'));
+    await tester.pump();
+
+    tester.view.physicalSize = const Size(1024, 760);
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    expect(find.byTooltip('Recolher conversas'), findsOne);
+    expect(find.byTooltip('Mostrar detalhes do contexto'), findsOne);
+
+    tester.view.physicalSize = const Size(1440, 900);
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    expect(find.byTooltip('Recolher conversas'), findsOne);
+    expect(find.byTooltip('Recolher painel contextual'), findsOne);
+    await tester.tap(find.byTooltip('Recolher conversas'));
+    await tester.pump();
+    expect(find.byKey(const Key('catalog-admin-chat-rail')), findsOne);
+    expect(find.byType(CoeloChatComposer), findsOne);
+  });
+
+  testWidgets('opens the administrative launcher within 460 by 600', (tester) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    await tester.tap(find.byKey(const Key('catalog-admin-chat-launcher')));
+    await tester.pump();
+
+    final size = tester.getSize(find.byKey(const Key('catalog-admin-chat-launcher-preview')));
+    expect(size.width, lessThanOrEqualTo(460));
+    expect(size.height, lessThanOrEqualTo(600));
+    expect(find.byTooltip('Fechar conversas'), findsOne);
+  });
+
+  testWidgets('golden administrative chat mobile light', (tester) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 760);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder)));
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('goldens/chat_admin_mobile_light.png'),
+    );
+  });
+
+  testWidgets('golden administrative chat desktop dark', (tester) async {
+    final foundation = buildCatalogFoundationRegistry()['pattern.chat-admin']!;
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(Builder(builder: foundation.builder), theme: CoeloTheme.dark));
+    await expectLater(
+      find.byType(Scaffold),
+      matchesGoldenFile('goldens/chat_admin_desktop_dark.png'),
+    );
+  });
 }
 
-Widget _app(Widget child) {
+Widget _app(Widget child, {ThemeData? theme}) {
   return MaterialApp(
-    theme: CoeloTheme.light,
+    theme: theme ?? CoeloTheme.light,
     home: Scaffold(body: child),
   );
 }
