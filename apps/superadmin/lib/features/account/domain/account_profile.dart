@@ -9,6 +9,8 @@ enum EmailChangeStatus { pending, approved, rejected }
 
 @immutable
 class AccountAvatar {
+  static const defaultBackgroundColor = CoeloPalette.orange50;
+
   const AccountAvatar({
     required this.mode,
     required this.initials,
@@ -29,6 +31,12 @@ class AccountAvatar {
     final parts = [firstName.trim(), lastName.trim()].where((part) => part.isNotEmpty).toList();
     return parts.take(2).map((part) => part.characters.first.toUpperCase()).join();
   }
+
+  AccountAvatar resetFor(String firstName, String lastName) => AccountAvatar(
+    mode: AccountAvatarMode.initials,
+    initials: initialsFor(firstName, lastName),
+    backgroundColor: defaultBackgroundColor,
+  );
 
   static String? validateInitials(String value) {
     return RegExp(r'^[A-Za-zÀ-ÖØ-öø-ÿ]{1,2}$').hasMatch(value.trim())
@@ -100,6 +108,7 @@ class AccountProfile {
     required this.firstName,
     required this.lastName,
     required this.email,
+    required this.mobilePhone,
     required this.avatar,
     required this.access,
     this.emailChange,
@@ -109,6 +118,7 @@ class AccountProfile {
     firstName: 'Owner',
     lastName: 'Coelo',
     email: 'owner@coelo.me',
+    mobilePhone: '+55 11 99999-0000',
     avatar: AccountAvatar(
       mode: AccountAvatarMode.initials,
       initials: 'OC',
@@ -124,6 +134,7 @@ class AccountProfile {
   final String firstName;
   final String lastName;
   final String email;
+  final String mobilePhone;
   final AccountAvatar avatar;
   final AccountAccessSummary access;
   final EmailChangeRequest? emailChange;
@@ -150,6 +161,7 @@ class AccountProfile {
     String? firstName,
     String? lastName,
     String? email,
+    String? mobilePhone,
     AccountAvatar? avatar,
     AccountAccessSummary? access,
     EmailChangeRequest? emailChange,
@@ -159,6 +171,7 @@ class AccountProfile {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
+      mobilePhone: mobilePhone ?? this.mobilePhone,
       avatar: avatar ?? this.avatar,
       access: access ?? this.access,
       emailChange: clearEmailChange ? null : emailChange ?? this.emailChange,

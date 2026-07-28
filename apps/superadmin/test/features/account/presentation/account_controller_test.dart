@@ -26,6 +26,7 @@ void main() {
       firstName: 'Owner',
       lastName: 'Coelo',
       email: 'novo@coelo.me',
+      mobilePhone: controller.profile!.mobilePhone,
       avatar: controller.profile!.avatar,
     );
 
@@ -35,11 +36,24 @@ void main() {
     expect(activities.activities.single.actionStatus, SuperadminActivityActionStatus.pending);
   });
 
+  test('saves the trimmed mobile phone in the profile', () async {
+    await controller.saveProfile(
+      firstName: 'Owner',
+      lastName: 'Coelo',
+      email: 'owner@coelo.me',
+      mobilePhone: ' +55 11 98888-7777 ',
+      avatar: controller.profile!.avatar,
+    );
+
+    expect(controller.profile!.mobilePhone, '+55 11 98888-7777');
+  });
+
   test('approval applies the pending email and updates the activity', () async {
     await controller.saveProfile(
       firstName: 'Owner',
       lastName: 'Coelo',
       email: 'novo@coelo.me',
+      mobilePhone: controller.profile!.mobilePhone,
       avatar: controller.profile!.avatar,
     );
     final activity = activities.activities.single;
@@ -55,6 +69,7 @@ void main() {
       firstName: 'Owner',
       lastName: 'Coelo',
       email: 'novo@coelo.me',
+      mobilePhone: controller.profile!.mobilePhone,
       avatar: controller.profile!.avatar,
     );
 

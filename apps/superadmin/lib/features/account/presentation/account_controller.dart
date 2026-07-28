@@ -29,6 +29,7 @@ final class AccountController extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String email,
+    required String mobilePhone,
     required AccountAvatar avatar,
   }) async {
     final current = _profile;
@@ -37,6 +38,7 @@ final class AccountController extends ChangeNotifier {
     var next = current.copyWith(
       firstName: firstName.trim(),
       lastName: lastName.trim(),
+      mobilePhone: mobilePhone.trim(),
       avatar: avatar,
     );
     final normalizedEmail = email.trim().toLowerCase();

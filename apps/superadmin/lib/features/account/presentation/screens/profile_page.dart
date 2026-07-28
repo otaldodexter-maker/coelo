@@ -114,6 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
       firstName: _firstName.text,
       lastName: _lastName.text,
       email: _email.text,
+      mobilePhone: widget.controller.profile!.mobilePhone,
       avatar: _avatar!.copyWith(initials: normalizedInitials),
     );
     if (mounted) setState(() {});

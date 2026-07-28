@@ -1,9 +1,27 @@
+import 'dart:typed_data';
+
 import 'package:coelo_superadmin/features/account/domain/account_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AccountAvatar', () {
+    test('resets a photo avatar to initials derived from the profile name', () {
+      final avatar = AccountAvatar(
+        mode: AccountAvatarMode.photo,
+        initials: 'XX',
+        backgroundColor: Colors.black,
+        photoBytes: Uint8List.fromList([1, 2, 3]),
+      );
+
+      final reset = avatar.resetFor('Maria', 'Silva');
+
+      expect(reset.mode, AccountAvatarMode.initials);
+      expect(reset.initials, 'MS');
+      expect(reset.photoBytes, isNull);
+      expect(reset.backgroundColor, AccountAvatar.defaultBackgroundColor);
+    });
+
     test('derives at most two uppercase initials from the profile name', () {
       expect(AccountAvatar.initialsFor('Adriano', 'Coelo'), 'AC');
       expect(AccountAvatar.initialsFor('adriano', ''), 'A');
@@ -24,6 +42,16 @@ void main() {
   });
 
   group('AccountProfile', () {
+    test('prototype provides the configured mobile phone', () {
+      expect(AccountProfile.prototype().mobilePhone, '+55 11 99999-0000');
+    });
+
+    test('copyWith preserves the mobile phone when it is not supplied', () {
+      final profile = AccountProfile.prototype().copyWith(firstName: 'Maria');
+
+      expect(profile.mobilePhone, '+55 11 99999-0000');
+    });
+
     test('keeps the active email while a different email is pending', () {
       final profile = AccountProfile.prototype().requestEmailChange('novo@coelo.me');
 
