@@ -30,7 +30,10 @@ final class InstitutionFormSection extends StatelessWidget {
         controller: controller,
         locationService: locationService,
       ),
-      InstitutionFormStep.owner => _OwnerSection(controller: controller),
+      InstitutionFormStep.legalRepresentatives => _LegalRepresentativesSection(
+        controller: controller,
+      ),
+      InstitutionFormStep.administrators => _AdministratorsSection(controller: controller),
       InstitutionFormStep.plan => _PlanSection(controller: controller),
       InstitutionFormStep.branding => _BrandingSection(controller: controller),
       InstitutionFormStep.review => _ReviewSection(controller: controller),
@@ -331,59 +334,516 @@ final class _LocationSectionState extends State<_LocationSection> {
       controller.text(InstitutionFormField.state) == state;
 }
 
-final class _OwnerSection extends StatelessWidget {
-  const _OwnerSection({required this.controller});
+final class _LegalRepresentativesSection extends StatelessWidget {
+  const _LegalRepresentativesSection({required this.controller});
   final InstitutionFormController controller;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return _Section(
-      title: 'Responsável inicial',
-      description: 'Cadastre a pessoa que será responsável principal (owner).',
+      title: 'Representantes legais',
+      description: 'Cadastre as pessoas legalmente responsáveis pela instituição.',
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _FieldGrid(
-            children: [
-              _field(controller, InstitutionFormField.ownerFirstName, 'Nome'),
-              _field(controller, InstitutionFormField.ownerLastName, 'Sobrenome'),
-              _field(controller, InstitutionFormField.ownerDisplayName, 'Nome de exibição'),
-              _field(
-                controller,
-                InstitutionFormField.ownerEmail,
-                'E-mail',
-                inputType: TextInputType.emailAddress,
-              ),
-              _field(controller, InstitutionFormField.ownerMobilePhone, 'Celular'),
-              InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Papel',
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
-                child: const Text('Responsável principal / owner'),
-              ),
-            ],
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          DecoratedBox(
-            key: const Key('institution-owner-invitation-notice'),
-            decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(CoeloRadius.md),
-              border: Border.all(color: colors.primary.withValues(alpha: 0.24)),
+          for (final representative in controller.legalRepresentatives)
+            _PersonCard(
+              key: Key('institution-legal-representative-${representative.id}'),
+              person: representative.person,
+              supportingText: 'Representante legal',
+              onEdit: () => _editRepresentative(context, representative),
+              onRemove: () => controller.removeLegalRepresentative(representative.id),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(CoeloSpacing.space4),
+          if (controller.legalRepresentatives.isEmpty)
+            const _EmptyPeopleMessage(message: 'Nenhum representante legal cadastrado.'),
+          if (controller.legalRepresentativesError case final error?)
+            Padding(
+              padding: const EdgeInsets.only(top: CoeloSpacing.space2),
               child: Text(
-                'O convite e a ativação de acesso do responsável serão configurados em uma etapa futura.',
-                style: TextStyle(color: colors.onPrimaryContainer),
+                error,
+                key: const Key('institution-legal-representatives-error'),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
+            ),
+          const SizedBox(height: CoeloSpacing.space4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: const Key('institution-add-legal-representative'),
+              onPressed: () => _addRepresentative(context),
+              icon: const Icon(Icons.person_add_alt_1_rounded),
+              label: const Text('Adicionar representante'),
             ),
           ),
         ],
       ),
     );
   }
+
+  Future<void> _addRepresentative(BuildContext context) async {
+    final person = await _showPersonDialog(context, title: 'Adicionar representante legal');
+    if (person != null) {
+      controller.addLegalRepresentative(person);
+    }
+  }
+
+  Future<void> _editRepresentative(
+    BuildContext context,
+    InstitutionLegalRepresentative representative,
+  ) async {
+    final person = await _showPersonDialog(
+      context,
+      title: 'Editar representante legal',
+      initialValue: representative.person,
+    );
+    if (person != null) {
+      controller.updateLegalRepresentative(representative.id, person);
+    }
+  }
+}
+
+final class _AdministratorsSection extends StatefulWidget {
+  const _AdministratorsSection({required this.controller});
+  final InstitutionFormController controller;
+
+  @override
+  State<_AdministratorsSection> createState() => _AdministratorsSectionState();
+}
+
+final class _AdministratorsSectionState extends State<_AdministratorsSection> {
+  late final Set<String> _selectedRepresentativeIds = {
+    ...widget.controller.recommendedAdministratorRepresentativeIds,
+  };
+
+  InstitutionFormController get controller => widget.controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final candidates = controller.legalRepresentatives
+        .where((item) => controller.recommendedAdministratorRepresentativeIds.contains(item.id))
+        .toList(growable: false);
+    return _Section(
+      title: 'Administradores',
+      description: 'Confirme quem administrará a instituição e acompanhe os convites locais.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (candidates.isNotEmpty) ...[
+            Text('Representantes sugeridos', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: CoeloSpacing.space2),
+            for (final candidate in candidates)
+              CheckboxListTile(
+                key: Key('institution-administrator-candidate-${candidate.id}'),
+                contentPadding: EdgeInsets.zero,
+                value: _selectedRepresentativeIds.contains(candidate.id),
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text(candidate.person.displayName),
+                subtitle: Text(candidate.person.email),
+                onChanged: (selected) => setState(() {
+                  if (selected ?? false) {
+                    _selectedRepresentativeIds.add(candidate.id);
+                  } else {
+                    _selectedRepresentativeIds.remove(candidate.id);
+                  }
+                }),
+              ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton(
+                key: const Key('institution-confirm-representative-administrators'),
+                onPressed: _selectedRepresentativeIds.isEmpty
+                    ? null
+                    : () {
+                        controller.confirmRepresentativeAdministrators(_selectedRepresentativeIds);
+                        setState(_selectedRepresentativeIds.clear);
+                      },
+                child: const Text('Confirmar seleção'),
+              ),
+            ),
+            const SizedBox(height: CoeloSpacing.space5),
+          ],
+          for (final administrator in controller.administrators)
+            _AdministratorCard(
+              administrator: administrator,
+              onEdit: () => _editAdministrator(context, administrator),
+              onRemove: () => controller.removeAdministrator(administrator.id),
+              onSendInvitation: () => controller.sendAdministratorInvitation(administrator.id),
+            ),
+          if (controller.administrators.isEmpty)
+            const _EmptyPeopleMessage(message: 'Nenhum administrador confirmado.'),
+          const SizedBox(height: CoeloSpacing.space4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: const Key('institution-add-administrator'),
+              onPressed: () => _addAdministrator(context),
+              icon: const Icon(Icons.manage_accounts_outlined),
+              label: const Text('Adicionar administrador'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addAdministrator(BuildContext context) async {
+    final result = await _showAdministratorDialog(context, title: 'Adicionar administrador');
+    if (result != null) {
+      controller.addAdministrator(result.person, level: result.level);
+    }
+  }
+
+  Future<void> _editAdministrator(
+    BuildContext context,
+    InstitutionAdministratorDraft administrator,
+  ) async {
+    final result = await _showAdministratorDialog(
+      context,
+      title: 'Editar administrador',
+      initialPerson: administrator.person,
+      initialLevel: administrator.level,
+    );
+    if (result != null) {
+      controller.updateAdministrator(administrator.id, person: result.person, level: result.level);
+    }
+  }
+}
+
+final class _EmptyPeopleMessage extends StatelessWidget {
+  const _EmptyPeopleMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Padding(padding: const EdgeInsets.all(CoeloSpacing.space4), child: Text(message)),
+    );
+  }
+}
+
+final class _PersonCard extends StatelessWidget {
+  const _PersonCard({
+    required this.person,
+    required this.supportingText,
+    required this.onEdit,
+    required this.onRemove,
+    super.key,
+  });
+
+  final InstitutionPersonDraft person;
+  final String supportingText;
+  final VoidCallback onEdit;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+      color: colors.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: colors.primaryContainer,
+              foregroundColor: colors.onPrimaryContainer,
+              child: Text(_personInitials(person)),
+            ),
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(person.displayName, style: Theme.of(context).textTheme.titleMedium),
+                  Text('$supportingText · ${person.email}'),
+                  Text(person.mobilePhone),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: 'Editar ${person.displayName}',
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined),
+            ),
+            IconButton(
+              tooltip: 'Remover ${person.displayName}',
+              onPressed: onRemove,
+              color: colors.error,
+              icon: const Icon(Icons.delete_outline_rounded),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _AdministratorCard extends StatelessWidget {
+  const _AdministratorCard({
+    required this.administrator,
+    required this.onEdit,
+    required this.onRemove,
+    required this.onSendInvitation,
+  });
+
+  final InstitutionAdministratorDraft administrator;
+  final VoidCallback onEdit;
+  final VoidCallback onRemove;
+  final VoidCallback onSendInvitation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _PersonCard(
+          key: Key('institution-administrator-${administrator.id}'),
+          person: administrator.person,
+          supportingText: '${administrator.level.label} · ${administrator.invitationStatus.label}',
+          onEdit: onEdit,
+          onRemove: onRemove,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: CoeloSpacing.space4,
+            right: CoeloSpacing.space4,
+            bottom: CoeloSpacing.space4,
+          ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CoeloSpacing.space3,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              OutlinedButton.icon(
+                key: Key('institution-send-invitation-${administrator.id}'),
+                onPressed: onSendInvitation,
+                icon: const Icon(Icons.send_outlined),
+                label: Text(
+                  administrator.invitationStatus == InstitutionInvitationStatus.notSent
+                      ? 'Enviar convite'
+                      : 'Reenviar convite',
+                ),
+              ),
+              Text(
+                'Histórico: ${administrator.invitationHistory.length} '
+                '${administrator.invitationHistory.length == 1 ? 'evento' : 'eventos'}',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+final class _AdministratorDialogResult {
+  const _AdministratorDialogResult({required this.person, required this.level});
+
+  final InstitutionPersonDraft person;
+  final InstitutionAdministratorLevel level;
+}
+
+Future<InstitutionPersonDraft?> _showPersonDialog(
+  BuildContext context, {
+  required String title,
+  InstitutionPersonDraft? initialValue,
+}) => showDialog<InstitutionPersonDraft>(
+  context: context,
+  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  builder: (context) => _PersonEditorDialog(title: title, initialPerson: initialValue),
+);
+
+Future<_AdministratorDialogResult?> _showAdministratorDialog(
+  BuildContext context, {
+  required String title,
+  InstitutionPersonDraft? initialPerson,
+  InstitutionAdministratorLevel initialLevel =
+      InstitutionAdministratorLevel.authorizedAdministrator,
+}) => showDialog<_AdministratorDialogResult>(
+  context: context,
+  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  builder: (context) =>
+      _PersonEditorDialog(title: title, initialPerson: initialPerson, initialLevel: initialLevel),
+);
+
+final class _PersonEditorDialog extends StatefulWidget {
+  const _PersonEditorDialog({required this.title, this.initialPerson, this.initialLevel});
+
+  final String title;
+  final InstitutionPersonDraft? initialPerson;
+  final InstitutionAdministratorLevel? initialLevel;
+
+  @override
+  State<_PersonEditorDialog> createState() => _PersonEditorDialogState();
+}
+
+final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
+  late final TextEditingController _firstName;
+  late final TextEditingController _lastName;
+  late final TextEditingController _displayName;
+  late final TextEditingController _email;
+  late final TextEditingController _mobilePhone;
+  late InstitutionAdministratorLevel _level =
+      widget.initialLevel ?? InstitutionAdministratorLevel.authorizedAdministrator;
+
+  bool get _valid =>
+      [
+        _firstName.text,
+        _lastName.text,
+        _displayName.text,
+        _email.text,
+        _mobilePhone.text,
+      ].every((value) => value.trim().isNotEmpty) &&
+      RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_email.text.trim());
+
+  @override
+  void initState() {
+    super.initState();
+    final person = widget.initialPerson;
+    _firstName = TextEditingController(text: person?.firstName ?? '');
+    _lastName = TextEditingController(text: person?.lastName ?? '');
+    _displayName = TextEditingController(text: person?.displayName ?? '');
+    _email = TextEditingController(text: person?.email ?? '');
+    _mobilePhone = TextEditingController(text: person?.mobilePhone ?? '');
+  }
+
+  @override
+  void dispose() {
+    _firstName.dispose();
+    _lastName.dispose();
+    _displayName.dispose();
+    _email.dispose();
+    _mobilePhone.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Dialog(
+      backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(CoeloSpacing.space6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
+                  ),
+                  IconButton(
+                    tooltip: 'Fechar',
+                    onPressed: Navigator.of(context).pop,
+                    color: colors.error,
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+              _FieldGrid(
+                children: [
+                  _personField(_firstName, 'Nome', 'first-name'),
+                  _personField(_lastName, 'Sobrenome', 'last-name'),
+                  _personField(_displayName, 'Nome de exibição', 'display-name'),
+                  _personField(_email, 'E-mail', 'email', keyboardType: TextInputType.emailAddress),
+                  _personField(
+                    _mobilePhone,
+                    'Celular',
+                    'mobile-phone',
+                    keyboardType: TextInputType.phone,
+                  ),
+                  if (widget.initialLevel != null)
+                    _dropdown<InstitutionAdministratorLevel>(
+                      key: const Key('institution-administrator-level-select'),
+                      label: 'Nível administrativo',
+                      value: _level,
+                      values: InstitutionAdministratorLevel.values,
+                      labelOf: (value) => value.label,
+                      onChanged: (value) => setState(() => _level = value),
+                      prefixIcon: Icons.admin_panel_settings_outlined,
+                    ),
+                ],
+              ),
+              const SizedBox(height: CoeloSpacing.space5),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: CoeloSpacing.space2,
+                runSpacing: CoeloSpacing.space2,
+                children: [
+                  OutlinedButton(
+                    onPressed: Navigator.of(context).pop,
+                    child: const Text('Cancelar'),
+                  ),
+                  FilledButton(
+                    key: const Key('institution-person-dialog-save'),
+                    onPressed: _valid ? _save : null,
+                    child: const Text('Salvar pessoa'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _personField(
+    TextEditingController controller,
+    String label,
+    String keyName, {
+    TextInputType? keyboardType,
+  }) => CoeloFormTextField(
+    controller: controller,
+    fieldKey: Key('institution-person-$keyName'),
+    labelText: label,
+    keyboardType: keyboardType,
+    prefixIcon: Icons.person_outline_rounded,
+    onChanged: (_) => setState(() {}),
+  );
+
+  void _save() {
+    final person = InstitutionPersonDraft(
+      firstName: _firstName.text.trim(),
+      lastName: _lastName.text.trim(),
+      displayName: _displayName.text.trim(),
+      email: _email.text.trim(),
+      mobilePhone: _mobilePhone.text.trim(),
+    );
+    Navigator.of(context).pop(
+      widget.initialLevel == null
+          ? person
+          : _AdministratorDialogResult(person: person, level: _level),
+    );
+  }
+}
+
+String _personInitials(InstitutionPersonDraft person) {
+  final first = person.firstName.trim();
+  final last = person.lastName.trim();
+  return '${first.isEmpty ? '' : first[0]}${last.isEmpty ? '' : last[0]}'.toUpperCase();
 }
 
 final class _PlanSection extends StatelessWidget {
@@ -1313,11 +1773,20 @@ final class _ReviewSection extends StatelessWidget {
             onEdit: () => controller.selectStep(InstitutionFormStep.location),
           ),
           _ReviewCard(
-            editKey: const Key('institution-review-edit-owner'),
-            title: 'Responsável',
-            summary:
-                '${controller.text(InstitutionFormField.ownerFirstName)} ${controller.text(InstitutionFormField.ownerLastName)}',
-            onEdit: () => controller.selectStep(InstitutionFormStep.owner),
+            editKey: const Key('institution-review-edit-legal-representatives'),
+            title: 'Representantes legais',
+            summary: controller.legalRepresentatives.isEmpty
+                ? 'Nenhum representante'
+                : '${controller.legalRepresentatives.length} cadastrado(s)',
+            onEdit: () => controller.selectStep(InstitutionFormStep.legalRepresentatives),
+          ),
+          _ReviewCard(
+            editKey: const Key('institution-review-edit-administrators'),
+            title: 'Administradores',
+            summary: controller.administrators.isEmpty
+                ? 'Nenhum administrador'
+                : '${controller.administrators.length} cadastrado(s)',
+            onEdit: () => controller.selectStep(InstitutionFormStep.administrators),
           ),
           _ReviewCard(
             editKey: const Key('institution-review-edit-plan'),

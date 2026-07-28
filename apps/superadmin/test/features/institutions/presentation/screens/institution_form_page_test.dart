@@ -162,43 +162,32 @@ void main() {
 
     const requiredError = 'Preencha este campo para concluir o cadastro.';
     final stateFinder = find.byKey(const Key('institution-state-select'));
-    final municipalityFinder = find.byKey(
-      const Key('institution-municipality-select'),
-    );
+    final municipalityFinder = find.byKey(const Key('institution-municipality-select'));
     expect(
       tester.widget<CoeloAdminSingleSelectField<String>>(stateFinder).errorText,
       requiredError,
     );
     expect(
-      tester
-          .widget<CoeloAdminSingleSelectField<String>>(municipalityFinder)
-          .errorText,
+      tester.widget<CoeloAdminSingleSelectField<String>>(municipalityFinder).errorText,
       requiredError,
     );
     expect(
       tester
-          .widgetList<Semantics>(
-            find.descendant(of: stateFinder, matching: find.byType(Semantics)),
-          )
+          .widgetList<Semantics>(find.descendant(of: stateFinder, matching: find.byType(Semantics)))
           .map((widget) => widget.properties.hint),
       contains(requiredError),
     );
     expect(
       tester
           .widgetList<Semantics>(
-            find.descendant(
-              of: municipalityFinder,
-              matching: find.byType(Semantics),
-            ),
+            find.descendant(of: municipalityFinder, matching: find.byType(Semantics)),
           )
           .map((widget) => widget.properties.hint),
       contains(requiredError),
     );
   });
 
-  testWidgets('editing CEP clears lookup error and reveals current validation', (
-    tester,
-  ) async {
+  testWidgets('editing CEP clears lookup error and reveals current validation', (tester) async {
     await _useDesktopSurface(tester);
     final service = InstitutionLocationService(
       client: MockClient((_) async => http.Response('{"erro": true}', 200)),
@@ -222,9 +211,7 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-step-location-error')));
     await tester.pumpAndSettle();
 
-    final postalCodeField = find.byKey(
-      const Key('institution-field-postalCode'),
-    );
+    final postalCodeField = find.byKey(const Key('institution-field-postalCode'));
     await tester.enterText(postalCodeField, '00000000');
     await tester.tap(find.byTooltip('Buscar CEP'));
     await tester.pumpAndSettle();
@@ -234,10 +221,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('CEP não encontrado.'), findsNothing);
-    expect(
-      find.text('Informe um CEP com exatamente 8 dígitos.'),
-      findsOneWidget,
-    );
+    expect(find.text('Informe um CEP com exatamente 8 dígitos.'), findsOneWidget);
   });
 
   testWidgets('ViaCEP shows loading and fills address without locking manual edits', (
@@ -731,7 +715,7 @@ void main() {
         ),
       ),
     );
-    for (var step = 0; step < 4; step++) {
+    for (var step = 0; step < 5; step++) {
       await tester.tap(find.byKey(const Key('institution-form-continue')));
       await tester.pumpAndSettle();
     }
@@ -798,7 +782,7 @@ void main() {
     expect(find.text('B'), findsOneWidget);
   });
 
-  testWidgets('location offers CEP lookup and owner notice uses the orange information surface', (
+  testWidgets('location offers CEP lookup and representatives use a neutral surface', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -819,15 +803,57 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byTooltip('Buscar CEP'), findsOneWidget);
 
-    await tester.tap(find.text('Responsável inicial'));
+    await tester.tap(find.text('Representantes legais'));
     await tester.pumpAndSettle();
-    final notice = tester.widget<DecoratedBox>(
-      find.byKey(const Key('institution-owner-invitation-notice')),
+    final representativeCard = tester.widget<Card>(
+      find.descendant(
+        of: find.byKey(const Key('institution-legal-representative-representative-legacy')),
+        matching: find.byType(Card),
+      ),
     );
+    expect(representativeCard.color, CoeloTheme.light.colorScheme.surface);
+  });
+
+  testWidgets('representatives are explicitly confirmed as admin master before inviting', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Representantes legais'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-add-legal-representative')), findsOneWidget);
+    expect(find.text('Rafael Coelho'), findsOneWidget);
+
+    await tester.tap(find.text('Administradores'));
+    await tester.pumpAndSettle();
     expect(
-      (notice.decoration as BoxDecoration).color,
-      CoeloTheme.light.colorScheme.primaryContainer,
+      find.byKey(const Key('institution-confirm-representative-administrators')),
+      findsOneWidget,
     );
+    expect(find.text('Rafael Coelho'), findsOneWidget);
+    expect(find.text('Admin Master'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Admin Master'), findsOneWidget);
+    expect(find.textContaining('Não enviado'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-send-invitation-administrator-1')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Enviado'), findsOneWidget);
+    expect(find.textContaining('Histórico: 1 evento'), findsOneWidget);
   });
 
   testWidgets('plan omits justification and exit actions split the dialog width equally', (
@@ -983,7 +1009,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-field-brandDisplayName')), findsOneWidget);
-    expect(find.text('Etapa 1 de 6'), findsOneWidget);
+    expect(find.text('Etapa 1 de 7'), findsOneWidget);
   });
 
   testWidgets('renders approved breakpoints without overflow', (tester) async {
@@ -993,6 +1019,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           InstitutionFormPage(
+            key: ValueKey(width),
             repository: FakeInstitutionDirectoryRepository(),
             logout: _logout,
             onCancel: () {},
@@ -1004,7 +1031,7 @@ void main() {
 
       expect(tester.takeException(), isNull, reason: 'overflow at ${width.toInt()} px');
       if (width == 375) {
-        expect(find.text('Etapa 1 de 6'), findsOneWidget);
+        expect(find.text('Etapa 1 de 7'), findsOneWidget);
       }
 
       for (var step = 0; step < 2; step++) {
@@ -1018,7 +1045,7 @@ void main() {
       );
       expect(tester.takeException(), isNull, reason: 'location overflow at ${width.toInt()} px');
 
-      for (var step = 0; step < 2; step++) {
+      for (var step = 0; step < 3; step++) {
         await tester.tap(find.byKey(const Key('institution-form-continue')));
         await tester.pumpAndSettle();
       }
@@ -1070,7 +1097,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Etapa 1 de 6'), findsOneWidget);
+    expect(find.text('Etapa 1 de 7'), findsOneWidget);
   });
 
   testWidgets('uses the neutral dialog surface in dark mode and Escape keeps editing', (

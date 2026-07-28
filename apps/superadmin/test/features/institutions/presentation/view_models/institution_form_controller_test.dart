@@ -26,6 +26,103 @@ void main() {
     expect(controller.plan, record.plan);
   });
 
+  test('create requires a legal representative while edit accepts none', () {
+    final createController = InstitutionFormController()
+      ..selectStep(InstitutionFormStep.legalRepresentatives);
+    final editController = InstitutionFormController(
+      record: FakeInstitutionDirectoryRepository().records.first,
+    )..selectStep(InstitutionFormStep.legalRepresentatives);
+    addTearDown(createController.dispose);
+    addTearDown(editController.dispose);
+
+    expect(createController.validateCurrentStep(), isFalse);
+    expect(createController.legalRepresentativesError, isNotNull);
+
+    editController.removeLegalRepresentative(editController.legalRepresentatives.single.id);
+    expect(editController.validateCurrentStep(), isTrue);
+  });
+
+  test('legal representatives can be added, edited and removed independently', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+
+    controller
+      ..addLegalRepresentative(
+        const InstitutionPersonDraft(
+          firstName: 'Ana',
+          lastName: 'Souza',
+          displayName: 'Ana Souza',
+          email: 'ana@example.com',
+          mobilePhone: '+55 11 99999-0001',
+        ),
+      )
+      ..addLegalRepresentative(
+        const InstitutionPersonDraft(
+          firstName: 'Caio',
+          lastName: 'Lima',
+          displayName: 'Caio Lima',
+          email: 'caio@example.com',
+          mobilePhone: '+55 11 99999-0002',
+        ),
+      );
+
+    final ana = controller.legalRepresentatives.first;
+    controller.updateLegalRepresentative(ana.id, ana.person.copyWith(displayName: 'Ana S.'));
+    controller.removeLegalRepresentative(controller.legalRepresentatives.last.id);
+
+    expect(controller.legalRepresentatives, hasLength(1));
+    expect(controller.legalRepresentatives.single.person.displayName, 'Ana S.');
+  });
+
+  test('legal representatives become admin master only after explicit confirmation', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.addLegalRepresentative(
+      const InstitutionPersonDraft(
+        firstName: 'Ana',
+        lastName: 'Souza',
+        displayName: 'Ana Souza',
+        email: 'ana@example.com',
+        mobilePhone: '+55 11 99999-0001',
+      ),
+    );
+    final representativeId = controller.legalRepresentatives.single.id;
+
+    expect(controller.recommendedAdministratorRepresentativeIds, {representativeId});
+    expect(controller.administrators, isEmpty);
+
+    controller.confirmRepresentativeAdministrators({representativeId});
+
+    expect(controller.administrators, hasLength(1));
+    expect(controller.administrators.single.level, InstitutionAdministratorLevel.adminMaster);
+    expect(controller.administrators.single.invitationStatus, InstitutionInvitationStatus.notSent);
+  });
+
+  test('sending an invitation changes local state and records history', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.addAdministrator(
+      const InstitutionPersonDraft(
+        firstName: 'Bia',
+        lastName: 'Nunes',
+        displayName: 'Bia Nunes',
+        email: 'bia@example.com',
+        mobilePhone: '+55 11 99999-0003',
+      ),
+      level: InstitutionAdministratorLevel.authorizedAdministrator,
+    );
+    final administrator = controller.administrators.single;
+
+    controller.sendAdministratorInvitation(administrator.id);
+
+    expect(controller.administrators.single.invitationStatus, InstitutionInvitationStatus.sent);
+    expect(controller.administrators.single.invitationHistory, hasLength(1));
+    expect(
+      controller.administrators.single.invitationHistory.single.status,
+      InstitutionInvitationStatus.sent,
+    );
+  });
+
   test('leaving an invalid step marks it with error without blocking navigation', () {
     final controller = InstitutionFormController();
     addTearDown(controller.dispose);

@@ -8,7 +8,8 @@ enum InstitutionFormStep {
   branding('Identidade visual'),
   profile('Perfil da instituição'),
   location('Localização e contato'),
-  owner('Responsável inicial'),
+  legalRepresentatives('Representantes legais'),
+  administrators('Administradores'),
   plan('Plano'),
   review('Revisão');
 
@@ -17,6 +18,101 @@ enum InstitutionFormStep {
 }
 
 enum InstitutionFormStepStatus { current, complete, incomplete, error }
+
+enum InstitutionAdministratorLevel {
+  adminMaster('Admin Master'),
+  authorizedAdministrator('Administrador autorizado'),
+  coordinator('Coordenador');
+
+  const InstitutionAdministratorLevel(this.label);
+  final String label;
+}
+
+enum InstitutionInvitationStatus {
+  notSent('Não enviado'),
+  sent('Enviado'),
+  accepted('Aceito'),
+  expired('Expirado');
+
+  const InstitutionInvitationStatus(this.label);
+  final String label;
+}
+
+final class InstitutionPersonDraft {
+  const InstitutionPersonDraft({
+    required this.firstName,
+    required this.lastName,
+    required this.displayName,
+    required this.email,
+    required this.mobilePhone,
+  });
+
+  final String firstName;
+  final String lastName;
+  final String displayName;
+  final String email;
+  final String mobilePhone;
+
+  InstitutionPersonDraft copyWith({
+    String? firstName,
+    String? lastName,
+    String? displayName,
+    String? email,
+    String? mobilePhone,
+  }) => InstitutionPersonDraft(
+    firstName: firstName ?? this.firstName,
+    lastName: lastName ?? this.lastName,
+    displayName: displayName ?? this.displayName,
+    email: email ?? this.email,
+    mobilePhone: mobilePhone ?? this.mobilePhone,
+  );
+}
+
+final class InstitutionLegalRepresentative {
+  const InstitutionLegalRepresentative({required this.id, required this.person});
+
+  final String id;
+  final InstitutionPersonDraft person;
+}
+
+final class InstitutionInvitationHistoryEntry {
+  const InstitutionInvitationHistoryEntry({required this.status, required this.occurredAt});
+
+  final InstitutionInvitationStatus status;
+  final DateTime occurredAt;
+}
+
+final class InstitutionAdministratorDraft {
+  const InstitutionAdministratorDraft({
+    required this.id,
+    required this.person,
+    required this.level,
+    required this.invitationStatus,
+    required this.invitationHistory,
+    this.sourceRepresentativeId,
+  });
+
+  final String id;
+  final InstitutionPersonDraft person;
+  final InstitutionAdministratorLevel level;
+  final InstitutionInvitationStatus invitationStatus;
+  final List<InstitutionInvitationHistoryEntry> invitationHistory;
+  final String? sourceRepresentativeId;
+
+  InstitutionAdministratorDraft copyWith({
+    InstitutionPersonDraft? person,
+    InstitutionAdministratorLevel? level,
+    InstitutionInvitationStatus? invitationStatus,
+    List<InstitutionInvitationHistoryEntry>? invitationHistory,
+  }) => InstitutionAdministratorDraft(
+    id: id,
+    person: person ?? this.person,
+    level: level ?? this.level,
+    invitationStatus: invitationStatus ?? this.invitationStatus,
+    invitationHistory: invitationHistory ?? this.invitationHistory,
+    sourceRepresentativeId: sourceRepresentativeId,
+  );
+}
 
 enum InstitutionFormField {
   publicName,
@@ -79,14 +175,21 @@ final class InstitutionFormController extends ChangeNotifier {
     for (final field in InstitutionFormField.values) {
       _controllers[field] = TextEditingController(text: values[field] ?? '');
     }
+    final legacyRepresentative = _legacyRepresentative(record);
+    if (legacyRepresentative != null) {
+      _legalRepresentatives.add(legacyRepresentative);
+    }
     _initialSignature = _signature;
   }
 
   final InstitutionRecord? original;
   final Map<InstitutionFormField, TextEditingController> _controllers = {};
   final Set<InstitutionFormStep> _attemptedSteps = {};
+  final List<InstitutionLegalRepresentative> _legalRepresentatives = [];
+  final List<InstitutionAdministratorDraft> _administrators = [];
   late String _initialSignature;
   bool _slugManuallyEdited = false;
+  var _personSequence = 0;
 
   InstitutionFormStep currentStep = InstitutionFormStep.branding;
   InstitutionStatus status;
@@ -106,6 +209,22 @@ final class InstitutionFormController extends ChangeNotifier {
 
   bool get isEditing => original != null;
   bool get isDirty => _signature != _initialSignature;
+  List<InstitutionLegalRepresentative> get legalRepresentatives =>
+      List.unmodifiable(_legalRepresentatives);
+  List<InstitutionAdministratorDraft> get administrators => List.unmodifiable(_administrators);
+  Set<String> get recommendedAdministratorRepresentativeIds => {
+    for (final representative in _legalRepresentatives)
+      if (!_administrators.any(
+        (administrator) => administrator.sourceRepresentativeId == representative.id,
+      ))
+        representative.id,
+  };
+  String? get legalRepresentativesError =>
+      _attemptedSteps.contains(InstitutionFormStep.legalRepresentatives) &&
+          !isEditing &&
+          _legalRepresentatives.isEmpty
+      ? 'Adicione pelo menos um representante legal para concluir o cadastro.'
+      : null;
 
   TextEditingController controllerOf(InstitutionFormField field) => _controllers[field]!;
   String text(InstitutionFormField field) => controllerOf(field).text.trim();
@@ -251,6 +370,96 @@ final class InstitutionFormController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addLegalRepresentative(InstitutionPersonDraft person) {
+    _legalRepresentatives.add(
+      InstitutionLegalRepresentative(id: _nextPersonId('representative'), person: person),
+    );
+    notifyListeners();
+  }
+
+  void updateLegalRepresentative(String id, InstitutionPersonDraft person) {
+    final index = _legalRepresentatives.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    _legalRepresentatives[index] = InstitutionLegalRepresentative(id: id, person: person);
+    notifyListeners();
+  }
+
+  void removeLegalRepresentative(String id) {
+    _legalRepresentatives.removeWhere((item) => item.id == id);
+    notifyListeners();
+  }
+
+  void confirmRepresentativeAdministrators(Set<String> representativeIds) {
+    for (final representative in _legalRepresentatives.where(
+      (item) => representativeIds.contains(item.id),
+    )) {
+      if (_administrators.any((item) => item.sourceRepresentativeId == representative.id)) {
+        continue;
+      }
+      _administrators.add(
+        InstitutionAdministratorDraft(
+          id: _nextPersonId('administrator'),
+          person: representative.person,
+          level: InstitutionAdministratorLevel.adminMaster,
+          invitationStatus: InstitutionInvitationStatus.notSent,
+          invitationHistory: const [],
+          sourceRepresentativeId: representative.id,
+        ),
+      );
+    }
+    notifyListeners();
+  }
+
+  void addAdministrator(
+    InstitutionPersonDraft person, {
+    required InstitutionAdministratorLevel level,
+  }) {
+    _administrators.add(
+      InstitutionAdministratorDraft(
+        id: _nextPersonId('administrator'),
+        person: person,
+        level: level,
+        invitationStatus: InstitutionInvitationStatus.notSent,
+        invitationHistory: const [],
+      ),
+    );
+    notifyListeners();
+  }
+
+  void updateAdministrator(
+    String id, {
+    required InstitutionPersonDraft person,
+    required InstitutionAdministratorLevel level,
+  }) {
+    final index = _administrators.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    _administrators[index] = _administrators[index].copyWith(person: person, level: level);
+    notifyListeners();
+  }
+
+  void removeAdministrator(String id) {
+    _administrators.removeWhere((item) => item.id == id);
+    notifyListeners();
+  }
+
+  void sendAdministratorInvitation(String id) {
+    final index = _administrators.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    final administrator = _administrators[index];
+    final history = [
+      ...administrator.invitationHistory,
+      InstitutionInvitationHistoryEntry(
+        status: InstitutionInvitationStatus.sent,
+        occurredAt: DateTime.now(),
+      ),
+    ];
+    _administrators[index] = administrator.copyWith(
+      invitationStatus: InstitutionInvitationStatus.sent,
+      invitationHistory: history,
+    );
+    notifyListeners();
+  }
+
   void markSaved() {
     _initialSignature = _signature;
     notifyListeners();
@@ -264,8 +473,8 @@ final class InstitutionFormController extends ChangeNotifier {
   }
 
   bool validateAll() {
-    _attemptedSteps.addAll(InstitutionFormStep.values.take(5));
-    final invalid = InstitutionFormStep.values.take(5).where((step) => !_isStepValid(step));
+    _attemptedSteps.addAll(_stepsBeforeReview);
+    final invalid = _stepsBeforeReview.where((step) => !_isStepValid(step));
     if (invalid.isNotEmpty) {
       currentStep = invalid.first;
       notifyListeners();
@@ -342,6 +551,7 @@ final class InstitutionFormController extends ChangeNotifier {
   }
 
   InstitutionRecord toRecord({required String id}) {
+    final primaryRepresentative = _legalRepresentatives.firstOrNull?.person;
     final units =
         original?.units ??
         [
@@ -378,11 +588,13 @@ final class InstitutionFormController extends ChangeNotifier {
       contactMobilePhone: text(InstitutionFormField.contactMobilePhone),
       whatsappNumber: text(InstitutionFormField.whatsappNumber),
       websiteUrl: text(InstitutionFormField.websiteUrl),
-      ownerFirstName: text(InstitutionFormField.ownerFirstName),
-      ownerLastName: text(InstitutionFormField.ownerLastName),
-      ownerDisplayName: text(InstitutionFormField.ownerDisplayName),
-      ownerEmail: text(InstitutionFormField.ownerEmail),
-      ownerMobilePhone: text(InstitutionFormField.ownerMobilePhone),
+      ownerFirstName: primaryRepresentative?.firstName ?? text(InstitutionFormField.ownerFirstName),
+      ownerLastName: primaryRepresentative?.lastName ?? text(InstitutionFormField.ownerLastName),
+      ownerDisplayName:
+          primaryRepresentative?.displayName ?? text(InstitutionFormField.ownerDisplayName),
+      ownerEmail: primaryRepresentative?.email ?? text(InstitutionFormField.ownerEmail),
+      ownerMobilePhone:
+          primaryRepresentative?.mobilePhone ?? text(InstitutionFormField.ownerMobilePhone),
       plan: plan,
       subscriptionStatus: subscriptionStatus,
       subscriptionStart: subscriptionStart,
@@ -410,7 +622,10 @@ final class InstitutionFormController extends ChangeNotifier {
 
   bool _isStepValid(InstitutionFormStep step) {
     if (step == InstitutionFormStep.review) {
-      return InstitutionFormStep.values.take(5).every(_isStepValid);
+      return _stepsBeforeReview.every(_isStepValid);
+    }
+    if (step == InstitutionFormStep.legalRepresentatives) {
+      return isEditing || _legalRepresentatives.isNotEmpty;
     }
     if (step == InstitutionFormStep.plan &&
         subscriptionStatus == InstitutionSubscriptionStatus.trial &&
@@ -442,7 +657,15 @@ final class InstitutionFormController extends ChangeNotifier {
     logoFileName ?? '',
     '$hasSimulatedCover',
     coverFileName ?? '',
+    for (final representative in _legalRepresentatives)
+      '${representative.id}:${_personSignature(representative.person)}',
+    for (final administrator in _administrators)
+      '${administrator.id}:${_personSignature(administrator.person)}:'
+          '${administrator.level.name}:${administrator.invitationStatus.name}:'
+          '${administrator.invitationHistory.length}',
   ].join('|');
+
+  String _nextPersonId(String prefix) => '$prefix-${++_personSequence}';
 
   @override
   void dispose() {
@@ -469,10 +692,6 @@ const _requiredFields = {
   InstitutionFormField.street,
   InstitutionFormField.addressNumber,
   InstitutionFormField.contactEmail,
-  InstitutionFormField.ownerFirstName,
-  InstitutionFormField.ownerLastName,
-  InstitutionFormField.ownerEmail,
-  InstitutionFormField.ownerMobilePhone,
 };
 
 const _colorFields = {
@@ -541,7 +760,7 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.ownerLastName ||
   InstitutionFormField.ownerDisplayName ||
   InstitutionFormField.ownerEmail ||
-  InstitutionFormField.ownerMobilePhone => InstitutionFormStep.owner,
+  InstitutionFormField.ownerMobilePhone => InstitutionFormStep.legalRepresentatives,
   InstitutionFormField.subscriptionJustification => InstitutionFormStep.plan,
   InstitutionFormField.brandDisplayName ||
   InstitutionFormField.slug ||
@@ -605,6 +824,41 @@ bool _isWebUrl(String value) {
   final uri = Uri.tryParse(value);
   return uri != null && (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
 }
+
+List<InstitutionFormStep> get _stepsBeforeReview => InstitutionFormStep.values
+    .where((step) => step != InstitutionFormStep.review)
+    .toList(growable: false);
+
+InstitutionLegalRepresentative? _legacyRepresentative(InstitutionRecord? record) {
+  if (record == null ||
+      [
+        record.ownerFirstName,
+        record.ownerLastName,
+        record.ownerDisplayName,
+        record.ownerEmail,
+        record.ownerMobilePhone,
+      ].every((value) => value.trim().isEmpty)) {
+    return null;
+  }
+  return InstitutionLegalRepresentative(
+    id: 'representative-legacy',
+    person: InstitutionPersonDraft(
+      firstName: record.ownerFirstName,
+      lastName: record.ownerLastName,
+      displayName: record.ownerDisplayName,
+      email: record.ownerEmail,
+      mobilePhone: record.ownerMobilePhone,
+    ),
+  );
+}
+
+String _personSignature(InstitutionPersonDraft person) => [
+  person.firstName,
+  person.lastName,
+  person.displayName,
+  person.email,
+  person.mobilePhone,
+].join(':');
 
 String _slugify(String value) {
   var normalized = value.toLowerCase();
