@@ -82,6 +82,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devSupport);
 
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutions);

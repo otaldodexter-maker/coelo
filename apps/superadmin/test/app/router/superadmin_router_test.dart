@@ -107,6 +107,8 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);

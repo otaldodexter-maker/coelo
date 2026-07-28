@@ -29,16 +29,16 @@ void main() {
           matchesGoldenFile('goldens/support_kanban_$suffix.png'),
         );
 
-        await tester.tap(find.text('Tabela').first);
+        await tester.tap(find.byTooltip('Exibir como tabela'));
         await tester.pumpAndSettle();
         await expectLater(
           find.byKey(const Key('support-golden-root')),
           matchesGoldenFile('goldens/support_table_$suffix.png'),
         );
 
-        await tester.tap(find.text('Kanban').first);
+        await tester.tap(find.byTooltip('Exibir como kanban'));
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('support-ticket-SUP-001')).first);
+        await tester.tap(find.byKey(const Key('support-card-SUP-001')).first);
         await tester.pumpAndSettle();
         await expectLater(
           find.byKey(const Key('support-golden-root')),
