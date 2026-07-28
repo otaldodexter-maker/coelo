@@ -1,6 +1,6 @@
 ---
 source: ".superpowers/sdd/superadmin-corrections-task-3b-brief.md"
-status: "implemented-with-concerns"
+status: "implemented"
 generated_at: "2026-07-28"
 ---
 
@@ -17,8 +17,13 @@ generated_at: "2026-07-28"
   coerentes com a documentação: `Admin Master`, `Administrador autorizado` e
   `Coordenador`.
 - `Enviar convite` é local, muda o estado para `Enviado` e acrescenta evento ao
-  histórico. Nenhum e-mail ou chamada externa é executado.
-- A revisão resume separadamente representantes e administradores.
+  histórico. A partir de `Enviado`, o operador pode simular `Aceito` ou
+  `Expirado`; cada transição registra status e data/hora. Nenhum e-mail ou
+  chamada externa é executado.
+- Editar um representante sincroniza o administrador derivado; removê-lo também
+  remove esse administrador para não deixar uma origem inexistente.
+- A revisão lista nomes de representantes e nomes, papéis e status de
+  administradores.
 - A persistência legada de `InstitutionRecord` continua recebendo o primeiro
   representante nos campos `owner*`; listas e convites permanecem somente no
   controller desta rodada, conforme a restrição de não tocar banco.
@@ -39,9 +44,11 @@ confirmação e histórico ainda não existiam.
 
 GREEN:
 
-- 13 testes do controller passaram.
+- 16 testes do controller passaram.
 - O teste widget focado de confirmação de representante, criação de Admin
-  Master e envio local de convite passou.
+  Master, histórico, transições Aceito/Expirado e revisão nominal passou.
+- O teste widget focado do diálogo passou: obrigatoriedade associada aos campos
+  depois da tentativa e ações com mesma largura no layout compacto.
 
 A suíte combinada executou 38 testes com sucesso antes de cinco falhas de
 expectativas antigas decorrentes da nova sétima etapa e de um finder de card.
@@ -70,7 +77,8 @@ Nenhum preview foi gerado.
 
 ## Pendências
 
-- Os estados `Aceito` e `Expirado` existem no modelo local, mas esta entrega
-  mínima só transiciona interativamente de `Não enviado` para `Enviado`.
+- A persistência normalizada das listas e do histórico continua reservada à
+  Task 3C; nesta rodada, o `InstitutionRecord` legado recebe somente o primeiro
+  representante e limpa corretamente `owner*` quando a edição remove todos.
 - A memória Coelo foi `no-op`: nenhuma fonte canônica deve ser atualizada antes
   da aprovação visual final.

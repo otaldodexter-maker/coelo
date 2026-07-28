@@ -123,6 +123,94 @@ void main() {
     );
   });
 
+  test('removing every representative clears the legacy owner on edit save', () {
+    final record = FakeInstitutionDirectoryRepository().records.first;
+    final controller = InstitutionFormController(record: record);
+    addTearDown(controller.dispose);
+
+    controller.removeLegalRepresentative(controller.legalRepresentatives.single.id);
+    final saved = controller.toRecord(id: record.id);
+
+    expect(saved.ownerFirstName, isEmpty);
+    expect(saved.ownerLastName, isEmpty);
+    expect(saved.ownerDisplayName, isEmpty);
+    expect(saved.ownerEmail, isEmpty);
+    expect(saved.ownerMobilePhone, isEmpty);
+  });
+
+  test('accepted and expired invitation transitions append timestamped history', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.addAdministrator(
+      const InstitutionPersonDraft(
+        firstName: 'Bia',
+        lastName: 'Nunes',
+        displayName: 'Bia Nunes',
+        email: 'bia@example.com',
+        mobilePhone: '+55 11 99999-0003',
+      ),
+      level: InstitutionAdministratorLevel.authorizedAdministrator,
+    );
+    final acceptedId = controller.administrators.single.id;
+    controller.addAdministrator(
+      const InstitutionPersonDraft(
+        firstName: 'Davi',
+        lastName: 'Reis',
+        displayName: 'Davi Reis',
+        email: 'davi@example.com',
+        mobilePhone: '+55 11 99999-0004',
+      ),
+      level: InstitutionAdministratorLevel.coordinator,
+    );
+    final expiredId = controller.administrators.last.id;
+
+    controller
+      ..sendAdministratorInvitation(acceptedId)
+      ..setAdministratorInvitationStatus(acceptedId, InstitutionInvitationStatus.accepted)
+      ..sendAdministratorInvitation(expiredId)
+      ..setAdministratorInvitationStatus(expiredId, InstitutionInvitationStatus.expired);
+
+    expect(controller.administrators.first.invitationHistory.map((event) => event.status), [
+      InstitutionInvitationStatus.sent,
+      InstitutionInvitationStatus.accepted,
+    ]);
+    expect(controller.administrators.last.invitationHistory.map((event) => event.status), [
+      InstitutionInvitationStatus.sent,
+      InstitutionInvitationStatus.expired,
+    ]);
+    expect(
+      controller.administrators
+          .expand((administrator) => administrator.invitationHistory)
+          .every((event) => event.occurredAt.millisecondsSinceEpoch > 0),
+      isTrue,
+    );
+  });
+
+  test('derived admin follows representative edits and removal', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.addLegalRepresentative(
+      const InstitutionPersonDraft(
+        firstName: 'Ana',
+        lastName: 'Souza',
+        displayName: 'Ana Souza',
+        email: 'ana@example.com',
+        mobilePhone: '+55 11 99999-0001',
+      ),
+    );
+    final representative = controller.legalRepresentatives.single;
+    controller.confirmRepresentativeAdministrators({representative.id});
+
+    controller.updateLegalRepresentative(
+      representative.id,
+      representative.person.copyWith(displayName: 'Ana S.'),
+    );
+    expect(controller.administrators.single.person.displayName, 'Ana S.');
+
+    controller.removeLegalRepresentative(representative.id);
+    expect(controller.administrators, isEmpty);
+  });
+
   test('leaving an invalid step marks it with error without blocking navigation', () {
     final controller = InstitutionFormController();
     addTearDown(controller.dispose);

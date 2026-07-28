@@ -381,11 +381,18 @@ final class InstitutionFormController extends ChangeNotifier {
     final index = _legalRepresentatives.indexWhere((item) => item.id == id);
     if (index < 0) return;
     _legalRepresentatives[index] = InstitutionLegalRepresentative(id: id, person: person);
+    for (var adminIndex = 0; adminIndex < _administrators.length; adminIndex++) {
+      final administrator = _administrators[adminIndex];
+      if (administrator.sourceRepresentativeId == id) {
+        _administrators[adminIndex] = administrator.copyWith(person: person);
+      }
+    }
     notifyListeners();
   }
 
   void removeLegalRepresentative(String id) {
     _legalRepresentatives.removeWhere((item) => item.id == id);
+    _administrators.removeWhere((item) => item.sourceRepresentativeId == id);
     notifyListeners();
   }
 
@@ -443,18 +450,33 @@ final class InstitutionFormController extends ChangeNotifier {
   }
 
   void sendAdministratorInvitation(String id) {
+    _transitionAdministratorInvitation(id, InstitutionInvitationStatus.sent);
+  }
+
+  void setAdministratorInvitationStatus(String id, InstitutionInvitationStatus status) {
+    final index = _administrators.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    final administrator = _administrators[index];
+    if (administrator.invitationStatus != InstitutionInvitationStatus.sent ||
+        !{
+          InstitutionInvitationStatus.accepted,
+          InstitutionInvitationStatus.expired,
+        }.contains(status)) {
+      return;
+    }
+    _transitionAdministratorInvitation(id, status);
+  }
+
+  void _transitionAdministratorInvitation(String id, InstitutionInvitationStatus status) {
     final index = _administrators.indexWhere((item) => item.id == id);
     if (index < 0) return;
     final administrator = _administrators[index];
     final history = [
       ...administrator.invitationHistory,
-      InstitutionInvitationHistoryEntry(
-        status: InstitutionInvitationStatus.sent,
-        occurredAt: DateTime.now(),
-      ),
+      InstitutionInvitationHistoryEntry(status: status, occurredAt: DateTime.now()),
     ];
     _administrators[index] = administrator.copyWith(
-      invitationStatus: InstitutionInvitationStatus.sent,
+      invitationStatus: status,
       invitationHistory: history,
     );
     notifyListeners();
@@ -588,13 +610,11 @@ final class InstitutionFormController extends ChangeNotifier {
       contactMobilePhone: text(InstitutionFormField.contactMobilePhone),
       whatsappNumber: text(InstitutionFormField.whatsappNumber),
       websiteUrl: text(InstitutionFormField.websiteUrl),
-      ownerFirstName: primaryRepresentative?.firstName ?? text(InstitutionFormField.ownerFirstName),
-      ownerLastName: primaryRepresentative?.lastName ?? text(InstitutionFormField.ownerLastName),
-      ownerDisplayName:
-          primaryRepresentative?.displayName ?? text(InstitutionFormField.ownerDisplayName),
-      ownerEmail: primaryRepresentative?.email ?? text(InstitutionFormField.ownerEmail),
-      ownerMobilePhone:
-          primaryRepresentative?.mobilePhone ?? text(InstitutionFormField.ownerMobilePhone),
+      ownerFirstName: primaryRepresentative?.firstName ?? '',
+      ownerLastName: primaryRepresentative?.lastName ?? '',
+      ownerDisplayName: primaryRepresentative?.displayName ?? '',
+      ownerEmail: primaryRepresentative?.email ?? '',
+      ownerMobilePhone: primaryRepresentative?.mobilePhone ?? '',
       plan: plan,
       subscriptionStatus: subscriptionStatus,
       subscriptionStart: subscriptionStart,

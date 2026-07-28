@@ -803,8 +803,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byTooltip('Buscar CEP'), findsOneWidget);
 
-    await tester.tap(find.text('Representantes legais'));
-    await tester.pumpAndSettle();
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.byKey(const Key('institution-form-continue')));
+      await tester.pumpAndSettle();
+    }
     final representativeCard = tester.widget<Card>(
       find.descendant(
         of: find.byKey(const Key('institution-legal-representative-representative-legacy')),
@@ -852,8 +854,51 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-send-invitation-administrator-1')));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Enviado'), findsOneWidget);
-    expect(find.textContaining('Histórico: 1 evento'), findsOneWidget);
+    expect(find.textContaining('Enviado'), findsWidgets);
+    expect(find.textContaining('Enviado em '), findsOneWidget);
+    expect(find.byKey(const Key('institution-accept-invitation-administrator-1')), findsOneWidget);
+    expect(find.byKey(const Key('institution-expire-invitation-administrator-1')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('institution-accept-invitation-administrator-1')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Aceito'), findsWidgets);
+    expect(find.textContaining('Aceito em '), findsOneWidget);
+
+    await tester.tap(find.text('Revisão'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Rafael Coelho — representante legal'), findsOneWidget);
+    expect(find.textContaining('Rafael Coelho — Admin Master · Aceito'), findsOneWidget);
+  });
+
+  testWidgets('person dialog reveals required errors after submit attempt', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    for (var step = 0; step < 3; step++) {
+      await tester.tap(find.byKey(const Key('institution-form-continue')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(const Key('institution-add-legal-representative')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-person-dialog-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Campo obrigatório.'), findsNWidgets(5));
+    expect(
+      tester.getSize(find.widgetWithText(FilledButton, 'Salvar pessoa')).width,
+      tester.getSize(find.widgetWithText(OutlinedButton, 'Cancelar')).width,
+    );
   });
 
   testWidgets('plan omits justification and exit actions split the dialog width equally', (

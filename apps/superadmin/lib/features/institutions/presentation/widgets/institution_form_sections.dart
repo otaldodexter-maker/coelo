@@ -468,6 +468,14 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
               onEdit: () => _editAdministrator(context, administrator),
               onRemove: () => controller.removeAdministrator(administrator.id),
               onSendInvitation: () => controller.sendAdministratorInvitation(administrator.id),
+              onAcceptInvitation: () => controller.setAdministratorInvitationStatus(
+                administrator.id,
+                InstitutionInvitationStatus.accepted,
+              ),
+              onExpireInvitation: () => controller.setAdministratorInvitationStatus(
+                administrator.id,
+                InstitutionInvitationStatus.expired,
+              ),
             ),
           if (controller.administrators.isEmpty)
             const _EmptyPeopleMessage(message: 'Nenhum administrador confirmado.'),
@@ -597,12 +605,16 @@ final class _AdministratorCard extends StatelessWidget {
     required this.onEdit,
     required this.onRemove,
     required this.onSendInvitation,
+    required this.onAcceptInvitation,
+    required this.onExpireInvitation,
   });
 
   final InstitutionAdministratorDraft administrator;
   final VoidCallback onEdit;
   final VoidCallback onRemove;
   final VoidCallback onSendInvitation;
+  final VoidCallback onAcceptInvitation;
+  final VoidCallback onExpireInvitation;
 
   @override
   Widget build(BuildContext context) {
@@ -637,13 +649,38 @@ final class _AdministratorCard extends StatelessWidget {
                       : 'Reenviar convite',
                 ),
               ),
-              Text(
-                'Histórico: ${administrator.invitationHistory.length} '
-                '${administrator.invitationHistory.length == 1 ? 'evento' : 'eventos'}',
-              ),
+              if (administrator.invitationStatus == InstitutionInvitationStatus.sent) ...[
+                OutlinedButton(
+                  key: Key('institution-accept-invitation-${administrator.id}'),
+                  onPressed: onAcceptInvitation,
+                  child: const Text('Marcar como aceito'),
+                ),
+                OutlinedButton(
+                  key: Key('institution-expire-invitation-${administrator.id}'),
+                  onPressed: onExpireInvitation,
+                  child: const Text('Marcar como expirado'),
+                ),
+              ],
             ],
           ),
         ),
+        if (administrator.invitationHistory.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(
+              left: CoeloSpacing.space4,
+              right: CoeloSpacing.space4,
+              bottom: CoeloSpacing.space4,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Histórico do convite', style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: CoeloSpacing.space1),
+                for (final event in administrator.invitationHistory)
+                  Text('${event.status.label} em ${_eventDateTime(event.occurredAt)}'),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -698,6 +735,7 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
   late final TextEditingController _mobilePhone;
   late InstitutionAdministratorLevel _level =
       widget.initialLevel ?? InstitutionAdministratorLevel.authorizedAdministrator;
+  var _attempted = false;
 
   bool get _valid =>
       [
@@ -787,21 +825,36 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
                 ],
               ),
               const SizedBox(height: CoeloSpacing.space5),
-              Wrap(
-                alignment: WrapAlignment.end,
-                spacing: CoeloSpacing.space2,
-                runSpacing: CoeloSpacing.space2,
-                children: [
-                  OutlinedButton(
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final cancel = OutlinedButton(
                     onPressed: Navigator.of(context).pop,
                     child: const Text('Cancelar'),
-                  ),
-                  FilledButton(
+                  );
+                  final save = FilledButton(
                     key: const Key('institution-person-dialog-save'),
-                    onPressed: _valid ? _save : null,
+                    onPressed: _submit,
                     child: const Text('Salvar pessoa'),
-                  ),
-                ],
+                  );
+                  if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        save,
+                        const SizedBox(height: CoeloSpacing.space2),
+                        cancel,
+                      ],
+                    );
+                  }
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      cancel,
+                      const SizedBox(width: CoeloSpacing.space2),
+                      save,
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -821,8 +874,27 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     labelText: label,
     keyboardType: keyboardType,
     prefixIcon: Icons.person_outline_rounded,
+    errorText: _personFieldError(controller, keyName),
     onChanged: (_) => setState(() {}),
   );
+
+  String? _personFieldError(TextEditingController controller, String keyName) {
+    if (!_attempted) return null;
+    if (controller.text.trim().isEmpty) return 'Campo obrigatório.';
+    if (keyName == 'email' &&
+        !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(controller.text.trim())) {
+      return 'Informe um e-mail válido.';
+    }
+    return null;
+  }
+
+  void _submit() {
+    if (!_valid) {
+      setState(() => _attempted = true);
+      return;
+    }
+    _save();
+  }
 
   void _save() {
     final person = InstitutionPersonDraft(
@@ -844,6 +916,12 @@ String _personInitials(InstitutionPersonDraft person) {
   final first = person.firstName.trim();
   final last = person.lastName.trim();
   return '${first.isEmpty ? '' : first[0]}${last.isEmpty ? '' : last[0]}'.toUpperCase();
+}
+
+String _eventDateTime(DateTime value) {
+  String two(int part) => part.toString().padLeft(2, '0');
+  return '${two(value.day)}/${two(value.month)}/${value.year} '
+      '${two(value.hour)}:${two(value.minute)}';
 }
 
 final class _PlanSection extends StatelessWidget {
@@ -1777,7 +1855,9 @@ final class _ReviewSection extends StatelessWidget {
             title: 'Representantes legais',
             summary: controller.legalRepresentatives.isEmpty
                 ? 'Nenhum representante'
-                : '${controller.legalRepresentatives.length} cadastrado(s)',
+                : controller.legalRepresentatives
+                      .map((item) => '${item.person.displayName} — representante legal')
+                      .join('\n'),
             onEdit: () => controller.selectStep(InstitutionFormStep.legalRepresentatives),
           ),
           _ReviewCard(
@@ -1785,7 +1865,13 @@ final class _ReviewSection extends StatelessWidget {
             title: 'Administradores',
             summary: controller.administrators.isEmpty
                 ? 'Nenhum administrador'
-                : '${controller.administrators.length} cadastrado(s)',
+                : controller.administrators
+                      .map(
+                        (item) =>
+                            '${item.person.displayName} — ${item.level.label} · '
+                            '${item.invitationStatus.label}',
+                      )
+                      .join('\n'),
             onEdit: () => controller.selectStep(InstitutionFormStep.administrators),
           ),
           _ReviewCard(
