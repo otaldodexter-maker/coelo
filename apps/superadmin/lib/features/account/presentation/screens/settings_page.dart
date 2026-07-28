@@ -67,20 +67,42 @@ class SettingsPage extends StatelessWidget {
                   _SettingsCard(
                     title: 'Acessibilidade',
                     description: 'Reduza transições e movimentos não essenciais.',
-                    child: Material(
+                    child: Semantics(
                       key: const Key('settings-reduce-motion-row'),
-                      color: Colors.transparent,
-                      child: SwitchListTile.adaptive(
-                        key: const Key('settings-reduce-motion'),
-                        contentPadding: EdgeInsets.zero,
-                        hoverColor: Colors.transparent,
-                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                        title: const Text('Reduzir animações'),
-                        subtitle: const Text(
-                          'Também respeitamos a preferência de movimento do sistema.',
+                      container: true,
+                      label: 'Reduzir animações',
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Reduzir animações',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  const SizedBox(height: CoeloSpacing.spaceHalf),
+                                  Text(
+                                    'Também respeitamos a preferência de movimento do sistema.',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: CoeloSpacing.space4),
+                            Switch.adaptive(
+                              key: const Key('settings-reduce-motion'),
+                              value: controller.preferences.reduceMotion,
+                              onChanged: controller.setReduceMotion,
+                            ),
+                          ],
                         ),
-                        value: controller.preferences.reduceMotion,
-                        onChanged: controller.setReduceMotion,
                       ),
                     ),
                   ),

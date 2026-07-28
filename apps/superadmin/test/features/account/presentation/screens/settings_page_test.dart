@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:coelo_superadmin/features/account/data/user_preferences_repository.dart';
 import 'package:coelo_superadmin/features/account/presentation/user_preferences_controller.dart';
 import 'package:coelo_superadmin/features/account/presentation/screens/settings_page.dart';
@@ -35,7 +33,7 @@ void main() {
     expect((await repository.load()).reduceMotion, isTrue);
   });
 
-  testWidgets('keeps the reduced motion row visually neutral when hovered', (tester) async {
+  testWidgets('uses a neutral reduced motion row without a hover surface', (tester) async {
     final controller = UserPreferencesController(InMemoryUserPreferencesRepository());
     await controller.load();
     addTearDown(controller.dispose);
@@ -53,16 +51,8 @@ void main() {
 
     final row = find.byKey(const Key('settings-reduce-motion-row'));
     expect(row, findsOneWidget);
-    expect(tester.widget<Material>(row).color, Colors.transparent);
-    final tile = tester.widget<SwitchListTile>(find.byKey(const Key('settings-reduce-motion')));
-    expect(tile.hoverColor, Colors.transparent);
-    expect(tile.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
-
-    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
-    await mouse.addPointer(location: tester.getCenter(row));
-    await mouse.moveTo(tester.getCenter(row));
-    await tester.pumpAndSettle();
-
-    expect(tester.widget<Material>(row).color, Colors.transparent);
+    expect(find.descendant(of: row, matching: find.byType(SwitchListTile)), findsNothing);
+    expect(find.descendant(of: row, matching: find.byType(InkWell)), findsNothing);
+    expect(find.byKey(const Key('settings-reduce-motion')), findsOneWidget);
   });
 }
