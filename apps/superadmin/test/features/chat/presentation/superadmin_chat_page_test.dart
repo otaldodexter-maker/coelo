@@ -4,10 +4,10 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
+import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_recipient_picker.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_scope_filters.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_thread_body.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -182,7 +182,7 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('opens contextual profile and hierarchical conversation creation', (tester) async {
+  testWidgets('opens contextual profile and hierarchical recipient selection', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1024, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -199,15 +199,23 @@ void main() {
 
     await tester.tap(find.byTooltip('Nova conversa'));
     await tester.pumpAndSettle();
-    expect(find.byType(CoeloAdminContextPicker), findsOne);
+    expect(find.byType(SuperadminChatRecipientPicker), findsOne);
     expect(find.text('Pesquisar pessoa · Acesso auditado'), findsOne);
     expect(
       tester.widget<Dialog>(find.byType(Dialog)).backgroundColor,
       CoeloTheme.light.colorScheme.surface,
     );
-    await tester.tap(find.byKey(const Key('coelo-context-select-centro-horizonte')));
+    final closeButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.close_rounded),
+    );
+    expect(
+      closeButton.style?.backgroundColor?.resolve({WidgetState.focused}),
+      CoeloTheme.light.colorScheme.errorContainer,
+    );
+    expect(closeButton.style?.overlayColor?.resolve({WidgetState.focused}), Colors.transparent);
+    await tester.tap(find.widgetWithText(CheckboxListTile, 'Centro Horizonte'));
     await tester.pump();
-    expect(find.widgetWithText(FilledButton, 'Selecionar contexto'), findsOne);
+    expect(find.text('1 destinatário selecionado'), findsOne);
 
     await tester.tap(find.text('Pesquisar pessoa · Acesso auditado'));
     await tester.pumpAndSettle();
@@ -219,6 +227,88 @@ void main() {
     await tester.tap(find.text('Marina Alves'));
     await tester.pump();
     expect(find.widgetWithText(FilledButton, 'Iniciar conversa'), findsOne);
+  });
+
+  testWidgets('confirms a bulk local demonstration and restores focus to its launcher', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+
+    final launcher = find.descendant(
+      of: find.byKey(const Key('superadmin-chat-inbox')),
+      matching: find.widgetWithIcon(IconButton, Icons.edit_outlined),
+    );
+    final launcherButton = tester.widget<IconButton>(launcher);
+    expect(launcherButton.focusNode, isNotNull);
+    launcherButton.focusNode!.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Selecionar todos'));
+    await tester.pump();
+    expect(find.text('4 destinatários selecionados'), findsOne);
+    await tester.tap(find.text('Revisar envio'));
+    await tester.pumpAndSettle();
+    expect(find.text('Demonstração local'), findsOne);
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirmar demonstração'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminChatRecipientPicker), findsNothing);
+    expect(find.text('Envio em massa · 4 destinatários'), findsOne);
+    expect(
+      find.descendant(
+        of: find.byType(SnackBar),
+        matching: find.text('Demonstração local · nenhum envio real foi realizado.'),
+      ),
+      findsOne,
+    );
+    expect(launcherButton.focusNode!.hasPrimaryFocus, isTrue);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-conversation-bulk-local-1')));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-chat-thread')),
+        matching: find.textContaining('Demonstração local'),
+      ),
+      findsWidgets,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Escape cancels recipient selection and restores launcher focus', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_app(const SuperadminChatPage(logout: _logout)));
+    await tester.pumpAndSettle();
+
+    final launcher = find.descendant(
+      of: find.byKey(const Key('superadmin-chat-inbox')),
+      matching: find.widgetWithIcon(IconButton, Icons.edit_outlined),
+    );
+    final launcherButton = tester.widget<IconButton>(launcher);
+    launcherButton.focusNode!.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.byType(SuperadminChatRecipientPicker), findsOne);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminChatRecipientPicker), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-conversation-bulk-local-1')), findsNothing);
+    expect(launcherButton.focusNode!.hasPrimaryFocus, isTrue);
   });
 
   testWidgets('launcher opens compact inbox and expands through its callback', (tester) async {

@@ -7,6 +7,7 @@ import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../chat_fixtures.dart';
 import '../widgets/superadmin_chat_context_panel.dart';
+import '../widgets/superadmin_chat_recipient_picker.dart';
 import '../widgets/superadmin_chat_scope_filters.dart';
 import '../widgets/superadmin_chat_thread_body.dart';
 
@@ -30,30 +31,34 @@ final class SuperadminChatPage extends StatefulWidget {
 
 final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   final _expandInboxFocusNode = FocusNode(debugLabel: 'Expandir conversas');
+  final _newConversationFocusNode = FocusNode(debugLabel: 'Nova conversa');
   final _collapsedContextPanelFocusNode = FocusNode(debugLabel: 'Mostrar detalhes do contexto');
   final _expandedContextPanelFocusNode = FocusNode(debugLabel: 'Recolher painel contextual');
+  final _conversations = [...superadminChatConversations];
   var _selectedIndex = 0;
+  var _bulkSequence = 0;
   var _mobileThreadOpen = false;
   var _inboxCollapsed = false;
   bool? _contextPanelCollapsedOverride;
   final _scopeSelections = <SuperadminChatScopeKind, String>{};
 
-  SuperadminChatConversation get _selected => superadminChatConversations[_selectedIndex];
-  List<SuperadminChatConversation> get _filteredConversations => superadminChatConversations
+  SuperadminChatConversation get _selected => _conversations[_selectedIndex];
+  List<SuperadminChatConversation> get _filteredConversations => _conversations
       .where((conversation) => matchesSuperadminChatScope(conversation, _scopeSelections))
       .toList(growable: false);
 
   @override
   void dispose() {
     _expandInboxFocusNode.dispose();
+    _newConversationFocusNode.dispose();
     _collapsedContextPanelFocusNode.dispose();
     _expandedContextPanelFocusNode.dispose();
     super.dispose();
   }
 
-  void _selectConversation(int index, {required bool mobile}) {
+  void _selectConversation(SuperadminChatConversation conversation, {required bool mobile}) {
     setState(() {
-      _selectedIndex = index;
+      _selectedIndex = _conversations.indexOf(conversation);
       _mobileThreadOpen = mobile;
     });
   }
@@ -113,9 +118,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                     return _ConversationInbox(
                       key: const Key('superadmin-chat-inbox'),
                       conversations: _filteredConversations,
-                      selectedIndex: _selectedIndex,
-                      onSelected: (index) => _selectConversation(index, mobile: true),
+                      selectedId: _selected.id,
+                      onSelected: (conversation) => _selectConversation(conversation, mobile: true),
                       onNewConversation: _openNewConversation,
+                      newConversationFocusNode: _newConversationFocusNode,
                       onBack: widget.onBack,
                     );
                   }
@@ -160,9 +166,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                       _ConversationRail(
                         key: const Key('superadmin-chat-rail'),
                         conversations: _filteredConversations,
-                        selectedIndex: _selectedIndex,
-                        onSelected: (index) => _selectConversation(index, mobile: false),
+                        selectedId: _selected.id,
+                        onSelected: (conversation) =>
+                            _selectConversation(conversation, mobile: false),
                         onNewConversation: _openNewConversation,
+                        newConversationFocusNode: _newConversationFocusNode,
                         onBack: widget.onBack,
                       ),
                       const VerticalDivider(width: 1),
@@ -197,9 +205,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                       _ConversationRail(
                         key: const Key('superadmin-chat-inbox-rail'),
                         conversations: _filteredConversations,
-                        selectedIndex: _selectedIndex,
-                        onSelected: (index) => _selectConversation(index, mobile: false),
+                        selectedId: _selected.id,
+                        onSelected: (conversation) =>
+                            _selectConversation(conversation, mobile: false),
                         onNewConversation: _openNewConversation,
+                        newConversationFocusNode: _newConversationFocusNode,
                         onBack: widget.onBack,
                         onExpand: () => setState(() => _inboxCollapsed = false),
                         expandFocusNode: _expandInboxFocusNode,
@@ -210,9 +220,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                         child: _ConversationInbox(
                           key: const Key('superadmin-chat-inbox'),
                           conversations: _filteredConversations,
-                          selectedIndex: _selectedIndex,
-                          onSelected: (index) => _selectConversation(index, mobile: false),
+                          selectedId: _selected.id,
+                          onSelected: (conversation) =>
+                              _selectConversation(conversation, mobile: false),
                           onNewConversation: _openNewConversation,
+                          newConversationFocusNode: _newConversationFocusNode,
                           onBack: widget.onBack,
                           onCollapse: _collapseInbox,
                         ),
@@ -248,12 +260,13 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     );
   }
 
-  Future<void> _openNewConversation() {
-    return showDialog<void>(
+  Future<void> _openNewConversation() async {
+    final selectedRecipients = await showDialog<List<CoeloAdminContextOption>>(
       context: context,
       builder: (dialogContext) {
         return Dialog(
           backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+          surfaceTintColor: Colors.transparent,
           insetPadding: const EdgeInsets.all(CoeloSpacing.space4),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 620, maxHeight: 720),
@@ -271,13 +284,24 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Fechar',
+                        tooltip: 'Fechar nova conversa',
                         onPressed: () => Navigator.of(dialogContext).pop(),
-                        style: IconButton.styleFrom(
-                          foregroundColor: Theme.of(dialogContext).colorScheme.error,
-                          hoverColor: Theme.of(dialogContext).colorScheme.errorContainer,
-                          focusColor: Theme.of(dialogContext).colorScheme.errorContainer,
-                        ),
+                        style:
+                            IconButton.styleFrom(
+                              foregroundColor: Theme.of(dialogContext).colorScheme.error,
+                              minimumSize: const Size.square(CoeloSize.touchMin),
+                              maximumSize: const Size.square(CoeloSize.touchMin),
+                              shape: const CircleBorder(),
+                            ).copyWith(
+                              backgroundColor: WidgetStateProperty.resolveWith(
+                                (states) =>
+                                    states.contains(WidgetState.hovered) ||
+                                        states.contains(WidgetState.focused)
+                                    ? Theme.of(dialogContext).colorScheme.errorContainer
+                                    : Colors.transparent,
+                              ),
+                              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                            ),
                         icon: const Icon(Icons.close_rounded),
                       ),
                     ],
@@ -292,9 +316,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                   ),
                   const Divider(),
                   Expanded(
-                    child: CoeloAdminContextPicker(
+                    child: SuperadminChatRecipientPicker(
                       options: widget.contextOptions,
-                      onSelected: (_) => Navigator.of(dialogContext).pop(),
+                      onConfirmed: (selection) => Navigator.of(dialogContext).pop(selection),
                     ),
                   ),
                 ],
@@ -304,6 +328,47 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         );
       },
     );
+    if (!mounted) {
+      return;
+    }
+
+    if (selectedRecipients != null && selectedRecipients.isNotEmpty) {
+      _addLocalBulkConversation(selectedRecipients);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _newConversationFocusNode.requestFocus();
+      }
+    });
+  }
+
+  void _addLocalBulkConversation(List<CoeloAdminContextOption> recipients) {
+    final count = recipients.length;
+    final title = count == 1 ? recipients.single.label : 'Envio em massa · $count destinatários';
+    final conversation = SuperadminChatConversation(
+      id: 'bulk-local-${++_bulkSequence}',
+      title: title,
+      initials: count == 1 ? _initials(recipients.single.label) : 'EM',
+      preview: 'Demonstração local · nenhum envio real foi realizado.',
+      timestamp: 'Agora',
+      context: 'Demonstração local · $count destinatários selecionados',
+      institution: recipients.first.label,
+      targetKind: count == 1 ? recipients.single.kind : CoeloAdminContextKind.institution,
+      metrics: [
+        SuperadminChatMetric('Destinatários', count),
+        const SuperadminChatMetric('Mensagens', 1),
+      ],
+    );
+
+    setState(() {
+      _conversations.insert(0, conversation);
+      _selectedIndex++;
+    });
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Demonstração local · nenhum envio real foi realizado.')),
+      );
   }
 
   Future<void> _openAuditedPersonSearch(BuildContext dialogContext) {
@@ -410,18 +475,20 @@ final class _AuditedPersonSearchDialogState extends State<_AuditedPersonSearchDi
 final class _ConversationInbox extends StatefulWidget {
   const _ConversationInbox({
     required this.conversations,
-    required this.selectedIndex,
+    required this.selectedId,
     required this.onSelected,
     required this.onNewConversation,
+    required this.newConversationFocusNode,
     this.onBack,
     this.onCollapse,
     super.key,
   });
 
   final List<SuperadminChatConversation> conversations;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
+  final String selectedId;
+  final ValueChanged<SuperadminChatConversation> onSelected;
   final VoidCallback onNewConversation;
+  final FocusNode newConversationFocusNode;
   final VoidCallback? onBack;
   final VoidCallback? onCollapse;
 
@@ -457,6 +524,7 @@ final class _ConversationInboxState extends State<_ConversationInbox> {
               IconButton.filledTonal(
                 tooltip: 'Nova conversa',
                 onPressed: widget.onNewConversation,
+                focusNode: widget.newConversationFocusNode,
                 icon: const Icon(Icons.edit_outlined),
               ),
               if (widget.onCollapse != null) ...[
@@ -488,7 +556,7 @@ final class _ConversationInboxState extends State<_ConversationInbox> {
                                 conversation.targetKind == CoeloAdminContextKind.group,
                           )
                           .toList(growable: false),
-                      selectedIndex: widget.selectedIndex,
+                      selectedId: widget.selectedId,
                       onSelected: widget.onSelected,
                     ),
                     _ConversationInboxSection(
@@ -499,7 +567,7 @@ final class _ConversationInboxState extends State<_ConversationInbox> {
                                 conversation.targetKind != CoeloAdminContextKind.group,
                           )
                           .toList(growable: false),
-                      selectedIndex: widget.selectedIndex,
+                      selectedId: widget.selectedId,
                       onSelected: widget.onSelected,
                     ),
                   ],
@@ -541,14 +609,14 @@ final class _ConversationInboxSection extends StatelessWidget {
   const _ConversationInboxSection({
     required this.title,
     required this.conversations,
-    required this.selectedIndex,
+    required this.selectedId,
     required this.onSelected,
   });
 
   final String title;
   final List<SuperadminChatConversation> conversations;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
+  final String selectedId;
+  final ValueChanged<SuperadminChatConversation> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -573,8 +641,8 @@ final class _ConversationInboxSection extends StatelessWidget {
               preview: conversation.preview,
               timestamp: conversation.timestamp,
               unreadCount: conversation.unreadCount,
-              selected: superadminChatConversations.indexOf(conversation) == selectedIndex,
-              onPressed: () => onSelected(superadminChatConversations.indexOf(conversation)),
+              selected: conversation.id == selectedId,
+              onPressed: () => onSelected(conversation),
             ),
         ],
       ),
@@ -585,9 +653,10 @@ final class _ConversationInboxSection extends StatelessWidget {
 final class _ConversationRail extends StatelessWidget {
   const _ConversationRail({
     required this.conversations,
-    required this.selectedIndex,
+    required this.selectedId,
     required this.onSelected,
     required this.onNewConversation,
+    required this.newConversationFocusNode,
     this.onBack,
     this.onExpand,
     this.expandFocusNode,
@@ -595,9 +664,10 @@ final class _ConversationRail extends StatelessWidget {
   });
 
   final List<SuperadminChatConversation> conversations;
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
+  final String selectedId;
+  final ValueChanged<SuperadminChatConversation> onSelected;
   final VoidCallback onNewConversation;
+  final FocusNode newConversationFocusNode;
   final VoidCallback? onBack;
   final VoidCallback? onExpand;
   final FocusNode? expandFocusNode;
@@ -623,6 +693,7 @@ final class _ConversationRail extends StatelessWidget {
             child: IconButton(
               tooltip: 'Nova conversa',
               onPressed: onNewConversation,
+              focusNode: newConversationFocusNode,
               icon: const Icon(Icons.edit_outlined),
             ),
           ),
@@ -633,8 +704,7 @@ final class _ConversationRail extends StatelessWidget {
                 for (final conversation in conversations)
                   Builder(
                     builder: (context) {
-                      final sourceIndex = superadminChatConversations.indexOf(conversation);
-                      final selected = sourceIndex == selectedIndex;
+                      final selected = conversation.id == selectedId;
                       final colors = Theme.of(context).colorScheme;
                       return Semantics(
                         key: Key('superadmin-chat-rail-conversation-${conversation.id}'),
@@ -658,8 +728,8 @@ final class _ConversationRail extends StatelessWidget {
                                 initials: conversation.initials,
                                 nowState: conversation.nowState,
                                 presence: conversation.presence,
-                                onProfilePressed: () => onSelected(sourceIndex),
-                                onNowPressed: () => onSelected(sourceIndex),
+                                onProfilePressed: () => onSelected(conversation),
+                                onNowPressed: () => onSelected(conversation),
                               ),
                             ),
                           ),
@@ -766,4 +836,9 @@ final class _ChatThread extends StatelessWidget {
       ),
     );
   }
+}
+
+String _initials(String label) {
+  final words = label.trim().split(RegExp(r'\s+'));
+  return words.take(2).where((word) => word.isNotEmpty).map((word) => word[0].toUpperCase()).join();
 }
