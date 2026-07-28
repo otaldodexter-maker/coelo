@@ -47,3 +47,23 @@ este comportamento durável; não houve nova regra de produto a capturar.
 - Código: `b863593 fix(superadmin): refine password dialog and settings row`.
 - Sem concerns funcionais. O Flutter informou 11 dependências com versões mais
   novas fora das restrições; isso não afetou testes nem análise.
+
+## Atualização P1 — responsividade do diálogo
+
+### RED
+
+- Novo teste explícito em viewport de 375 px e `TextScaler.linear(2)` abriu o
+  diálogo e falhou como esperado: `RenderFlex overflowed by 68 pixels on the
+  bottom`.
+
+### GREEN
+
+- O diálogo usa `scrollable: true` para manter conteúdo e ações alcançáveis
+  em altura compacta. Em largura compacta ou escala de texto a partir de 150%,
+  Cancelar e Alterar senha são empilhados em `Column` e ocupam toda a largura
+  útil; em contexto amplo permanece o `Row` 50/50 com `CoeloSpacing.space3`.
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart --suppress-analytics test test/features/account/presentation/screens/profile_page_test.dart test/features/account/presentation/screens/settings_page_test.dart`
+  retornou `All tests passed!` (10 testes).
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart --suppress-analytics analyze lib/features/account/presentation/screens/profile_page.dart test/features/account/presentation/screens/profile_page_test.dart`
+  retornou `No issues found!`.
+- Commit P1: `9c691a8 fix(superadmin): stack password actions on compact screens`.
