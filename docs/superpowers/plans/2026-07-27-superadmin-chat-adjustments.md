@@ -417,16 +417,68 @@ Atualizar primeiro esta spec e o Design System; somente então projetar para
 identificáveis. Executar `Test-CoeloKnowledge.ps1` e seus testes. Registrar
 `no-op` se não houver conteúdo adicional reutilizável.
 
+- [ ] **Step 6: Formatar os artefatos da promoção**
+
+Run:
+
+```powershell
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format packages/coelo_tokens/lib/src/coelo_scales.dart packages/coelo_ui_admin/lib/coelo_ui_admin.dart packages/coelo_ui_admin/lib/src/chat/coelo_admin_chat_context_summary.dart packages/coelo_ui_admin/test/chat/coelo_admin_chat_context_summary_test.dart apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_context_panel.dart apps/superadmin/test/features/chat/presentation/superadmin_chat_context_panel_test.dart apps/catalog/lib/catalog/chat_catalog_foundations.dart apps/catalog/test/catalog/chat_catalog_test.dart
+```
+
+Expected: exit 0.
+
+- [ ] **Step 7: Executar análise, testes e goldens da promoção**
+
+Run `dart analyze` e os testes focados em `coelo_tokens`,
+`coelo_ui_admin`, `apps/superadmin` e `apps/catalog`. Atualizar e verificar
+os goldens mobile claro e desktop escuro. Executar também:
+
+```powershell
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe analyze
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test
+& '.agents\skills\coelo-ui\scripts\validate-index.ps1'
+& '.agents\skills\coelo-knowledge\scripts\Test-CoeloKnowledge.ps1'
+& '.agents\skills\coelo-knowledge\tests\Test-CoeloKnowledge.ps1'
+```
+
+Expected: zero diagnostics, testes e goldens verdes, índice e conhecimento
+válidos. Executar análise e testes no diretório de cada pacote/app listado.
+
+- [ ] **Step 8: Revisar diff e commitar seletivamente a promoção**
+
+```powershell
+git diff --check
+git status --short
+git add packages/coelo_tokens/lib/src/coelo_scales.dart packages/coelo_tokens/test packages/coelo_ui_admin/lib/coelo_ui_admin.dart packages/coelo_ui_admin/lib/src/chat packages/coelo_ui_admin/test/chat apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_context_panel.dart apps/superadmin/test/features/chat/presentation/superadmin_chat_context_panel_test.dart apps/catalog/assets/coelo-ui.index.jsonl apps/catalog/lib/catalog/chat_catalog_foundations.dart apps/catalog/test/catalog/chat_catalog_test.dart apps/catalog/test/goldens docs/design/design-system.md
+if (git status --short docs/knowledge/team/chat.md) { git add docs/knowledge/team/chat.md }
+git commit -m "feat(ui): promote institutional chat pattern"
+```
+
+Adicionar `docs/knowledge/team/chat.md` somente se ele tiver sido alterado;
+não incluir arquivos não relacionados. Confirmar que o diff contém o token, a
+API de `coelo_ui_admin`, a migração do Superadmin, catálogo, Design System,
+índice, testes/goldens e memória quando aplicável.
+
 ### Task 7: Integração visual, catálogo e verificação
 
 **Files:**
 - Modify: `apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_thread_body.dart`
+- Verify: `packages/coelo_tokens/lib/src/coelo_scales.dart` e seus testes
+- Verify: `packages/coelo_ui_admin/lib/coelo_ui_admin.dart`,
+  `packages/coelo_ui_admin/lib/src/chat/` e seus testes
+- Verify: `apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_context_panel.dart`
+  e seus testes
+- Verify: `docs/design/design-system.md`
+- Verify: `apps/catalog/assets/coelo-ui.index.jsonl`
 - Modify: `apps/catalog/lib/catalog/chat_catalog_foundations.dart`
 - Modify: `apps/catalog/test/catalog/chat_catalog_test.dart`
-- Modify if behavior changed durably: `docs/knowledge/team/chat.md`
+- Verify: goldens de chat administrativo no catálogo
+- Verify if altered: `docs/knowledge/team/chat.md`
 
 **Interfaces:**
-- Consumes: APIs implementadas nas Tasks 1–5.
+- Consumes: APIs implementadas nas Tasks 1–6, incluindo
+  `CoeloChatComposer`, `CoeloSize.avatarXl`,
+  `CoeloAdminChatMetric` e `CoeloAdminChatContextSummary`.
 - Produces: integração final e evidência de verificação.
 
 - [ ] **Step 1: Integrar compositor e remover divisores redundantes**
@@ -457,7 +509,7 @@ promovida na Task 6, sem promover componente público adicional.
 Run:
 
 ```powershell
-C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format packages/coelo_ui_core/lib/src/chat packages/coelo_ui_core/test/chat apps/superadmin/lib/features/chat apps/superadmin/test/features/chat apps/catalog/lib/catalog/chat_catalog_foundations.dart apps/catalog/test/catalog/chat_catalog_test.dart
+C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format packages/coelo_tokens/lib/src/coelo_scales.dart packages/coelo_ui_admin/lib/coelo_ui_admin.dart packages/coelo_ui_admin/lib/src/chat packages/coelo_ui_admin/test/chat packages/coelo_ui_core/lib/src/chat packages/coelo_ui_core/test/chat apps/superadmin/lib/features/chat apps/superadmin/test/features/chat apps/catalog/lib/catalog/chat_catalog_foundations.dart apps/catalog/test/catalog/chat_catalog_test.dart
 ```
 
 Expected: exit 0.
@@ -471,7 +523,8 @@ C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe analyze
 C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test
 ```
 
-Working directories: `packages/coelo_ui_core`, `apps/superadmin` e `apps/catalog`.
+Working directories: `packages/coelo_tokens`, `packages/coelo_ui_admin`,
+`packages/coelo_ui_core`, `apps/superadmin` e `apps/catalog`.
 
 Expected: zero diagnostics e todos os testes passando.
 
@@ -494,6 +547,11 @@ além desta spec. Caso contrário, registrar gate de memória como `no-op`.
 ```powershell
 git diff --check
 git status --short
-git add apps/catalog/lib/catalog/chat_catalog_foundations.dart apps/catalog/test/catalog/chat_catalog_test.dart apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_thread_body.dart
+git add packages/coelo_tokens/lib/src/coelo_scales.dart packages/coelo_tokens/test packages/coelo_ui_admin/lib/coelo_ui_admin.dart packages/coelo_ui_admin/lib/src/chat packages/coelo_ui_admin/test/chat apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_context_panel.dart apps/superadmin/test/features/chat/presentation/superadmin_chat_context_panel_test.dart apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_thread_body.dart apps/catalog/assets/coelo-ui.index.jsonl apps/catalog/lib/catalog/chat_catalog_foundations.dart apps/catalog/test/catalog/chat_catalog_test.dart apps/catalog/test/goldens docs/design/design-system.md
+if (git status --short docs/knowledge/team/chat.md) { git add docs/knowledge/team/chat.md }
 git commit -m "test(superadmin): verify responsive chat experience"
 ```
+
+Adicionar `docs/knowledge/team/chat.md` somente se alterado. Reconfirmar que
+o commit não absorve mudanças não relacionadas e que a verificação cobre todos
+os artefatos promovidos na Task 6.
