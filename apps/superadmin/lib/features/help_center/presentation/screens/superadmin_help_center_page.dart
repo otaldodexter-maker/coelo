@@ -249,7 +249,7 @@ class _HistoryPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>();
+    final actionColors = theme.extension<CoeloActionColors>()!;
     return Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: Column(
@@ -326,7 +326,7 @@ class _HistoryRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>();
+    final actionColors = theme.extension<CoeloActionColors>()!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
       child: Column(
@@ -792,7 +792,7 @@ class _HelpComposerState extends State<_HelpComposer> {
   }
 }
 
-ButtonStyle _brandFilledButtonStyle(ColorScheme colors, CoeloActionColors? actionColors) {
+ButtonStyle _brandFilledButtonStyle(ColorScheme colors, CoeloActionColors actionColors) {
   return FilledButton.styleFrom(
     backgroundColor: colors.primary,
     foregroundColor: colors.onPrimary,
@@ -802,7 +802,7 @@ ButtonStyle _brandFilledButtonStyle(ColorScheme colors, CoeloActionColors? actio
   ).copyWith(backgroundColor: _brandBackgroundColor(colors, actionColors));
 }
 
-ButtonStyle _brandIconButtonStyle(ColorScheme colors, CoeloActionColors? actionColors) {
+ButtonStyle _brandIconButtonStyle(ColorScheme colors, CoeloActionColors actionColors) {
   return IconButton.styleFrom(
     minimumSize: const Size.square(CoeloSize.touchMin),
     fixedSize: const Size.square(CoeloSize.touchMin),
@@ -817,16 +817,16 @@ ButtonStyle _brandIconButtonStyle(ColorScheme colors, CoeloActionColors? actionC
 
 WidgetStateProperty<Color?> _brandBackgroundColor(
   ColorScheme colors,
-  CoeloActionColors? actionColors,
+  CoeloActionColors actionColors,
 ) => WidgetStateProperty.resolveWith((states) {
   if (states.contains(WidgetState.disabled)) {
     return colors.surfaceContainer;
   }
   if (states.contains(WidgetState.pressed)) {
-    return actionColors?.primaryPressed ?? colors.primary;
+    return actionColors.primaryPressed;
   }
   if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
-    return actionColors?.primaryHover ?? colors.primary;
+    return actionColors.primaryHover;
   }
   return colors.primary;
 });
