@@ -165,6 +165,41 @@ void main() {
     expect(tester.getBottomLeft(access).dy, lessThan(tester.getTopLeft(security).dy));
     expect(tester.getSize(find.byKey(const Key('account-save-profile'))).width, greaterThan(300));
   });
+
+  testWidgets('keeps profile controls accessible at 200 percent text on compact screens', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final activities = SuperadminActivityController();
+    final controller = AccountController(
+      repository: InMemoryAccountProfileRepository(),
+      activities: activities,
+    );
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: ProfilePage(controller: controller, logout: () async => const LogoutResult.success()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    await tester.ensureVisible(find.byKey(const Key('account-reset-profile')));
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    expect(find.byKey(const Key('account-reset-profile')), findsOneWidget);
+    expect(find.byKey(const Key('account-save-profile')), findsOneWidget);
+  });
 }
 
 Future<void> _pumpProfilePage(WidgetTester tester, AccountController controller) async {

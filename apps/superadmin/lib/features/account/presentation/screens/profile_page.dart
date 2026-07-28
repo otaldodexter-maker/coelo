@@ -377,36 +377,49 @@ class _PersonalDataForm extends StatelessWidget {
       const SizedBox(height: CoeloSpacing.space5),
       Text('Avatar sem foto', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space3),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: CoeloFormTextField(
-              fieldKey: const Key('account-initials-field'),
-              controller: initials,
-              labelText: 'Sigla',
-              hintText: 'OC',
-              prefixIcon: Icons.text_fields_rounded,
-              validator: (value) => AccountAvatar.validateInitials(value ?? ''),
-            ),
-          ),
-          const SizedBox(width: CoeloSpacing.space3),
-          SizedBox(
-            height: 52,
-            child: OutlinedButton.icon(
-              onPressed: onChooseColor,
-              icon: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: avatar.backgroundColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Theme.of(context).colorScheme.outline),
-                ),
-                child: const SizedBox.square(dimension: CoeloSize.iconMd),
+      Builder(
+        builder: (context) {
+          final initialsField = CoeloFormTextField(
+            fieldKey: const Key('account-initials-field'),
+            controller: initials,
+            labelText: 'Sigla',
+            hintText: 'OC',
+            prefixIcon: Icons.text_fields_rounded,
+            validator: (value) => AccountAvatar.validateInitials(value ?? ''),
+          );
+          final chooseColorButton = OutlinedButton.icon(
+            onPressed: onChooseColor,
+            icon: DecoratedBox(
+              decoration: BoxDecoration(
+                color: avatar.backgroundColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
               ),
-              label: const Text('Escolher cor'),
+              child: const SizedBox.square(dimension: CoeloSize.iconMd),
             ),
-          ),
-        ],
+            label: const Text('Escolher cor'),
+          );
+          final compact =
+              MediaQuery.sizeOf(context).width < 600 ||
+              MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+          return compact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    initialsField,
+                    const SizedBox(height: CoeloSpacing.space3),
+                    Align(alignment: Alignment.centerLeft, child: chooseColorButton),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: initialsField),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    SizedBox(height: 52, child: chooseColorButton),
+                  ],
+                );
+        },
       ),
       const SizedBox(height: CoeloSpacing.space2),
       const Text('PNG, JPG ou WebP, até 2 MB. A sigla aceita uma ou duas letras.'),
