@@ -681,21 +681,31 @@ class _PasswordDialogState extends State<_PasswordDialog> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       surfaceTintColor: Colors.transparent,
       scrollable: true,
-      title: Row(
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const Expanded(child: Text('Alterar senha')),
-          IconButton(
-            key: const Key('account-password-close'),
-            tooltip: 'Fechar alteração de senha',
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.close_rounded),
-            color: Theme.of(context).colorScheme.error,
-            style: IconButton.styleFrom(
-              minimumSize: const Size.square(CoeloSize.touchMin),
-              hoverColor: Theme.of(context).colorScheme.errorContainer,
-              focusColor: Theme.of(context).colorScheme.errorContainer,
-              highlightColor: Colors.transparent,
-            ),
+          Row(
+            children: [
+              const Expanded(child: Text('Alterar senha')),
+              IconButton(
+                key: const Key('account-password-close'),
+                tooltip: 'Fechar alteração de senha',
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close_rounded),
+                color: Theme.of(context).colorScheme.error,
+                style: IconButton.styleFrom(
+                  minimumSize: const Size.square(CoeloSize.touchMin),
+                  hoverColor: Theme.of(context).colorScheme.errorContainer,
+                  focusColor: Theme.of(context).colorScheme.errorContainer,
+                  highlightColor: Colors.transparent,
+                ),
+              ),
+            ],
+          ),
+          Divider(
+            key: const Key('account-password-header-divider'),
+            height: 1,
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
         ],
       ),

@@ -359,6 +359,15 @@ void main() {
     );
     expect(tester.getSize(close), const Size.square(CoeloSize.touchMin));
 
+    final headerDivider = find.byKey(const Key('account-password-header-divider'));
+    expect(headerDivider, findsOneWidget);
+    final divider = tester.widget<Divider>(headerDivider);
+    expect(divider.height, 1);
+    expect(
+      divider.color,
+      Theme.of(tester.element(headerDivider)).colorScheme.outlineVariant,
+    );
+
     final cancel = find.byKey(const Key('account-password-cancel'));
     final submit = find.byKey(const Key('account-password-submit'));
     expect(cancel, findsOneWidget);
