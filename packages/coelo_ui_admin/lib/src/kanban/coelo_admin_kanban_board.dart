@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 typedef CoeloAdminKanbanItemsForStatus<T, S> = List<T> Function(S status);
 typedef CoeloAdminKanbanItemBuilder<T> = Widget Function(BuildContext context, T item);
 typedef CoeloAdminKanbanAccept<T, S> = void Function(T item, S targetStatus);
+typedef CoeloAdminKanbanLeadingBuilder<S> = Widget? Function(BuildContext context, S status);
 
 /// A domain-neutral, horizontally scrollable operational Kanban.
 final class CoeloAdminKanbanBoard<T extends Object, S> extends StatefulWidget {
@@ -20,6 +21,7 @@ final class CoeloAdminKanbanBoard<T extends Object, S> extends StatefulWidget {
     this.selectedStatus,
     this.onSelectedStatusChanged,
     this.compact,
+    this.leadingBuilder,
     super.key,
   });
 
@@ -32,6 +34,7 @@ final class CoeloAdminKanbanBoard<T extends Object, S> extends StatefulWidget {
   final S? selectedStatus;
   final ValueChanged<S>? onSelectedStatusChanged;
   final bool? compact;
+  final CoeloAdminKanbanLeadingBuilder<S>? leadingBuilder;
 
   @override
   State<CoeloAdminKanbanBoard<T, S>> createState() => _CoeloAdminKanbanBoardState<T, S>();
@@ -140,7 +143,7 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
           child: DecoratedBox(
             key: ValueKey<(String, S)>(('coelo-admin-kanban-lane', status)),
             decoration: BoxDecoration(
-              color: colors.primaryContainer,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(CoeloRadius.lg),
               border: Border.all(color: accepting ? colors.primary : colors.outlineVariant),
             ),
@@ -181,6 +184,10 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
                     ),
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
+                  if (widget.leadingBuilder?.call(context, status) case final leading?) ...[
+                    leading,
+                    const SizedBox(height: CoeloSpacing.space3),
+                  ],
                   Expanded(
                     child: items.isEmpty
                         ? widget.emptyLaneBuilder?.call(context, status) ??

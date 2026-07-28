@@ -5,17 +5,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('expands four softly branded lanes edge-to-edge when they fit', (tester) async {
+  testWidgets('expands four neutral lanes edge-to-edge when they fit', (tester) async {
     await _pumpBoard(tester, width: 1200);
 
     final lanes = _Status.values.map(_laneFinder).toList(growable: false);
     for (final lane in lanes) {
       expect(tester.getSize(lane).width, 291);
       final decoration = tester.widget<DecoratedBox>(lane).decoration as BoxDecoration;
-      expect(decoration.color, CoeloColorSchemes.light.primaryContainer);
+      expect(decoration.color, CoeloColorSchemes.light.surface);
     }
     expect(tester.getTopLeft(lanes.first).dx, 0);
     expect(tester.getBottomRight(lanes.last).dx, 1200);
+  });
+
+  testWidgets('renders an optional leading action only in its target lane', (tester) async {
+    await _pumpBoard(
+      tester,
+      width: 1200,
+      leadingBuilder: (context, status) =>
+          status == _Status.todo ? const Text('Criar chamado') : null,
+    );
+
+    expect(find.text('Criar chamado'), findsOneWidget);
+    expect(
+      find.descendant(of: _laneFinder(_Status.todo), matching: find.text('Criar chamado')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('scrolls horizontally with 280 pixel lanes when they do not fit', (tester) async {
@@ -115,6 +130,7 @@ Future<void> _pumpBoard(
   _Status? selectedStatus,
   ValueChanged<_Status>? onSelectedStatusChanged,
   bool? compact,
+  Widget? Function(BuildContext context, _Status status)? leadingBuilder,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = Size(width, 600);
@@ -141,6 +157,7 @@ Future<void> _pumpBoard(
             selectedStatus: selectedStatus,
             onSelectedStatusChanged: onSelectedStatusChanged,
             compact: compact,
+            leadingBuilder: leadingBuilder,
           ),
         ),
       ),

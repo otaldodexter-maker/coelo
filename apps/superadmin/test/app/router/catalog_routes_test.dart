@@ -56,7 +56,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Governança'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Catálogo'));
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-catalog')));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutions);
@@ -64,7 +66,7 @@ void main() {
     expect(openedCatalogs, [Uri.parse('https://catalog.coelo.me/')]);
   });
 
-  testWidgets('keeps the authenticated institutions page when catalog launches externally', (
+  testWidgets('opens the protected catalog from authenticated persistent navigation', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
@@ -77,13 +79,15 @@ void main() {
     router.go(SuperadminRoutes.institutions);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Governança'));
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Catálogo'));
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-governance')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-catalog')));
     await tester.pumpAndSettle();
 
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
-    expect(find.byType(CatalogHostPage), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.governanceCatalog);
+    expect(find.byType(CatalogHostPage), findsOneWidget);
     expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
   });
 }

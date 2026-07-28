@@ -40,7 +40,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-navigation-support')), findsOneWidget);
   });
 
-  testWidgets('opens dev support without a session', (tester) async {
+  testWidgets('protects dev support without a session', (tester) async {
     final session = SuperadminSession();
     final router = _router(session);
     addTearDown(router.dispose);
@@ -48,20 +48,20 @@ void main() {
     router.go(SuperadminRoutes.devSupport);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devSupport);
-    expect(find.byType(SupportPage), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+    expect(find.byType(SupportPage), findsNothing);
   });
 
   testWidgets('keeps reports and navigation in one injected support session', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final session = SuperadminSession();
+    final session = SuperadminSession()..signIn();
     final supportController = SupportPrototypeController(initialTickets: const <SupportTicket>[]);
     final router = _router(session, supportController: supportController);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
     addTearDown(supportController.dispose);
-    router.go(SuperadminRoutes.devInstitutions);
+    router.go(SuperadminRoutes.institutions);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
@@ -80,11 +80,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-navigation-support')));
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devSupport);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.support);
 
     await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutions);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
   });
 }
 

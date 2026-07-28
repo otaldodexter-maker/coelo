@@ -13,8 +13,8 @@ final class SupportTicketDetail extends StatefulWidget {
     required this.ticket,
     required this.teamMembers,
     required this.statusBuilder,
-    required this.onOwnerChanged,
-    required this.onCollaboratorsChanged,
+    required this.onAssigneesChanged,
+    required this.onExpand,
     required this.onSend,
     required this.onClose,
     super.key,
@@ -23,8 +23,8 @@ final class SupportTicketDetail extends StatefulWidget {
   final SupportTicket ticket;
   final List<SupportTeamMember> teamMembers;
   final Widget Function(SupportTicket ticket) statusBuilder;
-  final ValueChanged<String?> onOwnerChanged;
-  final ValueChanged<Set<String>> onCollaboratorsChanged;
+  final ValueChanged<Set<String>> onAssigneesChanged;
+  final VoidCallback? onExpand;
   final ValueChanged<String> onSend;
   final VoidCallback onClose;
 
@@ -121,6 +121,19 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
                 ),
               ),
               const SizedBox(width: CoeloSpacing.space2),
+              if (widget.onExpand != null)
+                Tooltip(
+                  message: 'Expandir detalhes',
+                  child: IconButton(
+                    key: const Key('support-detail-expand'),
+                    onPressed: widget.onExpand,
+                    constraints: const BoxConstraints.tightFor(
+                      width: CoeloSize.touchMin,
+                      height: CoeloSize.touchMin,
+                    ),
+                    icon: const Icon(Icons.open_in_full_rounded),
+                  ),
+                ),
               Tooltip(
                 message: 'Fechar detalhes',
                 child: Semantics(
@@ -166,27 +179,16 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
       children: [
         Text('Equipe', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space2),
-        SupportAssigneeView(
-          ownerId: ticket.ownerId,
-          collaboratorIds: ticket.collaboratorIds,
-          teamMembers: widget.teamMembers,
-        ),
-        const SizedBox(height: CoeloSpacing.space2),
-        _OwnerSelector(
-          key: const Key('support-detail-owner'),
-          ownerId: ticket.ownerId,
-          teamMembers: widget.teamMembers,
-          onChanged: widget.onOwnerChanged,
-        ),
+        SupportAssigneeView(assigneeIds: ticket.assigneeIds, teamMembers: widget.teamMembers),
         const SizedBox(height: CoeloSpacing.space2),
         CoeloAdminMultiSelectFilter<String>(
-          key: const Key('support-detail-collaborators'),
-          label: 'Colaboradores',
+          key: const Key('support-detail-assignees'),
+          label: 'Responsáveis',
           options: widget.teamMembers.map((member) => member.id).toList(growable: false),
-          selectedValues: ticket.collaboratorIds,
+          selectedValues: ticket.assigneeIds,
           optionLabel: (memberId) =>
               _memberLabel(widget.teamMembers.singleWhere((member) => member.id == memberId)),
-          onChanged: widget.onCollaboratorsChanged,
+          onChanged: widget.onAssigneesChanged,
         ),
         const SizedBox(height: CoeloSpacing.space4),
         Text('Relatório original', style: Theme.of(context).textTheme.titleMedium),
@@ -225,6 +227,10 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
         const Divider(),
         Text('Histórico', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space2),
+        _HistoryEntry(label: 'Chamado criado', occurredAt: ticket.createdAt),
+        for (final activity in ticket.activities)
+          if (activity.kind != SupportActivityKind.created)
+            _HistoryEntry(label: activity.label, occurredAt: activity.occurredAt),
         for (final message in ticket.messages)
           CoeloMessageBubble(
             direction: message.author == SupportMessageAuthor.support
@@ -240,69 +246,24 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
   }
 }
 
-final class _OwnerSelector extends StatelessWidget {
-  const _OwnerSelector({
-    required this.ownerId,
-    required this.teamMembers,
-    required this.onChanged,
-    super.key,
-  });
+final class _HistoryEntry extends StatelessWidget {
+  const _HistoryEntry({required this.label, required this.occurredAt});
 
-  final String? ownerId;
-  final List<SupportTeamMember> teamMembers;
-  final ValueChanged<String?> onChanged;
+  final String label;
+  final DateTime occurredAt;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final owner = teamMembers.where((member) => member.id == ownerId).firstOrNull;
-    return MenuAnchor(
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        elevation: const WidgetStatePropertyAll(6),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
-          ),
-        ),
-      ),
-      menuChildren: [
-        MenuItemButton(
-          leadingIcon: ownerId == null
-              ? const Icon(Icons.check_rounded)
-              : const SizedBox(width: CoeloSpacing.space6),
-          onPressed: () => onChanged(null),
-          child: const Text('Sem responsável'),
-        ),
-        for (final member in teamMembers)
-          MenuItemButton(
-            leadingIcon: ownerId == member.id
-                ? const Icon(Icons.check_rounded)
-                : const SizedBox(width: CoeloSpacing.space6),
-            onPressed: () => onChanged(member.id),
-            child: Text(_memberLabel(member)),
-          ),
-      ],
-      builder: (context, controller, child) => OutlinedButton(
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(CoeloSize.touchMin),
-          alignment: Alignment.centerLeft,
-          shape: const StadiumBorder(),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                owner == null ? 'Atribuir responsável' : _memberLabel(owner),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const Icon(Icons.arrow_drop_down_rounded),
-          ],
-        ),
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.history_rounded),
+      title: Text(label),
+      subtitle: Text(
+        '${occurredAt.day.toString().padLeft(2, '0')}/'
+        '${occurredAt.month.toString().padLeft(2, '0')} '
+        '${occurredAt.hour.toString().padLeft(2, '0')}:'
+        '${occurredAt.minute.toString().padLeft(2, '0')}',
       ),
     );
   }

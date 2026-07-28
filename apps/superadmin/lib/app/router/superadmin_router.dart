@@ -34,6 +34,7 @@ import '../../features/units/data/fake_unit_directory_repository.dart';
 import '../../features/units/presentation/unit_directory_page.dart';
 import '../../features/units/presentation/unit_form_page.dart';
 import '../dev_menu/dev_menu_overlay.dart';
+import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
 
 GoRouter createSuperadminRouter({
@@ -94,7 +95,7 @@ GoRouter createSuperadminRouter({
     ),
     redirect: (context, state) {
       final location = state.matchedLocation;
-      if (location.startsWith('/dev/')) {
+      if (location.startsWith('/dev/') && location != SuperadminRoutes.devSupport) {
         return null;
       }
 
@@ -112,7 +113,21 @@ GoRouter createSuperadminRouter({
     },
     routes: [
       ShellRoute(
-        builder: (context, state, child) => DevMenuOverlay(onNavigate: context.go, child: child),
+        builder: (context, state, child) {
+          final location = state.matchedLocation;
+          final routedChild = _usesPersistentShell(location)
+              ? SuperadminShell.host(
+                  key: const Key('superadmin-persistent-shell'),
+                  logout: logout,
+                  currentDestination: _destinationForLocation(location),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                  onBugReportSubmitted: sessionSupportController.submitReport,
+                  child: child,
+                )
+              : child;
+          return DevMenuOverlay(onNavigate: context.go, child: routedChild);
+        },
         routes: [
           GoRoute(
             path: SuperadminRoutes.login,
@@ -678,6 +693,52 @@ void _navigateFromAccount(
         SuperadminRoutes.conversationsName,
         queryParameters: const {'from': 'profile'},
       );
+    case 'profile':
+      context.goNamed(SuperadminRoutes.profileName);
+    case 'settings':
+      context.goNamed(SuperadminRoutes.settingsName);
+  }
+}
+
+bool _usesPersistentShell(String location) {
+  return !location.startsWith('/dev/') &&
+      location != SuperadminRoutes.login &&
+      location != SuperadminRoutes.forgotPassword &&
+      location != SuperadminRoutes.resetPassword;
+}
+
+String _destinationForLocation(String location) {
+  if (location.startsWith('/institutions')) {
+    return 'institutions';
+  }
+  if (location.startsWith('/units')) {
+    return 'units';
+  }
+  return switch (location) {
+    SuperadminRoutes.home => 'home',
+    SuperadminRoutes.governanceCatalog => 'catalog',
+    SuperadminRoutes.support => 'support',
+    SuperadminRoutes.conversations => 'conversations',
+    SuperadminRoutes.profile => 'profile',
+    SuperadminRoutes.settings => 'settings',
+    _ => 'home',
+  };
+}
+
+void _navigateFromPersistentShell(BuildContext context, String destination) {
+  switch (destination) {
+    case 'home':
+      context.goNamed(SuperadminRoutes.homeName);
+    case 'institutions':
+      context.goNamed(SuperadminRoutes.institutionsName);
+    case 'units':
+      context.goNamed(SuperadminRoutes.unitsName);
+    case 'catalog':
+      context.goNamed(SuperadminRoutes.governanceCatalogName);
+    case 'support':
+      context.goNamed(SuperadminRoutes.supportName);
+    case 'conversations':
+      context.goNamed(SuperadminRoutes.conversationsName);
     case 'profile':
       context.goNamed(SuperadminRoutes.profileName);
     case 'settings':

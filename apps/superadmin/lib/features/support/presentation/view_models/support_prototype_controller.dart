@@ -4,6 +4,18 @@ import '../../domain/support_requester_context.dart';
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 
+enum SupportSortColumn {
+  id,
+  subject,
+  menu,
+  requester,
+  status,
+  assignees,
+  attachments,
+  unread,
+  updatedAt,
+}
+
 final class SupportPrototypeController extends ChangeNotifier {
   SupportPrototypeController({
     Iterable<SupportTicket>? initialTickets,
@@ -53,11 +65,29 @@ final class SupportPrototypeController extends ChangeNotifier {
   SupportFilters _filters = SupportFilters.empty;
   String? _selectedTicketId;
   int _nextSessionNumber = 1;
+  int _currentPage = 1;
+  int _pageSize = 9;
+  SupportSortColumn _sortColumn = SupportSortColumn.updatedAt;
+  bool _sortAscending = false;
 
   List<SupportTicket> get tickets => _tickets;
   List<SupportTeamMember> get teamMembers => defaultTeamMembers;
   SupportFilters get filters => _filters;
   bool get hasActiveFilters => _filters.hasActiveFilters;
+  int get currentPage => _currentPage;
+  int get pageSize => _pageSize;
+  SupportSortColumn get sortColumn => _sortColumn;
+  bool get sortAscending => _sortAscending;
+  int get totalPages =>
+      ((_sortedFilteredTickets.length + _pageSize - 1) ~/ _pageSize).clamp(1, 1 << 31);
+  List<SupportTicket> get visibleTickets {
+    final start = (_currentPage - 1) * _pageSize;
+    final tickets = _sortedFilteredTickets;
+    if (start >= tickets.length) {
+      return const [];
+    }
+    return List.unmodifiable(tickets.skip(start).take(_pageSize));
+  }
 
   List<SupportTicket> get filteredTickets {
     if (!hasActiveFilters) {
@@ -92,6 +122,13 @@ final class SupportPrototypeController extends ChangeNotifier {
       createdAt: now,
       updatedAt: now,
       status: SupportTicketStatus.newRequest,
+      activities: [
+        SupportActivity(
+          kind: SupportActivityKind.created,
+          label: 'Chamado criado',
+          occurredAt: now,
+        ),
+      ],
       attachments: draft.includeDemoAttachment
           ? const [
               SupportAttachment(
@@ -117,12 +154,51 @@ final class SupportPrototypeController extends ChangeNotifier {
     _replaceTicket(ticketId, (ticket) => ticket.copyWith(collaboratorIds: memberIds));
   }
 
+  void setAssignees(String ticketId, Set<String> memberIds) {
+    final now = _clock();
+    _replaceTicket(
+      ticketId,
+      (ticket) => ticket.copyWith(
+        clearOwner: true,
+        collaboratorIds: const {},
+        assigneeIds: memberIds,
+        updatedAt: now,
+        activities: [
+          ...ticket.activities,
+          SupportActivity(
+            kind: SupportActivityKind.assignmentChanged,
+            label: memberIds.isEmpty
+                ? 'Responsáveis removidos'
+                : '${memberIds.length} responsável(is) atribuído(s)',
+            occurredAt: now,
+          ),
+        ],
+      ),
+    );
+  }
+
   bool changeStatus(String ticketId, SupportTicketStatus status) {
     final ticket = _ticketById(ticketId);
-    if (ticket == null || (status == SupportTicketStatus.inProgress && ticket.ownerId == null)) {
+    if (ticket == null ||
+        (status == SupportTicketStatus.inProgress && ticket.assigneeIds.isEmpty)) {
       return false;
     }
-    _replaceTicket(ticketId, (ticket) => ticket.copyWith(status: status, updatedAt: _clock()));
+    final now = _clock();
+    _replaceTicket(
+      ticketId,
+      (ticket) => ticket.copyWith(
+        status: status,
+        updatedAt: now,
+        activities: [
+          ...ticket.activities,
+          SupportActivity(
+            kind: SupportActivityKind.statusChanged,
+            label: 'Status alterado para ${_statusLabel(status)}',
+            occurredAt: now,
+          ),
+        ],
+      ),
+    );
     return true;
   }
 
@@ -159,7 +235,18 @@ final class SupportPrototypeController extends ChangeNotifier {
         text: trimmedReply,
         sentAt: now,
       );
-      return ticket.copyWith(updatedAt: now, messages: [...ticket.messages, message]);
+      return ticket.copyWith(
+        updatedAt: now,
+        messages: [...ticket.messages, message],
+        activities: [
+          ...ticket.activities,
+          SupportActivity(
+            kind: SupportActivityKind.replySent,
+            label: 'Resposta enviada pela equipe',
+            occurredAt: now,
+          ),
+        ],
+      );
     });
   }
 
@@ -185,12 +272,66 @@ final class SupportPrototypeController extends ChangeNotifier {
 
   void updateFilters(SupportFilters filters) {
     _filters = filters;
+    _currentPage = 1;
     notifyListeners();
   }
 
   void clearFilters() {
     _filters = SupportFilters.empty;
+    _currentPage = 1;
     notifyListeners();
+  }
+
+  void setPage(int page) {
+    final nextPage = page.clamp(1, totalPages);
+    if (_currentPage == nextPage) {
+      return;
+    }
+    _currentPage = nextPage;
+    notifyListeners();
+  }
+
+  void setPageSize(int pageSize) {
+    if (_pageSize == pageSize) {
+      return;
+    }
+    _pageSize = pageSize;
+    _currentPage = 1;
+    notifyListeners();
+  }
+
+  void setSort(SupportSortColumn column) {
+    if (_sortColumn == column) {
+      _sortAscending = !_sortAscending;
+    } else {
+      _sortColumn = column;
+      _sortAscending = true;
+    }
+    _currentPage = 1;
+    notifyListeners();
+  }
+
+  List<SupportTicket> get _sortedFilteredTickets {
+    final values = filteredTickets.toList();
+    values.sort((first, second) {
+      final comparison = switch (_sortColumn) {
+        SupportSortColumn.id => first.id.compareTo(second.id),
+        SupportSortColumn.subject => first.subject.compareTo(second.subject),
+        SupportSortColumn.menu => first.menu.compareTo(second.menu),
+        SupportSortColumn.requester => first.requester.compareTo(second.requester),
+        SupportSortColumn.status => first.status.index.compareTo(second.status.index),
+        SupportSortColumn.assignees => first.assigneeIds.length.compareTo(
+          second.assigneeIds.length,
+        ),
+        SupportSortColumn.attachments => first.attachments.length.compareTo(
+          second.attachments.length,
+        ),
+        SupportSortColumn.unread => _unreadCount(first).compareTo(_unreadCount(second)),
+        SupportSortColumn.updatedAt => first.updatedAt.compareTo(second.updatedAt),
+      };
+      return _sortAscending ? comparison : -comparison;
+    });
+    return values;
   }
 
   bool _matchesFilters(SupportTicket ticket) {
@@ -203,16 +344,13 @@ final class SupportPrototypeController extends ChangeNotifier {
       ticket.menu,
       ticket.screen,
       ticket.requesterContext?.breadcrumb ?? '',
-      ticket.ownerId ?? '',
-      ...ticket.collaboratorIds,
+      ...ticket.assigneeIds,
     ].join(' ').toLowerCase();
     return (search.isEmpty || searchableText.contains(search)) &&
         (_filters.statuses.isEmpty || _filters.statuses.contains(ticket.status)) &&
         (_filters.menus.isEmpty || _filters.menus.contains(ticket.menu)) &&
         (_filters.screens.isEmpty || _filters.screens.contains(ticket.screen)) &&
-        (_filters.assigneeIds.isEmpty ||
-            _filters.assigneeIds.contains(ticket.ownerId) ||
-            ticket.collaboratorIds.any(_filters.assigneeIds.contains)) &&
+        (_filters.assigneeIds.isEmpty || ticket.assigneeIds.any(_filters.assigneeIds.contains)) &&
         (!_filters.unreadOnly || _hasUnreadRequesterMessage(ticket));
   }
 
@@ -253,11 +391,25 @@ final class SupportPrototypeController extends ChangeNotifier {
     }
     final updated = transform(_tickets[index]);
     _tickets = List.unmodifiable([..._tickets.take(index), updated, ..._tickets.skip(index + 1)]);
+    _currentPage = _currentPage.clamp(1, totalPages);
     if (notify) {
       notifyListeners();
     }
   }
 }
+
+int _unreadCount(SupportTicket ticket) => ticket.messages
+    .where(
+      (message) => message.author == SupportMessageAuthor.requester && !message.isReadBySupport,
+    )
+    .length;
+
+String _statusLabel(SupportTicketStatus status) => switch (status) {
+  SupportTicketStatus.newRequest => 'Novo',
+  SupportTicketStatus.inProgress => 'Em andamento',
+  SupportTicketStatus.waitingRequester => 'Aguardando solicitante',
+  SupportTicketStatus.completed => 'Concluído',
+};
 
 List<SupportTicket> _defaultTickets(DateTime now) {
   return [

@@ -43,6 +43,7 @@ final class SupportFilterToolbar extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 132.0;
+        final assigneeFilterWidth = compact ? filterWidth : 184.0;
         final controls = Wrap(
           spacing: CoeloSpacing.space3,
           runSpacing: CoeloSpacing.space2,
@@ -82,7 +83,7 @@ final class SupportFilterToolbar extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: filterWidth,
+              width: assigneeFilterWidth,
               child: CoeloAdminMultiSelectFilter<String>(
                 key: const Key('support-assignee-filter'),
                 label: 'Responsável',

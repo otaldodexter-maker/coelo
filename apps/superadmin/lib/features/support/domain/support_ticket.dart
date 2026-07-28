@@ -6,6 +6,16 @@ enum SupportMessageAuthor { support, requester }
 
 enum SupportMessageDeliveryState { sent, delivered, read }
 
+enum SupportActivityKind { created, assignmentChanged, statusChanged, replySent }
+
+final class SupportActivity {
+  const SupportActivity({required this.kind, required this.label, required this.occurredAt});
+
+  final SupportActivityKind kind;
+  final String label;
+  final DateTime occurredAt;
+}
+
 final class SupportAttachment {
   const SupportAttachment({required this.id, required this.fileName, this.byteLength});
 
@@ -56,12 +66,16 @@ final class SupportTicket {
     required this.status,
     this.requesterContext,
     this.ownerId,
+    Set<String> assigneeIds = const {},
     Set<String> collaboratorIds = const {},
     List<SupportAttachment> attachments = const [],
     List<SupportMessage> messages = const [],
+    List<SupportActivity> activities = const [],
   }) : collaboratorIds = Set.unmodifiable(collaboratorIds),
+       assigneeIds = Set.unmodifiable({...assigneeIds, ?ownerId, ...collaboratorIds}),
        attachments = List.unmodifiable(attachments),
-       messages = List.unmodifiable(messages);
+       messages = List.unmodifiable(messages),
+       activities = List.unmodifiable(activities);
 
   final String id;
   final String subject;
@@ -72,11 +86,13 @@ final class SupportTicket {
   final SupportRequesterContext? requesterContext;
   final String? ownerId;
   final Set<String> collaboratorIds;
+  final Set<String> assigneeIds;
   final DateTime createdAt;
   final DateTime updatedAt;
   final SupportTicketStatus status;
   final List<SupportAttachment> attachments;
   final List<SupportMessage> messages;
+  final List<SupportActivity> activities;
 
   SupportTicket copyWith({
     DateTime? updatedAt,
@@ -84,10 +100,25 @@ final class SupportTicket {
     SupportRequesterContext? requesterContext,
     String? ownerId,
     bool clearOwner = false,
+    Set<String>? assigneeIds,
     Set<String>? collaboratorIds,
     List<SupportAttachment>? attachments,
     List<SupportMessage>? messages,
+    List<SupportActivity>? activities,
   }) {
+    final nextOwnerId = clearOwner ? null : ownerId ?? this.ownerId;
+    final nextCollaboratorIds = collaboratorIds ?? this.collaboratorIds;
+    final nextAssigneeIds = assigneeIds != null
+        ? Set<String>.of(assigneeIds)
+        : {
+            ...this.assigneeIds.where(
+              (id) =>
+                  !(clearOwner && id == this.ownerId) &&
+                  !(collaboratorIds != null && this.collaboratorIds.contains(id)),
+            ),
+            ?nextOwnerId,
+            ...nextCollaboratorIds,
+          };
     return SupportTicket(
       id: id,
       subject: subject,
@@ -96,13 +127,15 @@ final class SupportTicket {
       description: description,
       requester: requester,
       requesterContext: requesterContext ?? this.requesterContext,
-      ownerId: clearOwner ? null : ownerId ?? this.ownerId,
-      collaboratorIds: collaboratorIds ?? this.collaboratorIds,
+      ownerId: nextOwnerId,
+      assigneeIds: nextAssigneeIds,
+      collaboratorIds: nextCollaboratorIds,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
       attachments: attachments ?? this.attachments,
       messages: messages ?? this.messages,
+      activities: activities ?? this.activities,
     );
   }
 }

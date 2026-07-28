@@ -23,18 +23,20 @@ void main() {
     expect(doubleTaps, 1);
   });
 
-  testWidgets('starts drag as soon as a pointer moves', (tester) async {
+  testWidgets('starts drag only after a long press', (tester) async {
     var taps = 0;
     await _pumpCard(tester, onTap: () => taps += 1, dragData: 'ticket');
 
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(CoeloAdminWorkItemCard<String>)),
     );
-    await gesture.moveBy(const Offset(100, 0));
-    await tester.pump();
+    await tester.pump(kLongPressTimeout - const Duration(milliseconds: 10));
 
-    expect(find.text('Dragging ticket'), findsOneWidget);
+    expect(find.text('Dragging ticket'), findsNothing);
     expect(taps, 0);
+
+    await tester.pump(const Duration(milliseconds: 20));
+    expect(find.text('Dragging ticket'), findsOneWidget);
 
     await gesture.up();
     await tester.pumpAndSettle();

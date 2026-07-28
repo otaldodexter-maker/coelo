@@ -264,6 +264,94 @@ void main() {
     );
   });
 
+  testWidgets('distinguishes the active section from its active destination', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp(currentDestination: 'institutions'));
+
+    final sectionDecoration =
+        tester
+                .widget<Container>(find.byKey(const Key('superadmin-navigation-section-structure')))
+                .decoration!
+            as BoxDecoration;
+    final destinationDecoration =
+        tester
+                .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
+                .decoration!
+            as BoxDecoration;
+
+    expect(sectionDecoration.color, isNot(destinationDecoration.color));
+  });
+
+  testWidgets('shows Activities after Groups as a future Structure destination', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp());
+
+    expect(find.text('Atividades'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Atividades')).dy,
+      greaterThan(tester.getTopLeft(find.text('Grupos')).dy),
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-navigation-activities')));
+    await tester.pumpAndSettle();
+    expect(find.text('Atividades será implementado em breve.'), findsOneWidget);
+  });
+
+  testWidgets('activates Units and gives Conversations a distinct icon', (tester) async {
+    final destinations = <String>[];
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      _shellApp(currentDestination: 'conversations', onDestinationSelected: destinations.add),
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-units')));
+    expect(destinations, ['units']);
+
+    final communicationIcon = tester.widget<Icon>(
+      find
+          .descendant(
+            of: find.byKey(const Key('superadmin-navigation-section-communication')),
+            matching: find.byType(Icon),
+          )
+          .first,
+    );
+    final conversationsIcon = tester.widget<Icon>(
+      find
+          .descendant(
+            of: find.byKey(const Key('superadmin-navigation-conversations')),
+            matching: find.byType(Icon),
+          )
+          .first,
+    );
+    expect(conversationsIcon.icon, isNot(communicationIcon.icon));
+  });
+
+  testWidgets('removes section and item geometry motion when reduced motion is requested', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_shellApp(disableAnimations: true));
+
+    for (final animatedSize in tester.widgetList<AnimatedSize>(find.byType(AnimatedSize))) {
+      expect(animatedSize.duration, Duration.zero);
+    }
+    for (final animatedPadding in tester.widgetList<AnimatedPadding>(
+      find.byType(AnimatedPadding),
+    )) {
+      expect(animatedPadding.duration, Duration.zero);
+    }
+  });
+
   testWidgets('keeps the Superadmin brand background transparent in every interaction state', (
     tester,
   ) async {
@@ -598,7 +686,10 @@ void main() {
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-structure')))
                 .decoration!
             as BoxDecoration;
-    expect(activeSectionDecoration.color, CoeloTheme.light.colorScheme.primary);
+    expect(
+      activeSectionDecoration.color,
+      CoeloTheme.light.extension<CoeloActionColors>()!.primaryPressed,
+    );
     final inactiveSectionDecoration =
         tester
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-access')))
@@ -1268,12 +1359,14 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 210));
 
-    final middleNavigation = Theme.of(tester.element(navigation)).colorScheme.primary;
+    final middleNavigation = Theme.of(
+      tester.element(navigation),
+    ).extension<CoeloActionColors>()!.primaryPressed;
     final middleStatus = Theme.of(
       tester.element(status),
     ).extension<CoeloStatusColors>()!.successContainer;
     expect(middleNavigation, isNot(lightNavigation));
-    expect(middleNavigation, isNot(CoeloTheme.dark.colorScheme.primary));
+    expect(middleNavigation, isNot(CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed));
     expect(middleStatus, isNot(lightStatus));
     expect(middleStatus, isNot(CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer));
     expect(_surfaceDecoration(tester, navigation).color, middleNavigation);
@@ -1281,7 +1374,10 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 210));
 
-    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
+    expect(
+      _surfaceDecoration(tester, navigation).color,
+      CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed,
+    );
     expect(
       _surfaceDecoration(tester, statusSurface).color,
       CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,
@@ -1303,7 +1399,10 @@ void main() {
 
     expect(tester.widget<Widget>(navigation), isA<Container>());
     expect(tester.widget<Widget>(statusSurface), isA<Container>());
-    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
+    expect(
+      _surfaceDecoration(tester, navigation).color,
+      CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed,
+    );
     expect(
       _surfaceDecoration(tester, statusSurface).color,
       CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,

@@ -11,9 +11,7 @@ typedef SupportTicketOpenCallback =
     void Function(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus);
 typedef SupportStatusChangeCallback =
     Future<void> Function(SupportTicket ticket, SupportTicketStatus status);
-typedef SupportOwnerChangeCallback = void Function(SupportTicket ticket, String? memberId);
-typedef SupportCollaboratorsChangeCallback =
-    void Function(SupportTicket ticket, Set<String> memberIds);
+typedef SupportAssigneesChangeCallback = void Function(SupportTicket ticket, Set<String> memberIds);
 
 final class SupportKanban extends StatefulWidget {
   const SupportKanban({
@@ -23,8 +21,8 @@ final class SupportKanban extends StatefulWidget {
     required this.onTicketPressed,
     required this.onTicketDoublePressed,
     required this.onStatusChanged,
-    required this.onOwnerChanged,
-    required this.onCollaboratorsChanged,
+    required this.onAssigneesChanged,
+    required this.onCreate,
     super.key,
   });
 
@@ -34,8 +32,8 @@ final class SupportKanban extends StatefulWidget {
   final SupportTicketOpenCallback onTicketPressed;
   final SupportTicketOpenCallback onTicketDoublePressed;
   final SupportStatusChangeCallback onStatusChanged;
-  final SupportOwnerChangeCallback onOwnerChanged;
-  final SupportCollaboratorsChangeCallback onCollaboratorsChanged;
+  final SupportAssigneesChangeCallback onAssigneesChanged;
+  final VoidCallback onCreate;
 
   @override
   State<SupportKanban> createState() => _SupportKanbanState();
@@ -94,6 +92,13 @@ final class _SupportKanbanState extends State<SupportKanban> {
           widget.tickets.where((ticket) => ticket.status == status).toList(growable: false),
       itemBuilder: (context, ticket) => _ticketCard(ticket),
       onItemAccepted: (ticket, status) => widget.onStatusChanged(ticket, status),
+      leadingBuilder: (context, status) => status == SupportTicketStatus.newRequest
+          ? SizedBox(
+              key: const Key('support-create-kanban'),
+              height: 152,
+              child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: widget.onCreate),
+            )
+          : null,
       emptyLaneBuilder: (context, status) => Center(
         child: Text(
           'Nenhum chamado',
@@ -144,8 +149,7 @@ final class _SupportKanbanState extends State<SupportKanban> {
         'Atualizado em ${_dateTime(ticket.updatedAt)}',
       ],
       assignees: SupportAssigneeView(
-        ownerId: ticket.ownerId,
-        collaboratorIds: ticket.collaboratorIds,
+        assigneeIds: ticket.assigneeIds,
         teamMembers: widget.teamMembers,
       ),
       indicators: indicators,
@@ -207,60 +211,34 @@ final class _CardMenuState extends State<_CardMenu> {
           focusNode: _ownerMenuFocusNode,
           style: _menuItemStyle(colors),
           menuStyle: menuStyle,
-          leadingIcon: const Icon(Icons.person_add_alt_1_outlined),
-          menuChildren: [
-            for (final member in supportKanban.teamMembers)
-              Semantics(
-                key: Key('support-owner-option-${ticket.id}-${member.id}'),
-                selected: ticket.ownerId == member.id,
-                child: MenuItemButton(
-                  style: _menuItemStyle(colors, selected: ticket.ownerId == member.id),
-                  leadingIcon: ExcludeSemantics(
-                    child: ticket.ownerId == member.id
-                        ? const Icon(Icons.check_rounded)
-                        : const SizedBox(width: CoeloSpacing.space6),
-                  ),
-                  onPressed: () => supportKanban.onOwnerChanged(ticket, member.id),
-                  child: Text(_memberLabel(member)),
-                ),
-              ),
-          ],
-          child: const Text('Atribuir responsável'),
-        ),
-        SubmenuButton(
-          style: _menuItemStyle(colors),
-          menuStyle: menuStyle,
           leadingIcon: const Icon(Icons.group_outlined),
           menuChildren: [
             for (final member in supportKanban.teamMembers)
               Semantics(
-                key: Key('support-collaborator-option-${ticket.id}-${member.id}'),
-                checked: ticket.collaboratorIds.contains(member.id),
+                key: Key('support-assignee-option-${ticket.id}-${member.id}'),
+                checked: ticket.assigneeIds.contains(member.id),
                 child: MenuItemButton(
                   closeOnActivate: false,
-                  style: _menuItemStyle(
-                    colors,
-                    checked: ticket.collaboratorIds.contains(member.id),
-                  ),
+                  style: _menuItemStyle(colors, checked: ticket.assigneeIds.contains(member.id)),
                   leadingIcon: ExcludeSemantics(
                     child: Icon(
-                      ticket.collaboratorIds.contains(member.id)
+                      ticket.assigneeIds.contains(member.id)
                           ? Icons.check_box_rounded
                           : Icons.check_box_outline_blank_rounded,
                     ),
                   ),
                   onPressed: () {
-                    final collaborators = Set<String>.of(ticket.collaboratorIds);
+                    final collaborators = Set<String>.of(ticket.assigneeIds);
                     if (!collaborators.add(member.id)) {
                       collaborators.remove(member.id);
                     }
-                    supportKanban.onCollaboratorsChanged(ticket, collaborators);
+                    supportKanban.onAssigneesChanged(ticket, collaborators);
                   },
                   child: Text(_memberLabel(member)),
                 ),
               ),
           ],
-          child: const Text('Colaboradores'),
+          child: const Text('Responsáveis'),
         ),
         const Divider(height: 1),
         SubmenuButton(

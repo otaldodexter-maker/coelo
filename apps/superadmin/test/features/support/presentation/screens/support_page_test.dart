@@ -78,22 +78,21 @@ void main() {
     expect(find.byKey(const Key('support-card-SUP-002')), findsOneWidget);
   });
 
-  testWidgets('assigns an owner from the kanban card menu', (tester) async {
+  testWidgets('assigns equivalent responsibles from the kanban card menu', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
 
     await tester.tap(find.byKey(const Key('support-card-menu-SUP-001')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Atribuir responsável').last);
+    await tester.tap(find.text('Responsáveis').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Ana Souza · Suporte').last);
     await tester.pumpAndSettle();
 
-    expect(
-      controller.tickets.singleWhere((ticket) => ticket.id == 'SUP-001').ownerId,
+    expect(controller.tickets.singleWhere((ticket) => ticket.id == 'SUP-001').assigneeIds, {
       'member-support',
-    );
+    });
   });
 
   testWidgets('card submenus use the approved raised surface', (tester) async {
@@ -111,7 +110,7 @@ void main() {
     expect(menuStyle.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
   });
 
-  testWidgets('requires an owner when a kanban drop starts work', (tester) async {
+  testWidgets('requires a responsible when a kanban drop starts work', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
@@ -119,6 +118,7 @@ void main() {
     final card = find.byKey(const Key('support-card-SUP-001'));
     final target = _laneFinder(SupportTicketStatus.inProgress);
     final gesture = await tester.startGesture(tester.getCenter(card));
+    await tester.pump(kLongPressTimeout);
     await gesture.moveTo(tester.getCenter(target));
     await tester.pump();
     await gesture.up();
@@ -129,7 +129,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final ticket = controller.tickets.singleWhere((item) => item.id == 'SUP-001');
-    expect(ticket.ownerId, 'member-support');
+    expect(ticket.assigneeIds, {'member-support'});
     expect(ticket.status, SupportTicketStatus.inProgress);
   });
 
@@ -153,10 +153,10 @@ void main() {
 
     expect(find.text('Escolha o responsável'), findsNothing);
     expect(controller.tickets.first.status, SupportTicketStatus.newRequest);
-    expect(controller.tickets.first.ownerId, isNull);
+    expect(controller.tickets.first.assigneeIds, isEmpty);
   });
 
-  testWidgets('card menu is accessible and assigns owner with keyboard', (tester) async {
+  testWidgets('card menu is accessible and assigns a responsible with keyboard', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
@@ -183,39 +183,31 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
 
-    expect(controller.tickets.first.ownerId, 'member-support');
+    expect(controller.tickets.first.assigneeIds, {'member-support'});
   });
 
-  testWidgets('card menu exposes owner status and collaborator semantics', (tester) async {
+  testWidgets('card menu exposes responsible and status semantics', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
-    controller.assignOwner('SUP-001', 'member-support');
-    controller.setCollaborators('SUP-001', {'member-dev'});
+    controller.setAssignees('SUP-001', {'member-support', 'member-dev'});
     await _pump(tester, controller, const Size(1280, 900));
 
     final menuFinder = find.byKey(const Key('support-card-menu-SUP-001'));
     await tester.tap(menuFinder);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Atribuir responsável').last);
+    await tester.tap(find.text('Responsáveis').last);
     await tester.pumpAndSettle();
     expect(
       tester
-          .getSemantics(find.byKey(const Key('support-owner-option-SUP-001-member-support')))
+          .getSemantics(find.byKey(const Key('support-assignee-option-SUP-001-member-support')))
           .flagsCollection
-          .isSelected,
-      Tristate.isTrue,
+          .isChecked,
+      CheckedState.isTrue,
     );
 
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.pumpAndSettle();
-    await tester.tap(menuFinder);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Colaboradores').last);
-    await tester.pumpAndSettle();
     expect(
       tester
-          .getSemantics(find.byKey(const Key('support-collaborator-option-SUP-001-member-dev')))
+          .getSemantics(find.byKey(const Key('support-assignee-option-SUP-001-member-dev')))
           .flagsCollection
           .isChecked,
       CheckedState.isTrue,
@@ -366,17 +358,16 @@ void main() {
     expect(readFilterButton.focusNode?.hasFocus, isTrue);
   });
 
-  testWidgets('keeps the principal assignee before collaborators in semantics', (tester) async {
+  testWidgets('keeps equivalent assignees in stable team order in semantics', (tester) async {
     final controller = SupportPrototypeController();
     addTearDown(controller.dispose);
-    controller.assignOwner('SUP-001', 'member-dev');
-    controller.setCollaborators('SUP-001', {'member-qa', 'member-support'});
+    controller.setAssignees('SUP-001', {'member-qa', 'member-dev', 'member-support'});
     await _pump(tester, controller, const Size(1280, 900));
 
     expect(
       find.bySemanticsLabel(
         RegExp(
-          'Caio Lima, Desenvolvimento; Ana Souza, Suporte; Davi Reis, Qualidade',
+          'Ana Souza, Suporte; Caio Lima, Desenvolvimento; Davi Reis, Qualidade',
           dotAll: true,
         ),
       ),
@@ -398,17 +389,10 @@ void main() {
       find.text('Centro Horizonte > Unidade Cambui > Turma Girassol > Oficina de Arte'),
       findsWidgets,
     );
-    expect(find.byKey(const Key('support-detail-owner')), findsOneWidget);
-    expect(find.byKey(const Key('support-detail-collaborators')), findsOneWidget);
+    expect(find.byKey(const Key('support-detail-assignees')), findsOneWidget);
     expect(controller.selectedTicket!.messages.first.isReadBySupport, isTrue);
 
-    await tester.tap(find.byKey(const Key('support-detail-owner')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Ana Souza · Suporte').last);
-    await tester.pumpAndSettle();
-    expect(controller.selectedTicket!.ownerId, 'member-support');
-
-    await tester.tap(find.byKey(const Key('support-detail-collaborators')));
+    await tester.tap(find.byKey(const Key('support-detail-assignees')));
     await tester.pumpAndSettle();
     final collaboratorOption = find.widgetWithText(MenuItemButton, 'Caio Lima · Desenvolvimento');
     expect(collaboratorOption, findsOneWidget);
@@ -416,13 +400,15 @@ void main() {
       of: collaboratorOption,
       matching: find.byType(Checkbox),
     );
+    await tester.tap(find.text('Ana Souza · Suporte').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Caio Lima · Desenvolvimento').last);
     await tester.pumpAndSettle();
     expect(tester.widget<Checkbox>(collaboratorCheckbox).value, isTrue);
     expect(find.text('Aplicar'), findsOneWidget);
     await tester.tap(find.text('Aplicar').last);
     await tester.pumpAndSettle();
-    expect(controller.selectedTicket!.collaboratorIds, {'member-dev'});
+    expect(controller.selectedTicket!.assigneeIds, {'member-support', 'member-dev'});
 
     await tester.scrollUntilVisible(
       find.text('erro-salvamento.png'),

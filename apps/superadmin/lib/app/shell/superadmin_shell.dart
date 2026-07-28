@@ -40,8 +40,24 @@ class SuperadminShell extends StatefulWidget {
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.showChatLauncher = false,
+    this.isHost = false,
     super.key,
   });
+
+  const SuperadminShell.host({
+    required this.logout,
+    required this.child,
+    required this.currentDestination,
+    required this.onDestinationSelected,
+    this.onBugReportSubmitted,
+    super.key,
+  }) : title = '',
+       subtitle = '',
+       actions = const [],
+       compactActions = const [],
+       activityController = null,
+       showChatLauncher = false,
+       isHost = true;
 
   final LogoutAction logout;
   final Widget? child;
@@ -54,14 +70,16 @@ class SuperadminShell extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool showChatLauncher;
+  final bool isHost;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
 }
 
-class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProviderStateMixin {
+class _SuperadminShellState extends State<SuperadminShell> with TickerProviderStateMixin {
   bool _sidebarCollapsed = false;
   late final AnimationController _sidebarController;
+  late final AnimationController _contentController;
   late final SuperadminActivityController _activityController;
   late final bool _ownsActivityController;
 
@@ -69,6 +87,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
   void initState() {
     super.initState();
     _sidebarController = AnimationController(vsync: this, duration: _sidebarMotionDuration);
+    _contentController = AnimationController(vsync: this, duration: CoeloMotion.short, value: 1);
     _ownsActivityController = widget.activityController == null;
     _activityController = widget.activityController ?? SuperadminActivityController();
   }
@@ -79,11 +98,28 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
     if (_reduceMotion && _sidebarController.isAnimating) {
       _sidebarController.value = _sidebarCollapsed ? 1 : 0;
     }
+    if (_reduceMotion && _contentController.value != 1) {
+      _contentController.value = 1;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SuperadminShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isHost || oldWidget.currentDestination == widget.currentDestination) {
+      return;
+    }
+    if (_reduceMotion) {
+      _contentController.value = 1;
+      return;
+    }
+    unawaited(_contentController.forward(from: 0));
   }
 
   @override
   void dispose() {
     _sidebarController.dispose();
+    _contentController.dispose();
     if (_ownsActivityController) {
       _activityController.dispose();
     }
@@ -116,10 +152,50 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     final pageBody = widget.child ?? const SizedBox.expand();
+    final hostScope = _SuperadminShellHostScope.maybeOf(context);
+    if (!widget.isHost && hostScope != null) {
+      return _buildEmbeddedPage(pageBody, hostScope);
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
         if (!isDesktop) {
+          if (widget.isHost) {
+            return Scaffold(
+              appBar: _CompactAppBar(
+                onLogout: _handleLogout,
+                onDestinationSelected: widget.onDestinationSelected,
+                activityController: _activityController,
+                currentScreen: widget.currentDestination,
+                onBugReportSubmitted: widget.onBugReportSubmitted,
+              ),
+              drawer: Drawer(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+                ),
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      _BrandHeader(
+                        collapsed: false,
+                        currentDestination: widget.currentDestination,
+                        onDestinationSelected: widget.onDestinationSelected,
+                      ),
+                      const _InsetDivider(key: Key('superadmin-brand-divider')),
+                      Expanded(
+                        child: _NavigationContent(
+                          collapsed: false,
+                          currentDestination: widget.currentDestination,
+                          onDestinationSelected: widget.onDestinationSelected,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              body: SuperadminNoticeHost(child: _hostedContent(pageBody, isDesktop: false)),
+            );
+          }
           return _withChatLauncher(
             Scaffold(
               appBar: _CompactAppBar(
@@ -177,26 +253,28 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
         }
 
         final contentSurface = Expanded(
-          child: _FloatingSurface(
-            key: const Key('superadmin-floating-content'),
-            clip: true,
-            child: Column(
-              children: [
-                _PageHeader(
-                  title: widget.title,
-                  subtitle: widget.subtitle,
-                  actions: widget.actions,
-                  compactActions: widget.compactActions,
-                  onLogout: _handleLogout,
-                  onDestinationSelected: widget.onDestinationSelected,
-                  activityController: _activityController,
-                  onBugReportSubmitted: widget.onBugReportSubmitted,
+          child: widget.isHost
+              ? _hostedContent(pageBody, isDesktop: true)
+              : _FloatingSurface(
+                  key: const Key('superadmin-floating-content'),
+                  clip: true,
+                  child: Column(
+                    children: [
+                      _PageHeader(
+                        title: widget.title,
+                        subtitle: widget.subtitle,
+                        actions: widget.actions,
+                        compactActions: widget.compactActions,
+                        onLogout: _handleLogout,
+                        onDestinationSelected: widget.onDestinationSelected,
+                        activityController: _activityController,
+                        onBugReportSubmitted: widget.onBugReportSubmitted,
+                      ),
+                      const _InsetDivider(key: Key('superadmin-page-divider')),
+                      Expanded(child: pageBody),
+                    ],
+                  ),
                 ),
-                const _InsetDivider(key: Key('superadmin-page-divider')),
-                Expanded(child: pageBody),
-              ],
-            ),
-          ),
         );
         return _withChatLauncher(
           Scaffold(
@@ -259,8 +337,63 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
     );
   }
 
-  Widget _withChatLauncher(Widget child) {
-    if (!widget.showChatLauncher || widget.onDestinationSelected == null) {
+  Widget _hostedContent(Widget child, {required bool isDesktop}) {
+    return _SuperadminShellHostScope(
+      isDesktop: isDesktop,
+      onDestinationSelected: widget.onDestinationSelected!,
+      child: FadeTransition(
+        key: const Key('superadmin-content-transition'),
+        opacity: _contentController,
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildEmbeddedPage(Widget pageBody, _SuperadminShellHostScope hostScope) {
+    final content = hostScope.isDesktop
+        ? _FloatingSurface(
+            key: const Key('superadmin-floating-content'),
+            clip: true,
+            child: Column(
+              children: [
+                _PageHeader(
+                  title: widget.title,
+                  subtitle: widget.subtitle,
+                  actions: widget.actions,
+                  compactActions: widget.compactActions,
+                  onLogout: _handleLogout,
+                  onDestinationSelected: hostScope.onDestinationSelected,
+                  activityController: _activityController,
+                  onBugReportSubmitted: widget.onBugReportSubmitted,
+                ),
+                const _InsetDivider(key: Key('superadmin-page-divider')),
+                Expanded(child: pageBody),
+              ],
+            ),
+          )
+        : Column(
+            children: [
+              _PageHeader(
+                title: widget.title,
+                subtitle: widget.subtitle,
+                actions: widget.actions,
+                compactActions: widget.compactActions,
+                onLogout: _handleLogout,
+                onDestinationSelected: hostScope.onDestinationSelected,
+                activityController: _activityController,
+                compact: true,
+                onBugReportSubmitted: widget.onBugReportSubmitted,
+              ),
+              const _InsetDivider(key: Key('superadmin-page-divider')),
+              Expanded(child: pageBody),
+            ],
+          );
+    return _withChatLauncher(content, onDestinationSelected: hostScope.onDestinationSelected);
+  }
+
+  Widget _withChatLauncher(Widget child, {ValueChanged<String>? onDestinationSelected}) {
+    final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
+    if (!widget.showChatLauncher || destinationHandler == null) {
       return child;
     }
     return Stack(
@@ -270,12 +403,31 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
         Positioned(
           right: CoeloSpacing.space4,
           bottom: CoeloSpacing.space4,
-          child: SuperadminChatLauncher(
-            onExpand: () => widget.onDestinationSelected!('conversations'),
-          ),
+          child: SuperadminChatLauncher(onExpand: () => destinationHandler('conversations')),
         ),
       ],
     );
+  }
+}
+
+class _SuperadminShellHostScope extends InheritedWidget {
+  const _SuperadminShellHostScope({
+    required this.isDesktop,
+    required this.onDestinationSelected,
+    required super.child,
+  });
+
+  final bool isDesktop;
+  final ValueChanged<String> onDestinationSelected;
+
+  static _SuperadminShellHostScope? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_SuperadminShellHostScope>();
+  }
+
+  @override
+  bool updateShouldNotify(_SuperadminShellHostScope oldWidget) {
+    return isDesktop != oldWidget.isDesktop ||
+        onDestinationSelected != oldWidget.onDestinationSelected;
   }
 }
 
@@ -546,8 +698,9 @@ const _navigationSections = <_NavigationSectionData>[
       Icons.account_balance_outlined,
       active: true,
     ),
-    _NavigationDestinationData('units', 'Unidades', Icons.apartment_outlined),
+    _NavigationDestinationData('units', 'Unidades', Icons.apartment_outlined, active: true),
     _NavigationDestinationData('groups', 'Grupos', Icons.groups_outlined),
+    _NavigationDestinationData('activities', 'Atividades', Icons.local_activity_outlined),
   ]),
   _NavigationSectionData('access', 'Acessos', Icons.manage_accounts_outlined, [
     _NavigationDestinationData('people', 'Pessoas', Icons.people_outline),
@@ -563,7 +716,12 @@ const _navigationSections = <_NavigationSectionData>[
     _NavigationDestinationData('import', 'Importações', Icons.upload_file_outlined),
   ]),
   _NavigationSectionData('communication', 'Comunicação', Icons.forum_outlined, [
-    _NavigationDestinationData('conversations', 'Conversas', Icons.forum_outlined, active: true),
+    _NavigationDestinationData(
+      'conversations',
+      'Conversas',
+      Icons.chat_bubble_outline,
+      active: true,
+    ),
     _NavigationDestinationData('invites', 'Convites', Icons.mail_outline),
     _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined),
   ]),
@@ -701,6 +859,26 @@ class _ExpandedNavigationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final expandedContent = expanded
+        ? Padding(
+            padding: const EdgeInsets.only(left: CoeloSpacing.space3, top: CoeloSpacing.space1),
+            child: Column(
+              children: [
+                for (final destination in section.destinations)
+                  _NavigationItem(
+                    id: destination.id,
+                    icon: destination.icon,
+                    label: destination.label,
+                    isActive: destination.id == currentDestination,
+                    onTap: destination.active
+                        ? () => onDestinationSelected?.call(destination.id)
+                        : null,
+                    collapsed: false,
+                  ),
+              ],
+            ),
+          )
+        : const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
       child: Column(
@@ -711,34 +889,15 @@ class _ExpandedNavigationSection extends StatelessWidget {
             expanded: expanded,
             onTap: onToggle,
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 260),
-            curve: Curves.easeOut,
-            alignment: Alignment.topCenter,
-            child: expanded
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                      left: CoeloSpacing.space3,
-                      top: CoeloSpacing.space1,
-                    ),
-                    child: Column(
-                      children: [
-                        for (final destination in section.destinations)
-                          _NavigationItem(
-                            id: destination.id,
-                            icon: destination.icon,
-                            label: destination.label,
-                            isActive: destination.id == currentDestination,
-                            onTap: destination.active
-                                ? () => onDestinationSelected?.call(destination.id)
-                                : null,
-                            collapsed: false,
-                          ),
-                      ],
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ),
+          if (MediaQuery.disableAnimationsOf(context))
+            expandedContent
+          else
+            AnimatedSize(
+              duration: const Duration(milliseconds: 260),
+              curve: Curves.easeOut,
+              alignment: Alignment.topCenter,
+              child: expandedContent,
+            ),
         ],
       ),
     );
@@ -769,9 +928,12 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>()!;
     final active = widget.active;
     final background = active
-        ? colors.primary
+        ? _highlighted
+              ? actionColors.primaryHover
+              : actionColors.primaryPressed
         : _highlighted
         ? colors.primaryContainer
         : colors.primaryContainer.withValues(alpha: 0);
@@ -1765,7 +1927,9 @@ class _NavigationItemState extends State<_NavigationItem> {
         borderRadius: BorderRadius.circular(CoeloRadius.md),
       ),
       child: AnimatedPadding(
-        duration: const Duration(milliseconds: 260),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 260),
         curve: Curves.easeOut,
         padding: EdgeInsets.symmetric(
           horizontal: widget.collapsed ? CoeloSpacing.space2 : CoeloSpacing.space3,

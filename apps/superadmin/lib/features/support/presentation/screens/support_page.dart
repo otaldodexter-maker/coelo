@@ -4,6 +4,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_notice.dart';
+import '../../../../app/shell/superadmin_bug_report_dialog.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/support_team_member.dart';
@@ -63,7 +64,9 @@ class _SupportPageState extends State<SupportPage> {
     child: AnimatedBuilder(animation: widget.controller, builder: (_, _) => _content(context)),
   );
   Widget _content(BuildContext context) {
-    final tickets = widget.controller.filteredTickets;
+    final tickets = _displayMode == SupportDisplayMode.table
+        ? widget.controller.visibleTickets
+        : widget.controller.filteredTickets;
     return Padding(
       key: const Key('support-page-content'),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -89,12 +92,48 @@ class _SupportPageState extends State<SupportPage> {
 
   Widget _listing(List<SupportTicket> tickets) {
     if (_displayMode == SupportDisplayMode.table) {
-      return SupportTicketTable(
-        tickets: tickets,
-        teamMembers: widget.controller.teamMembers,
-        selectedTicketId: widget.controller.selectedTicket?.id,
-        onTicketPressed: _open,
-        statusBuilder: _statusMenu,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            key: const Key('support-create-table'),
+            height: 128,
+            child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: _createSupport),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          Expanded(
+            child: SingleChildScrollView(
+              child: SupportTicketTable(
+                tickets: tickets,
+                teamMembers: widget.controller.teamMembers,
+                selectedTicketId: widget.controller.selectedTicket?.id,
+                onTicketPressed: _open,
+                statusBuilder: _statusMenu,
+                sortColumn: widget.controller.sortColumn,
+                sortAscending: widget.controller.sortAscending,
+                onSort: widget.controller.setSort,
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          KeyedSubtree(
+            key: const Key('support-pagination'),
+            child: CoeloAdminPagination(
+              currentPage: widget.controller.currentPage,
+              totalPages: widget.controller.totalPages,
+              pageSize: widget.controller.pageSize,
+              pageSizeOptions: const [9, 20, 50, 100],
+              onPageSizeChanged: widget.controller.setPageSize,
+              onPageSelected: widget.controller.setPage,
+              onPrevious: widget.controller.currentPage > 1
+                  ? () => widget.controller.setPage(widget.controller.currentPage - 1)
+                  : null,
+              onNext: widget.controller.currentPage < widget.controller.totalPages
+                  ? () => widget.controller.setPage(widget.controller.currentPage + 1)
+                  : null,
+            ),
+          ),
+        ],
       );
     }
     return SupportKanban(
@@ -104,9 +143,9 @@ class _SupportPageState extends State<SupportPage> {
       onTicketPressed: _open,
       onTicketDoublePressed: _openFullscreen,
       onStatusChanged: _requestStatus,
-      onOwnerChanged: (ticket, memberId) => widget.controller.assignOwner(ticket.id, memberId),
-      onCollaboratorsChanged: (ticket, memberIds) =>
-          widget.controller.setCollaborators(ticket.id, memberIds),
+      onAssigneesChanged: (ticket, memberIds) =>
+          widget.controller.setAssignees(ticket.id, memberIds),
+      onCreate: _createSupport,
     );
   }
 
@@ -145,9 +184,10 @@ class _SupportPageState extends State<SupportPage> {
       ticket: ticket,
       teamMembers: widget.controller.teamMembers,
       statusBuilder: _statusMenu,
-      onOwnerChanged: (memberId) => widget.controller.assignOwner(ticket.id, memberId),
-      onCollaboratorsChanged: (memberIds) =>
-          widget.controller.setCollaborators(ticket.id, memberIds),
+      onAssigneesChanged: (memberIds) => widget.controller.setAssignees(ticket.id, memberIds),
+      onExpand: compact
+          ? null
+          : () => _openFullscreen(ticket, _restoreDetailOriginFocus ?? () => false),
       onSend: (message) => widget.controller.sendReply(ticket.id, message),
       onClose: () => _closeDetails(compact: compact),
     );
@@ -171,14 +211,34 @@ class _SupportPageState extends State<SupportPage> {
   }
 
   Future<void> _requestStatus(SupportTicket ticket, SupportTicketStatus status) async {
-    if (status == SupportTicketStatus.inProgress && ticket.ownerId == null) {
+    if (status == SupportTicketStatus.inProgress && ticket.assigneeIds.isEmpty) {
       final ownerId = await _chooseOwner();
       if (!mounted || ownerId == null) {
         return;
       }
-      widget.controller.assignOwner(ticket.id, ownerId);
+      widget.controller.setAssignees(ticket.id, {ownerId});
     }
     widget.controller.changeStatus(ticket.id, status);
+  }
+
+  Future<void> _createSupport() async {
+    final draft = await showSuperadminBugReportDialog(
+      context,
+      currentScreen: 'Suporte',
+      sections: const {
+        'Suporte': ['Chamados', 'Outro'],
+        'Outros': [],
+      },
+    );
+    if (draft == null || !mounted) {
+      return;
+    }
+    widget.controller.submitReport(draft);
+    showSuperadminNotice(
+      context,
+      'Chamado criado com sucesso.',
+      icon: Icons.check_circle_outline_rounded,
+    );
   }
 
   Future<String?> _chooseOwner() {
