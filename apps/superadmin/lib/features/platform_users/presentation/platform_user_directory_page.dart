@@ -1,0 +1,806 @@
+import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui';
+
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:flutter/material.dart';
+
+import '../../../app/shell/superadmin_shell.dart';
+import '../../auth/domain/logout_action.dart';
+import '../domain/platform_user.dart';
+import 'platform_user_file_actions.dart';
+
+final class PlatformUserDirectoryPage extends StatefulWidget {
+  const PlatformUserDirectoryPage({
+    required this.repository,
+    required this.capability,
+    required this.logout,
+    this.onCreate,
+    this.onView,
+    this.onDestinationSelected,
+    this.successMessage,
+    super.key,
+  });
+
+  final PlatformUserRepository repository;
+  final PlatformUserCapability capability;
+  final LogoutAction logout;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onView;
+  final ValueChanged<String>? onDestinationSelected;
+  final String? successMessage;
+
+  @override
+  State<PlatformUserDirectoryPage> createState() => _PlatformUserDirectoryPageState();
+}
+
+final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryPage> {
+  final _searchController = TextEditingController();
+  Timer? _debounce;
+  PlatformUserDirectoryView _view = PlatformUserDirectoryView.cards;
+  Set<PlatformUserRole> _roles = {};
+  Set<PlatformMembershipStatus> _statuses = {};
+  int _page = 1;
+  int _pageSize = PlatformUserQuery.cardsPageSize;
+  bool _loading = true;
+  Object? _error;
+  PlatformUserPage _result = const PlatformUserPage(
+    items: [],
+    totalCount: 0,
+    page: 1,
+    pageSize: PlatformUserQuery.cardsPageSize,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_load());
+    if (widget.successMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.successMessage!)));
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  PlatformUserQuery get _query => PlatformUserQuery(
+    search: _searchController.text,
+    roles: _roles,
+    statuses: _statuses,
+    page: _page,
+    view: _view,
+    pageSize: _pageSize,
+  );
+
+  Future<void> _load() async {
+    if (widget.capability == PlatformUserCapability.unauthorized) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final result = await widget.repository.fetchPage(_query);
+      if (!mounted) return;
+      setState(() {
+        _result = result;
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error;
+        _loading = false;
+      });
+    }
+  }
+
+  void _search(String _) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _page = 1;
+      unawaited(_load());
+    });
+  }
+
+  void _changeView(PlatformUserDirectoryView view) {
+    setState(() {
+      _view = view;
+      _page = 1;
+      _pageSize = view == PlatformUserDirectoryView.cards
+          ? PlatformUserQuery.cardsPageSize
+          : PlatformUserQuery.tablePageSize;
+    });
+    unawaited(_load());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SuperadminShell(
+      logout: widget.logout,
+      title: 'Usuários internos',
+      subtitle: 'Gerencie o vínculo da equipe própria Coelo.',
+      currentDestination: 'internal-users',
+      onDestinationSelected: widget.onDestinationSelected,
+      chatLauncherBottomInset: _result.totalCount > 0 ? 92 : 0,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+              ? CoeloSpacing.space10
+              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              ? CoeloSpacing.space6
+              : CoeloSpacing.space4;
+          final showFooter =
+              !_loading &&
+              _error == null &&
+              widget.capability != PlatformUserCapability.unauthorized &&
+              _result.totalCount > 0;
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              ListView(
+                key: const Key('platform-user-directory-content-scroll'),
+                padding: EdgeInsets.fromLTRB(
+                  padding,
+                  padding,
+                  padding,
+                  padding + (showFooter ? 104 : 0),
+                ),
+                children: [
+                  if (widget.capability != PlatformUserCapability.unauthorized)
+                    _toolbar(constraints.maxWidth),
+                  if (widget.capability != PlatformUserCapability.unauthorized)
+                    const SizedBox(height: CoeloSpacing.space4),
+                  _results(),
+                ],
+              ),
+              if (showFooter)
+                Positioned(left: 0, right: 0, bottom: 0, child: _paginationFooter(padding)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _toolbar(double width) {
+    final compact = width < CoeloBreakpoints.medium.minWidth;
+    final filterWidth = compact ? (width - CoeloSpacing.space3) / 2 : 160.0;
+    final searchWidth = compact ? width : 300.0;
+    return CoeloAdminListingToolbar(
+      key: const Key('platform-user-filter-toolbar'),
+      search: Wrap(
+        spacing: CoeloSpacing.space3,
+        runSpacing: CoeloSpacing.space2,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          SizedBox(
+            width: searchWidth,
+            height: CoeloSize.touchMin,
+            child: CoeloSearchField(
+              controller: _searchController,
+              hintText: 'Buscar por nome ou e-mail',
+              semanticLabel: 'Buscar usuário interno por nome ou e-mail mascarado',
+              onChanged: _search,
+            ),
+          ),
+          SizedBox(
+            width: filterWidth,
+            child: CoeloAdminMultiSelectFilter<PlatformUserRole>(
+              key: const Key('platform-user-role-filter'),
+              label: 'Papel',
+              options: PlatformUserRole.values,
+              selectedValues: _roles,
+              optionLabel: (role) => role.label,
+              onChanged: (roles) {
+                setState(() {
+                  _roles = roles;
+                  _page = 1;
+                });
+                unawaited(_load());
+              },
+            ),
+          ),
+          SizedBox(
+            width: filterWidth,
+            child: CoeloAdminMultiSelectFilter<PlatformMembershipStatus>(
+              key: const Key('platform-user-status-filter'),
+              label: 'Status',
+              options: PlatformMembershipStatus.values,
+              selectedValues: _statuses,
+              optionLabel: (status) => status.label,
+              onChanged: (statuses) {
+                setState(() {
+                  _statuses = statuses;
+                  _page = 1;
+                });
+                unawaited(_load());
+              },
+            ),
+          ),
+          if (_roles.isNotEmpty || _statuses.isNotEmpty || _searchController.text.isNotEmpty)
+            TextButton.icon(
+              onPressed: () {
+                _searchController.clear();
+                setState(() {
+                  _roles = {};
+                  _statuses = {};
+                  _page = 1;
+                });
+                unawaited(_load());
+              },
+              icon: const Icon(Icons.filter_alt_off_outlined),
+              label: const Text('Limpar filtros'),
+            ),
+        ],
+      ),
+      filters: const [],
+      actions: [
+        SizedBox(
+          key: const Key('platform-user-display-toggle'),
+          height: CoeloSize.touchMin,
+          child: SegmentedButton<PlatformUserDirectoryView>(
+            segments: const [
+              ButtonSegment(
+                value: PlatformUserDirectoryView.cards,
+                tooltip: 'Exibir como cards',
+                icon: Icon(Icons.grid_view_rounded, key: Key('platform-user-view-cards')),
+              ),
+              ButtonSegment(
+                value: PlatformUserDirectoryView.table,
+                tooltip: 'Exibir como tabela',
+                icon: Icon(Icons.table_rows_rounded, key: Key('platform-user-view-table')),
+              ),
+            ],
+            selected: {_view},
+            showSelectedIcon: false,
+            onSelectionChanged: (selection) => _changeView(selection.single),
+          ),
+        ),
+        if (widget.capability == PlatformUserCapability.owner)
+          PlatformUserFileActions(compact: compact),
+      ],
+    );
+  }
+
+  Widget _results() {
+    if (widget.capability == PlatformUserCapability.unauthorized) {
+      return const CoeloStatePanel(
+        title: 'Acesso não autorizado',
+        message: 'Você não tem permissão para visualizar usuários internos.',
+        icon: Icons.lock_outline,
+      );
+    }
+    if (_loading) {
+      return const Column(
+        children: [
+          LinearProgressIndicator(),
+          SizedBox(height: CoeloSpacing.space4),
+          CoeloStatePanel(
+            title: 'Carregando usuários internos',
+            message: 'Aguarde enquanto preparamos o diretório.',
+            loading: true,
+          ),
+        ],
+      );
+    }
+    if (_error != null) {
+      return CoeloStatePanel(
+        title: 'Não foi possível carregar os usuários internos',
+        message: 'Tente novamente. Nenhuma alteração foi realizada.',
+        icon: Icons.error_outline,
+        actionLabel: 'Tentar novamente',
+        onAction: _load,
+      );
+    }
+    if (_result.totalCount == 0) {
+      final filtered =
+          _searchController.text.isNotEmpty || _roles.isNotEmpty || _statuses.isNotEmpty;
+      return CoeloStatePanel(
+        title: filtered ? 'Nenhum resultado encontrado' : 'Nenhum usuário interno cadastrado',
+        message: filtered
+            ? 'Ajuste a busca ou limpe os filtros.'
+            : 'Crie o primeiro vínculo de equipe no preview.',
+        icon: filtered ? Icons.search_off_outlined : Icons.badge_outlined,
+        actionLabel: !filtered && widget.capability == PlatformUserCapability.owner
+            ? 'Criar usuário'
+            : null,
+        onAction: !filtered && widget.capability == PlatformUserCapability.owner
+            ? widget.onCreate
+            : null,
+      );
+    }
+    return _view == PlatformUserDirectoryView.cards ? _cards() : _table();
+  }
+
+  Widget _cards() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = math.max(1, (constraints.maxWidth / 340).floor());
+        final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+        return Wrap(
+          key: const Key('platform-user-card-grid'),
+          spacing: CoeloSpacing.space6,
+          runSpacing: CoeloSpacing.space6,
+          children: [
+            if (widget.capability == PlatformUserCapability.owner)
+              SizedBox(
+                width: cardWidth,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 216),
+                  child: CoeloAdminCreateAction(
+                    label: 'Criar usuário interno',
+                    icon: Icons.person_add_alt_1_outlined,
+                    onPressed: widget.onCreate ?? () {},
+                  ),
+                ),
+              ),
+            for (final item in _result.items)
+              SizedBox(
+                width: cardWidth,
+                child: _PlatformUserCard(item: item, onView: widget.onView),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _table() {
+    return Column(
+      children: [
+        if (widget.capability == PlatformUserCapability.owner) ...[
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
+            child: SizedBox(
+              width: double.infinity,
+              child: CoeloAdminCreateAction(
+                label: 'Criar usuário interno',
+                icon: Icons.person_add_alt_1_outlined,
+                variant: CoeloAdminCreateActionVariant.banner,
+                description: 'Adicionar novo vínculo à equipe Coelo.',
+                onPressed: widget.onCreate ?? () {},
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
+        KeyedSubtree(
+          key: const Key('platform-user-table-page-size-8'),
+          child: CoeloAdminResizableTable<PlatformUserRecord>(
+            key: const Key('platform-user-directory-table'),
+            items: _result.items,
+            rowKey: (item) => 'platform-user-table-row-${item.id}',
+            pinnedColumn: _column('person', 'Pessoa', 260, _personCell),
+            columns: [
+              _column('role', 'Papel', 150, (context, item) => _textCell(item.role.label)),
+              _column('scope', 'Escopo', 190, (context, item) => _textCell(item.scopeLabel)),
+              _column(
+                'status',
+                'Status',
+                150,
+                (context, item) => _statusChip(context, item.status),
+              ),
+              _column(
+                'invitation',
+                'Convite',
+                150,
+                (context, item) => _textCell(item.invitationStatus.label),
+              ),
+              _column(
+                'reviewed',
+                'Revisado em',
+                150,
+                (context, item) => _textCell(_formatDate(item.lastReviewedAt)),
+              ),
+            ],
+            headerHeight: 56,
+            rowHeight: 64,
+            onRowPressed: (item) => widget.onView?.call(item.id),
+          ),
+        ),
+      ],
+    );
+  }
+
+  CoeloAdminTableColumn<PlatformUserRecord> _column(
+    String id,
+    String label,
+    double width,
+    Widget Function(BuildContext, PlatformUserRecord) builder,
+  ) {
+    return CoeloAdminTableColumn<PlatformUserRecord>(
+      id: id,
+      label: label,
+      initialWidth: width,
+      minWidth: math.min(width, 140),
+      maxWidth: 420,
+      cellBuilder: builder,
+    );
+  }
+
+  Widget _personCell(BuildContext context, PlatformUserRecord item) {
+    return Row(
+      children: [
+        CoeloAvatar(
+          semanticLabel: 'Avatar de ${item.fullName}',
+          initials: item.initials,
+          size: CoeloAvatarSize.small,
+        ),
+        const SizedBox(width: CoeloSpacing.space2),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(item.fullName, maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(
+                item.maskedEmail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _textCell(String text) => Align(
+    alignment: Alignment.centerLeft,
+    child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis),
+  );
+
+  Widget _paginationFooter(double horizontalPadding) {
+    final colors = Theme.of(context).colorScheme;
+    return ClipRect(
+      key: const Key('platform-user-pagination-footer'),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            CoeloSpacing.space3,
+            horizontalPadding,
+            CoeloSpacing.space3,
+          ),
+          decoration: BoxDecoration(
+            color: colors.surface.withValues(alpha: 0.88),
+            border: Border(top: BorderSide(color: colors.outlineVariant)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: CoeloAdminPagination(
+              currentPage: _result.page.clamp(1, _result.pageCount),
+              totalPages: _result.pageCount,
+              onPrevious: _page > 1
+                  ? () {
+                      _page--;
+                      unawaited(_load());
+                    }
+                  : null,
+              onNext: _page < _result.pageCount
+                  ? () {
+                      _page++;
+                      unawaited(_load());
+                    }
+                  : null,
+              onPageSelected: (page) {
+                _page = page;
+                unawaited(_load());
+              },
+              pageSize: _pageSize,
+              pageSizeOptions: _view == PlatformUserDirectoryView.cards
+                  ? const [11, 20, 50, 100]
+                  : const [8, 20, 50, 100],
+              onPageSizeChanged: (pageSize) {
+                setState(() {
+                  _pageSize = pageSize;
+                  _page = 1;
+                });
+                unawaited(_load());
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _PlatformUserCard extends StatefulWidget {
+  const _PlatformUserCard({required this.item, required this.onView});
+
+  final PlatformUserRecord item;
+  final ValueChanged<String>? onView;
+
+  @override
+  State<_PlatformUserCard> createState() => _PlatformUserCardState();
+}
+
+final class _PlatformUserCardState extends State<_PlatformUserCard> {
+  bool _highlighted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final item = widget.item;
+    final colors = Theme.of(context).colorScheme;
+    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
+    return ConstrainedBox(
+      key: Key('platform-user-card-${item.id}'),
+      constraints: const BoxConstraints(minHeight: 216),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _highlighted = true),
+        onExit: (_) => setState(() => _highlighted = false),
+        child: FocusableActionDetector(
+          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
+          child: TweenAnimationBuilder<double>(
+            key: Key('platform-user-card-surface-${item.id}'),
+            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
+            duration: duration,
+            curve: Curves.easeOutCubic,
+            builder: (context, progress, child) => Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                border: Border.all(
+                  color: Color.lerp(
+                    colors.outlineVariant,
+                    colors.primary.withValues(alpha: 0.5),
+                    progress,
+                  )!,
+                  width: 1 + 0.5 * progress,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.lerp(
+                      colors.shadow.withValues(alpha: 0.03),
+                      colors.primary.withValues(alpha: 0.15),
+                      progress,
+                    )!,
+                    blurRadius: 8 + 4 * progress,
+                    spreadRadius: 2 * progress,
+                    offset: Offset(0, 2 + 2 * progress),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                child: InkWell(
+                  onTap: () => widget.onView?.call(item.id),
+                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CoeloSpacing.space6,
+                      vertical: CoeloSpacing.space4,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CoeloAvatar(
+                              semanticLabel: 'Avatar de ${item.fullName}',
+                              initials: item.initials,
+                            ),
+                            const SizedBox(width: CoeloSpacing.space3),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.fullName,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    item.maskedEmail,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: CoeloSpacing.space2),
+                            _MembershipStatusDot(status: item.status),
+                          ],
+                        ),
+                        const SizedBox(height: CoeloSpacing.space4),
+                        const Divider(height: 1),
+                        const SizedBox(height: CoeloSpacing.space4),
+                        _UserCardDetailRow(
+                          first: _UserCardDetail(
+                            icon: Icons.admin_panel_settings_outlined,
+                            label: 'Papel',
+                            value: item.role.label,
+                          ),
+                          second: _UserCardDetail(
+                            icon: Icons.layers_outlined,
+                            label: 'Escopo',
+                            value: item.scopeLabel,
+                          ),
+                        ),
+                        const SizedBox(height: CoeloSpacing.space3),
+                        _UserCardDetailRow(
+                          first: _UserCardDetail(
+                            icon: Icons.mark_email_unread_outlined,
+                            label: 'Convite',
+                            value: item.invitationStatus.label,
+                          ),
+                          second: _UserCardDetail(
+                            icon: Icons.fact_check_outlined,
+                            label: 'Última revisão',
+                            value: _formatDate(item.lastReviewedAt),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _UserCardDetailRow extends StatelessWidget {
+  const _UserCardDetailRow({required this.first, required this.second});
+
+  final Widget first;
+  final Widget second;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: first),
+        const SizedBox(width: CoeloSpacing.space4),
+        Expanded(child: second),
+      ],
+    );
+  }
+}
+
+final class _UserCardDetail extends StatelessWidget {
+  const _UserCardDetail({required this.icon, required this.label, required this.value});
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: CoeloSpacing.space8,
+          height: CoeloSpacing.space8,
+          decoration: BoxDecoration(
+            color: colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+          ),
+          child: Icon(icon, size: CoeloSize.iconSm, color: colors.onSurfaceVariant),
+        ),
+        const SizedBox(width: CoeloSpacing.space2),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: Theme.of(context).textTheme.labelSmall),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+final class _MembershipStatusDot extends StatelessWidget {
+  const _MembershipStatusDot({required this.status});
+
+  final PlatformMembershipStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final statusColors =
+        Theme.of(context).extension<CoeloStatusColors>() ??
+        (Theme.of(context).brightness == Brightness.dark
+            ? CoeloStatusColors.dark
+            : CoeloStatusColors.light);
+    final (background, foreground) = switch (status) {
+      PlatformMembershipStatus.active => (
+        statusColors.successContainer,
+        statusColors.onSuccessContainer,
+      ),
+      PlatformMembershipStatus.invited => (
+        statusColors.infoContainer,
+        statusColors.onInfoContainer,
+      ),
+      PlatformMembershipStatus.suspended => (
+        statusColors.errorContainer,
+        statusColors.onErrorContainer,
+      ),
+      PlatformMembershipStatus.revoked => (colors.surfaceContainer, colors.onSurfaceVariant),
+    };
+    return Tooltip(
+      message: status.label,
+      child: Semantics(
+        label: 'Status: ${status.label}',
+        child: Container(
+          width: CoeloSpacing.space6,
+          height: CoeloSpacing.space6,
+          decoration: BoxDecoration(
+            color: background,
+            shape: BoxShape.circle,
+            border: Border.all(color: foreground.withValues(alpha: 0.28)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Widget _statusChip(BuildContext context, PlatformMembershipStatus status) {
+  final colors = Theme.of(context).colorScheme;
+  final statusColors =
+      Theme.of(context).extension<CoeloStatusColors>() ??
+      (Theme.of(context).brightness == Brightness.dark
+          ? CoeloStatusColors.dark
+          : CoeloStatusColors.light);
+  final (background, foreground) = switch (status) {
+    PlatformMembershipStatus.active => (
+      statusColors.successContainer,
+      statusColors.onSuccessContainer,
+    ),
+    PlatformMembershipStatus.invited => (statusColors.infoContainer, statusColors.onInfoContainer),
+    PlatformMembershipStatus.suspended => (
+      statusColors.errorContainer,
+      statusColors.onErrorContainer,
+    ),
+    PlatformMembershipStatus.revoked => (colors.surfaceContainer, colors.onSurfaceVariant),
+  };
+  return CoeloStatusChip(
+    label: status.label,
+    backgroundColor: background,
+    foregroundColor: foreground,
+  );
+}
+
+String _formatDate(DateTime? date) {
+  if (date == null) return 'Não revisado';
+  return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+}

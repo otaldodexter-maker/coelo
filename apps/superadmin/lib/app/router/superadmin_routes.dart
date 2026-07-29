@@ -49,6 +49,14 @@ abstract final class SuperadminRoutes {
   static const devUnitCreateName = 'dev-unit-create';
   static const devUnitEdit = '/dev/units/:unitId/edit';
   static const devUnitEditName = 'dev-unit-edit';
+  static const devInternalUsers = '/dev/internal-users';
+  static const devInternalUsersName = 'dev-internal-users';
+  static const devInternalUserCreate = '/dev/internal-users/new';
+  static const devInternalUserCreateName = 'dev-internal-user-create';
+  static const devInternalUserView = '/dev/internal-users/:internalUserId';
+  static const devInternalUserViewName = 'dev-internal-user-view';
+  static const devInternalUserEdit = '/dev/internal-users/:internalUserId/edit';
+  static const devInternalUserEditName = 'dev-internal-user-edit';
   static const devSupport = '/dev/support';
   static const devSupportName = 'dev-support';
   static const devConversations = '/dev/conversations';

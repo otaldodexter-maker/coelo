@@ -883,8 +883,8 @@ class _ExpandedNavigationSection extends StatelessWidget {
                     icon: destination.icon,
                     label: destination.label,
                     isActive: destination.id == currentDestination,
-                    onTap: destination.active
-                        ? () => onDestinationSelected?.call(destination.id)
+                    onTap: _destinationAvailable(context, destination)
+                        ? () => _handleDestinationTap(context, destination, onDestinationSelected)
                         : null,
                     collapsed: false,
                   ),
@@ -1164,14 +1164,28 @@ void _handleDestinationTap(
   _NavigationDestinationData destination,
   ValueChanged<String>? onDestinationSelected,
 ) {
-  if (!destination.active) {
+  if (!_destinationAvailable(context, destination)) {
     _showMessage(context, '${destination.label} será implementado em breve.');
+  } else if (destination.id == 'internal-users' && _isDevelopmentRoute(context)) {
+    context.go('/dev/internal-users');
   } else {
     onDestinationSelected?.call(destination.id);
   }
   final scaffold = Scaffold.maybeOf(context);
   if (scaffold?.isDrawerOpen ?? false) {
     Navigator.of(context).pop();
+  }
+}
+
+bool _destinationAvailable(BuildContext context, _NavigationDestinationData destination) {
+  return destination.active || (destination.id == 'internal-users' && _isDevelopmentRoute(context));
+}
+
+bool _isDevelopmentRoute(BuildContext context) {
+  try {
+    return GoRouterState.of(context).uri.path.startsWith('/dev/');
+  } on GoError {
+    return false;
   }
 }
 

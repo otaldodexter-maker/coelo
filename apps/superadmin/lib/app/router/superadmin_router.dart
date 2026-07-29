@@ -28,6 +28,11 @@ import '../../features/institutions/domain/institution_directory_repository.dart
 import '../../features/institutions/presentation/institution_context_options.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
+import '../../features/platform_users/data/fake_platform_user_repository.dart';
+import '../../features/platform_users/domain/platform_user.dart';
+import '../../features/platform_users/presentation/platform_user_detail_page.dart';
+import '../../features/platform_users/presentation/platform_user_directory_page.dart';
+import '../../features/platform_users/presentation/platform_user_form_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
 import '../../features/units/data/fake_unit_directory_repository.dart';
@@ -70,6 +75,9 @@ GoRouter createSuperadminRouter({
       ? institutionDirectoryRepository
       : FakeInstitutionDirectoryRepository();
   final unitRepository = FakeUnitDirectoryRepository(prototypeRepository);
+  FakePlatformUserRepository? platformUserPreviewRepository;
+  FakePlatformUserRepository previewPlatformUsers() =>
+      platformUserPreviewRepository ??= FakePlatformUserRepository();
   String? successMessage(Object? extra) {
     return switch (extra) {
       InstitutionFormSaveResult.created => 'Instituição criada com sucesso.',
@@ -589,6 +597,80 @@ GoRouter createSuperadminRouter({
                 }
               },
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInternalUsers,
+            name: SuperadminRoutes.devInternalUsersName,
+            builder: (context, state) => PlatformUserDirectoryPage(
+              repository: previewPlatformUsers(),
+              capability: PlatformUserCapability.owner,
+              logout: _previewLogout,
+              successMessage: state.extra as String?,
+              onCreate: () => context.goNamed(SuperadminRoutes.devInternalUserCreateName),
+              onView: (id) => context.goNamed(
+                SuperadminRoutes.devInternalUserViewName,
+                pathParameters: {'internalUserId': id},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromAccount(context, destination, developmentPreview: true),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInternalUserCreate,
+            name: SuperadminRoutes.devInternalUserCreateName,
+            builder: (context, state) => PlatformUserFormPage(
+              repository: previewPlatformUsers(),
+              capability: PlatformUserCapability.owner,
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devInternalUsersName),
+              onCreated: (result) =>
+                  context.goNamed(SuperadminRoutes.devInternalUsersName, extra: result.message),
+              onDestinationSelected: (destination) =>
+                  _navigateFromAccount(context, destination, developmentPreview: true),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInternalUserView,
+            name: SuperadminRoutes.devInternalUserViewName,
+            builder: (context, state) {
+              final id = state.pathParameters['internalUserId']!;
+              return PlatformUserDetailPage(
+                repository: previewPlatformUsers(),
+                internalUserId: id,
+                capability: PlatformUserCapability.owner,
+                logout: _previewLogout,
+                onBack: () => context.goNamed(SuperadminRoutes.devInternalUsersName),
+                onEdit: () => context.goNamed(
+                  SuperadminRoutes.devInternalUserEditName,
+                  pathParameters: {'internalUserId': id},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromAccount(context, destination, developmentPreview: true),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInternalUserEdit,
+            name: SuperadminRoutes.devInternalUserEditName,
+            builder: (context, state) {
+              final id = state.pathParameters['internalUserId']!;
+              return PlatformUserFormPage(
+                repository: previewPlatformUsers(),
+                internalUserId: id,
+                capability: PlatformUserCapability.owner,
+                logout: _previewLogout,
+                onCancel: () => context.goNamed(
+                  SuperadminRoutes.devInternalUserViewName,
+                  pathParameters: {'internalUserId': id},
+                ),
+                onUpdated: (_) => context.goNamed(
+                  SuperadminRoutes.devInternalUserViewName,
+                  pathParameters: {'internalUserId': id},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromAccount(context, destination, developmentPreview: true),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devSupport,
