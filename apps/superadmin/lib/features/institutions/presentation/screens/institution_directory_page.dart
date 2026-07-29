@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
@@ -304,13 +303,7 @@ class _InstitutionDirectoryResults extends StatelessWidget {
           successContent: display == InstitutionDirectoryDisplay.table
               ? InstitutionDirectoryTable(
                   items: viewModel.page.items,
-                  createAction: MediaQuery.textScalerOf(context).scale(1) > 1
-                      ? CoeloAdminCreateAction(
-                          key: const Key('create-institution-banner'),
-                          label: 'Criar instituição',
-                          onPressed: onCreate,
-                        )
-                      : InstitutionCreateBanner(onPressed: onCreate),
+                  createAction: InstitutionCreateBanner(onPressed: onCreate),
                   onEdit: (item) => onEdit(item.id),
                   sortColumn: viewModel.query.sortColumn,
                   sortAscending: viewModel.query.sortAscending,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
@@ -11,7 +12,6 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -891,28 +891,32 @@ void main() {
   testWidgets('keeps the final card and table row above the fixed pagination', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 700));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(_app());
+    const pageKey = ValueKey('footer-resize-page');
+    await tester.pumpWidget(_app(pageKey: pageKey));
     await tester.pumpAndSettle();
 
     final footer = find.byKey(const Key('institution-directory-pagination-footer'));
-    final pageViewport = _directoryScrollFinder();
     expect(footer, findsOneWidget);
+    final initialFooterHeight = tester.getSize(footer).height;
     await _scrollDirectoryToMax(tester);
 
-    final lastCard = _institutionCards().last;
-    final cardBottom = tester.getBottomLeft(lastCard).dy;
-    expect(cardBottom, lessThanOrEqualTo(tester.getBottomLeft(pageViewport).dy));
-    expect(cardBottom, lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4));
+    _expectVisibleAboveFooter(tester, item: _institutionCards().last, footer: footer);
+
+    await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2), pageKey: pageKey));
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(footer).height, greaterThan(initialFooterHeight));
+    await _scrollDirectoryToMax(tester);
+    _expectVisibleAboveFooter(tester, item: _institutionCards().last, footer: footer);
 
     await _scrollDirectoryToStart(tester);
-    await tester.tap(find.byKey(const Key('institution-view-table')));
+    final tableToggle = find.byKey(const Key('institution-view-table'), skipOffstage: false);
+    await tester.ensureVisible(tableToggle);
+    await tester.tap(tableToggle);
     await tester.pumpAndSettle();
     await _scrollDirectoryToMax(tester);
 
-    final lastRow = _institutionTableRows().last;
-    final rowBottom = tester.getBottomLeft(lastRow).dy;
-    expect(rowBottom, lessThanOrEqualTo(tester.getBottomLeft(pageViewport).dy));
-    expect(rowBottom, lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4));
+    _expectVisibleAboveFooter(tester, item: _institutionTableRows().last, footer: footer);
   });
 
   testWidgets('uses the approved glass footer surface in light and dark', (tester) async {
@@ -926,8 +930,15 @@ void main() {
       expect(find.descendant(of: footer, matching: find.byType(BackdropFilter)), findsOneWidget);
       expect(surface, findsOneWidget);
 
+      final backdrop = tester.widget<BackdropFilter>(
+        find.descendant(of: footer, matching: find.byType(BackdropFilter)),
+      );
       final colors = Theme.of(tester.element(surface)).colorScheme;
       final decoration = tester.widget<Container>(surface).decoration! as BoxDecoration;
+      expect(
+        backdrop.filter,
+        ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
+      );
       expect(decoration.color, colors.surface.withValues(alpha: 0.88));
       expect(decoration.border!.top.color, colors.outlineVariant);
     }
@@ -952,13 +963,61 @@ void main() {
     await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
     await tester.pumpAndSettle();
 
+    const viewport = Rect.fromLTWH(0, 0, 375, 900);
     for (final option in [11, 20, 50, 100]) {
       final item = find.byKey(Key('coelo-admin-pagination-page-size-$option'));
       expect(item, findsOneWidget);
+      final itemRect = tester.getRect(item);
+      expect(itemRect.left, greaterThanOrEqualTo(viewport.left));
+      expect(itemRect.top, greaterThanOrEqualTo(viewport.top));
+      expect(itemRect.right, lessThanOrEqualTo(viewport.right));
+      expect(itemRect.bottom, lessThanOrEqualTo(viewport.bottom));
+      expect(item.hitTestable(), findsOneWidget);
       expect(tester.widget<MenuItemButton>(item).onPressed, isNotNull);
     }
-    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size-20')));
+    final option20 = find.byKey(const Key('coelo-admin-pagination-page-size-20'));
+    await tester.tap(option20);
     await tester.pumpAndSettle();
+
+    expect(option20, findsNothing);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('coelo-admin-pagination-page-size')),
+        matching: find.text('20'),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the complete create banner responsive at 200 percent text', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var createRequested = false;
+    await tester.pumpWidget(
+      _app(textScaler: const TextScaler.linear(2), onCreate: () => createRequested = true),
+    );
+    await tester.pumpAndSettle();
+
+    final tableToggle = find.byKey(const Key('institution-view-table'), skipOffstage: false);
+    await tester.ensureVisible(tableToggle);
+    await tester.tap(tableToggle);
+    await tester.pumpAndSettle();
+
+    final banner = find.byKey(const Key('create-institution-banner'), skipOffstage: false);
+    await tester.ensureVisible(banner);
+    await tester.pumpAndSettle();
+
+    final subtitle = find.text('Adicionar nova instituição ao sistema.', skipOffstage: false);
+    expect(find.text('Criar instituição', skipOffstage: false), findsWidgets);
+    expect(subtitle, findsOneWidget);
+    expect(tester.widget<Text>(subtitle).maxLines, isNull);
+    expect(tester.widget<Text>(subtitle).overflow, isNull);
+    expect(tester.getSize(banner).height, greaterThan(CoeloSpacing.space20));
+
+    await tester.tap(banner);
+    await tester.pumpAndSettle();
+    expect(createRequested, isTrue);
     expect(tester.takeException(), isNull);
   });
 
@@ -1246,6 +1305,18 @@ Finder _directoryScrollFinder() {
         matching: find.byType(Scrollable),
       )
       .first;
+}
+
+void _expectVisibleAboveFooter(
+  WidgetTester tester, {
+  required Finder item,
+  required Finder footer,
+}) {
+  final viewportRect = tester.getRect(_directoryScrollFinder());
+  final itemRect = tester.getRect(item);
+  final footerRect = tester.getRect(footer);
+  expect(itemRect.top, greaterThanOrEqualTo(viewportRect.top));
+  expect(itemRect.bottom, lessThanOrEqualTo(footerRect.top - CoeloSpacing.space4));
 }
 
 Future<void> _scrollDirectoryToMax(WidgetTester tester) async {

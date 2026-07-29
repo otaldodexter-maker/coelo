@@ -58,10 +58,9 @@ final class InstitutionCreateBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return ConstrainedBox(
       key: const Key('create-institution-banner'),
-      width: double.infinity,
-      height: CoeloSpacing.space20,
+      constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
       child: _DashedAction(
         surfaceKey: const Key('create-institution-banner-surface'),
         onPressed: onPressed,
@@ -76,11 +75,7 @@ final class InstitutionCreateBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Criar instituição'),
-                  Text(
-                    'Adicionar nova instituição ao sistema.',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text('Adicionar nova instituição ao sistema.'),
                 ],
               ),
             ),
