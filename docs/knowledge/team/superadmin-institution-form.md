@@ -14,8 +14,10 @@ review_owner: Coelo Product
 
 Criar e editar instituição usam o mesmo fluxo local de sete etapas. `Identidade
 visual` é a primeira etapa: a prévia compacta antecede uploads e campos; ela
-separa cores de superfície, marca e texto. A bio aceita emoji, respeita 220
-grafemas e a paleta compacta insere no cursor sem substituir o teclado nativo.
+separa cores de superfície, marca e texto. Em desktop, marca e texto usam três
+colunas, que colapsam responsivamente. A bio aceita emoji, respeita 220
+grafemas e um ícone acessível abre a seleção compacta para inserir no cursor sem
+substituir o teclado nativo.
 
 A foto de perfil deve ser PNG, JPG ou WebP, quadrada e ter no máximo 2 MB. A
 prévia local usa recorte circular. Esta entrega permanece um protótipo local:
@@ -50,6 +52,12 @@ Os perfis podem iniciar com dados equivalentes, mas só voltam a coincidir por
 sincronização explícita. Dados de contato e identificação são opcionais no
 rascunho local e, se fornecidos, são validados; o requisito de ativação real não
 é simulado por esta interface.
+
+O avatar opcional já integra o cadastro e a edição de administrador. Ele usa o
+recorte circular padrão de perfil, com `Cancelar` e `Aplicar` em 50/50 e reset
+por ícone circular acessível. Os controles de sincronização expõem a direção:
+`Copiar dados do representante` faz representante → administrador e `Copiar
+dados para o representante` faz administrador → representante.
 
 ## Referência reutilizável
 

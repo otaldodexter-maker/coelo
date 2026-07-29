@@ -21,6 +21,8 @@ no Superadmin é a referência canônica; autenticação é a referência do cam
 - Grid amplo: até duas colunas, gap horizontal `CoeloSpacing.space3` (12 px),
   gap vertical `CoeloSpacing.space4` (16 px) e
   `CoeloSpacing.space5` (20 px) entre grupos. Compacto: uma coluna.
+- Na identidade institucional, os grupos de cores de marca e texto usam três
+  colunas no desktop e colapsam responsivamente sem alterar a ordem ou o foco.
 - Espaçamento deve vir de token ou referência aprovada. Número visual local sem
   justificativa bloqueia a conclusão.
 
@@ -43,8 +45,15 @@ no Superadmin é a referência canônica; autenticação é a referência do cam
 - Seletor de cor avançado: superfície neutra sem tint, área quadrada de
   saturação/valor, faixa contínua de matiz, amostras atual e nova e edição HSV,
   RGB e hexadecimal.
-- Bio com limite conta grafemas e pode oferecer uma paleta compacta de emojis,
-  inserindo no cursor sem substituir o teclado do sistema.
+- Bio com limite conta grafemas. Um ícone com tooltip e semântica abre a paleta
+  compacta de emojis, inserindo a escolha no cursor sem substituir o teclado do
+  sistema.
+- Avatar opcional do administrador é configurado no cadastro e na edição: usa o
+  recorte circular padrão de perfil, confirmação `Cancelar`/`Aplicar` em 50/50
+  e reset por ícone circular com tooltip, semântica e alvo mínimo.
+- Para perfis contextuais ligados, nomear a direção da sincronização: `Copiar
+  dados do representante` (representante → administrador) e `Copiar dados para
+  o representante` (administrador → representante).
 - `primaryContainer` pode destacar uma mensagem informativa aprovada, como
   convite e ativação; não é fundo estrutural do formulário ou de popup.
 

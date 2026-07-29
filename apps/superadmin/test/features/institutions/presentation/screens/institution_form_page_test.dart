@@ -105,21 +105,37 @@ void main() {
     expect(find.text('Cor principal da marca'), findsOneWidget);
     expect(find.text('Cor secundária da marca'), findsOneWidget);
     expect(find.text('Cor terciária da marca'), findsOneWidget);
+    final brandColorFields = [
+      find.byKey(const Key('institution-field-accentColor')),
+      find.byKey(const Key('institution-field-secondaryColor')),
+      find.byKey(const Key('institution-field-tertiaryColor')),
+    ];
+    expect(brandColorFields.map((finder) => tester.getTopLeft(finder).dy).toSet(), hasLength(1));
     expect(find.text('Cor principal do texto'), findsOneWidget);
     expect(find.text('Cor secundária do texto'), findsOneWidget);
     expect(find.text('Cor terciária do texto'), findsOneWidget);
+    final textColorFields = [
+      find.byKey(const Key('institution-field-textColor')),
+      find.byKey(const Key('institution-field-secondaryTextColor')),
+      find.byKey(const Key('institution-field-tertiaryTextColor')),
+    ];
+    expect(textColorFields.map((finder) => tester.getTopLeft(finder).dy).toSet(), hasLength(1));
 
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-field-profileBio')), findsOneWidget);
     expect(find.text('0/220'), findsOneWidget);
-    expect(find.byKey(const Key('institution-bio-emoji-palette')), findsOneWidget);
+    expect(find.byKey(const Key('institution-bio-emoji-picker')), findsOneWidget);
+    expect(find.byKey(const Key('institution-bio-emoji-palette')), findsNothing);
     await tester.enterText(find.byKey(const Key('institution-field-profileBio')), 'Olá mundo');
     final bio = tester.widget<TextFormField>(find.byKey(const Key('institution-field-profileBio')));
     bio.controller!.selection = const TextSelection.collapsed(offset: 4);
+    await tester.tap(find.byKey(const Key('institution-bio-emoji-picker')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-bio-emoji-palette')), findsOneWidget);
     await tester.tap(find.byKey(const Key('institution-bio-emoji-0')));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(bio.controller!.text, 'Olá 😊mundo');
     expect(find.text('10/220'), findsOneWidget);
     for (var index = 1; index <= 3; index++) {
@@ -904,6 +920,8 @@ void main() {
     expect(find.text('@rafael-coelho'), findsOneWidget);
     expect(_byKeyPrefix('institution-sync-representative-to-admin-'), findsOneWidget);
     expect(_byKeyPrefix('institution-sync-admin-to-representative-'), findsOneWidget);
+    expect(find.text('Copiar dados do representante'), findsOneWidget);
+    expect(find.text('Copiar dados para o representante'), findsOneWidget);
     expect(
       tester.getSize(_byKeyPrefix('institution-invitation-icon-box-')),
       const Size.square(CoeloSize.iconMd),
@@ -948,6 +966,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-add-administrator')));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-person-avatar-picker')), findsOneWidget);
+    expect(find.text('Adicionar foto'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('institution-person-first-name')), 'Ana');
     await tester.enterText(find.byKey(const Key('institution-person-last-name')), 'Souza');
     await tester.enterText(find.byKey(const Key('institution-person-display-name')), 'Ana Souza');

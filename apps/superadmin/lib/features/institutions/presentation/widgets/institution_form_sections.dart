@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../../data/institution_location_service.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_record.dart';
+import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../view_models/institution_form_controller.dart';
 import 'institution_form_dialogs.dart';
 import 'institution_logo_picker.dart';
@@ -526,7 +527,12 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
       title: 'Adicionar administrador',
     );
     if (result != null) {
-      controller.addAdministrator(result.person, level: result.level);
+      controller.addAdministrator(
+        result.person,
+        level: result.level,
+        avatarBytes: result.avatarBytes,
+        avatarFileName: result.avatarFileName,
+      );
     }
   }
 
@@ -542,6 +548,8 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
       title: 'Editar administrador',
       initialPerson: administrator.person,
       initialLevel: administrator.level,
+      initialAvatarBytes: administrator.avatarBytes,
+      initialAvatarFileName: administrator.avatarFileName,
       focusEmail: focusEmail,
     );
     if (result != null) {
@@ -551,6 +559,15 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
         level: result.level,
         sendInvitationAfterSave: sendInvitationAfterSave,
       );
+      if (result.avatarBytes == null) {
+        controller.removeAdministratorAvatar(administrator.id);
+      } else {
+        controller.setAdministratorAvatar(
+          administrator.id,
+          bytes: result.avatarBytes!,
+          fileName: result.avatarFileName!,
+        );
+      }
     } else if (focusEmail) {
       controller.cancelAdministratorEmailRequest();
     }
@@ -785,12 +802,12 @@ final class _AdministratorCard extends StatelessWidget {
                 OutlinedButton(
                   key: Key('institution-sync-representative-to-admin-${administrator.id}'),
                   onPressed: onSyncFromRepresentative,
-                  child: const Text('Atualizar pelo representante'),
+                  child: const Text('Copiar dados do representante'),
                 ),
                 OutlinedButton(
                   key: Key('institution-sync-admin-to-representative-${administrator.id}'),
                   onPressed: onSyncToRepresentative,
-                  child: const Text('Atualizar representante'),
+                  child: const Text('Copiar dados para o representante'),
                 ),
               ],
               if (administrator.invitationStatus == InstitutionInvitationStatus.sent) ...[
@@ -831,10 +848,17 @@ final class _AdministratorCard extends StatelessWidget {
 }
 
 final class _AdministratorDialogResult {
-  const _AdministratorDialogResult({required this.person, required this.level});
+  const _AdministratorDialogResult({
+    required this.person,
+    required this.level,
+    this.avatarBytes,
+    this.avatarFileName,
+  });
 
   final InstitutionPersonDraft person;
   final InstitutionAdministratorLevel level;
+  final Uint8List? avatarBytes;
+  final String? avatarFileName;
 }
 
 Future<InstitutionPersonDraft?> _showPersonDialog(
@@ -854,6 +878,8 @@ Future<_AdministratorDialogResult?> _showAdministratorDialog(
   required InstitutionFormController controller,
   required String title,
   InstitutionPersonDraft? initialPerson,
+  Uint8List? initialAvatarBytes,
+  String? initialAvatarFileName,
   bool focusEmail = false,
   InstitutionAdministratorLevel initialLevel =
       InstitutionAdministratorLevel.authorizedAdministrator,
@@ -865,6 +891,8 @@ Future<_AdministratorDialogResult?> _showAdministratorDialog(
     title: title,
     initialPerson: initialPerson,
     initialLevel: initialLevel,
+    initialAvatarBytes: initialAvatarBytes,
+    initialAvatarFileName: initialAvatarFileName,
     focusEmail: focusEmail,
   ),
 );
@@ -875,6 +903,8 @@ final class _PersonEditorDialog extends StatefulWidget {
     required this.title,
     this.initialPerson,
     this.initialLevel,
+    this.initialAvatarBytes,
+    this.initialAvatarFileName,
     this.focusEmail = false,
   });
 
@@ -882,6 +912,8 @@ final class _PersonEditorDialog extends StatefulWidget {
   final String title;
   final InstitutionPersonDraft? initialPerson;
   final InstitutionAdministratorLevel? initialLevel;
+  final Uint8List? initialAvatarBytes;
+  final String? initialAvatarFileName;
   final bool focusEmail;
 
   @override
@@ -896,6 +928,9 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
   late final TextEditingController _mobilePhone;
   late final TextEditingController _cpf;
   late final FocusNode _emailFocusNode;
+  late Uint8List? _avatarBytes = widget.initialAvatarBytes;
+  late String? _avatarFileName = widget.initialAvatarFileName;
+  String? _avatarError;
   late InstitutionAdministratorLevel _level =
       widget.initialLevel ?? InstitutionAdministratorLevel.authorizedAdministrator;
   var _attempted = false;
@@ -959,6 +994,21 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
       ),
       body: _FieldGrid(
         children: [
+          if (widget.initialLevel != null)
+            _WideField(
+              child: _AdministratorAvatarPicker(
+                bytes: _avatarBytes,
+                error: _avatarError,
+                onPick: _pickAvatar,
+                onRemove: _avatarBytes == null
+                    ? null
+                    : () => setState(() {
+                        _avatarBytes = null;
+                        _avatarFileName = null;
+                        _avatarError = null;
+                      }),
+              ),
+            ),
           _personField(_firstName, 'Nome', 'first-name'),
           _personField(_lastName, 'Sobrenome', 'last-name'),
           _personField(_displayName, 'Nome de exibição', 'display-name'),
@@ -1055,7 +1105,138 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     Navigator.of(context).pop(
       widget.initialLevel == null
           ? _person
-          : _AdministratorDialogResult(person: _person, level: _level),
+          : _AdministratorDialogResult(
+              person: _person,
+              level: _level,
+              avatarBytes: _avatarBytes,
+              avatarFileName: _avatarFileName,
+            ),
+    );
+  }
+
+  Future<void> _pickAvatar() async {
+    final file = await pickInstitutionLogo();
+    if (file == null || !mounted) return;
+    if (file.bytes.lengthInBytes > _LogoPicker.maxBytes) {
+      setState(() => _avatarError = 'A foto deve ter no máximo 2 MB.');
+      return;
+    }
+    try {
+      final codec = await ui.instantiateImageCodec(file.bytes);
+      final frame = await codec.getNextFrame();
+      frame.image.dispose();
+      codec.dispose();
+    } on Exception {
+      setState(() => _avatarError = 'Não foi possível ler essa foto.');
+      return;
+    }
+    if (!mounted) return;
+    final adjusted = await showDialog<AvatarCropResult>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (context) => AvatarCropDialog(bytes: file.bytes),
+    );
+    if (adjusted == null || !mounted) return;
+    setState(() {
+      _avatarBytes = adjusted.bytes;
+      _avatarFileName = file.name;
+      _avatarError = null;
+    });
+  }
+}
+
+final class _AdministratorAvatarPicker extends StatelessWidget {
+  const _AdministratorAvatarPicker({
+    required this.bytes,
+    required this.error,
+    required this.onPick,
+    required this.onRemove,
+  });
+
+  final Uint8List? bytes;
+  final String? error;
+  final VoidCallback onPick;
+  final VoidCallback? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      key: const Key('institution-person-avatar-picker'),
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: error == null ? colors.outlineVariant : colors.error),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+          final preview = Row(
+            children: [
+              CircleAvatar(
+                radius: CoeloSize.avatarMd / 2,
+                backgroundColor: colors.primaryContainer,
+                backgroundImage: bytes == null ? null : MemoryImage(bytes!),
+                child: bytes == null ? const Icon(Icons.person_outline_rounded) : null,
+              ),
+              const SizedBox(width: CoeloSpacing.space4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Foto do administrador', style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(
+                      error ?? 'PNG, JPG ou WebP, com até 2 MB.',
+                      style: error == null
+                          ? Theme.of(context).textTheme.bodySmall
+                          : Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.error),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+          final pickButton = OutlinedButton.icon(
+            onPressed: onPick,
+            icon: const Icon(Icons.add_a_photo_outlined),
+            label: Text(bytes == null ? 'Adicionar foto' : 'Trocar foto'),
+          );
+          final actions = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              pickButton,
+              if (onRemove != null) ...[
+                const SizedBox(width: CoeloSpacing.space2),
+                IconButton(
+                  tooltip: 'Remover foto',
+                  onPressed: onRemove,
+                  color: colors.error,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                ),
+              ],
+            ],
+          );
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                preview,
+                const SizedBox(height: CoeloSpacing.space3),
+                actions,
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: preview),
+              const SizedBox(width: CoeloSpacing.space4),
+              actions,
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -1253,6 +1434,7 @@ final class _BrandingSection extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space5),
           _ColorGroup(
             title: 'Cores da marca',
+            maxColumns: 3,
             children: [
               _ColorField(
                 controller: controller,
@@ -1274,6 +1456,7 @@ final class _BrandingSection extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space5),
           _ColorGroup(
             title: 'Cores de texto',
+            maxColumns: 3,
             children: [
               _ColorField(
                 controller: controller,
@@ -1299,10 +1482,11 @@ final class _BrandingSection extends StatelessWidget {
 }
 
 final class _ColorGroup extends StatelessWidget {
-  const _ColorGroup({required this.title, required this.children});
+  const _ColorGroup({required this.title, required this.children, this.maxColumns = 2});
 
   final String title;
   final List<Widget> children;
+  final int maxColumns;
 
   @override
   Widget build(BuildContext context) {
@@ -1311,7 +1495,7 @@ final class _ColorGroup extends StatelessWidget {
       children: [
         Text(title, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space3),
-        _FieldGrid(children: children),
+        _FieldGrid(maxColumns: maxColumns, children: children),
       ],
     );
   }
@@ -1445,26 +1629,46 @@ final class _BioField extends StatelessWidget {
         const SizedBox(height: CoeloSpacing.space2),
         Row(
           children: [
-            Expanded(
-              child: Wrap(
-                key: const Key('institution-bio-emoji-palette'),
-                spacing: CoeloSpacing.space1,
-                runSpacing: CoeloSpacing.space1,
-                children: [
-                  for (var index = 0; index < emojis.length; index++)
-                    IconButton(
-                      key: Key('institution-bio-emoji-$index'),
-                      tooltip: 'Inserir ${emojis[index]}',
-                      onPressed: () => controller.insertProfileBioEmoji(emojis[index]),
-                      icon: Text(emojis[index]),
+            PopupMenuButton<String>(
+              key: const Key('institution-bio-emoji-picker'),
+              tooltip: 'Selecionar emoji para a bio',
+              color: Theme.of(context).colorScheme.surface,
+              surfaceTintColor: Colors.transparent,
+              icon: const Icon(Icons.sentiment_satisfied_alt_outlined),
+              onSelected: controller.insertProfileBioEmoji,
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  enabled: false,
+                  padding: const EdgeInsets.all(CoeloSpacing.space2),
+                  child: Semantics(
+                    label: 'Emojis para a bio',
+                    child: Wrap(
+                      key: const Key('institution-bio-emoji-palette'),
+                      spacing: CoeloSpacing.space1,
+                      runSpacing: CoeloSpacing.space1,
+                      children: [
+                        for (var index = 0; index < emojis.length; index++)
+                          IconButton(
+                            key: Key('institution-bio-emoji-$index'),
+                            tooltip: 'Inserir ${emojis[index]}',
+                            onPressed: () {
+                              Navigator.of(context).pop(emojis[index]);
+                            },
+                            icon: Text(emojis[index]),
+                          ),
+                      ],
                     ),
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: CoeloSpacing.space2),
-            Text(
-              '${controller.profileBioLength}/220',
-              style: Theme.of(context).textTheme.bodySmall,
+            const Spacer(),
+            Semantics(
+              label: '${controller.profileBioLength} de 220 grafemas',
+              child: Text(
+                '${controller.profileBioLength}/220',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
           ],
         ),
@@ -2174,14 +2378,19 @@ final class _Section extends StatelessWidget {
 }
 
 final class _FieldGrid extends StatelessWidget {
-  const _FieldGrid({required this.children});
+  const _FieldGrid({required this.children, this.maxColumns = 2});
   final List<Widget> children;
+  final int maxColumns;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth ? 2 : 1;
+        final columns = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth && maxColumns >= 3
+            ? 3
+            : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth && maxColumns >= 2
+            ? 2
+            : 1;
         final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space3) / columns;
         return Wrap(
           spacing: CoeloSpacing.space3,
@@ -2400,7 +2609,7 @@ IconData _iconFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.tradeName ||
   InstitutionFormField.legalName ||
   InstitutionFormField.brandDisplayName ||
-  InstitutionFormField.profileBio => Icons.apartment_rounded,
+  InstitutionFormField.profileBio => Icons.notes_outlined,
   InstitutionFormField.typeName || InstitutionFormField.documentType => Icons.category_outlined,
   InstitutionFormField.document => Icons.badge_outlined,
   InstitutionFormField.slug => Icons.alternate_email_rounded,

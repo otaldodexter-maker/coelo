@@ -21,8 +21,11 @@ visual e tornando explícitas as regras de representantes e administradores.
 - As cores são agrupadas em `Cores de superfície` (principal e secundária),
   `Cores da marca` (principal, secundária e terciária) e `Cores de texto`
   (principal, secundária e terciária).
+- Em desktop, as cores de marca e de texto usam três colunas; a grade colapsa
+  responsivamente, preservando ordem, rótulo e foco.
 - A bio aceita emojis, oferece uma paleta compacta e limita o conteúdo a 220
-  grafemas, sem cortar sequências visuais no meio.
+  grafemas, sem cortar sequências visuais no meio. Um ícone acessível abre a
+  seleção; escolher emoji insere no cursor sem substituir o teclado nativo.
 
 ## Diálogos e seleções
 
@@ -50,6 +53,10 @@ visual e tornando explícitas as regras de representantes e administradores.
 - Administradores recebem `@` automático, estável e único no repositório local.
   A fonte definitiva de unicidade global continuará sendo o domínio de
   identidade.
+- O avatar opcional já está disponível no cadastro e na edição de administrador.
+  Ele usa o recorte circular padrão de perfil, com `Cancelar` e `Aplicar` em
+  50/50; o reset é um botão circular por ícone com tooltip, semântica e alvo
+  mínimo.
 - Converter representante em administrador cria um perfil contextual
   independente ligado à mesma pessoa lógica. Os dados começam iguais e só
   voltam a coincidir por sincronização explícita em uma das duas direções.
@@ -57,9 +64,10 @@ visual e tornando explícitas as regras de representantes e administradores.
   CPF; preserva `@`, foto, nível administrativo e estado do convite.
 - Remover um papel não remove o outro; apenas encerra o vínculo local de
   sincronização.
-- Administrador pode receber foto local opcional. Persistência privada futura
-  deve usar Media Gateway e Cloudflare R2, com metadados e autorização no
-  Postgres/Supabase.
+- Os rótulos de sincronização são direcionais: `Copiar dados do representante`
+  leva representante → administrador e `Copiar dados para o representante` leva
+  administrador → representante.
+- Administrador pode receber foto local opcional.
 - Enviar convite sem e-mail abre o editor focado no e-mail. Salvar um e-mail
   válido envia o convite localmente; cancelar não altera o estado.
 

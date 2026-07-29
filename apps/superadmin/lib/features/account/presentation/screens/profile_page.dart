@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
+import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/account_profile.dart';
 import '../account_controller.dart';
@@ -74,10 +73,10 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() => _imageError = 'Não foi possível ler esta imagem.');
       return;
     }
-    final adjusted = await showDialog<_AvatarCropResult>(
+    final adjusted = await showDialog<AvatarCropResult>(
       context: context,
       barrierColor: Colors.black54,
-      builder: (context) => _AvatarCropDialog(bytes: bytes),
+      builder: (context) => AvatarCropDialog(bytes: bytes),
     );
     if (adjusted != null && mounted) {
       setState(() {
@@ -597,100 +596,6 @@ class _PasswordDialogState extends State<_PasswordDialog> {
       ),
     ],
   );
-}
-
-class _AvatarCropDialog extends StatefulWidget {
-  const _AvatarCropDialog({required this.bytes});
-  final Uint8List bytes;
-
-  @override
-  State<_AvatarCropDialog> createState() => _AvatarCropDialogState();
-}
-
-class _AvatarCropDialogState extends State<_AvatarCropDialog> {
-  final transformation = TransformationController();
-  double zoom = 1;
-
-  @override
-  void dispose() {
-    transformation.dispose();
-    super.dispose();
-  }
-
-  void reset() {
-    transformation.value = Matrix4.identity();
-    setState(() => zoom = 1);
-  }
-
-  @override
-  Widget build(BuildContext context) => AlertDialog(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    title: const Text('Ajustar foto'),
-    content: SizedBox(
-      width: 520,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('Arraste e ajuste o zoom. A área dentro do círculo será exibida.'),
-          const SizedBox(height: CoeloSpacing.space4),
-          ClipOval(
-            child: SizedBox.square(
-              dimension: 300,
-              child: ColoredBox(
-                color: Theme.of(context).colorScheme.scrim,
-                child: InteractiveViewer(
-                  key: const Key('account-avatar-crop-view'),
-                  transformationController: transformation,
-                  minScale: 1,
-                  maxScale: 4,
-                  boundaryMargin: EdgeInsets.zero,
-                  constrained: true,
-                  child: Image.memory(widget.bytes, fit: BoxFit.cover),
-                ),
-              ),
-            ),
-          ),
-          Slider(
-            value: zoom,
-            min: 1,
-            max: 4,
-            divisions: 30,
-            label: '${zoom.toStringAsFixed(1)}×',
-            onChanged: (value) {
-              setState(() => zoom = value);
-              transformation.value = Matrix4.diagonal3Values(value, value, 1);
-            },
-          ),
-        ],
-      ),
-    ),
-    actions: [
-      TextButton(onPressed: reset, child: const Text('Redefinir')),
-      OutlinedButton(onPressed: Navigator.of(context).pop, child: const Text('Cancelar')),
-      FilledButton(
-        onPressed: () {
-          final matrix = transformation.value;
-          Navigator.of(context).pop(
-            _AvatarCropResult(
-              bytes: widget.bytes,
-              scale: matrix.entry(0, 0),
-              offset: Offset(matrix.entry(0, 3), matrix.entry(1, 3)),
-            ),
-          );
-        },
-        child: const Text('Aplicar'),
-      ),
-    ],
-  );
-}
-
-class _AvatarCropResult {
-  const _AvatarCropResult({required this.bytes, required this.scale, required this.offset});
-
-  final Uint8List bytes;
-  final double scale;
-  final Offset offset;
 }
 
 class _AvatarColorDialog extends StatefulWidget {

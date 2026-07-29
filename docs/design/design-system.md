@@ -527,8 +527,19 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   nova e edição HSV e RGB. A amostra nunca substitui o valor textual, para
   manter precisão e acessibilidade.
 - A identidade institucional apresenta primeiro sua prévia compacta e separa
-  cores de superfície, marca e texto. Bio limitada conta grafemas e pode
-  oferecer uma paleta compacta de emojis sem substituir o teclado nativo.
+  cores de superfície, marca e texto. Em desktop, marca e texto ocupam três
+  colunas; em larguras menores, a grade colapsa sem perda de ordem, rótulo ou
+  foco.
+- Bio limitada conta grafemas. Um botão de ícone com tooltip e semântica abre a
+  seleção compacta de emojis; a escolha entra no cursor e não substitui o
+  teclado nativo.
+- O avatar opcional do administrador pertence ao cadastro e à edição do
+  administrador. Usa o recorte circular padrão de perfil; a confirmação do
+  recorte apresenta `Cancelar` e `Aplicar` em ações 50/50, e o reset é uma ação
+  circular por ícone com tooltip, semântica e alvo mínimo.
+- Sincronizações entre representante e administrador devem nomear a direção:
+  `Copiar dados do representante` para representante → administrador e
+  `Copiar dados para o representante` para administrador → representante.
 - Ícones de campo representam o significado específico, evitando repetir um
   símbolo genérico em todo o grupo. Ação contextual que opera sobre o valor,
   como `Buscar CEP`, fica no próprio campo com tooltip, semântica e alvo mínimo.

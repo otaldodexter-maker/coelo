@@ -63,6 +63,23 @@ final class _CoeloFormTextFieldState extends State<CoeloFormTextField> {
       (Brightness.dark, false) => colors.surfaceContainer,
       (Brightness.dark, true) => colors.surfaceContainerHigh,
     };
+    Widget prefixIcon = Icon(widget.prefixIcon);
+    if (widget.maxLines > 1) {
+      final inputStyle = theme.useMaterial3
+          ? theme.textTheme.bodyLarge!
+          : theme.textTheme.titleMedium!;
+      final linePainter = TextPainter(
+        text: TextSpan(text: 'M', style: inputStyle),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+        maxLines: 1,
+      )..layout();
+      prefixIcon = SizedBox(
+        height: linePainter.height * widget.maxLines,
+        child: Align(alignment: Alignment.topCenter, child: prefixIcon),
+      );
+      linePainter.dispose();
+    }
     return MouseRegion(
       cursor: widget.enabled ? SystemMouseCursors.text : SystemMouseCursors.basic,
       onEnter: (_) => setState(() => _hovered = true),
@@ -83,7 +100,7 @@ final class _CoeloFormTextFieldState extends State<CoeloFormTextField> {
           labelText: widget.labelText,
           hintText: widget.hintText,
           prefixText: widget.prefixText,
-          prefixIcon: Icon(widget.prefixIcon),
+          prefixIcon: prefixIcon,
           suffixIcon: widget.suffixIcon,
           errorText: widget.errorText,
           fillColor: fillColor,
