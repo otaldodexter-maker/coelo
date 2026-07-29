@@ -60,6 +60,7 @@ class _SupportPageState extends State<SupportPage> {
       if (d == 'institutions') widget.onInstitutionsOpen();
       if (d == 'units') widget.onUnitsOpen?.call();
       if (d == 'catalog') widget.onCatalogOpen();
+      if (d == 'conversations') widget.onConversationsOpen?.call();
     },
     child: AnimatedBuilder(animation: widget.controller, builder: (_, _) => _content(context)),
   );

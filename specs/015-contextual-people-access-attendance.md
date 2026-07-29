@@ -254,6 +254,11 @@ alem do necessario.
 - Chat mostra autor, papel, escopo e criancas relacionadas.
 - Caixa unica retorna conversas independentes autorizadas; filtros de tipo e
   crianca nao ampliam acesso.
+- Superadmin pode compor grupo manual cross-tenant somente por caminho
+  privilegiado futuro, preservando membros, papeis e origens; Admin permanece
+  limitado a propria instituicao.
+- Envio em massa gera entregas privadas independentes e deduplicadas, nunca um
+  fio coletivo implicito.
 - Equipe nao configurada nao le chat institucional/unidade.
 - Revogacao remove imediatamente o contexto de inbox, busca, cache e Realtime
   operacionais e bloqueia mensagens, comandos e novas assinaturas.
@@ -266,7 +271,9 @@ alem do necessario.
 - Pendencia nao vira oficial automaticamente.
 - Somente `Gerenciar presenca` altera registro oficial.
 - Dashboards separam registros oficiais de pendencias.
-- Acesso cross-tenant e cross-unit falha.
+- Acesso cross-tenant e cross-unit falha fora da excecao explicita de grupo
+  manual do Superadmin; a excecao depende de spec tecnica de autorizacao,
+  auditoria, revogacao e retencao antes de producao.
 
 ## Testes Exigidos
 

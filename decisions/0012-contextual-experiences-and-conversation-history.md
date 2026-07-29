@@ -86,6 +86,23 @@ Cada mensagem preserva:
 - Vinculos em outras turmas, instituicoes ou na experiencia de responsavel
   permanecem independentes.
 
+### Grupos Manuais Cross-Tenant Do Superadmin
+
+- O Superadmin pode compor um grupo manual com participantes de instituicoes
+  diferentes quando a operacao Coelo exigir coordenacao entre contextos.
+- O grupo e um fio coletivo: participantes autorizados veem o grupo, seus
+  membros e as instituicoes/origens apresentadas no momento da composicao.
+- Cada membro preserva a pessoa ou entidade selecionada, papel apresentado,
+  instituicao e contexto de origem; a inclusao no grupo nao funde memberships
+  nem amplia acesso a outras superficies.
+- Um Admin institucional futuro fica limitado a participantes da propria
+  instituicao e nao recebe a excecao cross-tenant do Superadmin.
+- Envio em massa nao e grupo nem fio coletivo. Ele produz entregas privadas
+  independentes e deduplicadas por destinatario.
+- A autorizacao de produto acima nao autoriza implementacao fisica. Producao
+  permanece bloqueada ate spec aprovada de autorizacao, auditoria, revogacao,
+  retencao e notificacao dos participantes.
+
 ## Consequencias
 
 - Autorizacao final deve ocorrer no backend/RLS/caminho server-side; esconder
@@ -96,7 +113,8 @@ Cada mensagem preserva:
   tempo real.
 - Testes devem cobrir multi-papel, multi-instituicao, crianca multi-grupo,
   conversa entre contextos da mesma pessoa, troca de professora, acesso ao
-  historico e revogacao imediata.
+  historico, grupos cross-tenant do Superadmin, isolamento do Admin, entregas
+  privadas em massa e revogacao imediata.
 - A implementacao fisica depende de specs tecnicas pequenas e aprovadas.
 
 ## Fora De Escopo Desta Decisao
@@ -105,3 +123,4 @@ Cada mensagem preserva:
 - Definir retencao legal de mensagens.
 - Definir o desenho visual final do seletor de contexto.
 - Autorizar implementacao de chat, notificacoes ou troca de contexto.
+- Definir schema, RLS ou operacao fisica de grupos cross-tenant do Superadmin.

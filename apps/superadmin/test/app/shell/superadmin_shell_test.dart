@@ -216,6 +216,93 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('opens conversations through the generic navigation callback', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final destinations = <String>[];
+
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      onDestinationSelected: destinations.add,
+      child: const SizedBox.expand(),
+    );
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Abrir tela'));
+    expect(destinations, ['conversations']);
+  });
+
+  testWidgets('does not reserve global bottom clearance for the launcher', (tester) async {
+    for (final width in [375.0, 768.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: SuperadminShell(
+            key: ValueKey(width),
+            logout: () async => const LogoutResult.success(),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                key: const Key('bottom-right-content-action'),
+                tooltip: 'Ação inferior direita',
+                onPressed: () {},
+                icon: const Icon(Icons.arrow_forward),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-chat-launcher-clearance')), findsNothing);
+      if (width == 1440) {
+        expect(
+          tester.getBottomRight(find.byKey(const Key('superadmin-floating-content'))).dy,
+          900 - CoeloSpacing.space3,
+        );
+      }
+      expect(tester.takeException(), isNull, reason: 'viewport $width');
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('expands through the specific conversations capability', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var expansions = 0;
+
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      onDestinationSelected: (_) {},
+      onOpenConversations: () => expansions += 1,
+      child: const SizedBox.expand(),
+    );
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Abrir tela'));
+    expect(expansions, 1);
+  });
+
+  testWidgets('hides the global launcher on the conversations route', (tester) async {
+    final shell = SuperadminShell(
+      logout: () async => const LogoutResult.success(),
+      currentDestination: 'conversations',
+      child: const SizedBox.expand(),
+    );
+    await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: shell));
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+  });
+
   testWidgets('starts Home with Structure collapsed and opens the active section contextually', (
     tester,
   ) async {

@@ -162,6 +162,10 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.homeName,
             builder: (context, state) => SuperadminHelpCenterPage(
               logout: logout,
+              onOpenConversations: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'home'},
+              ),
               onDestinationSelected: (destination) {
                 if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.institutionsName);
@@ -172,10 +176,7 @@ GoRouter createSuperadminRouter({
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.supportName);
                 } else if (destination == 'conversations') {
-                  context.goNamed(
-                    SuperadminRoutes.conversationsName,
-                    queryParameters: const {'from': 'home'},
-                  );
+                  context.goNamed(SuperadminRoutes.conversationsName);
                 }
               },
             ),
@@ -224,6 +225,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.governanceCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.supportName);
+                } else if (destination == 'conversations') {
+                  context.goNamed(SuperadminRoutes.conversationsName);
                 }
               },
             ),
@@ -345,6 +348,10 @@ GoRouter createSuperadminRouter({
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'support'},
+              ),
             ),
           ),
           GoRoute(
@@ -425,6 +432,10 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devHomeName,
             builder: (context, state) => SuperadminHelpCenterPage(
               logout: _previewLogout,
+              onOpenConversations: () => context.goNamed(
+                SuperadminRoutes.devConversationsName,
+                queryParameters: const {'from': 'home'},
+              ),
               onDestinationSelected: (destination) {
                 if (destination == 'institutions') {
                   context.goNamed(SuperadminRoutes.devInstitutionsName);
@@ -433,10 +444,7 @@ GoRouter createSuperadminRouter({
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
                 } else if (destination == 'conversations') {
-                  context.goNamed(
-                    SuperadminRoutes.devConversationsName,
-                    queryParameters: const {'from': 'home'},
-                  );
+                  context.goNamed(SuperadminRoutes.devConversationsName);
                 }
               },
             ),
@@ -483,6 +491,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devUnitsName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
+                } else if (destination == 'conversations') {
+                  context.goNamed(SuperadminRoutes.devConversationsName);
                 }
               },
             ),
@@ -585,6 +595,10 @@ GoRouter createSuperadminRouter({
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.devUnitsName),
               onCatalogOpen: () =>
                   openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.devConversationsName,
+                queryParameters: const {'from': 'support'},
+              ),
             ),
           ),
           GoRoute(

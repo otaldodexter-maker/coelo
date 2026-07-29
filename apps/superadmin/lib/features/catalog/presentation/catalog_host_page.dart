@@ -44,8 +44,8 @@ final class CatalogHostPage extends StatelessWidget {
       subtitle: 'Consulte fundamentos, componentes e padrões aprovados.',
       logout: logout,
       currentDestination: 'catalog',
-      showChatLauncher: onConversationsOpen != null,
       onBugReportSubmitted: onBugReportSubmitted,
+      onOpenConversations: onConversationsOpen,
       onDestinationSelected: (destination) {
         if (destination == 'home') {
           onHomeOpen?.call();
@@ -55,8 +55,6 @@ final class CatalogHostPage extends StatelessWidget {
           onUnitsOpen?.call();
         } else if (destination == 'support') {
           onSupportOpen?.call();
-        } else if (destination == 'conversations') {
-          onConversationsOpen?.call();
         }
       },
       actions: [

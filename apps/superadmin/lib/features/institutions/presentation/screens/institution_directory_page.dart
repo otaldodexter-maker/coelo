@@ -107,6 +107,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       showChatLauncher: widget.onConversationsOpen != null,
       chatLauncherBottomInset: _paginationFooterHeight,
       onBugReportSubmitted: widget.onBugReportSubmitted,
+      onOpenConversations: widget.onConversationsOpen,
       onDestinationSelected: (destination) {
         if (destination == 'home') {
           widget.onHomeOpen?.call();
@@ -116,8 +117,6 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
           widget.onCatalogOpen?.call();
         } else if (destination == 'support') {
           widget.onSupportOpen?.call();
-        } else if (destination == 'conversations') {
-          widget.onConversationsOpen?.call();
         }
       },
       child: Builder(

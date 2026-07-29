@@ -34,8 +34,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
     expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
 
-    await tester.tap(find.text('Voltar à tela anterior'));
+    await tester.tap(find.byTooltip('Voltar'));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutions);
   });
@@ -57,6 +58,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.conversations);
-    expect(find.text('Conversas'), findsWidgets);
+    expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
+    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
   });
 }

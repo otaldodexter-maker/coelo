@@ -14,7 +14,7 @@ void main() {
     (name: 'light', theme: CoeloTheme.light),
     (name: 'dark', theme: CoeloTheme.dark),
   ]) {
-    testWidgets('renders collapsed launcher in ${themeCase.name}', (tester) async {
+    testWidgets('renders desktop launcher in ${themeCase.name}', (tester) async {
       _configureViewport(tester);
       await tester.pumpWidget(_stage(themeCase.theme));
       await tester.pumpAndSettle();
@@ -26,14 +26,23 @@ void main() {
     });
   }
 
+  testWidgets('renders compact neutral launcher', (tester) async {
+    _configureViewport(tester, width: 375);
+    await tester.pumpWidget(_stage(CoeloTheme.light));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('chat-launcher-golden-stage')),
+      matchesGoldenFile('goldens/superadmin_chat_launcher_compact_light.png'),
+    );
+  });
+
   testWidgets('renders the launcher orange hover', (tester) async {
     _configureViewport(tester);
     await tester.pumpWidget(_stage(CoeloTheme.light));
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer();
-    await mouse.moveTo(
-      tester.getCenter(find.byKey(const Key('superadmin-chat-launcher-surface'))),
-    );
+    await mouse.moveTo(tester.getCenter(find.byKey(const Key('superadmin-chat-launcher-surface'))));
     await tester.pump();
 
     await expectLater(
@@ -42,28 +51,54 @@ void main() {
     );
   });
 
-  testWidgets('renders compact inbox and thread references', (tester) async {
+  testWidgets('renders the launcher orange focus', (tester) async {
     _configureViewport(tester);
     await tester.pumpWidget(_stage(CoeloTheme.light));
-    await tester.tap(find.text('Mensagens'));
-    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
 
     await expectLater(
       find.byKey(const Key('chat-launcher-golden-stage')),
-      matchesGoldenFile('goldens/superadmin_chat_launcher_inbox_light.png'),
-    );
-
-    await tester.tap(find.text('Turma Girassol'));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byKey(const Key('chat-launcher-golden-stage')),
-      matchesGoldenFile('goldens/superadmin_chat_launcher_thread_light.png'),
+      matchesGoldenFile('goldens/superadmin_chat_launcher_focus_light.png'),
     );
   });
+
+  for (final themeCase in [
+    (name: 'light', theme: CoeloTheme.light),
+    (name: 'dark', theme: CoeloTheme.dark),
+  ]) {
+    testWidgets('renders compact inbox and thread in ${themeCase.name}', (
+      tester,
+    ) async {
+      _configureViewport(tester);
+      await tester.pumpWidget(_stage(themeCase.theme));
+      await tester.tap(
+        find.byKey(const Key('superadmin-chat-launcher-surface')),
+      );
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(Overlay).first,
+        matchesGoldenFile(
+          'goldens/superadmin_chat_launcher_inbox_${themeCase.name}.png',
+        ),
+      );
+
+      await tester.tap(find.text('Turma Girassol'));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(Overlay).first,
+        matchesGoldenFile(
+          'goldens/superadmin_chat_launcher_thread_${themeCase.name}.png',
+        ),
+      );
+    });
+  }
 }
 
 Widget _stage(ThemeData theme) {
   return MaterialApp(
+    debugShowCheckedModeBanner: false,
     theme: theme,
     home: Scaffold(
       body: Stack(
@@ -72,7 +107,7 @@ Widget _stage(ThemeData theme) {
           Positioned(
             right: CoeloSpacing.space4,
             bottom: CoeloSpacing.space4,
-            child: SuperadminChatLauncher(onExpand: _ignore),
+            child: SuperadminChatLauncher(onOpenConversations: _ignore),
           ),
         ],
       ),
@@ -82,8 +117,8 @@ Widget _stage(ThemeData theme) {
 
 void _ignore() {}
 
-void _configureViewport(WidgetTester tester) {
-  tester.view.physicalSize = const Size(720, 720);
+void _configureViewport(WidgetTester tester, {double width = 1024}) {
+  tester.view.physicalSize = Size(width, 720);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);

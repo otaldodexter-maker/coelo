@@ -38,6 +38,7 @@ class SuperadminShell extends StatefulWidget {
     this.activityController,
     this.currentDestination = 'institutions',
     this.onDestinationSelected,
+    this.onOpenConversations,
     this.onBugReportSubmitted,
     this.showChatLauncher = false,
     this.chatLauncherBottomInset = 0,
@@ -70,6 +71,7 @@ class SuperadminShell extends StatefulWidget {
   final SuperadminActivityController? activityController;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
+  final VoidCallback? onOpenConversations;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool showChatLauncher;
   final double chatLauncherBottomInset;

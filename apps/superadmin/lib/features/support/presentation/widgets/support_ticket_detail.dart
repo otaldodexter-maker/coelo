@@ -1,12 +1,13 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../domain/support_team_member.dart';
 import '../../domain/support_ticket.dart';
 import 'support_assignee_view.dart';
+import 'support_message_bubble.dart';
+import 'support_reply_composer.dart';
 
 final class SupportTicketDetail extends StatefulWidget {
   const SupportTicketDetail({
@@ -78,7 +79,7 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
                 const Divider(height: 1),
                 KeyedSubtree(
                   key: const Key('support-composer'),
-                  child: CoeloChatComposer(
+                  child: SupportReplyComposer(
                     controller: _composer,
                     hintText: 'Responder ao chamado',
                     onSend: () {
@@ -232,15 +233,7 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
           if (activity.kind != SupportActivityKind.created)
             _HistoryEntry(label: activity.label, occurredAt: activity.occurredAt),
         for (final message in ticket.messages)
-          CoeloMessageBubble(
-            direction: message.author == SupportMessageAuthor.support
-                ? CoeloMessageDirection.sent
-                : CoeloMessageDirection.received,
-            authorLabel: message.author == SupportMessageAuthor.requester ? ticket.requester : null,
-            body: message.text,
-            timestamp: '${message.sentAt.hour}:${message.sentAt.minute.toString().padLeft(2, '0')}',
-            deliveryState: _deliveryState(message),
-          ),
+          SupportMessageBubble(message: message, requesterName: ticket.requester),
       ],
     );
   }
@@ -268,12 +261,6 @@ final class _HistoryEntry extends StatelessWidget {
     );
   }
 }
-
-CoeloMessageDeliveryState _deliveryState(SupportMessage message) => switch (message.deliveryState) {
-  SupportMessageDeliveryState.sent => CoeloMessageDeliveryState.sent,
-  SupportMessageDeliveryState.delivered => CoeloMessageDeliveryState.delivered,
-  SupportMessageDeliveryState.read => CoeloMessageDeliveryState.read,
-};
 
 String _memberLabel(SupportTeamMember member) => '${member.name} · ${_roleLabel(member.role)}';
 
