@@ -63,24 +63,37 @@ void main() {
     );
   });
 
-  testWidgets('renders compact inbox and thread references', (tester) async {
-    _configureViewport(tester);
-    await tester.pumpWidget(_stage(CoeloTheme.light));
-    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
-    await tester.pumpAndSettle();
+  for (final themeCase in [
+    (name: 'light', theme: CoeloTheme.light),
+    (name: 'dark', theme: CoeloTheme.dark),
+  ]) {
+    testWidgets('renders compact inbox and thread in ${themeCase.name}', (
+      tester,
+    ) async {
+      _configureViewport(tester);
+      await tester.pumpWidget(_stage(themeCase.theme));
+      await tester.tap(
+        find.byKey(const Key('superadmin-chat-launcher-surface')),
+      );
+      await tester.pumpAndSettle();
 
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('goldens/superadmin_chat_launcher_inbox_light.png'),
-    );
+      await expectLater(
+        find.byType(Overlay).first,
+        matchesGoldenFile(
+          'goldens/superadmin_chat_launcher_inbox_${themeCase.name}.png',
+        ),
+      );
 
-    await tester.tap(find.text('Turma Girassol'));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('goldens/superadmin_chat_launcher_thread_light.png'),
-    );
-  });
+      await tester.tap(find.text('Turma Girassol'));
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(Overlay).first,
+        matchesGoldenFile(
+          'goldens/superadmin_chat_launcher_thread_${themeCase.name}.png',
+        ),
+      );
+    });
+  }
 }
 
 Widget _stage(ThemeData theme) {

@@ -5,7 +5,9 @@ import '../chat_controller.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_avatar.dart';
 import 'superadmin_chat_composer.dart';
+import 'superadmin_chat_flow_dialog.dart';
 import 'superadmin_chat_message_bubble.dart';
+import 'superadmin_chat_surface_primitives.dart';
 
 final class SuperadminChatThreadBody extends StatefulWidget {
   const SuperadminChatThreadBody({
@@ -58,6 +60,8 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
             conversation: widget.conversation,
             onBack: widget.onBack,
             onOpenContext: widget.onOpenContext,
+            pinned: widget.controller.pinnedIds.contains(widget.conversation.id),
+            onPin: () => widget.controller.togglePinned(widget.conversation.id),
             onDelete: () => _confirmDelete(context),
           ),
           Expanded(
@@ -114,22 +118,34 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
   Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Excluir conversa?'),
-        content: const Text('Esta ação afeta somente os dados simulados deste protótipo.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Excluir'),
-          ),
-        ],
+      builder: (dialogContext) => SuperadminChatDialogFrame(
+        title: 'Excluir conversa?',
+        subtitle: 'Demonstração local',
+        onClose: () => Navigator.pop(dialogContext, false),
+        footer: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(dialogContext).colorScheme.error,
+                foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+              ),
+              child: const Text('Excluir conversa'),
+            ),
+            const SizedBox(height: CoeloSpacing.space1),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        ),
+        child: const Text('Esta ação afeta somente os dados simulados deste protótipo.'),
       ),
     );
-    if (confirmed == true) widget.controller.deleteConversation(widget.conversation.id);
+    if (confirmed == true) {
+      widget.controller.deleteConversation(widget.conversation.id);
+    }
   }
 }
 
@@ -137,12 +153,16 @@ final class _ThreadHeader extends StatelessWidget {
   const _ThreadHeader({
     required this.conversation,
     required this.onOpenContext,
+    required this.pinned,
+    required this.onPin,
     required this.onDelete,
     this.onBack,
   });
 
   final SuperadminChatConversation conversation;
   final VoidCallback onOpenContext;
+  final bool pinned;
+  final VoidCallback onPin;
   final VoidCallback onDelete;
   final VoidCallback? onBack;
 
@@ -171,51 +191,47 @@ final class _ThreadHeader extends StatelessWidget {
             ),
             const SizedBox(width: CoeloSpacing.space3),
             Expanded(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(CoeloRadius.md),
-                onTap: onOpenContext,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        conversation.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      conversation.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      conversation.context,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                      Text(
-                        conversation.context,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
             IconButton(
-              tooltip: 'Ver contexto',
+              tooltip: 'Ver informações do perfil',
               onPressed: onOpenContext,
-              icon: const Icon(Icons.info_outline_rounded),
+              icon: const Icon(Icons.badge_outlined),
             ),
-            PopupMenuButton<String>(
+            SuperadminChatActionMenu(
               tooltip: 'Ações da conversa',
-              onSelected: (value) {
-                if (value == 'delete') onDelete();
-              },
-              itemBuilder: (_) => const [
-                PopupMenuItem(
-                  value: 'delete',
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(Icons.delete_outline_rounded),
-                    title: Text('Excluir conversa'),
-                  ),
+              actions: [
+                SuperadminChatMenuAction(
+                  label: pinned ? 'Desfixar' : 'Fixar',
+                  icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
+                  onPressed: onPin,
+                ),
+                SuperadminChatMenuAction(
+                  label: 'Excluir conversa',
+                  icon: Icons.delete_outline_rounded,
+                  destructive: true,
+                  onPressed: onDelete,
                 ),
               ],
             ),

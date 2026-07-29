@@ -1,16 +1,66 @@
-enum ChatAudience { contexts, people }
+enum ChatAudience { all, institutional, people }
 
-enum ChatContextKind { institution, unit, group, activity, person }
+enum ChatContextKind { institution, unit, group, activity, person, conversationGroup }
 
 enum ChatMessageKind { text, emoji, audio, image }
 
 enum ChatDeliveryState { sent, delivered, read }
+
+enum ChatAttachmentKind { file, image, video }
+
+enum ChatFilterKind { state, institution, unit, group, activity, role, child }
 
 final class SuperadminChatMetric {
   const SuperadminChatMetric(this.label, this.value);
 
   final String label;
   final int value;
+}
+
+final class SuperadminChatRoleView {
+  const SuperadminChatRoleView({
+    required this.label,
+    required this.context,
+    required this.metrics,
+    this.children = const [],
+  });
+
+  final String label;
+  final String context;
+  final List<String> children;
+  final List<SuperadminChatMetric> metrics;
+}
+
+final class SuperadminChatMember {
+  const SuperadminChatMember({
+    required this.id,
+    required this.name,
+    required this.role,
+    required this.institution,
+    required this.origin,
+    required this.facets,
+  });
+
+  final String id;
+  final String name;
+  final String role;
+  final String institution;
+  final String origin;
+  final Set<ChatAudience> facets;
+}
+
+final class SuperadminChatBulkDelivery {
+  const SuperadminChatBulkDelivery({
+    required this.recipientIds,
+    required this.body,
+    required this.attachments,
+    required this.isPrivate,
+  });
+
+  final Set<String> recipientIds;
+  final String body;
+  final Set<ChatAttachmentKind> attachments;
+  final bool isPrivate;
 }
 
 final class SuperadminChatMessage {
@@ -53,6 +103,13 @@ final class SuperadminChatConversation {
     this.role,
     this.unreadCount = 0,
     this.isGroup = false,
+    this.facets = const {ChatAudience.institutional},
+    this.location,
+    this.typeLabel,
+    this.planLabel,
+    this.children = const [],
+    this.roleViews = const [],
+    this.members = const [],
   });
 
   final String id;
@@ -71,6 +128,13 @@ final class SuperadminChatConversation {
   final String? role;
   final int unreadCount;
   final bool isGroup;
+  final Set<ChatAudience> facets;
+  final String? location;
+  final String? typeLabel;
+  final String? planLabel;
+  final List<String> children;
+  final List<SuperadminChatRoleView> roleViews;
+  final List<SuperadminChatMember> members;
 
   SuperadminChatConversation copyWith({
     String? preview,
@@ -94,6 +158,13 @@ final class SuperadminChatConversation {
       role: role,
       unreadCount: unreadCount,
       isGroup: isGroup,
+      facets: facets,
+      location: location,
+      typeLabel: typeLabel,
+      planLabel: planLabel,
+      children: children,
+      roleViews: roleViews,
+      members: members,
     );
   }
 }

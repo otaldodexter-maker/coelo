@@ -9,8 +9,8 @@ import '../chat_models.dart';
 import '../widgets/superadmin_chat_advanced_filters.dart';
 import '../widgets/superadmin_chat_avatar.dart';
 import '../widgets/superadmin_chat_context_panel.dart';
+import '../widgets/superadmin_chat_flow_dialog.dart';
 import '../widgets/superadmin_chat_inbox.dart';
-import '../widgets/superadmin_chat_recipient_picker.dart';
 import '../widgets/superadmin_chat_thread_body.dart';
 
 final class SuperadminChatPage extends StatefulWidget {
@@ -58,41 +58,38 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       subtitle: 'Comunicação institucional privada e contextual.',
       currentDestination: 'conversations',
       onDestinationSelected: widget.onDestinationSelected,
-      actions: [
-        FilledButton.icon(
-          key: const Key('superadmin-chat-new-message'),
-          onPressed: _openRecipients,
-          icon: const Icon(Icons.edit_outlined),
-          label: const Text('Nova mensagem'),
-        ),
-      ],
-      compactActions: [
-        IconButton(
-          tooltip: 'Nova mensagem',
-          onPressed: _openRecipients,
-          icon: const Icon(Icons.edit_outlined),
-        ),
-      ],
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final windowWidth = MediaQuery.sizeOf(context).width;
-              final threePaneMinimum =
-                  CoeloSize.touchMin * 7 + CoeloSize.touchMin * 10 + CoeloSize.touchMin * 6;
-              if (windowWidth >= CoeloBreakpoints.large.minWidth &&
-                  constraints.maxWidth >= threePaneMinimum) {
-                return _desktopThreePane();
-              }
-              if (windowWidth >= CoeloBreakpoints.expanded.minWidth) {
-                return _desktopPriorityThread();
-              }
-              if (windowWidth >= CoeloBreakpoints.medium.minWidth) {
-                return _tabletThread();
-              }
-              return _phoneStack();
-            },
+          final colors = Theme.of(context).colorScheme;
+          return DecoratedBox(
+            key: const Key('superadmin-chat-workspace-surface'),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              border: Border.all(color: colors.outlineVariant),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final windowWidth = MediaQuery.sizeOf(context).width;
+                  final threePaneMinimum =
+                      CoeloSize.touchMin * 7 + CoeloSize.touchMin * 10 + CoeloSize.touchMin * 6;
+                  if (windowWidth >= CoeloBreakpoints.large.minWidth &&
+                      constraints.maxWidth >= threePaneMinimum) {
+                    return _desktopThreePane();
+                  }
+                  if (windowWidth >= CoeloBreakpoints.expanded.minWidth) {
+                    return _desktopPriorityThread();
+                  }
+                  if (windowWidth >= CoeloBreakpoints.medium.minWidth) {
+                    return _tabletThread();
+                  }
+                  return _phoneStack();
+                },
+              ),
+            ),
           );
         },
       ),
@@ -117,34 +114,24 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
               onCollapse: () => setState(() => _inboxCollapsed = true),
             ),
           ),
+        const VerticalDivider(width: 1),
         Expanded(
           child: _thread(
-            onOpenContext: () =>
-                setState(() => _desktopContextOpen = !_desktopContextOpen),
+            onOpenContext: () => setState(() => _desktopContextOpen = !_desktopContextOpen),
           ),
         ),
         if (_desktopContextOpen)
-          SizedBox(
-            width: CoeloSize.touchMin * 6,
-            child: SuperadminChatContextPanel(
-              conversation: _controller.selectedConversation,
-              onClose: () => setState(() => _desktopContextOpen = false),
-            ),
-          )
-        else
-          SizedBox(
-            width: CoeloSize.touchMin + CoeloSpacing.space4,
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-                child: IconButton(
-                  tooltip: 'Mostrar contexto',
-                  onPressed: () => setState(() => _desktopContextOpen = true),
-                  icon: const Icon(Icons.info_outline_rounded),
+          Row(
+            children: [
+              const VerticalDivider(width: 1),
+              SizedBox(
+                width: CoeloSize.touchMin * 6,
+                child: SuperadminChatContextPanel(
+                  conversation: _controller.selectedConversation,
+                  onClose: () => setState(() => _desktopContextOpen = false),
                 ),
               ),
-            ),
+            ],
           ),
       ],
     );
@@ -165,9 +152,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
               },
             ),
             Expanded(
-              child: _thread(
-                onOpenContext: () => setState(() => _overlayContextOpen = true),
-              ),
+              child: _thread(onOpenContext: () => setState(() => _overlayContextOpen = true)),
             ),
           ],
         ),
@@ -179,6 +164,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             width: CoeloSize.touchMin * 6,
             child: Material(
               elevation: 8,
+              shape: Border(left: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
               child: SuperadminChatContextPanel(
                 conversation: _controller.selectedConversation,
                 onClose: () => setState(() => _overlayContextOpen = false),
@@ -208,6 +194,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       onBack: onBack,
       onCollapse: onCollapse,
       onFilter: _openFilters,
+      onCreateGroup: _openCreateGroupFlow,
       onNewMessage: _openRecipients,
       onOpenConversation: (id) {
         _controller.selectConversation(id);
@@ -268,71 +255,31 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   }
 
   Future<void> _openFilters() {
-    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
-    if (compact) {
-      return showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (_) => SuperadminChatAdvancedFilters(controller: _controller),
-      );
-    }
     return showDialog<void>(
       context: context,
-      builder: (_) => Dialog(child: SuperadminChatAdvancedFilters(controller: _controller)),
+      builder: (_) =>
+          SuperadminChatAdvancedFilters(controller: _controller, options: widget.contextOptions),
     );
   }
 
   Future<void> _openRecipients() {
     _controller.clearRecipients();
-    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
-    final picker = SuperadminChatRecipientPicker(
-      controller: _controller,
-      options: widget.contextOptions,
-      onConfirmed: _reviewBulkSend,
-    );
-    if (compact) {
-      return showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (_) => FractionallySizedBox(heightFactor: 0.92, child: picker),
-      );
-    }
-    return showDialog<void>(
+    return showDialog<bool>(
       context: context,
-      builder: (_) => Dialog(
-        child: SizedBox(height: CoeloSize.touchMin * 12, child: picker),
-      ),
-    );
+      builder: (_) =>
+          SuperadminChatMessageDialog(controller: _controller, options: widget.contextOptions),
+    ).then((completed) {
+      if (!mounted || completed != true || _controller.feedback == null) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_controller.feedback!)));
+    });
   }
 
-  Future<void> _reviewBulkSend(Set<String> recipients) async {
-    Navigator.of(context).pop();
-    final confirmed = await showDialog<bool>(
+  Future<void> _openCreateGroupFlow() {
+    return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Revisar envio em massa'),
-        content: Text(
-          '${recipients.length} destinatários selecionados.\n'
-          'Nenhuma mensagem será enviada fora deste protótipo.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Confirmar simulação'),
-          ),
-        ],
-      ),
+      builder: (_) =>
+          SuperadminChatCreateGroupDialog(controller: _controller, options: widget.contextOptions),
     );
-    if (!mounted || confirmed != true) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Envio em massa simulado com sucesso.')));
   }
 }
 
