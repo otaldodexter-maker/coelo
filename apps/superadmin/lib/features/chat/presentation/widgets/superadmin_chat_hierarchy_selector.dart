@@ -246,10 +246,14 @@ List<SuperadminChatContextOption> _filterTree(
   String query,
   ChatContextKind? kind, {
   required bool guardiansOnly,
-}) => [
-  for (final option in options)
-    if (_filteredOption(option, query, kind, guardiansOnly: guardiansOnly) case final match?) match,
-];
+}) {
+  final matches = <SuperadminChatContextOption>[];
+  for (final option in options) {
+    final match = _filteredOption(option, query, kind, guardiansOnly: guardiansOnly);
+    if (match != null) matches.add(match);
+  }
+  return matches;
+}
 
 SuperadminChatContextOption? _filteredOption(
   SuperadminChatContextOption option,
