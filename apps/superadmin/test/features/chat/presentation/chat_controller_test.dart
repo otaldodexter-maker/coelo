@@ -204,6 +204,24 @@ void main() {
     expect(invited.invitationStatus, ChatGroupInvitationStatus.pending);
   });
 
+  test('a pending invite must be accepted before the member can be promoted', () {
+    final controller = SuperadminChatController(superadminChatConversations)
+      ..createGroup('Equipe', {'aurora'});
+    final groupId = controller.groupConversations.single.id;
+
+    controller.inviteToGroup(groupId, {'marina'});
+
+    expect(controller.promoteMember(groupId, 'marina'), isFalse);
+    expect(controller.acceptInvite(groupId, 'marina'), isTrue);
+    expect(
+      controller.groupConversations.single.members
+          .singleWhere((item) => item.id == 'marina')
+          .invitationStatus,
+      ChatGroupInvitationStatus.accepted,
+    );
+    expect(controller.promoteMember(groupId, 'marina'), isTrue);
+  });
+
   test('an administrator can promote a member and then leave the group', () {
     final controller = SuperadminChatController(superadminChatConversations)
       ..createGroup('Equipe', {'aurora'});

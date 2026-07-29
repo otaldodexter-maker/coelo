@@ -237,10 +237,32 @@ final class SuperadminChatController extends ChangeNotifier {
     if (group == null) return false;
     final memberIndex = group.members.indexWhere((item) => item.id == memberId);
     if (memberIndex < 0) return false;
+    if (group.members[memberIndex].invitationStatus != ChatGroupInvitationStatus.accepted) {
+      return false;
+    }
     final members = List<SuperadminChatMember>.of(group.members);
     members[memberIndex] = _copyMember(members[memberIndex], groupRole: ChatGroupMemberRole.admin);
     _replaceGroup(group.copyWith(members: members));
     feedback = 'Administrador promovido apenas nesta demonstração local.';
+    notifyListeners();
+    return true;
+  }
+
+  bool acceptInvite(String groupId, String memberId) {
+    final group = _groupFor(groupId);
+    if (group == null) return false;
+    final memberIndex = group.members.indexWhere((item) => item.id == memberId);
+    if (memberIndex < 0 ||
+        group.members[memberIndex].invitationStatus != ChatGroupInvitationStatus.pending) {
+      return false;
+    }
+    final members = List<SuperadminChatMember>.of(group.members);
+    members[memberIndex] = _copyMember(
+      members[memberIndex],
+      invitationStatus: ChatGroupInvitationStatus.accepted,
+    );
+    _replaceGroup(group.copyWith(members: members));
+    feedback = 'Convite aceito apenas nesta demonstração local.';
     notifyListeners();
     return true;
   }
