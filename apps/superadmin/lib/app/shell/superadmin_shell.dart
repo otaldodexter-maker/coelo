@@ -265,7 +265,7 @@ class _SuperadminShellState extends State<SuperadminShell> with SingleTickerProv
         child,
         Positioned(
           right: CoeloSpacing.space4,
-          bottom: CoeloSize.touchMin * 2 + CoeloSpacing.space5,
+          bottom: CoeloSpacing.space4,
           child: SuperadminChatLauncher(
             onOpenConversations:
                 widget.onOpenConversations ??

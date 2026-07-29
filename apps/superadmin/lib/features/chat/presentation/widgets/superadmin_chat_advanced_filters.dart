@@ -75,5 +75,6 @@ ChatFilterKind? _filterKind(ChatContextKind kind) => switch (kind) {
   ChatContextKind.unit => ChatFilterKind.unit,
   ChatContextKind.group => ChatFilterKind.group,
   ChatContextKind.activity => ChatFilterKind.activity,
+  ChatContextKind.child => null,
   ChatContextKind.person || ChatContextKind.conversationGroup => null,
 };
