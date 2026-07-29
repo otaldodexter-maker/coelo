@@ -135,6 +135,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
             activityController: _activityController,
             searchController: _searchController,
             display: _display,
+            avoidChatLauncher: widget.onConversationsOpen != null,
             onDisplayChanged: _changeDisplay,
             onCreate: widget.onCreate ?? () {},
             onEdit: widget.onEdit ?? (_) {},
@@ -156,6 +157,7 @@ class _InstitutionDirectoryContent extends StatefulWidget {
     required this.activityController,
     required this.searchController,
     required this.display,
+    required this.avoidChatLauncher,
     required this.onDisplayChanged,
     required this.onCreate,
     required this.onEdit,
@@ -167,6 +169,7 @@ class _InstitutionDirectoryContent extends StatefulWidget {
   final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final InstitutionDirectoryDisplay display;
+  final bool avoidChatLauncher;
   final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;

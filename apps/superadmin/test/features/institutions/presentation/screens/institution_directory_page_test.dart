@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
@@ -11,7 +12,6 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1178,16 +1178,6 @@ void main() {
     await tester.pumpAndSettle();
 
     final pagination = find.byKey(const Key('coelo-admin-pagination-content'));
-    await tester.scrollUntilVisible(
-      pagination,
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
     expect(
       tester.getCenter(pagination).dx,
       closeTo(tester.getCenter(find.byKey(const Key('institution-card-grid'))).dx, 1),
@@ -1196,16 +1186,6 @@ void main() {
     await tester.ensureVisible(find.byKey(const Key('institution-view-table')));
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      pagination,
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
     expect(
       tester.getCenter(pagination).dx,
       closeTo(
@@ -1270,19 +1250,26 @@ void main() {
   });
 
   testWidgets('supports 200 percent text at all approved viewports', (tester) async {
-    final widthsWithLayoutExceptions = <double>[];
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
-      await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+      await tester.pumpWidget(
+        _app(textScaler: const TextScaler.linear(2), pageKey: ValueKey(width)),
+      );
       await tester.pumpAndSettle();
 
-      if (tester.takeException() != null) {
-        widthsWithLayoutExceptions.add(width);
-      }
+      expect(tester.takeException(), isNull, reason: '$width cards');
       expect(find.text('Instituições'), findsWidgets);
+      expect(find.byKey(const Key('institution-directory-pagination-footer')), findsOneWidget);
+
+      final tableToggle = find.byKey(const Key('institution-view-table'), skipOffstage: false);
+      await tester.ensureVisible(tableToggle);
+      await tester.tap(tableToggle);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull, reason: '$width table');
+      expect(find.byKey(const Key('institution-directory-pagination-footer')), findsOneWidget);
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    expect(widthsWithLayoutExceptions, isEmpty);
   });
 
   testWidgets('finishes themed card surfaces with the global transition without a local tail', (
@@ -1398,6 +1385,40 @@ Finder _institutionTableRows() {
   });
 }
 
+Finder _directoryScrollFinder() {
+  return find
+      .descendant(
+        of: find.byKey(const Key('institution-directory-content-scroll')),
+        matching: find.byType(Scrollable),
+      )
+      .first;
+}
+
+void _expectVisibleAboveFooter(
+  WidgetTester tester, {
+  required Finder item,
+  required Finder footer,
+}) {
+  final viewportRect = tester.getRect(_directoryScrollFinder());
+  final itemRect = tester.getRect(item);
+  final footerRect = tester.getRect(footer);
+  expect(itemRect.top, greaterThanOrEqualTo(viewportRect.top));
+  expect(itemRect.bottom, lessThanOrEqualTo(footerRect.top - CoeloSpacing.space4));
+}
+
+Future<void> _scrollDirectoryToMax(WidgetTester tester) async {
+  tester
+      .state<ScrollableState>(_directoryScrollFinder())
+      .position
+      .jumpTo(tester.state<ScrollableState>(_directoryScrollFinder()).position.maxScrollExtent);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _scrollDirectoryToStart(WidgetTester tester) async {
+  tester.state<ScrollableState>(_directoryScrollFinder()).position.jumpTo(0);
+  await tester.pumpAndSettle();
+}
+
 Widget _app({
   Brightness brightness = Brightness.light,
   InstitutionDirectoryRepository? repository,
@@ -1415,6 +1436,7 @@ Widget _app({
       child: child!,
     ),
     home: InstitutionDirectoryPage(
+      key: pageKey,
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: () async => const LogoutResult.success(),
       onCreate: onCreate,
