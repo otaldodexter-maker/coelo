@@ -23,6 +23,9 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   `colorScheme.outlineVariant`, elevação e abertura a 4 px do gatilho.
 - O diálogo de reporte de bug do Superadmin é a referência canônica de
   composição; seu conteúdo de domínio não é um componente genérico.
+- Composições administrativas reutilizam `CoeloAdminDialogShell`: uma ação
+  ocupa a largura útil e duas ações dividem a largura igualmente com
+  `CoeloSpacing.space3`. O corpo rola sem deslocar cabeçalho ou rodapé.
 
 ## Hover e foco
 
@@ -78,8 +81,9 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   fundo próprio.
 - O single-select usa `colorScheme.primaryContainer` no estado selecionado, hover e foco,
   com conteúdo em `colorScheme.primary`; não usa checkbox nem check. O painel
-  acompanha exatamente a largura do gatilho em todas as superfícies Flutter e
-  web.
+  acompanha exatamente a largura do gatilho, abre 4 px abaixo, exibe no máximo
+  seis opções e reduz sua altura ao espaço inferior disponível. A busca
+  permanece fixa e somente as opções rolam.
 - Reutilizar `CoeloAdminMultiSelectFilter` como referência de implementação do
   multi-select administrativo. Instituições é a referência de comportamento do
   multi-select; o popup de Bug é a referência do single-select.

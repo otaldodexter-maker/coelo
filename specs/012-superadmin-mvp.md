@@ -52,7 +52,7 @@ Pessoas nao entram como um template unico de "usuarios". Quando a importacao de 
 
 | Template futuro | Uso | Regra de seguranca |
 | --- | --- | --- |
-| Adultos | Responsaveis, professores, coordenadores, diretores, equipe e admins institucionais. | CPF obrigatorio no MVP; e-mail/celular e `@username` ajudam matching e convite; resultados de matching entre tenants devem ser mascarados. |
+| Adultos | Responsaveis, professores, coordenadores, diretores, equipe e admins institucionais. | CPF pode ficar ausente no rascunho inicial, mas e obrigatorio antes da ativacao real no MVP; e-mail/celular e `@username` ajudam matching e convite; resultados de matching entre tenants devem ser mascarados. |
 | Criancas | Participantes/alunos como pessoa global com contexto institucional. | CPF infantil nao e obrigatorio no MVP; usar dados minimos, data de nascimento quando aplicavel, identificador interno da instituicao e `@username` infantil apenas em busca autorizada. |
 | Vinculos | Crianca-grupo, responsavel-crianca, responsavel-contexto e pessoa-papel. | Nenhum vinculo sensivel deve ser gravado sem previa, validacao de hierarquia e confirmacao explicita. |
 

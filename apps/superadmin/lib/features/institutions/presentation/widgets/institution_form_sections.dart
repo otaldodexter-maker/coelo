@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -346,7 +347,17 @@ final class _LegalRepresentativesSection extends StatelessWidget {
               person: representative.person,
               supportingText: 'Representante legal',
               onEdit: () => _editRepresentative(context, representative),
-              onRemove: () => controller.removeLegalRepresentative(representative.id),
+              onRemove: () {
+                if (!controller.removeLegalRepresentative(representative.id)) {
+                  final message = controller.peopleRuleMessage;
+                  if (message != null) {
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(SnackBar(content: Text(message)));
+                  }
+                }
+              },
             ),
           if (controller.legalRepresentatives.isEmpty)
             const _EmptyPeopleMessage(message: 'Nenhum representante legal cadastrado.'),
@@ -375,7 +386,11 @@ final class _LegalRepresentativesSection extends StatelessWidget {
   }
 
   Future<void> _addRepresentative(BuildContext context) async {
-    final person = await _showPersonDialog(context, title: 'Adicionar representante legal');
+    final person = await _showPersonDialog(
+      context,
+      controller: controller,
+      title: 'Adicionar representante legal',
+    );
     if (person != null) {
       controller.addLegalRepresentative(person);
     }
@@ -387,6 +402,7 @@ final class _LegalRepresentativesSection extends StatelessWidget {
   ) async {
     final person = await _showPersonDialog(
       context,
+      controller: controller,
       title: 'Editar representante legal',
       initialValue: representative.person,
     );
@@ -460,8 +476,14 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
             _AdministratorCard(
               administrator: administrator,
               onEdit: () => _editAdministrator(context, administrator),
-              onRemove: () => controller.removeAdministrator(administrator.id),
-              onSendInvitation: () => controller.sendAdministratorInvitation(administrator.id),
+              onRemove: () => _removeAdministrator(context, administrator),
+              onSendInvitation: () => _sendInvitation(context, administrator),
+              onPickAvatar: () => _pickAdministratorAvatar(context, administrator),
+              onRemoveAvatar: () => controller.removeAdministratorAvatar(administrator.id),
+              onSyncFromRepresentative: () =>
+                  controller.syncRepresentativeToAdministrator(administrator.id),
+              onSyncToRepresentative: () =>
+                  controller.syncAdministratorToRepresentative(administrator.id),
               onAcceptInvitation: () => controller.setAdministratorInvitationStatus(
                 administrator.id,
                 InstitutionInvitationStatus.accepted,
@@ -473,6 +495,15 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
             ),
           if (controller.administrators.isEmpty)
             const _EmptyPeopleMessage(message: 'Nenhum administrador confirmado.'),
+          if (controller.administratorsError case final error?)
+            Padding(
+              padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+              child: Text(
+                error,
+                key: const Key('institution-administrators-error'),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
           const SizedBox(height: CoeloSpacing.space4),
           Align(
             alignment: Alignment.centerLeft,
@@ -489,7 +520,11 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
   }
 
   Future<void> _addAdministrator(BuildContext context) async {
-    final result = await _showAdministratorDialog(context, title: 'Adicionar administrador');
+    final result = await _showAdministratorDialog(
+      context,
+      controller: controller,
+      title: 'Adicionar administrador',
+    );
     if (result != null) {
       controller.addAdministrator(result.person, level: result.level);
     }
@@ -497,17 +532,90 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
 
   Future<void> _editAdministrator(
     BuildContext context,
-    InstitutionAdministratorDraft administrator,
-  ) async {
+    InstitutionAdministratorDraft administrator, {
+    bool focusEmail = false,
+    bool sendInvitationAfterSave = false,
+  }) async {
     final result = await _showAdministratorDialog(
       context,
+      controller: controller,
       title: 'Editar administrador',
       initialPerson: administrator.person,
       initialLevel: administrator.level,
+      focusEmail: focusEmail,
     );
     if (result != null) {
-      controller.updateAdministrator(administrator.id, person: result.person, level: result.level);
+      controller.updateAdministrator(
+        administrator.id,
+        person: result.person,
+        level: result.level,
+        sendInvitationAfterSave: sendInvitationAfterSave,
+      );
+    } else if (focusEmail) {
+      controller.cancelAdministratorEmailRequest();
     }
+  }
+
+  Future<void> _sendInvitation(
+    BuildContext context,
+    InstitutionAdministratorDraft administrator,
+  ) async {
+    if (controller.sendAdministratorInvitation(administrator.id)) {
+      return;
+    }
+    await _editAdministrator(
+      context,
+      administrator,
+      focusEmail: true,
+      sendInvitationAfterSave: true,
+    );
+  }
+
+  void _removeAdministrator(BuildContext context, InstitutionAdministratorDraft administrator) {
+    if (!controller.removeAdministrator(administrator.id)) {
+      _showPeopleRuleMessage(context);
+    }
+  }
+
+  Future<void> _pickAdministratorAvatar(
+    BuildContext context,
+    InstitutionAdministratorDraft administrator,
+  ) async {
+    final file = await pickInstitutionLogo();
+    if (file == null || !context.mounted) return;
+    if (file.bytes.lengthInBytes > _LogoPicker.maxBytes) {
+      _showMessage(context, 'A foto deve ter no máximo 2 MB.');
+      return;
+    }
+    try {
+      final codec = await ui.instantiateImageCodec(file.bytes);
+      final frame = await codec.getNextFrame();
+      final square = frame.image.width == frame.image.height;
+      frame.image.dispose();
+      codec.dispose();
+      if (!context.mounted) return;
+      if (!square) {
+        _showMessage(context, 'Escolha uma foto quadrada.');
+        return;
+      }
+      controller.setAdministratorAvatar(administrator.id, bytes: file.bytes, fileName: file.name);
+    } on Exception {
+      if (context.mounted) {
+        _showMessage(context, 'Não foi possível ler essa foto.');
+      }
+    }
+  }
+
+  void _showPeopleRuleMessage(BuildContext context) {
+    final message = controller.peopleRuleMessage;
+    if (message != null) _showMessage(context, message);
+  }
+
+  void _showMessage(BuildContext context, String message) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -536,11 +644,15 @@ final class _PersonCard extends StatelessWidget {
     required this.supportingText,
     required this.onEdit,
     required this.onRemove,
+    this.badgeText,
+    this.avatarBytes,
     super.key,
   });
 
   final InstitutionPersonDraft person;
   final String supportingText;
+  final String? badgeText;
+  final Uint8List? avatarBytes;
   final VoidCallback onEdit;
   final VoidCallback onRemove;
 
@@ -562,7 +674,8 @@ final class _PersonCard extends StatelessWidget {
             CircleAvatar(
               backgroundColor: colors.primaryContainer,
               foregroundColor: colors.onPrimaryContainer,
-              child: Text(_personInitials(person)),
+              backgroundImage: avatarBytes == null ? null : MemoryImage(avatarBytes!),
+              child: avatarBytes == null ? Text(_personInitials(person)) : null,
             ),
             const SizedBox(width: CoeloSpacing.space3),
             Expanded(
@@ -570,8 +683,11 @@ final class _PersonCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(person.displayName, style: Theme.of(context).textTheme.titleMedium),
-                  Text('$supportingText · ${person.email}'),
-                  Text(person.mobilePhone),
+                  if (badgeText case final badge?) Text(badge),
+                  Text(
+                    [supportingText, if (person.email.trim().isNotEmpty) person.email].join(' · '),
+                  ),
+                  if (person.mobilePhone.trim().isNotEmpty) Text(person.mobilePhone),
                 ],
               ),
             ),
@@ -599,6 +715,10 @@ final class _AdministratorCard extends StatelessWidget {
     required this.onEdit,
     required this.onRemove,
     required this.onSendInvitation,
+    required this.onPickAvatar,
+    required this.onRemoveAvatar,
+    required this.onSyncFromRepresentative,
+    required this.onSyncToRepresentative,
     required this.onAcceptInvitation,
     required this.onExpireInvitation,
   });
@@ -607,6 +727,10 @@ final class _AdministratorCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onRemove;
   final VoidCallback onSendInvitation;
+  final VoidCallback onPickAvatar;
+  final VoidCallback onRemoveAvatar;
+  final VoidCallback onSyncFromRepresentative;
+  final VoidCallback onSyncToRepresentative;
   final VoidCallback onAcceptInvitation;
   final VoidCallback onExpireInvitation;
 
@@ -618,6 +742,8 @@ final class _AdministratorCard extends StatelessWidget {
         _PersonCard(
           key: Key('institution-administrator-${administrator.id}'),
           person: administrator.person,
+          badgeText: administrator.handle,
+          avatarBytes: administrator.avatarBytes,
           supportingText: '${administrator.level.label} · ${administrator.invitationStatus.label}',
           onEdit: onEdit,
           onRemove: onRemove,
@@ -636,13 +762,37 @@ final class _AdministratorCard extends StatelessWidget {
               OutlinedButton.icon(
                 key: Key('institution-send-invitation-${administrator.id}'),
                 onPressed: onSendInvitation,
-                icon: const Icon(Icons.send_outlined),
+                icon: SizedBox.square(
+                  key: Key('institution-invitation-icon-box-${administrator.id}'),
+                  dimension: CoeloSize.iconMd,
+                  child: const Center(child: Icon(Icons.send_outlined)),
+                ),
                 label: Text(
                   administrator.invitationStatus == InstitutionInvitationStatus.notSent
                       ? 'Enviar convite'
                       : 'Reenviar convite',
                 ),
               ),
+              OutlinedButton.icon(
+                key: Key('institution-administrator-avatar-${administrator.id}'),
+                onPressed: onPickAvatar,
+                icon: const Icon(Icons.add_a_photo_outlined),
+                label: Text(administrator.avatarBytes == null ? 'Adicionar foto' : 'Trocar foto'),
+              ),
+              if (administrator.avatarBytes != null)
+                TextButton(onPressed: onRemoveAvatar, child: const Text('Remover foto')),
+              if (administrator.sourceRepresentativeId != null) ...[
+                OutlinedButton(
+                  key: Key('institution-sync-representative-to-admin-${administrator.id}'),
+                  onPressed: onSyncFromRepresentative,
+                  child: const Text('Atualizar pelo representante'),
+                ),
+                OutlinedButton(
+                  key: Key('institution-sync-admin-to-representative-${administrator.id}'),
+                  onPressed: onSyncToRepresentative,
+                  child: const Text('Atualizar representante'),
+                ),
+              ],
               if (administrator.invitationStatus == InstitutionInvitationStatus.sent) ...[
                 OutlinedButton(
                   key: Key('institution-accept-invitation-${administrator.id}'),
@@ -689,33 +839,50 @@ final class _AdministratorDialogResult {
 
 Future<InstitutionPersonDraft?> _showPersonDialog(
   BuildContext context, {
+  required InstitutionFormController controller,
   required String title,
   InstitutionPersonDraft? initialValue,
 }) => showDialog<InstitutionPersonDraft>(
   context: context,
   barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-  builder: (context) => _PersonEditorDialog(title: title, initialPerson: initialValue),
+  builder: (context) =>
+      _PersonEditorDialog(controller: controller, title: title, initialPerson: initialValue),
 );
 
 Future<_AdministratorDialogResult?> _showAdministratorDialog(
   BuildContext context, {
+  required InstitutionFormController controller,
   required String title,
   InstitutionPersonDraft? initialPerson,
+  bool focusEmail = false,
   InstitutionAdministratorLevel initialLevel =
       InstitutionAdministratorLevel.authorizedAdministrator,
 }) => showDialog<_AdministratorDialogResult>(
   context: context,
   barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-  builder: (context) =>
-      _PersonEditorDialog(title: title, initialPerson: initialPerson, initialLevel: initialLevel),
+  builder: (context) => _PersonEditorDialog(
+    controller: controller,
+    title: title,
+    initialPerson: initialPerson,
+    initialLevel: initialLevel,
+    focusEmail: focusEmail,
+  ),
 );
 
 final class _PersonEditorDialog extends StatefulWidget {
-  const _PersonEditorDialog({required this.title, this.initialPerson, this.initialLevel});
+  const _PersonEditorDialog({
+    required this.controller,
+    required this.title,
+    this.initialPerson,
+    this.initialLevel,
+    this.focusEmail = false,
+  });
 
+  final InstitutionFormController controller;
   final String title;
   final InstitutionPersonDraft? initialPerson;
   final InstitutionAdministratorLevel? initialLevel;
+  final bool focusEmail;
 
   @override
   State<_PersonEditorDialog> createState() => _PersonEditorDialogState();
@@ -727,19 +894,26 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
   late final TextEditingController _displayName;
   late final TextEditingController _email;
   late final TextEditingController _mobilePhone;
+  late final TextEditingController _cpf;
+  late final FocusNode _emailFocusNode;
   late InstitutionAdministratorLevel _level =
       widget.initialLevel ?? InstitutionAdministratorLevel.authorizedAdministrator;
   var _attempted = false;
 
+  InstitutionPersonDraft get _person => InstitutionPersonDraft(
+    firstName: _firstName.text.trim(),
+    lastName: _lastName.text.trim(),
+    displayName: _displayName.text.trim(),
+    email: _email.text.trim(),
+    mobilePhone: _mobilePhone.text.trim(),
+    cpf: _cpf.text.trim(),
+  );
+
   bool get _valid =>
-      [
-        _firstName.text,
-        _lastName.text,
-        _displayName.text,
-        _email.text,
-        _mobilePhone.text,
-      ].every((value) => value.trim().isNotEmpty) &&
-      RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_email.text.trim());
+      widget.controller.isPersonValid(_person) &&
+      (!widget.focusEmail ||
+          (_person.email.trim().isNotEmpty &&
+              widget.controller.personError(_person, InstitutionPersonField.email) == null));
 
   @override
   void initState() {
@@ -750,6 +924,11 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     _displayName = TextEditingController(text: person?.displayName ?? '');
     _email = TextEditingController(text: person?.email ?? '');
     _mobilePhone = TextEditingController(text: person?.mobilePhone ?? '');
+    _cpf = TextEditingController(text: person?.cpf ?? '');
+    _emailFocusNode = FocusNode();
+    if (widget.focusEmail) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _emailFocusNode.requestFocus());
+    }
   }
 
   @override
@@ -759,100 +938,70 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     _displayName.dispose();
     _email.dispose();
     _mobilePhone.dispose();
+    _cpf.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Dialog(
-      backgroundColor: colors.surface,
-      surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        side: BorderSide(color: colors.outlineVariant),
+    return CoeloAdminDialogShell(
+      title: widget.title,
+      maxWidth: 720,
+      secondaryAction: OutlinedButton(
+        onPressed: Navigator.of(context).pop,
+        child: const Text('Cancelar'),
       ),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 720),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(CoeloSpacing.space6),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
-                  ),
-                  IconButton(
-                    tooltip: 'Fechar',
-                    onPressed: Navigator.of(context).pop,
-                    color: colors.error,
-                    icon: const Icon(Icons.close_rounded),
-                  ),
-                ],
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              _FieldGrid(
-                children: [
-                  _personField(_firstName, 'Nome', 'first-name'),
-                  _personField(_lastName, 'Sobrenome', 'last-name'),
-                  _personField(_displayName, 'Nome de exibição', 'display-name'),
-                  _personField(_email, 'E-mail', 'email', keyboardType: TextInputType.emailAddress),
-                  _personField(
-                    _mobilePhone,
-                    'Celular',
-                    'mobile-phone',
-                    keyboardType: TextInputType.phone,
-                  ),
-                  if (widget.initialLevel != null)
-                    _dropdown<InstitutionAdministratorLevel>(
-                      key: const Key('institution-administrator-level-select'),
-                      label: 'Nível administrativo',
-                      value: _level,
-                      values: InstitutionAdministratorLevel.values,
-                      labelOf: (value) => value.label,
-                      onChanged: (value) => setState(() => _level = value),
-                      prefixIcon: Icons.admin_panel_settings_outlined,
-                    ),
-                ],
-              ),
-              const SizedBox(height: CoeloSpacing.space5),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final cancel = OutlinedButton(
-                    onPressed: Navigator.of(context).pop,
-                    child: const Text('Cancelar'),
-                  );
-                  final save = FilledButton(
-                    key: const Key('institution-person-dialog-save'),
-                    onPressed: _submit,
-                    child: const Text('Salvar pessoa'),
-                  );
-                  if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        save,
-                        const SizedBox(height: CoeloSpacing.space2),
-                        cancel,
-                      ],
-                    );
-                  }
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      cancel,
-                      const SizedBox(width: CoeloSpacing.space2),
-                      save,
-                    ],
-                  );
-                },
-              ),
-            ],
+      primaryAction: FilledButton(
+        key: const Key('institution-person-dialog-save'),
+        onPressed: _submit,
+        child: const Text('Salvar pessoa'),
+      ),
+      body: _FieldGrid(
+        children: [
+          _personField(_firstName, 'Nome', 'first-name'),
+          _personField(_lastName, 'Sobrenome', 'last-name'),
+          _personField(_displayName, 'Nome de exibição', 'display-name'),
+          _personField(
+            _email,
+            'E-mail (opcional)',
+            'email',
+            keyboardType: TextInputType.emailAddress,
+            focusNode: _emailFocusNode,
           ),
-        ),
+          _personField(
+            _mobilePhone,
+            'Telefone (opcional)',
+            'mobile-phone',
+            keyboardType: TextInputType.phone,
+          ),
+          _personField(
+            _cpf,
+            'CPF (opcional)',
+            'cpf',
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              final formatted = widget.controller.formatCpf(value);
+              if (_cpf.text != formatted) {
+                _cpf.value = TextEditingValue(
+                  text: formatted,
+                  selection: TextSelection.collapsed(offset: formatted.length),
+                );
+              }
+              setState(() {});
+            },
+          ),
+          if (widget.initialLevel != null)
+            _dropdown<InstitutionAdministratorLevel>(
+              key: const Key('institution-administrator-level-select'),
+              label: 'Nível administrativo',
+              value: _level,
+              values: InstitutionAdministratorLevel.values,
+              labelOf: (value) => value.label,
+              onChanged: (value) => setState(() => _level = value),
+              prefixIcon: Icons.admin_panel_settings_outlined,
+            ),
+        ],
       ),
     );
   }
@@ -862,24 +1011,36 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     String label,
     String keyName, {
     TextInputType? keyboardType,
+    FocusNode? focusNode,
+    ValueChanged<String>? onChanged,
   }) => CoeloFormTextField(
     controller: controller,
     fieldKey: Key('institution-person-$keyName'),
     labelText: label,
     keyboardType: keyboardType,
+    focusNode: focusNode,
     prefixIcon: Icons.person_outline_rounded,
-    errorText: _personFieldError(controller, keyName),
-    onChanged: (_) => setState(() {}),
+    errorText: _personError(keyName),
+    onChanged: onChanged ?? (_) => setState(() {}),
   );
 
-  String? _personFieldError(TextEditingController controller, String keyName) {
+  String? _personError(String keyName) {
     if (!_attempted) return null;
-    if (controller.text.trim().isEmpty) return 'Campo obrigatório.';
-    if (keyName == 'email' &&
-        !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(controller.text.trim())) {
-      return 'Informe um e-mail válido.';
+    final field = switch (keyName) {
+      'first-name' => InstitutionPersonField.firstName,
+      'last-name' => InstitutionPersonField.lastName,
+      'display-name' => InstitutionPersonField.displayName,
+      'email' => InstitutionPersonField.email,
+      'mobile-phone' => InstitutionPersonField.mobilePhone,
+      'cpf' => InstitutionPersonField.cpf,
+      _ => InstitutionPersonField.displayName,
+    };
+    if (field == InstitutionPersonField.email &&
+        widget.focusEmail &&
+        _person.email.trim().isEmpty) {
+      return 'Informe um e-mail para enviar o convite.';
     }
-    return null;
+    return widget.controller.personError(_person, field);
   }
 
   void _submit() {
@@ -891,17 +1052,10 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
   }
 
   void _save() {
-    final person = InstitutionPersonDraft(
-      firstName: _firstName.text.trim(),
-      lastName: _lastName.text.trim(),
-      displayName: _displayName.text.trim(),
-      email: _email.text.trim(),
-      mobilePhone: _mobilePhone.text.trim(),
-    );
     Navigator.of(context).pop(
       widget.initialLevel == null
-          ? person
-          : _AdministratorDialogResult(person: person, level: _level),
+          ? _person
+          : _AdministratorDialogResult(person: _person, level: _level),
     );
   }
 }
@@ -972,6 +1126,7 @@ final class _PlanSection extends StatelessWidget {
           _FieldGrid(
             children: [
               _dropdown<InstitutionSubscriptionStatus>(
+                key: const Key('institution-subscription-status-select'),
                 label: 'Status da assinatura',
                 value: controller.subscriptionStatus,
                 values: InstitutionSubscriptionStatus.values,
@@ -1057,6 +1212,8 @@ final class _BrandingSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          _InstitutionBrandPreview(controller: controller, accent: accent, secondary: secondary),
+          const SizedBox(height: CoeloSpacing.space5),
           _LogoPicker(controller: controller, accent: accent),
           const SizedBox(height: CoeloSpacing.space4),
           _CoverPicker(controller: controller, accent: accent),
@@ -1075,6 +1232,28 @@ final class _BrandingSection extends StatelessWidget {
                 '@ da instituição',
                 hint: 'instituicao',
               ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          _ColorGroup(
+            title: 'Cores de superfície',
+            children: [
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.surfaceColor,
+                label: 'Cor principal da superfície',
+              ),
+              _ColorField(
+                controller: controller,
+                field: InstitutionFormField.secondarySurfaceColor,
+                label: 'Cor secundária da superfície',
+              ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          _ColorGroup(
+            title: 'Cores da marca',
+            children: [
               _ColorField(
                 controller: controller,
                 field: InstitutionFormField.accentColor,
@@ -1090,6 +1269,12 @@ final class _BrandingSection extends StatelessWidget {
                 field: InstitutionFormField.tertiaryColor,
                 label: 'Cor terciária da marca',
               ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space5),
+          _ColorGroup(
+            title: 'Cores de texto',
+            children: [
               _ColorField(
                 controller: controller,
                 field: InstitutionFormField.textColor,
@@ -1105,77 +1290,107 @@ final class _BrandingSection extends StatelessWidget {
                 field: InstitutionFormField.tertiaryTextColor,
                 label: 'Cor terciária do texto',
               ),
-              _ColorField(
-                controller: controller,
-                field: InstitutionFormField.surfaceColor,
-                label: 'Cor de superfície',
-              ),
             ],
           ),
-          const SizedBox(height: CoeloSpacing.space4),
-          Container(
-            key: const Key('institution-brand-preview'),
-            width: double.infinity,
-            padding: const EdgeInsets.all(CoeloSpacing.space4),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(CoeloRadius.lg),
-              border: Border.all(color: colors.outlineVariant),
+        ],
+      ),
+    );
+  }
+}
+
+final class _ColorGroup extends StatelessWidget {
+  const _ColorGroup({required this.title, required this.children});
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space3),
+        _FieldGrid(children: children),
+      ],
+    );
+  }
+}
+
+final class _InstitutionBrandPreview extends StatelessWidget {
+  const _InstitutionBrandPreview({
+    required this.controller,
+    required this.accent,
+    required this.secondary,
+  });
+
+  final InstitutionFormController controller;
+  final Color accent;
+  final Color secondary;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      key: const Key('institution-brand-preview'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (controller.hasSimulatedCover) ...[
+            Container(
+              height: CoeloSize.touchMin,
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.18),
+                image: controller.coverBytes == null
+                    ? null
+                    : DecorationImage(
+                        image: MemoryImage(controller.coverBytes!),
+                        fit: BoxFit.cover,
+                      ),
+                borderRadius: BorderRadius.circular(CoeloRadius.md),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (controller.hasSimulatedCover) ...[
-                  Container(
-                    height: CoeloSize.touchMin,
-                    decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.18),
-                      image: controller.coverBytes == null
-                          ? null
-                          : DecorationImage(
-                              image: MemoryImage(controller.coverBytes!),
-                              fit: BoxFit.cover,
-                            ),
-                      borderRadius: BorderRadius.circular(CoeloRadius.md),
-                    ),
-                  ),
-                  const SizedBox(height: CoeloSpacing.space3),
-                ],
-                Row(
+            const SizedBox(height: CoeloSpacing.space3),
+          ],
+          Row(
+            children: [
+              if (controller.hasSimulatedLogo)
+                CircleAvatar(
+                  backgroundColor: accent.withValues(alpha: 0.18),
+                  foregroundColor: colors.onSurface,
+                  backgroundImage: controller.logoBytes == null
+                      ? null
+                      : MemoryImage(controller.logoBytes!),
+                  child: controller.logoBytes == null
+                      ? Text(_initials(controller.text(InstitutionFormField.publicName)))
+                      : null,
+                ),
+              if (controller.hasSimulatedLogo) const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (controller.hasSimulatedLogo)
-                      CircleAvatar(
-                        backgroundColor: accent.withValues(alpha: 0.18),
-                        foregroundColor: colors.onSurface,
-                        backgroundImage: controller.logoBytes == null
-                            ? null
-                            : MemoryImage(controller.logoBytes!),
-                        child: controller.logoBytes == null
-                            ? Text(_initials(controller.text(InstitutionFormField.publicName)))
-                            : null,
-                      ),
-                    if (controller.hasSimulatedLogo) const SizedBox(width: CoeloSpacing.space3),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            controller.text(InstitutionFormField.brandDisplayName).isEmpty
-                                ? controller.text(InstitutionFormField.publicName)
-                                : controller.text(InstitutionFormField.brandDisplayName),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const Text('Prévia institucional do Coelo'),
-                        ],
-                      ),
+                    Text(
+                      controller.text(InstitutionFormField.brandDisplayName).isEmpty
+                          ? controller.text(InstitutionFormField.publicName)
+                          : controller.text(InstitutionFormField.brandDisplayName),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    _ColorSwatch(color: accent, label: 'Destaque'),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    _ColorSwatch(color: secondary, label: 'Secundária'),
+                    const Text('Prévia institucional do Coelo'),
                   ],
                 ),
-              ],
-            ),
+              ),
+              _ColorSwatch(color: accent, label: 'Destaque'),
+              const SizedBox(width: CoeloSpacing.space2),
+              _ColorSwatch(color: secondary, label: 'Secundária'),
+            ],
           ),
         ],
       ),
@@ -1212,11 +1427,11 @@ final class _ColorSwatch extends StatelessWidget {
 final class _BioField extends StatelessWidget {
   const _BioField({required this.controller});
 
+  static const emojis = ['😊', '🌱', '💛', '📚', '✨', '🤝'];
   final InstitutionFormController controller;
 
   @override
   Widget build(BuildContext context) {
-    final value = controller.controllerOf(InstitutionFormField.profileBio).text;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1227,10 +1442,31 @@ final class _BioField extends StatelessWidget {
           maxLines: 4,
           hint: 'Conte brevemente o propósito da instituição.',
         ),
-        const SizedBox(height: CoeloSpacing.space1),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text('${value.length}/220', style: Theme.of(context).textTheme.bodySmall),
+        const SizedBox(height: CoeloSpacing.space2),
+        Row(
+          children: [
+            Expanded(
+              child: Wrap(
+                key: const Key('institution-bio-emoji-palette'),
+                spacing: CoeloSpacing.space1,
+                runSpacing: CoeloSpacing.space1,
+                children: [
+                  for (var index = 0; index < emojis.length; index++)
+                    IconButton(
+                      key: Key('institution-bio-emoji-$index'),
+                      tooltip: 'Inserir ${emojis[index]}',
+                      onPressed: () => controller.insertProfileBioEmoji(emojis[index]),
+                      icon: Text(emojis[index]),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: CoeloSpacing.space2),
+            Text(
+              '${controller.profileBioLength}/220',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
         ),
       ],
     );
@@ -1541,11 +1777,19 @@ final class _ColorPickerDialogState extends State<_ColorPickerDialog> {
   @override
   Widget build(BuildContext context) {
     final selected = color.toColor();
-    return AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      title: Text(widget.title),
-      content: SizedBox(
+    return CoeloAdminDialogShell(
+      dialogKey: Key('${widget.keyPrefix}-color-dialog'),
+      title: widget.title,
+      maxWidth: 680,
+      secondaryAction: OutlinedButton(
+        onPressed: Navigator.of(context).pop,
+        child: const Text('Cancelar'),
+      ),
+      primaryAction: FilledButton(
+        onPressed: () => Navigator.of(context).pop(selected),
+        child: const Text('Usar cor'),
+      ),
+      body: SizedBox(
         width: 620,
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -1591,13 +1835,6 @@ final class _ColorPickerDialogState extends State<_ColorPickerDialog> {
           },
         ),
       ),
-      actions: [
-        OutlinedButton(onPressed: Navigator.of(context).pop, child: const Text('Cancelar')),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(selected),
-          child: const Text('Usar cor'),
-        ),
-      ],
     );
   }
 }
@@ -2201,7 +2438,8 @@ IconData _iconFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.textColor ||
   InstitutionFormField.secondaryTextColor ||
   InstitutionFormField.tertiaryTextColor ||
-  InstitutionFormField.surfaceColor => Icons.palette_outlined,
+  InstitutionFormField.surfaceColor ||
+  InstitutionFormField.secondarySurfaceColor => Icons.palette_outlined,
 };
 
 Widget _dropdown<T>({

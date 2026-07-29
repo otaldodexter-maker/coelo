@@ -75,7 +75,9 @@ void main() {
     expect(field.controller!.text, 'Instituto Aurora');
   });
 
-  testWidgets('offers cover, complete palette, bio, and three custom links', (tester) async {
+  testWidgets('puts preview first, groups the complete palette, and offers emoji bio', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -89,20 +91,37 @@ void main() {
       ),
     );
 
+    expect(
+      tester.getTopLeft(find.byKey(const Key('institution-brand-preview'))).dy,
+      lessThan(tester.getTopLeft(find.byKey(const Key('institution-logo-picker'))).dy),
+    );
     expect(find.byKey(const Key('institution-cover-picker')), findsOneWidget);
+    expect(find.text('Cores de superfície'), findsOneWidget);
+    expect(find.text('Cores da marca'), findsOneWidget);
+    expect(find.text('Cores de texto'), findsOneWidget);
+    expect(find.text('Cor principal da superfície'), findsOneWidget);
+    expect(find.text('Cor secundária da superfície'), findsOneWidget);
+    expect(find.byKey(const Key('institution-field-secondarySurfaceColor')), findsOneWidget);
     expect(find.text('Cor principal da marca'), findsOneWidget);
     expect(find.text('Cor secundária da marca'), findsOneWidget);
     expect(find.text('Cor terciária da marca'), findsOneWidget);
     expect(find.text('Cor principal do texto'), findsOneWidget);
     expect(find.text('Cor secundária do texto'), findsOneWidget);
     expect(find.text('Cor terciária do texto'), findsOneWidget);
-    expect(find.text('Cor de superfície'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-field-profileBio')), findsOneWidget);
     expect(find.text('0/220'), findsOneWidget);
+    expect(find.byKey(const Key('institution-bio-emoji-palette')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('institution-field-profileBio')), 'Olá mundo');
+    final bio = tester.widget<TextFormField>(find.byKey(const Key('institution-field-profileBio')));
+    bio.controller!.selection = const TextSelection.collapsed(offset: 4);
+    await tester.tap(find.byKey(const Key('institution-bio-emoji-0')));
+    await tester.pump();
+    expect(bio.controller!.text, 'Olá 😊mundo');
+    expect(find.text('10/220'), findsOneWidget);
     for (var index = 1; index <= 3; index++) {
       expect(find.byKey(Key('institution-field-link${index}Label')), findsOneWidget);
       expect(find.byKey(Key('institution-field-link${index}Url')), findsOneWidget);
@@ -624,7 +643,7 @@ void main() {
     expect(repository.findById('demo-institution-aurora')!.postalCode, isNot('123'));
   });
 
-  testWidgets('edit mode saves locally on the current step and remains there', (tester) async {
+  testWidgets('legacy edit cannot save until it has an administrator', (tester) async {
     final repository = FakeInstitutionDirectoryRepository();
     var savedCallbackCalls = 0;
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -648,8 +667,18 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-form-save-current')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('institution-field-brandDisplayName')), findsOneWidget);
+    expect(find.text('Administradores'), findsWidgets);
+    expect(
+      repository.findById('demo-institution-aurora')!.brandDisplayName,
+      isNot('Aurora atualizado'),
+    );
+    await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    await tester.pumpAndSettle();
+
     expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
+    expect(repository.findById('demo-institution-aurora')!.administrators, hasLength(1));
     expect(savedCallbackCalls, 0);
     await tester.tap(find.byKey(const Key('institution-form-cancel')));
     await tester.pumpAndSettle();
@@ -704,7 +733,15 @@ void main() {
 
   testWidgets('trial dates are suggested and calendar uses pt-BR Coelo surface', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1100));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view
+      ..physicalSize = const Size(1440, 1100)
+      ..devicePixelRatio = 1;
+    addTearDown(() {
+      tester.binding.setSurfaceSize(null);
+      tester.view
+        ..resetPhysicalSize()
+        ..resetDevicePixelRatio();
+    });
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -729,9 +766,19 @@ void main() {
           )
           .first,
     );
-    await tester.tap(find.text('Rascunho'));
+    await tester.tap(find.byKey(const Key('institution-subscription-status-select')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Período de teste'));
+    final trialOption = find.widgetWithText(MenuItemButton, 'Período de teste');
+    expect(MenuController.maybeOf(tester.element(trialOption))?.isOpen, isTrue);
+    final subscriptionTrigger = find.descendant(
+      of: find.byKey(const Key('institution-subscription-status-select')),
+      matching: find.byType(InputDecorator),
+    );
+    expect(
+      tester.getTopLeft(trialOption).dy,
+      greaterThan(tester.getBottomLeft(subscriptionTrigger).dy),
+    );
+    await tester.tap(trialOption);
     await tester.pumpAndSettle();
 
     final now = DateTime.now();
@@ -769,9 +816,10 @@ void main() {
     await tester.tap(colorPicker);
     await tester.pumpAndSettle();
 
-    final dialog = tester.widget<AlertDialog>(find.byType(AlertDialog));
+    final dialog = tester.widget<Dialog>(find.byKey(const Key('institution-color-dialog')));
     expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
     expect(dialog.surfaceTintColor, Colors.transparent);
+    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
     expect(find.byKey(const Key('institution-color-area')), findsOneWidget);
     expect(find.byKey(const Key('institution-color-hex')), findsOneWidget);
     expect(find.text('H'), findsOneWidget);
@@ -780,6 +828,10 @@ void main() {
     expect(find.text('R'), findsOneWidget);
     expect(find.text('G'), findsOneWidget);
     expect(find.text('B'), findsOneWidget);
+    expect(
+      tester.getSize(find.widgetWithText(OutlinedButton, 'Cancelar')).width,
+      tester.getSize(find.widgetWithText(FilledButton, 'Usar cor')).width,
+    );
   });
 
   testWidgets('location offers CEP lookup and representatives use a neutral surface', (
@@ -803,10 +855,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byTooltip('Buscar CEP'), findsOneWidget);
 
-    for (var step = 0; step < 3; step++) {
-      await tester.tap(find.byKey(const Key('institution-form-continue')));
-      await tester.pumpAndSettle();
-    }
+    await tester.tap(find.text('Representantes legais'));
+    await tester.pumpAndSettle();
     final representativeCard = tester.widget<Card>(
       find.descendant(
         of: find.byKey(const Key('institution-legal-representative-representative-legacy')),
@@ -851,15 +901,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Admin Master'), findsOneWidget);
     expect(find.textContaining('Não enviado'), findsOneWidget);
+    expect(find.text('@rafael-coelho'), findsOneWidget);
+    expect(_byKeyPrefix('institution-sync-representative-to-admin-'), findsOneWidget);
+    expect(_byKeyPrefix('institution-sync-admin-to-representative-'), findsOneWidget);
+    expect(
+      tester.getSize(_byKeyPrefix('institution-invitation-icon-box-')),
+      const Size.square(CoeloSize.iconMd),
+    );
 
-    await tester.tap(find.byKey(const Key('institution-send-invitation-administrator-1')));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Enviar convite'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Enviado'), findsWidgets);
     expect(find.textContaining('Enviado em '), findsOneWidget);
-    expect(find.byKey(const Key('institution-accept-invitation-administrator-1')), findsOneWidget);
-    expect(find.byKey(const Key('institution-expire-invitation-administrator-1')), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Marcar como aceito'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Marcar como expirado'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('institution-accept-invitation-administrator-1')));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Marcar como aceito'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Aceito'), findsWidgets);
     expect(find.textContaining('Aceito em '), findsOneWidget);
@@ -868,6 +925,98 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Rafael Coelho — representante legal'), findsOneWidget);
     expect(find.textContaining('Rafael Coelho — Admin Master · Aceito'), findsOneWidget);
+  });
+
+  testWidgets('invite without email opens the editor focused and sends after valid save', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Administradores'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-add-administrator')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('institution-person-first-name')), 'Ana');
+    await tester.enterText(find.byKey(const Key('institution-person-last-name')), 'Souza');
+    await tester.enterText(find.byKey(const Key('institution-person-display-name')), 'Ana Souza');
+    await tester.tap(find.byKey(const Key('institution-person-dialog-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('@ana-souza'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget.key is ValueKey<String> &&
+            (widget.key! as ValueKey<String>).value.startsWith('institution-administrator-avatar-'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Enviar convite'));
+    await tester.pumpAndSettle();
+
+    final emailField = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('institution-person-email')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(emailField.focusNode.hasFocus, isTrue);
+    await tester.tap(find.byKey(const Key('institution-person-dialog-save')));
+    await tester.pump();
+    expect(find.text('Informe um e-mail para enviar o convite.'), findsOneWidget);
+    expect(find.byKey(const Key('institution-person-email')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('institution-person-email')), 'ana@example.com');
+    await tester.tap(find.byKey(const Key('institution-person-dialog-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Enviado'), findsWidgets);
+    expect(find.textContaining('Enviado em '), findsOneWidget);
+  });
+
+  testWidgets('blocks removing the last person in either required role', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Representantes legais'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Remover Rafael Coelho'));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('Adicione outro representante legal'), findsOneWidget);
+    expect(find.text('Rafael Coelho'), findsOneWidget);
+    ScaffoldMessenger.of(tester.element(find.text('Representantes legais').last)).clearSnackBars();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Administradores'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Remover Rafael Coelho'));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('Adicione outro administrador'), findsOneWidget);
+    expect(find.text('@rafael-coelho'), findsOneWidget);
   });
 
   testWidgets('person dialog reveals required errors after submit attempt', (tester) async {
@@ -894,7 +1043,10 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-person-dialog-save')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Campo obrigatório.'), findsNWidgets(5));
+    expect(find.text('Preencha este campo.'), findsNWidgets(3));
+    expect(find.text('E-mail (opcional)'), findsOneWidget);
+    expect(find.text('Telefone (opcional)'), findsOneWidget);
+    expect(find.text('CPF (opcional)'), findsOneWidget);
     expect(
       tester.getSize(find.widgetWithText(FilledButton, 'Salvar pessoa')).width,
       tester.getSize(find.widgetWithText(OutlinedButton, 'Cancelar')).width,
@@ -1215,3 +1367,8 @@ CoeloAdminSingleSelectField<String> _municipalitySelect(WidgetTester tester) =>
 
 String _dateLabel(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+
+Finder _byKeyPrefix(String prefix) => find.byWidgetPredicate(
+  (widget) =>
+      widget.key is ValueKey<String> && (widget.key! as ValueKey<String>).value.startsWith(prefix),
+);

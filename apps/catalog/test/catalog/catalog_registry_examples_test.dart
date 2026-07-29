@@ -8,6 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('registers the administrative dialog shell as an implemented component', () {
+    final registry = buildCatalogRegistry();
+
+    expect(registry, contains('admin.dialog-shell'));
+  });
+
   testWidgets('builds every implemented index component from the real package registry', (
     tester,
   ) async {

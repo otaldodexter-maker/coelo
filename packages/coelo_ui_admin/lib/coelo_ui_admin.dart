@@ -7,6 +7,7 @@ export 'src/listing/coelo_admin_create_action.dart';
 export 'src/listing/coelo_admin_file_actions.dart';
 export 'src/listing/coelo_admin_listing_toolbar.dart';
 export 'src/listing/coelo_admin_pagination.dart';
+export 'src/overlay/coelo_admin_dialog_shell.dart';
 export 'src/kanban/coelo_admin_kanban_board.dart';
 export 'src/kanban/coelo_admin_work_item_card.dart';
 export 'src/people/coelo_admin_assignee_stack.dart';

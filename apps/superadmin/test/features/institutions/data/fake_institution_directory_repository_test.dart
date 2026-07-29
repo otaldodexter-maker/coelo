@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_people.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -35,6 +36,31 @@ void main() {
     );
     final page = await repository.fetchPage(InstitutionDirectoryQuery(search: 'Aurora Atualizado'));
     expect(page.items.single.id, 'demo-institution-aurora');
+  });
+
+  test('reserves institution and administrator handles globally, except one institution', () {
+    final aurora = demoInstitutionRecords.first.copyWith(
+      administrators: const [
+        InstitutionAdministratorDraft(
+          id: 'administrator-ana',
+          person: InstitutionPersonDraft(
+            firstName: 'Ana',
+            lastName: 'Souza',
+            displayName: 'Ana Souza',
+          ),
+          handle: '@Ana-Souza',
+          level: InstitutionAdministratorLevel.adminMaster,
+          invitationStatus: InstitutionInvitationStatus.accepted,
+          invitationHistory: [],
+        ),
+      ],
+    );
+    final repository = FakeInstitutionDirectoryRepository(
+      records: [aurora, demoInstitutionRecords[1]],
+    );
+
+    expect(repository.reservedHandles(), {'@aurora', '@ana-souza', '@horizonte'});
+    expect(repository.reservedHandles(excludingInstitutionId: aurora.id), {'@horizonte'});
   });
 
   test('searches public, trade, and legal names but never the domain', () async {

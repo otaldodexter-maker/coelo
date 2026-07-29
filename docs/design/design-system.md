@@ -500,14 +500,17 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   `outlineVariant` e `surface`. Em compact, a ação primária ocupa a
   largura e precede cancelar/anterior; em medium ou maior, cancelar fica à
   esquerda e navegação/continuidade à direita.
-- Confirmação binária simétrica, como sair sem salvar versus continuar
-  editando, divide a largura útil igualmente entre as duas ações, com
-  `spacing.3` entre elas.
+- Diálogo administrativo usa `CoeloAdminDialogShell`, derivado do popup de bug,
+  com cabeçalho dividido, fechar acessível, corpo rolável e rodapé persistente.
+  Uma ação ocupa toda a largura útil; duas ações dividem a largura igualmente,
+  com `spacing.3` entre elas.
 - Single-select administrativo usa `CoeloAdminSingleSelectField`: opções
   contínuas de pelo menos 48 px, superfície neutra, e
   `primaryContainer`/`primary` para seleção, hover e foco. Não usar o menu
   cinza nativo como composição final. O painel acompanha exatamente a largura
-  do campo e não usa check ou checkbox.
+  do campo, abre `spacing.1` abaixo, mostra no máximo seis opções e reduz a
+  altura para caber abaixo do gatilho. Busca permanece fixa e somente a lista
+  rola; não usar check ou checkbox.
 - Popup, dialog, menu e overlay usam `color.surface` sem tint. Laranja aparece
   em ação, foco, seleção ou aviso contextual, nunca como fundo-base da
   superfície. O popup de bug, o submenu do sino e a importação de arquivo são
@@ -523,6 +526,9 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   bidimensional de saturação/valor com controle de matiz, amostras atual e
   nova e edição HSV e RGB. A amostra nunca substitui o valor textual, para
   manter precisão e acessibilidade.
+- A identidade institucional apresenta primeiro sua prévia compacta e separa
+  cores de superfície, marca e texto. Bio limitada conta grafemas e pode
+  oferecer uma paleta compacta de emojis sem substituir o teclado nativo.
 - Ícones de campo representam o significado específico, evitando repetir um
   símbolo genérico em todo o grupo. Ação contextual que opera sobre o valor,
   como `Buscar CEP`, fica no próprio campo com tooltip, semântica e alvo mínimo.

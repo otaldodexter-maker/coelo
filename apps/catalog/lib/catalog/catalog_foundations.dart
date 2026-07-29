@@ -27,7 +27,11 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
     ),
     'pattern.form-controls': CatalogFoundation(
       id: 'pattern.form-controls',
-      referencedComponentIds: const ['core.form-text-field', 'core.search-field'],
+      referencedComponentIds: const [
+        'core.form-text-field',
+        'core.search-field',
+        'admin.dialog-shell',
+      ],
       builder: (_) => const _FormControlsFoundation(),
     ),
     'pattern.selection-controls': CatalogFoundation(

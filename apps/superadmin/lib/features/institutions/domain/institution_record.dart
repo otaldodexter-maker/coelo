@@ -1,4 +1,5 @@
 import 'institution_directory_item.dart';
+import 'institution_people.dart';
 import '../../units/domain/unit_status.dart';
 
 enum InstitutionSubscriptionStatus {
@@ -197,10 +198,13 @@ final class InstitutionRecord {
     this.secondaryTextColor = '#3F4549',
     this.tertiaryTextColor = '#3F4549',
     this.surfaceColor = '#FFFFFF',
+    this.secondarySurfaceColor = '#F4F5F5',
     this.profileBio = '',
     this.profileLinks = const [],
     this.websiteUrl = '',
     this.whatsappNumber = '',
+    this.legalRepresentatives = const [],
+    this.administrators = const [],
   });
 
   factory InstitutionRecord.fromDirectoryItem(InstitutionDirectoryItem item) {
@@ -307,10 +311,13 @@ final class InstitutionRecord {
   final String secondaryTextColor;
   final String tertiaryTextColor;
   final String surfaceColor;
+  final String secondarySurfaceColor;
   final String profileBio;
   final List<InstitutionProfileLink> profileLinks;
   final String websiteUrl;
   final String whatsappNumber;
+  final List<InstitutionLegalRepresentative> legalRepresentatives;
+  final List<InstitutionAdministratorDraft> administrators;
 
   InstitutionDirectoryItem get directoryItem => InstitutionDirectoryItem(
     id: id,
@@ -384,10 +391,13 @@ final class InstitutionRecord {
     String? secondaryTextColor,
     String? tertiaryTextColor,
     String? surfaceColor,
+    String? secondarySurfaceColor,
     String? profileBio,
     List<InstitutionProfileLink>? profileLinks,
     String? websiteUrl,
     String? whatsappNumber,
+    List<InstitutionLegalRepresentative>? legalRepresentatives,
+    List<InstitutionAdministratorDraft>? administrators,
   }) {
     return InstitutionRecord(
       id: id ?? this.id,
@@ -435,10 +445,13 @@ final class InstitutionRecord {
       secondaryTextColor: secondaryTextColor ?? this.secondaryTextColor,
       tertiaryTextColor: tertiaryTextColor ?? this.tertiaryTextColor,
       surfaceColor: surfaceColor ?? this.surfaceColor,
+      secondarySurfaceColor: secondarySurfaceColor ?? this.secondarySurfaceColor,
       profileBio: profileBio ?? this.profileBio,
       profileLinks: profileLinks ?? this.profileLinks,
       websiteUrl: websiteUrl ?? this.websiteUrl,
       whatsappNumber: whatsappNumber ?? this.whatsappNumber,
+      legalRepresentatives: legalRepresentatives ?? this.legalRepresentatives,
+      administrators: administrators ?? this.administrators,
     );
   }
 }

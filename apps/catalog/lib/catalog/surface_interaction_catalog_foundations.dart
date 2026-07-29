@@ -9,7 +9,7 @@ Map<String, CatalogFoundation> buildSurfaceInteractionFoundationRegistry() {
   return {
     'pattern.overlay-surfaces': CatalogFoundation(
       id: 'pattern.overlay-surfaces',
-      referencedComponentIds: const ['admin.multi-select-filter'],
+      referencedComponentIds: const ['admin.dialog-shell', 'admin.multi-select-filter'],
       builder: (_) => const _OverlaySurfacesFoundation(),
     ),
     'pattern.interaction-states': CatalogFoundation(
@@ -50,53 +50,16 @@ final class _OverlaySurfacesFoundation extends StatelessWidget {
     showDialog<void>(
       context: context,
       barrierColor: Colors.black54,
-      builder: (context) {
-        final colors = Theme.of(context).colorScheme;
-        return Dialog(
-          backgroundColor: colors.surface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
-          child: Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text('Popup Coelo', style: Theme.of(context).textTheme.titleLarge),
-                    ),
-                    IconButton(
-                      key: const Key('surface-interaction-close'),
-                      tooltip: 'Fechar demonstração',
-                      constraints: const BoxConstraints.tightFor(
-                        width: CoeloSize.touchMin,
-                        height: CoeloSize.touchMin,
-                      ),
-                      style: ButtonStyle(
-                        foregroundColor: WidgetStatePropertyAll(colors.error),
-                        backgroundColor: WidgetStateProperty.resolveWith((states) {
-                          if (states.contains(WidgetState.hovered) ||
-                              states.contains(WidgetState.focused)) {
-                            return colors.errorContainer;
-                          }
-                          return Colors.transparent;
-                        }),
-                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                        shape: const WidgetStatePropertyAll(CircleBorder()),
-                      ),
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close_rounded),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: CoeloSpacing.space3),
-                const Text('O conteúdo contextual permanece legível nos temas claro e escuro.'),
-              ],
-            ),
-          ),
-        );
-      },
+      builder: (context) => CoeloAdminDialogShell(
+        title: 'Popup Coelo',
+        closeTooltip: 'Fechar demonstração',
+        closeButtonKey: const Key('surface-interaction-close'),
+        body: const Text('O conteúdo contextual permanece legível nos temas claro e escuro.'),
+        primaryAction: FilledButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Entendi'),
+        ),
+      ),
     );
   }
 }

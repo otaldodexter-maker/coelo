@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/view_models/institution_form_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -26,7 +29,7 @@ void main() {
     expect(controller.plan, record.plan);
   });
 
-  test('create requires a legal representative while edit accepts none', () {
+  test('create and edit require at least one representative and administrator', () {
     final createController = InstitutionFormController()
       ..selectStep(InstitutionFormStep.legalRepresentatives);
     final editController = InstitutionFormController(
@@ -38,8 +41,15 @@ void main() {
     expect(createController.validateCurrentStep(), isFalse);
     expect(createController.legalRepresentativesError, isNotNull);
 
-    editController.removeLegalRepresentative(editController.legalRepresentatives.single.id);
-    expect(editController.validateCurrentStep(), isTrue);
+    expect(
+      editController.removeLegalRepresentative(editController.legalRepresentatives.single.id),
+      isFalse,
+    );
+    expect(editController.legalRepresentatives, hasLength(1));
+
+    editController.selectStep(InstitutionFormStep.administrators);
+    expect(editController.validateCurrentStep(), isFalse);
+    expect(editController.administratorsError, isNotNull);
   });
 
   test('legal representatives can be added, edited and removed independently', () {
@@ -123,19 +133,16 @@ void main() {
     );
   });
 
-  test('removing every representative clears the legacy owner on edit save', () {
+  test('the last representative cannot be removed', () {
     final record = FakeInstitutionDirectoryRepository().records.first;
     final controller = InstitutionFormController(record: record);
     addTearDown(controller.dispose);
 
-    controller.removeLegalRepresentative(controller.legalRepresentatives.single.id);
-    final saved = controller.toRecord(id: record.id);
-
-    expect(saved.ownerFirstName, isEmpty);
-    expect(saved.ownerLastName, isEmpty);
-    expect(saved.ownerDisplayName, isEmpty);
-    expect(saved.ownerEmail, isEmpty);
-    expect(saved.ownerMobilePhone, isEmpty);
+    expect(
+      controller.removeLegalRepresentative(controller.legalRepresentatives.single.id),
+      isFalse,
+    );
+    expect(controller.peopleRuleMessage, contains('outro representante'));
   });
 
   test('accepted and expired invitation transitions append timestamped history', () {
@@ -186,7 +193,7 @@ void main() {
     );
   });
 
-  test('derived admin follows representative edits and removal', () {
+  test('derived admin remains independent and synchronizes only on request', () {
     final controller = InstitutionFormController();
     addTearDown(controller.dispose);
     controller.addLegalRepresentative(
@@ -205,10 +212,202 @@ void main() {
       representative.id,
       representative.person.copyWith(displayName: 'Ana S.'),
     );
+    expect(controller.administrators.single.person.displayName, 'Ana Souza');
+
+    final administrator = controller.administrators.single;
+    controller.syncRepresentativeToAdministrator(administrator.id);
     expect(controller.administrators.single.person.displayName, 'Ana S.');
 
-    controller.removeLegalRepresentative(representative.id);
-    expect(controller.administrators, isEmpty);
+    controller.updateAdministrator(
+      administrator.id,
+      person: administrator.person.copyWith(displayName: 'Ana Admin'),
+      level: administrator.level,
+    );
+    expect(controller.legalRepresentatives.single.person.displayName, 'Ana S.');
+
+    controller.syncAdministratorToRepresentative(administrator.id);
+    expect(controller.legalRepresentatives.single.person.displayName, 'Ana Admin');
+  });
+
+  test('optional contact fields validate only when filled and CPF is formatted', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    const minimal = InstitutionPersonDraft(
+      firstName: 'Ana',
+      lastName: 'Souza',
+      displayName: 'Ana Souza',
+      email: '',
+      mobilePhone: '',
+    );
+
+    expect(controller.isPersonValid(minimal), isTrue);
+    expect(
+      controller.personError(minimal.copyWith(email: 'invalido'), InstitutionPersonField.email),
+      isNotNull,
+    );
+    expect(
+      controller.personError(
+        minimal.copyWith(mobilePhone: '123'),
+        InstitutionPersonField.mobilePhone,
+      ),
+      isNotNull,
+    );
+    expect(controller.formatCpf('52998224725'), '529.982.247-25');
+    expect(
+      controller.personError(minimal.copyWith(cpf: '111.111.111-11'), InstitutionPersonField.cpf),
+      isNotNull,
+    );
+  });
+
+  test('administrator handles are unique, accentless and stable after edits', () {
+    final controller = InstitutionFormController(reservedHandles: const {'@ana-souza'});
+    addTearDown(controller.dispose);
+    const person = InstitutionPersonDraft(
+      firstName: 'Ana',
+      lastName: 'Souza',
+      displayName: 'Ána Souza',
+      email: '',
+      mobilePhone: '',
+    );
+
+    controller
+      ..addAdministrator(person, level: InstitutionAdministratorLevel.authorizedAdministrator)
+      ..addAdministrator(person, level: InstitutionAdministratorLevel.coordinator);
+
+    expect(controller.administrators.map((administrator) => administrator.handle), [
+      '@ana-souza-2',
+      '@ana-souza-3',
+    ]);
+    final first = controller.administrators.first;
+    controller.updateAdministrator(
+      first.id,
+      person: first.person.copyWith(displayName: 'Outro nome'),
+      level: first.level,
+    );
+    expect(controller.administrators.first.handle, '@ana-souza-2');
+
+    final ownSlugController = InstitutionFormController();
+    addTearDown(ownSlugController.dispose);
+    ownSlugController
+      ..setText(InstitutionFormField.slug, 'ana-souza')
+      ..addAdministrator(person, level: InstitutionAdministratorLevel.authorizedAdministrator);
+    expect(ownSlugController.administrators.single.handle, '@ana-souza-2');
+
+    ownSlugController.setText(InstitutionFormField.slug, 'ana-souza-2');
+    ownSlugController.validateCurrentStep();
+    expect(ownSlugController.errorFor(InstitutionFormField.slug), 'Este @ já está em uso.');
+  });
+
+  test('role removal detaches the link without deleting the other role', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    const ana = InstitutionPersonDraft(
+      firstName: 'Ana',
+      lastName: 'Souza',
+      displayName: 'Ana Souza',
+      email: '',
+      mobilePhone: '',
+    );
+    const bia = InstitutionPersonDraft(
+      firstName: 'Bia',
+      lastName: 'Nunes',
+      displayName: 'Bia Nunes',
+      email: '',
+      mobilePhone: '',
+    );
+    controller
+      ..addLegalRepresentative(ana)
+      ..addLegalRepresentative(bia);
+    final anaId = controller.legalRepresentatives.first.id;
+    controller.confirmRepresentativeAdministrators({anaId});
+    controller.addAdministrator(bia, level: InstitutionAdministratorLevel.coordinator);
+
+    expect(controller.removeLegalRepresentative(anaId), isTrue);
+    expect(controller.administrators, hasLength(2));
+    expect(controller.administrators.first.sourceRepresentativeId, isNull);
+  });
+
+  test('invite without email requests editing and valid save sends immediately', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.addAdministrator(
+      const InstitutionPersonDraft(
+        firstName: 'Ana',
+        lastName: 'Souza',
+        displayName: 'Ana Souza',
+        email: '',
+        mobilePhone: '',
+      ),
+      level: InstitutionAdministratorLevel.adminMaster,
+    );
+    final administrator = controller.administrators.single;
+
+    expect(controller.sendAdministratorInvitation(administrator.id), isFalse);
+    expect(controller.administratorNeedingEmailId, administrator.id);
+
+    controller.updateAdministrator(
+      administrator.id,
+      person: administrator.person,
+      level: administrator.level,
+      sendInvitationAfterSave: true,
+    );
+    expect(controller.administrators.single.invitationStatus, InstitutionInvitationStatus.notSent);
+    expect(controller.administratorNeedingEmailId, administrator.id);
+
+    controller.updateAdministrator(
+      administrator.id,
+      person: administrator.person.copyWith(email: 'ana@example.com'),
+      level: administrator.level,
+      sendInvitationAfterSave: true,
+    );
+    expect(controller.administrators.single.invitationStatus, InstitutionInvitationStatus.sent);
+    expect(controller.administratorNeedingEmailId, isNull);
+  });
+
+  test('people lists and secondary surface persist in the in-memory record', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    const person = InstitutionPersonDraft(
+      firstName: 'Ana',
+      lastName: 'Souza',
+      displayName: 'Ana Souza',
+      email: '',
+      mobilePhone: '',
+    );
+    controller
+      ..addLegalRepresentative(person)
+      ..addAdministrator(person, level: InstitutionAdministratorLevel.adminMaster)
+      ..setText(InstitutionFormField.secondarySurfaceColor, '#F4F5F5');
+
+    final record = controller.toRecord(id: 'institution-local');
+    expect(record.legalRepresentatives, hasLength(1));
+    expect(record.administrators, hasLength(1));
+    expect(record.secondarySurfaceColor, '#F4F5F5');
+
+    final restored = InstitutionFormController(record: record);
+    addTearDown(restored.dispose);
+    expect(restored.legalRepresentatives, hasLength(1));
+    expect(restored.administrators, hasLength(1));
+    expect(restored.administrators.single.handle, controller.administrators.single.handle);
+  });
+
+  test('restored people ids continue after the greatest persisted suffix', () {
+    const person = InstitutionPersonDraft(
+      firstName: 'Ana',
+      lastName: 'Souza',
+      displayName: 'Ana Souza',
+    );
+    final record = FakeInstitutionDirectoryRepository().records.first.copyWith(
+      legalRepresentatives: const [
+        InstitutionLegalRepresentative(id: 'representative-7', person: person),
+      ],
+    );
+    final controller = InstitutionFormController(record: record);
+    addTearDown(controller.dispose);
+
+    controller.addLegalRepresentative(person);
+
+    expect(controller.legalRepresentatives.last.id, 'representative-8');
   });
 
   test('leaving an invalid step marks it with error without blocking navigation', () {
@@ -227,6 +426,7 @@ void main() {
     );
     addTearDown(controller.dispose);
 
+    controller.confirmRepresentativeAdministrators({controller.legalRepresentatives.single.id});
     controller
       ..setSubscriptionStatus(InstitutionSubscriptionStatus.trial)
       ..setTrialEnd(null)
@@ -292,6 +492,56 @@ void main() {
 
     controller.setText(InstitutionFormField.profileBio, '${exactlyAtLimit}b');
     expect(controller.text(InstitutionFormField.profileBio), exactlyAtLimit);
+  });
+
+  test('profile bio inserts an emoji at the cursor and counts graphemes', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.setText(InstitutionFormField.profileBio, 'Olá mundo');
+    controller.controllerOf(InstitutionFormField.profileBio).selection =
+        const TextSelection.collapsed(offset: 4);
+
+    controller.insertProfileBioEmoji('👨‍👩‍👧‍👦');
+
+    expect(controller.text(InstitutionFormField.profileBio), 'Olá 👨‍👩‍👧‍👦mundo');
+    expect(controller.profileBioLength, 10);
+    expect(
+      controller.controllerOf(InstitutionFormField.profileBio).selection.baseOffset,
+      4 + '👨‍👩‍👧‍👦'.length,
+    );
+  });
+
+  test('administrator avatar remains local and persists in the in-memory record', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.addAdministrator(
+      const InstitutionPersonDraft(firstName: 'Ana', lastName: 'Souza', displayName: 'Ana Souza'),
+      level: InstitutionAdministratorLevel.adminMaster,
+    );
+    final administrator = controller.administrators.single;
+
+    controller.setAdministratorAvatar(
+      administrator.id,
+      bytes: Uint8List.fromList(const [1, 2, 3]),
+      fileName: 'avatar.png',
+    );
+
+    final saved = controller.toRecord(id: 'institution-local');
+    expect(saved.administrators.single.avatarFileName, 'avatar.png');
+    expect(saved.administrators.single.avatarBytes, [1, 2, 3]);
+
+    final restored = InstitutionFormController(record: saved);
+    addTearDown(restored.dispose);
+    expect(restored.isDirty, isFalse);
+    restored.setAdministratorAvatar(
+      restored.administrators.single.id,
+      bytes: Uint8List.fromList(const [4, 5, 6]),
+      fileName: 'avatar.png',
+    );
+    expect(restored.isDirty, isTrue);
+
+    controller.removeAdministratorAvatar(administrator.id);
+    expect(controller.administrators.single.avatarBytes, isNull);
   });
 
   test('profile links require a complete pair and persist a valid URL', () {

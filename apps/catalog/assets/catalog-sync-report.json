@@ -7,7 +7,7 @@
       "example": "877182a0"
     },
     "core.form-text-field": {
-      "source": "fc09daa7",
+      "source": "dd5d3ee9",
       "example": "40be5032"
     },
     "core.status-chip": {
@@ -27,11 +27,11 @@
       "example": "42ee4890"
     },
     "admin.single-select-field": {
-      "source": "b18f70e5",
+      "source": "000b2f9c",
       "example": "d2d36330"
     },
     "admin.pagination": {
-      "source": "4733e35e",
+      "source": "16561a2e",
       "example": "98c3c2e2"
     },
     "admin.create-action": {
@@ -39,27 +39,27 @@
       "example": "6cfadc88"
     },
     "admin.file-actions": {
-      "source": "f9ead305",
+      "source": "b19a0ac0",
       "example": "1a9de0e2"
     },
     "admin.resizable-table": {
-      "source": "83456134",
+      "source": "66c8e87f",
       "example": "28c16c6f"
     },
     "admin.kanban-board": {
-      "source": "d8778fbf",
+      "source": "d2203df9",
       "example": "c8184dc9"
     },
     "admin.work-item-card": {
-      "source": "00e64596",
+      "source": "b7177345",
       "example": "4be821ae"
     },
     "admin.assignee-stack": {
-      "source": "9e95f129",
+      "source": "5730ecaf",
       "example": "3ca7b1d6"
     },
     "admin.workspace-layout": {
-      "source": "b1bf9b78",
+      "source": "36a8631a",
       "example": "6cb119f6"
     },
     "pattern.action-hierarchy": {
@@ -111,28 +111,32 @@
       "example": "d994ba96"
     },
     "core.chat-avatar": {
-      "source": "59ad7342",
+      "source": "aea84c7d",
       "example": "1bc8a0e6"
     },
     "core.conversation-tile": {
-      "source": "5c6057e3",
+      "source": "f05cdf0b",
       "example": "ba64d0cf"
     },
     "core.conversation-header": {
-      "source": "3d4ecad7",
+      "source": "cea055eb",
       "example": "ee715d65"
     },
     "core.message-bubble": {
-      "source": "eae407c5",
+      "source": "ab52b73c",
       "example": "c54c61a9"
     },
     "core.chat-composer": {
-      "source": "5e15d5b4",
+      "source": "c5885c3e",
       "example": "126598b5"
     },
     "admin.context-picker": {
-      "source": "6c80616b",
+      "source": "1593029d",
       "example": "387967e3"
+    },
+    "admin.dialog-shell": {
+      "source": "aeb59a19",
+      "example": "a8f0535c"
     },
     "pattern.chat-admin": {
       "source": "811c9dc5",

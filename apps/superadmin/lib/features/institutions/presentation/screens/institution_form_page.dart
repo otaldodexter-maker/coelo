@@ -52,7 +52,10 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
     final record = id == null ? null : widget.repository.findById(id);
     _missingInstitution = id != null && record == null;
     if (!_missingInstitution) {
-      _controller = InstitutionFormController(record: record);
+      _controller = InstitutionFormController(
+        record: record,
+        reservedHandles: widget.repository.reservedHandles(excludingInstitutionId: id),
+      );
     }
   }
 
@@ -75,7 +78,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   Future<void> _save() async {
     final controller = _controller!;
     final creating = widget.institutionId == null;
-    if (!(creating ? controller.validateAll() : controller.validateCurrentStep())) {
+    if (!(creating ? controller.validateAll() : controller.validateEditSave())) {
       return;
     }
     controller.setSaving(true);
