@@ -42,3 +42,8 @@ Task 3B Institution people workflow: complete (commits 360d764..2f75038, review 
 Task 3C Institution Supabase schema: complete (migrations 20260728172333 and 20260728203000 applied to project coelo; functional SQL passed with rollback, pgTAP 21/21 passed, RLS/cross-tenant checks passed, and the migration-related unindexed FK advisor finding was remediated).
 Task 4 Support corrections: complete (equivalent multi-assignees, in-progress guard, create actions in Kanban/table, neutral shared Kanban, explicit full-screen detail, enriched local history, sortable pagination 9/20/50/100, and page clamping after filtered mutations; focused tests and analysis passed).
 Task 5 Persistent menu and motion: complete (one protected shell host, short content fade, reduced-motion bypass, stable geometry, distinct parent/child hierarchy, Units active, Activities future destination, distinct communication icons, centralized Support/Catalog routing, and protected `/dev/support`; focused tests and analysis passed).
+
+# Institution Sticky Pagination
+
+Baseline: complete (commits 049be81..e0ce7a9, review approved; 37 Institution tests and 15 shared pagination tests passed).
+Task 1: complete (commits 2278d8d..722cf75, review approved; table uses 8 rows and cards preserve 11).
