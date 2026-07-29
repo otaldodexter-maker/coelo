@@ -185,6 +185,35 @@ void main() {
     }
   });
 
+  testWidgets('supports 200 percent text without page-size selector overflows', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final width in [375.0, 1024.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 600));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: const Scaffold(
+            body: CoeloAdminPagination(
+              currentPage: 1,
+              totalPages: 2,
+              onPrevious: null,
+              onNext: _noop,
+              pageSize: 11,
+              pageSizeOptions: [11, 20, 50, 100],
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull, reason: '200% text at $width px');
+    }
+  });
+
   testWidgets('uses the approved compact single-select surface', (tester) async {
     var selectedPageSize = 0;
     await tester.pumpWidget(
