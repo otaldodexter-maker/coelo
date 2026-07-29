@@ -3,6 +3,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../chat_controller.dart';
+import '../chat_fixtures.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_avatar.dart';
 import 'superadmin_chat_flow_dialog.dart';
@@ -15,6 +16,7 @@ final class SuperadminChatInbox extends StatefulWidget {
     required this.onCreateGroup,
     required this.onNewMessage,
     required this.onFilter,
+    this.options = superadminChatContextOptions,
     this.onCollapse,
     this.onBack,
     super.key,
@@ -25,6 +27,7 @@ final class SuperadminChatInbox extends StatefulWidget {
   final VoidCallback onCreateGroup;
   final VoidCallback onNewMessage;
   final VoidCallback onFilter;
+  final List<SuperadminChatContextOption> options;
   final VoidCallback? onCollapse;
   final VoidCallback? onBack;
 
@@ -186,8 +189,9 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                       pinned: true,
                       onOpen: () => widget.onOpenConversation(conversation.id),
                       onPin: () => controller.togglePinned(conversation.id),
-                      onCreateGroup: widget.onCreateGroup,
-                      canInviteToGroup: controller.groupConversations.isNotEmpty,
+                      onCreateGroup: () => _openCreateGroupWith(conversation),
+                      onInviteToGroup: () => _openInviteToGroup(conversation),
+                      canInviteToGroup: _canInvite(conversation),
                       flag: controller.flagFor(conversation.id),
                       onFlag: (flag) => controller.setFlag(conversation.id, flag),
                       onDelete: () => _confirmDelete(conversation),
@@ -202,8 +206,9 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                       pinned: false,
                       onOpen: () => widget.onOpenConversation(conversation.id),
                       onPin: () => controller.togglePinned(conversation.id),
-                      onCreateGroup: widget.onCreateGroup,
-                      canInviteToGroup: controller.groupConversations.isNotEmpty,
+                      onCreateGroup: () => _openCreateGroupWith(conversation),
+                      onInviteToGroup: () => _openInviteToGroup(conversation),
+                      canInviteToGroup: _canInvite(conversation),
                       flag: controller.flagFor(conversation.id),
                       onFlag: (flag) => controller.setFlag(conversation.id, flag),
                       onDelete: () => _confirmDelete(conversation),
@@ -217,8 +222,9 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                     pinned: false,
                     onOpen: () => widget.onOpenConversation(conversation.id),
                     onPin: () => controller.togglePinned(conversation.id),
-                    onCreateGroup: widget.onCreateGroup,
-                    canInviteToGroup: controller.groupConversations.isNotEmpty,
+                    onCreateGroup: () => _openCreateGroupWith(conversation),
+                    onInviteToGroup: () => _openInviteToGroup(conversation),
+                    canInviteToGroup: _canInvite(conversation),
                     flag: controller.flagFor(conversation.id),
                     onFlag: (flag) => controller.setFlag(conversation.id, flag),
                     onDelete: () => _confirmDelete(conversation),
@@ -239,12 +245,39 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
     );
   }
 
+  bool _canInvite(SuperadminChatConversation conversation) => widget.controller.conversations.any(
+    (item) => item.kind == ChatContextKind.conversationGroup && item.id != conversation.id,
+  );
+
+  Future<void> _openCreateGroupWith(SuperadminChatConversation conversation) {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => SuperadminChatCreateGroupDialog(
+        controller: widget.controller,
+        options: widget.options,
+        initialSelectedIds: {conversation.id},
+      ),
+    );
+  }
+
+  Future<void> _openInviteToGroup(SuperadminChatConversation conversation) {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => SuperadminChatInviteToGroupDialog(
+        controller: widget.controller,
+        conversation: conversation,
+      ),
+    );
+  }
+
   Future<void> _confirmDelete(SuperadminChatConversation conversation) async {
+    final isGroup = conversation.kind == ChatContextKind.conversationGroup;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => SuperadminChatDialogFrame(
-        title: 'Excluir grupo?',
+        title: isGroup ? 'Excluir grupo?' : 'Excluir conversa?',
         subtitle: 'Demonstração local',
+        compact: true,
         onClose: () => Navigator.pop(dialogContext, false),
         footer: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -255,7 +288,7 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                 backgroundColor: Theme.of(dialogContext).colorScheme.error,
                 foregroundColor: Theme.of(dialogContext).colorScheme.onError,
               ),
-              child: const Text('Excluir grupo'),
+              child: Text(isGroup ? 'Excluir grupo' : 'Excluir conversa'),
             ),
             const SizedBox(height: CoeloSpacing.space1),
             TextButton(
@@ -264,10 +297,19 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
             ),
           ],
         ),
-        child: const Text('O grupo será removido somente desta demonstração local.'),
+        child: Text(
+          isGroup
+              ? 'O grupo e todo o histórico desta demonstração serão excluídos. '
+                    'Esta ação não pode ser desfeita. Deseja continuar?'
+              : 'A conversa e todo o histórico desta demonstração serão excluídos. '
+                    'Esta ação não pode ser desfeita. Deseja continuar?',
+        ),
       ),
     );
-    if (confirmed == true) widget.controller.deleteGroup(conversation.id);
+    if (confirmed != true) return;
+    isGroup
+        ? widget.controller.deleteGroup(conversation.id)
+        : widget.controller.deleteConversation(conversation.id);
   }
 }
 
@@ -338,7 +380,7 @@ final class _SectionHeader extends StatelessWidget {
   }
 }
 
-final class _ConversationItem extends StatelessWidget {
+final class _ConversationItem extends StatefulWidget {
   const _ConversationItem({
     required this.conversation,
     required this.selected,
@@ -346,6 +388,7 @@ final class _ConversationItem extends StatelessWidget {
     required this.onOpen,
     required this.onPin,
     required this.onCreateGroup,
+    required this.onInviteToGroup,
     required this.canInviteToGroup,
     required this.flag,
     required this.onFlag,
@@ -358,111 +401,127 @@ final class _ConversationItem extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onPin;
   final VoidCallback onCreateGroup;
+  final VoidCallback onInviteToGroup;
   final bool canInviteToGroup;
   final ChatFlag flag;
   final ValueChanged<ChatFlag> onFlag;
   final VoidCallback onDelete;
 
   @override
+  State<_ConversationItem> createState() => _ConversationItemState();
+}
+
+final class _ConversationItemState extends State<_ConversationItem> {
+  var _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final conversation = widget.conversation;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: CoeloSpacing.space2,
         vertical: CoeloSpacing.space1,
       ),
-      child: Material(
-        color: selected ? colors.primaryContainer : Colors.transparent,
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          key: Key('superadmin-chat-conversation-${conversation.id}'),
-          onTap: onOpen,
-          hoverColor: colors.primaryContainer,
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-            child: Padding(
-              padding: const EdgeInsets.all(CoeloSpacing.space2),
-              child: Row(
-                children: [
-                  SuperadminChatAvatar(
-                    label: conversation.title,
-                    initials: conversation.initials,
-                    online: conversation.kind == ChatContextKind.person,
-                  ),
-                  const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                conversation.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                            ),
-                            Text(
-                              conversation.timestamp,
-                              style: Theme.of(context).textTheme.labelSmall,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space1),
-                        Text(
-                          conversation.preview,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                        ),
-                      ],
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: Material(
+          color: widget.selected || _hovered ? colors.primaryContainer : Colors.transparent,
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            key: Key('superadmin-chat-conversation-${conversation.id}'),
+            onTap: widget.onOpen,
+            hoverColor: Colors.transparent,
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+              child: Padding(
+                padding: const EdgeInsets.all(CoeloSpacing.space2),
+                child: Row(
+                  children: [
+                    SuperadminChatAvatar(
+                      label: conversation.title,
+                      initials: conversation.initials,
+                      online: conversation.kind == ChatContextKind.person,
                     ),
-                  ),
-                  if (conversation.unreadCount > 0)
-                    Badge(label: Text('${conversation.unreadCount}')),
-                  SuperadminChatActionMenu(
-                    tooltip: 'Ações de ${conversation.title}',
-                    actions: [
-                      SuperadminChatMenuAction(
-                        label: 'Criar grupo com…',
-                        icon: Icons.group_add_outlined,
-                        onPressed: onCreateGroup,
+                    const SizedBox(width: CoeloSpacing.space2),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  conversation.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                              ),
+                              Text(
+                                conversation.timestamp,
+                                style: Theme.of(context).textTheme.labelSmall,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: CoeloSpacing.space1),
+                          Text(
+                            conversation.preview,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                          ),
+                        ],
                       ),
-                      if (canInviteToGroup)
-                        SuperadminChatMenuAction(
-                          label: 'Convidar para grupo',
-                          icon: Icons.person_add_alt_1_outlined,
-                          onPressed: onCreateGroup,
-                        ),
-                      SuperadminChatMenuAction(
-                        label: pinned ? 'Desfixar' : 'Fixar',
-                        icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
-                        onPressed: onPin,
+                    ),
+                    if (conversation.unreadCount > 0)
+                      Badge(label: Text('${conversation.unreadCount}')),
+                    IconButton(
+                      key: Key('superadmin-chat-flag-${conversation.id}'),
+                      tooltip: 'Sinalizar ${conversation.title}',
+                      onPressed: () => widget.onFlag(_nextFlag(widget.flag)),
+                      color: _flagColor(colors, widget.flag),
+                      icon: Icon(
+                        widget.flag == ChatFlag.none ? Icons.flag_outlined : Icons.flag_rounded,
                       ),
-                      for (final option in ChatFlag.values)
+                    ),
+                    SuperadminChatActionMenu(
+                      tooltip: 'Ações de ${conversation.title}',
+                      actions: [
                         SuperadminChatMenuAction(
-                          key: Key('superadmin-chat-flag-${conversation.id}-${option.name}'),
-                          label: _flagLabel(option, selected: flag == option),
-                          icon: _flagIcon(option),
-                          onPressed: () => onFlag(option),
+                          label: 'Criar grupo com…',
+                          icon: Icons.group_add_outlined,
+                          onPressed: widget.onCreateGroup,
                         ),
-                      if (conversation.kind == ChatContextKind.conversationGroup)
+                        if (widget.canInviteToGroup)
+                          SuperadminChatMenuAction(
+                            label: 'Convidar para grupo',
+                            icon: Icons.person_add_alt_1_outlined,
+                            onPressed: widget.onInviteToGroup,
+                          ),
                         SuperadminChatMenuAction(
-                          label: 'Excluir grupo',
+                          label: widget.pinned ? 'Desfixar' : 'Fixar',
+                          icon: widget.pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
+                          onPressed: widget.onPin,
+                        ),
+                        SuperadminChatMenuAction(
+                          label: conversation.kind == ChatContextKind.conversationGroup
+                              ? 'Excluir grupo'
+                              : 'Excluir conversa',
                           icon: Icons.delete_outline_rounded,
                           destructive: true,
                           dividerBefore: true,
-                          onPressed: onDelete,
+                          onPressed: widget.onDelete,
                         ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -478,19 +537,16 @@ String _audienceLabel(ChatAudience audience) => switch (audience) {
   ChatAudience.people => 'Pessoas',
 };
 
-String _flagLabel(ChatFlag flag, {required bool selected}) {
-  final label = switch (flag) {
-    ChatFlag.none => 'Sem sinalização',
-    ChatFlag.red => 'Sinalizador vermelho',
-    ChatFlag.yellow => 'Sinalizador amarelo',
-    ChatFlag.green => 'Sinalizador verde',
-  };
-  return selected ? '$label (selecionado)' : label;
-}
+ChatFlag _nextFlag(ChatFlag flag) => switch (flag) {
+  ChatFlag.none => ChatFlag.red,
+  ChatFlag.red => ChatFlag.yellow,
+  ChatFlag.yellow => ChatFlag.green,
+  ChatFlag.green => ChatFlag.none,
+};
 
-IconData _flagIcon(ChatFlag flag) => switch (flag) {
-  ChatFlag.none => Icons.flag_outlined,
-  ChatFlag.red => Icons.flag_rounded,
-  ChatFlag.yellow => Icons.flag_rounded,
-  ChatFlag.green => Icons.flag_rounded,
+Color _flagColor(ColorScheme colors, ChatFlag flag) => switch (flag) {
+  ChatFlag.none => colors.onSurfaceVariant,
+  ChatFlag.red => colors.error,
+  ChatFlag.yellow => colors.tertiary,
+  ChatFlag.green => colors.secondary,
 };

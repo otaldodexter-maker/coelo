@@ -196,6 +196,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       onFilter: _openFilters,
       onCreateGroup: _openCreateGroupFlow,
       onNewMessage: _openRecipients,
+      options: widget.contextOptions,
       onOpenConversation: (id) {
         _controller.selectConversation(id);
         setState(() => _mobileThreadOpen = true);

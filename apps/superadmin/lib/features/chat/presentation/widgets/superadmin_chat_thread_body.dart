@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../chat_controller.dart';
+import '../chat_fixtures.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_avatar.dart';
 import 'superadmin_chat_composer.dart';
@@ -14,6 +15,7 @@ final class SuperadminChatThreadBody extends StatefulWidget {
     required this.controller,
     required this.conversation,
     required this.onOpenContext,
+    this.options = superadminChatContextOptions,
     this.onBack,
     this.compact = false,
     super.key,
@@ -22,6 +24,7 @@ final class SuperadminChatThreadBody extends StatefulWidget {
   final SuperadminChatController controller;
   final SuperadminChatConversation conversation;
   final VoidCallback onOpenContext;
+  final List<SuperadminChatContextOption> options;
   final VoidCallback? onBack;
   final bool compact;
 
@@ -62,6 +65,13 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
             onOpenContext: widget.onOpenContext,
             pinned: widget.controller.pinnedIds.contains(widget.conversation.id),
             onPin: () => widget.controller.togglePinned(widget.conversation.id),
+            onCreateGroup: _openCreateGroupWith,
+            onInviteToGroup: _openInviteToGroup,
+            canInviteToGroup: widget.controller.conversations.any(
+              (item) =>
+                  item.kind == ChatContextKind.conversationGroup &&
+                  item.id != widget.conversation.id,
+            ),
             onDelete: () => _confirmDelete(context),
           ),
           Expanded(
@@ -115,12 +125,35 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
     );
   }
 
+  Future<void> _openCreateGroupWith() {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => SuperadminChatCreateGroupDialog(
+        controller: widget.controller,
+        options: widget.options,
+        initialSelectedIds: {widget.conversation.id},
+      ),
+    );
+  }
+
+  Future<void> _openInviteToGroup() {
+    return showDialog<bool>(
+      context: context,
+      builder: (_) => SuperadminChatInviteToGroupDialog(
+        controller: widget.controller,
+        conversation: widget.conversation,
+      ),
+    );
+  }
+
   Future<void> _confirmDelete(BuildContext context) async {
+    final isGroup = widget.conversation.kind == ChatContextKind.conversationGroup;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => SuperadminChatDialogFrame(
-        title: 'Excluir conversa?',
+        title: isGroup ? 'Excluir grupo?' : 'Excluir conversa?',
         subtitle: 'Demonstração local',
+        compact: true,
         onClose: () => Navigator.pop(dialogContext, false),
         footer: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -131,7 +164,7 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
                 backgroundColor: Theme.of(dialogContext).colorScheme.error,
                 foregroundColor: Theme.of(dialogContext).colorScheme.onError,
               ),
-              child: const Text('Excluir conversa'),
+              child: Text(isGroup ? 'Excluir grupo' : 'Excluir conversa'),
             ),
             const SizedBox(height: CoeloSpacing.space1),
             TextButton(
@@ -140,11 +173,19 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
             ),
           ],
         ),
-        child: const Text('Esta ação afeta somente os dados simulados deste protótipo.'),
+        child: Text(
+          isGroup
+              ? 'O grupo e todo o histórico desta demonstração serão excluídos. '
+                    'Esta ação não pode ser desfeita. Deseja continuar?'
+              : 'A conversa e todo o histórico desta demonstração serão excluídos. '
+                    'Esta ação não pode ser desfeita. Deseja continuar?',
+        ),
       ),
     );
     if (confirmed == true) {
-      widget.controller.deleteConversation(widget.conversation.id);
+      isGroup
+          ? widget.controller.deleteGroup(widget.conversation.id)
+          : widget.controller.deleteConversation(widget.conversation.id);
     }
   }
 }
@@ -155,6 +196,9 @@ final class _ThreadHeader extends StatelessWidget {
     required this.onOpenContext,
     required this.pinned,
     required this.onPin,
+    required this.onCreateGroup,
+    required this.onInviteToGroup,
+    required this.canInviteToGroup,
     required this.onDelete,
     this.onBack,
   });
@@ -163,6 +207,9 @@ final class _ThreadHeader extends StatelessWidget {
   final VoidCallback onOpenContext;
   final bool pinned;
   final VoidCallback onPin;
+  final VoidCallback onCreateGroup;
+  final VoidCallback onInviteToGroup;
+  final bool canInviteToGroup;
   final VoidCallback onDelete;
   final VoidCallback? onBack;
 
@@ -223,14 +270,28 @@ final class _ThreadHeader extends StatelessWidget {
               tooltip: 'Ações da conversa',
               actions: [
                 SuperadminChatMenuAction(
+                  label: 'Criar grupo com…',
+                  icon: Icons.group_add_outlined,
+                  onPressed: onCreateGroup,
+                ),
+                if (canInviteToGroup)
+                  SuperadminChatMenuAction(
+                    label: 'Convidar para grupo',
+                    icon: Icons.person_add_alt_1_outlined,
+                    onPressed: onInviteToGroup,
+                  ),
+                SuperadminChatMenuAction(
                   label: pinned ? 'Desfixar' : 'Fixar',
                   icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
                   onPressed: onPin,
                 ),
                 SuperadminChatMenuAction(
-                  label: 'Excluir conversa',
+                  label: conversation.kind == ChatContextKind.conversationGroup
+                      ? 'Excluir grupo'
+                      : 'Excluir conversa',
                   icon: Icons.delete_outline_rounded,
                   destructive: true,
+                  dividerBefore: true,
                   onPressed: onDelete,
                 ),
               ],

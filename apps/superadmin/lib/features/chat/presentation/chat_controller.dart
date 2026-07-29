@@ -308,7 +308,18 @@ final class SuperadminChatController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteConversation(String id) => deleteGroup(id);
+  void deleteConversation(String id) {
+    final index = _conversations.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    _conversations.removeAt(index);
+    _pinnedOrder.remove(id);
+    _flags.remove(id);
+    if (_conversations.isNotEmpty && _selectedId == id) {
+      _selectedId = _conversations.first.id;
+    }
+    feedback = 'Conversa excluída apenas desta demonstração local.';
+    notifyListeners();
+  }
 
   void simulateBulkSend({
     required Set<String> recipientIds,
