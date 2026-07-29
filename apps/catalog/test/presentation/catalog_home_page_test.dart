@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_catalog/catalog/catalog_entry.dart';
 import 'package:coelo_catalog/catalog/catalog_foundations.dart';
 import 'package:coelo_catalog/catalog/catalog_registry.dart';
+import 'package:coelo_catalog/catalog/catalog_sync_status.dart';
 import 'package:coelo_catalog/presentation/catalog_home_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +132,11 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: CatalogHomePage.fromIndexAsset(registry: buildCatalogRegistry(), entriesLoader: load),
+        home: CatalogHomePage.fromIndexAsset(
+          registry: buildCatalogRegistry(),
+          entriesLoader: load,
+          syncReportLoader: () async => const CatalogSyncReport.synchronized(),
+        ),
       ),
     );
     await tester.pump();
@@ -145,8 +150,7 @@ void main() {
     await tester.tap(find.byKey(const Key('catalog-retry-load')));
     await tester.pump();
     newer.complete([_entries.last]);
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('CoeloAdminPagination'), findsOneWidget);
   });
 

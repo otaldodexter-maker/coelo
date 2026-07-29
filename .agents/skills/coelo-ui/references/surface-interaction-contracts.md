@@ -25,10 +25,18 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   composição; seu conteúdo de domínio não é um componente genérico.
 - Composições administrativas reutilizam `CoeloAdminDialogShell`: uma ação
   ocupa a largura útil e duas ações dividem a largura igualmente com
-  `CoeloSpacing.space3`. O corpo rola sem deslocar cabeçalho ou rodapé.
+  `CoeloSpacing.space3`. Três ações dividem a linha em terços com o mesmo gap;
+  se largura útil ou texto ampliado não comportar, todas empilham em 100% da
+  largura. O corpo rola sem deslocar cabeçalho ou rodapé.
+- A largura das ações irmãs é sempre igual. A hierarquia vem do estilo
+  primary/secondary/negative, nunca de largura diferente. Não aceitar `Wrap`
+  com quebra 2+1.
 
 ## Hover e foco
 
+- Antes de implementar, classificar a superfície pela matriz completa em
+  [diretórios e flyouts](admin-directory-flyout-contracts.md). Não existe um
+  único “hover padrão” válido para todas as famílias.
 - Itens discretos de navegação, menus, submenus e listas de ações usam
   `colorScheme.primaryContainer` no hover e foco visível,
   `colorScheme.primary` no conteúdo destacado, `CoeloRadius.md` e margem
@@ -39,6 +47,9 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
   `colorScheme.primaryContainer` no hover e foco, mas não recebem raio ou
   espaçamento entre linhas.
 - O menu lateral do Superadmin é a referência de item discreto.
+- Cards interativos preservam `surface`: hover/foco enfatizam borda e sombra
+  com `primary`, sem preencher todo o card. Ações destrutivas usam
+  `errorContainer`/`error` e ficam em grupo separado por divisor.
 
 ## Ações primárias, tonais e por ícone
 

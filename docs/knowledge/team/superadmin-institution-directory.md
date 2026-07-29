@@ -1,7 +1,7 @@
 ---
 title: Diretório de instituições do Superadmin
 knowledge_id: superadmin-institution-directory
-source: docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md
+source: docs/design/design-system.md
 status: validated
 generated_at: 2026-07-29
 audience: team
@@ -31,3 +31,14 @@ do rodapé, sem cobrir a paginação.
 O contrato reutilizável está em `admin.pagination` e
 `pattern.selection-controls` no índice Coelo UI. Não existe variante pública
 específica de Instituições.
+
+A composição completa do diretório usa toolbar, busca, filtros, toggle
+cards/tabela e arquivos; há `space4` entre toolbar e conteúdo. Cards usam
+`space6` nos dois eixos, mínimo de referência de 340 px por coluna, altura
+mínima de 216 px e padding horizontal `space6`/vertical `space4`. No modo
+tabela, a faixa de criação precede `space4` e a tabela redimensionável.
+
+Hover do card preserva `surface` e enfatiza borda/sombra com `primary`; hover de
+linha usa `primaryContainer` sem raio ou gap. O toggle segmentado usa
+`surface`/`outlineVariant`, com seleção, hover e foco em
+`primaryContainer`/`primary`. Arquivos reutiliza `CoeloAdminFileActions`.

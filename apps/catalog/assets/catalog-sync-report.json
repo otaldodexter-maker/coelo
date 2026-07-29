@@ -1,55 +1,6 @@
 {
-  "status": "catalogStale",
-  "diagnostics": [
-    {
-      "code": "orphan-registry-entry",
-      "message": "O registry contém componente sem implementação ativa no índice.",
-      "id": "admin.context-picker",
-      "path": "lib\\catalog\\catalog_registry.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "core.form-text-field",
-      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.single-select-field",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.file-actions",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.kanban-board",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.work-item-card",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.assignee-stack",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.workspace-layout",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    }
-  ],
+  "status": "synchronized",
+  "diagnostics": [],
   "fingerprints": {
     "core.avatar": {
       "source": "7a7a59a2",
@@ -60,7 +11,7 @@
       "example": "877182a0"
     },
     "core.form-text-field": {
-      "source": "dd5d3ee9",
+      "source": "00078807",
       "example": "46fce9e0"
     },
     "core.status-chip": {
@@ -80,7 +31,7 @@
       "example": "6a280730"
     },
     "admin.single-select-field": {
-      "source": "b18f70e5",
+      "source": "24e2f6a5",
       "example": "d2d36330"
     },
     "admin.dialog-shell": {
@@ -96,7 +47,7 @@
       "example": "07a3c792"
     },
     "admin.file-actions": {
-      "source": "f9ead305",
+      "source": "b19a0ac0",
       "example": "1a9de0e2"
     },
     "admin.resizable-table": {
@@ -104,28 +55,28 @@
       "example": "d3c80b9e"
     },
     "admin.kanban-board": {
-      "source": "d8778fbf",
+      "source": "d2203df9",
       "example": "c8184dc9"
     },
     "admin.work-item-card": {
-      "source": "00e64596",
+      "source": "b7177345",
       "example": "4be821ae"
     },
     "admin.assignee-stack": {
-      "source": "9e95f129",
+      "source": "5730ecaf",
       "example": "3ca7b1d6"
     },
     "admin.workspace-layout": {
-      "source": "b1bf9b78",
+      "source": "36a8631a",
       "example": "6cb119f6"
     },
     "pattern.action-hierarchy": {
       "source": "811c9dc5",
-      "example": "9687564f"
+      "example": "65fd6f17"
     },
     "pattern.form-controls": {
       "source": "811c9dc5",
-      "example": "b89c37a3"
+      "example": "d4c1be1c"
     },
     "pattern.selection-controls": {
       "source": "811c9dc5",
@@ -134,6 +85,22 @@
     "pattern.interaction-states": {
       "source": "811c9dc5",
       "example": "31c1eb54"
+    },
+    "pattern.admin-directory": {
+      "source": "811c9dc5",
+      "example": "1273c2c5"
+    },
+    "pattern.flyout-actions": {
+      "source": "811c9dc5",
+      "example": "1afc96f8"
+    },
+    "pattern.negative-actions": {
+      "source": "811c9dc5",
+      "example": "bf88ccb3"
+    },
+    "pattern.dialog-actions": {
+      "source": "811c9dc5",
+      "example": "080a9386"
     },
     "pattern.overlay-surfaces": {
       "source": "811c9dc5",

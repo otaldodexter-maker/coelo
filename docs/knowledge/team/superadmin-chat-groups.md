@@ -1,7 +1,7 @@
 ---
 title: Grupos e envios do chat do Superadmin
 knowledge_id: superadmin-chat-groups
-source: [decisions/0012-contextual-experiences-and-conversation-history.md, docs/open-questions.md, docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md]
+source: docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md
 status: validated
 generated_at: 2026-07-29
 audience: team

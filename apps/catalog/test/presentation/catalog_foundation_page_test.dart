@@ -43,6 +43,9 @@ void main() {
   testWidgets('renders package components instead of fake catalog copies', (tester) async {
     await _pumpFoundation(tester, entries, foundations, 'pattern.action-hierarchy');
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
+    expect(find.byKey(const Key('action-hierarchy-primary')), findsOneWidget);
+    expect(find.byKey(const Key('action-hierarchy-secondary')), findsOneWidget);
+    expect(find.byKey(const Key('action-hierarchy-tertiary')), findsOneWidget);
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.form-controls');
     expect(find.byType(CoeloFormTextField), findsNWidgets(2));
@@ -68,9 +71,42 @@ void main() {
     expect(find.textContaining('375, 768, 1024 e 1440'), findsOneWidget);
     expect(find.textContaining('texto a 200%'), findsAtLeastNWidgets(1));
 
-    final exit = tester.getSize(find.widgetWithText(OutlinedButton, 'Sair sem salvar'));
-    final continueEditing = tester.getSize(find.widgetWithText(FilledButton, 'Continuar editando'));
-    expect(exit.width, continueEditing.width);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 900,
+            child: Builder(builder: foundations['pattern.form-controls']!.builder),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final footer = tester.getRect(find.byKey(const Key('foundation-form-action-footer-row')));
+    final exit = tester.getRect(find.widgetWithText(OutlinedButton, 'Sair sem salvar'));
+    final continueEditing = tester.getRect(find.widgetWithText(FilledButton, 'Continuar editando'));
+    expect(exit.left, footer.left);
+    expect(continueEditing.right, footer.right);
+    expect(exit.right, lessThan(continueEditing.left));
+  });
+
+  testWidgets('stacks screen footer primary before the negative action on compact', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: Builder(builder: foundations['pattern.form-controls']!.builder)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final primary = tester.getRect(find.widgetWithText(FilledButton, 'Continuar editando'));
+    final exit = tester.getRect(find.widgetWithText(OutlinedButton, 'Sair sem salvar'));
+    expect(primary.width, exit.width);
+    expect(primary.bottom, lessThan(exit.top));
   });
 
   testWidgets('keeps migrated action, form, selection and theme guidance interactive', (

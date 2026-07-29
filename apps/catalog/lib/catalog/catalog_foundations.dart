@@ -4,6 +4,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import 'catalog_foundation.dart';
+import 'admin_directory_catalog_foundations.dart';
 import 'error_page_catalog_foundation.dart';
 import 'surface_interaction_catalog_foundations.dart';
 
@@ -57,6 +58,7 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
     ),
     ...buildErrorPageFoundationRegistry(),
     ...buildSurfaceInteractionFoundationRegistry(),
+    ...buildAdminDirectoryFoundationRegistry(),
   };
 }
 
@@ -87,6 +89,28 @@ final class _ActionHierarchyFoundationState extends State<_ActionHierarchyFounda
             label: 'Criar instituição',
             onPressed: () => setState(() => _activations++),
           ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        Wrap(
+          spacing: CoeloSpacing.space3,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            FilledButton(
+              key: const Key('action-hierarchy-primary'),
+              onPressed: () {},
+              child: const Text('Salvar'),
+            ),
+            OutlinedButton(
+              key: const Key('action-hierarchy-secondary'),
+              onPressed: () {},
+              child: const Text('Anterior'),
+            ),
+            TextButton(
+              key: const Key('action-hierarchy-tertiary'),
+              onPressed: () {},
+              child: const Text('Cancelar'),
+            ),
+          ],
         ),
         const SizedBox(height: CoeloSpacing.space2),
         Text('Ativações no exemplo: $_activations'),
@@ -195,16 +219,43 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
           ),
           child: Padding(
             padding: const EdgeInsets.all(CoeloSpacing.space3),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(onPressed: () {}, child: const Text('Sair sem salvar')),
-                ),
-                const SizedBox(width: CoeloSpacing.space3),
-                Expanded(
-                  child: FilledButton(onPressed: () {}, child: const Text('Continuar editando')),
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                Widget exitButton() => OutlinedButton(
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStatePropertyAll(colors.error),
+                    side: WidgetStatePropertyAll(BorderSide(color: colors.error)),
+                    backgroundColor: WidgetStateProperty.resolveWith(
+                      (states) =>
+                          states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused)
+                          ? colors.errorContainer
+                          : Colors.transparent,
+                    ),
+                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  ),
+                  onPressed: () {},
+                  child: const Text('Sair sem salvar'),
+                );
+                Widget continueButton() =>
+                    FilledButton(onPressed: () {}, child: const Text('Continuar editando'));
+
+                if (constraints.maxWidth < 520) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      continueButton(),
+                      const SizedBox(height: CoeloSpacing.space2),
+                      exitButton(),
+                    ],
+                  );
+                }
+                return Row(
+                  key: const Key('foundation-form-action-footer-row'),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [exitButton(), continueButton()],
+                );
+              },
             ),
           ),
         ),

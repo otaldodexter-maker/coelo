@@ -60,11 +60,23 @@ no Superadmin é a referência canônica; autenticação é a referência do cam
 ## Rodapé e confirmação
 
 - Rodapé usa `surface`, borda sutil e padding semântico; não é uma faixa cinza.
-- A ação primária fica visualmente dominante. Voltar e cancelar preservam a
-  hierarquia e não competem com salvar ou continuar.
+- Ação primária usa botão laranja preenchido para o único compromisso dominante
+  do contexto: salvar, criar, continuar, aplicar ou confirmar.
+- Ação secundária usa `OutlinedButton`: fundo é a `surface` visível do tema
+  (não branco literal), contorno leve e conteúdo semântico. Serve para anterior,
+  voltar, cancelar relevante ou alternativa que precisa permanecer evidente.
+- Ação terciária usa `TextButton`: a mesma `surface`, sem contorno, para
+  cancelar discreto, limpar, editar, ver mais ou ação auxiliar. Não promovê-la a
+  outlined apenas para preencher espaço.
+- Ações negativas ignoram essa escala cromática e seguem
+  `pattern.negative-actions`.
+- Em medium ou maior, cancelar/terciária fica no extremo esquerdo; navegação,
+  secundárias e a única primária ficam agrupadas no extremo direito. Em compact,
+  a primária ocupa 100% e precede as demais.
 - Diálogo administrativo usa `CoeloAdminDialogShell`. Uma ação ocupa toda a
   largura útil; duas ações dividem igualmente a largura com gap
-  `CoeloSpacing.space3`.
+  `CoeloSpacing.space3`; três dividem em terços. Se não couberem, todas empilham
+  em 100%, sem quebra 2+1.
 - Em mobile, a ação primária ocupa a largura útil e as demais ações continuam
   acessíveis sem cobrir conteúdo permanentemente.
 

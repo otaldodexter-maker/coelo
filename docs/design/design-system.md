@@ -433,6 +433,22 @@ Cada tela deve ter uma ação primária clara. O uso excessivo de botões preenc
 | Text | Sem fundo · texto #B83300 | Sem fundo · texto #FFB59B | Ação contextual de baixa ênfase. |
 | Danger | Fundo #B42318 · texto branco | Fundo #FFB4AB · texto #690005 | Excluir, revogar ou encerrar. |
 
+### Hierarquia operacional
+
+- Primary é o botão laranja preenchido e representa o único compromisso
+  dominante do contexto: criar, salvar, continuar, aplicar ou confirmar.
+- Outlined é a ação secundária. O fundo percebido é `colorScheme.surface`
+  — nunca branco literal — com contorno leve; usar para anterior, voltar,
+  cancelar relevante, filtrar ou alternar.
+- Text é a ação terciária: `surface` sem contorno, para cancelar discreto,
+  limpar, editar, ver mais ou apoio contextual.
+- Não escolher Filled, Outlined ou Text pela quantidade de espaço disponível.
+  A variante expressa prioridade. Ação negativa habilitada sempre usa a
+  hierarquia `error`/`errorContainer`.
+- Em rodapé de tela medium ou maior, terciária/cancelar ocupa o extremo
+  esquerdo; secundárias e a única primária formam o grupo no extremo direito.
+  Em compact, a primária ocupa 100% e precede as demais.
+
 ## Especificação
 
 | Item | Padrão |
@@ -819,6 +835,10 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 
 ### Hover, foco e exceções de linhas contínuas
 
+- Não existe um “hover padrão Coelo” aplicado indistintamente. Antes de
+  implementar, classificar a superfície como ação primária, ação tonal, item
+  discreto, linha contínua, card interativo, item destrutivo ou toggle
+  segmentado. Cinza/HEX local e o hover genérico do Material não são contratos.
 - Itens discretos de navegação, menus, submenus e listas de ações usam
   `colorScheme.primaryContainer` no hover e foco visível, conteúdo destacado em
   `colorScheme.primary`, `CoeloRadius.md` e margem vertical
@@ -830,6 +850,66 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   `colorScheme.primaryContainer` no hover e foco.
 - O menu lateral do Superadmin é a referência canônica para itens discretos; a
   tabela administrativa é a referência para a exceção de linha contínua.
+- Card interativo mantém `colorScheme.surface`; hover e foco enfatizam a borda
+  com `colorScheme.primary` translúcido e a sombra primária sutil, preservando
+  `CoeloRadius.lg`. Não preencher o card inteiro com `primaryContainer`.
+- Item destrutivo usa `colorScheme.errorContainer` no fundo e
+  `colorScheme.error` no conteúdo, em grupo separado por divisor. O flyout de
+  Perfil, com `Sair` abaixo do divisor, é a referência.
+- Toggle segmentado usa contêiner pill em `surface`, borda/divisória
+  `outlineVariant` e segmento selecionado, hovered ou focado na hierarquia
+  `primaryContainer`/`primary`.
+
+### Diretórios administrativos e flyouts
+
+- Instituições é a referência canônica de diretório: toolbar; busca e filtros;
+  toggle cards/tabela; arquivos; conteúdo; paginação sticky.
+- Entre toolbar e conteúdo usar `CoeloSpacing.space4`.
+- Cards usam `CoeloSpacing.space6` nos dois eixos, largura de referência mínima
+  de 340 px, altura mínima de 216 px e padding horizontal `space6`/vertical
+  `space4`.
+- No modo tabela, compor `CoeloAdminCreateAction.banner`,
+  `CoeloSpacing.space4` e `CoeloAdminResizableTable`, nessa ordem.
+- `CoeloAdminFileActions` agrupa importação e exportações. Seu flyout usa
+  `surface`, sem tint, e hover de item discreto.
+- Flyouts de Tour e Perfil são as referências de menu ancorado: `surface`, sem
+  tint, `radius.lg`, borda, elevação e padding `space2`. Ações destrutivas como
+  sair, excluir e deletar ficam abaixo de divisor, com respiro `space1`.
+- O toggle cards/tabela é um controle segmentado único, não dois botões soltos.
+  Cada segmento preserva alvo mínimo de 48 px e nome acessível.
+- O rodapé sticky de Instituições é composição privada. Cards oferecem
+  `11, 20, 50, 100`; tabela oferece `8, 20, 50, 100`.
+
+### Ações negativas
+
+- `X`, sair, desligar, encerrar, fechar, remover, deletar e excluir pertencem à
+  hierarquia negativa enquanto habilitados. Não usar `primary`, grafite ou
+  cinza para esses verbos.
+- Fechar/dispensar por ícone usa `Icons.close_rounded`, `error` no repouso,
+  fundo transparente circular e `errorContainer` no hover/foco.
+- Item terminal ou destrutivo em menu usa ícone e texto `error` no repouso,
+  `errorContainer` no hover/foco e fica em grupo inferior separado por divisor.
+- Botão textual ou outlined negativo usa conteúdo e borda em `error`, com
+  `errorContainer` no hover/foco. Confirmação destrutiva principal pode usar
+  fundo `error` e conteúdo contrastante; cancelar permanece neutro.
+- Disabled segue o contrato disabled do componente, sem hover. A hierarquia
+  visual compartilhada não elimina regras específicas de confirmação,
+  autorização, auditoria ou retorno de foco.
+
+### Ações em popups e dialogs
+
+- Uma ação ocupa 100% da largura útil.
+- Duas ações dividem a linha em 50/50; três ações dividem em terços. Usar
+  `CoeloSpacing.space3` entre ações e `Expanded` para igualdade real.
+- A prioridade vem do estilo: neutra/cancelar, secundária e
+  primária/destrutiva. Não comunicar prioridade fazendo um botão maior.
+- Quando constraints reais ou texto a 200% não comportarem a linha, empilhar
+  todas as ações com 100% da largura e gap vertical `space2` ou `space3`.
+- É proibida a quebra acidental 2+1, larguras intrínsecas diferentes, alinhamento
+  irregular ou um botão solto abaixo dos demais.
+- `CoeloAdminDialogShell` é a referência para uma e duas ações. Três ações
+  permanecem composição documentada até existir evidência para ampliar sua API
+  pública.
 
 ### Fechar e dispensar
 

@@ -25,7 +25,6 @@ const catalogRegistryManifestJson = r'''
   "admin.work-item-card": [],
   "admin.assignee-stack": [],
   "admin.workspace-layout": [],
-  "admin.context-picker": [],
   "admin.dialog-shell": ["one-action", "two-actions"]
 }
 ''';

@@ -2,7 +2,7 @@
 name: coelo-ui
 description: Use when creating, changing, or reviewing Coelo UI in Flutter or future Astro surfaces, including screens, widgets, components, tokens, themes, states, responsiveness, accessibility, catalog examples, and visual regressions.
 metadata:
-  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
+  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
   status: "active"
   generated_at: "2026-07-29"
 ---
@@ -19,6 +19,24 @@ silenciosamente.
    menu, filtro, tabela, table, close, dismiss ou “X”, ler
    obrigatoriamente o [contrato de superfícies e interação](references/surface-interaction-contracts.md)
    antes de decidir ou implementar a composição visual.
+   Quando mencionar listagem, diretório, cards/tabela, card hover, table hover,
+   view toggle, arquivos, flyout, perfil, configurações, tour, sair, excluir ou
+   deletar, ler também o
+   [contrato de diretórios e flyouts](references/admin-directory-flyout-contracts.md)
+   e consultar `pattern.admin-directory`, `pattern.flyout-actions` e
+   `pattern.interaction-states`. Para `X`, sair, desligar, encerrar, fechar,
+   remover, deletar ou excluir, consultar também `pattern.negative-actions`;
+   toda ação negativa habilitada permanece na hierarquia
+   `errorContainer`/`error`, independentemente do verbo escolhido.
+   Quando popup ou dialog tiver uma, duas ou três ações, consultar
+   `pattern.dialog-actions`: ações irmãs têm larguras iguais; uma ocupa 100%,
+   duas dividem 50/50 e três dividem em terços, com gaps tokenizados. Empilhar
+   todas em 100% somente quando constraints ou texto ampliado exigirem.
+   Para hierarquia de botões, consultar `pattern.action-hierarchy`: laranja
+   preenchido é a única ação principal; `OutlinedButton` em `surface` com
+   contorno leve é secundário; `TextButton` em `surface` sem contorno é
+   terciário. Em rodapé de tela ampla, terciária fica no extremo esquerdo e o
+   grupo de continuidade no direito; não aplicar o 50/50 de dialogs à tela.
    Quando mencionar formulário, cadastro, edição, input, campo, select, upload,
    avatar, wizard, step form, rodapé ou color picker, ler obrigatoriamente o
    [contrato de formulários](references/form-layout-contracts.md), consultar
@@ -56,6 +74,12 @@ silenciosamente.
    interativos, sem overlay cinza. Disabled tonal é exceção condicional para
    ação primária antecipada, nunca o padrão global. Botão de ícone assimétrico
    usa alvo e caixa centralizados pelos tokens `CoeloSize`.
+   Antes de criar qualquer hover, classificar a superfície como ação primária,
+   ação tonal, item discreto, linha contínua, card interativo, item destrutivo
+   ou toggle segmentado. É proibido aplicar “hover padrão Material”, cinza/HEX
+   local ou uma regra universal a famílias diferentes. Ação negativa habilitada
+   nunca usa `primary`, grafite ou cinza: ícone, item e botão preservam o
+   vermelho semântico também no repouso.
 5. Respeitar [fronteiras de pacote](references/package-boundaries.md).
 6. Se nada atender, seguir o
    [contrato de proposta](references/component-proposal.md) e aguardar aprovação.

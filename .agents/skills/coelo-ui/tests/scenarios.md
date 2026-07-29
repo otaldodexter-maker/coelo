@@ -399,3 +399,43 @@ três famílias, prova visual, quatro gates, limites de correção, protocolo
 RED/GREEN, distinção entre `goldens/` e `failures/` e as duas matrizes. Nenhum
 arquivo foi alterado durante o cenário. A auditoria posterior confirmou os
 headers explícitos da matriz final e da matriz de sincronização.
+
+## Diretórios, hover e hierarquia de ações — RED/GREEN, 2026-07-29
+
+### Baseline — RED
+
+Evidência reproduzível: `query-index.tests.ps1` recebeu consultas naturais para
+`view toggle cards table`, hover de card, gap entre criação e tabela, flyout de
+Perfil, arquivos, ações negativas, duas/três ações de dialog e rodapé de tela.
+A primeira consulta não retornou entrada alguma. O catálogo também não possuía
+fundações compostas para diretório, flyout, ações negativas ou distribuição de
+três botões.
+
+Falhas observadas nas iterações reais: hover genérico aplicado a famílias
+incompatíveis; ações `X`, sair, desligar, encerrar e excluir fora da hierarquia
+vermelha; botões de popup com larguras desiguais ou quebra 2+1; regra 50/50 de
+popup aplicada incorretamente a rodapé de tela; Filled, Outlined e Text
+escolhidos sem relação com prioridade.
+
+### Critério GREEN
+
+- `pattern.admin-directory` recupera toolbar, filtros, toggle, arquivos, cards,
+  tabela, gaps, hover e paginação de Instituições;
+- `pattern.flyout-actions` recupera Tour, Perfil, Configurações, Arquivos e o
+  divisor do grupo destrutivo;
+- `pattern.negative-actions` recupera `X`, sair, desligar, encerrar, fechar,
+  remover, deletar e excluir;
+- `pattern.dialog-actions` recupera 100%, 50/50, terços e stack responsivo;
+- `pattern.form-controls` distingue rodapé de tela com extremos;
+- `pattern.action-hierarchy` distingue primary laranja, secondary outlined em
+  `surface` e tertiary text sem contorno;
+- o catálogo exercita card hover sem preencher a superfície, linha contínua,
+  item discreto, toggle e ações negativas.
+
+### Reexecução — GREEN
+
+O teste do índice passou com todas as consultas novas e antigas. Os testes do
+catálogo confirmaram a composição do diretório, card hover, flyout com divisor,
+vermelho semântico nas ações negativas, igualdade real em dois e três botões de
+dialog e extremos no rodapé de tela ampla. Nenhum componente, token ou variante
+pública foi criado.

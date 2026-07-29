@@ -74,5 +74,31 @@ Assert-QueryContains -Query 'senha' `
     -ExpectedId 'core.form-text-field'
 Assert-QueryContains -Query 'password' `
     -ExpectedId 'core.form-text-field'
+Assert-QueryContains -Query 'view toggle cards table' `
+    -ExpectedId 'pattern.admin-directory'
+Assert-QueryContains -Query 'hover card institutions' `
+    -ExpectedId 'pattern.admin-directory'
+Assert-QueryContains -Query 'gap create banner table' `
+    -ExpectedId 'pattern.admin-directory'
+Assert-QueryContains -Query 'flyout profile logout divider' `
+    -ExpectedId 'pattern.flyout-actions'
+Assert-QueryContains -Query 'settings profile menu' `
+    -ExpectedId 'pattern.flyout-actions'
+Assert-QueryContains -Query 'files import export' `
+    -ExpectedId 'admin.file-actions'
+Assert-QueryContains -Query 'negative exit close delete' `
+    -ExpectedId 'pattern.negative-actions'
+Assert-QueryContains -Query 'sair desligar encerrar fechar excluir' `
+    -ExpectedId 'pattern.negative-actions'
+Assert-QueryContains -Query 'popup two three equal buttons' `
+    -ExpectedId 'pattern.dialog-actions'
+Assert-QueryContains -Query 'dialog 50 50 stacked actions' `
+    -ExpectedId 'pattern.dialog-actions'
+Assert-QueryContains -Query 'screen footer buttons opposite extremes' `
+    -ExpectedId 'pattern.form-controls'
+Assert-QueryContains -Query 'orange outlined ghost button hierarchy' `
+    -ExpectedId 'pattern.action-hierarchy'
+Assert-QueryContains -Query 'primary secondary tertiary buttons' `
+    -ExpectedId 'pattern.action-hierarchy'
 
 Write-Output 'query-index.tests.ps1: PASS'
