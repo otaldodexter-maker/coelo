@@ -52,5 +52,27 @@ Assert-QueryContains -Query 'confirmacao binaria 50/50' `
     -ExpectedId 'pattern.form-controls'
 Assert-QueryContains -Query 'rodape responsivo texto 200%' `
     -ExpectedId 'pattern.form-controls'
+$instituicoes = "institui$([char]0x00E7)$([char]0x00F5)es"
+$paginacao = "pagina$([char]0x00E7)$([char]0x00E3)o"
+$autenticacao = "autentica$([char]0x00E7)$([char]0x00E3)o"
+
+Assert-QueryContains -Query $instituicoes `
+    -ExpectedId 'admin.resizable-table'
+Assert-QueryContains -Query 'institutions' `
+    -ExpectedId 'admin.pagination'
+Assert-QueryContains -Query $paginacao `
+    -ExpectedId 'admin.pagination'
+Assert-QueryContains -Query 'pagination' `
+    -ExpectedId 'admin.pagination'
+Assert-QueryContains -Query $autenticacao `
+    -ExpectedId 'core.form-text-field'
+Assert-QueryContains -Query 'authentication' `
+    -ExpectedId 'core.form-text-field'
+Assert-QueryContains -Query 'login' `
+    -ExpectedId 'core.form-text-field'
+Assert-QueryContains -Query 'senha' `
+    -ExpectedId 'core.form-text-field'
+Assert-QueryContains -Query 'password' `
+    -ExpectedId 'core.form-text-field'
 
 Write-Output 'query-index.tests.ps1: PASS'

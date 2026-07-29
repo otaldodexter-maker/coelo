@@ -52,4 +52,28 @@ void main() {
       );
     });
   }
+
+  testWidgets('renders the light mobile reset password form', (tester) async {
+    tester.view.physicalSize = const Size(375, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminResetPasswordScreen(
+          resetPassword: unavailableResetPassword,
+          onBackToLogin: () {},
+          onThemeModeChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(SuperadminResetPasswordScreen),
+      matchesGoldenFile('goldens/superadmin_reset_password_mobile_light.png'),
+    );
+  });
 }

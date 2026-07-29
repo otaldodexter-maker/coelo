@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +54,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   late final SuperadminActivityController _activityController;
   InstitutionDirectoryDisplay _display = InstitutionDirectoryDisplay.cards;
   bool _noticeShown = false;
+  double _paginationFooterHeight = 0;
 
   void _changeDisplay(InstitutionDirectoryDisplay display) {
     if (display == _display) {
@@ -59,9 +62,16 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     }
     setState(() => _display = display);
     _viewModel.setPageSize(
-      display == InstitutionDirectoryDisplay.cards ? 11 : 9,
+      display == InstitutionDirectoryDisplay.cards ? 11 : 8,
       resetSort: display == InstitutionDirectoryDisplay.cards,
     );
+  }
+
+  void _handlePaginationFooterHeightChanged(double height) {
+    if ((_paginationFooterHeight - height).abs() < 0.5) {
+      return;
+    }
+    setState(() => _paginationFooterHeight = height);
   }
 
   @override
@@ -95,6 +105,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       logout: widget.logout,
       activityController: _activityController,
       showChatLauncher: widget.onConversationsOpen != null,
+      chatLauncherBottomInset: _paginationFooterHeight,
       onBugReportSubmitted: widget.onBugReportSubmitted,
       onDestinationSelected: (destination) {
         if (destination == 'home') {
@@ -128,6 +139,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
             onDisplayChanged: _changeDisplay,
             onCreate: widget.onCreate ?? () {},
             onEdit: widget.onEdit ?? (_) {},
+            onFooterHeightChanged: _handlePaginationFooterHeightChanged,
             onClearFilters: () {
               _searchController.clear();
               _viewModel.clearFilters();
@@ -139,7 +151,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   }
 }
 
-class _InstitutionDirectoryContent extends StatelessWidget {
+class _InstitutionDirectoryContent extends StatefulWidget {
   const _InstitutionDirectoryContent({
     required this.viewModel,
     required this.activityController,
@@ -148,6 +160,7 @@ class _InstitutionDirectoryContent extends StatelessWidget {
     required this.onDisplayChanged,
     required this.onCreate,
     required this.onEdit,
+    required this.onFooterHeightChanged,
     required this.onClearFilters,
   });
 
@@ -158,7 +171,43 @@ class _InstitutionDirectoryContent extends StatelessWidget {
   final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
+  final ValueChanged<double> onFooterHeightChanged;
   final VoidCallback onClearFilters;
+
+  @override
+  State<_InstitutionDirectoryContent> createState() => _InstitutionDirectoryContentState();
+}
+
+class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryContent> {
+  final GlobalKey _footerKey = GlobalKey();
+  double _footerHeight = 0;
+  bool _measurementScheduled = false;
+
+  void _scheduleFooterMeasurement(bool showFooter) {
+    if (_measurementScheduled) {
+      return;
+    }
+    _measurementScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _measurementScheduled = false;
+      if (!mounted) {
+        return;
+      }
+      var nextHeight = 0.0;
+      if (showFooter) {
+        final renderObject = _footerKey.currentContext?.findRenderObject();
+        if (renderObject is! RenderBox || !renderObject.hasSize) {
+          return;
+        }
+        nextHeight = renderObject.size.height;
+      }
+      if ((nextHeight - _footerHeight).abs() < 0.5) {
+        return;
+      }
+      setState(() => _footerHeight = nextHeight);
+      widget.onFooterHeightChanged(nextHeight);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,29 +218,64 @@ class _InstitutionDirectoryContent extends StatelessWidget {
             : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
             ? CoeloSpacing.space6
             : CoeloSpacing.space4;
-        return ListView(
-          key: const Key('institution-directory-content-scroll'),
-          padding: EdgeInsets.all(horizontalPadding),
-          children: [
-            AnimatedBuilder(
-              animation: viewModel,
-              builder: (context, child) => InstitutionDirectoryToolbar(
-                viewModel: viewModel,
-                activityController: activityController,
-                searchController: searchController,
-                display: display,
-                onDisplayChanged: onDisplayChanged,
-                onClearFilters: onClearFilters,
-              ),
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            _InstitutionDirectoryResults(
-              viewModel: viewModel,
-              display: display,
-              onCreate: onCreate,
-              onEdit: onEdit,
-            ),
-          ],
+        return AnimatedBuilder(
+          animation: widget.viewModel,
+          builder: (context, child) {
+            final showPagination = widget.viewModel.state == InstitutionDirectoryLoadState.success;
+            _scheduleFooterMeasurement(showPagination);
+            final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                ListView(
+                  key: const Key('institution-directory-content-scroll'),
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    horizontalPadding,
+                    horizontalPadding,
+                    horizontalPadding + footerInset,
+                  ),
+                  children: [
+                    InstitutionDirectoryToolbar(
+                      viewModel: widget.viewModel,
+                      activityController: widget.activityController,
+                      searchController: widget.searchController,
+                      display: widget.display,
+                      onDisplayChanged: widget.onDisplayChanged,
+                      onClearFilters: widget.onClearFilters,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    _InstitutionDirectoryResults(
+                      viewModel: widget.viewModel,
+                      display: widget.display,
+                      onCreate: widget.onCreate,
+                      onEdit: widget.onEdit,
+                    ),
+                  ],
+                ),
+                if (showPagination)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: NotificationListener<SizeChangedLayoutNotification>(
+                      onNotification: (_) {
+                        _scheduleFooterMeasurement(true);
+                        return true;
+                      },
+                      child: SizeChangedLayoutNotifier(
+                        key: _footerKey,
+                        child: _InstitutionDirectoryPaginationFooter(
+                          viewModel: widget.viewModel,
+                          display: widget.display,
+                          horizontalPadding: horizontalPadding,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
         );
       },
     );
@@ -213,44 +297,75 @@ class _InstitutionDirectoryResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: viewModel,
-      builder: (context, child) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (viewModel.isLoading) const LinearProgressIndicator(),
-            if (viewModel.isLoading) const SizedBox(height: CoeloSpacing.space4),
-            InstitutionDirectoryStates(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (viewModel.isLoading) const LinearProgressIndicator(),
+        if (viewModel.isLoading) const SizedBox(height: CoeloSpacing.space4),
+        InstitutionDirectoryStates(
+          viewModel: viewModel,
+          successContent: display == InstitutionDirectoryDisplay.table
+              ? InstitutionDirectoryTable(
+                  items: viewModel.page.items,
+                  createAction: InstitutionCreateBanner(onPressed: onCreate),
+                  onEdit: (item) => onEdit(item.id),
+                  sortColumn: viewModel.query.sortColumn,
+                  sortAscending: viewModel.query.sortAscending,
+                  onSort: viewModel.setSort,
+                )
+              : InstitutionDirectoryCards(
+                  items: viewModel.page.items,
+                  onCreate: onCreate,
+                  onEdit: (item) => onEdit(item.id),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InstitutionDirectoryPaginationFooter extends StatelessWidget {
+  const _InstitutionDirectoryPaginationFooter({
+    required this.viewModel,
+    required this.display,
+    required this.horizontalPadding,
+  });
+
+  final InstitutionDirectoryViewModel viewModel;
+  final InstitutionDirectoryDisplay display;
+  final double horizontalPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return ClipRect(
+      key: const Key('institution-directory-pagination-footer'),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
+        child: Container(
+          key: const Key('institution-directory-pagination-footer-surface'),
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            CoeloSpacing.space3,
+            horizontalPadding,
+            CoeloSpacing.space3,
+          ),
+          decoration: BoxDecoration(
+            color: colors.surface.withValues(alpha: 0.88),
+            border: Border(top: BorderSide(color: colors.outlineVariant)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: InstitutionDirectoryPagination(
               viewModel: viewModel,
-              successContent: display == InstitutionDirectoryDisplay.table
-                  ? InstitutionDirectoryTable(
-                      items: viewModel.page.items,
-                      createAction: InstitutionCreateBanner(onPressed: onCreate),
-                      onEdit: (item) => onEdit(item.id),
-                      sortColumn: viewModel.query.sortColumn,
-                      sortAscending: viewModel.query.sortAscending,
-                      onSort: viewModel.setSort,
-                    )
-                  : InstitutionDirectoryCards(
-                      items: viewModel.page.items,
-                      onCreate: onCreate,
-                      onEdit: (item) => onEdit(item.id),
-                    ),
+              pageSizeOptions: display == InstitutionDirectoryDisplay.cards
+                  ? const [11, 20, 50, 100]
+                  : const [8, 20, 50, 100],
             ),
-            if (viewModel.state == InstitutionDirectoryLoadState.success) ...[
-              const SizedBox(height: CoeloSpacing.space4),
-              InstitutionDirectoryPagination(
-                viewModel: viewModel,
-                pageSizeOptions: display == InstitutionDirectoryDisplay.cards
-                    ? const [11, 20, 50, 100]
-                    : const [9, 20, 50, 100],
-              ),
-            ],
-          ],
-        );
-      },
+          ),
+        ),
+      ),
     );
   }
 }

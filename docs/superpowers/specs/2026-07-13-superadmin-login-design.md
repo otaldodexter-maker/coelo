@@ -3,7 +3,7 @@ title: "Superadmin Login Design"
 source: "User-approved design; docs/design/design-system.md; docs/contexts/superadmin-context.md; docs/product/prd-superadmin.md; docs/security/auth-multitenant-permissions.md; docs/security/lgpd-security-media.md; decisions/0011-flutter-routing-performance.md"
 status: "approved-design"
 generated_at: "2026-07-13"
-updated_at: "2026-07-14"
+updated_at: "2026-07-29"
 ---
 
 # Superadmin Login Design
@@ -138,6 +138,15 @@ estrutura local, mas nao e tratado como autorizacao real.
   toque, label ou descricao semantica.
 - O resultado deve ser verificado em light e dark e em larguras de 375, 768,
   1024 e 1440 px, sem overflow horizontal.
+
+### Baseline de campos aprovado em 2026-07-29
+
+- `LoginTextField` compõe `CoeloFormTextField`, preservando label flutuante,
+  hint complementar, ícone específico, erro associado, hover, foco e disabled.
+- A autenticação não cria variante `auth`: a anatomia compartilhada atual é a
+  baseline visual para login, recuperação e definição de nova senha.
+- Goldens canônicos cobrem desktop light/dark e mobile light a 375 px. Imagens
+  em diretórios `failures/` são transitórias e não contam como aprovação.
 
 ## Acessibilidade
 

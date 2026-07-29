@@ -182,15 +182,19 @@ final class _PageSizeSelectorState extends State<_PageSizeSelector> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final enabled = widget.onChanged != null;
+    final usesLargeText = MediaQuery.textScalerOf(context).scale(14) > 20;
+    final triggerWidth = usesLargeText ? CoeloSpacing.space24 : _width;
     return Semantics(
       label: 'Quantidade de itens por página',
       value: '${widget.value}',
       enabled: enabled,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: CoeloSpacing.space2,
+        runSpacing: CoeloSpacing.space2,
         children: [
           const Text('Itens por p\u00e1gina'),
-          const SizedBox(width: CoeloSpacing.space2),
           MenuAnchor(
             key: const Key('coelo-admin-pagination-page-size-anchor'),
             childFocusNode: _focusNode,
@@ -202,8 +206,8 @@ final class _PageSizeSelectorState extends State<_PageSizeSelector> {
               surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
               elevation: const WidgetStatePropertyAll(CoeloElevation.level3),
               padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-              minimumSize: const WidgetStatePropertyAll(Size(_width, 0)),
-              maximumSize: const WidgetStatePropertyAll(Size(_width, double.infinity)),
+              minimumSize: WidgetStatePropertyAll(Size(triggerWidth, 0)),
+              maximumSize: WidgetStatePropertyAll(Size(triggerWidth, double.infinity)),
               shape: WidgetStatePropertyAll(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(CoeloRadius.lg),
@@ -214,7 +218,7 @@ final class _PageSizeSelectorState extends State<_PageSizeSelector> {
             menuChildren: [
               for (final option in widget.options)
                 SizedBox(
-                  width: _width,
+                  width: triggerWidth,
                   child: Semantics(
                     selected: option == widget.value,
                     child: MenuItemButton(
@@ -255,9 +259,11 @@ final class _PageSizeSelectorState extends State<_PageSizeSelector> {
                 focusNode: _focusNode,
                 onPressed: enabled ? () => active ? menu.close() : menu.open() : null,
                 style: ButtonStyle(
-                  fixedSize: const WidgetStatePropertyAll(Size(_width, CoeloSize.touchMin)),
-                  padding: const WidgetStatePropertyAll(
-                    EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+                  fixedSize: WidgetStatePropertyAll(Size(triggerWidth, CoeloSize.touchMin)),
+                  padding: WidgetStatePropertyAll(
+                    EdgeInsets.symmetric(
+                      horizontal: usesLargeText ? CoeloSpacing.space2 : CoeloSpacing.space3,
+                    ),
                   ),
                   shape: const WidgetStatePropertyAll(StadiumBorder()),
                   foregroundColor: WidgetStateProperty.resolveWith(

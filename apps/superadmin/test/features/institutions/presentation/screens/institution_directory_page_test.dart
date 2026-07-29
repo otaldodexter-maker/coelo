@@ -65,7 +65,7 @@ void main() {
     expect(createRequested, isTrue);
   });
 
-  testWidgets('starts with eleven card items and switches to nine table rows', (tester) async {
+  testWidgets('starts with eleven card items and switches to eight table rows', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
@@ -77,7 +77,90 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
 
-    expect(_institutionTableRows(), findsNWidgets(9));
+    expect(_institutionTableRows(), findsNWidgets(8));
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size-8')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size-9')), findsNothing);
+  });
+
+  testWidgets('keeps pagination fixed at the bottom while cards scroll', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final footer = find.byKey(const Key('institution-directory-pagination-footer'));
+    final scroll = find.byKey(const Key('institution-directory-content-scroll'));
+    expect(footer, findsOneWidget);
+    final bottomBefore = tester.getBottomLeft(footer).dy;
+
+    await tester.drag(scroll, const Offset(0, -500));
+    await tester.pumpAndSettle();
+
+    expect(tester.getBottomLeft(footer).dy, closeTo(bottomBefore, 1));
+  });
+
+  testWidgets('keeps the final card above the fixed pagination', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final scroll = find.byKey(const Key('institution-directory-content-scroll'));
+    await tester.drag(scroll, const Offset(0, -5000));
+    await tester.pumpAndSettle();
+
+    final footer = find.byKey(const Key('institution-directory-pagination-footer'));
+    expect(
+      tester.getBottomLeft(_institutionCards().last).dy,
+      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+    );
+  });
+
+  testWidgets('uses the approved glass footer surface in light and dark', (tester) async {
+    for (final brightness in [Brightness.light, Brightness.dark]) {
+      await tester.binding.setSurfaceSize(const Size(1440, 700));
+      await tester.pumpWidget(_app(brightness: brightness));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('institution-directory-pagination-footer')),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsOneWidget,
+      );
+      final surface = tester.widget<Container>(
+        find.byKey(const Key('institution-directory-pagination-footer-surface')),
+      );
+      final decoration = surface.decoration! as BoxDecoration;
+      final colors = brightness == Brightness.light
+          ? CoeloTheme.light.colorScheme
+          : CoeloTheme.dark.colorScheme;
+      expect(decoration.color, colors.surface.withValues(alpha: 0.88));
+      expect(decoration.border!.top.color, colors.outlineVariant);
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('keeps the chat launcher above the fixed pagination', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [375.0, 1024.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(_app(onConversationsOpen: () {}));
+      await tester.pumpAndSettle();
+
+      final footer = find.byKey(const Key('institution-directory-pagination-footer'));
+      final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+      expect(footer, findsOneWidget);
+      expect(launcher, findsOneWidget);
+      expect(
+        tester.getBottomLeft(launcher).dy,
+        lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+        reason: '$width px',
+      );
+    }
   });
 
   testWidgets('reveals municipality and district filters after their parents', (tester) async {
@@ -393,7 +476,7 @@ void main() {
     final pinnedRow = find.byKey(
       const Key(
         'coelo-admin-table-pinned-row-background-'
-        'institution-table-row-demo-institution-aurora',
+        'institution-table-row-demo-institution-horizonte',
       ),
     );
     await tester.drag(
@@ -405,7 +488,7 @@ void main() {
     await tester.tapAt(Offset(pinnedTopLeft.dx + 100, tester.getCenter(pinnedRow).dy));
 
     expect(createRequested, isTrue);
-    expect(editedId, 'demo-institution-aurora');
+    expect(editedId, 'demo-institution-horizonte');
   });
 
   testWidgets('keeps the approved information hierarchy in the interactive table', (tester) async {
@@ -445,11 +528,11 @@ void main() {
     }
     expect(headerPositions, orderedEquals([...headerPositions]..sort()));
     expect(find.text('Razão social'), findsNothing);
-    expect(find.byKey(const Key('copy-domain-demo-institution-aurora')), findsOneWidget);
-    expect(find.byKey(const Key('copy-email-demo-institution-aurora')), findsOneWidget);
-    expect(find.byKey(const Key('copy-phone-demo-institution-aurora')), findsOneWidget);
-    expect(find.byKey(const Key('copy-mobile-phone-demo-institution-aurora')), findsOneWidget);
-    expect(find.text('01310-100'), findsOneWidget);
+    expect(find.byKey(const Key('copy-domain-demo-institution-horizonte')), findsOneWidget);
+    expect(find.byKey(const Key('copy-email-demo-institution-horizonte')), findsOneWidget);
+    expect(find.byKey(const Key('copy-phone-demo-institution-horizonte')), findsOneWidget);
+    expect(find.byKey(const Key('copy-mobile-phone-demo-institution-horizonte')), findsOneWidget);
+    expect(find.text('13025-100'), findsOneWidget);
 
     final viewportWidth = tester
         .getSize(find.byKey(const Key('institution-directory-table-viewport')))
@@ -466,6 +549,7 @@ void main() {
     await tester.drag(
       find.byKey(const Key('coelo-admin-table-resizer-indicator-institution')),
       const Offset(80, 0),
+      warnIfMissed: false,
     );
     await tester.pumpAndSettle();
     expect(tester.getSize(nameColumn).width, greaterThan(oldWidth));
@@ -581,14 +665,14 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
-    final copyEmail = find.byKey(const Key('copy-email-demo-institution-aurora'));
+    final copyEmail = find.byKey(const Key('copy-email-demo-institution-horizonte'));
     await tester.ensureVisible(copyEmail);
     await tester.pumpAndSettle();
     await tester.tap(copyEmail);
     await tester.pump();
 
     expect(clipboardCalls, hasLength(1));
-    expect(clipboardCalls.single.arguments, {'text': 'contato@aurora.coelo.me'});
+    expect(clipboardCalls.single.arguments, {'text': 'contato@centrohorizonte.coelo.me'});
     expect(find.text('E-mail copiado.'), findsOneWidget);
   });
 
@@ -795,14 +879,17 @@ void main() {
     final row = find.byKey(
       const Key(
         'coelo-admin-table-row-background-'
-        'institution-table-row-demo-institution-aurora',
+        'institution-table-row-demo-institution-horizonte',
       ),
     );
-    expect(find.byKey(const Key('institution-table-row-demo-institution-aurora')), findsOneWidget);
+    expect(
+      find.byKey(const Key('institution-table-row-demo-institution-horizonte')),
+      findsOneWidget,
+    );
     final pinned = find.byKey(
       const Key(
         'coelo-admin-table-pinned-row-background-'
-        'institution-table-row-demo-institution-aurora',
+        'institution-table-row-demo-institution-horizonte',
       ),
     );
     final pinnedColumn = find.byKey(const Key('coelo-admin-table-pinned-column'));
@@ -1176,6 +1263,7 @@ Widget _app({
   TextScaler textScaler = TextScaler.noScaling,
   VoidCallback? onCreate,
   ValueChanged<String>? onEdit,
+  VoidCallback? onConversationsOpen,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -1190,6 +1278,7 @@ Widget _app({
       logout: () async => const LogoutResult.success(),
       onCreate: onCreate,
       onEdit: onEdit,
+      onConversationsOpen: onConversationsOpen,
     ),
   );
 }

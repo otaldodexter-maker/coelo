@@ -77,17 +77,48 @@ final class _ErrorPagePreview extends StatelessWidget {
 
             return Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(CoeloSpacing.space4),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Semantics(
-                      container: true,
-                      label: 'Erro ${reference.code}. ${reference.message}',
-                      child: ExcludeSemantics(
-                        child: horizontal
-                            ? IntrinsicHeight(
-                                child: Row(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontal ? CoeloSpacing.space10 : CoeloSpacing.space4,
+                  vertical: CoeloSpacing.space8,
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Semantics(
+                        container: true,
+                        label: 'Erro ${reference.code}. ${reference.message}',
+                        child: ExcludeSemantics(
+                          child: horizontal
+                              ? IntrinsicHeight(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        reference.code,
+                                        style: textTheme.titleMedium?.copyWith(
+                                          color: colors.onPrimaryContainer,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: CoeloSpacing.space4,
+                                        ),
+                                        child: VerticalDivider(color: colors.onPrimaryContainer),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          reference.message,
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            color: colors.onPrimaryContainer,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
@@ -98,54 +129,29 @@ final class _ErrorPagePreview extends StatelessWidget {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: CoeloSpacing.space4,
+                                        vertical: CoeloSpacing.space3,
                                       ),
-                                      child: VerticalDivider(color: colors.onPrimaryContainer),
+                                      child: Divider(color: colors.onPrimaryContainer),
                                     ),
-                                    Flexible(
-                                      child: Text(
-                                        reference.message,
-                                        style: textTheme.bodyLarge?.copyWith(
-                                          color: colors.onPrimaryContainer,
-                                        ),
+                                    Text(
+                                      reference.message,
+                                      textAlign: TextAlign.center,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        color: colors.onPrimaryContainer,
                                       ),
                                     ),
                                   ],
                                 ),
-                              )
-                            : Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    reference.code,
-                                    style: textTheme.titleMedium?.copyWith(
-                                      color: colors.onPrimaryContainer,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: CoeloSpacing.space3,
-                                    ),
-                                    child: Divider(color: colors.onPrimaryContainer),
-                                  ),
-                                  Text(
-                                    reference.message,
-                                    textAlign: TextAlign.center,
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: colors.onPrimaryContainer,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space6),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(foregroundColor: colors.onPrimaryContainer),
-                      child: Text(reference.actionLabel),
-                    ),
-                  ],
+                      const SizedBox(height: CoeloSpacing.space6),
+                      TextButton(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(foregroundColor: colors.onPrimaryContainer),
+                        child: Text(reference.actionLabel),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

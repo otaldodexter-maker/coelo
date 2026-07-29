@@ -185,6 +185,34 @@ void main() {
     }
   });
 
+  testWidgets('supports 200 percent text on the compact approved viewport', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: const Scaffold(
+          body: CoeloAdminPagination(
+            currentPage: 5,
+            totalPages: 10,
+            onPrevious: _noop,
+            onNext: _noop,
+            pageSize: 20,
+            pageSizeOptions: [8, 20, 50, 100],
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Itens por p\u00e1gina'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+  });
+
   testWidgets('uses the approved compact single-select surface', (tester) async {
     var selectedPageSize = 0;
     await tester.pumpWidget(

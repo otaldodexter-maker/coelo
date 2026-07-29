@@ -97,6 +97,8 @@ final class _FormTextFieldExampleState extends State<_FormTextFieldExample> {
     labelText: 'E-mail',
     hintText: 'seu.email@coelo.me',
     prefixIcon: Icons.mail_outline_rounded,
+    textInputAction: TextInputAction.next,
+    autofillHints: const [AutofillHints.email],
   );
 }
 
@@ -241,7 +243,7 @@ final class _PaginationExample extends StatefulWidget {
 
 final class _PaginationExampleState extends State<_PaginationExample> {
   var _page = 1;
-  var _pageSize = 20;
+  var _pageSize = 8;
 
   @override
   Widget build(BuildContext context) {
@@ -251,7 +253,7 @@ final class _PaginationExampleState extends State<_PaginationExample> {
       onPrevious: _page == 1 ? null : () => setState(() => _page--),
       onNext: _page == 4 ? null : () => setState(() => _page++),
       pageSize: _pageSize,
-      pageSizeOptions: const [11, 20, 50, 100],
+      pageSizeOptions: const [8, 20, 50, 100],
       onPageSizeChanged: (value) => setState(() {
         _pageSize = value;
         _page = 1;

@@ -2,9 +2,9 @@
 name: coelo-ui
 description: Use when creating, changing, or reviewing Coelo UI in Flutter or future Astro surfaces, including screens, widgets, components, tokens, themes, states, responsiveness, accessibility, catalog examples, and visual regressions.
 metadata:
-  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
+  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
   status: "active"
-  generated_at: "2026-07-28"
+  generated_at: "2026-07-29"
 ---
 
 # Coelo UI
@@ -31,6 +31,9 @@ silenciosamente.
    [contrato de páginas de erro](references/error-page-contracts.md). Não
    substituir esse padrão por `CoeloStatePanel`: o painel é feedback dentro de
    uma superfície existente.
+   Quando pedir revisão semanal, code review profundo, auditoria visual ou
+   sincronização UI do Superadmin, ler obrigatoriamente o
+   [runbook semanal](references/weekly-superadmin-ui-review.md).
 2. Consultar primeiro o índice com
    `scripts/query-index.ps1 -Query "<termo>"`. Informar ao usuário:
    `Consultei o índice Coelo UI para <contexto>.`

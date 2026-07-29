@@ -40,9 +40,10 @@ class SuperadminShell extends StatefulWidget {
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.showChatLauncher = false,
+    this.chatLauncherBottomInset = 0,
     this.isHost = false,
     super.key,
-  });
+  }) : assert(chatLauncherBottomInset >= 0);
 
   const SuperadminShell.host({
     required this.logout,
@@ -57,6 +58,7 @@ class SuperadminShell extends StatefulWidget {
        compactActions = const [],
        activityController = null,
        showChatLauncher = false,
+       chatLauncherBottomInset = 0,
        isHost = true;
 
   final LogoutAction logout;
@@ -70,6 +72,7 @@ class SuperadminShell extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool showChatLauncher;
+  final double chatLauncherBottomInset;
   final bool isHost;
 
   @override
@@ -402,7 +405,11 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
         child,
         Positioned(
           right: CoeloSpacing.space4,
-          bottom: CoeloSpacing.space4,
+          bottom:
+              CoeloSpacing.space4 +
+              (widget.chatLauncherBottomInset > 0
+                  ? _shellGutter + widget.chatLauncherBottomInset
+                  : 0),
           child: SuperadminChatLauncher(onExpand: () => destinationHandler('conversations')),
         ),
       ],

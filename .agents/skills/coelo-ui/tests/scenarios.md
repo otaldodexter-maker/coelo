@@ -373,3 +373,29 @@ consumidor e exigiu spec própria para Admin ou Principal.
 
 Resultado GREEN: o padrão completo foi localizado pelo índice sem depender do
 contexto desta conversa e nenhum arquivo foi alterado pelo agente de teste.
+
+## Revisão semanal profunda do Superadmin — RED/GREEN, 2026-07-29
+
+Prompt, em agente novo e somente leitura:
+
+> Rode o code review profundo semanal do Superadmin.
+
+**RED:** a skill anterior recuperou Design System, índice, catálogo e
+verificação proporcional, mas não delimitou o teto de 3 horas e corte em 2h35,
+últimos sete dias, até três famílias, matriz enxuta, quatro gates, limites para
+correções, protocolo RED/GREEN nem a entrega obrigatória.
+
+**Critério GREEN:** recuperar
+`references/weekly-superadmin-ui-review.md`, limitar o lote a no máximo três
+famílias com evidência visual aprovada, avaliar as quatro camadas e produzir as
+duas matrizes finais obrigatórias: sincronização por camada e
+`Superfície | Referência | Componente/padrão | Achado | Ação | Verificação`.
+A reexecução deve distinguir `goldens/` aprovados de `failures/` transitórios e
+não criar spec para o processo.
+
+**GREEN:** um agente novo recuperou o runbook pelo roteamento obrigatório e
+localizou, com evidência de linha, timebox/corte, últimos sete dias, limite de
+três famílias, prova visual, quatro gates, limites de correção, protocolo
+RED/GREEN, distinção entre `goldens/` e `failures/` e as duas matrizes. Nenhum
+arquivo foi alterado durante o cenário. A auditoria posterior confirmou os
+headers explícitos da matriz final e da matriz de sincronização.

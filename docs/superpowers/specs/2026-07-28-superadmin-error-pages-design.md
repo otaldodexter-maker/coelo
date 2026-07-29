@@ -3,6 +3,7 @@ title: "Páginas de erro do Superadmin"
 source: "User-approved plan on 2026-07-28; docs/design/design-system.md; decisions/0011-flutter-routing-performance.md"
 status: "implemented"
 generated_at: "2026-07-28"
+updated_at: "2026-07-29"
 ---
 
 # Páginas de erro do Superadmin
@@ -42,7 +43,9 @@ A ação fica abaixo do grupo e recebe foco visível pelo tema Coelo.
 - Usar somente `ColorScheme`, `TextTheme`, `CoeloSpacing`,
   `CoeloBreakpoints` e dimensões já aprovadas.
 - Light e dark usam `primaryContainer` e `onPrimaryContainer`.
-- O conteúdo possui largura máxima e padding adaptativo.
+- O conteúdo usa largura máxima de 720 px, padding horizontal
+  `CoeloSpacing.space10` em amplo e `space4` em compact, além de padding
+  vertical `space8`.
 - O código e a mensagem são anunciados como uma única informação de erro.
 - A ação mantém alvo mínimo, teclado, foco e semântica nativos de botão.
 - Validar 375, 768, 1024 e 1440 px, além de texto a 200%.

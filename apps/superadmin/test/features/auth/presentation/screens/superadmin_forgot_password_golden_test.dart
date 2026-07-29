@@ -66,6 +66,27 @@ void main() {
       );
     });
   }
+
+  testWidgets('renders the light mobile password recovery form reference', (tester) async {
+    _configureViewport(tester, const Size(375, 844));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminForgotPasswordScreen(
+          requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+          onBackToLogin: () {},
+          onThemeModeChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(SuperadminForgotPasswordScreen),
+      matchesGoldenFile('goldens/superadmin_forgot_password_mobile_light.png'),
+    );
+  });
 }
 
 Future<void> _loadGoldenFonts() async {
@@ -83,7 +104,11 @@ Future<void> _loadGoldenFonts() async {
 }
 
 void _configureDesktopViewport(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1440, 900);
+  _configureViewport(tester, const Size(1440, 900));
+}
+
+void _configureViewport(WidgetTester tester, Size size) {
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);

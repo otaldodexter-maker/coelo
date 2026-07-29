@@ -1,10 +1,15 @@
 ---
 source: "Solicitação aprovada para centralizar e alinhar visualmente a paginação de Instituições"
-status: "approved"
+status: "superseded"
 generated_at: "2026-07-28"
+updated_at: "2026-07-29"
+superseded_by: "docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
 ---
 
 # Refinamento da paginação de Instituições no Superadmin
+
+Esta versão foi substituída pela spec de paginação sticky, que preserva este
+contrato visual compartilhado e altera o tamanho inicial da tabela de 9 para 8.
 
 ## Objetivo
 

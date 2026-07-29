@@ -1,14 +1,87 @@
 {
-  "status": "synchronized",
-  "diagnostics": [],
+  "status": "catalogStale",
+  "diagnostics": [
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.single-select-field",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.file-actions",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.kanban-board",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.work-item-card",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.assignee-stack",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.workspace-layout",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.chat-avatar",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.conversation-tile",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.conversation-header",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.message-bubble",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.chat-composer",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.context-picker",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    }
+  ],
   "fingerprints": {
     "core.search-field": {
       "source": "f3e1d2ff",
       "example": "877182a0"
     },
     "core.form-text-field": {
-      "source": "fc09daa7",
-      "example": "40be5032"
+      "source": "dd5d3ee9",
+      "example": "46fce9e0"
     },
     "core.status-chip": {
       "source": "ad8b1f60",
@@ -31,8 +104,8 @@
       "example": "d2d36330"
     },
     "admin.pagination": {
-      "source": "4733e35e",
-      "example": "98c3c2e2"
+      "source": "819ecd93",
+      "example": "3f55595e"
     },
     "admin.create-action": {
       "source": "cf03f5a3",
@@ -43,8 +116,8 @@
       "example": "1a9de0e2"
     },
     "admin.resizable-table": {
-      "source": "83456134",
-      "example": "28c16c6f"
+      "source": "66c8e87f",
+      "example": "d3c80b9e"
     },
     "admin.kanban-board": {
       "source": "d8778fbf",

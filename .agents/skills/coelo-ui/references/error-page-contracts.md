@@ -1,7 +1,7 @@
 ---
 source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
 status: "active"
-generated_at: "2026-07-28"
+generated_at: "2026-07-29"
 ---
 
 # Contrato de páginas fullscreen de erro
@@ -33,7 +33,9 @@ não encontrada, acesso negado e indisponibilidade.
 
 - Decidir por constraints com `LayoutBuilder`: linha em largura ampla; coluna
   em compact ou texto ampliado.
-- Limitar largura de leitura e usar `SafeArea` com scroll vertical.
+- Limitar a largura de leitura a 720 px e usar `SafeArea` com scroll vertical.
+  Aplicar padding horizontal `space10` em amplo e `space4` em compact, com
+  padding vertical `space8`.
 - Anunciar `Erro {código}. {mensagem}` como um único grupo semântico.
 - Preservar foco, teclado e alvo mínimo da ação.
 - Validar 375/768/1024/1440, light/dark, texto a 200%, overflow e goldens.

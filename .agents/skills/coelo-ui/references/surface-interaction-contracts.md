@@ -1,7 +1,7 @@
 ---
-source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md"
+source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
 status: "active"
-generated_at: "2026-07-27"
+generated_at: "2026-07-29"
 ---
 
 # Contratos de superfícies e interação
@@ -105,6 +105,18 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
 - Status semântico usa chip com texto, cor e ícone opcional. Ações compactas
   expõem no máximo duas ações rápidas ou um menu contextual, separando ações
   sensíveis.
+
+## Paginação administrativa
+
+- Consultar `admin.pagination` e reutilizar `CoeloAdminPagination`.
+- O controle público centraliza as quebras, ações, páginas numeradas e seletor
+  compacto; o consumidor escolhe os tamanhos permitidos.
+- Instituições exemplifica cards com 11 itens e tabela com 8. Seu rodapé
+  sticky/glass é composição privada descrita na spec especializada: não
+  promover blur, inset ou fixação para variante pública.
+- Nessa superfície, a altura medida também desloca o launcher de chat para
+  cima; rodapé e launcher não podem compartilhar a mesma área interativa.
+- Validar texto a 200%, teclado, foco, semântica e menu em viewport compacto.
 
 ## Acessibilidade
 

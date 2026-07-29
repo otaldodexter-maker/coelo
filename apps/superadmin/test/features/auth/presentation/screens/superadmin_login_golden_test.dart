@@ -43,6 +43,34 @@ void main() {
       );
     });
   }
+
+  testWidgets('renders the light mobile login reference', (tester) async {
+    tester.view.physicalSize = const Size(375, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminLoginScreen(
+          session: session,
+          login: unavailableSuperadminLogin,
+          onForgotPassword: () {},
+          onThemeModeChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(SuperadminLoginScreen),
+      matchesGoldenFile('goldens/superadmin_login_mobile_light.png'),
+    );
+  });
 }
 
 Future<void> _loadGoldenFonts() async {

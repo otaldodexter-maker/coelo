@@ -110,17 +110,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.text('Página 1 de 2'),
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.pumpAndSettle();
+    expect(find.text('Página 1 de 2'), findsOneWidget);
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),
       matchesGoldenFile('goldens/institution_directory_pagination_disabled_light_1440.png'),

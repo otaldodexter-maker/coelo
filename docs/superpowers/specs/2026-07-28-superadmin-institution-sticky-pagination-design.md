@@ -2,6 +2,7 @@
 source: "Solicitação aprovada em 2026-07-28 para reduzir a tabela de Instituições a 8 linhas e manter a paginação no rodapé"
 status: "approved"
 generated_at: "2026-07-28"
+updated_at: "2026-07-29"
 ---
 
 # Paginação fixa do diretório de Instituições
@@ -32,12 +33,21 @@ referência.
 
 ## Fora de escopo
 
-- Alterar a API pública ou o visual interno de `CoeloAdminPagination`.
+- Alterar a API pública ou o visual interno de `CoeloAdminPagination` em escala
+  de texto normal.
 - Criar componente, variante ou token global para rodapés com blur.
 - Alterar cards, colunas, dados exibidos, filtros ou regras de ordenação.
 - Alterar a paginação de outras telas administrativas.
 - Mudar consultas, policies, RLS ou contratos de banco além do valor
   `pageSize` já aceito pelo diretório.
+
+### Exceção acessível confirmada na verificação
+
+O teste obrigatório com texto a 200% revelou overflow no seletor compartilhado.
+Fica aprovada a correção interna mínima de permitir quebra do rótulo e ampliar
+o gatilho somente em escala de texto elevada. A API pública, os tokens e a
+aparência em escala normal permanecem inalterados; esta exceção não transforma
+o rodapé `glass` de Instituições em padrão global.
 
 ## Superfícies afetadas
 

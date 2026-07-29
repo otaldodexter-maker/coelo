@@ -67,6 +67,32 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(SuperadminErrorScreen), findsOneWidget);
   });
+
+  testWidgets('switches from wide geometry to compact geometry at 200 percent', (tester) async {
+    await _pumpError(tester, size: const Size(1024, 900));
+
+    expect(find.byType(VerticalDivider), findsOneWidget);
+    expect(find.byType(Divider), findsNothing);
+    expect(
+      tester.widget<SingleChildScrollView>(find.byType(SingleChildScrollView)).padding,
+      const EdgeInsets.symmetric(horizontal: CoeloSpacing.space10, vertical: CoeloSpacing.space8),
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is ConstrainedBox && widget.constraints.maxWidth == 720,
+      ),
+      findsOneWidget,
+    );
+
+    await _pumpError(tester, size: const Size(1024, 900), textScaler: const TextScaler.linear(2));
+
+    expect(find.byType(VerticalDivider), findsNothing);
+    expect(find.byType(Divider), findsOneWidget);
+    expect(
+      tester.widget<SingleChildScrollView>(find.byType(SingleChildScrollView)).padding,
+      const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4, vertical: CoeloSpacing.space8),
+    );
+  });
 }
 
 Future<void> _pumpError(

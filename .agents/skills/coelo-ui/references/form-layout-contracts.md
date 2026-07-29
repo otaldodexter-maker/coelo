@@ -1,7 +1,7 @@
 ---
-source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-27-superadmin-institution-form-visual-refactor-design.md"
+source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-27-superadmin-institution-form-visual-refactor-design.md; docs/superpowers/specs/2026-07-13-superadmin-login-design.md"
 status: "active"
-generated_at: "2026-07-27"
+generated_at: "2026-07-29"
 ---
 
 # Contrato de formulários de cadastro e edição
@@ -63,5 +63,8 @@ no Superadmin é a referência canônica; autenticação é a referência do cam
 - Proteger no mínimo mobile light e desktop dark com golden.
 - Comparar com Instituições e autenticação. Se a composição divergir, explicar
   qual regra de produto exige a diferença.
+- Em autenticação, `CoeloFormTextField` com label flutuante e hint complementar
+  é a baseline aprovada, sem variante `auth`. Usar os goldens de login,
+  recuperação e nova senha como evidência; nunca usar `failures/`.
 - Atualizar contrato canônico, índice, catálogo, exemplo e testes quando uma
   decisão aprovada passar a ser reutilizável.

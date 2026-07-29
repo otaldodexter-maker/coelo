@@ -4,10 +4,10 @@ source: "Coelo Design System Oficial v1.docx; docs/superpowers/specs/2026-07-24-
 source_file: "Coelo Design System Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Design System Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Design/Coelo Design System Oficial v1.docx"
-supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md"
+supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
 status: "derived-from-official-docx"
 version: "v1"
-generated_at: "2026-07-24"
+generated_at: "2026-07-29"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -712,7 +712,7 @@ para falhas de rota, permissão ou disponibilidade que ocupam toda a janela.
 | Anatomia | Código, divisor e mensagem centralizados, seguidos por uma única ação contextual. Não adicionar ilustração, logo ou ícone sem nova aprovação. |
 | Conteúdo | 403: “Você não tem permissão para acessar esta área.”; 404: “Não encontramos a página que você procura.”; 500: “Não foi possível concluir esta ação.”; 503: “O Coelo está temporariamente indisponível.” |
 | Ação | “Voltar ao início” em 403/404; “Tentar novamente” em 500/503. O destino ou retry é delegado ao app. |
-| Responsividade | Em janela ampla, código, divisor e mensagem ficam em linha. Em compact ou com texto ampliado, passam para coluna. Usar `LayoutBuilder`, largura de leitura limitada, `SafeArea` e scroll vertical. |
+| Responsividade | Em janela ampla, código, divisor e mensagem ficam em linha. Em compact ou com texto ampliado, passam para coluna. Usar `LayoutBuilder`, `SafeArea`, scroll vertical, padding horizontal adaptativo de `spacing.10` (40 px) em amplo e `spacing.4` (16 px) em compact, padding vertical `spacing.8` (32 px) e largura máxima de leitura de 720 px. |
 | Acessibilidade | Anunciar “Erro {código}. {mensagem}” como uma única informação, sem duplicar os filhos. A ação mantém foco visível, teclado e alvo mínimo do tema. |
 | QA | Validar 375, 768, 1024 e 1440 px, light/dark, texto a 200%, ausência de overflow e goldens das quatro variantes. |
 
@@ -745,7 +745,22 @@ referência de composição é a tabela de Instituições. Não substituir por u
 | Números | Alinhar à direita; usar tabular figures quando disponível. |
 | Responsividade | Priorizar colunas; no compact, usar cards quando necessário. Se a tabela continuar, manter scroll horizontal em vez de ocultar informação crítica. |
 
-## 17.2 Paleta para gráficos — uso exclusivo de dados
+## 17.2 Paginação administrativa
+
+Reutilizar `CoeloAdminPagination` em listagens administrativas paginadas. O
+controle mantém todas as quebras centralizadas, ações anterior/próxima,
+indicador e páginas numeradas, além do seletor compacto opcional de itens por
+página. O gatilho e o menu usam superfície neutra; seleção, hover e foco usam
+`primaryContainer` e `primary`, sem check ou checkbox. O consumidor define os
+tamanhos permitidos e deve validar teclado, foco, semântica, compactação e texto
+a 200%.
+
+Instituições é a referência aprovada. Seus tamanhos de página e o rodapé sticky
+com blur são governados pela spec da superfície; não são variante nem
+responsabilidade do componente público. Com texto ampliado, rótulo e gatilho do
+seletor podem quebrar internamente e o gatilho pode expandir sem alterar a API.
+
+## 17.3 Paleta para gráficos — uso exclusivo de dados
 
 | Cor | Token / nome | HEX | Uso principal | Texto sobre a cor | Contraste |
 | --- | --- | --- | --- | --- | --- |
@@ -764,7 +779,7 @@ referência de composição é a tabela de Instituições. Não substituir por u
 
 - Para status binário, use semântica; para séries analíticas, use data.1–6.
 
-## 17.3 Contratos de superfícies e interação
+## 17.4 Contratos de superfícies e interação
 
 Esta seção operacional formaliza a decisão aprovada em
 `docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md`. Ela
