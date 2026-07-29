@@ -867,6 +867,101 @@ void main() {
     expect(after, lessThan(before));
   });
 
+  testWidgets('keeps pagination fixed at the bottom while cards and table scroll', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final footer = find.byKey(const Key('institution-directory-pagination-footer'));
+    expect(footer, findsOneWidget);
+    final footerBottom = tester.getBottomLeft(footer).dy;
+
+    await _scrollDirectoryToMax(tester);
+    expect(tester.getBottomLeft(footer).dy, footerBottom);
+
+    await _scrollDirectoryToStart(tester);
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    await _scrollDirectoryToMax(tester);
+
+    expect(tester.getBottomLeft(footer).dy, footerBottom);
+  });
+
+  testWidgets('keeps the final card and table row above the fixed pagination', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final footer = find.byKey(const Key('institution-directory-pagination-footer'));
+    final pageViewport = _directoryScrollFinder();
+    expect(footer, findsOneWidget);
+    await _scrollDirectoryToMax(tester);
+
+    final lastCard = _institutionCards().last;
+    final cardBottom = tester.getBottomLeft(lastCard).dy;
+    expect(cardBottom, lessThanOrEqualTo(tester.getBottomLeft(pageViewport).dy));
+    expect(cardBottom, lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4));
+
+    await _scrollDirectoryToStart(tester);
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    await _scrollDirectoryToMax(tester);
+
+    final lastRow = _institutionTableRows().last;
+    final rowBottom = tester.getBottomLeft(lastRow).dy;
+    expect(rowBottom, lessThanOrEqualTo(tester.getBottomLeft(pageViewport).dy));
+    expect(rowBottom, lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4));
+  });
+
+  testWidgets('uses the approved glass footer surface in light and dark', (tester) async {
+    for (final brightness in [Brightness.light, Brightness.dark]) {
+      await tester.binding.setSurfaceSize(const Size(1024, 700));
+      await tester.pumpWidget(_app(brightness: brightness));
+      await tester.pumpAndSettle();
+
+      final footer = find.byKey(const Key('institution-directory-pagination-footer'));
+      final surface = find.byKey(const Key('institution-directory-pagination-footer-surface'));
+      expect(find.descendant(of: footer, matching: find.byType(BackdropFilter)), findsOneWidget);
+      expect(surface, findsOneWidget);
+
+      final colors = Theme.of(tester.element(surface)).colorScheme;
+      final decoration = tester.widget<Container>(surface).decoration! as BoxDecoration;
+      expect(decoration.color, colors.surface.withValues(alpha: 0.88));
+      expect(decoration.border!.top.color, colors.outlineVariant);
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('keeps compact pagination clear of chat and opens the page-size menu', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(onConversationsOpen: () {}));
+    await tester.pumpAndSettle();
+
+    final pagination = find.byKey(const Key('coelo-admin-pagination-content'));
+    final chatLauncher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    expect(
+      tester.getBottomLeft(pagination).dy,
+      lessThanOrEqualTo(tester.getTopLeft(chatLauncher).dy - CoeloSpacing.space2),
+    );
+
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
+    await tester.pumpAndSettle();
+
+    for (final option in [11, 20, 50, 100]) {
+      final item = find.byKey(Key('coelo-admin-pagination-page-size-$option'));
+      expect(item, findsOneWidget);
+      expect(tester.widget<MenuItemButton>(item).onPressed, isNotNull);
+    }
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size-20')));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('paginates the directory in groups of twenty items', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -898,32 +993,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(
-      find.text('Página 1 de 2'),
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.pumpAndSettle();
     expect(find.text('Página 1 de 2'), findsOneWidget);
     await tester.tap(find.text('Próxima'));
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(
-      find.text('Página 2 de 2'),
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.pumpAndSettle();
     expect(find.text('Página 2 de 2'), findsOneWidget);
     expect(find.text('Instituição 21'), findsOneWidget);
   });
@@ -959,16 +1032,6 @@ void main() {
     await tester.pumpAndSettle();
 
     final pagination = find.byKey(const Key('coelo-admin-pagination-content'));
-    await tester.scrollUntilVisible(
-      pagination,
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
     expect(
       tester.getCenter(pagination).dx,
       closeTo(tester.getCenter(find.byKey(const Key('institution-card-grid'))).dx, 1),
@@ -977,16 +1040,6 @@ void main() {
     await tester.ensureVisible(find.byKey(const Key('institution-view-table')));
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      pagination,
-      600,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-directory-content-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
     expect(
       tester.getCenter(pagination).dx,
       closeTo(
@@ -1051,19 +1104,26 @@ void main() {
   });
 
   testWidgets('supports 200 percent text at all approved viewports', (tester) async {
-    final widthsWithLayoutExceptions = <double>[];
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
-      await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+      await tester.pumpWidget(
+        _app(textScaler: const TextScaler.linear(2), pageKey: ValueKey(width)),
+      );
       await tester.pumpAndSettle();
 
-      if (tester.takeException() != null) {
-        widthsWithLayoutExceptions.add(width);
-      }
+      expect(tester.takeException(), isNull, reason: '$width cards');
       expect(find.text('Instituições'), findsWidgets);
+      expect(find.byKey(const Key('institution-directory-pagination-footer')), findsOneWidget);
+
+      final tableToggle = find.byKey(const Key('institution-view-table'), skipOffstage: false);
+      await tester.ensureVisible(tableToggle);
+      await tester.tap(tableToggle);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull, reason: '$width table');
+      expect(find.byKey(const Key('institution-directory-pagination-footer')), findsOneWidget);
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    expect(widthsWithLayoutExceptions, isEmpty);
   });
 
   testWidgets('finishes themed card surfaces with the global transition without a local tail', (
@@ -1179,12 +1239,36 @@ Finder _institutionTableRows() {
   });
 }
 
+Finder _directoryScrollFinder() {
+  return find
+      .descendant(
+        of: find.byKey(const Key('institution-directory-content-scroll')),
+        matching: find.byType(Scrollable),
+      )
+      .first;
+}
+
+Future<void> _scrollDirectoryToMax(WidgetTester tester) async {
+  tester
+      .state<ScrollableState>(_directoryScrollFinder())
+      .position
+      .jumpTo(tester.state<ScrollableState>(_directoryScrollFinder()).position.maxScrollExtent);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _scrollDirectoryToStart(WidgetTester tester) async {
+  tester.state<ScrollableState>(_directoryScrollFinder()).position.jumpTo(0);
+  await tester.pumpAndSettle();
+}
+
 Widget _app({
   Brightness brightness = Brightness.light,
   InstitutionDirectoryRepository? repository,
   TextScaler textScaler = TextScaler.noScaling,
   VoidCallback? onCreate,
   ValueChanged<String>? onEdit,
+  VoidCallback? onConversationsOpen,
+  Key? pageKey,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -1195,10 +1279,12 @@ Widget _app({
       child: child!,
     ),
     home: InstitutionDirectoryPage(
+      key: pageKey,
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: () async => const LogoutResult.success(),
       onCreate: onCreate,
       onEdit: onEdit,
+      onConversationsOpen: onConversationsOpen,
     ),
   );
 }
