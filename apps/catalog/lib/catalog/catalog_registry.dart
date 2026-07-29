@@ -249,7 +249,14 @@ final class _PaginationExampleState extends State<_PaginationExample> {
   Widget build(BuildContext context) {
     return CoeloAdminPagination(
       currentPage: _page,
-      totalPages: 4,
+      totalPages: 20,
+      pageSize: _pageSize,
+      pageSizeOptions: const [10, 50, 100, 500],
+      onPageSelected: (page) => setState(() => _page = page),
+      onPageSizeChanged: (size) => setState(() {
+        _pageSize = size;
+        _page = 1;
+      }),
       onPrevious: _page == 1 ? null : () => setState(() => _page--),
       onNext: _page == 4 ? null : () => setState(() => _page++),
       pageSize: _pageSize,

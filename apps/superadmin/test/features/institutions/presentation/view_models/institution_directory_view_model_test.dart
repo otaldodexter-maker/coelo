@@ -193,8 +193,12 @@ void main() {
 
   test('distinguishes initial empty data from no search result', () async {
     final repository = _StubRepository(
-      onFetch: (query) async =>
-          InstitutionDirectoryPage(items: const [], totalCount: 0, page: query.page),
+      onFetch: (query) async => InstitutionDirectoryPage(
+        items: const [],
+        totalCount: 0,
+        page: query.page,
+        pageSize: query.pageSize,
+      ),
     );
     final viewModel = InstitutionDirectoryViewModel(repository: repository);
     addTearDown(viewModel.dispose);
@@ -274,5 +278,6 @@ InstitutionDirectoryPage _page(InstitutionDirectoryQuery query) {
     ],
     totalCount: 1,
     page: query.page,
+    pageSize: query.pageSize,
   );
 }

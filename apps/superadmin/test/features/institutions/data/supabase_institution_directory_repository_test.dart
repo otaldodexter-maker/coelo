@@ -9,6 +9,38 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final pageSize in InstitutionDirectoryQuery.allowedPageSizes) {
+    test('requests the exact PostgREST range for page size $pageSize', () async {
+      Request? capturedRequest;
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          capturedRequest = request;
+          return Response(
+            jsonEncode(<Map<String, Object?>>[]),
+            200,
+            headers: {
+              'content-range': '${pageSize * 2}-${pageSize * 3 - 1}/0',
+              'content-type': 'application/json',
+            },
+            request: request,
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseInstitutionDirectoryRepository(client);
+
+      final page = await repository.fetchPage(
+        InstitutionDirectoryQuery(page: 2, pageSize: pageSize),
+      );
+
+      expect(capturedRequest?.url.queryParameters['offset'], '${pageSize * 2}');
+      expect(capturedRequest?.url.queryParameters['limit'], '$pageSize');
+      expect(page.pageSize, pageSize);
+    });
+  }
+
   test('keeps state options unfiltered and cascades distinct location options', () async {
     final capturedUris = <Uri>[];
     final client = SupabaseClient(

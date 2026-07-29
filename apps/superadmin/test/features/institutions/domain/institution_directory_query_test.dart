@@ -18,7 +18,7 @@ void main() {
     expect(query.states, {'SP', 'PR'});
     expect(query.cities, {'Campinas', 'Curitiba'});
     expect(query.districts, {'Cambuí', 'Batel'});
-    expect(query.offset, 40);
+    expect(query.offset, 100);
     expect(query.hasActiveFilters, isTrue);
     expect(
       query,
@@ -50,6 +50,7 @@ void main() {
   test('treats empty filter collections as no active filter', () {
     final query = InstitutionDirectoryQuery();
 
+    expect(query.pageSize, InstitutionDirectoryQuery.defaultPageSize);
     expect(query.statuses, isEmpty);
     expect(query.typeIds, isEmpty);
     expect(query.states, isEmpty);
