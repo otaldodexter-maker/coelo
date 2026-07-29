@@ -4,7 +4,6 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import 'catalog_foundation.dart';
-import 'chat_catalog_foundations.dart';
 import 'error_page_catalog_foundation.dart';
 import 'surface_interaction_catalog_foundations.dart';
 
@@ -27,7 +26,11 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
     ),
     'pattern.form-controls': CatalogFoundation(
       id: 'pattern.form-controls',
-      referencedComponentIds: const ['core.form-text-field', 'core.search-field'],
+      referencedComponentIds: const [
+        'core.form-text-field',
+        'core.search-field',
+        'admin.dialog-shell',
+      ],
       builder: (_) => const _FormControlsFoundation(),
     ),
     'pattern.selection-controls': CatalogFoundation(
@@ -53,7 +56,6 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
       builder: (_) => const _ThemesFoundation(),
     ),
     ...buildErrorPageFoundationRegistry(),
-    ...buildChatFoundationRegistry(),
     ...buildSurfaceInteractionFoundationRegistry(),
   };
 }

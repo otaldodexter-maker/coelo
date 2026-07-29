@@ -8,6 +8,7 @@ environment:
   flutter: ">=3.38.0"
 
 dependencies:
+  characters: 1.4.1
   coelo_auth:
     path: ../../packages/coelo_auth
   coelo_tokens:

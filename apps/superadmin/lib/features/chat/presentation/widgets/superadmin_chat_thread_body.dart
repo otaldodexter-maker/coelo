@@ -67,11 +67,15 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
           Expanded(
             child: ListView(
               key: const Key('superadmin-chat-history'),
+              reverse: true,
               padding: EdgeInsets.symmetric(
                 horizontal: widget.compact ? CoeloSpacing.space3 : CoeloSpacing.space5,
                 vertical: CoeloSpacing.space4,
               ),
               children: [
+                for (final message in widget.conversation.messages.reversed)
+                  SuperadminChatMessageBubble(message: message),
+                const SizedBox(height: CoeloSpacing.space4),
                 Center(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -87,9 +91,6 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
                     ),
                   ),
                 ),
-                const SizedBox(height: CoeloSpacing.space4),
-                for (final message in widget.conversation.messages)
-                  SuperadminChatMessageBubble(message: message),
               ],
             ),
           ),

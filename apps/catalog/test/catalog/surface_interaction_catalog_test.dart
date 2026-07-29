@@ -16,6 +16,14 @@ void main() {
         'admin.resizable-table',
       ]),
     );
+    expect(
+      foundations['pattern.overlay-surfaces']!.referencedComponentIds,
+      contains('admin.dialog-shell'),
+    );
+    expect(
+      foundations['pattern.form-controls']!.referencedComponentIds,
+      contains('admin.dialog-shell'),
+    );
   });
 
   for (final themeCase in <({String name, ThemeData theme})>[
@@ -28,6 +36,7 @@ void main() {
       await tester.tap(find.byKey(const Key('surface-interaction-open-dialog')));
       await tester.pumpAndSettle();
 
+      expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
       final dialog = tester.widget<Dialog>(find.byType(Dialog));
       final close = tester.widget<IconButton>(find.byKey(const Key('surface-interaction-close')));
       final theme = Theme.of(tester.element(find.byType(Dialog)));
@@ -36,8 +45,10 @@ void main() {
       expect(close.icon, isA<Icon>());
       expect((close.icon as Icon).icon, Icons.close_rounded);
       expect(close.tooltip, 'Fechar demonstração');
-      expect(close.constraints?.minWidth, CoeloSize.touchMin);
-      expect(close.constraints?.minHeight, CoeloSize.touchMin);
+      expect(
+        tester.getSize(find.byKey(const Key('surface-interaction-close'))),
+        const Size.square(CoeloSize.touchMin),
+      );
       expect(close.style?.foregroundColor?.resolve(<WidgetState>{}), theme.colorScheme.error);
       expect(
         close.style?.backgroundColor?.resolve(<WidgetState>{WidgetState.hovered}),

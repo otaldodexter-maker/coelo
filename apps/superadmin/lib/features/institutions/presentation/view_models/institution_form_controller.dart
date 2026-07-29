@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:characters/characters.dart' as characters;
 import 'dart:typed_data';
 
 import '../../domain/institution_directory_item.dart';
+import '../../domain/institution_people.dart';
 import '../../domain/institution_record.dart';
+
+export '../../domain/institution_people.dart';
 
 enum InstitutionFormStep {
   branding('Identidade visual'),
@@ -18,101 +22,6 @@ enum InstitutionFormStep {
 }
 
 enum InstitutionFormStepStatus { current, complete, incomplete, error }
-
-enum InstitutionAdministratorLevel {
-  adminMaster('Admin Master'),
-  authorizedAdministrator('Administrador autorizado'),
-  coordinator('Coordenador');
-
-  const InstitutionAdministratorLevel(this.label);
-  final String label;
-}
-
-enum InstitutionInvitationStatus {
-  notSent('Não enviado'),
-  sent('Enviado'),
-  accepted('Aceito'),
-  expired('Expirado');
-
-  const InstitutionInvitationStatus(this.label);
-  final String label;
-}
-
-final class InstitutionPersonDraft {
-  const InstitutionPersonDraft({
-    required this.firstName,
-    required this.lastName,
-    required this.displayName,
-    required this.email,
-    required this.mobilePhone,
-  });
-
-  final String firstName;
-  final String lastName;
-  final String displayName;
-  final String email;
-  final String mobilePhone;
-
-  InstitutionPersonDraft copyWith({
-    String? firstName,
-    String? lastName,
-    String? displayName,
-    String? email,
-    String? mobilePhone,
-  }) => InstitutionPersonDraft(
-    firstName: firstName ?? this.firstName,
-    lastName: lastName ?? this.lastName,
-    displayName: displayName ?? this.displayName,
-    email: email ?? this.email,
-    mobilePhone: mobilePhone ?? this.mobilePhone,
-  );
-}
-
-final class InstitutionLegalRepresentative {
-  const InstitutionLegalRepresentative({required this.id, required this.person});
-
-  final String id;
-  final InstitutionPersonDraft person;
-}
-
-final class InstitutionInvitationHistoryEntry {
-  const InstitutionInvitationHistoryEntry({required this.status, required this.occurredAt});
-
-  final InstitutionInvitationStatus status;
-  final DateTime occurredAt;
-}
-
-final class InstitutionAdministratorDraft {
-  const InstitutionAdministratorDraft({
-    required this.id,
-    required this.person,
-    required this.level,
-    required this.invitationStatus,
-    required this.invitationHistory,
-    this.sourceRepresentativeId,
-  });
-
-  final String id;
-  final InstitutionPersonDraft person;
-  final InstitutionAdministratorLevel level;
-  final InstitutionInvitationStatus invitationStatus;
-  final List<InstitutionInvitationHistoryEntry> invitationHistory;
-  final String? sourceRepresentativeId;
-
-  InstitutionAdministratorDraft copyWith({
-    InstitutionPersonDraft? person,
-    InstitutionAdministratorLevel? level,
-    InstitutionInvitationStatus? invitationStatus,
-    List<InstitutionInvitationHistoryEntry>? invitationHistory,
-  }) => InstitutionAdministratorDraft(
-    id: id,
-    person: person ?? this.person,
-    level: level ?? this.level,
-    invitationStatus: invitationStatus ?? this.invitationStatus,
-    invitationHistory: invitationHistory ?? this.invitationHistory,
-    sourceRepresentativeId: sourceRepresentativeId,
-  );
-}
 
 enum InstitutionFormField {
   publicName,
@@ -159,11 +68,13 @@ enum InstitutionFormField {
   secondaryTextColor,
   tertiaryTextColor,
   surfaceColor,
+  secondarySurfaceColor,
 }
 
 final class InstitutionFormController extends ChangeNotifier {
-  InstitutionFormController({InstitutionRecord? record})
+  InstitutionFormController({InstitutionRecord? record, Set<String> reservedHandles = const {}})
     : original = record,
+      _reservedHandles = reservedHandles.map(_normalizeHandle).toSet(),
       status = record?.status ?? InstitutionStatus.draft,
       plan = record?.plan ?? InstitutionPlan.essential,
       subscriptionStatus = record?.subscriptionStatus ?? InstitutionSubscriptionStatus.draft,
@@ -175,14 +86,31 @@ final class InstitutionFormController extends ChangeNotifier {
     for (final field in InstitutionFormField.values) {
       _controllers[field] = TextEditingController(text: values[field] ?? '');
     }
-    final legacyRepresentative = _legacyRepresentative(record);
-    if (legacyRepresentative != null) {
-      _legalRepresentatives.add(legacyRepresentative);
+    if (record != null && record.legalRepresentatives.isNotEmpty) {
+      _legalRepresentatives.addAll(record.legalRepresentatives);
+    } else {
+      final legacyRepresentative = _legacyRepresentative(record);
+      if (legacyRepresentative != null) {
+        _legalRepresentatives.add(legacyRepresentative);
+      }
+    }
+    if (record != null) {
+      _administrators.addAll(record.administrators);
+    }
+    for (final id in [
+      for (final representative in _legalRepresentatives) representative.id,
+      for (final administrator in _administrators) administrator.id,
+    ]) {
+      final suffix = int.tryParse(RegExp(r'(\d+)$').firstMatch(id)?.group(1) ?? '') ?? 0;
+      if (suffix > _personSequence) {
+        _personSequence = suffix;
+      }
     }
     _initialSignature = _signature;
   }
 
   final InstitutionRecord? original;
+  final Set<String> _reservedHandles;
   final Map<InstitutionFormField, TextEditingController> _controllers = {};
   final Set<InstitutionFormStep> _attemptedSteps = {};
   final List<InstitutionLegalRepresentative> _legalRepresentatives = [];
@@ -190,6 +118,8 @@ final class InstitutionFormController extends ChangeNotifier {
   late String _initialSignature;
   bool _slugManuallyEdited = false;
   var _personSequence = 0;
+  String? peopleRuleMessage;
+  String? administratorNeedingEmailId;
 
   InstitutionFormStep currentStep = InstitutionFormStep.branding;
   InstitutionStatus status;
@@ -221,17 +151,37 @@ final class InstitutionFormController extends ChangeNotifier {
   };
   String? get legalRepresentativesError =>
       _attemptedSteps.contains(InstitutionFormStep.legalRepresentatives) &&
-          !isEditing &&
           _legalRepresentatives.isEmpty
       ? 'Adicione pelo menos um representante legal para concluir o cadastro.'
+      : null;
+  String? get administratorsError =>
+      _attemptedSteps.contains(InstitutionFormStep.administrators) && _administrators.isEmpty
+      ? 'Adicione pelo menos um administrador para concluir o cadastro.'
       : null;
 
   TextEditingController controllerOf(InstitutionFormField field) => _controllers[field]!;
   String text(InstitutionFormField field) => controllerOf(field).text.trim();
+  int get profileBioLength =>
+      characters.Characters(controllerOf(InstitutionFormField.profileBio).text).length;
+
+  void insertProfileBioEmoji(String emoji) {
+    final controller = controllerOf(InstitutionFormField.profileBio);
+    final selection = controller.selection;
+    final start = selection.isValid ? selection.start : controller.text.length;
+    final end = selection.isValid ? selection.end : controller.text.length;
+    final candidate = controller.text.replaceRange(start, end, emoji);
+    final clipped = characters.Characters(candidate).take(220).toString();
+    final desiredOffset = (start + emoji.length).clamp(0, clipped.length);
+    controller.value = TextEditingValue(
+      text: clipped,
+      selection: TextSelection.collapsed(offset: desiredOffset),
+    );
+    notifyListeners();
+  }
 
   void setText(InstitutionFormField field, String value, {bool userInitiated = false}) {
-    if (field == InstitutionFormField.profileBio && value.length > 220) {
-      value = value.substring(0, 220);
+    if (field == InstitutionFormField.profileBio && characters.Characters(value).length > 220) {
+      value = characters.Characters(value).take(220).toString();
     }
     if (field == InstitutionFormField.postalCode && userInitiated) {
       value = value.replaceAll(RegExp(r'\D'), '');
@@ -371,6 +321,7 @@ final class InstitutionFormController extends ChangeNotifier {
   }
 
   void addLegalRepresentative(InstitutionPersonDraft person) {
+    peopleRuleMessage = null;
     _legalRepresentatives.add(
       InstitutionLegalRepresentative(id: _nextPersonId('representative'), person: person),
     );
@@ -381,19 +332,24 @@ final class InstitutionFormController extends ChangeNotifier {
     final index = _legalRepresentatives.indexWhere((item) => item.id == id);
     if (index < 0) return;
     _legalRepresentatives[index] = InstitutionLegalRepresentative(id: id, person: person);
-    for (var adminIndex = 0; adminIndex < _administrators.length; adminIndex++) {
-      final administrator = _administrators[adminIndex];
-      if (administrator.sourceRepresentativeId == id) {
-        _administrators[adminIndex] = administrator.copyWith(person: person);
-      }
-    }
     notifyListeners();
   }
 
-  void removeLegalRepresentative(String id) {
+  bool removeLegalRepresentative(String id) {
+    if (_legalRepresentatives.length <= 1) {
+      peopleRuleMessage = 'Adicione outro representante legal antes de remover o último registro.';
+      notifyListeners();
+      return false;
+    }
     _legalRepresentatives.removeWhere((item) => item.id == id);
-    _administrators.removeWhere((item) => item.sourceRepresentativeId == id);
+    for (var index = 0; index < _administrators.length; index++) {
+      if (_administrators[index].sourceRepresentativeId == id) {
+        _administrators[index] = _administrators[index].copyWith(clearSourceRepresentativeId: true);
+      }
+    }
+    peopleRuleMessage = null;
     notifyListeners();
+    return true;
   }
 
   void confirmRepresentativeAdministrators(Set<String> representativeIds) {
@@ -406,7 +362,8 @@ final class InstitutionFormController extends ChangeNotifier {
       _administrators.add(
         InstitutionAdministratorDraft(
           id: _nextPersonId('administrator'),
-          person: representative.person,
+          person: representative.person.copyWith(),
+          handle: _nextAdministratorHandle(representative.person.displayName),
           level: InstitutionAdministratorLevel.adminMaster,
           invitationStatus: InstitutionInvitationStatus.notSent,
           invitationHistory: const [],
@@ -420,14 +377,20 @@ final class InstitutionFormController extends ChangeNotifier {
   void addAdministrator(
     InstitutionPersonDraft person, {
     required InstitutionAdministratorLevel level,
+    Uint8List? avatarBytes,
+    String? avatarFileName,
   }) {
+    peopleRuleMessage = null;
     _administrators.add(
       InstitutionAdministratorDraft(
         id: _nextPersonId('administrator'),
-        person: person,
+        person: person.copyWith(),
+        handle: _nextAdministratorHandle(person.displayName),
         level: level,
         invitationStatus: InstitutionInvitationStatus.notSent,
         invitationHistory: const [],
+        avatarBytes: avatarBytes,
+        avatarFileName: avatarFileName,
       ),
     );
     notifyListeners();
@@ -437,20 +400,97 @@ final class InstitutionFormController extends ChangeNotifier {
     String id, {
     required InstitutionPersonDraft person,
     required InstitutionAdministratorLevel level,
+    bool sendInvitationAfterSave = false,
   }) {
     final index = _administrators.indexWhere((item) => item.id == id);
     if (index < 0) return;
     _administrators[index] = _administrators[index].copyWith(person: person, level: level);
+    if (sendInvitationAfterSave &&
+        person.email.trim().isNotEmpty &&
+        personError(person, InstitutionPersonField.email) == null) {
+      administratorNeedingEmailId = null;
+      _transitionAdministratorInvitation(id, InstitutionInvitationStatus.sent);
+      return;
+    }
     notifyListeners();
   }
 
-  void removeAdministrator(String id) {
+  bool removeAdministrator(String id) {
+    if (_administrators.length <= 1) {
+      peopleRuleMessage = 'Adicione outro administrador antes de remover o último registro.';
+      notifyListeners();
+      return false;
+    }
     _administrators.removeWhere((item) => item.id == id);
+    peopleRuleMessage = null;
+    notifyListeners();
+    return true;
+  }
+
+  bool sendAdministratorInvitation(String id) {
+    final administrator = _administrators.where((item) => item.id == id).firstOrNull;
+    if (administrator == null) return false;
+    if (administrator.person.email.trim().isEmpty ||
+        personError(administrator.person, InstitutionPersonField.email) != null) {
+      administratorNeedingEmailId = id;
+      notifyListeners();
+      return false;
+    }
+    administratorNeedingEmailId = null;
+    _transitionAdministratorInvitation(id, InstitutionInvitationStatus.sent);
+    return true;
+  }
+
+  void cancelAdministratorEmailRequest() {
+    administratorNeedingEmailId = null;
     notifyListeners();
   }
 
-  void sendAdministratorInvitation(String id) {
-    _transitionAdministratorInvitation(id, InstitutionInvitationStatus.sent);
+  void setAdministratorAvatar(String id, {required Uint8List bytes, required String fileName}) {
+    final index = _administrators.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    _administrators[index] = _administrators[index].copyWith(
+      avatarBytes: bytes,
+      avatarFileName: fileName,
+    );
+    notifyListeners();
+  }
+
+  void removeAdministratorAvatar(String id) {
+    final index = _administrators.indexWhere((item) => item.id == id);
+    if (index < 0) return;
+    _administrators[index] = _administrators[index].copyWith(clearAvatar: true);
+    notifyListeners();
+  }
+
+  bool syncRepresentativeToAdministrator(String administratorId) {
+    final adminIndex = _administrators.indexWhere((item) => item.id == administratorId);
+    if (adminIndex < 0) return false;
+    final representativeId = _administrators[adminIndex].sourceRepresentativeId;
+    final representative = _legalRepresentatives
+        .where((item) => item.id == representativeId)
+        .firstOrNull;
+    if (representative == null) return false;
+    _administrators[adminIndex] = _administrators[adminIndex].copyWith(
+      person: representative.person.copyWith(),
+    );
+    notifyListeners();
+    return true;
+  }
+
+  bool syncAdministratorToRepresentative(String administratorId) {
+    final administrator = _administrators.where((item) => item.id == administratorId).firstOrNull;
+    if (administrator == null || administrator.sourceRepresentativeId == null) {
+      return false;
+    }
+    final representativeIndex = _legalRepresentatives.indexWhere(
+      (item) => item.id == administrator.sourceRepresentativeId,
+    );
+    if (representativeIndex < 0) return false;
+    _legalRepresentatives[representativeIndex] = _legalRepresentatives[representativeIndex]
+        .copyWith(person: administrator.person.copyWith());
+    notifyListeners();
+    return true;
   }
 
   void setAdministratorInvitationStatus(String id, InstitutionInvitationStatus status) {
@@ -506,6 +546,28 @@ final class InstitutionFormController extends ChangeNotifier {
     return true;
   }
 
+  bool validateEditSave() {
+    _attemptedSteps.add(currentStep);
+    if (!_isStepValid(currentStep)) {
+      notifyListeners();
+      return false;
+    }
+    const requiredPeopleSteps = [
+      InstitutionFormStep.legalRepresentatives,
+      InstitutionFormStep.administrators,
+    ];
+    _attemptedSteps.addAll(requiredPeopleSteps);
+    for (final step in requiredPeopleSteps) {
+      if (!_isStepValid(step)) {
+        currentStep = step;
+        notifyListeners();
+        return false;
+      }
+    }
+    notifyListeners();
+    return true;
+  }
+
   InstitutionFormStepStatus statusOf(InstitutionFormStep step) {
     if (step == currentStep) {
       return InstitutionFormStepStatus.current;
@@ -526,6 +588,15 @@ final class InstitutionFormController extends ChangeNotifier {
     final value = text(field);
     if (_requiredFields.contains(field) && value.isEmpty) {
       return 'Preencha este campo para concluir o cadastro.';
+    }
+    if (field == InstitutionFormField.slug && value.isNotEmpty) {
+      final handle = _normalizeHandle('@$value');
+      final administratorHandles = {
+        for (final administrator in _administrators) _normalizeHandle(administrator.handle),
+      };
+      if (_reservedHandles.contains(handle) || administratorHandles.contains(handle)) {
+        return 'Este @ já está em uso.';
+      }
     }
     if (field == InstitutionFormField.postalCode && !RegExp(r'^\d{8}$').hasMatch(value)) {
       return 'Informe um CEP com exatamente 8 dígitos.';
@@ -555,6 +626,53 @@ final class InstitutionFormController extends ChangeNotifier {
       return 'Informe pelo menos um telefone ou WhatsApp institucional.';
     }
     return null;
+  }
+
+  String? personError(InstitutionPersonDraft person, InstitutionPersonField field) {
+    final value = switch (field) {
+      InstitutionPersonField.firstName => person.firstName,
+      InstitutionPersonField.lastName => person.lastName,
+      InstitutionPersonField.displayName => person.displayName,
+      InstitutionPersonField.email => person.email,
+      InstitutionPersonField.mobilePhone => person.mobilePhone,
+      InstitutionPersonField.cpf => person.cpf,
+    }.trim();
+    if ({
+          InstitutionPersonField.firstName,
+          InstitutionPersonField.lastName,
+          InstitutionPersonField.displayName,
+        }.contains(field) &&
+        value.isEmpty) {
+      return 'Preencha este campo.';
+    }
+    if (field == InstitutionPersonField.email &&
+        value.isNotEmpty &&
+        !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
+      return 'Informe um e-mail válido, como nome@dominio.com.';
+    }
+    if (field == InstitutionPersonField.mobilePhone &&
+        value.isNotEmpty &&
+        value.replaceAll(RegExp(r'\D'), '').length < 10) {
+      return 'Informe um telefone válido com DDD.';
+    }
+    if (field == InstitutionPersonField.cpf && value.isNotEmpty && !_isValidCpf(value)) {
+      return 'Informe um CPF válido.';
+    }
+    return null;
+  }
+
+  bool isPersonValid(InstitutionPersonDraft person) =>
+      InstitutionPersonField.values.every((field) => personError(person, field) == null);
+
+  String formatCpf(String value) {
+    final digits = characters.Characters(value.replaceAll(RegExp(r'\D'), '')).take(11).toString();
+    final buffer = StringBuffer();
+    for (var index = 0; index < digits.length; index++) {
+      if (index == 3 || index == 6) buffer.write('.');
+      if (index == 9) buffer.write('-');
+      buffer.write(digits[index]);
+    }
+    return buffer.toString();
   }
 
   String? get trialEndError {
@@ -630,12 +748,15 @@ final class InstitutionFormController extends ChangeNotifier {
       secondaryTextColor: text(InstitutionFormField.secondaryTextColor),
       tertiaryTextColor: text(InstitutionFormField.tertiaryTextColor),
       surfaceColor: text(InstitutionFormField.surfaceColor),
+      secondarySurfaceColor: text(InstitutionFormField.secondarySurfaceColor),
       profileBio: text(InstitutionFormField.profileBio),
       profileLinks: [
         for (final pair in _linkFieldPairs)
           if (text(pair.$1).isNotEmpty || text(pair.$2).isNotEmpty)
             InstitutionProfileLink(label: text(pair.$1), url: text(pair.$2)),
       ],
+      legalRepresentatives: List.unmodifiable(_legalRepresentatives),
+      administrators: List.unmodifiable(_administrators),
       units: units,
     );
   }
@@ -645,7 +766,12 @@ final class InstitutionFormController extends ChangeNotifier {
       return _stepsBeforeReview.every(_isStepValid);
     }
     if (step == InstitutionFormStep.legalRepresentatives) {
-      return isEditing || _legalRepresentatives.isNotEmpty;
+      return _legalRepresentatives.isNotEmpty &&
+          _legalRepresentatives.every((item) => isPersonValid(item.person));
+    }
+    if (step == InstitutionFormStep.administrators) {
+      return _administrators.isNotEmpty &&
+          _administrators.every((item) => isPersonValid(item.person));
     }
     if (step == InstitutionFormStep.plan &&
         subscriptionStatus == InstitutionSubscriptionStatus.trial &&
@@ -682,10 +808,29 @@ final class InstitutionFormController extends ChangeNotifier {
     for (final administrator in _administrators)
       '${administrator.id}:${_personSignature(administrator.person)}:'
           '${administrator.level.name}:${administrator.invitationStatus.name}:'
-          '${administrator.invitationHistory.length}',
+          '${administrator.invitationHistory.length}:${administrator.handle}:'
+          '${administrator.sourceRepresentativeId ?? ''}:${administrator.avatarFileName ?? ''}:'
+          '${administrator.avatarBytes?.hashCode ?? ''}',
   ].join('|');
 
   String _nextPersonId(String prefix) => '$prefix-${++_personSequence}';
+
+  String _nextAdministratorHandle(String displayName) {
+    final base = _slugify(displayName).isEmpty ? 'administrador' : _slugify(displayName);
+    final used = {
+      ..._reservedHandles,
+      if (text(InstitutionFormField.slug).isNotEmpty)
+        _normalizeHandle('@${text(InstitutionFormField.slug)}'),
+      for (final administrator in _administrators) _normalizeHandle(administrator.handle),
+    };
+    var suffix = 1;
+    var candidate = '@$base';
+    while (used.contains(_normalizeHandle(candidate))) {
+      suffix++;
+      candidate = '@$base-$suffix';
+    }
+    return candidate;
+  }
 
   @override
   void dispose() {
@@ -722,6 +867,7 @@ const _colorFields = {
   InstitutionFormField.secondaryTextColor,
   InstitutionFormField.tertiaryTextColor,
   InstitutionFormField.surfaceColor,
+  InstitutionFormField.secondarySurfaceColor,
 };
 
 const _urlFields = {
@@ -790,7 +936,8 @@ InstitutionFormStep _stepFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.textColor ||
   InstitutionFormField.secondaryTextColor ||
   InstitutionFormField.tertiaryTextColor ||
-  InstitutionFormField.surfaceColor => InstitutionFormStep.branding,
+  InstitutionFormField.surfaceColor ||
+  InstitutionFormField.secondarySurfaceColor => InstitutionFormStep.branding,
 };
 
 Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
@@ -838,6 +985,7 @@ Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
   InstitutionFormField.secondaryTextColor: record?.secondaryTextColor ?? '#3F4549',
   InstitutionFormField.tertiaryTextColor: record?.tertiaryTextColor ?? '#3F4549',
   InstitutionFormField.surfaceColor: record?.surfaceColor ?? '#FFFFFF',
+  InstitutionFormField.secondarySurfaceColor: record?.secondarySurfaceColor ?? '#F4F5F5',
 };
 
 bool _isWebUrl(String value) {
@@ -868,6 +1016,7 @@ InstitutionLegalRepresentative? _legacyRepresentative(InstitutionRecord? record)
       displayName: record.ownerDisplayName,
       email: record.ownerEmail,
       mobilePhone: record.ownerMobilePhone,
+      cpf: '',
     ),
   );
 }
@@ -878,7 +1027,28 @@ String _personSignature(InstitutionPersonDraft person) => [
   person.displayName,
   person.email,
   person.mobilePhone,
+  person.cpf,
 ].join(':');
+
+String _normalizeHandle(String value) =>
+    value.trim().toLowerCase().replaceFirst(RegExp(r'^@?'), '@');
+
+bool _isValidCpf(String value) {
+  final digits = value.replaceAll(RegExp(r'\D'), '');
+  if (digits.length != 11 || RegExp(r'^(\d)\1{10}$').hasMatch(digits)) {
+    return false;
+  }
+  int verifier(int length) {
+    var sum = 0;
+    for (var index = 0; index < length; index++) {
+      sum += int.parse(digits[index]) * (length + 1 - index);
+    }
+    final remainder = (sum * 10) % 11;
+    return remainder == 10 ? 0 : remainder;
+  }
+
+  return verifier(9) == int.parse(digits[9]) && verifier(10) == int.parse(digits[10]);
+}
 
 String _slugify(String value) {
   var normalized = value.toLowerCase();

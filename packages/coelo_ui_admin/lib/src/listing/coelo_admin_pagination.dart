@@ -2,7 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 final class CoeloAdminPagination extends StatelessWidget {
-  CoeloAdminPagination({
+  const CoeloAdminPagination({
     required this.currentPage,
     required this.totalPages,
     required this.onPrevious,
@@ -20,10 +20,6 @@ final class CoeloAdminPagination extends StatelessWidget {
 
   final int currentPage;
   final int totalPages;
-  final int pageSize;
-  final List<int> pageSizeOptions;
-  final ValueChanged<int> onPageSelected;
-  final ValueChanged<int> onPageSizeChanged;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
   final ValueChanged<int>? onPageSelected;
@@ -69,59 +65,35 @@ class _CoeloAdminPaginationContent extends StatefulWidget {
   final ValueChanged<int>? onPageSizeChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 180,
-      child: DropdownButtonFormField<int>(
-        key: const Key('coelo-pagination-page-size'),
-        initialValue: pageSize,
-        decoration: const InputDecoration(labelText: 'Itens por página'),
-        items: pageSizeOptions
-            .map((size) => DropdownMenuItem<int>(value: size, child: Text('$size')))
-            .toList(),
-        onChanged: (size) {
-          if (size != null) {
-            onChanged(size);
-          }
-        },
-      ),
-    );
-  }
+  State<_CoeloAdminPaginationContent> createState() => _CoeloAdminPaginationContentState();
 }
 
-class _NavigationButton extends StatefulWidget {
-  const _NavigationButton({
-    required this.label,
-    required this.semanticLabel,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String label;
-  final String semanticLabel;
-  final IconData icon;
-  final VoidCallback? onPressed;
-
-  @override
-  State<_NavigationButton> createState() => _NavigationButtonState();
-}
-
-class _NavigationButtonState extends State<_NavigationButton> {
-  final FocusNode _focusNode = FocusNode();
+class _CoeloAdminPaginationContentState extends State<_CoeloAdminPaginationContent> {
+  final FocusNode _previousFocusNode = FocusNode();
+  final FocusNode _nextFocusNode = FocusNode();
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _previousFocusNode.dispose();
+    _nextFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final action = widget.onPressed == null
+    final previousCallback = widget.currentPage > 1 ? widget.onPrevious : null;
+    final nextCallback = widget.currentPage < widget.totalPages ? widget.onNext : null;
+    final previousAction = previousCallback == null
         ? null
         : () {
-            _focusNode.requestFocus();
-            widget.onPressed!();
+            _previousFocusNode.requestFocus();
+            previousCallback();
+          };
+    final nextAction = nextCallback == null
+        ? null
+        : () {
+            _nextFocusNode.requestFocus();
+            nextCallback();
           };
 
     return Wrap(

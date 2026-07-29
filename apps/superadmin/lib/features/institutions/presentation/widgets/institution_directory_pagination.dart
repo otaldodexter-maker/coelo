@@ -21,15 +21,11 @@ final class InstitutionDirectoryPagination extends StatelessWidget {
       currentPage: page.page + 1,
       totalPages: totalPages,
       pageSize: viewModel.query.pageSize,
-      pageSizeOptions: InstitutionDirectoryQuery.allowedPageSizes,
+      pageSizeOptions: pageSizeOptions,
       onPageSelected: (value) => viewModel.goToPage(value - 1),
       onPageSizeChanged: viewModel.setPageSize,
       onPrevious: page.hasPrevious ? () => viewModel.goToPage(page.page - 1) : null,
       onNext: page.hasNext ? () => viewModel.goToPage(page.page + 1) : null,
-      onPageSelected: (value) => viewModel.goToPage(value - 1),
-      pageSize: viewModel.query.pageSize,
-      pageSizeOptions: pageSizeOptions,
-      onPageSizeChanged: viewModel.setPageSize,
     );
   }
 }

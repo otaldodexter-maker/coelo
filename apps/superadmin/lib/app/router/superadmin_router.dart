@@ -126,7 +126,13 @@ GoRouter createSuperadminRouter({
                   child: child,
                 )
               : child;
-          return DevMenuOverlay(onNavigate: context.go, child: routedChild);
+          return DevMenuOverlay(
+            onNavigate: context.go,
+            showTrigger:
+                location != SuperadminRoutes.conversations &&
+                location != SuperadminRoutes.devConversations,
+            child: routedChild,
+          );
         },
         routes: [
           GoRoute(

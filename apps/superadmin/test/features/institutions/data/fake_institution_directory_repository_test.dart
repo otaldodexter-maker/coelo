@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_people.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -35,6 +36,31 @@ void main() {
     );
     final page = await repository.fetchPage(InstitutionDirectoryQuery(search: 'Aurora Atualizado'));
     expect(page.items.single.id, 'demo-institution-aurora');
+  });
+
+  test('reserves institution and administrator handles globally, except one institution', () {
+    final aurora = demoInstitutionRecords.first.copyWith(
+      administrators: const [
+        InstitutionAdministratorDraft(
+          id: 'administrator-ana',
+          person: InstitutionPersonDraft(
+            firstName: 'Ana',
+            lastName: 'Souza',
+            displayName: 'Ana Souza',
+          ),
+          handle: '@Ana-Souza',
+          level: InstitutionAdministratorLevel.adminMaster,
+          invitationStatus: InstitutionInvitationStatus.accepted,
+          invitationHistory: [],
+        ),
+      ],
+    );
+    final repository = FakeInstitutionDirectoryRepository(
+      records: [aurora, demoInstitutionRecords[1]],
+    );
+
+    expect(repository.reservedHandles(), {'@aurora', '@ana-souza', '@horizonte'});
+    expect(repository.reservedHandles(excludingInstitutionId: aurora.id), {'@horizonte'});
   });
 
   test('searches public, trade, and legal names but never the domain', () async {
@@ -111,7 +137,14 @@ void main() {
     );
     final repository = FakeInstitutionDirectoryRepository(items: items);
 
-    final result = await repository.fetchPage(InstitutionDirectoryQuery(page: 1, pageSize: 20));
+    final pageOfTen = await repository.fetchPage(InstitutionDirectoryQuery(page: 11, pageSize: 10));
+    final pageOfFifty = await repository.fetchPage(
+      InstitutionDirectoryQuery(page: 1, pageSize: 50),
+    );
+    final pageOfOneHundred = await repository.fetchPage(
+      InstitutionDirectoryQuery(page: 1, pageSize: 100),
+    );
+    final pageOfFiveHundred = await repository.fetchPage(InstitutionDirectoryQuery(pageSize: 500));
 
     expect(pageOfTen.items.map((item) => item.id), [
       for (var index = 110; index < 120; index++) 'institution-${index.toString().padLeft(3, '0')}',

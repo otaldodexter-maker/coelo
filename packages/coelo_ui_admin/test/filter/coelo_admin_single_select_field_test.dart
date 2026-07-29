@@ -137,6 +137,87 @@ void main() {
     expect(find.widgetWithText(MenuItemButton, 'UF 00'), findsNothing);
   });
 
+  testWidgets('keeps a long searchable menu below the field with a scrolling option list', (
+    tester,
+  ) async {
+    final options = List.generate(27, (index) => 'UF ${index.toString().padLeft(2, '0')}');
+    await tester.binding.setSurfaceSize(const Size(800, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.only(top: 80, left: 120, right: 120),
+            child: CoeloAdminSingleSelectField<String>(
+              label: 'UF',
+              value: options.first,
+              options: options,
+              optionLabel: _identity,
+              onChanged: _ignore,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final trigger = find.byType(InputDecorator).first;
+    await tester.tap(find.text(options.first));
+    await tester.pumpAndSettle();
+
+    final search = find.byKey(const Key('coelo-admin-single-select-search'));
+    final optionScroll = find.byKey(const Key('coelo-admin-single-select-options-scroll'));
+    expect(tester.getTopLeft(search).dy, greaterThan(tester.getBottomLeft(trigger).dy));
+    expect(
+      tester.getTopLeft(search).dy - tester.getBottomLeft(trigger).dy,
+      CoeloSpacing.space1 + CoeloSpacing.space2,
+    );
+    expect(tester.getSize(optionScroll).height, lessThanOrEqualTo(CoeloSize.touchMin * 6));
+
+    final searchTop = tester.getTopLeft(search).dy;
+    await tester.drag(optionScroll, const Offset(0, -240));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(search).dy, searchTop);
+    expect(find.text('UF 10'), findsOneWidget);
+  });
+
+  testWidgets('keeps a low scrollable trigger below and its options tappable', (tester) async {
+    var value = 'Rascunho';
+    await tester.binding.setSurfaceSize(const Size(800, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(120, 620, 120, 400),
+              child: StatefulBuilder(
+                builder: (context, setState) => CoeloAdminSingleSelectField<String>(
+                  label: 'Status',
+                  value: value,
+                  options: const ['Rascunho', 'Período de teste', 'Ativa', 'Suspensa'],
+                  optionLabel: _identity,
+                  onChanged: (option) => setState(() => value = option),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final trigger = find.byType(InputDecorator);
+    await tester.tap(find.text(value));
+    await tester.pumpAndSettle();
+
+    final option = find.widgetWithText(MenuItemButton, 'Período de teste');
+    expect(tester.getTopLeft(option).dy, greaterThan(tester.getBottomLeft(trigger).dy));
+    await tester.tap(option);
+    await tester.pumpAndSettle();
+    expect(value, 'Período de teste');
+  });
+
   testWidgets('opens from keyboard focus and returns selection focus to trigger', (tester) async {
     var value = 'Rascunho';
     await tester.pumpWidget(

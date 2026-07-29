@@ -98,6 +98,9 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   }
 
   Future<void> setPageSize(int value, {bool resetSort = false}) {
+    if (!InstitutionDirectoryQuery.allowedPageSizes.contains(value)) {
+      return Future<void>.value();
+    }
     return _replaceAndLoad(
       _queryWith(
         pageSize: value,
@@ -117,13 +120,6 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       return Future<void>.value();
     }
     return _replaceAndLoad(_queryWith(page: value));
-  }
-
-  Future<void> setPageSize(int value) {
-    if (!InstitutionDirectoryQuery.allowedPageSizes.contains(value)) {
-      return Future<void>.value();
-    }
-    return _replaceAndLoad(_queryWith(pageSize: value));
   }
 
   InstitutionDirectoryQuery _queryWith({

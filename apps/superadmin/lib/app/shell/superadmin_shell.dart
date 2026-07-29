@@ -40,7 +40,7 @@ class SuperadminShell extends StatefulWidget {
     this.onDestinationSelected,
     this.onOpenConversations,
     this.onBugReportSubmitted,
-    this.showChatLauncher = false,
+    this.showChatLauncher = true,
     this.chatLauncherBottomInset = 0,
     this.isHost = false,
     super.key,
@@ -58,7 +58,8 @@ class SuperadminShell extends StatefulWidget {
        actions = const [],
        compactActions = const [],
        activityController = null,
-       showChatLauncher = false,
+       onOpenConversations = null,
+       showChatLauncher = true,
        chatLauncherBottomInset = 0,
        isHost = true;
 
@@ -398,9 +399,12 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
 
   Widget _withChatLauncher(Widget child, {ValueChanged<String>? onDestinationSelected}) {
     final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
-    if (!widget.showChatLauncher || destinationHandler == null) {
+    if (!widget.showChatLauncher || widget.currentDestination == 'conversations') {
       return child;
     }
+    final openConversations =
+        widget.onOpenConversations ??
+        (destinationHandler == null ? () {} : () => destinationHandler('conversations'));
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -412,7 +416,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               (widget.chatLauncherBottomInset > 0
                   ? _shellGutter + widget.chatLauncherBottomInset
                   : 0),
-          child: SuperadminChatLauncher(onExpand: () => destinationHandler('conversations')),
+          child: SuperadminChatLauncher(onOpenConversations: openConversations),
         ),
       ],
     );

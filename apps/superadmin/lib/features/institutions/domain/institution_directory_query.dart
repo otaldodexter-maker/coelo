@@ -25,6 +25,9 @@ enum InstitutionDirectorySortColumn {
 }
 
 final class InstitutionDirectoryQuery {
+  static const defaultPageSize = 11;
+  static const allowedPageSizes = <int>[8, 10, 11, 20, 50, 100, 500];
+
   InstitutionDirectoryQuery({
     this.search = '',
     Set<InstitutionStatus> statuses = const {},
@@ -34,11 +37,11 @@ final class InstitutionDirectoryQuery {
     Set<String> districts = const {},
     Set<String> typeIds = const {},
     this.page = 0,
-    this.pageSize = 11,
+    this.pageSize = defaultPageSize,
     this.sortColumn = InstitutionDirectorySortColumn.publicName,
     this.sortAscending = true,
   }) : assert(page >= 0),
-       assert(pageSize > 0),
+       assert(allowedPageSizes.contains(pageSize)),
        statuses = Set.unmodifiable(statuses),
        states = Set.unmodifiable(states),
        cities = Set.unmodifiable(cities),

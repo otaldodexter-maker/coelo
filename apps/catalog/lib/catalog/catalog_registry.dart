@@ -24,7 +24,8 @@ const catalogRegistryManifestJson = r'''
   "admin.work-item-card": [],
   "admin.assignee-stack": [],
   "admin.workspace-layout": [],
-  "admin.context-picker": []
+  "admin.context-picker": [],
+  "admin.dialog-shell": ["one-action", "two-actions"]
 }
 ''';
 
@@ -33,6 +34,18 @@ final class CatalogExample {
 
   final CatalogExampleBuilder builder;
   final List<String> approvedVariants;
+}
+
+final class _DialogShellExample extends StatelessWidget {
+  const _DialogShellExample();
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    title: 'Confirmar alterações',
+    body: const Text('O cabeçalho e o rodapé permanecem visíveis enquanto o conteúdo rola.'),
+    secondaryAction: OutlinedButton(onPressed: () {}, child: const Text('Cancelar')),
+    primaryAction: FilledButton(onPressed: () {}, child: const Text('Continuar')),
+  );
 }
 
 Map<String, CatalogExample> buildCatalogRegistry() {
@@ -52,7 +65,7 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'admin.work-item-card': (_) => const _WorkItemCardExample(),
     'admin.assignee-stack': (_) => const _AssigneeStackExample(),
     'admin.workspace-layout': (_) => const _WorkspaceLayoutExample(),
-    ...buildChatCatalogExamples(),
+    'admin.dialog-shell': (_) => const _DialogShellExample(),
   };
   final decoded = jsonDecode(catalogRegistryManifestJson) as Map<String, Object?>;
   final variants = decoded.map(
@@ -244,16 +257,10 @@ final class _PaginationExampleState extends State<_PaginationExample> {
       currentPage: _page,
       totalPages: 20,
       pageSize: _pageSize,
-      pageSizeOptions: const [10, 50, 100, 500],
-      onPageSelected: (page) => setState(() => _page = page),
-      onPageSizeChanged: (size) => setState(() {
-        _pageSize = size;
-        _page = 1;
-      }),
-      onPrevious: _page == 1 ? null : () => setState(() => _page--),
-      onNext: _page == 4 ? null : () => setState(() => _page++),
-      pageSize: _pageSize,
       pageSizeOptions: const [8, 20, 50, 100],
+      onPageSelected: (page) => setState(() => _page = page),
+      onPrevious: _page == 1 ? null : () => setState(() => _page--),
+      onNext: _page == 20 ? null : () => setState(() => _page++),
       onPageSizeChanged: (value) => setState(() {
         _pageSize = value;
         _page = 1;

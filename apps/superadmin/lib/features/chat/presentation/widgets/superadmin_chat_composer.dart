@@ -25,9 +25,12 @@ final class SuperadminChatComposer extends StatefulWidget {
 }
 
 final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
+  late final FocusNode _focusNode;
+
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode(onKeyEvent: _onKey);
     widget.controller.addListener(_refresh);
   }
 
@@ -42,6 +45,7 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
   @override
   void dispose() {
     widget.controller.removeListener(_refresh);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -77,26 +81,24 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
               onTap: widget.onEmoji,
             ),
             Expanded(
-              child: Focus(
-                onKeyEvent: _onKey,
-                child: TextField(
-                  key: const Key('superadmin-chat-composer-field'),
-                  controller: widget.controller,
-                  minLines: 1,
-                  maxLines: widget.compact ? 3 : 5,
-                  textInputAction: TextInputAction.newline,
-                  decoration: InputDecoration(
-                    hintText: 'Mensagem',
-                    filled: true,
-                    fillColor: colors.surfaceContainerLow,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(CoeloRadius.xl),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(CoeloRadius.xl),
-                      borderSide: BorderSide.none,
-                    ),
+              child: TextField(
+                key: const Key('superadmin-chat-composer-field'),
+                controller: widget.controller,
+                focusNode: _focusNode,
+                minLines: 1,
+                maxLines: widget.compact ? 3 : 5,
+                textInputAction: TextInputAction.newline,
+                decoration: InputDecoration(
+                  hintText: 'Mensagem',
+                  filled: true,
+                  fillColor: colors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(CoeloRadius.xl),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),

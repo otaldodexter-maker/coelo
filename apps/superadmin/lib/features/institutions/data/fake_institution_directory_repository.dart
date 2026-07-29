@@ -21,6 +21,14 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
 
   List<InstitutionRecord> get records => List.unmodifiable(_records);
 
+  Set<String> reservedHandles({String? excludingInstitutionId}) => {
+    for (final record in _records)
+      if (record.id != excludingInstitutionId) ...{
+        '@${record.slug.toLowerCase()}',
+        for (final administrator in record.administrators) administrator.handle.toLowerCase(),
+      },
+  };
+
   InstitutionRecord? findById(String id) {
     for (final record in _records) {
       if (record.id == id) {

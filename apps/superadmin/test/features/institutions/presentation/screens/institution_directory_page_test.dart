@@ -1385,41 +1385,8 @@ Finder _institutionTableRows() {
   });
 }
 
-Finder _directoryScrollFinder() {
-  return find
-      .descendant(
-        of: find.byKey(const Key('institution-directory-content-scroll')),
-        matching: find.byType(Scrollable),
-      )
-      .first;
-}
-
-void _expectVisibleAboveFooter(
-  WidgetTester tester, {
-  required Finder item,
-  required Finder footer,
-}) {
-  final viewportRect = tester.getRect(_directoryScrollFinder());
-  final itemRect = tester.getRect(item);
-  final footerRect = tester.getRect(footer);
-  expect(itemRect.top, greaterThanOrEqualTo(viewportRect.top));
-  expect(itemRect.bottom, lessThanOrEqualTo(footerRect.top - CoeloSpacing.space4));
-}
-
-Future<void> _scrollDirectoryToMax(WidgetTester tester) async {
-  tester
-      .state<ScrollableState>(_directoryScrollFinder())
-      .position
-      .jumpTo(tester.state<ScrollableState>(_directoryScrollFinder()).position.maxScrollExtent);
-  await tester.pumpAndSettle();
-}
-
-Future<void> _scrollDirectoryToStart(WidgetTester tester) async {
-  tester.state<ScrollableState>(_directoryScrollFinder()).position.jumpTo(0);
-  await tester.pumpAndSettle();
-}
-
 Widget _app({
+  Key? pageKey,
   Brightness brightness = Brightness.light,
   InstitutionDirectoryRepository? repository,
   TextScaler textScaler = TextScaler.noScaling,

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
+import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/account_profile.dart';
 import '../account_controller.dart';
@@ -90,10 +91,10 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() => _imageError = 'Não foi possível ler esta imagem.');
       return;
     }
-    final adjusted = await showDialog<_AvatarCropResult>(
+    final adjusted = await showDialog<AvatarCropResult>(
       context: context,
       barrierColor: Colors.black54,
-      builder: (context) => _AvatarCropDialog(bytes: bytes),
+      builder: (context) => AvatarCropDialog(bytes: bytes),
     );
     if (adjusted != null && mounted) {
       setState(() {
@@ -762,6 +763,8 @@ class _PasswordDialogState extends State<_PasswordDialog> {
   }
 }
 
+// TODO(consolidation): remove after all account references use AvatarCropDialog.
+// ignore: unused_element
 class _AvatarCropDialog extends StatefulWidget {
   const _AvatarCropDialog({required this.bytes});
   final Uint8List bytes;

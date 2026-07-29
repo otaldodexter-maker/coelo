@@ -23,6 +23,7 @@ final class SupportPage extends StatefulWidget {
     required this.onCatalogOpen,
     this.onHomeOpen,
     this.onUnitsOpen,
+    this.onConversationsOpen,
     super.key,
   });
   final SupportPrototypeController controller;
@@ -31,6 +32,7 @@ final class SupportPage extends StatefulWidget {
   final VoidCallback onCatalogOpen;
   final VoidCallback? onHomeOpen;
   final VoidCallback? onUnitsOpen;
+  final VoidCallback? onConversationsOpen;
   @override
   State<SupportPage> createState() => _SupportPageState();
 }

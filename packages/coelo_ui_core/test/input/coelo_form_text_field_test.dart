@@ -30,4 +30,54 @@ void main() {
     await tester.pump();
     expect(tester.widget<InputDecorator>(find.byType(InputDecorator)).isFocused, isTrue);
   });
+
+  testWidgets('top-aligns the prefix icon only for multiline fields', (tester) async {
+    final singleLineController = TextEditingController(text: 'Linha única');
+    final multilineController = TextEditingController(text: 'Primeira linha\nSegunda linha');
+    addTearDown(singleLineController.dispose);
+    addTearDown(multilineController.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Column(
+            children: [
+              CoeloFormTextField(
+                controller: singleLineController,
+                labelText: 'Assunto',
+                prefixIcon: Icons.title_rounded,
+              ),
+              CoeloFormTextField(
+                controller: multilineController,
+                labelText: 'Descrição',
+                prefixIcon: Icons.notes_rounded,
+                maxLines: 4,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final singleLineField = find.byType(TextFormField).first;
+    final multilineField = find.byType(TextFormField).last;
+    final singleLineEditable = find.descendant(
+      of: singleLineField,
+      matching: find.byType(EditableText),
+    );
+    final multilineEditable = find.descendant(
+      of: multilineField,
+      matching: find.byType(EditableText),
+    );
+
+    expect(
+      tester.getCenter(find.byIcon(Icons.title_rounded)).dy,
+      closeTo(tester.getCenter(singleLineEditable).dy, 1),
+    );
+    expect(
+      tester.getTopLeft(find.byIcon(Icons.notes_rounded)).dy,
+      closeTo(tester.getTopLeft(multilineEditable).dy, 1),
+    );
+  });
 }
