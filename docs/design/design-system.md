@@ -880,6 +880,27 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 - O rodapé sticky de Instituições é composição privada. Cards oferecem
   `11, 20, 50, 100`; tabela oferece `8, 20, 50, 100`.
 
+### Baselines visuais aprovadas do Superadmin
+
+As superfícies abaixo foram aprovadas em conjunto pelo Owner Coelo em
+2026-07-29. A matriz operacional completa e os caminhos dos goldens ficam em
+`.agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md`.
+Ela é obrigatória para revisão ou implementação dessas famílias:
+
+| Família | Baseline aprovada |
+| --- | --- |
+| Login | campos default/foco, checkbox, ação principal default/hover, recuperação e aviso restrito |
+| Instituições | toolbar, filtros, toggle, arquivos, cards/default/hover, tabela, gaps e paginação |
+| Home | conversas, orientação central, sugestões e compositor inferior |
+| Navegação | menu expandido, rail compacto, seleção por nível e flyouts |
+| Conta | flyout, Perfil, ajuste de foto e Configurações |
+| Overlays | popup de Bug como anatomia modal; X sempre negativo |
+| Instituição | wizard de criar/editar e rodapé de tela com ações nos extremos |
+
+Os goldens aprovados são evidência visual, não licença para copiar números
+locais. Componentes e tokens continuam sendo a implementação canônica. Arquivos
+em diretórios `failures/` são diagnósticos transitórios e nunca baseline.
+
 ### Ações negativas
 
 - `X`, sair, desligar, encerrar, fechar, remover, deletar e excluir pertencem à

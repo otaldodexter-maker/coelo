@@ -100,5 +100,15 @@ Assert-QueryContains -Query 'orange outlined ghost button hierarchy' `
     -ExpectedId 'pattern.action-hierarchy'
 Assert-QueryContains -Query 'primary secondary tertiary buttons' `
     -ExpectedId 'pattern.action-hierarchy'
+Assert-QueryContains -Query 'login security checkbox password' `
+    -ExpectedId 'pattern.approved-superadmin-surfaces'
+Assert-QueryContains -Query 'home help center conversations' `
+    -ExpectedId 'pattern.approved-superadmin-surfaces'
+Assert-QueryContains -Query 'sidebar rail menu selected child' `
+    -ExpectedId 'pattern.approved-superadmin-surfaces'
+Assert-QueryContains -Query 'profile settings avatar theme reduced motion' `
+    -ExpectedId 'pattern.approved-superadmin-surfaces'
+Assert-QueryContains -Query 'institution create edit wizard footer' `
+    -ExpectedId 'pattern.approved-superadmin-surfaces'
 
 Write-Output 'query-index.tests.ps1: PASS'

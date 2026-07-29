@@ -37,3 +37,10 @@ Flyouts usam `surface`, sem tint, borda, `radius.lg`, elevação e padding
 tokenizado. Perfil e Configurações formam o grupo padrão; ações terminais ou
 destrutivas ficam abaixo de divisor. O popup de Bug é a referência modal; Tour,
 Perfil e Arquivos são referências de flyout.
+
+Login, Instituições, Home, navegação, Conta, overlays e o wizard de
+Criar/Editar instituição possuem uma matriz visual aprovada única. Para essas
+famílias, consultar
+`.agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md`,
+o golden indicado e o padrão específico antes de alterar a composição. Pastas
+`failures/` contêm somente diagnóstico de regressão e não são referência.

@@ -18,6 +18,7 @@ void main() {
         'pattern.flyout-actions',
         'pattern.negative-actions',
         'pattern.dialog-actions',
+        'pattern.approved-superadmin-surfaces',
         'admin.resizable-table',
       ]),
     );
@@ -273,6 +274,24 @@ void main() {
     expect(save.width, delete.width);
     expect(cancel.bottom, lessThan(save.top));
     expect(save.bottom, lessThan(delete.top));
+  });
+
+  testWidgets('catalogs every approved Superadmin visual baseline family', (tester) async {
+    await _pumpFoundation(tester, 'pattern.approved-superadmin-surfaces', CoeloTheme.light);
+
+    for (final key in const [
+      Key('approved-surface-login'),
+      Key('approved-surface-institutions'),
+      Key('approved-surface-home'),
+      Key('approved-surface-navigation'),
+      Key('approved-surface-account'),
+      Key('approved-surface-overlays'),
+      Key('approved-surface-institution-form'),
+    ]) {
+      expect(find.byKey(key), findsOneWidget);
+    }
+    expect(find.textContaining('golden'), findsWidgets);
+    expect(find.textContaining('hover'), findsWidgets);
   });
 }
 

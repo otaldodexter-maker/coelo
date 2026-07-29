@@ -2,7 +2,7 @@
 name: coelo-ui
 description: Use when creating, changing, or reviewing Coelo UI in Flutter or future Astro surfaces, including screens, widgets, components, tokens, themes, states, responsiveness, accessibility, catalog examples, and visual regressions.
 metadata:
-  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
+  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
   status: "active"
   generated_at: "2026-07-29"
 ---
@@ -19,6 +19,12 @@ silenciosamente.
    menu, filtro, tabela, table, close, dismiss ou “X”, ler
    obrigatoriamente o [contrato de superfícies e interação](references/surface-interaction-contracts.md)
    antes de decidir ou implementar a composição visual.
+   Quando mencionar Login, Home, Instituições, menu lateral, rail, Perfil,
+   Configurações, popup de Bug, criar ou editar instituição, ler também as
+   [baselines visuais aprovadas do Superadmin](references/approved-superadmin-visual-baselines.md)
+   e consultar `pattern.approved-superadmin-surfaces`. O anexo temporário
+   registra a aprovação; o golden e o teste indicados na matriz são a evidência
+   persistente. Nunca usar `failures/` como referência.
    Quando mencionar listagem, diretório, cards/tabela, card hover, table hover,
    view toggle, arquivos, flyout, perfil, configurações, tour, sair, excluir ou
    deletar, ler também o

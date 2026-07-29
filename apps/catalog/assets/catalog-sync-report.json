@@ -102,6 +102,10 @@
       "source": "811c9dc5",
       "example": "080a9386"
     },
+    "pattern.approved-superadmin-surfaces": {
+      "source": "811c9dc5",
+      "example": "07b14b53"
+    },
     "pattern.overlay-surfaces": {
       "source": "811c9dc5",
       "example": "7bdfaf31"

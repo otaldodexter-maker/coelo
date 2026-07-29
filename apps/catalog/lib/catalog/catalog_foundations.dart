@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'catalog_foundation.dart';
 import 'admin_directory_catalog_foundations.dart';
+import 'approved_superadmin_catalog_foundation.dart';
 import 'error_page_catalog_foundation.dart';
 import 'surface_interaction_catalog_foundations.dart';
 
@@ -59,6 +60,7 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
     ...buildErrorPageFoundationRegistry(),
     ...buildSurfaceInteractionFoundationRegistry(),
     ...buildAdminDirectoryFoundationRegistry(),
+    ...buildApprovedSuperadminFoundationRegistry(),
   };
 }
 
