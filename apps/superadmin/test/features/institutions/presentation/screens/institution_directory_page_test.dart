@@ -393,7 +393,7 @@ void main() {
     final pinnedRow = find.byKey(
       const Key(
         'coelo-admin-table-pinned-row-background-'
-        'institution-table-row-demo-institution-aurora',
+        'institution-table-row-demo-institution-horizonte',
       ),
     );
     await tester.drag(
@@ -405,7 +405,7 @@ void main() {
     await tester.tapAt(Offset(pinnedTopLeft.dx + 100, tester.getCenter(pinnedRow).dy));
 
     expect(createRequested, isTrue);
-    expect(editedId, 'demo-institution-aurora');
+    expect(editedId, 'demo-institution-horizonte');
   });
 
   testWidgets('keeps the approved information hierarchy in the interactive table', (tester) async {
@@ -445,11 +445,11 @@ void main() {
     }
     expect(headerPositions, orderedEquals([...headerPositions]..sort()));
     expect(find.text('Razão social'), findsNothing);
-    expect(find.byKey(const Key('copy-domain-demo-institution-aurora')), findsOneWidget);
-    expect(find.byKey(const Key('copy-email-demo-institution-aurora')), findsOneWidget);
-    expect(find.byKey(const Key('copy-phone-demo-institution-aurora')), findsOneWidget);
-    expect(find.byKey(const Key('copy-mobile-phone-demo-institution-aurora')), findsOneWidget);
-    expect(find.text('01310-100'), findsOneWidget);
+    expect(find.byKey(const Key('copy-domain-demo-institution-horizonte')), findsOneWidget);
+    expect(find.byKey(const Key('copy-email-demo-institution-horizonte')), findsOneWidget);
+    expect(find.byKey(const Key('copy-phone-demo-institution-horizonte')), findsOneWidget);
+    expect(find.byKey(const Key('copy-mobile-phone-demo-institution-horizonte')), findsOneWidget);
+    expect(find.text('13025-100'), findsOneWidget);
 
     final viewportWidth = tester
         .getSize(find.byKey(const Key('institution-directory-table-viewport')))
@@ -581,14 +581,14 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
-    final copyEmail = find.byKey(const Key('copy-email-demo-institution-aurora'));
+    final copyEmail = find.byKey(const Key('copy-email-demo-institution-horizonte'));
     await tester.ensureVisible(copyEmail);
     await tester.pumpAndSettle();
     await tester.tap(copyEmail);
     await tester.pump();
 
     expect(clipboardCalls, hasLength(1));
-    expect(clipboardCalls.single.arguments, {'text': 'contato@aurora.coelo.me'});
+    expect(clipboardCalls.single.arguments, {'text': 'contato@centrohorizonte.coelo.me'});
     expect(find.text('E-mail copiado.'), findsOneWidget);
   });
 
@@ -795,14 +795,17 @@ void main() {
     final row = find.byKey(
       const Key(
         'coelo-admin-table-row-background-'
-        'institution-table-row-demo-institution-aurora',
+        'institution-table-row-demo-institution-horizonte',
       ),
     );
-    expect(find.byKey(const Key('institution-table-row-demo-institution-aurora')), findsOneWidget);
+    expect(
+      find.byKey(const Key('institution-table-row-demo-institution-horizonte')),
+      findsOneWidget,
+    );
     final pinned = find.byKey(
       const Key(
         'coelo-admin-table-pinned-row-background-'
-        'institution-table-row-demo-institution-aurora',
+        'institution-table-row-demo-institution-horizonte',
       ),
     );
     final pinnedColumn = find.byKey(const Key('coelo-admin-table-pinned-column'));
