@@ -712,16 +712,22 @@ const _navigationSections = <_NavigationSectionData>[
       active: true,
     ),
     _NavigationDestinationData('units', 'Unidades', Icons.apartment_outlined, active: true),
-    _NavigationDestinationData('groups', 'Grupos', Icons.groups_outlined),
-    _NavigationDestinationData('activities', 'Atividades', Icons.local_activity_outlined),
+    _NavigationDestinationData('groups', 'Grupos', Icons.groups_outlined, active: true),
+    _NavigationDestinationData(
+      'activities',
+      'Atividades',
+      Icons.local_activity_outlined,
+      active: true,
+    ),
   ]),
   _NavigationSectionData('access', 'Acessos', Icons.manage_accounts_outlined, [
-    _NavigationDestinationData('people', 'Pessoas', Icons.people_outline),
+    _NavigationDestinationData('people', 'Pessoas', Icons.people_outline, active: true),
     _NavigationDestinationData('internal-users', 'Usuários internos', Icons.badge_outlined),
     _NavigationDestinationData(
       'profiles',
       'Perfis e permissões',
       Icons.admin_panel_settings_outlined,
+      active: true,
     ),
   ]),
   _NavigationSectionData('operations', 'Operação', Icons.tune_outlined, [
@@ -1381,6 +1387,7 @@ MenuStyle _tourMenuStyle(ColorScheme colors) {
   return MenuStyle(
     backgroundColor: WidgetStatePropertyAll(colors.surface),
     elevation: const WidgetStatePropertyAll(4),
+    shadowColor: WidgetStatePropertyAll(colors.shadow.withValues(alpha: 0.12)),
     padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
     shape: WidgetStatePropertyAll(
       RoundedRectangleBorder(
@@ -1577,7 +1584,10 @@ class _ThemeModeControl extends StatelessWidget {
       height: collapsed ? 80 : CoeloSize.touchMin,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final useCompactLayout = collapsed || constraints.maxWidth < 180;
+          final useCompactLayout =
+              collapsed ||
+              constraints.maxWidth < 180 ||
+              MediaQuery.textScalerOf(context).scale(1) >= 1.5;
           return Tooltip(
             message: isDark ? 'Ativar tema claro' : 'Ativar tema escuro',
             child: Semantics(
@@ -2240,6 +2250,7 @@ class _ProfileSummary extends StatelessWidget {
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
         elevation: const WidgetStatePropertyAll(4),
+        shadowColor: WidgetStatePropertyAll(colors.shadow.withValues(alpha: 0.12)),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
         alignment: compact ? AlignmentDirectional.bottomStart : null,
         minimumSize: compact

@@ -1,23 +1,23 @@
 ---
 title: "Tipo Próprio E Herança De Plano Por Unidade"
-source: "aprovação do plano Tela de Unidades no Superadmin em 2026-07-28; schema Supabase consultado em 2026-07-28"
+source: "aprovação do plano Tela de Unidades no Superadmin em 2026-07-28; schema Supabase consultado em 2026-07-28; specs/017-superadmin-unit-schema-foundation.md"
 status: "Accepted"
-generated_at: "2026-07-28"
+generated_at: "2026-07-29"
 ---
 
 # Tipo Próprio E Herança De Plano Por Unidade
 
 ## Contexto
 
-Uma instituição pode operar unidades com especializações e condições comerciais
-diferentes. O tipo e o plano da instituição, isoladamente, não descrevem todos
-os seus filhos. Ao mesmo tempo, repetir o plano em cada unidade eliminaria a
-herança e faria alterações institucionais deixarem de se propagar.
+Uma instituição pode operar unidades com especializações e condições
+comerciais diferentes. O tipo e o plano da instituição, isoladamente, não
+descrevem todos os seus filhos. Ao mesmo tempo, repetir o plano em cada unidade
+eliminaria a herança e faria alterações institucionais deixarem de se propagar.
 
-O schema Supabase consultado possui `units`, `unit_addresses`,
-`unit_contacts`, `unit_branding`, `groups` e `activity_unit_links`. Hoje
-`units` contém vínculo institucional, nome, slug, status e timestamps, mas não
-possui coluna de tipo nem assinatura ou override de plano.
+Antes da fundação da spec 017, `units` continha vínculo institucional, nome,
+slug, status e timestamps, mas não possuía tipo nem override de plano. O schema
+já continha `unit_addresses`, `unit_contacts`, `unit_branding`, `groups` e
+`activity_unit_links`.
 
 ## Decisão
 
@@ -39,11 +39,17 @@ possui coluna de tipo nem assinatura ou override de plano.
 
 ## Consequências
 
-A tela atual usa um repositório fake e expande o registro local de unidade
-existente dentro de `InstitutionRecord`, preservando uma fonte única para
-instituições, unidades e contagens.
+A fundação da spec 017 adiciona `units.institution_type_id` obrigatório,
+referenciando `institution_types`, e `units.plan_override_id` opcional,
+referenciando `plans`. Remover o override do registro restaura a herança por
+`NULL`. As duas colunas são filtráveis e permanecem não importáveis até existir
+contrato técnico de importação.
 
-A persistência futura precisa de spec própria para adicionar tipo e override de
-plano, além de diretório agregado, migration, RLS, RPCs, auditoria e testes de
-isolamento entre tenants. Esta decisão não autoriza alteração do banco.
+A migração usa o tipo da instituição-mãe para unidades existentes e falha
+explicitamente se alguma delas não puder ser tipada sem inventar catálogo.
 
+A tela ainda usa repositório fake e expande o registro local de unidade dentro
+de `InstitutionRecord`. Diretório agregado, criação/edição persistentes,
+permissões de escrita, RPCs, auditoria, importação/exportação e testes
+cross-tenant de mutação exigem decisão posterior. Esta fundação não amplia
+grants nem policies.

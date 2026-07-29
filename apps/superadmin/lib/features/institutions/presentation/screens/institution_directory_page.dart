@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +6,7 @@ import '../../../../app/shell/superadmin_notice.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
+import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_directory_view_model.dart';
 import '../widgets/institution_directory_cards.dart';
@@ -22,6 +21,7 @@ class InstitutionDirectoryPage extends StatefulWidget {
     required this.logout,
     this.onHomeOpen,
     this.onUnitsOpen,
+    this.onPeopleOpen,
     this.onCatalogOpen,
     this.onSupportOpen,
     this.onBugReportSubmitted,
@@ -36,6 +36,7 @@ class InstitutionDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback? onHomeOpen;
   final VoidCallback? onUnitsOpen;
+  final VoidCallback? onPeopleOpen;
   final VoidCallback? onCatalogOpen;
   final VoidCallback? onSupportOpen;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
@@ -113,6 +114,8 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
           widget.onHomeOpen?.call();
         } else if (destination == 'units') {
           widget.onUnitsOpen?.call();
+        } else if (destination == 'people') {
+          widget.onPeopleOpen?.call();
         } else if (destination == 'catalog') {
           widget.onCatalogOpen?.call();
         } else if (destination == 'support') {
@@ -340,32 +343,16 @@ class _InstitutionDirectoryPaginationFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return ClipRect(
-      key: const Key('institution-directory-pagination-footer'),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
-        child: Container(
-          key: const Key('institution-directory-pagination-footer-surface'),
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            CoeloSpacing.space3,
-            horizontalPadding,
-            CoeloSpacing.space3,
-          ),
-          decoration: BoxDecoration(
-            color: colors.surface.withValues(alpha: 0.88),
-            border: Border(top: BorderSide(color: colors.outlineVariant)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: InstitutionDirectoryPagination(
-              viewModel: viewModel,
-              pageSizeOptions: display == InstitutionDirectoryDisplay.cards
-                  ? const [11, 20, 50, 100]
-                  : const [8, 20, 50, 100],
-            ),
-          ),
+    return SuperadminListingPaginationFooter(
+      semanticKey: const Key('institution-directory-pagination-footer'),
+      horizontalPadding: horizontalPadding,
+      child: KeyedSubtree(
+        key: const Key('institution-directory-pagination-footer-surface'),
+        child: InstitutionDirectoryPagination(
+          viewModel: viewModel,
+          pageSizeOptions: display == InstitutionDirectoryDisplay.cards
+              ? const [11, 20, 50, 100]
+              : const [8, 20, 50, 100],
         ),
       ),
     );

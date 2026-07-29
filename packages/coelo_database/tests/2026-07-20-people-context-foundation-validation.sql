@@ -43,9 +43,8 @@ begin
         and tablename = current_table
         and roles = array['authenticated']::name[]
         and cmd = 'SELECT'
-        and qual like '%has_platform_permission%platform.read%'
     ) then
-      raise exception 'platform.read policy is missing on public.%', current_table;
+      raise exception 'authenticated SELECT policy is missing on public.%', current_table;
     end if;
 
     if has_table_privilege('anon', format('public.%I', current_table), 'SELECT')
@@ -81,9 +80,9 @@ begin
   end if;
 
   if pg_get_viewdef('public.person_directory'::regclass, true)
-       not like '%has_platform_permission(''platform.read''%'
+       not like '%current_person_id()%'
   then
-    raise exception 'person_directory must enforce platform.read';
+    raise exception 'person_directory must remain self-only';
   end if;
 
   if exists (
@@ -109,9 +108,8 @@ begin
       and tablename = 'invitations'
       and roles = array['authenticated']::name[]
       and cmd = 'SELECT'
-      and qual like '%has_platform_permission%platform.read%'
   ) then
-    raise exception 'platform.read policy is missing on public.invitations';
+    raise exception 'authenticated SELECT policy is missing on public.invitations';
   end if;
 
   if has_table_privilege('anon', 'public.invitations', 'SELECT')

@@ -371,11 +371,12 @@ void main() {
     expect(sectionDecoration.color, isNot(destinationDecoration.color));
   });
 
-  testWidgets('shows Activities after Groups as a future Structure destination', (tester) async {
+  testWidgets('shows Activities after Groups as an active Structure destination', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final destinations = <String>[];
 
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onDestinationSelected: destinations.add));
 
     expect(find.text('Atividades'), findsOneWidget);
     expect(
@@ -384,8 +385,8 @@ void main() {
     );
 
     await tester.tap(find.byKey(const Key('superadmin-navigation-activities')));
-    await tester.pumpAndSettle();
-    expect(find.text('Atividades será implementado em breve.'), findsOneWidget);
+    await tester.pump();
+    expect(destinations, ['activities']);
   });
 
   testWidgets('activates Units and gives Conversations a distinct icon', (tester) async {
@@ -912,6 +913,24 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(logoutCount, 1);
+  });
+
+  testWidgets('uses a soft semantic shadow for profile and tour flyouts', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final expectedShadow = CoeloTheme.light.colorScheme.shadow.withValues(alpha: 0.12);
+    for (final triggerKey in const [
+      Key('superadmin-profile-menu'),
+      Key('superadmin-onboarding-tour'),
+    ]) {
+      final anchor = tester.widget<MenuAnchor>(
+        find.ancestor(of: find.byKey(triggerKey), matching: find.byType(MenuAnchor)).first,
+      );
+      expect(anchor.style?.shadowColor?.resolve({}), expectedShadow);
+      expect(anchor.style?.elevation?.resolve({}), 4);
+    }
   });
 
   testWidgets('keeps the compact profile menu subtly inset from the right edge', (tester) async {

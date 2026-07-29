@@ -156,7 +156,12 @@ class SuperadminActivityController extends ChangeNotifier {
     }
   }
 
-  void startDemoImport() {
+  void startDemoImport({
+    String subject = 'Instituições',
+    String fileName = 'instituicoes-julho.xlsx',
+    String progressSummary = 'Importando instituições',
+    String completedSummary = '24 importadas, 2 rejeitadas',
+  }) {
     final id = 'demo-import-${_nextId++}';
     _activities.insert(
       0,
@@ -164,10 +169,10 @@ class SuperadminActivityController extends ChangeNotifier {
         id: id,
         kind: SuperadminActivityKind.import,
         status: SuperadminActivityStatus.inProgress,
-        subject: 'Instituições',
+        subject: subject,
         summary: 'Preparando importação',
         createdAt: _now(),
-        fileName: 'instituicoes-julho.xlsx',
+        fileName: fileName,
         progress: 0,
         isRead: true,
       ),
@@ -192,7 +197,7 @@ class SuperadminActivityController extends ChangeNotifier {
       _activities[activityIndex] = _activities[activityIndex].copyWith(
         progress: progress,
         status: completed ? SuperadminActivityStatus.partial : SuperadminActivityStatus.inProgress,
-        summary: completed ? '24 importadas, 2 rejeitadas' : 'Importando instituições',
+        summary: completed ? completedSummary : progressSummary,
         isRead: completed ? _centerOpen : true,
       );
       if (completed) {
@@ -204,17 +209,21 @@ class SuperadminActivityController extends ChangeNotifier {
     _timers.add(timer);
   }
 
-  void completeDemoExport(SuperadminExportFormat format) {
+  void completeDemoExport(
+    SuperadminExportFormat format, {
+    String subject = 'Instituições',
+    String fileBaseName = 'instituicoes',
+  }) {
     _activities.insert(
       0,
       SuperadminActivity(
         id: 'demo-export-${_nextId++}',
         kind: SuperadminActivityKind.export,
         status: SuperadminActivityStatus.succeeded,
-        subject: 'Instituições',
+        subject: subject,
         summary: 'Exportação preparada para demonstração',
         createdAt: _now(),
-        fileName: 'instituicoes.${format.name}',
+        fileName: '$fileBaseName.${format.name}',
         progress: 100,
         isRead: _centerOpen,
       ),

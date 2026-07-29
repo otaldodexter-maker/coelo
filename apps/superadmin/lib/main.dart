@@ -16,6 +16,9 @@ Future<void> main() async {
       logout: authScope.logout,
       requestPasswordRecovery: authScope.requestPasswordRecovery,
       institutionDirectoryRepository: authScope.institutionDirectoryRepository,
+      activityDirectoryRepository: authScope.activityDirectoryRepository,
+      personDirectoryRepository: authScope.personDirectoryRepository,
+      accessProfileRepository: authScope.accessProfileRepository,
     ),
   );
 }

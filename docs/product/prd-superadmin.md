@@ -418,6 +418,13 @@ São responsabilidades da plataforma:
 
 O menu do Superadmin deve priorizar catálogos, diagnóstico e auditoria. Cadastros cotidianos de responsáveis, profissionais, pessoas autorizadas, turmas, atividades e presença pertencem ao Admin.
 
+Para Atividades, o Superadmin oferece diretório e detalhe somente leitura.
+Essas superfícies podem mostrar definição, governança, unidades e grupos,
+além de contagens minimizadas de profissionais e participantes. Criar e editar
+continuam no Admin, protegidos pelas capacidades institucionais
+`activities.create` e `activities.manage`; a interface do Superadmin não
+contorna RLS nem expõe nomes de crianças nesse diagnóstico.
+
 # Fontes e referências
 
 ## Fontes internas

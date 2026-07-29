@@ -543,6 +543,25 @@ A fundação aplicada ainda requer consolidação da fonte privada reutilizável
 pessoa de confiança e da revogação dinâmica de chat. Nenhuma migration ou
 alteração de policy é autorizada por este aditivo sem plano técnico aprovado.
 
+## 27.6 Governança de perfis de acesso
+
+A central de Perfis e Permissões usa papéis reutilizáveis separados para
+Superadmin (`platform_roles`) e Admin (`institution_roles`). Principal mantém
+capacidades familiares contextuais e não recebe um perfil genérico.
+
+Somente membership Superadmin ativa, de escopo global de plataforma, com grant
+explícito de `platform.roles.manage` ou `institution.roles.manage`, pode chamar
+os comandos de governança correspondentes. Mutações exigem AAL2, motivo,
+`request_id`, versão esperada e validação server-side do catálogo, do escopo e
+da autoridade concedível. `deny` prevalece e não pode ser convertido em
+`allow` pelo editor.
+
+Redução de escopo é recusada enquanto houver atribuição mais ampla. Exclusão
+em uso exige realocação transacional e a plataforma não pode ficar sem uma
+membership global ativa, com MFA e autoridade total explícita. O cliente não
+envia nem decide `is_system`, não usa metadata mutável e não acessa receipts de
+idempotência.
+
 # Fontes e referências
 
 ## Fontes internas

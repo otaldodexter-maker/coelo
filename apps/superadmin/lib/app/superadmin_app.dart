@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
+import '../features/activities/data/supabase_activity_directory_repository.dart';
+import '../features/activities/domain/activity_directory.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
@@ -13,6 +15,10 @@ import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
+import '../features/people/data/supabase_person_directory_repository.dart';
+import '../features/people/domain/person_directory.dart';
+import '../features/access_profiles/data/supabase_access_profile_repository.dart';
+import '../features/access_profiles/domain/access_profile.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 
@@ -24,6 +30,9 @@ class SuperadminApp extends StatefulWidget {
     this.requestPasswordRecovery = unavailableSuperadminPasswordRecovery,
     this.resetPassword = unavailableResetPassword,
     this.institutionDirectoryRepository = const UnavailableInstitutionDirectoryRepository(),
+    this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
+    this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
+    this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.userPreferencesRepository,
     super.key,
   });
@@ -34,6 +43,9 @@ class SuperadminApp extends StatefulWidget {
   final PasswordRecoveryAction requestPasswordRecovery;
   final ResetPasswordAction resetPassword;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
+  final ActivityDirectoryRepository activityDirectoryRepository;
+  final PersonDirectoryRepository personDirectoryRepository;
+  final AccessProfileRepository accessProfileRepository;
   final UserPreferencesRepository? userPreferencesRepository;
 
   @override
@@ -62,6 +74,9 @@ class _SuperadminAppState extends State<SuperadminApp> {
       requestPasswordRecovery: widget.requestPasswordRecovery,
       resetPassword: widget.resetPassword,
       institutionDirectoryRepository: widget.institutionDirectoryRepository,
+      activityDirectoryRepository: widget.activityDirectoryRepository,
+      personDirectoryRepository: widget.personDirectoryRepository,
+      accessProfileRepository: widget.accessProfileRepository,
       userPreferencesController: _preferencesController,
       onThemeModeChanged: _setThemeMode,
     );

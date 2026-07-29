@@ -26,19 +26,6 @@ final class FakeUnitDirectoryRepository implements UnitDirectoryRepository {
       slug: unit.slug.isEmpty ? unit.id : unit.slug,
       typeId: unit.typeId.isEmpty ? institution.typeId : unit.typeId,
       typeName: unit.typeName.isEmpty ? institution.typeName : unit.typeName,
-      postalCode: unit.postalCode.isEmpty ? institution.postalCode : unit.postalCode,
-      country: unit.country.isEmpty ? institution.country : unit.country,
-      state: unit.state.isEmpty ? institution.state : unit.state,
-      city: unit.city.isEmpty ? institution.city : unit.city,
-      district: unit.district.isEmpty ? institution.district : unit.district,
-      street: unit.street.isEmpty ? institution.street : unit.street,
-      addressNumber: unit.addressNumber.isEmpty ? institution.addressNumber : unit.addressNumber,
-      complement: unit.complement.isEmpty ? institution.complement : unit.complement,
-      contactEmail: unit.contactEmail.isEmpty ? institution.contactEmail : unit.contactEmail,
-      contactPhone: unit.contactPhone.isEmpty ? institution.contactPhone : unit.contactPhone,
-      contactMobilePhone: unit.contactMobilePhone.isEmpty
-          ? institution.contactMobilePhone
-          : unit.contactMobilePhone,
       brandDisplayName: unit.brandDisplayName.isEmpty ? unit.name : unit.brandDisplayName,
       activitiesCount: unit.activitiesCount == 0
           ? (unit.groups.length / 3).ceil() + index
@@ -98,6 +85,14 @@ final class FakeUnitDirectoryRepository implements UnitDirectoryRepository {
   }
 
   @override
+  Future<UnitFormData> loadForm({String? unitId}) async {
+    return UnitFormData(
+      institutions: List.unmodifiable(_institutions.records),
+      record: unitId == null ? null : findById(unitId),
+    );
+  }
+
+  @override
   Future<UnitDirectoryPage> fetchPage(UnitDirectoryQuery query) async {
     final search = query.search.trim().toLowerCase();
     final filtered =
@@ -112,15 +107,16 @@ final class FakeUnitDirectoryRepository implements UnitDirectoryRepository {
               (query.cities.isEmpty || query.cities.contains(record.city)) &&
               (query.districts.isEmpty || query.districts.contains(record.district));
         }).toList()..sort((first, second) {
-          final institution = first.institutionName.compareTo(second.institutionName);
-          return institution != 0 ? institution : first.name.compareTo(second.name);
+          final comparison = _compareRecords(first, second, query.sortColumn);
+          return query.sortAscending ? comparison : -comparison;
         });
     final start = query.offset.clamp(0, filtered.length);
-    final end = (start + UnitDirectoryQuery.pageSize).clamp(start, filtered.length);
+    final end = (start + query.pageSize).clamp(start, filtered.length);
     return UnitDirectoryPage(
       items: filtered.sublist(start, end).map(UnitDirectoryItem.new).toList(growable: false),
       totalCount: filtered.length,
       page: query.page,
+      pageSize: query.pageSize,
     );
   }
 
@@ -165,4 +161,35 @@ final class FakeUnitDirectoryRepository implements UnitDirectoryRepository {
       districts: options(districtOptions),
     );
   }
+}
+
+int _compareRecords(UnitRecord first, UnitRecord second, UnitDirectorySortColumn column) {
+  final comparison = switch (column) {
+    UnitDirectorySortColumn.name => first.name.compareTo(second.name),
+    UnitDirectorySortColumn.institutionName => first.institutionName.compareTo(
+      second.institutionName,
+    ),
+    UnitDirectorySortColumn.typeName => first.typeName.compareTo(second.typeName),
+    UnitDirectorySortColumn.groupsCount => first.groupsCount.compareTo(second.groupsCount),
+    UnitDirectorySortColumn.activitiesCount => first.activitiesCount.compareTo(
+      second.activitiesCount,
+    ),
+    UnitDirectorySortColumn.planName => first.effectivePlan.label.compareTo(
+      second.effectivePlan.label,
+    ),
+    UnitDirectorySortColumn.status => first.status.label.compareTo(second.status.label),
+    UnitDirectorySortColumn.contactEmail => first.contactEmail.compareTo(second.contactEmail),
+    UnitDirectorySortColumn.contactPhone => first.contactPhone.compareTo(second.contactPhone),
+    UnitDirectorySortColumn.contactMobilePhone => first.contactMobilePhone.compareTo(
+      second.contactMobilePhone,
+    ),
+    UnitDirectorySortColumn.street => first.street.compareTo(second.street),
+    UnitDirectorySortColumn.addressNumber => first.addressNumber.compareTo(second.addressNumber),
+    UnitDirectorySortColumn.complement => first.complement.compareTo(second.complement),
+    UnitDirectorySortColumn.district => first.district.compareTo(second.district),
+    UnitDirectorySortColumn.postalCode => first.postalCode.compareTo(second.postalCode),
+    UnitDirectorySortColumn.city => first.city.compareTo(second.city),
+    UnitDirectorySortColumn.state => first.state.compareTo(second.state),
+  };
+  return comparison != 0 ? comparison : first.id.compareTo(second.id);
 }

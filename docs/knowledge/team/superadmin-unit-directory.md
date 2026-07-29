@@ -3,7 +3,7 @@ title: Diretório de unidades do Superadmin
 knowledge_id: superadmin-unit-directory
 source: decisions/0016-unit-type-and-plan-inheritance.md
 status: validated
-generated_at: 2026-07-28
+generated_at: 2026-07-29
 audience: team
 surfaces: [superadmin, units]
 visibility: internal
@@ -26,8 +26,12 @@ Os filtros incluem instituição, tipo, status, plano efetivo e a cascata
 UF → Município → Bairro. Alterar um nível geográfico limpa seleções
 descendentes incompatíveis. Grupos e atividades são métricas somente leitura.
 
-Esta implementação é um protótipo local no repositório fake. O Supabase atual
-já contém as tabelas de unidade, endereço, contato, branding, grupos e vínculo
-de atividades, mas ainda não possui tipo nem override de plano por unidade.
-Persistência, RLS, RPC, auditoria e diretório agregado exigem spec posterior.
+O schema agora possui `units.institution_type_id` obrigatório e
+`units.plan_override_id` opcional. O tipo usa `institution_types`; o override
+usa `plans`, e `NULL` mantém a herança do plano institucional. As duas colunas
+são filtráveis e não importáveis no catálogo atual.
 
+A tela ainda usa repositório fake. O Supabase conserva RLS de leitura, mas não
+possui RPC, grant ou policy para criar e editar unidades pelo cliente.
+Diretório agregado, mutações auditadas, importação e exportação permanecem para
+spec posterior.

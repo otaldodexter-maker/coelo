@@ -1,0 +1,843 @@
+import 'dart:math' as math;
+
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:flutter/material.dart';
+
+import '../../../app/activity/superadmin_activity.dart';
+import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../auth/domain/logout_action.dart';
+import '../../support/domain/support_ticket.dart';
+import '../domain/access_profile.dart';
+import 'access_profile_view_model.dart';
+
+final class AccessProfileDirectoryPage extends StatefulWidget {
+  const AccessProfileDirectoryPage({
+    required this.repository,
+    required this.logout,
+    this.onCreate,
+    this.onOpen,
+    this.onDestinationSelected,
+    this.onBugReportSubmitted,
+    this.onConversationsOpen,
+    super.key,
+  });
+
+  final AccessProfileRepository repository;
+  final LogoutAction logout;
+  final ValueChanged<AccessProfileDomain>? onCreate;
+  final void Function(AccessProfileDomain domain, String profileId)? onOpen;
+  final ValueChanged<String>? onDestinationSelected;
+  final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
+  final VoidCallback? onConversationsOpen;
+
+  @override
+  State<AccessProfileDirectoryPage> createState() => _AccessProfileDirectoryPageState();
+}
+
+final class _AccessProfileDirectoryPageState extends State<AccessProfileDirectoryPage> {
+  late final AccessProfileViewModel _viewModel;
+  late final TextEditingController _searchController;
+  late final SuperadminActivityController _activityController;
+  double _footerHeight = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = AccessProfileViewModel(widget.repository);
+    _searchController = TextEditingController();
+    _activityController = SuperadminActivityController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _viewModel.load());
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    _searchController.dispose();
+    _activityController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => SuperadminShell(
+    logout: widget.logout,
+    title: 'Perfis e permissões',
+    subtitle: 'Gerencie perfis do Superadmin e Admin e consulte capacidades do Principal.',
+    currentDestination: 'profiles',
+    activityController: _activityController,
+    showChatLauncher: widget.onConversationsOpen != null,
+    chatLauncherBottomInset: _footerHeight,
+    onDestinationSelected: widget.onDestinationSelected,
+    onBugReportSubmitted: widget.onBugReportSubmitted,
+    onOpenConversations: widget.onConversationsOpen,
+    child: _AccessProfileDirectoryContent(
+      viewModel: _viewModel,
+      searchController: _searchController,
+      onCreate: widget.onCreate ?? (_) {},
+      onOpen: widget.onOpen ?? (_, _) {},
+      onFooterHeightChanged: (height) {
+        if ((_footerHeight - height).abs() < .5) return;
+        setState(() => _footerHeight = height);
+      },
+    ),
+  );
+}
+
+final class _AccessProfileDirectoryContent extends StatefulWidget {
+  const _AccessProfileDirectoryContent({
+    required this.viewModel,
+    required this.searchController,
+    required this.onCreate,
+    required this.onOpen,
+    required this.onFooterHeightChanged,
+  });
+
+  final AccessProfileViewModel viewModel;
+  final TextEditingController searchController;
+  final ValueChanged<AccessProfileDomain> onCreate;
+  final void Function(AccessProfileDomain domain, String profileId) onOpen;
+  final ValueChanged<double> onFooterHeightChanged;
+
+  @override
+  State<_AccessProfileDirectoryContent> createState() => _AccessProfileDirectoryContentState();
+}
+
+final class _AccessProfileDirectoryContentState extends State<_AccessProfileDirectoryContent> {
+  final GlobalKey _footerKey = GlobalKey();
+  double _footerHeight = 0;
+  bool _measurementScheduled = false;
+
+  void _measureFooter(bool visible) {
+    if (_measurementScheduled) return;
+    _measurementScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _measurementScheduled = false;
+      if (!mounted) return;
+      var height = 0.0;
+      if (visible) {
+        final renderObject = _footerKey.currentContext?.findRenderObject();
+        if (renderObject is! RenderBox || !renderObject.hasSize) return;
+        height = renderObject.size.height;
+      }
+      if ((height - _footerHeight).abs() < .5) return;
+      setState(() => _footerHeight = height);
+      widget.onFooterHeightChanged(height);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final horizontalPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space6
+          : CoeloSpacing.space4;
+      return AnimatedBuilder(
+        animation: widget.viewModel,
+        builder: (context, child) {
+          final query = widget.viewModel.query;
+          final showPagination =
+              query.domain != AccessProfileDomain.principal &&
+              widget.viewModel.state == AccessProfileLoadState.success;
+          _measureFooter(showPagination);
+          final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              ListView(
+                key: const Key('access-profiles-scroll'),
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  horizontalPadding,
+                  horizontalPadding,
+                  horizontalPadding + footerInset,
+                ),
+                children: [
+                  _DomainSelector(
+                    value: query.domain,
+                    onChanged: (value) {
+                      widget.searchController.clear();
+                      widget.viewModel.setDomain(value);
+                    },
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  _AccessProfileToolbar(
+                    viewModel: widget.viewModel,
+                    searchController: widget.searchController,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  if (widget.viewModel.page.isDemo ||
+                      (query.domain == AccessProfileDomain.principal && widget.viewModel.isDemo))
+                    const _DemoNotice(),
+                  if (widget.viewModel.page.isDemo ||
+                      (query.domain == AccessProfileDomain.principal && widget.viewModel.isDemo))
+                    const SizedBox(height: CoeloSpacing.space4),
+                  _AccessProfileResults(
+                    viewModel: widget.viewModel,
+                    compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth,
+                    onCreate: () => widget.onCreate(query.domain),
+                    onOpen: (id) => widget.onOpen(query.domain, id),
+                  ),
+                ],
+              ),
+              if (showPagination)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: NotificationListener<SizeChangedLayoutNotification>(
+                    onNotification: (_) {
+                      _measureFooter(true);
+                      return true;
+                    },
+                    child: SizeChangedLayoutNotifier(
+                      key: _footerKey,
+                      child: SuperadminListingPaginationFooter(
+                        semanticKey: const Key('access-profile-pagination-footer'),
+                        horizontalPadding: horizontalPadding,
+                        child: _AccessProfilePagination(viewModel: widget.viewModel),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+final class _DomainSelector extends StatelessWidget {
+  const _DomainSelector({required this.value, required this.onChanged});
+
+  final AccessProfileDomain value;
+  final ValueChanged<AccessProfileDomain> onChanged;
+
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.centerLeft,
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SegmentedButton<AccessProfileDomain>(
+        key: const Key('access-profile-domain-selector'),
+        segments: [
+          for (final domain in AccessProfileDomain.values)
+            ButtonSegment(value: domain, label: Text(domain.label)),
+        ],
+        selected: {value},
+        showSelectedIcon: false,
+        onSelectionChanged: (selection) => onChanged(selection.single),
+      ),
+    ),
+  );
+}
+
+final class _AccessProfileToolbar extends StatelessWidget {
+  const _AccessProfileToolbar({required this.viewModel, required this.searchController});
+
+  final AccessProfileViewModel viewModel;
+  final TextEditingController searchController;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      final query = viewModel.query;
+      if (query.domain == AccessProfileDomain.principal) {
+        return CoeloAdminListingToolbar(
+          search: SizedBox(
+            width: compact ? constraints.maxWidth : 300,
+            height: CoeloSize.touchMin,
+            child: CoeloSearchField(
+              controller: searchController,
+              hintText: 'Buscar capacidade',
+              semanticLabel: 'Buscar capacidade do Principal',
+              onChanged: viewModel.setSearch,
+            ),
+          ),
+          filters: const [],
+          actions: const [],
+        );
+      }
+      final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 176.0;
+      final validScopes = query.domain == AccessProfileDomain.platform
+          ? const [AccessProfileScope.platform, AccessProfileScope.institution]
+          : const [
+              AccessProfileScope.institution,
+              AccessProfileScope.unit,
+              AccessProfileScope.group,
+            ];
+      return CoeloAdminListingToolbar(
+        key: const Key('access-profile-toolbar'),
+        search: SizedBox(
+          width: compact ? constraints.maxWidth : 300,
+          height: CoeloSize.touchMin,
+          child: CoeloSearchField(
+            controller: searchController,
+            hintText: 'Buscar por nome',
+            semanticLabel: 'Buscar perfis por nome',
+            onChanged: viewModel.setSearch,
+          ),
+        ),
+        filters: [
+          SizedBox(
+            width: filterWidth,
+            child: CoeloAdminMultiSelectFilter<AccessProfileStatus>(
+              label: 'Todos os status',
+              options: AccessProfileStatus.values,
+              selectedValues: query.statuses,
+              optionLabel: (value) => value.label,
+              onChanged: viewModel.setStatuses,
+            ),
+          ),
+          SizedBox(
+            width: filterWidth,
+            child: CoeloAdminMultiSelectFilter<AccessProfileScope>(
+              label: 'Todos os escopos',
+              options: validScopes,
+              selectedValues: query.scopes,
+              optionLabel: (value) => value.label,
+              onChanged: viewModel.setScopes,
+            ),
+          ),
+          if (query.hasFilters)
+            TextButton.icon(
+              onPressed: () {
+                searchController.clear();
+                viewModel.clearFilters();
+              },
+              icon: const Icon(Icons.filter_alt_off_outlined),
+              label: const Text('Limpar filtros'),
+            ),
+        ],
+        actions: [
+          SizedBox(
+            height: CoeloSize.touchMin,
+            child: SegmentedButton<AccessProfileLayout>(
+              segments: const [
+                ButtonSegment(
+                  value: AccessProfileLayout.cards,
+                  tooltip: 'Exibir como cards',
+                  icon: Icon(Icons.grid_view_rounded),
+                ),
+                ButtonSegment(
+                  value: AccessProfileLayout.table,
+                  tooltip: 'Exibir como tabela',
+                  icon: Icon(Icons.table_rows_rounded),
+                ),
+              ],
+              selected: {query.layout},
+              showSelectedIcon: false,
+              onSelectionChanged: (value) => viewModel.setLayout(value.single),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+final class _DemoNotice extends StatelessWidget {
+  const _DemoNotice();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Dados de demonstração',
+    child: Container(
+      key: const Key('access-profile-demo-notice'),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space4,
+        vertical: CoeloSpacing.space3,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.science_outlined),
+          SizedBox(width: CoeloSpacing.space2),
+          Expanded(
+            child: Text('Dados de demonstração — disponíveis somente em dev, catálogo e testes.'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+final class _AccessProfileResults extends StatelessWidget {
+  const _AccessProfileResults({
+    required this.viewModel,
+    required this.compact,
+    required this.onCreate,
+    required this.onOpen,
+  });
+
+  final AccessProfileViewModel viewModel;
+  final bool compact;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget result;
+    switch (viewModel.state) {
+      case AccessProfileLoadState.initial:
+      case AccessProfileLoadState.loading:
+        result = const CoeloStatePanel(
+          title: 'Carregando perfis',
+          message: 'Aguarde enquanto consultamos as permissões.',
+          loading: true,
+        );
+      case AccessProfileLoadState.empty:
+        result = CoeloStatePanel(
+          title: viewModel.query.domain == AccessProfileDomain.principal
+              ? 'Nenhuma capacidade disponível'
+              : 'Nenhum perfil cadastrado',
+          message: viewModel.query.domain == AccessProfileDomain.principal
+              ? 'O catálogo contextual não retornou capacidades.'
+              : 'Crie o primeiro perfil para começar.',
+          icon: Icons.manage_accounts_outlined,
+          actionLabel: viewModel.query.domain == AccessProfileDomain.principal
+              ? null
+              : 'Criar perfil',
+          onAction: viewModel.query.domain == AccessProfileDomain.principal ? null : onCreate,
+        );
+      case AccessProfileLoadState.noResults:
+        result = CoeloStatePanel(
+          title: 'Nenhum resultado',
+          message: 'Revise a busca ou os filtros aplicados.',
+          icon: Icons.search_off_rounded,
+          actionLabel: 'Limpar filtros',
+          onAction: viewModel.clearFilters,
+        );
+      case AccessProfileLoadState.failure:
+        result = CoeloStatePanel(
+          title: 'Não foi possível carregar os perfis',
+          message: viewModel.errorMessage ?? 'Tente novamente em instantes.',
+          icon: Icons.error_outline_rounded,
+          actionLabel: 'Tentar novamente',
+          onAction: viewModel.load,
+        );
+      case AccessProfileLoadState.unauthorized:
+        result = const CoeloStatePanel(
+          title: 'Acesso não autorizado',
+          message: 'Você não possui permissão para consultar esta central.',
+          icon: Icons.lock_outline_rounded,
+        );
+      case AccessProfileLoadState.conflict:
+        result = CoeloStatePanel(
+          title: 'O perfil foi alterado',
+          message: 'Recarregue os dados antes de continuar.',
+          icon: Icons.sync_problem_outlined,
+          actionLabel: 'Recarregar',
+          onAction: viewModel.load,
+        );
+      case AccessProfileLoadState.success:
+        if (viewModel.query.domain == AccessProfileDomain.principal) {
+          result = _PrincipalCapabilities(capabilities: viewModel.visibleCapabilities);
+        } else if (viewModel.query.layout == AccessProfileLayout.cards) {
+          result = _AccessProfileCards(
+            items: viewModel.page.items,
+            onCreate: onCreate,
+            onOpen: onOpen,
+          );
+        } else {
+          result = _AccessProfileTable(
+            items: viewModel.page.items,
+            onCreate: onCreate,
+            onOpen: onOpen,
+          );
+        }
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (viewModel.state == AccessProfileLoadState.loading) ...[
+          const LinearProgressIndicator(),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
+        result,
+      ],
+    );
+  }
+}
+
+final class _AccessProfileCards extends StatelessWidget {
+  const _AccessProfileCards({required this.items, required this.onCreate, required this.onOpen});
+
+  final List<AccessProfile> items;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onOpen;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final columns = math.max(1, (constraints.maxWidth / 340).floor());
+      final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+      return Wrap(
+        key: const Key('access-profile-card-grid'),
+        spacing: CoeloSpacing.space6,
+        runSpacing: CoeloSpacing.space6,
+        children: [
+          SizedBox(
+            width: width,
+            child: ConstrainedBox(
+              key: const Key('create-access-profile-card'),
+              constraints: const BoxConstraints(minHeight: 216),
+              child: CoeloAdminCreateAction(
+                label: 'Criar perfil',
+                icon: Icons.manage_accounts_outlined,
+                onPressed: onCreate,
+              ),
+            ),
+          ),
+          for (final item in items)
+            SizedBox(
+              width: width,
+              child: _AccessProfileCard(item: item, onPressed: () => onOpen(item.id)),
+            ),
+        ],
+      );
+    },
+  );
+}
+
+final class _AccessProfileCard extends StatefulWidget {
+  const _AccessProfileCard({required this.item, required this.onPressed});
+
+  final AccessProfile item;
+  final VoidCallback onPressed;
+
+  @override
+  State<_AccessProfileCard> createState() => _AccessProfileCardState();
+}
+
+final class _AccessProfileCardState extends State<_AccessProfileCard> {
+  bool _highlighted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final item = widget.item;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 216),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _highlighted = true),
+        onExit: (_) => setState(() => _highlighted = false),
+        child: FocusableActionDetector(
+          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : CoeloMotion.standard,
+            curve: Curves.easeOutCubic,
+            builder: (context, progress, child) => Container(
+              key: Key('access-profile-card-${item.id}'),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                border: Border.all(
+                  color: Color.lerp(
+                    colors.outlineVariant,
+                    colors.primary.withValues(alpha: .5),
+                    progress,
+                  )!,
+                  width: 1 + .5 * progress,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.lerp(
+                      colors.shadow.withValues(alpha: .03),
+                      colors.primary.withValues(alpha: .15),
+                      progress,
+                    )!,
+                    blurRadius: 8 + 4 * progress,
+                    spreadRadius: 2 * progress,
+                    offset: Offset(0, 2 + 2 * progress),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                child: InkWell(
+                  onTap: widget.onPressed,
+                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CoeloSpacing.space6,
+                      vertical: CoeloSpacing.space4,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: colors.secondaryContainer,
+                              foregroundColor: colors.onSecondaryContainer,
+                              child: const Icon(Icons.badge_outlined),
+                            ),
+                            const SizedBox(width: CoeloSpacing.space3),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    item.description,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            _ProfileStatusChip(status: item.status),
+                          ],
+                        ),
+                        const SizedBox(height: CoeloSpacing.space4),
+                        const Divider(height: 1),
+                        const SizedBox(height: CoeloSpacing.space4),
+                        _ProfileMetricRow(
+                          icon: Icons.layers_outlined,
+                          label: 'Escopo máximo',
+                          value: item.maxScope.label,
+                        ),
+                        const SizedBox(height: CoeloSpacing.space3),
+                        _ProfileMetricRow(
+                          icon: Icons.link_outlined,
+                          label: 'Vínculos',
+                          value: '${item.membershipCount}',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _ProfileMetricRow extends StatelessWidget {
+  const _ProfileMetricRow({required this.icon, required this.label, required this.value});
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.sm),
+        ),
+        child: Icon(icon, size: CoeloSize.iconSm),
+      ),
+      const SizedBox(width: CoeloSpacing.space2),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.labelSmall),
+            Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+final class _AccessProfileTable extends StatelessWidget {
+  const _AccessProfileTable({required this.items, required this.onCreate, required this.onOpen});
+
+  final List<AccessProfile> items;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onOpen;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      CoeloAdminCreateAction(
+        key: const Key('create-access-profile-banner'),
+        label: 'Criar perfil',
+        description: 'Adicionar novo perfil de acesso ao sistema.',
+        variant: CoeloAdminCreateActionVariant.banner,
+        onPressed: onCreate,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloAdminResizableTable<AccessProfile>(
+        key: const Key('access-profile-table'),
+        items: items,
+        rowKey: (item) => item.id,
+        pinnedColumn: CoeloAdminTableColumn(
+          id: 'name',
+          label: 'Perfil',
+          initialWidth: 280,
+          minWidth: 200,
+          maxWidth: 480,
+          cellBuilder: (context, item) => Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                child: const Icon(Icons.badge_outlined, size: 18),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              Expanded(child: Text(item.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
+            ],
+          ),
+        ),
+        columns: [
+          CoeloAdminTableColumn(
+            id: 'description',
+            label: 'Descrição',
+            initialWidth: 340,
+            minWidth: 220,
+            maxWidth: 520,
+            cellBuilder: (context, item) =>
+                Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
+          CoeloAdminTableColumn(
+            id: 'scope',
+            label: 'Escopo máximo',
+            initialWidth: 180,
+            minWidth: 140,
+            maxWidth: 240,
+            cellBuilder: (context, item) => Text(item.maxScope.label),
+          ),
+          CoeloAdminTableColumn(
+            id: 'status',
+            label: 'Status',
+            initialWidth: 150,
+            minWidth: 120,
+            maxWidth: 200,
+            cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
+          ),
+          CoeloAdminTableColumn(
+            id: 'memberships',
+            label: 'Vínculos',
+            initialWidth: 120,
+            minWidth: 96,
+            maxWidth: 180,
+            cellBuilder: (context, item) => Text('${item.membershipCount}'),
+          ),
+        ],
+        headerHeight: 56,
+        rowHeight: 64,
+        onRowPressed: (item) => onOpen(item.id),
+      ),
+    ],
+  );
+}
+
+final class _PrincipalCapabilities extends StatelessWidget {
+  const _PrincipalCapabilities({required this.capabilities});
+
+  final List<PrincipalCapability> capabilities;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const CoeloStatePanel(
+        title: 'Catálogo somente leitura',
+        message:
+            'No Principal, capacidades são contextuais. Esta entrega não cria perfis familiares.',
+        icon: Icons.visibility_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      for (final capability in capabilities) ...[
+        Card(
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space4,
+              vertical: CoeloSpacing.space2,
+            ),
+            leading: const Icon(Icons.verified_user_outlined),
+            title: Text(capability.name),
+            subtitle: Text(capability.description),
+            trailing: Semantics(
+              label: '${capability.contextCount} contextos impactados',
+              child: Chip(label: Text('${capability.contextCount} contextos')),
+            ),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+      ],
+    ],
+  );
+}
+
+final class _ProfileStatusChip extends StatelessWidget {
+  const _ProfileStatusChip({required this.status});
+
+  final AccessProfileStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final pair = switch (status) {
+      AccessProfileStatus.active => (colors.primaryContainer, colors.onPrimaryContainer),
+      AccessProfileStatus.inactive => (colors.surfaceContainer, colors.onSurfaceVariant),
+      AccessProfileStatus.archived => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
+    };
+    return CoeloStatusChip(label: status.label, backgroundColor: pair.$1, foregroundColor: pair.$2);
+  }
+}
+
+final class _AccessProfilePagination extends StatelessWidget {
+  const _AccessProfilePagination({required this.viewModel});
+
+  final AccessProfileViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    final page = viewModel.page;
+    final totalPages = math.max(1, (page.totalCount / viewModel.query.pageSize).ceil());
+    final options = viewModel.query.layout == AccessProfileLayout.cards
+        ? const [11, 20, 50, 100]
+        : const [8, 20, 50, 100];
+    return CoeloAdminPagination(
+      currentPage: page.page + 1,
+      totalPages: totalPages,
+      pageSize: viewModel.query.pageSize,
+      pageSizeOptions: options,
+      onPageSelected: (value) => viewModel.goToPage(value - 1),
+      onPageSizeChanged: viewModel.setPageSize,
+      onPrevious: page.hasPrevious ? () => viewModel.goToPage(page.page - 1) : null,
+      onNext: page.hasNext ? () => viewModel.goToPage(page.page + 1) : null,
+    );
+  }
+}

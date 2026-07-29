@@ -2,6 +2,18 @@
   "status": "catalogStale",
   "diagnostics": [
     {
+      "code": "orphan-registry-entry",
+      "message": "O registry contém componente sem implementação ativa no índice.",
+      "id": "admin.context-picker",
+      "path": "lib\\catalog\\catalog_registry.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "core.form-text-field",
+      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
+    },
+    {
       "code": "source-example-fingerprint-mismatch",
       "message": "A fonte mudou sem atualização do exemplo.",
       "id": "admin.single-select-field",
@@ -36,45 +48,13 @@
       "message": "A fonte mudou sem atualização do exemplo.",
       "id": "admin.workspace-layout",
       "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "core.chat-avatar",
-      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "core.conversation-tile",
-      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "core.conversation-header",
-      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "core.message-bubble",
-      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "core.chat-composer",
-      "path": "packages/coelo_ui_core/lib/coelo_ui_core.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.context-picker",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
     }
   ],
   "fingerprints": {
+    "core.avatar": {
+      "source": "7a7a59a2",
+      "example": "5e27be7b"
+    },
     "core.search-field": {
       "source": "f3e1d2ff",
       "example": "877182a0"
@@ -96,20 +76,24 @@
       "example": "662f920e"
     },
     "admin.multi-select-filter": {
-      "source": "05433b24",
-      "example": "42ee4890"
+      "source": "03aab2d6",
+      "example": "6a280730"
     },
     "admin.single-select-field": {
       "source": "b18f70e5",
       "example": "d2d36330"
+    },
+    "admin.dialog-shell": {
+      "source": "62ab780e",
+      "example": "1b037637"
     },
     "admin.pagination": {
       "source": "819ecd93",
       "example": "3f55595e"
     },
     "admin.create-action": {
-      "source": "cf03f5a3",
-      "example": "6cfadc88"
+      "source": "153b6846",
+      "example": "07a3c792"
     },
     "admin.file-actions": {
       "source": "f9ead305",
@@ -182,6 +166,10 @@
     "governance.component-lifecycle": {
       "source": "811c9dc5",
       "example": "d994ba96"
+    },
+    "product.superadmin-access-profiles": {
+      "source": "811c9dc5",
+      "example": "6e88055d"
     }
   }
 }

@@ -163,7 +163,9 @@ Registros sensiveis devem entrar em auditoria quando alterarem acesso, professor
 
 ## Riscos E Perguntas Abertas
 
-- Definir se a atividade tera pagina propria ou apenas subpagina dentro do grupo no MVP.
+- Resolvido para o Superadmin em 2026-07-29: Atividades possui diretório e
+  detalhe próprios somente leitura; a gestão operacional permanece no Admin e
+  os contextos de grupo continuam sendo o centro da operação.
 - Definir se o nome exibido para a turma devera ser "atividade" em todos os contextos ou se a UI podera usar termos mais amigaveis.
 - Decidir quais tipos de sugestao padrao entram por tipo de instituicao.
 - Definir os papeis institucionais que receberao cada capacidade no seed de produto; a migration registra o catalogo, mas nao amplia acesso automaticamente.

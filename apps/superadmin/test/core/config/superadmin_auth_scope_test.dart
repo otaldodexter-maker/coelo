@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
+import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -36,6 +37,7 @@ void main() {
     expect(result.message, UnavailableCoeloAuthGateway.defaultMessage);
     expect(recoveryResult.isSuccess, isFalse);
     expect(recoveryResult.message, UnavailableCoeloAuthGateway.defaultMessage);
+    expect(scope.personDirectoryRepository, isA<UnavailablePersonDirectoryRepository>());
   });
 
   test('initializes Supabase with public config and conditional local storage', () async {
@@ -59,6 +61,7 @@ void main() {
     expect(initializedKey, 'sb_publishable_test');
     expect(initializedStorage, isA<ConditionalSupabaseLocalStorage>());
     expect(scope.session.isAuthenticated, isFalse);
+    expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
   });
 
   test('starts authenticated from a restored session and mirrors later auth changes', () async {

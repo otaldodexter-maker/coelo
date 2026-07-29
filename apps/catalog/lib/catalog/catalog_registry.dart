@@ -9,6 +9,7 @@ typedef CatalogExampleBuilder = Widget Function(BuildContext context);
 
 const catalogRegistryManifestJson = r'''
 {
+  "core.avatar": ["small", "medium", "large"],
   "core.search-field": [],
   "core.form-text-field": [],
   "core.status-chip": [],
@@ -17,7 +18,7 @@ const catalogRegistryManifestJson = r'''
   "admin.multi-select-filter": [],
   "admin.single-select-field": [],
   "admin.pagination": [],
-  "admin.create-action": [],
+  "admin.create-action": ["tile", "banner"],
   "admin.file-actions": [],
   "admin.resizable-table": [],
   "admin.kanban-board": [],
@@ -50,6 +51,7 @@ final class _DialogShellExample extends StatelessWidget {
 
 Map<String, CatalogExample> buildCatalogRegistry() {
   final builders = <String, CatalogExampleBuilder>{
+    'core.avatar': (_) => const _AvatarExample(),
     'core.search-field': (_) => const _SearchFieldExample(),
     'core.form-text-field': (_) => const _FormTextFieldExample(),
     'core.status-chip': (_) => const _StatusChipExample(),
@@ -79,6 +81,17 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     for (final builder in builders.entries)
       builder.key: CatalogExample(builder: builder.value, approvedVariants: variants[builder.key]!),
   };
+}
+
+final class _AvatarExample extends StatelessWidget {
+  const _AvatarExample();
+
+  @override
+  Widget build(BuildContext context) => const CoeloAvatar(
+    initials: 'AM',
+    semanticLabel: 'Foto de Ana Martins',
+    size: CoeloAvatarSize.large,
+  );
 }
 
 final class _FormTextFieldExample extends StatefulWidget {
@@ -286,6 +299,13 @@ final class _CreateActionExampleState extends State<_CreateActionExample> {
         CoeloAdminCreateAction(
           label: 'Criar instituição',
           onPressed: () => setState(() => _activations++),
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+        CoeloAdminCreateAction(
+          label: 'Criar pessoa',
+          description: 'Cadastre identidade e vínculos contextuais.',
+          onPressed: () => setState(() => _activations++),
+          variant: CoeloAdminCreateActionVariant.banner,
         ),
         const SizedBox(height: CoeloSpacing.space2),
         Text('Ativações: $_activations'),

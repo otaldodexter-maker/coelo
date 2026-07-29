@@ -3,21 +3,33 @@ import 'dart:math' as math;
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+enum CoeloAdminCreateActionVariant { tile, banner }
+
 final class CoeloAdminCreateAction extends StatelessWidget {
   const CoeloAdminCreateAction({
     required this.label,
     required this.onPressed,
     this.icon = Icons.add,
+    this.variant = CoeloAdminCreateActionVariant.tile,
+    this.description,
     super.key,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData icon;
+  final CoeloAdminCreateActionVariant variant;
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
-    return _CoeloAdminCreateActionContent(label: label, onPressed: onPressed, icon: icon);
+    return _CoeloAdminCreateActionContent(
+      label: label,
+      onPressed: onPressed,
+      icon: icon,
+      variant: variant,
+      description: description,
+    );
   }
 }
 
@@ -26,11 +38,15 @@ class _CoeloAdminCreateActionContent extends StatefulWidget {
     required this.label,
     required this.onPressed,
     required this.icon,
+    required this.variant,
+    required this.description,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData icon;
+  final CoeloAdminCreateActionVariant variant;
+  final String? description;
 
   @override
   State<_CoeloAdminCreateActionContent> createState() => _CoeloAdminCreateActionContentState();
@@ -62,8 +78,10 @@ class _CoeloAdminCreateActionContentState extends State<_CoeloAdminCreateActionC
         ? CoeloMotion.instant
         : CoeloMotion.standard;
 
-    return Semantics(
-      label: widget.label,
+    final action = Semantics(
+      label: widget.variant == CoeloAdminCreateActionVariant.banner && widget.description != null
+          ? '${widget.label}. ${widget.description}'
+          : widget.label,
       button: true,
       enabled: widget.onPressed != null,
       onTap: widget.onPressed == null ? null : _activate,
@@ -103,44 +121,91 @@ class _CoeloAdminCreateActionContentState extends State<_CoeloAdminCreateActionC
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                 child: Padding(
                   padding: const EdgeInsets.all(CoeloSpacing.space4),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: Color.lerp(colors.surface, colors.primary, progress),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.lerp(
-                                  colors.shadow.withValues(alpha: 0.08),
-                                  colors.primary.withValues(alpha: 0.15),
-                                  progress,
-                                )!,
-                                blurRadius: CoeloSpacing.space2 + CoeloSpacing.space1 * progress,
-                                offset: const Offset(0, 3),
+                  child: widget.variant == CoeloAdminCreateActionVariant.tile
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _CreateActionIcon(icon: widget.icon, progress: progress),
+                              const SizedBox(height: CoeloSpacing.space3),
+                              Text(widget.label),
+                            ],
+                          ),
+                        )
+                      : Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _CreateActionIcon(
+                                icon: widget.icon,
+                                progress: progress,
+                                compact: true,
+                              ),
+                              const SizedBox(width: CoeloSpacing.space3),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(widget.label),
+                                    if (widget.description case final description?)
+                                      Text(description),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                          child: Icon(
-                            widget.icon,
-                            color: Color.lerp(colors.primary, colors.onPrimary, progress),
-                            size: CoeloSize.iconMd,
-                          ),
                         ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        Text(widget.label),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
           ),
         ),
+      ),
+    );
+
+    return widget.variant == CoeloAdminCreateActionVariant.banner
+        ? ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
+            child: action,
+          )
+        : action;
+  }
+}
+
+class _CreateActionIcon extends StatelessWidget {
+  const _CreateActionIcon({required this.icon, required this.progress, this.compact = false});
+
+  final IconData icon;
+  final double progress;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      width: compact ? CoeloSize.avatarMd : 56,
+      height: compact ? CoeloSize.avatarMd : 56,
+      decoration: BoxDecoration(
+        color: Color.lerp(colors.surface, colors.primary, progress),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Color.lerp(
+              colors.shadow.withValues(alpha: 0.08),
+              colors.primary.withValues(alpha: 0.15),
+              progress,
+            )!,
+            blurRadius: CoeloSpacing.space2 + CoeloSpacing.space1 * progress,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        icon,
+        color: Color.lerp(colors.primary, colors.onPrimary, progress),
+        size: compact ? CoeloSize.iconSm : CoeloSize.iconMd,
       ),
     );
   }

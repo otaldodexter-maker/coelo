@@ -200,7 +200,10 @@ precisa nem pode receber acesso à linha privada reutilizável em
 | platform_role_permissions | Permissões liberadas por perfil. |
 | platform_memberships | Pessoas vinculadas a perfis internos Coelo. |
 | platform_member_permission_overrides | Exceções de permissão por usuário. |
-| institution_memberships | Perfis contextuais do Admin institucional. |
+| institution_roles | Perfis reutilizáveis do Admin, globais ou locais. |
+| institution_role_permissions | Permissões allow/deny configuradas no perfil Admin. |
+| institution_role_assignments | Atribuição do perfil a uma membership e escopo efetivo. |
+| institution_memberships | Vínculo contextual da pessoa ao Admin institucional. |
 | plans | Catálogo de planos e limites preparados para futuro. |
 | institution_subscriptions | Plano/status/datas por instituição; operação manual no MVP. |
 | usage_limits/analytics.usage_counters | Limites e consumo, inicialmente informativos. |
@@ -208,6 +211,12 @@ precisa nem pode receber acesso à linha privada reutilizável em
 | notice_audiences/receipts | Audiência e leitura. |
 | support_sessions | Canal de atendimento Coelo aberto por instituição ou unidade. |
 | support_messages | Mensagens do atendimento Coelo. |
+
+`platform_roles` e `institution_roles` possuem `max_scope_kind` e versão
+otimista. O escopo efetivo permanece na membership/atribuição e nunca pode ser
+mais amplo que o teto do perfil. Perfis Admin criados pela central do
+Superadmin são bases globais reutilizáveis; `is_system` é derivado pelo
+servidor.
 
 - Não limitar tecnicamente a quantidade de responsáveis por criança/contexto;
   eventual regra comercial permanece adiada e não produz cobrança no MVP.

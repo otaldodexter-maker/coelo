@@ -128,6 +128,10 @@ void main() {
     final field = tester.widget<TextField>(find.byType(TextField));
 
     expect(anchor.style?.elevation?.resolve({}), 6);
+    expect(
+      anchor.style?.shadowColor?.resolve({}),
+      CoeloTheme.light.colorScheme.shadow.withValues(alpha: 0.12),
+    );
     expect(find.byIcon(Icons.search_rounded), findsOneWidget);
     expect(field.focusNode?.hasFocus, isTrue);
   });

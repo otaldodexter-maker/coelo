@@ -27,6 +27,35 @@ Validacoes principais:
 - `tests/2026-07-24-activity-governance-participation-validation.sql`
 - `tests/2026-07-24-contextual-chat-validation.sql`
 - `tests/2026-07-24-attendance-assiduity-validation.sql`
+- `tests/2026-07-29-superadmin-people-directory-validation.sql`
+
+## Diretório de Pessoas do Superadmin
+
+- `migrations/20260729141839_superadmin_people_directory.sql`
+- `migrations/20260729153000_superadmin_people_directory_policy_hardening.sql`
+- `migrations/20260729153100_child_context_lifecycle_trigger_hardening.sql`
+- `supabase/tests/superadmin_people_directory_test.sql`
+
+A migration adiciona as permissões `people.*`, mantém o grant inicial somente
+no Owner e expõe RPCs compatíveis com o repositório Flutter. Criação permanece
+em draft, sem Auth; edição usa `expected_updated_at` e patches de vínculos. A
+aplicação remota fica bloqueada até reset/dry-run, testes transacionais,
+advisors e revisão explícita de autorização.
+
+## Perfis e Permissões
+
+- `migrations/20260729144440_profiles_permissions_governance.sql`
+- `supabase/tests/profiles_permissions_governance_test.sql`
+
+A migration adiciona escopo máximo e versão otimista aos perfis Superadmin e
+Admin, remove o bypass implícito do Owner, aplica `deny` antes de `allow` e
+expõe as cinco RPCs auditadas da central. As permissões
+`platform.roles.manage` e `institution.roles.manage` nascem somente no Owner.
+O catálogo do Principal permanece contextual e somente leitura.
+
+A aplicação remota permanece bloqueada até reset local, pgTAP, revisão dos
+advisors e aprovação explícita; nenhum comando desta entrega grava no projeto
+remoto.
 
 Fundacao de Atividades Contextuais:
 

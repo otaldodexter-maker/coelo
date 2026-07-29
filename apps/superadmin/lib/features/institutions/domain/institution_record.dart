@@ -56,8 +56,11 @@ final class InstitutionUnit {
     this.inheritInstitutionBranding = true,
     this.brandDisplayName = '',
     this.hasSimulatedLogo = false,
+    this.hasSimulatedCover = false,
     this.accentColor = '#D63C00',
     this.secondaryColor = '#3F4549',
+    this.textColor = '#3F4549',
+    this.surfaceColor = '#FFFFFF',
     this.activitiesCount = 0,
   });
 
@@ -83,8 +86,11 @@ final class InstitutionUnit {
   final bool inheritInstitutionBranding;
   final String brandDisplayName;
   final bool hasSimulatedLogo;
+  final bool hasSimulatedCover;
   final String accentColor;
   final String secondaryColor;
+  final String textColor;
+  final String surfaceColor;
   final int activitiesCount;
 
   InstitutionUnit copyWith({
@@ -110,8 +116,11 @@ final class InstitutionUnit {
     bool? inheritInstitutionBranding,
     String? brandDisplayName,
     bool? hasSimulatedLogo,
+    bool? hasSimulatedCover,
     String? accentColor,
     String? secondaryColor,
+    String? textColor,
+    String? surfaceColor,
     int? activitiesCount,
   }) {
     return InstitutionUnit(
@@ -137,8 +146,11 @@ final class InstitutionUnit {
       inheritInstitutionBranding: inheritInstitutionBranding ?? this.inheritInstitutionBranding,
       brandDisplayName: brandDisplayName ?? this.brandDisplayName,
       hasSimulatedLogo: hasSimulatedLogo ?? this.hasSimulatedLogo,
+      hasSimulatedCover: hasSimulatedCover ?? this.hasSimulatedCover,
       accentColor: accentColor ?? this.accentColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
+      textColor: textColor ?? this.textColor,
+      surfaceColor: surfaceColor ?? this.surfaceColor,
       activitiesCount: activitiesCount ?? this.activitiesCount,
     );
   }

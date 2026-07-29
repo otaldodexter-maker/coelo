@@ -28,6 +28,19 @@ void main() {
     );
   });
 
+  test('does not inherit address or contact values from the institution', () {
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
+    final sourceInstitution = institutions.records.first;
+    final sourceUnit = sourceInstitution.units.first;
+    final record = repository.findById(sourceUnit.id)!;
+
+    expect(record.postalCode, sourceUnit.postalCode);
+    expect(record.street, sourceUnit.street);
+    expect(record.contactEmail, sourceUnit.contactEmail);
+    expect(record.contactPhone, sourceUnit.contactPhone);
+  });
+
   test('uses the institution plan until the unit receives an override', () async {
     final institutions = FakeInstitutionDirectoryRepository();
     final repository = FakeUnitDirectoryRepository(institutions);
@@ -129,14 +142,49 @@ void main() {
     expect(() => source.copyWith(institutionId: anotherInstitution), throwsArgumentError);
   });
 
-  test('paginates the directory in groups of twenty', () async {
+  test('paginates the directory with the requested page size', () async {
     final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
-    final first = await repository.fetchPage(UnitDirectoryQuery());
-    final second = await repository.fetchPage(UnitDirectoryQuery(page: 1));
+    final first = await repository.fetchPage(UnitDirectoryQuery(pageSize: 8));
+    final second = await repository.fetchPage(UnitDirectoryQuery(page: 1, pageSize: 8));
 
-    expect(first.items, hasLength(UnitDirectoryQuery.pageSize));
+    expect(first.items, hasLength(8));
     expect(second.items, isNotEmpty);
     expect(first.items.map((item) => item.id).toSet(), isNot(contains(second.items.first.id)));
     expect(first.totalCount, repository.records.length);
+    expect(first.pageSize, 8);
+  });
+
+  test('sorts unit rows by the selected domain column', () async {
+    final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+
+    final page = await repository.fetchPage(
+      UnitDirectoryQuery(
+        pageSize: 100,
+        sortColumn: UnitDirectorySortColumn.groupsCount,
+        sortAscending: false,
+      ),
+    );
+
+    expect(
+      page.items.map((item) => item.groupsCount),
+      orderedEquals(
+        page.items.map((item) => item.groupsCount).toList()..sort((a, b) => b.compareTo(a)),
+      ),
+    );
+  });
+
+  test('loads form options and never turns a missing edit into creation', () async {
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
+    final existing = repository.records.first;
+
+    final createData = await repository.loadForm();
+    final editData = await repository.loadForm(unitId: existing.id);
+    final missingData = await repository.loadForm(unitId: 'missing-unit');
+
+    expect(createData.institutions, hasLength(institutions.records.length));
+    expect(createData.record, isNull);
+    expect(editData.record?.id, existing.id);
+    expect(missingData.record, isNull);
   });
 }

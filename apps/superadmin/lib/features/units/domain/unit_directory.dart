@@ -33,8 +33,11 @@ final class UnitRecord {
   bool get inheritInstitutionBranding => unit.inheritInstitutionBranding;
   String get brandDisplayName => unit.brandDisplayName;
   bool get hasSimulatedLogo => unit.hasSimulatedLogo;
+  bool get hasSimulatedCover => unit.hasSimulatedCover;
   String get accentColor => unit.accentColor;
   String get secondaryColor => unit.secondaryColor;
+  String get textColor => unit.textColor;
+  String get surfaceColor => unit.surfaceColor;
   int get groupsCount => unit.groups.length;
   int get activitiesCount => unit.activitiesCount;
 
@@ -62,8 +65,11 @@ final class UnitRecord {
     bool? inheritInstitutionBranding,
     String? brandDisplayName,
     bool? hasSimulatedLogo,
+    bool? hasSimulatedCover,
     String? accentColor,
     String? secondaryColor,
+    String? textColor,
+    String? surfaceColor,
     int? activitiesCount,
   }) {
     final targetInstitution = institutionId == null || institutionId == institution.id
@@ -98,8 +104,11 @@ final class UnitRecord {
         inheritInstitutionBranding: inheritInstitutionBranding,
         brandDisplayName: brandDisplayName,
         hasSimulatedLogo: hasSimulatedLogo,
+        hasSimulatedCover: hasSimulatedCover,
         accentColor: accentColor,
         secondaryColor: secondaryColor,
+        textColor: textColor,
+        surfaceColor: surfaceColor,
         activitiesCount: activitiesCount,
       ),
     );
@@ -139,6 +148,26 @@ final class UnitDirectoryItem {
   }
 }
 
+enum UnitDirectorySortColumn {
+  name,
+  institutionName,
+  typeName,
+  groupsCount,
+  activitiesCount,
+  planName,
+  status,
+  contactEmail,
+  contactPhone,
+  contactMobilePhone,
+  street,
+  addressNumber,
+  complement,
+  district,
+  postalCode,
+  city,
+  state,
+}
+
 final class UnitDirectoryQuery {
   UnitDirectoryQuery({
     this.search = '',
@@ -150,7 +179,11 @@ final class UnitDirectoryQuery {
     Set<String> cities = const {},
     Set<String> districts = const {},
     this.page = 0,
+    this.pageSize = defaultPageSize,
+    this.sortColumn = UnitDirectorySortColumn.name,
+    this.sortAscending = true,
   }) : assert(page >= 0),
+       assert(allowedPageSizes.contains(pageSize)),
        institutionIds = Set.unmodifiable(institutionIds),
        typeIds = Set.unmodifiable(typeIds),
        statuses = Set.unmodifiable(statuses),
@@ -159,7 +192,8 @@ final class UnitDirectoryQuery {
        cities = Set.unmodifiable(cities),
        districts = Set.unmodifiable(districts);
 
-  static const pageSize = 20;
+  static const defaultPageSize = 11;
+  static const allowedPageSizes = <int>[8, 11, 20, 50, 100];
 
   final String search;
   final Set<String> institutionIds;
@@ -170,6 +204,9 @@ final class UnitDirectoryQuery {
   final Set<String> cities;
   final Set<String> districts;
   final int page;
+  final int pageSize;
+  final UnitDirectorySortColumn sortColumn;
+  final bool sortAscending;
 
   int get offset => page * pageSize;
   bool get hasActiveFilters =>
@@ -184,11 +221,20 @@ final class UnitDirectoryQuery {
 }
 
 final class UnitDirectoryPage {
-  const UnitDirectoryPage({required this.items, required this.totalCount, required this.page});
+  const UnitDirectoryPage({
+    required this.items,
+    required this.totalCount,
+    required this.page,
+    this.pageSize = UnitDirectoryQuery.defaultPageSize,
+  });
 
   final List<UnitDirectoryItem> items;
   final int totalCount;
   final int page;
+  final int pageSize;
+
+  bool get hasPrevious => page > 0;
+  bool get hasNext => (page * pageSize) + items.length < totalCount;
 }
 
 final class UnitFilterOption {
@@ -220,11 +266,19 @@ final class UnitDirectoryUnauthorizedException implements Exception {
   const UnitDirectoryUnauthorizedException();
 }
 
+final class UnitFormData {
+  const UnitFormData({required this.institutions, this.record});
+
+  final List<InstitutionRecord> institutions;
+  final UnitRecord? record;
+}
+
 abstract interface class UnitDirectoryRepository {
   List<UnitRecord> get records;
   UnitRecord? findById(String id);
   String createId(String institutionId, String slug);
   Future<void> upsert(UnitRecord record);
+  Future<UnitFormData> loadForm({String? unitId});
   Future<UnitDirectoryPage> fetchPage(UnitDirectoryQuery query);
   Future<UnitDirectoryFilterOptions> fetchFilterOptions({
     Set<String> states = const {},

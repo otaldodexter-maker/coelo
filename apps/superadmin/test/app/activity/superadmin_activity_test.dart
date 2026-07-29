@@ -68,6 +68,28 @@ void main() {
     expect(activity.subject, 'Instituições');
   });
 
+  test('labels demo file activities for the requested directory', () {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+
+    controller.completeDemoExport(
+      SuperadminExportFormat.xlsx,
+      subject: 'Grupos',
+      fileBaseName: 'grupos',
+    );
+    controller.startDemoImport(
+      subject: 'Grupos',
+      fileName: 'grupos-demonstracao.xlsx',
+      progressSummary: 'Importando grupos',
+      completedSummary: '24 grupos importados, 2 rejeitados',
+    );
+
+    expect(controller.activities.first.subject, 'Grupos');
+    expect(controller.activities.first.fileName, 'grupos-demonstracao.xlsx');
+    expect(controller.activities.last.subject, 'Grupos');
+    expect(controller.activities.last.fileName, 'grupos.xlsx');
+  });
+
   test('uses the injected clock for completed exports', () {
     final now = DateTime(2026, 7, 21, 14, 35);
     final controller = SuperadminActivityController(now: () => now);

@@ -3,11 +3,17 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/domain/coelo_auth_login_action.dart';
+import '../../features/activities/data/supabase_activity_directory_repository.dart';
+import '../../features/activities/domain/activity_directory.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
+import '../../features/people/data/supabase_person_directory_repository.dart';
+import '../../features/people/domain/person_directory.dart';
+import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
+import '../../features/access_profiles/domain/access_profile.dart';
 import '../guards/superadmin_session.dart';
 import 'superadmin_app_config.dart';
 
@@ -31,6 +37,9 @@ final class SuperadminAuthScope {
     required this.logout,
     required this.requestPasswordRecovery,
     required this.institutionDirectoryRepository,
+    required this.activityDirectoryRepository,
+    required this.personDirectoryRepository,
+    required this.accessProfileRepository,
   });
 
   final SuperadminSession session;
@@ -38,6 +47,9 @@ final class SuperadminAuthScope {
   final LogoutAction logout;
   final PasswordRecoveryAction requestPasswordRecovery;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
+  final ActivityDirectoryRepository activityDirectoryRepository;
+  final PersonDirectoryRepository personDirectoryRepository;
+  final AccessProfileRepository accessProfileRepository;
 }
 
 Future<SuperadminAuthScope> createSuperadminAuthScope({
@@ -70,6 +82,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       logout: createCoeloAuthLogoutAction(auth: auth, session: session),
       requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
       institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
+      activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
+      personDirectoryRepository: SupabasePersonDirectoryRepository(client),
+      accessProfileRepository: SupabaseAccessProfileRepository(client),
     );
   } on Exception catch (error, stackTrace) {
     FlutterError.reportError(
@@ -96,6 +111,9 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     logout: createCoeloAuthLogoutAction(auth: auth, session: session),
     requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
     institutionDirectoryRepository: const UnavailableInstitutionDirectoryRepository(),
+    activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
+    personDirectoryRepository: const UnavailablePersonDirectoryRepository(),
+    accessProfileRepository: const UnavailableAccessProfileRepository(),
   );
 }
 

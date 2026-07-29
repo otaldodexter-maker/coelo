@@ -51,13 +51,7 @@ void main() {
     tester.view.physicalSize = const Size(375, 900);
     await tester.pumpWidget(
       _formApp(
-        UnitFormPage(
-          institutions: institutions,
-          repository: units,
-          logout: _logout,
-          onCancel: () {},
-          onSaved: (_) {},
-        ),
+        UnitFormPage(repository: units, logout: _logout, onCancel: () {}, onSaved: (_) {}),
         Brightness.light,
       ),
     );
@@ -71,7 +65,6 @@ void main() {
     await tester.pumpWidget(
       _formApp(
         UnitFormPage(
-          institutions: institutions,
           repository: units,
           unitId: units.records.first.id,
           logout: _logout,

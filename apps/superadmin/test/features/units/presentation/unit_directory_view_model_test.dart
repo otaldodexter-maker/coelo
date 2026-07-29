@@ -46,6 +46,40 @@ void main() {
     await viewModel.retry();
     expect(viewModel.state, UnitDirectoryLoadState.unauthorized);
   });
+
+  test('uses eleven cards and switches to eight table rows', () async {
+    final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final viewModel = UnitDirectoryViewModel(repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load();
+    expect(viewModel.query.pageSize, 11);
+    expect(viewModel.page.items, hasLength(11));
+
+    await viewModel.setPageSize(8);
+    expect(viewModel.query.pageSize, 8);
+    expect(viewModel.page.items, hasLength(8));
+  });
+
+  test('exposes loading, empty, no-results, and failure states', () async {
+    final source = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final repository = _RecordingRepository(source)
+      ..pageOverride = const UnitDirectoryPage(items: [], totalCount: 0, page: 0);
+    final viewModel = UnitDirectoryViewModel(repository);
+    addTearDown(viewModel.dispose);
+
+    final emptyLoad = viewModel.load();
+    expect(viewModel.state, UnitDirectoryLoadState.loading);
+    await emptyLoad;
+    expect(viewModel.state, UnitDirectoryLoadState.empty);
+
+    await viewModel.setStatuses({UnitStatus.draft});
+    expect(viewModel.state, UnitDirectoryLoadState.noResults);
+
+    repository.failure = true;
+    await viewModel.retry();
+    expect(viewModel.state, UnitDirectoryLoadState.failure);
+  });
 }
 
 final class _RecordingRepository implements UnitDirectoryRepository {
@@ -54,6 +88,8 @@ final class _RecordingRepository implements UnitDirectoryRepository {
   final UnitDirectoryRepository delegate;
   int pageRequests = 0;
   bool unauthorized = false;
+  bool failure = false;
+  UnitDirectoryPage? pageOverride;
 
   @override
   List<UnitRecord> get records => delegate.records;
@@ -77,8 +113,12 @@ final class _RecordingRepository implements UnitDirectoryRepository {
   Future<UnitDirectoryPage> fetchPage(UnitDirectoryQuery query) {
     pageRequests += 1;
     if (unauthorized) throw const UnitDirectoryUnauthorizedException();
-    return delegate.fetchPage(query);
+    if (failure) throw Exception('load failed');
+    return pageOverride == null ? delegate.fetchPage(query) : Future.value(pageOverride);
   }
+
+  @override
+  Future<UnitFormData> loadForm({String? unitId}) => delegate.loadForm(unitId: unitId);
 
   @override
   Future<void> upsert(UnitRecord record) => delegate.upsert(record);

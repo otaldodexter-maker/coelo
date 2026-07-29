@@ -52,3 +52,12 @@ Task 3: complete (commits 50b73f8..51921fb, review clean; phone field, draft res
 Task 4: complete (commits 51921fb..099c1fa, review clean; canonical password close, neutral accessibility row, wide 50/50 actions, compact/200% stacked actions, 10 focused tests and analysis passed).
 Task 5: complete (commit c6623f7, review approved; 34 account tests, 8 golden cases, full analysis and knowledge validators passed; unrelated pre-existing Institutions test failure at institution_form_page_test.dart:812 remains documented).
 Final review fixes: complete (commits f2ef952, fb7cccb and a9e1ad4, re-review approved; recoverable save errors, accessible SV/hue controls with visible focus, keyboard and semantics, and delayed profile hydration without draft loss; 88 relevant tests and full analysis passed).
+
+# People Visual Parity with Institutions
+
+Plan: `docs/superpowers/plans/2026-07-29-superadmin-people-visual-files-institution-parity.md`
+Execution: subagent-driven in the current checkout, explicitly approved by the user; visual-only, no Supabase/MFA changes.
+Paused safely at user request on 2026-07-29.
+Task 1: in progress in working tree. RED was confirmed; `PersonFileActions`, its widget tests, and toolbar integration exist. GREEN validation, self-review, report, task review and commit are still pending.
+Task 2: not started; brief ready at `.superpowers/sdd/people-visual-parity-task-2-brief.md`.
+Task 3: not started.

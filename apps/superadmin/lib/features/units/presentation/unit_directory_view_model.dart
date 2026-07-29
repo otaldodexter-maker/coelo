@@ -29,7 +29,13 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
 
   Future<void> load() => _load(_query);
   Future<void> retry() => _load(_query);
-  Future<void> clearFilters() => _replace(UnitDirectoryQuery());
+  Future<void> clearFilters() => _replace(
+    UnitDirectoryQuery(
+      pageSize: _query.pageSize,
+      sortColumn: _query.sortColumn,
+      sortAscending: _query.sortAscending,
+    ),
+  );
 
   void setSearch(String value) {
     _query = _copy(search: value);
@@ -47,6 +53,23 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
   Future<void> setCities(Set<String> value) => _replace(_copy(cities: value, districts: const {}));
   Future<void> setDistricts(Set<String> value) => _replace(_copy(districts: value));
   Future<void> goToPage(int value) => value < 0 ? Future.value() : _replace(_copy(page: value));
+  Future<void> setPageSize(int value, {bool resetSort = false}) {
+    if (!UnitDirectoryQuery.allowedPageSizes.contains(value)) {
+      return Future.value();
+    }
+    return _replace(
+      _copy(
+        pageSize: value,
+        sortColumn: resetSort ? UnitDirectorySortColumn.name : _query.sortColumn,
+        sortAscending: resetSort ? true : _query.sortAscending,
+      ),
+    );
+  }
+
+  Future<void> setSort(UnitDirectorySortColumn column) {
+    final ascending = _query.sortColumn == column ? !_query.sortAscending : true;
+    return _replace(_copy(sortColumn: column, sortAscending: ascending));
+  }
 
   UnitDirectoryQuery _copy({
     String? search,
@@ -58,6 +81,9 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
     Set<String>? cities,
     Set<String>? districts,
     int page = 0,
+    int? pageSize,
+    UnitDirectorySortColumn? sortColumn,
+    bool? sortAscending,
   }) {
     return UnitDirectoryQuery(
       search: search ?? _query.search,
@@ -69,6 +95,9 @@ final class UnitDirectoryViewModel extends ChangeNotifier {
       cities: cities ?? _query.cities,
       districts: districts ?? _query.districts,
       page: page,
+      pageSize: pageSize ?? _query.pageSize,
+      sortColumn: sortColumn ?? _query.sortColumn,
+      sortAscending: sortAscending ?? _query.sortAscending,
     );
   }
 

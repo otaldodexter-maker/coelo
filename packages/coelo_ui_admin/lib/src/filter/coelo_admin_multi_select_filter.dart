@@ -155,6 +155,7 @@ class _CoeloAdminMultiSelectFilterState<T> extends State<CoeloAdminMultiSelectFi
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
         elevation: const WidgetStatePropertyAll(6),
+        shadowColor: WidgetStatePropertyAll(colors.shadow.withValues(alpha: 0.12)),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CoeloRadius.lg),
