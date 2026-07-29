@@ -453,8 +453,9 @@ List<_Recipient> _flatten(List<SuperadminChatContextOption> options, {String par
 String _kindLabel(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo/Turma',
+  ChatContextKind.group => 'Grupo (Turma)',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
+  ChatContextKind.child => 'Criança',
   ChatContextKind.conversationGroup => 'Grupo de conversa',
 };
