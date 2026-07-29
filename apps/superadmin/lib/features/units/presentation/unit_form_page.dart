@@ -7,12 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../institutions/data/fake_institution_directory_repository.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
-import '../../institutions/presentation/widgets/institution_form_sections.dart'
-    show showCoeloAdminColorPicker;
 import '../domain/unit_directory.dart';
 
 enum UnitFormSaveResult { created, updated }
@@ -618,11 +617,10 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         key: Key('unit-color-picker-$id'),
         tooltip: 'Selecionar $label',
         onPressed: () async {
-          final selected = await showCoeloAdminColorPicker(
-            context: context,
+          final selected = await showSuperadminAdvancedColorPicker(
+            context,
             initialColor: color,
             title: label,
-            keyPrefix: 'unit',
           );
           if (selected != null) {
             _controllers[id]!.text =

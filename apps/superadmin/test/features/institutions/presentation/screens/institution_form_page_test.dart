@@ -769,11 +769,13 @@ void main() {
     await tester.tap(colorPicker);
     await tester.pumpAndSettle();
 
-    final dialog = tester.widget<AlertDialog>(find.byType(AlertDialog));
+    final dialog = tester.widget<AlertDialog>(
+      find.byKey(const Key('advanced-color-picker-dialog')),
+    );
     expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
     expect(dialog.surfaceTintColor, Colors.transparent);
-    expect(find.byKey(const Key('institution-color-area')), findsOneWidget);
-    expect(find.byKey(const Key('institution-color-hex')), findsOneWidget);
+    expect(find.byKey(const Key('advanced-color-picker-area')), findsOneWidget);
+    expect(find.byKey(const Key('advanced-color-picker-hex')), findsOneWidget);
     expect(find.text('H'), findsOneWidget);
     expect(find.text('S'), findsOneWidget);
     expect(find.text('V'), findsOneWidget);

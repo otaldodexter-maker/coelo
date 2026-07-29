@@ -29,28 +29,39 @@ final class AccountController extends ChangeNotifier {
     required String firstName,
     required String lastName,
     required String email,
+    required String mobilePhone,
     required AccountAvatar avatar,
   }) async {
     final current = _profile;
     if (current == null || _busy) return;
+    _message = null;
     _setBusy(true);
     var next = current.copyWith(
       firstName: firstName.trim(),
       lastName: lastName.trim(),
+      mobilePhone: mobilePhone.trim(),
       avatar: avatar,
     );
     final normalizedEmail = email.trim().toLowerCase();
-    if (normalizedEmail != current.email) {
+    final requestsEmailChange = normalizedEmail != current.email;
+    if (requestsEmailChange) {
       next = next.requestEmailChange(normalizedEmail);
-      if (_emailActivityId != null) activities.removeActivity(_emailActivityId!);
-      _emailActivityId = activities.addEmailApproval(requestedEmail: normalizedEmail);
-      _message = 'Solicitação enviada para aprovação.';
-    } else {
-      _message = 'Perfil atualizado.';
     }
-    await repository.save(next);
-    _profile = next;
-    _setBusy(false);
+    try {
+      await repository.save(next);
+      _profile = next;
+      if (requestsEmailChange) {
+        if (_emailActivityId != null) activities.removeActivity(_emailActivityId!);
+        _emailActivityId = activities.addEmailApproval(requestedEmail: normalizedEmail);
+        _message = 'Solicitação enviada para aprovação.';
+      } else {
+        _message = 'Perfil atualizado.';
+      }
+    } catch (_) {
+      _message = 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.';
+    } finally {
+      _setBusy(false);
+    }
   }
 
   Future<void> cancelEmailChange() async {

@@ -77,8 +77,8 @@ void main() {
     await tester.tap(find.byKey(const Key('unit-color-picker-accentColor')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('unit-color-area')), findsOneWidget);
-    expect(find.byKey(const Key('unit-color-hex')), findsOneWidget);
+    expect(find.byKey(const Key('advanced-color-picker-area')), findsOneWidget);
+    expect(find.byKey(const Key('advanced-color-picker-hex')), findsOneWidget);
     expect(find.text('Usar cor'), findsOneWidget);
   });
 

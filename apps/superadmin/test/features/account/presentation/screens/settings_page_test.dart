@@ -32,4 +32,27 @@ void main() {
     expect((await repository.load()).themeMode, ThemeMode.dark);
     expect((await repository.load()).reduceMotion, isTrue);
   });
+
+  testWidgets('uses a neutral reduced motion row without a hover surface', (tester) async {
+    final controller = UserPreferencesController(InMemoryUserPreferencesRepository());
+    await controller.load();
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SettingsPage(
+          controller: controller,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final row = find.byKey(const Key('settings-reduce-motion-row'));
+    expect(row, findsOneWidget);
+    expect(find.descendant(of: row, matching: find.byType(SwitchListTile)), findsNothing);
+    expect(find.descendant(of: row, matching: find.byType(InkWell)), findsNothing);
+    expect(find.byKey(const Key('settings-reduce-motion')), findsOneWidget);
+  });
 }

@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
+import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/account_profile.dart';
 import '../account_controller.dart';
@@ -31,19 +32,33 @@ class _ProfilePageState extends State<ProfilePage> {
   late final TextEditingController _firstName;
   late final TextEditingController _lastName;
   late final TextEditingController _email;
+  late final TextEditingController _mobilePhone;
   late final TextEditingController _initials;
   AccountAvatar? _avatar;
   String? _imageError;
+  String? _saveError;
+  var _hasHydratedInitialProfile = false;
 
   @override
   void initState() {
     super.initState();
-    final profile = widget.controller.profile;
-    _firstName = TextEditingController(text: profile?.firstName);
-    _lastName = TextEditingController(text: profile?.lastName);
-    _email = TextEditingController(text: profile?.email);
-    _initials = TextEditingController(text: profile?.avatar.initials);
-    _avatar = profile?.avatar;
+    _firstName = TextEditingController();
+    _lastName = TextEditingController();
+    _email = TextEditingController();
+    _mobilePhone = TextEditingController();
+    _initials = TextEditingController();
+    _hydrateInitialProfile(widget.controller.profile);
+  }
+
+  void _hydrateInitialProfile(AccountProfile? profile) {
+    if (profile == null || _hasHydratedInitialProfile) return;
+    _firstName.text = profile.firstName;
+    _lastName.text = profile.lastName;
+    _email.text = profile.email;
+    _mobilePhone.text = profile.mobilePhone;
+    _initials.text = profile.avatar.initials;
+    _avatar = profile.avatar;
+    _hasHydratedInitialProfile = true;
   }
 
   @override
@@ -51,6 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _firstName.dispose();
     _lastName.dispose();
     _email.dispose();
+    _mobilePhone.dispose();
     _initials.dispose();
     super.dispose();
   }
@@ -93,9 +109,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _chooseColor() async {
-    final selected = await showDialog<Color>(
-      context: context,
-      builder: (context) => _AvatarColorDialog(initial: _avatar!.backgroundColor),
+    final selected = await showSuperadminAdvancedColorPicker(
+      context,
+      initialColor: _avatar!.backgroundColor,
+      title: 'Cor da sigla',
     );
     if (selected != null && mounted) {
       setState(() => _avatar = _avatar!.copyWith(backgroundColor: selected));
@@ -110,13 +127,32 @@ class _ProfilePageState extends State<ProfilePage> {
       text: normalizedInitials,
       selection: TextSelection.collapsed(offset: normalizedInitials.length),
     );
-    await widget.controller.saveProfile(
-      firstName: _firstName.text,
-      lastName: _lastName.text,
-      email: _email.text,
-      avatar: _avatar!.copyWith(initials: normalizedInitials),
+    try {
+      await widget.controller.saveProfile(
+        firstName: _firstName.text,
+        lastName: _lastName.text,
+        email: _email.text,
+        mobilePhone: _mobilePhone.text,
+        avatar: _avatar!.copyWith(initials: normalizedInitials),
+      );
+      if (mounted) setState(() => _saveError = null);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _saveError = 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
+      }
+    }
+  }
+
+  void _reset() {
+    final reset = _avatar!.resetFor(_firstName.text, _lastName.text);
+    _initials.value = TextEditingValue(
+      text: reset.initials,
+      selection: TextSelection.collapsed(offset: reset.initials.length),
     );
-    if (mounted) setState(() {});
+    setState(() {
+      _imageError = null;
+      _avatar = reset;
+    });
   }
 
   @override
@@ -131,6 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
       listenable: widget.controller,
       builder: (context, child) {
         final profile = widget.controller.profile;
+        _hydrateInitialProfile(profile);
         if (profile == null || _avatar == null) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -145,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (widget.controller.message case final message?)
+                    if (widget.controller.message ?? _saveError case final message?)
                       Padding(
                         padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
                         child: MaterialBanner(
@@ -157,12 +194,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context, constraints) {
                         final wide = constraints.maxWidth >= 840;
                         final personal = _SectionCard(
+                          cardKey: const Key('account-personal-card'),
                           title: 'Dados pessoais',
                           description: 'Sua identidade exibida no Superadmin.',
                           child: _PersonalDataForm(
                             firstName: _firstName,
                             lastName: _lastName,
                             email: _email,
+                            mobilePhone: _mobilePhone,
                             initials: _initials,
                             avatar: _avatar!,
                             imageError: _imageError,
@@ -178,33 +217,52 @@ class _ProfilePageState extends State<ProfilePage> {
                             onCancelEmailChange: widget.controller.cancelEmailChange,
                           ),
                         );
-                        final side = Column(
-                          children: [
-                            _AccessCard(access: profile.access),
-                            const SizedBox(height: CoeloSpacing.space5),
-                            _SecurityCard(controller: widget.controller),
-                          ],
+                        final access = _AccessCard(
+                          cardKey: const Key('account-access-card'),
+                          access: profile.access,
+                        );
+                        final security = _SecurityCard(
+                          cardKey: const Key('account-security-card'),
+                          controller: widget.controller,
                         );
                         return wide
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(flex: 3, child: personal),
-                                  const SizedBox(width: CoeloSpacing.space5),
-                                  Expanded(flex: 2, child: side),
-                                ],
+                            ? IntrinsicHeight(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(flex: 3, child: personal),
+                                    const SizedBox(width: CoeloSpacing.space5),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Container(
+                                        key: const Key('account-profile-side-column'),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [
+                                            access,
+                                            const SizedBox(height: CoeloSpacing.space5),
+                                            Expanded(child: security),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
                             : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   personal,
                                   const SizedBox(height: CoeloSpacing.space5),
-                                  side,
+                                  access,
+                                  const SizedBox(height: CoeloSpacing.space5),
+                                  security,
                                 ],
                               );
                       },
                     ),
                     const SizedBox(height: CoeloSpacing.space5),
-                    _FormFooter(busy: widget.controller.busy, onSave: _save),
+                    _FormFooter(busy: widget.controller.busy, onReset: _reset, onSave: _save),
                   ],
                 ),
               ),
@@ -221,6 +279,7 @@ class _PersonalDataForm extends StatelessWidget {
     required this.firstName,
     required this.lastName,
     required this.email,
+    required this.mobilePhone,
     required this.initials,
     required this.avatar,
     required this.imageError,
@@ -234,6 +293,7 @@ class _PersonalDataForm extends StatelessWidget {
   final TextEditingController firstName;
   final TextEditingController lastName;
   final TextEditingController email;
+  final TextEditingController mobilePhone;
   final TextEditingController initials;
   final AccountAvatar avatar;
   final String? imageError;
@@ -273,23 +333,25 @@ class _PersonalDataForm extends StatelessWidget {
         ),
       ],
       const SizedBox(height: CoeloSpacing.space5),
-      LayoutBuilder(
-        builder: (context, constraints) {
+      Builder(
+        builder: (context) {
           final fields = [
             CoeloFormTextField(
+              fieldKey: const Key('account-first-name-field'),
               controller: firstName,
               labelText: 'Nome',
               prefixIcon: Icons.person_outline,
               validator: _requiredName,
             ),
             CoeloFormTextField(
+              fieldKey: const Key('account-last-name-field'),
               controller: lastName,
               labelText: 'Sobrenome',
               prefixIcon: Icons.badge_outlined,
               validator: _requiredName,
             ),
           ];
-          return constraints.maxWidth >= 600
+          return MediaQuery.sizeOf(context).width >= 600
               ? Row(
                   children: [
                     Expanded(child: fields.first),
@@ -314,6 +376,14 @@ class _PersonalDataForm extends StatelessWidget {
         keyboardType: TextInputType.emailAddress,
         validator: _validateEmail,
       ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloFormTextField(
+        fieldKey: const Key('account-mobile-phone-field'),
+        controller: mobilePhone,
+        labelText: 'Celular',
+        prefixIcon: Icons.smartphone_outlined,
+        keyboardType: TextInputType.phone,
+      ),
       if (emailChange?.status == EmailChangeStatus.pending) ...[
         const SizedBox(height: CoeloSpacing.space2),
         Row(
@@ -326,36 +396,49 @@ class _PersonalDataForm extends StatelessWidget {
       const SizedBox(height: CoeloSpacing.space5),
       Text('Avatar sem foto', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space3),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: CoeloFormTextField(
-              fieldKey: const Key('account-initials-field'),
-              controller: initials,
-              labelText: 'Sigla',
-              hintText: 'OC',
-              prefixIcon: Icons.text_fields_rounded,
-              validator: (value) => AccountAvatar.validateInitials(value ?? ''),
-            ),
-          ),
-          const SizedBox(width: CoeloSpacing.space3),
-          SizedBox(
-            height: 52,
-            child: OutlinedButton.icon(
-              onPressed: onChooseColor,
-              icon: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: avatar.backgroundColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Theme.of(context).colorScheme.outline),
-                ),
-                child: const SizedBox.square(dimension: CoeloSize.iconMd),
+      Builder(
+        builder: (context) {
+          final initialsField = CoeloFormTextField(
+            fieldKey: const Key('account-initials-field'),
+            controller: initials,
+            labelText: 'Sigla',
+            hintText: 'OC',
+            prefixIcon: Icons.text_fields_rounded,
+            validator: (value) => AccountAvatar.validateInitials(value ?? ''),
+          );
+          final chooseColorButton = OutlinedButton.icon(
+            onPressed: onChooseColor,
+            icon: DecoratedBox(
+              decoration: BoxDecoration(
+                color: avatar.backgroundColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
               ),
-              label: const Text('Escolher cor'),
+              child: const SizedBox.square(dimension: CoeloSize.iconMd),
             ),
-          ),
-        ],
+            label: const Text('Escolher cor'),
+          );
+          final compact =
+              MediaQuery.sizeOf(context).width < 600 ||
+              MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+          return compact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    initialsField,
+                    const SizedBox(height: CoeloSpacing.space3),
+                    Align(alignment: Alignment.centerLeft, child: chooseColorButton),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: initialsField),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    SizedBox(height: 52, child: chooseColorButton),
+                  ],
+                );
+        },
       ),
       const SizedBox(height: CoeloSpacing.space2),
       const Text('PNG, JPG ou WebP, até 2 MB. A sigla aceita uma ou duas letras.'),
@@ -397,11 +480,13 @@ class _AvatarPreview extends StatelessWidget {
 }
 
 class _AccessCard extends StatelessWidget {
-  const _AccessCard({required this.access});
+  const _AccessCard({required this.access, required this.cardKey});
   final AccountAccessSummary access;
+  final Key cardKey;
 
   @override
   Widget build(BuildContext context) => _SectionCard(
+    cardKey: cardKey,
     title: 'Meu acesso',
     description: 'Somente leitura. Permissões são administradas por governança.',
     child: Column(
@@ -432,11 +517,13 @@ class _AccessCard extends StatelessWidget {
 }
 
 class _SecurityCard extends StatelessWidget {
-  const _SecurityCard({required this.controller});
+  const _SecurityCard({required this.controller, required this.cardKey});
   final AccountController controller;
+  final Key cardKey;
 
   @override
   Widget build(BuildContext context) => _SectionCard(
+    cardKey: cardKey,
     title: 'Segurança',
     description: 'Atualize sua senha de acesso.',
     child: Align(
@@ -454,13 +541,20 @@ class _SecurityCard extends StatelessWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.description, required this.child});
+  const _SectionCard({
+    required this.cardKey,
+    required this.title,
+    required this.description,
+    required this.child,
+  });
+  final Key cardKey;
   final String title;
   final String description;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
+    key: cardKey,
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
@@ -488,8 +582,9 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _FormFooter extends StatelessWidget {
-  const _FormFooter({required this.busy, required this.onSave});
+  const _FormFooter({required this.busy, required this.onReset, required this.onSave});
   final bool busy;
+  final VoidCallback onReset;
   final VoidCallback onSave;
 
   @override
@@ -501,19 +596,34 @@ class _FormFooter extends StatelessWidget {
     ),
     child: Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space3),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: FilledButton.icon(
-          key: const Key('account-save-profile'),
-          onPressed: busy ? null : onSave,
-          icon: busy
-              ? const SizedBox.square(
-                  dimension: CoeloSize.iconSm,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final resetButton = OutlinedButton.icon(
+            key: const Key('account-reset-profile'),
+            onPressed: busy ? null : onReset,
+            icon: const Icon(Icons.restart_alt_rounded),
+            label: const Text('Redefinir'),
+          );
+          final saveButton = FilledButton.icon(
+            key: const Key('account-save-profile'),
+            onPressed: busy ? null : onSave,
+            icon: const Icon(Icons.save_outlined),
+            label: const Text('Salvar alterações'),
+          );
+          return constraints.maxWidth < 480
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    resetButton,
+                    const SizedBox(height: CoeloSpacing.space3),
+                    saveButton,
+                  ],
                 )
-              : const Icon(Icons.save_outlined),
-          label: Text(busy ? 'Salvando…' : 'Salvar alterações'),
-        ),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [resetButton, saveButton],
+                );
+        },
       ),
     ),
   );
@@ -542,61 +652,114 @@ class _PasswordDialogState extends State<_PasswordDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    title: const Text('Alterar senha'),
-    content: SizedBox(
-      width: 440,
-      child: Column(
+  Widget build(BuildContext context) {
+    final compact =
+        MediaQuery.sizeOf(context).width < 600 || MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final cancelButton = OutlinedButton(
+      key: const Key('account-password-cancel'),
+      onPressed: Navigator.of(context).pop,
+      child: const Text('Cancelar'),
+    );
+    final submitButton = FilledButton(
+      key: const Key('account-password-submit'),
+      onPressed: () async {
+        final result = await widget.controller.changePassword(
+          currentPassword: current.text,
+          newPassword: next.text,
+          confirmation: confirmation.text,
+        );
+        if (!context.mounted) return;
+        if (result == null) {
+          Navigator.of(context).pop();
+        } else {
+          setState(() => error = result);
+        }
+      },
+      child: const Text('Alterar senha'),
+    );
+    return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      surfaceTintColor: Colors.transparent,
+      scrollable: true,
+      title: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CoeloFormTextField(
-            controller: current,
-            labelText: 'Senha atual',
-            prefixIcon: Icons.lock_outline,
-            obscureText: true,
+          Row(
+            children: [
+              const Expanded(child: Text('Alterar senha')),
+              IconButton(
+                key: const Key('account-password-close'),
+                tooltip: 'Fechar alteração de senha',
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close_rounded),
+                color: Theme.of(context).colorScheme.error,
+                style: IconButton.styleFrom(
+                  minimumSize: const Size.square(CoeloSize.touchMin),
+                  hoverColor: Theme.of(context).colorScheme.errorContainer,
+                  focusColor: Theme.of(context).colorScheme.errorContainer,
+                  highlightColor: Colors.transparent,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloFormTextField(
-            controller: next,
-            labelText: 'Nova senha',
-            prefixIcon: Icons.password_rounded,
-            obscureText: true,
+          Divider(
+            key: const Key('account-password-header-divider'),
+            height: 1,
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloFormTextField(
-            controller: confirmation,
-            labelText: 'Confirmar nova senha',
-            prefixIcon: Icons.password_rounded,
-            obscureText: true,
-            errorText: error,
-          ),
-          const SizedBox(height: CoeloSpacing.space2),
-          const Text('Senha atual do protótipo: coelo-demo'),
         ],
       ),
-    ),
-    actions: [
-      OutlinedButton(onPressed: Navigator.of(context).pop, child: const Text('Cancelar')),
-      FilledButton(
-        onPressed: () async {
-          final result = await widget.controller.changePassword(
-            currentPassword: current.text,
-            newPassword: next.text,
-            confirmation: confirmation.text,
-          );
-          if (!context.mounted) return;
-          if (result == null) {
-            Navigator.of(context).pop();
-          } else {
-            setState(() => error = result);
-          }
-        },
-        child: const Text('Alterar senha'),
+      content: SizedBox(
+        width: 440,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CoeloFormTextField(
+              controller: current,
+              labelText: 'Senha atual',
+              prefixIcon: Icons.lock_outline,
+              obscureText: true,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloFormTextField(
+              controller: next,
+              labelText: 'Nova senha',
+              prefixIcon: Icons.password_rounded,
+              obscureText: true,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloFormTextField(
+              controller: confirmation,
+              labelText: 'Confirmar nova senha',
+              prefixIcon: Icons.password_rounded,
+              obscureText: true,
+              errorText: error,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            const Text('Senha atual do protótipo: coelo-demo'),
+          ],
+        ),
       ),
-    ],
-  );
+      actions: [
+        compact
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  cancelButton,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  submitButton,
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: cancelButton),
+                  const SizedBox(width: CoeloSpacing.space3),
+                  Expanded(child: submitButton),
+                ],
+              ),
+      ],
+    );
+  }
 }
 
 class _AvatarCropDialog extends StatefulWidget {
@@ -693,124 +856,6 @@ class _AvatarCropResult {
   final Offset offset;
 }
 
-class _AvatarColorDialog extends StatefulWidget {
-  const _AvatarColorDialog({required this.initial});
-  final Color initial;
-
-  @override
-  State<_AvatarColorDialog> createState() => _AvatarColorDialogState();
-}
-
-class _AvatarColorDialogState extends State<_AvatarColorDialog> {
-  late HSVColor hsv = HSVColor.fromColor(widget.initial);
-  late final TextEditingController hex = TextEditingController(text: _hex(widget.initial));
-
-  @override
-  void dispose() {
-    hex.dispose();
-    super.dispose();
-  }
-
-  void update(HSVColor value) {
-    setState(() {
-      hsv = value;
-      hex.text = _hex(value.toColor());
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final color = hsv.toColor();
-    return AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      title: const Text('Cor da sigla'),
-      content: SizedBox(
-        width: 460,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: 36,
-              backgroundColor: color,
-              child: Text(
-                'OC',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AccountAvatar.foregroundFor(color),
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            _ColorSlider(
-              label: 'Matiz',
-              value: hsv.hue,
-              max: 360,
-              onChanged: (value) => update(hsv.withHue(value)),
-            ),
-            _ColorSlider(
-              label: 'Saturação',
-              value: hsv.saturation * 100,
-              onChanged: (value) => update(hsv.withSaturation(value / 100)),
-            ),
-            _ColorSlider(
-              label: 'Brilho',
-              value: hsv.value * 100,
-              onChanged: (value) => update(hsv.withValue(value / 100)),
-            ),
-            CoeloFormTextField(
-              controller: hex,
-              labelText: 'Hexadecimal',
-              prefixIcon: Icons.tag_rounded,
-              onChanged: (value) {
-                if (RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(value)) {
-                  setState(() => hsv = HSVColor.fromColor(_parseHex(value)));
-                }
-              },
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            Text(
-              'RGB: ${(color.r * 255).round()} · ${(color.g * 255).round()} · '
-              '${(color.b * 255).round()}',
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        OutlinedButton(onPressed: Navigator.of(context).pop, child: const Text('Cancelar')),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(color),
-          child: const Text('Usar cor'),
-        ),
-      ],
-    );
-  }
-}
-
-class _ColorSlider extends StatelessWidget {
-  const _ColorSlider({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    this.max = 100,
-  });
-  final String label;
-  final double value;
-  final double max;
-  final ValueChanged<double> onChanged;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      SizedBox(width: 80, child: Text(label)),
-      Expanded(
-        child: Slider(value: value.clamp(0, max), max: max, onChanged: onChanged),
-      ),
-      SizedBox(width: 44, child: Text(value.round().toString())),
-    ],
-  );
-}
-
 String? _requiredName(String? value) =>
     value == null || value.trim().isEmpty ? 'Campo obrigatório.' : null;
 
@@ -819,7 +864,3 @@ String? _validateEmail(String? value) {
   if (email.isEmpty) return 'Informe o e-mail.';
   return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email) ? null : 'Informe um e-mail válido.';
 }
-
-String _hex(Color color) => '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
-
-Color _parseHex(String value) => Color(int.parse('FF${value.substring(1)}', radix: 16));

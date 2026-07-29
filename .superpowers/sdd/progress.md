@@ -42,3 +42,13 @@ Task 3B Institution people workflow: complete (commits 360d764..2f75038, review 
 Task 3C Institution Supabase schema: complete (migrations 20260728172333 and 20260728203000 applied to project coelo; functional SQL passed with rollback, pgTAP 21/21 passed, RLS/cross-tenant checks passed, and the migration-related unindexed FK advisor finding was remediated).
 Task 4 Support corrections: complete (equivalent multi-assignees, in-progress guard, create actions in Kanban/table, neutral shared Kanban, explicit full-screen detail, enriched local history, sortable pagination 9/20/50/100, and page clamping after filtered mutations; focused tests and analysis passed).
 Task 5 Persistent menu and motion: complete (one protected shell host, short content fade, reduced-motion bypass, stable geometry, distinct parent/child hierarchy, Units active, Activities future destination, distinct communication icons, centralized Support/Catalog routing, and protected `/dev/support`; focused tests and analysis passed).
+
+# Superadmin Profile and Settings Refinement
+
+Plan: `docs/superpowers/plans/2026-07-28-superadmin-profile-settings-refinement.md`
+Task 1: complete (commits bfeeeee..814fec3, review clean; 14 domain/controller tests plus failure-retry coverage and focused analysis passed).
+Task 2: complete (commits 814fec3..50b73f8, review clean; shared advanced color picker, Institutions/Units integration, 3 focused tests and analysis passed).
+Task 3: complete (commits 50b73f8..51921fb, review clean; phone field, draft reset, aligned responsive layout, 200% text fix, 6 focused tests and analysis passed). Minor: update Task 3 report commit reference from 45ae56e to 51921fb during final bookkeeping. Cross-task: update account goldens in Task 5.
+Task 4: complete (commits 51921fb..099c1fa, review clean; canonical password close, neutral accessibility row, wide 50/50 actions, compact/200% stacked actions, 10 focused tests and analysis passed).
+Task 5: complete (commit c6623f7, review approved; 34 account tests, 8 golden cases, full analysis and knowledge validators passed; unrelated pre-existing Institutions test failure at institution_form_page_test.dart:812 remains documented).
+Final review fixes: complete (commits f2ef952, fb7cccb and a9e1ad4, re-review approved; recoverable save errors, accessible SV/hue controls with visible focus, keyboard and semantics, and delayed profile hydration without draft loss; 88 relevant tests and full analysis passed).
