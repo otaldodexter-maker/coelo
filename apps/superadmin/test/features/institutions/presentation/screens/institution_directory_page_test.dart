@@ -65,7 +65,7 @@ void main() {
     expect(createRequested, isTrue);
   });
 
-  testWidgets('starts with eleven card items and switches to nine table rows', (tester) async {
+  testWidgets('starts with eleven card items and switches to eight table rows', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
@@ -77,7 +77,13 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
 
-    expect(_institutionTableRows(), findsNWidgets(9));
+    expect(_institutionTableRows(), findsNWidgets(8));
+
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size-8')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size-9')), findsNothing);
   });
 
   testWidgets('reveals municipality and district filters after their parents', (tester) async {

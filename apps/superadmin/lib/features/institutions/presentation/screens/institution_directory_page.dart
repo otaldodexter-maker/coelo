@@ -59,7 +59,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     }
     setState(() => _display = display);
     _viewModel.setPageSize(
-      display == InstitutionDirectoryDisplay.cards ? 11 : 9,
+      display == InstitutionDirectoryDisplay.cards ? 11 : 8,
       resetSort: display == InstitutionDirectoryDisplay.cards,
     );
   }
@@ -245,7 +245,7 @@ class _InstitutionDirectoryResults extends StatelessWidget {
                 viewModel: viewModel,
                 pageSizeOptions: display == InstitutionDirectoryDisplay.cards
                     ? const [11, 20, 50, 100]
-                    : const [9, 20, 50, 100],
+                    : const [8, 20, 50, 100],
               ),
             ],
           ],
