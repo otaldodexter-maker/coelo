@@ -217,7 +217,6 @@ final class _ContextMetadata extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Text.rich(
-      key: key,
       TextSpan(
         children: [
           TextSpan(
