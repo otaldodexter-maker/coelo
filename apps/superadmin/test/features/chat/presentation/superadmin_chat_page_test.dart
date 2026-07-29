@@ -78,7 +78,9 @@ void main() {
     expect(find.widgetWithText(InputChip, 'Centro Horizonte'), findsOne);
   });
 
-  testWidgets('Shift Enter does not send and Enter sends the multiline composer value', (tester) async {
+  testWidgets('Shift Enter does not send and Enter sends the multiline composer value', (
+    tester,
+  ) async {
     _viewport(tester, 768);
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
@@ -143,6 +145,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Fixados'), findsOne);
+  });
+
+  testWidgets('keeps academic conversations read-only in their action menu', (tester) async {
+    _viewport(tester, 1440);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Ações de Turma Girassol'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Fixar'), findsOneWidget);
+    expect(find.text('Excluir conversa'), findsNothing);
+    expect(find.text('Excluir grupo'), findsNothing);
   });
 
   testWidgets('uses the neutral rounded action menu and canonical delete dialog', (tester) async {
@@ -231,7 +246,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Equipe integrada'), findsWidgets);
-    expect(find.text('Fixados'), findsOne);
+    expect(find.text('Grupos'), findsOne);
   });
 
   testWidgets('uses one profile toggle and the canonical red close action', (tester) async {

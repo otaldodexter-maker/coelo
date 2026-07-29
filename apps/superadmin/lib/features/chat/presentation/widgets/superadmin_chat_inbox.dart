@@ -186,17 +186,41 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                       pinned: true,
                       onOpen: () => widget.onOpenConversation(conversation.id),
                       onPin: () => controller.togglePinned(conversation.id),
+                      onCreateGroup: widget.onCreateGroup,
+                      canInviteToGroup: controller.groupConversations.isNotEmpty,
+                      flag: controller.flagFor(conversation.id),
+                      onFlag: (flag) => controller.setFlag(conversation.id, flag),
+                      onDelete: () => _confirmDelete(conversation),
+                    ),
+                ],
+                if (controller.groupConversations.isNotEmpty) ...[
+                  const _SectionHeader(title: 'Grupos'),
+                  for (final conversation in controller.groupConversations)
+                    _ConversationItem(
+                      conversation: conversation,
+                      selected: selectedId == conversation.id,
+                      pinned: false,
+                      onOpen: () => widget.onOpenConversation(conversation.id),
+                      onPin: () => controller.togglePinned(conversation.id),
+                      onCreateGroup: widget.onCreateGroup,
+                      canInviteToGroup: controller.groupConversations.isNotEmpty,
+                      flag: controller.flagFor(conversation.id),
+                      onFlag: (flag) => controller.setFlag(conversation.id, flag),
                       onDelete: () => _confirmDelete(conversation),
                     ),
                 ],
                 _SectionHeader(title: _audienceLabel(controller.audience)),
-                for (final conversation in controller.unpinnedConversations)
+                for (final conversation in controller.regularConversations)
                   _ConversationItem(
                     conversation: conversation,
                     selected: selectedId == conversation.id,
                     pinned: false,
                     onOpen: () => widget.onOpenConversation(conversation.id),
                     onPin: () => controller.togglePinned(conversation.id),
+                    onCreateGroup: widget.onCreateGroup,
+                    canInviteToGroup: controller.groupConversations.isNotEmpty,
+                    flag: controller.flagFor(conversation.id),
+                    onFlag: (flag) => controller.setFlag(conversation.id, flag),
                     onDelete: () => _confirmDelete(conversation),
                   ),
                 if (controller.visibleConversations.isEmpty)
@@ -321,6 +345,10 @@ final class _ConversationItem extends StatelessWidget {
     required this.pinned,
     required this.onOpen,
     required this.onPin,
+    required this.onCreateGroup,
+    required this.canInviteToGroup,
+    required this.flag,
+    required this.onFlag,
     required this.onDelete,
   });
 
@@ -329,6 +357,10 @@ final class _ConversationItem extends StatelessWidget {
   final bool pinned;
   final VoidCallback onOpen;
   final VoidCallback onPin;
+  final VoidCallback onCreateGroup;
+  final bool canInviteToGroup;
+  final ChatFlag flag;
+  final ValueChanged<ChatFlag> onFlag;
   final VoidCallback onDelete;
 
   @override
@@ -398,15 +430,34 @@ final class _ConversationItem extends StatelessWidget {
                     tooltip: 'Ações de ${conversation.title}',
                     actions: [
                       SuperadminChatMenuAction(
+                        label: 'Criar grupo com…',
+                        icon: Icons.group_add_outlined,
+                        onPressed: onCreateGroup,
+                      ),
+                      if (canInviteToGroup)
+                        SuperadminChatMenuAction(
+                          label: 'Convidar para grupo',
+                          icon: Icons.person_add_alt_1_outlined,
+                          onPressed: onCreateGroup,
+                        ),
+                      SuperadminChatMenuAction(
                         label: pinned ? 'Desfixar' : 'Fixar',
                         icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
                         onPressed: onPin,
                       ),
+                      for (final option in ChatFlag.values)
+                        SuperadminChatMenuAction(
+                          key: Key('superadmin-chat-flag-${conversation.id}-${option.name}'),
+                          label: _flagLabel(option, selected: flag == option),
+                          icon: _flagIcon(option),
+                          onPressed: () => onFlag(option),
+                        ),
                       if (conversation.kind == ChatContextKind.conversationGroup)
                         SuperadminChatMenuAction(
                           label: 'Excluir grupo',
                           icon: Icons.delete_outline_rounded,
                           destructive: true,
+                          dividerBefore: true,
                           onPressed: onDelete,
                         ),
                     ],
@@ -425,4 +476,21 @@ String _audienceLabel(ChatAudience audience) => switch (audience) {
   ChatAudience.all => 'Todos',
   ChatAudience.institutional => 'Institucional',
   ChatAudience.people => 'Pessoas',
+};
+
+String _flagLabel(ChatFlag flag, {required bool selected}) {
+  final label = switch (flag) {
+    ChatFlag.none => 'Sem sinalização',
+    ChatFlag.red => 'Sinalizador vermelho',
+    ChatFlag.yellow => 'Sinalizador amarelo',
+    ChatFlag.green => 'Sinalizador verde',
+  };
+  return selected ? '$label (selecionado)' : label;
+}
+
+IconData _flagIcon(ChatFlag flag) => switch (flag) {
+  ChatFlag.none => Icons.flag_outlined,
+  ChatFlag.red => Icons.flag_rounded,
+  ChatFlag.yellow => Icons.flag_rounded,
+  ChatFlag.green => Icons.flag_rounded,
 };
