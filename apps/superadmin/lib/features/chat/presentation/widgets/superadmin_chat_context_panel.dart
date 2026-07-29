@@ -221,11 +221,11 @@ final class _ContextMetadata extends StatelessWidget {
         children: [
           TextSpan(
             text: '$label: ',
-            style: TextStyle(color: colors.onSurfaceVariant),
+            style: TextStyle(color: colors.onSurfaceVariant, fontWeight: FontWeight.w600),
           ),
           TextSpan(
             text: value,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: TextStyle(color: colors.onSurfaceVariant),
           ),
         ],
       ),
@@ -303,9 +303,10 @@ final class _SharedItem extends StatelessWidget {
 String _panelTitle(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo/Turma',
+  ChatContextKind.group => 'Grupo (Turma)',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
+  ChatContextKind.child => 'Criança',
   ChatContextKind.conversationGroup => 'Grupo de conversa',
 };
 

@@ -1,6 +1,12 @@
 enum ChatAudience { all, institutional, people }
 
-enum ChatContextKind { institution, unit, group, activity, person, conversationGroup }
+enum ChatContextKind { institution, unit, group, activity, person, child, conversationGroup }
+
+enum ChatFlag { none, red, yellow, green }
+
+enum ChatGroupMemberRole { admin, member }
+
+enum ChatGroupInvitationStatus { accepted, pending }
 
 enum ChatMessageKind { text, emoji, audio, image }
 
@@ -39,6 +45,8 @@ final class SuperadminChatMember {
     required this.institution,
     required this.origin,
     required this.facets,
+    this.groupRole = ChatGroupMemberRole.member,
+    this.invitationStatus = ChatGroupInvitationStatus.accepted,
   });
 
   final String id;
@@ -47,6 +55,8 @@ final class SuperadminChatMember {
   final String institution;
   final String origin;
   final Set<ChatAudience> facets;
+  final ChatGroupMemberRole groupRole;
+  final ChatGroupInvitationStatus invitationStatus;
 }
 
 final class SuperadminChatBulkDelivery {
@@ -110,6 +120,8 @@ final class SuperadminChatConversation {
     this.children = const [],
     this.roleViews = const [],
     this.members = const [],
+    this.childContextId,
+    this.childLabel,
   });
 
   final String id;
@@ -135,11 +147,14 @@ final class SuperadminChatConversation {
   final List<String> children;
   final List<SuperadminChatRoleView> roleViews;
   final List<SuperadminChatMember> members;
+  final String? childContextId;
+  final String? childLabel;
 
   SuperadminChatConversation copyWith({
     String? preview,
     String? timestamp,
     List<SuperadminChatMessage>? messages,
+    List<SuperadminChatMember>? members,
   }) {
     return SuperadminChatConversation(
       id: id,
@@ -164,7 +179,9 @@ final class SuperadminChatConversation {
       planLabel: planLabel,
       children: children,
       roleViews: roleViews,
-      members: members,
+      members: members ?? this.members,
+      childContextId: childContextId,
+      childLabel: childLabel,
     );
   }
 }
@@ -176,6 +193,8 @@ final class SuperadminChatContextOption {
     required this.kind,
     this.subtitle,
     this.children = const [],
+    this.isGuardian = false,
+    this.guardianIds = const {},
   });
 
   final String id;
@@ -183,4 +202,6 @@ final class SuperadminChatContextOption {
   final ChatContextKind kind;
   final String? subtitle;
   final List<SuperadminChatContextOption> children;
+  final bool isGuardian;
+  final Set<String> guardianIds;
 }

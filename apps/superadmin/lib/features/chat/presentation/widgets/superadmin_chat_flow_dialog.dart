@@ -231,11 +231,13 @@ final class SuperadminChatCreateGroupDialog extends StatefulWidget {
   const SuperadminChatCreateGroupDialog({
     required this.controller,
     required this.options,
+    this.initialSelectedIds = const {},
     super.key,
   });
 
   final SuperadminChatController controller;
   final List<SuperadminChatContextOption> options;
+  final Set<String> initialSelectedIds;
 
   @override
   State<SuperadminChatCreateGroupDialog> createState() => _SuperadminChatCreateGroupDialogState();
@@ -245,6 +247,12 @@ final class _SuperadminChatCreateGroupDialogState extends State<SuperadminChatCr
   final _name = TextEditingController();
   final _selected = <String>{};
   var _reviewing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected.addAll(widget.initialSelectedIds);
+  }
 
   @override
   void dispose() {
@@ -330,6 +338,67 @@ final class _SuperadminChatCreateGroupDialogState extends State<SuperadminChatCr
   }
 }
 
+final class SuperadminChatInviteToGroupDialog extends StatelessWidget {
+  const SuperadminChatInviteToGroupDialog({
+    required this.controller,
+    required this.conversation,
+    super.key,
+  });
+
+  final SuperadminChatController controller;
+  final SuperadminChatConversation conversation;
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = controller.conversations
+        .where(
+          (item) => item.kind == ChatContextKind.conversationGroup && item.id != conversation.id,
+        )
+        .toList(growable: false);
+    return SuperadminChatDialogFrame(
+      title: 'Convidar para grupo',
+      subtitle: 'Demonstração local',
+      compact: true,
+      onClose: () => Navigator.pop(context, false),
+      footer: OutlinedButton(
+        onPressed: () => Navigator.pop(context, false),
+        child: const Text('Cancelar'),
+      ),
+      child: groups.isEmpty
+          ? const Text('Crie um grupo antes de convidar esta conversa.')
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Escolha o grupo que receberá o convite.'),
+                const SizedBox(height: CoeloSpacing.space2),
+                for (final group in groups)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(CoeloRadius.md),
+                      clipBehavior: Clip.antiAlias,
+                      child: ListTile(
+                        key: Key('superadmin-chat-invite-group-${group.id}'),
+                        minTileHeight: CoeloSize.touchMin,
+                        hoverColor: Theme.of(context).colorScheme.primaryContainer,
+                        splashColor: Colors.transparent,
+                        leading: const Icon(Icons.group_outlined),
+                        title: Text(group.title),
+                        subtitle: Text(group.preview),
+                        onTap: () {
+                          controller.inviteToGroup(group.id, {conversation.id});
+                          Navigator.pop(context, true);
+                        },
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+    );
+  }
+}
+
 final class SuperadminChatDialogFrame extends StatelessWidget {
   const SuperadminChatDialogFrame({
     required this.title,
@@ -337,6 +406,7 @@ final class SuperadminChatDialogFrame extends StatelessWidget {
     required this.onClose,
     required this.child,
     required this.footer,
+    this.compact = false,
     super.key,
   });
 
@@ -345,6 +415,7 @@ final class SuperadminChatDialogFrame extends StatelessWidget {
   final VoidCallback onClose;
   final Widget child;
   final Widget footer;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -367,6 +438,7 @@ final class SuperadminChatDialogFrame extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(
+            mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -403,12 +475,15 @@ final class SuperadminChatDialogFrame extends StatelessWidget {
                   color: colors.outlineVariant,
                 ),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(CoeloSpacing.space4),
-                  child: child,
+              if (compact)
+                Padding(padding: const EdgeInsets.all(CoeloSpacing.space4), child: child)
+              else
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(CoeloSpacing.space4),
+                    child: child,
+                  ),
                 ),
-              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   CoeloSpacing.space4,
@@ -453,8 +528,9 @@ List<_Recipient> _flatten(List<SuperadminChatContextOption> options, {String par
 String _kindLabel(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo/Turma',
+  ChatContextKind.group => 'Grupo (Turma)',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
+  ChatContextKind.child => 'Criança',
   ChatContextKind.conversationGroup => 'Grupo de conversa',
 };

@@ -8,6 +8,7 @@ import '../chat_fixtures.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_avatar.dart';
 import 'superadmin_chat_composer.dart';
+import 'superadmin_chat_flow_dialog.dart';
 import 'superadmin_chat_message_bubble.dart';
 
 final class SuperadminChatLauncher extends StatefulWidget {
@@ -344,15 +345,39 @@ final class _CompactLauncherContentState extends State<_CompactLauncherContent> 
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-          child: SegmentedButton<ChatAudience>(
-            showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(value: ChatAudience.all, label: Text('Todos')),
-              ButtonSegment(value: ChatAudience.institutional, label: Text('Institucional')),
-              ButtonSegment(value: ChatAudience.people, label: Text('Pessoas')),
+          child: Row(
+            children: [
+              Expanded(
+                child: SegmentedButton<ChatAudience>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(value: ChatAudience.all, label: Text('Todos')),
+                    ButtonSegment(value: ChatAudience.institutional, label: Text('Institucional')),
+                    ButtonSegment(value: ChatAudience.people, label: Text('Pessoas')),
+                  ],
+                  selected: {controller.audience},
+                  onSelectionChanged: (value) => controller.setAudience(value.first),
+                ),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              IconButton(
+                key: const Key('superadmin-chat-launcher-new-message'),
+                tooltip: 'Criar conversa',
+                onPressed: _openNewMessage,
+                color: Theme.of(context).colorScheme.primary,
+                style: ButtonStyle(
+                  minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
+                  backgroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : Colors.transparent,
+                  ),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                ),
+                icon: const Icon(Icons.edit_outlined),
+              ),
             ],
-            selected: {controller.audience},
-            onSelectionChanged: (value) => controller.setAudience(value.first),
           ),
         ),
         const SizedBox(height: CoeloSpacing.space2),
@@ -374,6 +399,19 @@ final class _CompactLauncherContentState extends State<_CompactLauncherContent> 
         ),
       ],
     );
+  }
+
+  Future<void> _openNewMessage() async {
+    widget.controller.clearRecipients();
+    final completed = await showDialog<bool>(
+      context: context,
+      builder: (_) => SuperadminChatMessageDialog(
+        controller: widget.controller,
+        options: superadminChatContextOptions,
+      ),
+    );
+    if (!mounted || completed != true) return;
+    setState(() => _threadId = widget.controller.selectedConversation.id);
   }
 
   Widget _thread(SuperadminChatConversation conversation) {

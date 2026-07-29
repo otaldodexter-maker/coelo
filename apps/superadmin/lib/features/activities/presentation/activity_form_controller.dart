@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../domain/activity_directory.dart';
@@ -36,9 +35,8 @@ final class ActivityFormController extends ChangeNotifier {
   bool isSubmitting = false;
   late String _baseline;
 
-  List<ActivityFormUnitOption> get units => selectedInstitutionId == null
-      ? const []
-      : options.unitsFor(selectedInstitutionId!);
+  List<ActivityFormUnitOption> get units =>
+      selectedInstitutionId == null ? const [] : options.unitsFor(selectedInstitutionId!);
 
   bool get isDirty => _signature != _baseline;
 
@@ -74,8 +72,9 @@ final class ActivityFormController extends ChangeNotifier {
 
   bool validate() {
     nameError = name.text.trim().isEmpty ? 'Informe o nome da atividade.' : null;
-    institutionError =
-        !isEditing && selectedInstitutionId == null ? 'Selecione a instituição.' : null;
+    institutionError = !isEditing && selectedInstitutionId == null
+        ? 'Selecione a instituição.'
+        : null;
     unitError = !isEditing && selectedUnitId == null ? 'Selecione a unidade inicial.' : null;
     notifyListeners();
     return nameError == null && institutionError == null && unitError == null;

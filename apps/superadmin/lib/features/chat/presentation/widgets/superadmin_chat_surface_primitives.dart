@@ -34,12 +34,16 @@ final class SuperadminChatMenuAction {
     required this.icon,
     required this.onPressed,
     this.destructive = false,
+    this.dividerBefore = false,
+    this.key,
   });
 
   final String label;
   final IconData icon;
   final VoidCallback onPressed;
   final bool destructive;
+  final bool dividerBefore;
+  final Key? key;
 }
 
 final class SuperadminChatActionMenu extends StatelessWidget {
@@ -65,10 +69,16 @@ final class SuperadminChatActionMenu extends StatelessWidget {
         ),
       ),
       menuChildren: [
-        for (final action in actions)
+        for (final action in actions) ...[
+          if (action.dividerBefore)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+              child: Divider(height: 1),
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
             child: MenuItemButton(
+              key: action.key,
               onPressed: action.onPressed,
               leadingIcon: Icon(action.icon),
               style: ButtonStyle(
@@ -97,6 +107,7 @@ final class SuperadminChatActionMenu extends StatelessWidget {
               child: Text(action.label),
             ),
           ),
+        ],
       ],
       builder: (context, controller, _) => IconButton(
         tooltip: tooltip,
