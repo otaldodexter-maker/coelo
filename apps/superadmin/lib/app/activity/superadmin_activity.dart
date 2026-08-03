@@ -110,6 +110,11 @@ class SuperadminActivityController extends ChangeNotifier {
   int get unreadCount =>
       _activities.where((activity) => activity.isComplete && !activity.isRead).length;
 
+  void addActivity(SuperadminActivity activity) {
+    _activities.insert(0, activity.copyWith(isRead: _centerOpen));
+    notifyListeners();
+  }
+
   String addEmailApproval({required String requestedEmail}) {
     final id = 'email-approval-${_nextId++}';
     _activities.insert(
