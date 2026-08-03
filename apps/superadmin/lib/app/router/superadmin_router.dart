@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/guards/superadmin_session.dart';
 import '../../core/config/superadmin_app_config.dart';
 import '../activity/superadmin_activity.dart';
+import '../prototype/superadmin_prototype_store.dart';
 import '../../features/activities/data/fake_activity_directory_repository.dart';
 import '../../features/activities/data/supabase_activity_directory_repository.dart';
 import '../../features/activities/domain/activity_directory.dart';
@@ -53,6 +54,21 @@ import '../../features/institutions/domain/institution_directory_repository.dart
 import '../../features/institutions/presentation/institution_context_options.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
+import '../../features/audit/presentation/audit_directory_page.dart';
+import '../../features/imports/data/fake_import_repository.dart';
+import '../../features/imports/presentation/import_directory_page.dart';
+import '../../features/imports/presentation/import_wizard_controller.dart';
+import '../../features/imports/presentation/import_wizard_page.dart';
+import '../../features/invites/data/fake_invite_repository.dart';
+import '../../features/invites/presentation/invite_detail_page.dart';
+import '../../features/invites/presentation/invite_directory_page.dart';
+import '../../features/invites/presentation/invite_form_page.dart';
+import '../../features/notices/data/fake_notice_repository.dart';
+import '../../features/notices/presentation/notice_directory_page.dart';
+import '../../features/notices/presentation/notice_form_page.dart';
+import '../../features/plans/data/fake_plan_catalog_repository.dart';
+import '../../features/plans/presentation/plan_directory_page.dart';
+import '../../features/plans/presentation/plan_form_page.dart';
 import '../../features/platform_users/data/fake_platform_user_repository.dart';
 import '../../features/platform_users/domain/platform_user.dart';
 import '../../features/platform_users/presentation/platform_user_detail_page.dart';
@@ -98,6 +114,12 @@ GoRouter createSuperadminRouter({
 }) {
   final sessionSupportController = supportController ?? SupportPrototypeController();
   final accountActivities = SuperadminActivityController();
+  final operationalActivities = SuperadminActivityController();
+  final operationalStore = SuperadminPrototypeStore(activityController: operationalActivities);
+  final planRepository = FakePlanCatalogRepository(store: operationalStore);
+  final importRepository = FakeImportRepository();
+  final inviteRepository = FakeInviteRepository(prototypeStore: operationalStore);
+  final noticeRepository = FakeNoticeRepository(store: operationalStore);
   final accountController = AccountController(
     repository: InMemoryAccountProfileRepository(),
     activities: accountActivities,
@@ -150,6 +172,22 @@ GoRouter createSuperadminRouter({
       _ => null,
     };
   }
+
+  Widget operationalPage(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required String destination,
+    required Widget child,
+  }) => SuperadminShell(
+    logout: _previewLogout,
+    title: title,
+    subtitle: subtitle,
+    currentDestination: destination,
+    activityController: operationalActivities,
+    onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
+    child: child,
+  );
 
   return GoRouter(
     initialLocation: SuperadminRoutes.login,
@@ -1455,6 +1493,188 @@ GoRouter createSuperadminRouter({
             },
           ),
           GoRoute(
+            path: SuperadminRoutes.devPlans,
+            name: SuperadminRoutes.devPlansName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Planos',
+              subtitle: 'Configure os planos fictícios da plataforma.',
+              destination: 'plans',
+              child: PlanDirectoryPage(
+                repository: planRepository,
+                onCreate: () => context.goNamed(SuperadminRoutes.devPlanCreateName),
+                onEdit: (id) => context.goNamed(
+                  SuperadminRoutes.devPlanEditName,
+                  pathParameters: {'planId': id},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devPlanCreate,
+            name: SuperadminRoutes.devPlanCreateName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Novo plano',
+              subtitle: 'Cadastre um plano fictício.',
+              destination: 'plans',
+              child: PlanFormPage(
+                repository: planRepository,
+                onSaved: () => context.goNamed(SuperadminRoutes.devPlansName),
+                onCancel: () => context.goNamed(SuperadminRoutes.devPlansName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devPlanEdit,
+            name: SuperadminRoutes.devPlanEditName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Editar plano',
+              subtitle: 'Altere um plano fictício.',
+              destination: 'plans',
+              child: PlanFormPage(
+                repository: planRepository,
+                planId: state.pathParameters['planId'],
+                onSaved: () => context.goNamed(SuperadminRoutes.devPlansName),
+                onCancel: () => context.goNamed(SuperadminRoutes.devPlansName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devImports,
+            name: SuperadminRoutes.devImportsName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Importações',
+              subtitle: 'Execute importações locais determinísticas.',
+              destination: 'import',
+              child: ImportDirectoryPage(
+                repository: importRepository,
+                onNewImport: () => context.goNamed(SuperadminRoutes.devImportCreateName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devImportCreate,
+            name: SuperadminRoutes.devImportCreateName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Nova importação',
+              subtitle: 'Simule o envio e a validação de um arquivo.',
+              destination: 'import',
+              child: ImportWizardPage(
+                controller: ImportWizardController(
+                  repository: importRepository,
+                  store: operationalStore,
+                ),
+                onFinished: () => context.goNamed(SuperadminRoutes.devImportsName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInvites,
+            name: SuperadminRoutes.devInvitesName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Convites',
+              subtitle: 'Gerencie convites fictícios e mascarados.',
+              destination: 'invites',
+              child: InviteDirectoryPage(
+                repository: inviteRepository,
+                onCreate: () => context.goNamed(SuperadminRoutes.devInviteCreateName),
+                onOpen: (id) => context.goNamed(
+                  SuperadminRoutes.devInviteDetailName,
+                  pathParameters: {'inviteId': id},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInviteCreate,
+            name: SuperadminRoutes.devInviteCreateName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Novo convite',
+              subtitle: 'Envie um convite fictício com validade de 48 horas.',
+              destination: 'invites',
+              child: InviteFormPage(
+                repository: inviteRepository,
+                onSent: (_) => context.goNamed(SuperadminRoutes.devInvitesName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devInviteDetail,
+            name: SuperadminRoutes.devInviteDetailName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Detalhe do convite',
+              subtitle: 'Consulte o histórico e ações permitidas.',
+              destination: 'invites',
+              child: InviteDetailPage(
+                repository: inviteRepository,
+                inviteId: state.pathParameters['inviteId']!,
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devNotices,
+            name: SuperadminRoutes.devNoticesName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Avisos',
+              subtitle: 'Publique avisos fictícios para audiências identificadas.',
+              destination: 'notices',
+              child: NoticeDirectoryPage(
+                repository: noticeRepository,
+                onCreate: () => context.goNamed(SuperadminRoutes.devNoticeCreateName),
+                onEdit: (id) => context.goNamed(
+                  SuperadminRoutes.devNoticeEditName,
+                  pathParameters: {'noticeId': id},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devNoticeCreate,
+            name: SuperadminRoutes.devNoticeCreateName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Novo aviso',
+              subtitle: 'Revise o preview antes de publicar.',
+              destination: 'notices',
+              child: NoticeFormPage(
+                repository: noticeRepository,
+                onSaved: (_) => context.goNamed(SuperadminRoutes.devNoticesName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devNoticeEdit,
+            name: SuperadminRoutes.devNoticeEditName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Editar aviso',
+              subtitle: 'Altere um aviso fictício.',
+              destination: 'notices',
+              child: NoticeFormPage(
+                repository: noticeRepository,
+                noticeId: state.pathParameters['noticeId'],
+                onSaved: (_) => context.goNamed(SuperadminRoutes.devNoticesName),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAudit,
+            name: SuperadminRoutes.devAuditName,
+            builder: (context, state) => AuditDirectoryPage(
+              store: operationalStore,
+              logout: _previewLogout,
+              onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devCatalog,
             name: SuperadminRoutes.devCatalogName,
             builder: (context, state) => CatalogHostPage(
@@ -1814,6 +2034,18 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devPeopleName);
     case 'profiles':
       context.goNamed(SuperadminRoutes.devProfilesName);
+    case 'plans':
+      context.goNamed(SuperadminRoutes.devPlansName);
+    case 'import':
+      context.goNamed(SuperadminRoutes.devImportsName);
+    case 'invites':
+      context.goNamed(SuperadminRoutes.devInvitesName);
+    case 'notices':
+      context.goNamed(SuperadminRoutes.devNoticesName);
+    case 'audit':
+      context.goNamed(SuperadminRoutes.devAuditName);
+    case 'catalog':
+      context.goNamed(SuperadminRoutes.devCatalogName);
     case 'internal-users':
       context.goNamed(SuperadminRoutes.devInternalUsersName);
     case 'catalog':
