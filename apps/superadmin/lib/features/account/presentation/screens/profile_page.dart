@@ -228,9 +228,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           controller: widget.controller,
                         );
                         return wide
-                            ? IntrinsicHeight(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(flex: 3, child: personal),
                                     const SizedBox(width: CoeloSpacing.space5),
@@ -243,14 +242,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                           children: [
                                             access,
                                             const SizedBox(height: CoeloSpacing.space5),
-                                            Expanded(child: security),
+                                            security,
                                           ],
                                         ),
                                       ),
                                     ),
                                   ],
-                                ),
-                              )
+                                )
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

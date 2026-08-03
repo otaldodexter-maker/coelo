@@ -3,7 +3,14 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
-enum SuperadminActivityKind { import, export, announcement, emailApproval }
+enum SuperadminActivityKind {
+  import,
+  export,
+  announcement,
+  emailApproval,
+  attendanceNotice,
+  routineUpdate,
+}
 
 enum SuperadminActivityStatus { inProgress, succeeded, partial, failed }
 
@@ -25,6 +32,7 @@ class SuperadminActivity {
     this.isRead = false,
     this.actionStatus,
     this.requestedEmail,
+    this.destination,
   });
 
   factory SuperadminActivity.announcement({
@@ -45,6 +53,38 @@ class SuperadminActivity {
     );
   }
 
+  factory SuperadminActivity.attendanceNotice({
+    required String id,
+    required String subject,
+    required String summary,
+    required String destination,
+    DateTime? createdAt,
+  }) => SuperadminActivity(
+    id: id,
+    kind: SuperadminActivityKind.attendanceNotice,
+    status: SuperadminActivityStatus.succeeded,
+    subject: subject,
+    summary: summary,
+    destination: destination,
+    createdAt: createdAt ?? DateTime.now(),
+  );
+
+  factory SuperadminActivity.routineUpdate({
+    required String id,
+    required String subject,
+    required String summary,
+    required String destination,
+    DateTime? createdAt,
+  }) => SuperadminActivity(
+    id: id,
+    kind: SuperadminActivityKind.routineUpdate,
+    status: SuperadminActivityStatus.succeeded,
+    subject: subject,
+    summary: summary,
+    destination: destination,
+    createdAt: createdAt ?? DateTime.now(),
+  );
+
   final String id;
   final SuperadminActivityKind kind;
   final SuperadminActivityStatus status;
@@ -56,6 +96,7 @@ class SuperadminActivity {
   final bool isRead;
   final SuperadminActivityActionStatus? actionStatus;
   final String? requestedEmail;
+  final String? destination;
 
   bool get isComplete => status != SuperadminActivityStatus.inProgress;
 
@@ -78,6 +119,7 @@ class SuperadminActivity {
       isRead: isRead ?? this.isRead,
       actionStatus: actionStatus ?? this.actionStatus,
       requestedEmail: requestedEmail,
+      destination: destination,
     );
   }
 }
@@ -109,6 +151,11 @@ class SuperadminActivityController extends ChangeNotifier {
 
   int get unreadCount =>
       _activities.where((activity) => activity.isComplete && !activity.isRead).length;
+
+  void addActivity(SuperadminActivity activity) {
+    _activities.insert(0, activity.copyWith(isRead: _centerOpen));
+    notifyListeners();
+  }
 
   String addEmailApproval({required String requestedEmail}) {
     final id = 'email-approval-${_nextId++}';

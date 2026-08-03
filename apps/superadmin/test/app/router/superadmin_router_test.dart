@@ -104,6 +104,26 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, '/dev/settings');
   });
 
+  testWidgets('protects development preview when it is disabled', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: false,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devHome);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+  });
+
   testWidgets('redirects authenticated sessions from login to Home', (tester) async {
     final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(

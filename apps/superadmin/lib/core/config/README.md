@@ -22,6 +22,13 @@ Variaveis client-safe atuais:
 - `COELO_SUPABASE_PUBLISHABLE_KEY`
 - `COELO_DEV_MFA`
 
+## Pre-visualizacao local
+
+Quando `COELO_APP_ENV=local` (valor padrao), as rotas `/dev/...` ficam
+disponiveis para navegar pelas telas fake de UI/UX sem autenticar no Supabase.
+Em qualquer outro ambiente, essas rotas permanecem protegidas e redirecionam
+para o login.
+
 ## Supabase Auth do Superadmin
 
 O bootstrap de autenticacao usa somente:

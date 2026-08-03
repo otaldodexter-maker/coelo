@@ -32,6 +32,10 @@ import '../../features/auth/domain/reset_password_action.dart';
 import '../../features/auth/presentation/screens/superadmin_forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/superadmin_login_screen.dart';
 import '../../features/auth/presentation/screens/superadmin_reset_password_screen.dart';
+import '../../features/attendance/attendance.dart';
+import '../../features/attendance/attendance_pages.dart';
+import '../../features/daily_routine/daily_routine.dart';
+import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
@@ -110,6 +114,13 @@ GoRouter createSuperadminRouter({
   final unitRepository = FakeUnitDirectoryRepository(prototypeRepository);
   final groupRepository = FakeGroupDirectoryRepository(prototypeRepository);
   final activityPreviewRepository = FakeActivityDirectoryRepository();
+  final attendanceActivities = SuperadminActivityController();
+  final attendanceRepository = InMemoryAttendanceRepository.seeded(
+    activities: attendanceActivities,
+  );
+  final dailyRoutineRepository = InMemoryDailyRoutineRepository.seeded(
+    activities: attendanceActivities,
+  );
   final healthSafetyRepository = DemoHealthSafetyRepository();
   final accessProfilePreviewRepository = FakeAccessProfileRepository();
   final peoplePreviewRepository = FakePersonDirectoryRepository();
@@ -238,6 +249,10 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.groupsName);
                 } else if (destination == 'activities') {
                   context.goNamed(SuperadminRoutes.activitiesName);
+                } else if (destination == 'attendance') {
+                  context.goNamed(SuperadminRoutes.attendanceName);
+                } else if (destination == 'daily-routine') {
+                  context.goNamed(SuperadminRoutes.dailyRoutineName);
                 } else if (destination == 'people') {
                   context.goNamed(SuperadminRoutes.peopleName);
                 } else if (destination == 'catalog') {
@@ -529,6 +544,105 @@ GoRouter createSuperadminRouter({
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.attendance,
+            name: SuperadminRoutes.attendanceName,
+            builder: (context, state) => AttendanceDashboardPage(
+              repository: attendanceRepository,
+              permissions: const AttendancePermissions.owner(),
+              logout: logout,
+              onCreate: () => context.goNamed(SuperadminRoutes.attendanceCreateName),
+              onOpenCall: (id) => context.goNamed(
+                SuperadminRoutes.attendanceCallName,
+                pathParameters: {'callId': id},
+              ),
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.attendanceCreate,
+            name: SuperadminRoutes.attendanceCreateName,
+            builder: (context, state) => AttendanceNewCallPage(
+              repository: attendanceRepository,
+              permissions: const AttendancePermissions.owner(),
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.attendanceName),
+              onCreated: (id) => context.goNamed(
+                SuperadminRoutes.attendanceCallName,
+                pathParameters: {'callId': id},
+              ),
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.attendanceCall,
+            name: SuperadminRoutes.attendanceCallName,
+            builder: (context, state) => AttendanceCallPage(
+              repository: attendanceRepository,
+              callId: state.pathParameters['callId']!,
+              focusedParticipantId: state.uri.queryParameters['participant'],
+              permissions: const AttendancePermissions.owner(),
+              logout: logout,
+              onBack: () => context.goNamed(SuperadminRoutes.attendanceName),
+              onPreview: () => context.goNamed(
+                SuperadminRoutes.attendanceTeacherPreviewName,
+                pathParameters: {'callId': state.pathParameters['callId']!},
+              ),
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.attendanceTeacherPreview,
+            name: SuperadminRoutes.attendanceTeacherPreviewName,
+            builder: (context, state) => AttendanceTeacherPreviewPage(
+              repository: attendanceRepository,
+              callId: state.pathParameters['callId']!,
+              permissions: const AttendancePermissions.teacher(
+                assignedGroupIds: {'group-sun'},
+                assignedActivityContextIds: {'activity-music-group-sun'},
+              ),
+              onBack: () => context.goNamed(
+                SuperadminRoutes.attendanceCallName,
+                pathParameters: {'callId': state.pathParameters['callId']!},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.dailyRoutine,
+            name: SuperadminRoutes.dailyRoutineName,
+            builder: (context, state) => DailyRoutineDirectoryPage(
+              repository: dailyRoutineRepository,
+              permissions: DailyRoutinePermissions.owner,
+              logout: logout,
+              activityController: attendanceActivities,
+              onCreate: () => context.goNamed(SuperadminRoutes.dailyRoutineCreateName),
+              onEdit: (id) => context.goNamed(
+                SuperadminRoutes.dailyRoutineEditName,
+                pathParameters: {'modelId': id},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.dailyRoutineCreate,
+            name: SuperadminRoutes.dailyRoutineCreateName,
+            builder: (context, state) => DailyRoutineEditorPage(
+              repository: dailyRoutineRepository,
+              permissions: DailyRoutinePermissions.owner,
+              logout: logout,
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.dailyRoutineEdit,
+            name: SuperadminRoutes.dailyRoutineEditName,
+            builder: (context, state) => DailyRoutineEditorPage(
+              repository: dailyRoutineRepository,
+              permissions: DailyRoutinePermissions.owner,
+              logout: logout,
+              modelId: state.pathParameters['modelId'],
+              activityController: attendanceActivities,
             ),
           ),
           GoRoute(
@@ -1116,6 +1230,105 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
+            path: SuperadminRoutes.devAttendance,
+            name: SuperadminRoutes.devAttendanceName,
+            builder: (context, state) => AttendanceDashboardPage(
+              repository: attendanceRepository,
+              permissions: const AttendancePermissions.owner(),
+              logout: _previewLogout,
+              onCreate: () => context.goNamed(SuperadminRoutes.devAttendanceCreateName),
+              onOpenCall: (id) => context.goNamed(
+                SuperadminRoutes.devAttendanceCallName,
+                pathParameters: {'callId': id},
+              ),
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAttendanceCreate,
+            name: SuperadminRoutes.devAttendanceCreateName,
+            builder: (context, state) => AttendanceNewCallPage(
+              repository: attendanceRepository,
+              permissions: const AttendancePermissions.owner(),
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devAttendanceName),
+              onCreated: (id) => context.goNamed(
+                SuperadminRoutes.devAttendanceCallName,
+                pathParameters: {'callId': id},
+              ),
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAttendanceCall,
+            name: SuperadminRoutes.devAttendanceCallName,
+            builder: (context, state) => AttendanceCallPage(
+              repository: attendanceRepository,
+              callId: state.pathParameters['callId']!,
+              focusedParticipantId: state.uri.queryParameters['participant'],
+              permissions: const AttendancePermissions.owner(),
+              logout: _previewLogout,
+              onBack: () => context.goNamed(SuperadminRoutes.devAttendanceName),
+              onPreview: () => context.goNamed(
+                SuperadminRoutes.devAttendanceTeacherPreviewName,
+                pathParameters: {'callId': state.pathParameters['callId']!},
+              ),
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAttendanceTeacherPreview,
+            name: SuperadminRoutes.devAttendanceTeacherPreviewName,
+            builder: (context, state) => AttendanceTeacherPreviewPage(
+              repository: attendanceRepository,
+              callId: state.pathParameters['callId']!,
+              permissions: const AttendancePermissions.teacher(
+                assignedGroupIds: {'group-sun'},
+                assignedActivityContextIds: {'activity-music-group-sun'},
+              ),
+              onBack: () => context.goNamed(
+                SuperadminRoutes.devAttendanceCallName,
+                pathParameters: {'callId': state.pathParameters['callId']!},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devDailyRoutine,
+            name: SuperadminRoutes.devDailyRoutineName,
+            builder: (context, state) => DailyRoutineDirectoryPage(
+              repository: dailyRoutineRepository,
+              permissions: DailyRoutinePermissions.owner,
+              logout: _previewLogout,
+              activityController: attendanceActivities,
+              onCreate: () => context.goNamed(SuperadminRoutes.devDailyRoutineCreateName),
+              onEdit: (id) => context.goNamed(
+                SuperadminRoutes.devDailyRoutineEditName,
+                pathParameters: {'modelId': id},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devDailyRoutineCreate,
+            name: SuperadminRoutes.devDailyRoutineCreateName,
+            builder: (context, state) => DailyRoutineEditorPage(
+              repository: dailyRoutineRepository,
+              permissions: DailyRoutinePermissions.owner,
+              logout: _previewLogout,
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devDailyRoutineEdit,
+            name: SuperadminRoutes.devDailyRoutineEditName,
+            builder: (context, state) => DailyRoutineEditorPage(
+              repository: dailyRoutineRepository,
+              permissions: DailyRoutinePermissions.owner,
+              logout: _previewLogout,
+              modelId: state.pathParameters['modelId'],
+              activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devPeople,
             name: SuperadminRoutes.devPeopleName,
             builder: (context, state) => PersonDirectoryPage(
@@ -1520,6 +1733,12 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/activities')) {
     return 'activities';
   }
+  if (location.startsWith('/attendance')) {
+    return 'attendance';
+  }
+  if (location.startsWith('/daily-routine')) {
+    return 'daily-routine';
+  }
   if (location.startsWith('/health-safety')) {
     return 'health-safety';
   }
@@ -1552,6 +1771,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.groupsName);
     case 'activities':
       context.goNamed(SuperadminRoutes.activitiesName);
+    case 'attendance':
+      context.goNamed(SuperadminRoutes.attendanceName);
+    case 'daily-routine':
+      context.goNamed(SuperadminRoutes.dailyRoutineName);
     case 'health-safety':
       context.goNamed(SuperadminRoutes.healthSafetyName);
     case 'people':
@@ -1569,8 +1792,6 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
     case 'settings':
       context.goNamed(SuperadminRoutes.settingsName);
   }
-    case 'catalog':
-      context.goNamed(SuperadminRoutes.devCatalogName);
 }
 
 void _navigateFromDevelopmentShell(BuildContext context, String destination) {
@@ -1585,12 +1806,18 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devGroupsName);
     case 'activities':
       context.goNamed(SuperadminRoutes.devActivitiesName);
+    case 'attendance':
+      context.goNamed(SuperadminRoutes.devAttendanceName);
+    case 'daily-routine':
+      context.goNamed(SuperadminRoutes.devDailyRoutineName);
     case 'people':
       context.goNamed(SuperadminRoutes.devPeopleName);
     case 'profiles':
       context.goNamed(SuperadminRoutes.devProfilesName);
     case 'internal-users':
       context.goNamed(SuperadminRoutes.devInternalUsersName);
+    case 'catalog':
+      context.goNamed(SuperadminRoutes.devCatalogName);
     case 'support':
       context.goNamed(SuperadminRoutes.devSupportName);
     case 'conversations':

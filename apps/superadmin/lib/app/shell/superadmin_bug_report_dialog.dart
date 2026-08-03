@@ -214,7 +214,7 @@ class _BugSingleSelect<T> extends StatelessWidget {
             backgroundColor: WidgetStatePropertyAll(colors.surface),
             elevation: const WidgetStatePropertyAll(6),
             padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-            maximumSize: WidgetStatePropertyAll(Size(menuWidth, 360)),
+            maximumSize: WidgetStatePropertyAll(Size(menuWidth, 420)),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(CoeloRadius.lg),

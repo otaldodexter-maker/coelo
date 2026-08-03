@@ -25,7 +25,7 @@ Em monetização, o benchmark público aponta para modelos consultivos, normalme
 
 Na leitura dos sites oficiais, help centers, páginas de integrações e lojas de aplicativos, há um padrão forte de convergência funcional. Quase todos os concorrentes já operam com algum conjunto de: mensagens/comunicados, calendário/eventos, confirmação de leitura, anexos multimídia, matrícula/assinatura digital, cobrança/pagamentos, dashboards de engajamento, e algum tipo de integração com ERP, portal ou dados acadêmicos. Onde eles realmente se diferenciam é na profundidade operacional e no território de marca que tentam ocupar. [5]
 
-A Agenda Edu e o ClassApp jogam fortíssimo em comunicação, atendimento e relacionamento com famílias. O Diário Escola e a Sponte empurram o discurso para uma gestão escolar mais ampla, unificando financeiro, pedagógico, secretaria, agenda e operação. O Meu Arco atua mais como uma camada integradora do ecossistema Arco/isaac do que como um app de agenda “puro”. A ClipEscola, por sua vez, combina agenda digital com contratos, live, pagamentos, controle de saída e white label, o que a torna um concorrente híbrido e comercialmente perigoso para uma solução nova. [6]
+A Agenda Edu e o ClassApp jogam fortíssimo em comunicação, atendimento e relacionamento com famílias. O Diário Escola e a Sponte empurram o discurso para uma gestão escolar mais ampla, unificando financeiro, pedagógico, secretaria, agenda e operação. O Meu Arco atua mais como uma camada integradora do ecossistema Arco/isaac do que como um app de agenda “puro”. A ClipEscola, por sua vez, combina agenda digital com contratos, live, pagamentos, controle de saída e white label, o que a torna um concorrente híbrido e comercialmente perigoso para uma solução nova. Como benchmark internacional de experiência, o ClassDojo merece atenção especial por separar feed de turma e feed da escola, reforçar leitura/comentários, publicar imagens/vídeos/texto com moderação e tratar a home de ajuda como produto em si. [6][52]
 
 Um detalhe estratégico importante: a própria Arco Educação lista ClassApp entre suas marcas, enquanto posiciona o Meu Arco como plataforma unificadora das soluções do grupo. Isso sugere uma tendência de convergência de portfólio e reduz a chance de ver ClassApp e Meu Arco como produtos completamente independentes no médio prazo. Para um novo entrante, isso significa que competir só em “chat escola-família” é pouco; o melhor caminho é ganhar em UX, velocidade de implantação, modularidade e preço inicial. [7]
 
@@ -125,6 +125,18 @@ Plataformas: o Meu Arco funciona em web e mobile, com app principal para famíli
 No modelo de negócio, o preço é consultivo e varia conforme contrato e perfil da instituição. O público-alvo é o universo de escolas parceiras da Arco/isaac, com forte aderência ao segmento privado. Em integrações, as fontes públicas falam bastante de login único e conexão entre soluções Arco, mas não exibem catálogo amplo de ERPs externos. Estratégicamente, vale notar que a própria Arco inclui ClassApp entre suas marcas; então, para o mercado, Meu Arco e ClassApp são melhor lidos como peças de um mesmo portfólio do que como dois concorrentes totalmente desvinculados. [42]
 
 Sobre stack provável, a evidência pública aponta para uma arquitetura fortemente integrada por APIs/camadas de ecossistema, com múltiplos apps e módulos web especializados. Fora isso, não há base pública sólida para inferir framework mobile ou backend. O que dá para afirmar com segurança é a alta integração com o stack comercial e financeiro ligado ao isaac/Arco. [43]
+
+### ClassDojo
+
+Links diretos pesquisados: página principal, página "Sobre nós", páginas "story da turma" e "story da escola", e central de ajuda em português. [52]
+
+O ClassDojo não é um concorrente direto do Coelo no mesmo mercado geográfico, mas é um benchmark muito forte de produto e de suporte. A empresa se posiciona como comunidade global com dezenas de milhões de professores e famílias, com foco em conectar escola e casa por fotos, vídeos, mensagens e reconhecimento positivo. A proposta é simples de entender e extremamente boa para inspiração de onboarding e ajuda contextual. [53]
+
+No recorte funcional, a separação entre Story da Turma e Story da Escola é o ponto mais valioso para o Coelo observar. O Story da Turma funciona como feed privado da turma, visível aos pais conectados àquela turma, com postagens de professores, imagens, vídeos, eventos e anexos. O Story da Escola é um quadro de avisos da escola inteira, visível para pais conectados às turmas ativas, pensado para anúncios, dias sem aula, lembretes e comunicados institucionais. Essa separação resolve um problema clássico de produto: nem toda mensagem deve ter o mesmo alcance. [54]
+
+Na camada de suporte, o help center do ClassDojo é um bom benchmark para uma futura central de ajuda do Coelo alimentada por IA. A estrutura pública organiza os artigos por tema, com páginas específicas para publicar, editar, programar, moderar comentários e trabalhar com mídia. Isso ajuda a transformar dúvidas comuns em caminhos guiados antes mesmo de escalar para atendimento humano. [55]
+
+Como direção prática, vale copiar o princípio, não a interface: separar comunicação por contexto, deixar claro o alcance de cada publicação, mostrar leitura/visualização quando fizer sentido e tratar ajuda como superfície de produto, não só como repositório de artigos. [56]
 
 ## Recomendações de produto e monetização
 
@@ -316,3 +328,23 @@ https://diarioescola.com.br/o-superapp-da-escola-personalizado-para-chamar-de-se
 [51] Painel
 
 https://sponte.sponte.com.br/
+
+[52] ClassDojo | ClassDojo
+
+https://www.classdojo.com/pt-br/
+
+[53] About us | ClassDojo
+
+https://www.classdojo.com/pt-br/about/
+
+[54] Apresentando o story da turma | ClassDojo
+
+https://www.classdojo.com/pt-br/classstory/
+
+[55] Story da Turma – ClassDojo Help Center
+
+https://help.classdojo.com/hc/pt-br/sections/29010925152525-Story-da-Turma
+
+[56] Story da escola – ClassDojo Help Center
+
+https://help.classdojo.com/hc/pt-br/sections/29011253347469-Story-da-escola

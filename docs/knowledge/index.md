@@ -22,6 +22,7 @@ review_owner: Coelo Owner
 | team | Superadmin / Unidades | [Diretório de unidades do Superadmin](team/superadmin-unit-directory.md) | validated | `decisions/0016-unit-type-and-plan-inheritance.md` |
 | team | Superadmin / Atividades | [Diretório de atividades do Superadmin](team/superadmin-activity-directory.md) | validated | `docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md` |
 | team | Superadmin / Perfis e permissões | [Perfis e Permissões do Superadmin](team/superadmin-access-profiles.md) | validated | `specs/018-profiles-permissions-superadmin.md`; `decisions/0017-access-profile-governance.md` |
+| team | Suporte / Benchmark externo | [Benchmark de suporte e stories do ClassDojo](team/classdojo-support-benchmark.md) | validated | `docs/product/competitive-map.md` |
 
 As pastas `admin/` e `users/` serão criadas somente quando houver conteúdo
 válido e aprovado para essas audiências.

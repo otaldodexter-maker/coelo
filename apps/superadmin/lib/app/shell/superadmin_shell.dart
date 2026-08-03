@@ -716,6 +716,20 @@ const _navigationSections = <_NavigationSectionData>[
       active: true,
     ),
   ]),
+  _NavigationSectionData('monitoring', 'Acompanhamento', Icons.monitor_heart_outlined, [
+    _NavigationDestinationData(
+      'attendance',
+      'Assiduidade',
+      Icons.fact_check_outlined,
+      active: true,
+    ),
+    _NavigationDestinationData(
+      'daily-routine',
+      'Rotina diária',
+      Icons.view_agenda_outlined,
+      active: true,
+    ),
+  ]),
   _NavigationSectionData('access', 'Acessos', Icons.manage_accounts_outlined, [
     _NavigationDestinationData('people', 'Pessoas', Icons.people_outline, active: true),
     _NavigationDestinationData('internal-users', 'Usuários internos', Icons.badge_outlined),
@@ -950,6 +964,20 @@ class _NavigationSectionHeader extends StatefulWidget {
 class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
   bool _highlighted = false;
 
+  Future<void> _handleTap() async {
+    widget.onTap();
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted) return;
+    await Scrollable.ensureVisible(
+      context,
+      alignment: 0.5,
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 260),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1017,7 +1045,7 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: widget.onTap,
+            onTap: _handleTap,
             borderRadius: BorderRadius.circular(CoeloRadius.md),
             overlayColor: const WidgetStatePropertyAll(Colors.transparent),
             child: content,
@@ -2249,7 +2277,10 @@ class _ProfileSummary extends StatelessWidget {
       ),
     ];
     return MenuAnchor(
-      crossAxisUnconstrained: !compact,
+      // Keep the flyout in the overlay's available viewport instead of
+      // constraining its height to the compact header row.
+      crossAxisUnconstrained: true,
+      useRootOverlay: true,
       alignmentOffset: Offset(
         compact ? _compactProfileTriggerWidth - _compactProfileMenuWidth : 0,
         CoeloSpacing.space2,
@@ -2273,7 +2304,18 @@ class _ProfileSummary extends StatelessWidget {
           ),
         ),
       ),
-      menuChildren: menuItems,
+      // The compact header can leave a short overlay viewport. Keep the
+      // account actions reachable without forcing the menu's column to
+      // overflow vertically.
+      menuChildren: [
+        SingleChildScrollView(
+          primary: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: menuItems,
+          ),
+        ),
+      ],
       builder: (context, controller, child) {
         return Tooltip(
           message: 'Abrir menu do usuário',

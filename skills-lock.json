@@ -150,6 +150,12 @@
       "sourceType": "github",
       "skillPath": "skills/product-marketing/SKILL.md",
       "computedHash": "3c8b5ada0a4296f0b44e9445f01fe851dffa05ae55d48246157a5f03c15998eb"
+    },
+    "rtk": {
+      "source": "akillness/oh-my-skills",
+      "sourceType": "github",
+      "skillPath": ".agent-skills/rtk/SKILL.md",
+      "computedHash": "ffd980505698661d2cb8cf779d1bc081b9ed82c4e46e6e70df603a00a6f8ba30"
     }
   }
 }

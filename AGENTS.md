@@ -98,3 +98,5 @@ canonicas. Ao terminar, execute o gate de memoria da skill: atualize primeiro a
 fonte canonica, registre somente conhecimento duravel e aprovado para a
 audiencia correta, valide o conteudo e relate o que foi capturado. Quando nada
 reutilizavel mudar, nao crie arquivos apenas para registrar atividade.
+
+@RTK.md

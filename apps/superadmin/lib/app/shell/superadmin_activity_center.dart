@@ -4,6 +4,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:go_router/go_router.dart';
 
 import '../activity/superadmin_activity.dart';
 import 'superadmin_notice.dart';
@@ -284,7 +285,9 @@ class _ActivityTile extends StatelessWidget {
           hoverColor: colors.primaryContainer,
           focusColor: colors.primaryContainer,
           borderRadius: BorderRadius.circular(CoeloRadius.md),
-          onTap: canDownload
+          onTap: activity.destination != null
+              ? () => context.go(activity.destination!)
+              : canDownload
               ? () {
                   final fileName = activity.fileName;
                   if (fileName == null) {
@@ -522,6 +525,8 @@ String _activityKindLabel(SuperadminActivityKind kind) => switch (kind) {
   SuperadminActivityKind.export => 'Exportação',
   SuperadminActivityKind.announcement => 'Novidade',
   SuperadminActivityKind.emailApproval => 'Aprovação',
+  SuperadminActivityKind.attendanceNotice => 'Assiduidade',
+  SuperadminActivityKind.routineUpdate => 'Rotina diária',
 };
 
 IconData _activityIcon(SuperadminActivityKind kind) => switch (kind) {
@@ -529,6 +534,8 @@ IconData _activityIcon(SuperadminActivityKind kind) => switch (kind) {
   SuperadminActivityKind.export => Icons.download_outlined,
   SuperadminActivityKind.announcement => Icons.campaign_outlined,
   SuperadminActivityKind.emailApproval => Icons.mark_email_read_outlined,
+  SuperadminActivityKind.attendanceNotice => Icons.fact_check_outlined,
+  SuperadminActivityKind.routineUpdate => Icons.checklist_rounded,
 };
 
 String _activityStatusLabel(SuperadminActivityStatus status) => switch (status) {
