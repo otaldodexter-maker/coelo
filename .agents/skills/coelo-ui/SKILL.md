@@ -30,7 +30,9 @@ silenciosamente.
    deletar, ler também o
    [contrato de diretórios e flyouts](references/admin-directory-flyout-contracts.md)
    e consultar `pattern.admin-directory`, `pattern.flyout-actions` e
-   `pattern.interaction-states`. Para `X`, sair, desligar, encerrar, fechar,
+   `pattern.interaction-states`. Para qualquer card de diretório administrativo,
+   Instituições é baseline obrigatória e deve ser consultado também
+   `pattern.institution-card-status`. Para `X`, sair, desligar, encerrar, fechar,
    remover, deletar ou excluir, consultar também `pattern.negative-actions`;
    toda ação negativa habilitada permanece na hierarquia
    `errorContainer`/`error`, independentemente do verbo escolhido.
@@ -69,6 +71,15 @@ silenciosamente.
    `InkWell`, `PopupMenuButton`, `MenuAnchor` ou `MenuItemButton` dentro de uma
    feature. Exceção legada exige entrada contada e justificada na allowlist;
    conveniência local não é justificativa.
+   O card de Instituições define o contrato visual de todo card de diretório e
+   deve ser implementado com `CoeloAdminInteractiveCard`:
+   a superfície continua `surface`, o raio é preservado e hover/foco alteram
+   somente borda e sombra; overlay/splash permanece transparente, sem cinza. Quando o card
+   possui status semântico, usar `CoeloAdminExpandableStatusIndicator`; o
+   indicador começa compacto em 24 × 24 sem texto e
+   expande para revelar o rótulo em hover, foco ou toque; usa cores semânticas,
+   não depende apenas da cor e elimina a animação não essencial com reduced
+   motion. Não substituir esse comportamento por chip sempre aberto.
    Não criar campo textual ou single-select local quando
    `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Medidas de
    grid, gaps, padding e rodapé devem citar tokens existentes ou uma referência

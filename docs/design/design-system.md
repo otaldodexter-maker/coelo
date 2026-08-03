@@ -868,6 +868,14 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   `surface` e `radius.lg`; hover/foco enfatizam somente borda e sombra na
   hierarquia primária. Não compor `Card` + `InkWell` local nem aceitar overlay
   Material cinza ou hover retangular.
+- A baseline de Instituições é obrigatória para todo card de diretório
+  administrativo; usar `CoeloAdminInteractiveCard`. Quando houver status
+  semântico, usar `CoeloAdminExpandableStatusIndicator`: o indicador começa circular
+  em 24 × 24 e sem texto; hover, foco por teclado ou toque no indicador o
+  expande para revelar o rótulo. A cor segue o token semântico do status e o
+  texto impede dependência exclusiva de cor. Com reduced motion, a expansão
+  acontece sem animação não essencial. Não usar chip sempre aberto como
+  substituição silenciosa desse padrão.
 - Flyout de ações usa `CoeloAdminFlyout`. Itens comuns usam o hover discreto
   arredondado; itens terminais/destrutivos usam
   `CoeloAdminFlyoutTone.negative`, `error` em repouso e `errorContainer` no
@@ -919,7 +927,7 @@ Ela é obrigatória para revisão ou implementação dessas famílias:
 | Família | Baseline aprovada |
 | --- | --- |
 | Login | campos default/foco, checkbox, ação principal default/hover, recuperação e aviso restrito |
-| Instituições | toolbar, filtros, toggle, arquivos, cards/default/hover, tabela, gaps e paginação |
+| Instituições | baseline obrigatória de cards de diretório; toolbar, filtros, toggle, arquivos, cards/default/hover sem cinza, status 24 × 24 progressivo, tabela, gaps e paginação |
 | Home | conversas, orientação central, sugestões e compositor inferior |
 | Navegação | menu expandido, rail compacto, seleção por nível e flyouts |
 | Conta | flyout, Perfil, ajuste de foto e Configurações |

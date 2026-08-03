@@ -15,4 +15,5 @@ export 'src/table/coelo_admin_resizable_table.dart';
 export 'src/table/coelo_admin_table_controller.dart';
 export 'src/table/coelo_admin_table_column.dart';
 export 'src/surface/coelo_admin_interactive_card.dart';
+export 'src/surface/coelo_admin_expandable_status_indicator.dart';
 export 'src/workspace/coelo_admin_workspace_layout.dart';

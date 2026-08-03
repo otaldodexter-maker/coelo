@@ -44,6 +44,15 @@ negativos definem `CoeloAdminFlyoutTone.negative`. Um validador bloqueante do
 catálogo impede novas composições Material brutas; a allowlist é exclusiva do
 legado contado e justificado e não deve crescer para acomodar tela nova.
 
+Instituições é a baseline obrigatória para todo card de diretório
+administrativo. O card usa `CoeloAdminInteractiveCard`, mantém `surface` e
+`radius.lg`; hover/foco enfatizam
+somente borda e sombra, nunca com overlay cinza ou retangular. Quando existe
+status semântico, usar `CoeloAdminExpandableStatusIndicator`: ele começa como
+ponto circular de 24 × 24 sem texto e expande
+para revelar o rótulo em hover, foco ou toque no indicador. A apresentação usa
+cores semânticas com texto e remove a animação não essencial em reduced motion.
+
 Login, Instituições, Home, navegação, Conta, overlays e o wizard de
 Criar/Editar instituição possuem uma matriz visual aprovada única. Para essas
 famílias, consultar

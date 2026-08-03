@@ -24,11 +24,38 @@ void main() {
       (decoration.border! as Border).top.color,
       CoeloTheme.light.colorScheme.primary.withValues(alpha: 0.5),
     );
-    expect(decoration.boxShadow, isNotEmpty);
+    expect((decoration.border! as Border).top.width, 1.5);
+    expect(decoration.boxShadow, [
+      BoxShadow(
+        color: CoeloTheme.light.colorScheme.primary.withValues(alpha: 0.15),
+        blurRadius: 12,
+        spreadRadius: 2,
+        offset: const Offset(0, 4),
+      ),
+    ]);
 
     final ink = tester.widget<InkWell>(find.byType(InkWell));
     expect(ink.borderRadius, BorderRadius.circular(CoeloRadius.lg));
     expect(ink.overlayColor!.resolve({WidgetState.hovered}), Colors.transparent);
+  });
+
+  testWidgets('uses the exact Institutions resting surface', (tester) async {
+    await _pumpCard(tester);
+
+    final surface = tester.widget<AnimatedContainer>(
+      find.byKey(const Key('interactive-card-surface')),
+    );
+    final decoration = surface.decoration! as BoxDecoration;
+    expect(surface.duration, CoeloMotion.standard);
+    expect((decoration.border! as Border).top.width, 1);
+    expect((decoration.border! as Border).top.color, CoeloTheme.light.colorScheme.outlineVariant);
+    expect(decoration.boxShadow, [
+      BoxShadow(
+        color: CoeloTheme.light.colorScheme.shadow.withValues(alpha: 0.03),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
+    ]);
   });
 
   testWidgets('uses instant motion when animations are disabled', (tester) async {

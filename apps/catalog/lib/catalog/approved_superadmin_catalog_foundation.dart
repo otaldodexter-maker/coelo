@@ -15,6 +15,7 @@ Map<String, CatalogFoundation> buildApprovedSuperadminFoundationRegistry() {
         'admin.file-actions',
         'admin.dialog-shell',
         'admin.interactive-card',
+        'admin.expandable-status-indicator',
         'admin.flyout',
         'admin.pagination',
       ],
@@ -41,7 +42,9 @@ final class _ApprovedSuperadminSurfacesFoundation extends StatelessWidget {
         title: 'Instituições',
         baseline: 'Toolbar, filtros, toggle, arquivos, cards, tabela, gaps e paginação.',
         golden: 'institution_directory_*_light_1440.png',
-        rule: 'Card hover preserva surface; linha hover é contínua e sem raio.',
+        rule:
+            'Instituições é a baseline obrigatória: card preserva surface sem '
+            'hover cinza; status inicia como ponto e revela o texto por hover, foco ou toque.',
       ),
       _ApprovedSurface(
         keyName: 'home',
@@ -122,6 +125,10 @@ final class _CanonicalInteractionPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     return Wrap(
       spacing: CoeloSpacing.space4,
       runSpacing: CoeloSpacing.space4,
@@ -137,6 +144,13 @@ final class _CanonicalInteractionPreview extends StatelessWidget {
               child: Text('Card real: surface preservada; hover/foco apenas na borda e sombra.'),
             ),
           ),
+        ),
+        CoeloAdminExpandableStatusIndicator(
+          label: 'Ativa',
+          semanticLabel: 'Status de exemplo: Ativa',
+          backgroundColor: statusColors.successContainer,
+          foregroundColor: statusColors.onSuccessContainer,
+          surfaceKey: const Key('approved-institution-expandable-status'),
         ),
         CoeloAdminFlyout<String>(
           items: const [

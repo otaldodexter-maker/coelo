@@ -38,7 +38,7 @@ final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveC
 
     final surface = AnimatedContainer(
       key: widget.surfaceKey,
-      duration: disableAnimations ? CoeloMotion.instant : CoeloMotion.short,
+      duration: disableAnimations ? CoeloMotion.instant : CoeloMotion.standard,
       curve: Curves.easeOutCubic,
       constraints: BoxConstraints(minHeight: widget.minHeight ?? 0),
       decoration: BoxDecoration(
@@ -46,16 +46,18 @@ final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveC
         borderRadius: radius,
         border: Border.all(
           color: emphasized ? colors.primary.withValues(alpha: 0.5) : colors.outlineVariant,
+          width: emphasized ? 1.5 : 1,
         ),
-        boxShadow: emphasized
-            ? [
-                BoxShadow(
-                  color: colors.primary.withValues(alpha: 0.12),
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                ),
-              ]
-            : const [],
+        boxShadow: [
+          BoxShadow(
+            color: emphasized
+                ? colors.primary.withValues(alpha: 0.15)
+                : colors.shadow.withValues(alpha: 0.03),
+            blurRadius: emphasized ? 12 : 8,
+            spreadRadius: emphasized ? 2 : 0,
+            offset: Offset(0, emphasized ? 4 : 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,

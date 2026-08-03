@@ -41,6 +41,10 @@ void main() {
   }
 
   testWidgets('renders package components instead of fake catalog copies', (tester) async {
+    await _pumpFoundation(tester, entries, foundations, 'pattern.approved-superadmin-surfaces');
+    expect(find.byType(CoeloAdminInteractiveCard), findsOneWidget);
+    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsOneWidget);
+
     await _pumpFoundation(tester, entries, foundations, 'pattern.action-hierarchy');
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byKey(const Key('action-hierarchy-primary')), findsOneWidget);

@@ -45,6 +45,13 @@ goldens, testes e regras abaixo são a evidência canônica. Não usar imagens e
 - Card comum preserva `surface` no hover; somente borda e sombra ganham ênfase
   primária sutil. O card de criar usa borda tracejada; no hover, borda e círculo
   do ícone assumem a hierarquia primária.
+- Instituições é a baseline obrigatória para todo card de diretório
+  administrativo, não apenas para esta feature. O card nunca recebe hover cinza
+  ou retangular: preserva `surface`, `radius.lg` e overlay transparente.
+- O status do card começa como indicador circular de 24 × 24 sem texto e
+  expande para revelar o rótulo em hover, foco ou toque no indicador. As cores
+  são semânticas, o texto impede dependência exclusiva de cor e reduced motion
+  remove a animação não essencial.
 - Filtro aberto usa linhas contínuas. Opção hovered não recebe raio; seleção
   usa checkbox laranja. O rodapé do multi-select divide `Limpar` tonal e
   `Aplicar` preenchido em 50/50.

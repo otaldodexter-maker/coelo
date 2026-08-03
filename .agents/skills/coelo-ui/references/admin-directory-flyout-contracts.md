@@ -14,6 +14,9 @@ implementação canônica é pública em `coelo_ui_admin`: usar
 menus ancorados. Features não recriam essas superfícies com widgets Material
 brutos.
 
+Instituições não é apenas exemplo ilustrativo: é a baseline obrigatória para
+todo card de diretório administrativo, inclusive em novas features.
+
 ## Anatomia do diretório
 
 1. Toolbar com `CoeloAdminListingToolbar`: busca, filtros, toggle de visualização
@@ -68,6 +71,26 @@ cinza local, HEX local ou uma regra única aplicada a tudo bloqueiam a entrega.
 Disabled não recebe hover. Foco visível deve ser equivalente, mas não pode
 depender somente da cor. `surfaceTintColor` e overlays adicionais permanecem
 transparentes.
+
+## Card de Instituições e status progressivo
+
+- O corpo do card permanece em `surface` no repouso, hover e foco. Não aplicar
+  preenchimento cinza, `primaryContainer`, overlay Material ou hover retangular
+  sobre a superfície inteira; overlay e splash adicionais são transparentes.
+- Hover e foco preservam `radius.lg` e comunicam interatividade somente pela
+  borda primária translúcida, sombra primária sutil e foco visível.
+- Quando existe status semântico, seu indicador inicia como ponto circular de
+  24 × 24, sem texto. Implementar com `CoeloAdminExpandableStatusIndicator`;
+  não recriar o estado localmente. Em hover, foco por teclado ou ativação por toque no
+  indicador, ele expande e revela o rótulo do status.
+- O estado expandido preserva a cor semântica correspondente e inclui texto;
+  nunca comunicar Ativa, Suspensa, Em implantação ou outro status apenas pela
+  cor. O alvo interativo continua acessível mesmo com a forma visual compacta.
+- A expansão usa duração e curva tokenizadas. Com reduced motion, a mudança de
+  tamanho e rótulo ocorre sem animação não essencial.
+- Um card sem status não inventa o indicador. Um card com status não troca este
+  padrão por chip permanentemente aberto, salvo contrato de densidade diferente
+  aprovado e indexado.
 
 ## Flyouts
 
