@@ -51,13 +51,13 @@ class SuperadminShell extends StatefulWidget {
     required this.child,
     required this.currentDestination,
     required this.onDestinationSelected,
+    this.activityController,
     this.onBugReportSubmitted,
     super.key,
   }) : title = '',
        subtitle = '',
        actions = const [],
        compactActions = const [],
-       activityController = null,
        onOpenConversations = null,
        showChatLauncher = true,
        chatLauncherBottomInset = 0,
@@ -1185,7 +1185,9 @@ void _handleDestinationTap(
 }
 
 bool _destinationAvailable(BuildContext context, _NavigationDestinationData destination) {
-  return destination.active || (destination.id == 'internal-users' && _isDevelopmentRoute(context));
+  const previewOnly = {'plans', 'import', 'invites', 'notices', 'audit', 'internal-users'};
+  return destination.active ||
+      (_isDevelopmentRoute(context) && previewOnly.contains(destination.id));
 }
 
 bool _isDevelopmentRoute(BuildContext context) {
