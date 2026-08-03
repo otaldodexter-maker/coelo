@@ -101,7 +101,7 @@ updated_at: "2026-08-03"
 
 ### Em andamento
 
-- Verificação integrada final, revisão do diff e reinício do localhost.
+- Nenhum lote desta revisão permanece em andamento.
 
 ### Pendente
 
@@ -136,5 +136,6 @@ updated_at: "2026-08-03"
 
 ### Próximo ponto seguro
 
-- Finalizar gates focados, selecionar somente o escopo intencional para commit,
-  encerrar o localhost anterior e iniciar uma nova instância validada.
+- Commit `20b90fe` criado somente com o escopo intencional. O localhost anterior
+  foi encerrado e a nova instância responde HTTP 200 em
+  `http://127.0.0.1:8775` (PID 43092).
