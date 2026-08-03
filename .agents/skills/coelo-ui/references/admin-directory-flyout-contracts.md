@@ -1,16 +1,18 @@
 ---
 source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md; goldens aprovados de Instituições, Bug, Tour, Perfil, Configurações e formulário de Instituições"
 status: "active"
-generated_at: "2026-07-29"
+generated_at: "2026-08-03"
 ---
 
 # Diretórios administrativos, hover e flyouts
 
 Consulta obrigatória para listagem, diretório, cards/tabela, view toggle,
 arquivos, flyout, perfil, configurações, tour, sair, excluir ou deletar. A tela
-de Instituições do Superadmin é a referência canônica de composição. Este
-contrato oficializa padrões documentais e exemplos compostos; não cria API,
-variante ou componente público.
+de Instituições do Superadmin é a referência canônica de composição. A
+implementação canônica é pública em `coelo_ui_admin`: usar
+`CoeloAdminInteractiveCard` para cards clicáveis e `CoeloAdminFlyout` para
+menus ancorados. Features não recriam essas superfícies com widgets Material
+brutos.
 
 ## Anatomia do diretório
 
@@ -69,6 +71,9 @@ transparentes.
 
 ## Flyouts
 
+- Usar `CoeloAdminFlyout`; cada opção é um `CoeloAdminFlyoutItem`. Ação
+  terminal ou destrutiva define `startsGroup: true` e
+  `tone: CoeloAdminFlyoutTone.negative`.
 - Flyout usa `colorScheme.surface`, `surfaceTintColor: Colors.transparent`,
   `CoeloRadius.lg`, borda `outlineVariant`, elevação e padding `space2`.
 - Tour da tela/menu/completo usa o flyout de Tour como referência.
@@ -124,6 +129,12 @@ compartilha regras de confirmação, autorização ou auditoria.
 
 ## Verificação mínima
 
+- Executar, a partir de `apps/catalog`,
+  `rtk proxy C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_admin_visual_contracts.dart ../.. assets/admin-visual-contract-allowlist.json`.
+  O comando é bloqueante. Nova ocorrência de `Card` + `InkWell`,
+  `PopupMenuButton`, `PopupMenuItem`, `MenuAnchor` ou `MenuItemButton` em feature
+  não pode ser resolvida aumentando a allowlist; deve usar o componente
+  canônico. A allowlist existe somente para legado contado e justificado.
 - Validar 375, 768, 1024 e 1440 px quando a composição for alterada.
 - Validar light/dark, texto a 200%, teclado, foco, semântica e reduced motion.
 - Exercitar por teste cada família de hover usada na mudança.
