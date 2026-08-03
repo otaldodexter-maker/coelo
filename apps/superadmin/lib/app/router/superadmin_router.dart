@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/guards/superadmin_session.dart';
+import '../../core/config/superadmin_app_config.dart';
 import '../activity/superadmin_activity.dart';
 import '../../features/activities/data/fake_activity_directory_repository.dart';
 import '../../features/activities/data/supabase_activity_directory_repository.dart';
 import '../../features/activities/domain/activity_directory.dart';
 import '../../features/activities/presentation/activity_detail_page.dart';
 import '../../features/activities/presentation/activity_directory_page.dart';
+import '../../features/activities/presentation/activity_form_page.dart';
 import '../../features/account/data/account_profile_repository.dart';
 import '../../features/account/data/user_preferences_repository.dart';
 import '../../features/account/presentation/account_controller.dart';
@@ -83,6 +85,7 @@ GoRouter createSuperadminRouter({
   ValueChanged<Uri>? openExternalCatalog,
   SupportPrototypeController? supportController,
   UserPreferencesController? userPreferencesController,
+  bool allowDevelopmentPreview = !kReleaseMode || SuperadminAppConfig.environment == 'local',
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
   final sessionSupportController = supportController ?? SupportPrototypeController();
@@ -141,10 +144,10 @@ GoRouter createSuperadminRouter({
     ),
     redirect: (context, state) {
       final location = state.matchedLocation;
-      if (kReleaseMode && location.startsWith('/dev/')) {
+      if (!allowDevelopmentPreview && location.startsWith('/dev/')) {
         return session.isAuthenticated ? SuperadminRoutes.home : SuperadminRoutes.login;
       }
-      if (location.startsWith('/dev/') && location != SuperadminRoutes.devSupport) {
+      if (location.startsWith('/dev/')) {
         return null;
       }
 
@@ -459,10 +462,28 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => ActivityDirectoryPage(
               repository: activityDirectoryRepository,
               logout: logout,
+              onCreate: () => context.goNamed(SuperadminRoutes.activityCreateName),
+              onEdit: (id) => context.goNamed(
+                SuperadminRoutes.activityEditName,
+                pathParameters: {'activityId': id},
+              ),
               onView: (id) => context.goNamed(
                 SuperadminRoutes.activityDetailName,
                 pathParameters: {'activityId': id},
               ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+              onBugReportSubmitted: sessionSupportController.submitReport,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.activityCreate,
+            name: SuperadminRoutes.activityCreateName,
+            builder: (context, state) => ActivityFormPage(
+              repository: activityDirectoryRepository,
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.activitiesName),
+              onPrototypeSubmitted: () => context.goNamed(SuperadminRoutes.activitiesName),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
@@ -476,6 +497,30 @@ GoRouter createSuperadminRouter({
               repository: activityDirectoryRepository,
               logout: logout,
               onBack: () => context.goNamed(SuperadminRoutes.activitiesName),
+              onEdit: () => context.goNamed(
+                SuperadminRoutes.activityEditName,
+                pathParameters: {'activityId': state.pathParameters['activityId']!},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+              onBugReportSubmitted: sessionSupportController.submitReport,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.activityEdit,
+            name: SuperadminRoutes.activityEditName,
+            builder: (context, state) => ActivityFormPage(
+              activityId: state.pathParameters['activityId']!,
+              repository: activityDirectoryRepository,
+              logout: logout,
+              onCancel: () => context.goNamed(
+                SuperadminRoutes.activityDetailName,
+                pathParameters: {'activityId': state.pathParameters['activityId']!},
+              ),
+              onPrototypeSubmitted: () => context.goNamed(
+                SuperadminRoutes.activityDetailName,
+                pathParameters: {'activityId': state.pathParameters['activityId']!},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
@@ -979,10 +1024,28 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => ActivityDirectoryPage(
               repository: activityPreviewRepository,
               logout: _previewLogout,
+              onCreate: () => context.goNamed(SuperadminRoutes.devActivityCreateName),
+              onEdit: (id) => context.goNamed(
+                SuperadminRoutes.devActivityEditName,
+                pathParameters: {'activityId': id},
+              ),
               onView: (id) => context.goNamed(
                 SuperadminRoutes.devActivityDetailName,
                 pathParameters: {'activityId': id},
               ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+              onBugReportSubmitted: sessionSupportController.submitReport,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devActivityCreate,
+            name: SuperadminRoutes.devActivityCreateName,
+            builder: (context, state) => ActivityFormPage(
+              repository: activityPreviewRepository,
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devActivitiesName),
+              onPrototypeSubmitted: () => context.goNamed(SuperadminRoutes.devActivitiesName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
@@ -996,6 +1059,30 @@ GoRouter createSuperadminRouter({
               repository: activityPreviewRepository,
               logout: _previewLogout,
               onBack: () => context.goNamed(SuperadminRoutes.devActivitiesName),
+              onEdit: () => context.goNamed(
+                SuperadminRoutes.devActivityEditName,
+                pathParameters: {'activityId': state.pathParameters['activityId']!},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+              onBugReportSubmitted: sessionSupportController.submitReport,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devActivityEdit,
+            name: SuperadminRoutes.devActivityEditName,
+            builder: (context, state) => ActivityFormPage(
+              activityId: state.pathParameters['activityId']!,
+              repository: activityPreviewRepository,
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(
+                SuperadminRoutes.devActivityDetailName,
+                pathParameters: {'activityId': state.pathParameters['activityId']!},
+              ),
+              onPrototypeSubmitted: () => context.goNamed(
+                SuperadminRoutes.devActivityDetailName,
+                pathParameters: {'activityId': state.pathParameters['activityId']!},
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,

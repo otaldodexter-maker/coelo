@@ -6,15 +6,26 @@ import '../../../../app/activity/superadmin_activity.dart';
 import '../../../../app/shell/superadmin_notice.dart';
 
 final class UnitFileActions extends StatelessWidget {
-  const UnitFileActions({required this.activityController, this.compact = false, super.key});
+  const UnitFileActions({
+    required this.activityController,
+    this.compact = false,
+    this.viewLabel,
+    super.key,
+  });
 
   final SuperadminActivityController activityController;
   final bool compact;
+  final String? viewLabel;
 
   @override
   Widget build(BuildContext context) {
     void export(SuperadminExportFormat format) {
-      activityController.completeDemoExport(format, subject: 'Unidades', fileBaseName: 'unidades');
+      final label = viewLabel;
+      activityController.completeDemoExport(
+        format,
+        subject: label == null ? 'Unidades' : 'Unidades · $label',
+        fileBaseName: label == null ? 'unidades' : 'unidades-${_viewSuffix(label)}',
+      );
       showSuperadminNotice(
         context,
         'A exportação está em andamento. Acompanhe pelo sininho.',
@@ -47,6 +58,14 @@ final class UnitFileActions extends StatelessWidget {
     );
   }
 }
+
+String _viewSuffix(String label) => switch (label) {
+  'Cards' => 'cards',
+  'Agrupado' => 'agrupado',
+  'Por grupos' => 'por-grupos',
+  'Por atividades' => 'por-atividades',
+  _ => 'visao',
+};
 
 Future<void> _showImportDialog(BuildContext context, SuperadminActivityController controller) {
   return showDialog<void>(

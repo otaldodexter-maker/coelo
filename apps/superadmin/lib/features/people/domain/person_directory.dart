@@ -40,6 +40,28 @@ enum AuthLinkStatus {
 
 enum PersonDirectoryLayout { cards, table }
 
+enum PersonDirectorySegment {
+  all('Todos'),
+  institutionalTeam('Equipe institucional'),
+  guardians('Responsáveis'),
+  children('Crianças'),
+  dualProfile('Perfil duplo');
+
+  const PersonDirectorySegment(this.label);
+  final String label;
+}
+
+enum PersonDirectoryTableView {
+  grouped('Visão agrupada'),
+  institutions('Instituições'),
+  units('Unidades'),
+  groups('Grupos'),
+  activities('Atividades');
+
+  const PersonDirectoryTableView(this.label);
+  final String label;
+}
+
 enum PersonDirectorySortColumn {
   displayName('display_name'),
   type('type'),
@@ -64,6 +86,8 @@ final class PersonMembership {
     this.unitName,
     this.groupId,
     this.groupName,
+    this.activityId,
+    this.activityName,
     required this.role,
     this.isPlatform = false,
   });
@@ -76,6 +100,8 @@ final class PersonMembership {
   final String? unitName;
   final String? groupId;
   final String? groupName;
+  final String? activityId;
+  final String? activityName;
   final String role;
   final bool isPlatform;
 
@@ -88,6 +114,8 @@ final class PersonMembership {
     unitName: unitName,
     groupId: groupId,
     groupName: groupName,
+    activityId: activityId,
+    activityName: activityName,
     role: role ?? this.role,
     isPlatform: isPlatform,
   );
@@ -101,6 +129,8 @@ final class PersonMembership {
     unitName: json['unit_name'] as String?,
     groupId: json['group_id'] as String?,
     groupName: json['group_name'] as String?,
+    activityId: json['activity_id'] as String?,
+    activityName: json['activity_name'] as String?,
     role: json['role'] as String,
     isPlatform: json['is_platform'] as bool? ?? false,
   );
@@ -186,6 +216,13 @@ final class PersonDirectoryItem {
     this.childContexts = const [],
     this.platformMembershipSummary,
     this.guardianLinksSummary,
+    this.maskedContact,
+    this.linkedChildrenCount = 0,
+    this.accompaniedStudentsCount = 0,
+    this.linkedGuardiansCount = 0,
+    this.stateCode,
+    this.municipalityId,
+    this.neighborhoodId,
     required this.updatedAt,
   });
 
@@ -213,6 +250,7 @@ final class PersonDirectoryItem {
           .toList(growable: false),
       platformMembershipSummary: json['platform_membership_summary'] as String?,
       guardianLinksSummary: json['guardian_links_summary'] as String?,
+      maskedContact: null,
       updatedAt: DateTime.parse(json['updated_at'] as String).toUtc(),
     );
   }
@@ -230,6 +268,13 @@ final class PersonDirectoryItem {
   final List<PersonChildContext> childContexts;
   final String? platformMembershipSummary;
   final String? guardianLinksSummary;
+  final String? maskedContact;
+  final int linkedChildrenCount;
+  final int accompaniedStudentsCount;
+  final int linkedGuardiansCount;
+  final String? stateCode;
+  final String? municipalityId;
+  final String? neighborhoodId;
   final DateTime updatedAt;
 
   bool get isEditable => type != PersonType.service;
@@ -266,6 +311,23 @@ final class PersonDirectoryItem {
       .where((value) => value.isNotEmpty)
       .toSet()
       .join(', ');
+  String get activitySummary => memberships
+      .map((item) => item.activityName)
+      .whereType<String>()
+      .where((value) => value.isNotEmpty)
+      .toSet()
+      .join(', ');
+
+  bool get isGuardian => memberships.any((item) => item.role == 'guardian');
+  bool get isInstitutionalTeam =>
+      memberships.any((item) => !const {'guardian', 'student'}.contains(item.role));
+  bool matchesSegment(PersonDirectorySegment segment) => switch (segment) {
+    PersonDirectorySegment.all => true,
+    PersonDirectorySegment.institutionalTeam => isInstitutionalTeam,
+    PersonDirectorySegment.guardians => isGuardian,
+    PersonDirectorySegment.children => type == PersonType.child,
+    PersonDirectorySegment.dualProfile => isGuardian && isInstitutionalTeam,
+  };
 
   PersonDirectoryItem copyWith({
     String? firstName,
@@ -274,6 +336,9 @@ final class PersonDirectoryItem {
     String? legalName,
     List<PersonMembership>? memberships,
     List<PersonChildContext>? childContexts,
+    int? linkedChildrenCount,
+    int? accompaniedStudentsCount,
+    int? linkedGuardiansCount,
     DateTime? updatedAt,
   }) => PersonDirectoryItem(
     id: id,
@@ -289,6 +354,13 @@ final class PersonDirectoryItem {
     childContexts: childContexts ?? this.childContexts,
     platformMembershipSummary: platformMembershipSummary,
     guardianLinksSummary: guardianLinksSummary,
+    maskedContact: maskedContact,
+    linkedChildrenCount: linkedChildrenCount ?? this.linkedChildrenCount,
+    accompaniedStudentsCount: accompaniedStudentsCount ?? this.accompaniedStudentsCount,
+    linkedGuardiansCount: linkedGuardiansCount ?? this.linkedGuardiansCount,
+    stateCode: stateCode,
+    municipalityId: municipalityId,
+    neighborhoodId: neighborhoodId,
     updatedAt: updatedAt ?? this.updatedAt,
   );
 }
@@ -306,12 +378,17 @@ final class PersonDirectoryQuery {
     Set<String> institutionIds = const {},
     Set<String> unitIds = const {},
     Set<String> groupIds = const {},
+    Set<String> activityIds = const {},
+    Set<String> stateCodes = const {},
+    Set<String> municipalityIds = const {},
+    Set<String> neighborhoodIds = const {},
     Set<String> contextualRoles = const {},
     Set<AuthLinkStatus> authLinks = const {},
     this.page = 0,
     this.pageSize = cardsPageSize,
     this.sortColumn = PersonDirectorySortColumn.displayName,
     this.sortAscending = true,
+    this.segment = PersonDirectorySegment.all,
   }) : assert(page >= 0),
        assert(allowedPageSizes.contains(pageSize)),
        types = Set.unmodifiable(types),
@@ -319,6 +396,10 @@ final class PersonDirectoryQuery {
        institutionIds = Set.unmodifiable(institutionIds),
        unitIds = Set.unmodifiable(unitIds),
        groupIds = Set.unmodifiable(groupIds),
+       activityIds = Set.unmodifiable(activityIds),
+       stateCodes = Set.unmodifiable(stateCodes),
+       municipalityIds = Set.unmodifiable(municipalityIds),
+       neighborhoodIds = Set.unmodifiable(neighborhoodIds),
        contextualRoles = Set.unmodifiable(contextualRoles),
        authLinks = Set.unmodifiable(authLinks);
 
@@ -331,12 +412,17 @@ final class PersonDirectoryQuery {
   final Set<String> institutionIds;
   final Set<String> unitIds;
   final Set<String> groupIds;
+  final Set<String> activityIds;
+  final Set<String> stateCodes;
+  final Set<String> municipalityIds;
+  final Set<String> neighborhoodIds;
   final Set<String> contextualRoles;
   final Set<AuthLinkStatus> authLinks;
   final int page;
   final int pageSize;
   final PersonDirectorySortColumn sortColumn;
   final bool sortAscending;
+  final PersonDirectorySegment segment;
 
   int get offset => page * pageSize;
   bool get hasActiveFilters =>
@@ -346,8 +432,13 @@ final class PersonDirectoryQuery {
       institutionIds.isNotEmpty ||
       unitIds.isNotEmpty ||
       groupIds.isNotEmpty ||
+      activityIds.isNotEmpty ||
+      stateCodes.isNotEmpty ||
+      municipalityIds.isNotEmpty ||
+      neighborhoodIds.isNotEmpty ||
       contextualRoles.isNotEmpty ||
-      authLinks.isNotEmpty;
+      authLinks.isNotEmpty ||
+      segment != PersonDirectorySegment.all;
 }
 
 final class PersonDirectoryPage {
@@ -367,11 +458,22 @@ final class PersonDirectoryPage {
 }
 
 final class PersonFilterOption {
-  const PersonFilterOption(this.id, this.label, {this.institutionId, this.unitId});
+  const PersonFilterOption(
+    this.id,
+    this.label, {
+    this.institutionId,
+    this.unitId,
+    this.groupId,
+    this.stateCode,
+    this.municipalityId,
+  });
   final String id;
   final String label;
   final String? institutionId;
   final String? unitId;
+  final String? groupId;
+  final String? stateCode;
+  final String? municipalityId;
 }
 
 final class PersonDirectoryFilterOptions {
@@ -380,11 +482,19 @@ final class PersonDirectoryFilterOptions {
     this.units = const [],
     this.groups = const [],
     this.roles = const [],
+    this.activities = const [],
+    this.states = const [],
+    this.municipalities = const [],
+    this.neighborhoods = const [],
   });
   final List<PersonFilterOption> institutions;
   final List<PersonFilterOption> units;
   final List<PersonFilterOption> groups;
   final List<PersonFilterOption> roles;
+  final List<PersonFilterOption> activities;
+  final List<PersonFilterOption> states;
+  final List<PersonFilterOption> municipalities;
+  final List<PersonFilterOption> neighborhoods;
 }
 
 final class PersonMembershipDraft {

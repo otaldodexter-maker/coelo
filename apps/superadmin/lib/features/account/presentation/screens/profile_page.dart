@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -654,8 +655,6 @@ class _PasswordDialogState extends State<_PasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final compact =
-        MediaQuery.sizeOf(context).width < 600 || MediaQuery.textScalerOf(context).scale(1) >= 1.5;
     final cancelButton = OutlinedButton(
       key: const Key('account-password-cancel'),
       onPressed: Navigator.of(context).pop,
@@ -678,39 +677,15 @@ class _PasswordDialogState extends State<_PasswordDialog> {
       },
       child: const Text('Alterar senha'),
     );
-    return AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      scrollable: true,
-      title: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              const Expanded(child: Text('Alterar senha')),
-              IconButton(
-                key: const Key('account-password-close'),
-                tooltip: 'Fechar alteração de senha',
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close_rounded),
-                color: Theme.of(context).colorScheme.error,
-                style: IconButton.styleFrom(
-                  minimumSize: const Size.square(CoeloSize.touchMin),
-                  hoverColor: Theme.of(context).colorScheme.errorContainer,
-                  focusColor: Theme.of(context).colorScheme.errorContainer,
-                  highlightColor: Colors.transparent,
-                ),
-              ),
-            ],
-          ),
-          Divider(
-            key: const Key('account-password-header-divider'),
-            height: 1,
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ],
-      ),
-      content: SizedBox(
+    return CoeloAdminDialogShell(
+      dialogKey: const Key('account-password-dialog'),
+      title: 'Alterar senha',
+      closeTooltip: 'Fechar alteração de senha',
+      closeButtonKey: const Key('account-password-close'),
+      maxWidth: 520,
+      secondaryAction: cancelButton,
+      primaryAction: submitButton,
+      body: SizedBox(
         width: 440,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -741,24 +716,6 @@ class _PasswordDialogState extends State<_PasswordDialog> {
           ],
         ),
       ),
-      actions: [
-        compact
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  cancelButton,
-                  const SizedBox(height: CoeloSpacing.space3),
-                  submitButton,
-                ],
-              )
-            : Row(
-                children: [
-                  Expanded(child: cancelButton),
-                  const SizedBox(width: CoeloSpacing.space3),
-                  Expanded(child: submitButton),
-                ],
-              ),
-      ],
     );
   }
 }

@@ -24,9 +24,10 @@ variante ou componente público.
    `CoeloAdminResizableTable`, nessa ordem. Não colar a faixa de criação na
    tabela nem inventar outro gap.
 5. Entre toolbar e conteúdo usar `CoeloSpacing.space4`.
-6. A paginação usa `CoeloAdminPagination` em rodapé sticky privado, com inset
-   medido para não cobrir card, linha ou launcher. Cards oferecem
-   `11, 20, 50, 100`; tabela oferece `8, 20, 50, 100`.
+6. A paginação usa `CoeloAdminPagination` em rodapé sticky privado, sem borda
+   superior, com blur `CoeloSpacing.space3`, `surface` a 84% no tema claro e
+   88% no escuro, e inset medido para não cobrir card, linha ou launcher. Cards
+   oferecem `11, 20, 50, 100`; tabela oferece `8, 20, 50, 100`.
 
 ## Filtros, toggle e arquivos
 
@@ -38,6 +39,10 @@ variante ou componente público.
   `surface`, borda e divisória `outlineVariant`; selecionado, hover e foco usam
   a hierarquia `primaryContainer`/`primary`. Cada segmento tem alvo mínimo de
   48 px e nome acessível. Não usar dois botões soltos nem cor cinza local.
+- Clicar diretamente em Tabela seleciona `Agrupado`. Quando houver visões
+  detalhadas, hover ou foco no segmento abre um flyout Coelo com as opções;
+  toque, Enter e Espaço oferecem caminho equivalente. O flyout usa `surface`,
+  tint transparente, borda, `CoeloRadius.lg` e elevação semântica.
 - Arquivos usa `CoeloAdminFileActions`. O flyout agrupa importação e exportações
   em `surface`, sem tint, e seus itens seguem o hover de item discreto.
 

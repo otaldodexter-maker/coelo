@@ -7,20 +7,67 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('collapsed launcher shows badge, avatars and keyboard focus', (tester) async {
+  testWidgets('desktop launcher starts collapsed and expands on hover', (tester) async {
     _viewport(tester, 1024);
     await tester.pumpWidget(_app());
 
+    expect(find.text('Mensagens'), findsNothing);
+    expect(find.text('3'), findsOne);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(
+      location: tester.getCenter(find.byKey(const Key('superadmin-chat-launcher-surface'))),
+    );
+    await tester.pumpAndSettle();
     expect(find.text('Mensagens'), findsOne);
     expect(find.byIcon(Icons.more_horiz_rounded), findsOne);
     expect(find.byType(CircleAvatar), findsNWidgets(7));
-    expect(find.text('3'), findsOne);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
     final size = tester.getSize(find.byKey(const Key('superadmin-chat-launcher-surface')));
     expect(size.width, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(size.height, greaterThanOrEqualTo(CoeloSize.touchMin));
+  });
+
+  testWidgets('outside click closes the panel without keeping the launcher orange', (tester) async {
+    _viewport(tester, 1024);
+    await tester.pumpWidget(_app());
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-chat-launcher-panel')), findsOneWidget);
+
+    await tester.tapAt(const Offset(8, 8));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-panel')), findsNothing);
+    final surface = tester.widget<Material>(
+      find.byKey(const Key('superadmin-chat-launcher-surface')),
+    );
+    expect(surface.color, CoeloTheme.light.colorScheme.surfaceContainerHighest);
+    expect(FocusManager.instance.primaryFocus?.debugLabel, isNot('Launcher de conversas'));
+  });
+
+  testWidgets('Alt arrows move the launcher and Home resets it', (tester) async {
+    _viewport(tester, 1024);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    final initial = tester.getTopLeft(launcher);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
+    await tester.pumpAndSettle();
+    final moved = tester.getTopLeft(launcher);
+    expect(moved.dx, lessThan(initial.dx));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.home);
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(launcher), initial);
   });
 
   testWidgets('opens compact inbox with canonical search and three audience tabs', (tester) async {
@@ -136,6 +183,28 @@ void main() {
     expect(find.byType(BottomSheet), findsOne);
     expect(find.text('Conversas'), findsOne);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+  });
+
+  testWidgets('clamps safely when the reserved footer consumes the viewport', (tester) async {
+    _viewport(tester, 375);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.bottomRight,
+            child: SuperadminChatLauncher(bottomClearance: 900, onOpenConversations: () {}),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getTopLeft(find.byKey(const Key('superadmin-chat-launcher-surface'))).dy,
+      greaterThanOrEqualTo(CoeloSpacing.space2),
+    );
   });
 }
 

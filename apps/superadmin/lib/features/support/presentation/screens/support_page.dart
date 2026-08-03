@@ -56,6 +56,7 @@ class _SupportPageState extends State<SupportPage> {
     subtitle: 'Acompanhe os chamados enviados pelo botão de bug.',
     logout: widget.logout,
     currentDestination: 'support',
+    chatLauncherBottomInset: CoeloSpacing.space20,
     onBugReportSubmitted: widget.controller.submitReport,
     onDestinationSelected: (d) {
       if (d == 'home') widget.onHomeOpen?.call();
@@ -248,18 +249,44 @@ class _SupportPageState extends State<SupportPage> {
     return showDialog<String>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (context) => SimpleDialog(
-        title: const Text('Escolha o responsável'),
-        children: [
-          for (final member in widget.controller.teamMembers)
-            SimpleDialogOption(
-              onPressed: () => Navigator.of(context).pop(member.id),
-              child: SizedBox(
-                height: CoeloSize.touchMin,
-                child: Align(alignment: Alignment.centerLeft, child: Text(_memberLabel(member))),
-              ),
-            ),
-        ],
+      builder: (context) => CoeloAdminDialogShell(
+        title: 'Escolha o responsável',
+        body: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 360),
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: widget.controller.teamMembers.length,
+            separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space1),
+            itemBuilder: (context, index) {
+              final member = widget.controller.teamMembers[index];
+              return TextButton(
+                onPressed: () => Navigator.of(context).pop(member.id),
+                style: ButtonStyle(
+                  minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
+                  alignment: Alignment.centerLeft,
+                  foregroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                  backgroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : Colors.transparent,
+                  ),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                ),
+                child: Text(_memberLabel(member)),
+              );
+            },
+          ),
+        ),
+        primaryAction: FilledButton.tonal(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
       ),
     );
   }

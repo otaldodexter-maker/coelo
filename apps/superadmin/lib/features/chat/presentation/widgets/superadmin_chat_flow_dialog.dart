@@ -501,6 +501,45 @@ final class SuperadminChatDialogFrame extends StatelessWidget {
   }
 }
 
+final class SuperadminChatDialogActions extends StatelessWidget {
+  const SuperadminChatDialogActions({required this.actions, super.key})
+    : assert(actions.length > 0 && actions.length <= 3);
+
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    if (actions.length == 1) {
+      return SizedBox(width: double.infinity, child: actions.single);
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.3;
+        final stack = constraints.maxWidth < CoeloSize.touchMin * 7 || enlargedText;
+        if (stack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = actions.length - 1; index >= 0; index--) ...[
+                SizedBox(width: double.infinity, child: actions[index]),
+                if (index > 0) const SizedBox(height: CoeloSpacing.space2),
+              ],
+            ],
+          );
+        }
+        return Row(
+          children: [
+            for (var index = 0; index < actions.length; index++) ...[
+              if (index > 0) const SizedBox(width: CoeloSpacing.space3),
+              Expanded(child: actions[index]),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
 final class _Recipient {
   const _Recipient({required this.id, required this.label, required this.detail});
 

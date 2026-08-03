@@ -46,4 +46,37 @@ void main() {
     expect(viewModel.query.groupIds, isEmpty);
     expect(viewModel.query.contextualRoles, isEmpty);
   });
+
+  test('progressive filters hide and clear descendants without a compatible parent', () async {
+    final viewModel = PersonDirectoryViewModel(FakePersonDirectoryRepository());
+    await viewModel.load();
+
+    expect(viewModel.visibleUnits, isEmpty);
+    expect(viewModel.visibleGroups, isEmpty);
+    expect(viewModel.visibleActivities, isEmpty);
+    expect(viewModel.visibleMunicipalities, isEmpty);
+    expect(viewModel.visibleNeighborhoods, isEmpty);
+
+    await viewModel.setInstitutions({'institution-0'});
+    expect(viewModel.visibleUnits, isNotEmpty);
+    await viewModel.setUnits({'unit-0'});
+    expect(viewModel.visibleGroups, isNotEmpty);
+    await viewModel.setGroups({'group-0'});
+    expect(viewModel.visibleActivities, isNotEmpty);
+    await viewModel.setActivities({'activity-0'});
+
+    await viewModel.setInstitutions({'institution-1'});
+    expect(viewModel.query.unitIds, isEmpty);
+    expect(viewModel.query.groupIds, isEmpty);
+    expect(viewModel.query.activityIds, isEmpty);
+
+    await viewModel.setStates({'SP'});
+    expect(viewModel.visibleMunicipalities, isNotEmpty);
+    await viewModel.setMunicipalities({'municipality-sp'});
+    expect(viewModel.visibleNeighborhoods, isNotEmpty);
+    await viewModel.setNeighborhoods({'neighborhood-centro'});
+    await viewModel.setStates({'RJ'});
+    expect(viewModel.query.municipalityIds, isEmpty);
+    expect(viewModel.query.neighborhoodIds, isEmpty);
+  });
 }

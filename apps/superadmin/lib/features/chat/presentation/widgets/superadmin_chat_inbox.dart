@@ -279,9 +279,12 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
         subtitle: 'Demonstração local',
         compact: true,
         onClose: () => Navigator.pop(dialogContext, false),
-        footer: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        footer: SuperadminChatDialogActions(
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
+            ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               style: FilledButton.styleFrom(
@@ -289,11 +292,6 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                 foregroundColor: Theme.of(dialogContext).colorScheme.onError,
               ),
               child: Text(isGroup ? 'Excluir grupo' : 'Excluir conversa'),
-            ),
-            const SizedBox(height: CoeloSpacing.space1),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
             ),
           ],
         ),
@@ -313,7 +311,7 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
   }
 }
 
-final class _InboxAction extends StatelessWidget {
+final class _InboxAction extends StatefulWidget {
   const _InboxAction({required this.icon, required this.label, required this.onTap, super.key});
 
   final IconData icon;
@@ -321,38 +319,56 @@ final class _InboxAction extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_InboxAction> createState() => _InboxActionState();
+}
+
+final class _InboxActionState extends State<_InboxAction> {
+  bool _hovered = false;
+  bool _focused = false;
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-        side: BorderSide(color: colors.outlineVariant),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        hoverColor: colors.primaryContainer,
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoeloSpacing.space1,
-              vertical: CoeloSpacing.space2,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 18),
-                const SizedBox(height: CoeloSpacing.space1),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall,
+    final highlighted = _hovered || _focused;
+    return FocusableActionDetector(
+      onShowHoverHighlight: (value) => setState(() => _hovered = value),
+      onShowFocusHighlight: (value) => setState(() => _focused = value),
+      child: Material(
+        color: highlighted ? colors.primaryContainer : colors.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+          side: BorderSide(color: colors.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: widget.onTap,
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CoeloSpacing.space1,
+                vertical: CoeloSpacing.space2,
+              ),
+              child: IconTheme(
+                data: IconThemeData(color: highlighted ? colors.primary : colors.onSurface),
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(color: highlighted ? colors.primary : colors.onSurface),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(widget.icon, size: 18),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        widget.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

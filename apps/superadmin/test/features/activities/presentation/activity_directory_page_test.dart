@@ -2,6 +2,8 @@ import 'package:coelo_superadmin/features/activities/data/fake_activity_director
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_directory_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/gestures.dart';
@@ -14,6 +16,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     String? viewedId;
+    String? editedId;
     var createCount = 0;
 
     await tester.pumpWidget(
@@ -23,6 +26,7 @@ void main() {
           repository: FakeActivityDirectoryRepository(),
           logout: () async => const LogoutResult.success(),
           onCreate: () => createCount++,
+          onEdit: (id) => editedId = id,
           onView: (id) => viewedId = id,
         ),
       ),
@@ -32,14 +36,55 @@ void main() {
     expect(find.text('Atividades'), findsWidgets);
     expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
-    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     expect(find.text('Criar atividade'), findsOneWidget);
     expect(find.textContaining('Editar atividade'), findsNothing);
+    expect(
+      find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
+      findsOneWidget,
+    );
+    expect(find.text('Instituição'), findsWidgets);
+    expect(find.text('Unidades vinculadas'), findsWidgets);
+    expect(find.text('Grupos vinculados'), findsWidgets);
 
     await tester.tap(find.text('Criar atividade'));
     expect(createCount, 1);
     await tester.tap(find.byKey(const Key('activity-card-activity-10')));
     expect(viewedId, 'activity-10');
+    await tester.tap(find.byKey(const Key('activity-card-edit-activity-10')));
+    expect(editedId, 'activity-10');
+  });
+
+  testWidgets('switches between grouped, unit and group table views', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ActivityDirectoryPage(
+          repository: FakeActivityDirectoryRepository(),
+          logout: () async => const LogoutResult.success(),
+          onCreate: () {},
+          onView: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.longPress(find.byKey(const Key('activity-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.text('Agrupado'), findsOneWidget);
+    expect(find.text('Por Unidades'), findsOneWidget);
+    expect(find.text('Por Grupos'), findsOneWidget);
+    await tester.tap(find.text('Por Unidades'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-unit-directory-table')), findsOneWidget);
+
+    await tester.longPress(find.byKey(const Key('activity-view-table')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Por Grupos'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-group-directory-table')), findsOneWidget);
   });
 
   testWidgets('switches to the canonical resizable table and keeps sticky pagination', (
@@ -66,14 +111,48 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('activity-directory-pagination-footer')), findsOneWidget);
+    expect(find.byType(SuperadminListingPaginationFooter), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.byKey(const Key('activity-view-table')));
+    final tableSegment = find.descendant(
+      of: find.byKey(const Key('activity-view-table')),
+      matching: find.byType(InkWell),
+    );
+    tester.widget<InkWell>(tableSegment).onTap!();
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-directory-table')), findsOneWidget);
     expect(find.byKey(const Key('create-activity-banner')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('export preview identifies the selected table view', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ActivityDirectoryPage(
+          repository: FakeActivityDirectoryRepository(),
+          logout: () async => const LogoutResult.success(),
+          onCreate: () {},
+          onView: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.longPress(find.byKey(const Key('activity-view-table')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Por Grupos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-files-export-xlsx')));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Por Grupos'), findsOneWidget);
+    expect(find.textContaining('Nenhum arquivo real foi gerado'), findsOneWidget);
   });
 
   testWidgets('shows only confirmed filters and supports reduced motion focus', (tester) async {
@@ -94,6 +173,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('activity-institution-filter')), findsOneWidget);
+    expect(find.byKey(const Key('activity-unit-filter')), findsOneWidget);
+    expect(find.byKey(const Key('activity-group-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-status-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-origin-filter')), findsOneWidget);
     expect(find.text('Tipo'), findsNothing);

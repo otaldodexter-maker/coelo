@@ -5,11 +5,97 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('uses the requested five sections and the shared form footer', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final label in ['Identidade', 'Hierarquia', 'Localização', 'Plano', 'Revisão']) {
+      expect(find.text(label), findsWidgets);
+    }
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+  });
+
+  testWidgets('cannot bypass required hierarchy validation from review', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+    UnitFormSaveResult? result;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (value) => result = value,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('unit-step-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('unit-form-save')));
+    await tester.pumpAndSettle();
+
+    expect(result, isNull);
+    expect(find.text('Hierarquia'), findsWidgets);
+    expect(find.text('Campo obrigatório.'), findsNWidgets(2));
+  });
+
+  testWidgets('plan choices keep hover in the Coelo primary palette without gray overlay', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('unit-step-plan')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+
+    final button = tester.widget<OutlinedButton>(find.byKey(const Key('unit-plan-professional')));
+    expect(button.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(
+      button.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      CoeloTheme.light.colorScheme.primaryContainer,
+    );
+  });
+
   testWidgets('creates a unit with inherited plan and institution branding', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -31,7 +117,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Criar unidade'), findsWidgets);
-    expect(find.text('Identidade visual'), findsWidgets);
+    expect(find.text('Identidade'), findsWidgets);
     expect(find.text('Herdar identidade visual da instituição'), findsOneWidget);
     expect(find.byKey(const Key('unit-brand-preview')), findsOneWidget);
     expect(find.byKey(const Key('unit-logo-card')), findsOneWidget);
@@ -116,7 +202,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Perfil da unidade').first);
+    await tester.tap(find.text('Hierarquia').first);
     await tester.pumpAndSettle();
 
     final lockedField = find.ancestor(
@@ -295,7 +381,7 @@ void main() {
 
     expect(find.text('Informe um e-mail válido.'), findsOneWidget);
     expect(find.text('Plano'), findsWidgets);
-    expect(find.text('Localização e contato'), findsWidgets);
+    expect(find.text('Localização'), findsWidgets);
   });
 
   testWidgets('edit saves from the current step and remains on the form', (tester) async {

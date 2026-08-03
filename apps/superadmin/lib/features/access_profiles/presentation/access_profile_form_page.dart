@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
 import '../../support/domain/support_ticket.dart';
@@ -55,6 +56,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   List<AccessPermission> _permissions = const [];
   bool _loading = true;
   bool _saving = false;
+  double _footerHeight = 0;
   String? _error;
   String? _pendingSaveRequestId;
   String? _pendingSaveFingerprint;
@@ -308,60 +310,181 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
                     : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
                     ? CoeloSpacing.space6
                     : CoeloSpacing.space4;
-                return IgnorePointer(
-                  ignoring: _saving,
-                  child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      key: const Key('access-profile-form-scroll'),
-                      padding: EdgeInsets.all(padding),
-                      children: [
-                        _IdentitySection(
-                          nameController: _nameController,
-                          codeController: _codeController,
-                          descriptionController: _descriptionController,
-                          status: _status,
-                          scope: _scope,
-                          domain: widget.domain,
-                          onStatusChanged: (value) => setState(() => _status = value),
-                          onScopeChanged: (value) => setState(() => _scope = value),
-                        ),
-                        const SizedBox(height: CoeloSpacing.space6),
-                        _PermissionEditor(
-                          permissions: _permissions,
-                          searchController: _permissionSearchController,
-                          onChanged: (permissions) => setState(() => _permissions = permissions),
-                        ),
-                        const SizedBox(height: CoeloSpacing.space6),
-                        Wrap(
-                          alignment: WrapAlignment.end,
-                          spacing: CoeloSpacing.space3,
-                          runSpacing: CoeloSpacing.space2,
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    IgnorePointer(
+                      ignoring: _saving,
+                      child: Form(
+                        key: _formKey,
+                        child: ListView(
+                          key: const Key('access-profile-form-scroll'),
+                          padding: EdgeInsets.fromLTRB(
+                            padding,
+                            padding,
+                            padding,
+                            padding + _footerHeight + CoeloSpacing.space4,
+                          ),
                           children: [
-                            OutlinedButton(
-                              onPressed: _saving ? null : _requestExit,
-                              child: const Text('Cancelar'),
+                            _IdentitySection(
+                              nameController: _nameController,
+                              codeController: _codeController,
+                              descriptionController: _descriptionController,
+                              status: _status,
+                              scope: _scope,
+                              domain: widget.domain,
+                              onStatusChanged: (value) => setState(() => _status = value),
+                              onScopeChanged: (value) => setState(() => _scope = value),
                             ),
-                            FilledButton.icon(
-                              key: const Key('review-access-profile'),
-                              onPressed: _saving ? null : _review,
-                              icon: _saving
-                                  ? const SizedBox.square(
-                                      dimension: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    )
-                                  : const Icon(Icons.fact_check_outlined),
-                              label: const Text('Revisar alterações'),
+                            const SizedBox(height: CoeloSpacing.space6),
+                            _AccessProfilePrototypeContext(domain: widget.domain),
+                            const SizedBox(height: CoeloSpacing.space6),
+                            _PermissionEditor(
+                              permissions: _permissions,
+                              searchController: _permissionSearchController,
+                              onChanged: (permissions) =>
+                                  setState(() => _permissions = permissions),
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      left: padding,
+                      right: padding,
+                      bottom: padding,
+                      child: SuperadminFormActionFooter(
+                        surfaceKey: const Key('access-profile-form-footer-surface'),
+                        onHeightChanged: (height) {
+                          if ((_footerHeight - height).abs() < .5) return;
+                          setState(() => _footerHeight = height);
+                        },
+                        tertiaryAction: TextButton(
+                          onPressed: _saving ? null : _requestExit,
+                          child: const Text('Cancelar'),
+                        ),
+                        continuationActions: [
+                          FilledButton.icon(
+                            key: const Key('review-access-profile'),
+                            onPressed: _saving ? null : _review,
+                            icon: _saving
+                                ? const SizedBox.square(
+                                    dimension: CoeloSize.iconSm,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.fact_check_outlined),
+                            label: const Text('Revisar alterações'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
           ),
+  );
+}
+
+final class _AccessProfilePrototypeContext extends StatelessWidget {
+  const _AccessProfilePrototypeContext({required this.domain});
+
+  final AccessProfileDomain domain;
+
+  @override
+  Widget build(BuildContext context) {
+    final profiles = domain == AccessProfileDomain.platform
+        ? const [
+            (
+              name: 'Owner Coelo',
+              description: 'Permite controle total da plataforma dentro das salvaguardas internas.',
+            ),
+            (
+              name: 'Operações',
+              description: 'Permite operar cadastros e suporte sem alterar o teto de segurança.',
+            ),
+            (
+              name: 'Auditoria',
+              description: 'Permite consultar trilhas e evidências em modo somente leitura.',
+            ),
+          ]
+        : const [
+            (
+              name: 'Administrador institucional',
+              description: 'Permite administrar a instituição nos contextos atribuídos.',
+            ),
+            (
+              name: 'Coordenação',
+              description: 'Permite acompanhar unidades, grupos e atividades atribuídos.',
+            ),
+            (
+              name: 'Atendimento',
+              description: 'Permite apoiar pessoas e rotinas sem ampliar permissões.',
+            ),
+          ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _FormSurface(
+          title: 'Catálogo predefinido',
+          description:
+              'Referências locais do app ${domain.title}; cada app mantém seu próprio catálogo.',
+          child: Column(
+            children: [
+              for (final profile in profiles)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.verified_user_outlined),
+                  title: Text(profile.name),
+                  subtitle: Text(profile.description),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space5),
+        _FormSurface(
+          title: 'Atribuições contextuais demonstrativas',
+          description: 'Perfil define teto; atribuição define contexto efetivo.',
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _PrototypeAssignment(
+                icon: Icons.account_balance_outlined,
+                label: 'Instituição · Colégio Horizonte',
+              ),
+              _PrototypeAssignment(
+                icon: Icons.apartment_outlined,
+                label: 'Unidade · Unidade Centro',
+              ),
+              _PrototypeAssignment(icon: Icons.groups_outlined, label: 'Grupo (Turma) · Girassol'),
+              _PrototypeAssignment(
+                icon: Icons.local_activity_outlined,
+                label: 'Atividade · Robótica',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+final class _PrototypeAssignment extends StatelessWidget {
+  const _PrototypeAssignment({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+    child: Row(
+      children: [
+        Icon(icon, size: CoeloSize.iconSm),
+        const SizedBox(width: CoeloSpacing.space2),
+        Expanded(child: Text(label)),
+      ],
+    ),
   );
 }
 

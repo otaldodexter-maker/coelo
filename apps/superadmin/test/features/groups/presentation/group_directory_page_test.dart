@@ -3,6 +3,7 @@ import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repos
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart' as domain;
 import 'package:coelo_superadmin/features/groups/presentation/group_directory_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +33,17 @@ void main() {
     expect(find.text('Gerencie os grupos da plataforma.'), findsOneWidget);
     expect(find.text('Instituição'), findsWidgets);
     expect(find.text('Unidade'), findsWidgets);
-    expect(find.text('Tipo'), findsWidgets);
+    expect(find.text('Tipos'), findsWidgets);
     expect(find.text('Status'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
+      findsOneWidget,
+    );
+    expect(find.text('Equipe institucional'), findsWidgets);
+    expect(find.text('Atividades'), findsWidgets);
+    expect(find.text('Responsáveis'), findsWidgets);
+    expect(find.text('Crianças'), findsWidgets);
 
     await tester.tap(find.byKey(Key('group-card-${first.id}')));
     expect(editedId, first.id);
@@ -43,6 +52,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-directory-table')), findsOneWidget);
     expect(find.text('Grupo'), findsWidgets);
+
+    await tester.longPress(find.byKey(const Key('group-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.text('Agrupado'), findsOneWidget);
+    expect(find.text('Detalhado por Atividades'), findsOneWidget);
+    await tester.tap(find.text('Detalhado por Atividades'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-activity-directory-table')), findsOneWidget);
+    expect(find.text('Atividade'), findsWidgets);
+    expect(find.text('Equipe institucional'), findsWidgets);
   });
 
   testWidgets('keeps sticky pagination usable at 200 percent text on compact width', (
@@ -113,6 +132,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Importar grupos'), findsOneWidget);
     expect(find.text('Exportar grupos'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('group-export-action')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('visão: Cards'), findsOneWidget);
+
+    final toggle = tester.widget<SuperadminDirectoryViewToggle<GroupDirectoryTableView>>(
+      find.byType(SuperadminDirectoryViewToggle<GroupDirectoryTableView>),
+    );
+    toggle.onTableViewSelected(GroupDirectoryTableView.activities);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-export-action')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('visão: Detalhado por Atividades'), findsOneWidget);
   });
 
   testWidgets('inherits the approved Bug, profile and tour overlays from the shell', (

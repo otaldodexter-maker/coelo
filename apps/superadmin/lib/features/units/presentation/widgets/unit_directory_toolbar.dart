@@ -4,7 +4,9 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
+import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../domain/unit_directory.dart';
+import '../unit_directory_table_view.dart';
 import '../unit_directory_view_model.dart';
 import 'unit_file_actions.dart';
 
@@ -16,7 +18,9 @@ final class UnitDirectoryToolbar extends StatelessWidget {
     required this.activityController,
     required this.searchController,
     required this.display,
+    required this.tableView,
     required this.onDisplayChanged,
+    required this.onTableViewChanged,
     required this.onClearFilters,
     super.key,
   });
@@ -25,7 +29,9 @@ final class UnitDirectoryToolbar extends StatelessWidget {
   final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final UnitDirectoryDisplay display;
+  final UnitDirectoryTableView tableView;
   final ValueChanged<UnitDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<UnitDirectoryTableView> onTableViewChanged;
   final VoidCallback onClearFilters;
 
   @override
@@ -169,36 +175,36 @@ final class UnitDirectoryToolbar extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
-                height: CoeloSize.touchMin,
-                child: SegmentedButton<UnitDirectoryDisplay>(
-                  style: const ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(
-                      Size(CoeloSize.touchMin, CoeloSize.touchMin),
-                    ),
-                    padding: WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                    ),
+              SuperadminDirectoryViewToggle<UnitDirectoryTableView>(
+                key: const Key('unit-display-toggle'),
+                cardsKey: const Key('unit-view-cards'),
+                tableKey: const Key('unit-view-table'),
+                cardsSelected: display == UnitDirectoryDisplay.cards,
+                groupedView: UnitDirectoryTableView.grouped,
+                selectedTableView: tableView,
+                tableViews: const [
+                  SuperadminDirectoryTableViewOption(
+                    value: UnitDirectoryTableView.grouped,
+                    label: 'Agrupado',
                   ),
-                  segments: const [
-                    ButtonSegment(
-                      value: UnitDirectoryDisplay.cards,
-                      tooltip: 'Exibir como cards',
-                      icon: Icon(key: Key('unit-view-cards'), Icons.grid_view_rounded),
-                    ),
-                    ButtonSegment(
-                      value: UnitDirectoryDisplay.table,
-                      tooltip: 'Exibir como tabela',
-                      icon: Icon(key: Key('unit-view-table'), Icons.table_rows_rounded),
-                    ),
-                  ],
-                  selected: {display},
-                  showSelectedIcon: false,
-                  onSelectionChanged: (selection) => onDisplayChanged(selection.single),
-                ),
+                  SuperadminDirectoryTableViewOption(
+                    value: UnitDirectoryTableView.groups,
+                    label: 'Por grupos',
+                  ),
+                  SuperadminDirectoryTableViewOption(
+                    value: UnitDirectoryTableView.activities,
+                    label: 'Por atividades',
+                  ),
+                ],
+                onCardsSelected: () => onDisplayChanged(UnitDirectoryDisplay.cards),
+                onTableViewSelected: onTableViewChanged,
               ),
               const SizedBox(width: CoeloSpacing.space2),
-              UnitFileActions(activityController: activityController, compact: compactFiles),
+              UnitFileActions(
+                activityController: activityController,
+                compact: compactFiles,
+                viewLabel: display == UnitDirectoryDisplay.cards ? 'Cards' : tableView.label,
+              ),
             ],
           ),
         );

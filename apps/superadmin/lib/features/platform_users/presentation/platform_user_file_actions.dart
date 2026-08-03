@@ -5,16 +5,18 @@ import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_notice.dart';
 
 final class PlatformUserFileActions extends StatelessWidget {
-  const PlatformUserFileActions({required this.compact, super.key});
+  const PlatformUserFileActions({required this.compact, required this.viewLabel, super.key});
 
   final bool compact;
+  final String viewLabel;
 
   @override
   Widget build(BuildContext context) {
     void export(String format) {
       showSuperadminNotice(
         context,
-        'Exportação $format preparada somente no preview. Nenhum arquivo real foi gerado.',
+        'Exportação $format preparada somente no preview (visão: $viewLabel). '
+        'Nenhum arquivo real foi gerado.',
         icon: Icons.download_outlined,
       );
     }

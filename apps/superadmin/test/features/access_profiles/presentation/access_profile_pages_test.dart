@@ -4,6 +4,8 @@ import 'package:coelo_superadmin/features/access_profiles/presentation/access_pr
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_directory_page.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +22,28 @@ void main() {
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byKey(const Key('access-profile-pagination-footer')), findsOneWidget);
     expect(find.byKey(const Key('access-profile-demo-notice')), findsOneWidget);
+    expect(find.text('Perfil define teto; atribuição define contexto efetivo'), findsOneWidget);
+    expect(find.text('Predefinido'), findsWidgets);
 
-    await tester.tap(find.byIcon(Icons.table_rows_rounded));
+    await tester.tap(find.byKey(const Key('access-profile-view-table')));
     await tester.pumpAndSettle();
 
+    final toggle = tester.widget<SuperadminDirectoryViewToggle<AccessProfileTableView>>(
+      find.byType(SuperadminDirectoryViewToggle<AccessProfileTableView>),
+    );
+    expect(toggle.tableViews.map((option) => option.label), [
+      'Agrupado',
+      'Detalhado por atribuições',
+    ]);
     expect(find.byKey(const Key('access-profile-table')), findsOneWidget);
     expect(find.byKey(const Key('create-access-profile-banner')), findsOneWidget);
+
+    toggle.onTableViewSelected(AccessProfileTableView.assignments);
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição'), findsOneWidget);
+    expect(find.text('Unidade'), findsOneWidget);
+    expect(find.text('Grupo'), findsOneWidget);
+    expect(find.text('Atividade'), findsOneWidget);
   });
 
   testWidgets('Principal is read-only and does not expose profile creation', (tester) async {
@@ -60,9 +78,26 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final directoryScroll = tester.state<ScrollableState>(
+      find
+          .descendant(
+            of: find.byKey(const Key('access-profiles-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    directoryScroll.position.jumpTo(400);
+    await tester.pump();
     expect(find.byKey(const Key('access-profile-card-grid')), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.table_rows_rounded));
+    directoryScroll.position.jumpTo(0);
+    await tester.pump();
+    final compactToggle = tester.widget<SuperadminDirectoryViewToggle<AccessProfileTableView>>(
+      find.byType(SuperadminDirectoryViewToggle<AccessProfileTableView>),
+    );
+    compactToggle.onTableViewSelected(AccessProfileTableView.grouped);
     await tester.pumpAndSettle();
+    directoryScroll.position.jumpTo(400);
+    await tester.pump();
     expect(find.byKey(const Key('access-profile-table')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -144,13 +179,34 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-form-footer-surface')), findsOneWidget);
+    final scroll = find
+        .descendant(
+          of: find.byKey(const Key('access-profile-form-scroll')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    await tester.scrollUntilVisible(find.text('Catálogo predefinido'), 300, scrollable: scroll);
+    expect(find.text('Catálogo predefinido'), findsOneWidget);
+    expect(find.textContaining('controle total da plataforma'), findsOneWidget);
+    expect(find.text('Perfil define teto; atribuição define contexto efetivo.'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Atividade · Robótica'), 300, scrollable: scroll);
+    expect(find.text('Instituição · Colégio Horizonte'), findsOneWidget);
+    expect(find.text('Unidade · Unidade Centro'), findsOneWidget);
+    expect(find.text('Grupo (Turma) · Girassol'), findsOneWidget);
+    expect(find.text('Atividade · Robótica'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('permission-support.manage')),
+      300,
+      scrollable: scroll,
+    );
     final unavailable = tester.widget<CheckboxListTile>(
       find.byKey(const Key('permission-support.manage')),
     );
     expect(unavailable.enabled, isFalse);
 
-    await tester.drag(find.byKey(const Key('access-profile-form-scroll')), const Offset(0, -1200));
-    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('review-access-profile')));
     await tester.pumpAndSettle();
 

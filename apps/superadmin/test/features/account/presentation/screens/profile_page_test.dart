@@ -7,7 +7,9 @@ import 'package:coelo_superadmin/features/account/domain/account_profile.dart';
 import 'package:coelo_superadmin/features/account/presentation/account_controller.dart';
 import 'package:coelo_superadmin/features/account/presentation/screens/profile_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/avatar_crop_dialog.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -348,25 +350,20 @@ void main() {
     await tester.tap(changePassword);
     await tester.pumpAndSettle();
 
+    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
     final close = find.byKey(const Key('account-password-close'));
     expect(close, findsOneWidget);
     final closeButton = tester.widget<IconButton>(close);
     expect(closeButton.tooltip, 'Fechar alteração de senha');
-    expect(closeButton.color, Theme.of(tester.element(close)).colorScheme.error);
+    expect(
+      closeButton.style?.foregroundColor?.resolve(const {}),
+      Theme.of(tester.element(close)).colorScheme.error,
+    );
     expect(
       tester.widget<Icon>(find.descendant(of: close, matching: find.byType(Icon))).icon,
       Icons.close_rounded,
     );
     expect(tester.getSize(close), const Size.square(CoeloSize.touchMin));
-
-    final headerDivider = find.byKey(const Key('account-password-header-divider'));
-    expect(headerDivider, findsOneWidget);
-    final divider = tester.widget<Divider>(headerDivider);
-    expect(divider.height, 1);
-    expect(
-      divider.color,
-      Theme.of(tester.element(headerDivider)).colorScheme.outlineVariant,
-    );
 
     final cancel = find.byKey(const Key('account-password-cancel'));
     final submit = find.byKey(const Key('account-password-submit'));
@@ -379,7 +376,7 @@ void main() {
     expect(find.byKey(const Key('account-password-close')), findsNothing);
   });
 
-  testWidgets('stacks password actions at 200 percent text on compact screens', (tester) async {
+  testWidgets('balances password actions at 200 percent text on compact screens', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final activities = SuperadminActivityController();
@@ -420,8 +417,34 @@ void main() {
     expect(submit, findsOneWidget);
     expect(tester.getSize(cancel).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(tester.getSize(submit).height, greaterThanOrEqualTo(CoeloSize.touchMin));
-    expect(tester.getSize(cancel).width, greaterThan(200));
-    expect(tester.getSize(submit).width, greaterThan(200));
+    expect(tester.getSize(cancel).width, tester.getSize(submit).width);
+  });
+
+  testWidgets('uses the canonical shell and balanced actions for avatar crop', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Builder(
+          builder: (context) => FilledButton(
+            onPressed: () => showDialog<AvatarCropResult>(
+              context: context,
+              builder: (context) => AvatarCropDialog(bytes: Uint8List.fromList(_transparentPng)),
+            ),
+            child: const Text('Abrir recorte'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Abrir recorte'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
+    final cancel = find.widgetWithText(OutlinedButton, 'Cancelar');
+    final apply = find.widgetWithText(FilledButton, 'Aplicar');
+    expect(cancel, findsOneWidget);
+    expect(apply, findsOneWidget);
+    expect(tester.getSize(cancel).width, tester.getSize(apply).width);
   });
 }
 

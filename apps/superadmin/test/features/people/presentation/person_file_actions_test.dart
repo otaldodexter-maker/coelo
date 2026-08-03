@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_notice.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_file_actions.dart';
+import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,8 +27,7 @@ void main() {
     await tester.tap(xlsx);
     await tester.pump(const Duration(milliseconds: 250));
     expect(controller.activities.single.fileName, 'pessoas.xlsx');
-    expect(controller.activities.single.subject, 'Pessoas');
-    expect(find.text('A exportação está em andamento. Acompanhe pelo sininho.'), findsOneWidget);
+    expect(controller.activities.single.subject, 'Pessoas · Visão agrupada');
   });
 
   testWidgets('uses the compact trigger', (tester) async {
@@ -43,9 +43,21 @@ void main() {
     );
   });
 
+  testWidgets('identifies the selected table view in export preview', (tester) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_app(controller, tableView: PersonDirectoryTableView.activities));
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('people-files-export-csv')));
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(controller.activities.single.subject, 'Pessoas · Atividades');
+  });
+
   testWidgets('runs the two-step people import demo and starts local activity', (tester) async {
     final controller = SuperadminActivityController(tickInterval: const Duration(seconds: 30));
-    addTearDown(controller.dispose);
     await tester.pumpWidget(_app(controller));
 
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
@@ -75,10 +87,15 @@ void main() {
     expect(controller.activities.single.fileName, 'pessoas-julho.xlsx');
     expect(controller.activities.single.summary, 'Preparando importação');
     expect(find.text('A importação está em andamento. Acompanhe pelo sininho.'), findsOneWidget);
+    controller.dispose();
   });
 }
 
-Widget _app(SuperadminActivityController controller, {bool compact = false}) => MaterialApp(
+Widget _app(
+  SuperadminActivityController controller, {
+  bool compact = false,
+  PersonDirectoryTableView tableView = PersonDirectoryTableView.grouped,
+}) => MaterialApp(
   theme: CoeloTheme.light,
   home: SuperadminNoticeHost(
     child: Scaffold(
@@ -86,7 +103,11 @@ Widget _app(SuperadminActivityController controller, {bool compact = false}) => 
         padding: const EdgeInsets.all(CoeloSpacing.space4),
         child: Align(
           alignment: Alignment.topRight,
-          child: PersonFileActions(activityController: controller, compact: compact),
+          child: PersonFileActions(
+            activityController: controller,
+            compact: compact,
+            tableView: tableView,
+          ),
         ),
       ),
     ),

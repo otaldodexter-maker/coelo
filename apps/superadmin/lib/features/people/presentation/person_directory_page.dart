@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
@@ -182,6 +183,8 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
                   horizontalPadding + footerInset,
                 ),
                 children: [
+                  _PersonSegmentSelector(viewModel: widget.viewModel),
+                  const SizedBox(height: CoeloSpacing.space4),
                   _PersonToolbar(
                     viewModel: widget.viewModel,
                     searchController: widget.searchController,
@@ -219,6 +222,27 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
         },
       );
     },
+  );
+}
+
+final class _PersonSegmentSelector extends StatelessWidget {
+  const _PersonSegmentSelector({required this.viewModel});
+
+  final PersonDirectoryViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: SegmentedButton<PersonDirectorySegment>(
+      key: const Key('people-segment-selector'),
+      segments: [
+        for (final segment in PersonDirectorySegment.values)
+          ButtonSegment(value: segment, label: Text(segment.label)),
+      ],
+      selected: {viewModel.query.segment},
+      showSelectedIcon: false,
+      onSelectionChanged: (values) => viewModel.setSegment(values.single),
+    ),
   );
 }
 
@@ -262,26 +286,13 @@ final class _PersonToolbar extends StatelessWidget {
         ),
       );
       final selectedInstitutions = viewModel.query.institutionIds;
-      final selectedUnits = viewModel.query.unitIds;
-      final visibleUnits = viewModel.filterOptions.units
-          .where(
-            (option) =>
-                selectedInstitutions.isEmpty || selectedInstitutions.contains(option.institutionId),
-          )
-          .toList(growable: false);
-      final visibleGroups = viewModel.filterOptions.groups
-          .where(
-            (option) =>
-                (selectedInstitutions.isEmpty ||
-                    selectedInstitutions.contains(option.institutionId)) &&
-                (selectedUnits.isEmpty || selectedUnits.contains(option.unitId)),
-          )
-          .toList(growable: false);
+      final visibleUnits = viewModel.visibleUnits;
+      final visibleGroups = viewModel.visibleGroups;
+      final visibleActivities = viewModel.visibleActivities;
+      final visibleMunicipalities = viewModel.visibleMunicipalities;
+      final visibleNeighborhoods = viewModel.visibleNeighborhoods;
       final visibleRoles = viewModel.filterOptions.roles
-          .where(
-            (option) =>
-                selectedInstitutions.isEmpty || selectedInstitutions.contains(option.institutionId),
-          )
+          .where((option) => selectedInstitutions.contains(option.institutionId))
           .toList(growable: false);
       final filters = <Widget>[
         filter<PersonType>(
@@ -311,37 +322,86 @@ final class _PersonToolbar extends StatelessWidget {
           changed: (values) => viewModel.setInstitutions(values.map((item) => item.id).toSet()),
           searchHintText: 'Buscar instituição',
         ),
+        if (selectedInstitutions.isNotEmpty)
+          filter<PersonFilterOption>(
+            key: const Key('people-unit-filter'),
+            label: 'Unidade',
+            options: visibleUnits,
+            selected: visibleUnits
+                .where((item) => viewModel.query.unitIds.contains(item.id))
+                .toSet(),
+            optionLabel: (value) => value.label,
+            changed: (values) => viewModel.setUnits(values.map((item) => item.id).toSet()),
+            searchHintText: 'Buscar unidade',
+          ),
+        if (viewModel.query.unitIds.isNotEmpty)
+          filter<PersonFilterOption>(
+            key: const Key('people-group-filter'),
+            label: 'Grupo',
+            options: visibleGroups,
+            selected: visibleGroups
+                .where((item) => viewModel.query.groupIds.contains(item.id))
+                .toSet(),
+            optionLabel: (value) => value.label,
+            changed: (values) => viewModel.setGroups(values.map((item) => item.id).toSet()),
+            searchHintText: 'Buscar grupo',
+          ),
+        if (viewModel.query.groupIds.isNotEmpty)
+          filter<PersonFilterOption>(
+            key: const Key('people-activity-filter'),
+            label: 'Atividade',
+            options: visibleActivities,
+            selected: visibleActivities
+                .where((item) => viewModel.query.activityIds.contains(item.id))
+                .toSet(),
+            optionLabel: (value) => value.label,
+            changed: (values) => viewModel.setActivities(values.map((item) => item.id).toSet()),
+            searchHintText: 'Buscar atividade',
+          ),
+        if (selectedInstitutions.isNotEmpty)
+          filter<PersonFilterOption>(
+            key: const Key('people-role-filter'),
+            label: 'Papel',
+            options: visibleRoles,
+            selected: visibleRoles
+                .where((item) => viewModel.query.contextualRoles.contains(item.id))
+                .toSet(),
+            optionLabel: (value) => value.label,
+            changed: (values) => viewModel.setRoles(values.map((item) => item.id).toSet()),
+            searchHintText: 'Buscar papel',
+          ),
         filter<PersonFilterOption>(
-          key: const Key('people-unit-filter'),
-          label: 'Unidade',
-          options: visibleUnits,
-          selected: visibleUnits.where((item) => viewModel.query.unitIds.contains(item.id)).toSet(),
-          optionLabel: (value) => value.label,
-          changed: (values) => viewModel.setUnits(values.map((item) => item.id).toSet()),
-          searchHintText: 'Buscar unidade',
-        ),
-        filter<PersonFilterOption>(
-          key: const Key('people-group-filter'),
-          label: 'Grupo',
-          options: visibleGroups,
-          selected: visibleGroups
-              .where((item) => viewModel.query.groupIds.contains(item.id))
+          key: const Key('people-state-filter'),
+          label: 'UF',
+          options: viewModel.filterOptions.states,
+          selected: viewModel.filterOptions.states
+              .where((item) => viewModel.query.stateCodes.contains(item.id))
               .toSet(),
           optionLabel: (value) => value.label,
-          changed: (values) => viewModel.setGroups(values.map((item) => item.id).toSet()),
-          searchHintText: 'Buscar grupo',
+          changed: (values) => viewModel.setStates(values.map((item) => item.id).toSet()),
         ),
-        filter<PersonFilterOption>(
-          key: const Key('people-role-filter'),
-          label: 'Papel',
-          options: visibleRoles,
-          selected: visibleRoles
-              .where((item) => viewModel.query.contextualRoles.contains(item.id))
-              .toSet(),
-          optionLabel: (value) => value.label,
-          changed: (values) => viewModel.setRoles(values.map((item) => item.id).toSet()),
-          searchHintText: 'Buscar papel',
-        ),
+        if (viewModel.query.stateCodes.isNotEmpty)
+          filter<PersonFilterOption>(
+            key: const Key('people-municipality-filter'),
+            label: 'Município',
+            options: visibleMunicipalities,
+            selected: visibleMunicipalities
+                .where((item) => viewModel.query.municipalityIds.contains(item.id))
+                .toSet(),
+            optionLabel: (value) => value.label,
+            changed: (values) => viewModel.setMunicipalities(values.map((item) => item.id).toSet()),
+          ),
+        if (viewModel.query.municipalityIds.isNotEmpty)
+          filter<PersonFilterOption>(
+            key: const Key('people-neighborhood-filter'),
+            label: 'Bairro',
+            options: visibleNeighborhoods,
+            selected: visibleNeighborhoods
+                .where((item) => viewModel.query.neighborhoodIds.contains(item.id))
+                .toSet(),
+            optionLabel: (value) => value.label,
+            changed: (values) => viewModel.setNeighborhoods(values.map((item) => item.id).toSet()),
+          ),
         filter<AuthLinkStatus>(
           key: const Key('people-auth-filter'),
           label: 'Auth',
@@ -379,35 +439,24 @@ final class _PersonToolbar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SegmentedButton<PersonDirectoryLayout>(
-                  style: const ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(
-                      Size(CoeloSize.touchMin, CoeloSize.touchMin),
-                    ),
-                    padding: WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                    ),
-                  ),
-                  segments: const [
-                    ButtonSegment(
-                      value: PersonDirectoryLayout.cards,
-                      tooltip: 'Exibir como cards',
-                      icon: Icon(key: Key('people-view-cards'), Icons.grid_view_rounded),
-                    ),
-                    ButtonSegment(
-                      value: PersonDirectoryLayout.table,
-                      tooltip: 'Exibir como tabela',
-                      icon: Icon(key: Key('people-view-table'), Icons.table_rows_rounded),
-                    ),
+                SuperadminDirectoryViewToggle<PersonDirectoryTableView>(
+                  cardsSelected: viewModel.layout == PersonDirectoryLayout.cards,
+                  groupedView: PersonDirectoryTableView.grouped,
+                  selectedTableView: viewModel.tableView,
+                  tableViews: [
+                    for (final view in PersonDirectoryTableView.values)
+                      SuperadminDirectoryTableViewOption(value: view, label: view.label),
                   ],
-                  selected: {viewModel.layout},
-                  showSelectedIcon: false,
-                  onSelectionChanged: (values) => viewModel.setLayout(values.single),
+                  cardsKey: const Key('people-view-cards'),
+                  tableKey: const Key('people-view-table'),
+                  onCardsSelected: () => viewModel.setLayout(PersonDirectoryLayout.cards),
+                  onTableViewSelected: viewModel.setTableView,
                 ),
                 const SizedBox(width: CoeloSpacing.space2),
                 PersonFileActions(
                   activityController: activityController,
                   compact: compactFileAction,
+                  tableView: viewModel.tableView,
                 ),
               ],
             ),
@@ -473,6 +522,7 @@ final class _PersonResults extends StatelessWidget {
                 sortColumn: viewModel.query.sortColumn,
                 sortAscending: viewModel.query.sortAscending,
                 onSort: viewModel.setSort,
+                tableView: viewModel.tableView,
               );
     }
     return Column(
@@ -550,6 +600,53 @@ final class _PersonCardState extends State<_PersonCard> {
   Widget build(BuildContext context) {
     final item = widget.item;
     final colors = Theme.of(context).colorScheme;
+    final metrics = <Widget>[
+      if (item.maskedContact != null)
+        _PersonDetail(
+          icon: Icons.contact_mail_outlined,
+          label: 'Contato',
+          value: item.maskedContact!,
+        ),
+      _PersonDetail(
+        icon: Icons.account_balance_outlined,
+        label: 'Instituições',
+        value: item.institutionSummary.isEmpty ? 'Não informado' : item.institutionSummary,
+      ),
+      if (item.unitSummary.isNotEmpty)
+        _PersonDetail(icon: Icons.apartment_outlined, label: 'Unidades', value: item.unitSummary),
+      if (item.groupSummary.isNotEmpty)
+        _PersonDetail(icon: Icons.groups_outlined, label: 'Grupos', value: item.groupSummary),
+      if (item.activitySummary.isNotEmpty)
+        _PersonDetail(
+          icon: Icons.local_activity_outlined,
+          label: 'Atividades',
+          value: item.activitySummary,
+        ),
+      if (item.type != PersonType.child)
+        _PersonDetail(
+          icon: Icons.badge_outlined,
+          label: 'Papéis',
+          value: item.roleSummary.isEmpty ? 'Não informado' : item.roleSummary,
+        ),
+      if (item.linkedChildrenCount > 0)
+        _PersonDetail(
+          icon: Icons.family_restroom_outlined,
+          label: 'Crianças vinculadas',
+          value: '${item.linkedChildrenCount}',
+        ),
+      if (item.accompaniedStudentsCount > 0)
+        _PersonDetail(
+          icon: Icons.school_outlined,
+          label: 'Alunos acompanhados',
+          value: '${item.accompaniedStudentsCount}',
+        ),
+      if (item.linkedGuardiansCount > 0)
+        _PersonDetail(
+          icon: Icons.supervisor_account_outlined,
+          label: 'Responsáveis vinculados',
+          value: '${item.linkedGuardiansCount}',
+        ),
+    ];
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 216),
       child: MouseRegion(
@@ -656,33 +753,15 @@ final class _PersonCardState extends State<_PersonCard> {
                   const SizedBox(height: CoeloSpacing.space4),
                   const Divider(height: 1),
                   const SizedBox(height: CoeloSpacing.space4),
-                  _PersonDetails(
-                    first: _PersonDetail(
-                      icon: Icons.account_balance_outlined,
-                      label: 'Instituições',
-                      value: item.institutionSummary.isEmpty
-                          ? 'Não informado'
-                          : item.institutionSummary,
+                  for (var index = 0; index < metrics.length; index += 2) ...[
+                    _PersonDetails(
+                      first: metrics[index],
+                      second: index + 1 < metrics.length
+                          ? metrics[index + 1]
+                          : const SizedBox.shrink(),
                     ),
-                    second: _PersonDetail(
-                      icon: Icons.apartment_outlined,
-                      label: 'Unidades',
-                      value: item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
-                    ),
-                  ),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  _PersonDetails(
-                    first: _PersonDetail(
-                      icon: Icons.groups_outlined,
-                      label: 'Grupos',
-                      value: item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
-                    ),
-                    second: _PersonDetail(
-                      icon: Icons.badge_outlined,
-                      label: 'Papéis',
-                      value: item.roleSummary.isEmpty ? 'Não informado' : item.roleSummary,
-                    ),
-                  ),
+                    if (index + 2 < metrics.length) const SizedBox(height: CoeloSpacing.space3),
+                  ],
                 ],
               ),
             ),
@@ -854,6 +933,7 @@ final class _PersonTable extends StatelessWidget {
     required this.sortColumn,
     required this.sortAscending,
     required this.onSort,
+    required this.tableView,
   });
   final List<PersonDirectoryItem> items;
   final VoidCallback onCreate;
@@ -861,6 +941,7 @@ final class _PersonTable extends StatelessWidget {
   final PersonDirectorySortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<PersonDirectorySortColumn> onSort;
+  final PersonDirectoryTableView tableView;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -923,31 +1004,33 @@ final class _PersonTable extends StatelessWidget {
               if (column != null) onSort(column);
             },
             columns: [
-              CoeloAdminTableColumn(
-                id: 'type',
-                label: 'Tipo',
-                initialWidth: 128,
-                minWidth: 112,
-                maxWidth: 180,
-                sortable: true,
-                cellBuilder: (context, item) => Text(item.type.label),
-              ),
-              CoeloAdminTableColumn(
-                id: 'status',
-                label: 'Status',
-                initialWidth: 128,
-                minWidth: 112,
-                maxWidth: 180,
-                sortable: true,
-                cellBuilder: (context, item) {
-                  final (background, foreground) = _personStatusColors(context, item.status);
-                  return CoeloStatusChip(
-                    label: item.status.label,
-                    backgroundColor: background,
-                    foregroundColor: foreground,
-                  );
-                },
-              ),
+              if (tableView == PersonDirectoryTableView.grouped)
+                CoeloAdminTableColumn(
+                  id: 'type',
+                  label: 'Tipo',
+                  initialWidth: 128,
+                  minWidth: 112,
+                  maxWidth: 180,
+                  sortable: true,
+                  cellBuilder: (context, item) => Text(item.type.label),
+                ),
+              if (tableView == PersonDirectoryTableView.grouped)
+                CoeloAdminTableColumn(
+                  id: 'status',
+                  label: 'Status',
+                  initialWidth: 128,
+                  minWidth: 112,
+                  maxWidth: 180,
+                  sortable: true,
+                  cellBuilder: (context, item) {
+                    final (background, foreground) = _personStatusColors(context, item.status);
+                    return CoeloStatusChip(
+                      label: item.status.label,
+                      backgroundColor: background,
+                      foregroundColor: foreground,
+                    );
+                  },
+                ),
               CoeloAdminTableColumn(
                 id: PersonDirectorySortColumn.institution.databaseValue,
                 label: 'Instituição',
@@ -961,51 +1044,71 @@ final class _PersonTable extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              CoeloAdminTableColumn(
-                id: PersonDirectorySortColumn.unit.databaseValue,
-                label: 'Unidade',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 280,
-                sortable: true,
-                cellBuilder: (context, item) => Text(
-                  item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+              if (tableView != PersonDirectoryTableView.institutions)
+                CoeloAdminTableColumn(
+                  id: PersonDirectorySortColumn.unit.databaseValue,
+                  label: 'Unidade',
+                  initialWidth: 180,
+                  minWidth: 140,
+                  maxWidth: 280,
+                  sortable: true,
+                  cellBuilder: (context, item) => Text(
+                    item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              CoeloAdminTableColumn(
-                id: PersonDirectorySortColumn.group.databaseValue,
-                label: 'Grupo',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 280,
-                sortable: true,
-                cellBuilder: (context, item) => Text(
-                  item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+              if (tableView == PersonDirectoryTableView.grouped ||
+                  tableView == PersonDirectoryTableView.groups ||
+                  tableView == PersonDirectoryTableView.activities)
+                CoeloAdminTableColumn(
+                  id: PersonDirectorySortColumn.group.databaseValue,
+                  label: 'Grupo',
+                  initialWidth: 180,
+                  minWidth: 140,
+                  maxWidth: 280,
+                  sortable: true,
+                  cellBuilder: (context, item) => Text(
+                    item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              CoeloAdminTableColumn(
-                id: PersonDirectorySortColumn.role.databaseValue,
-                label: 'Papel contextual',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 280,
-                sortable: true,
-                cellBuilder: (context, item) => Text(item.roleSummary),
-              ),
-              CoeloAdminTableColumn(
-                id: PersonDirectorySortColumn.authLink.databaseValue,
-                label: 'Auth',
-                initialWidth: 140,
-                minWidth: 112,
-                maxWidth: 180,
-                sortable: true,
-                cellBuilder: (context, item) =>
-                    Text(item.isEditable ? item.authLink.label : 'Somente leitura'),
-              ),
+              if (tableView == PersonDirectoryTableView.grouped)
+                CoeloAdminTableColumn(
+                  id: PersonDirectorySortColumn.role.databaseValue,
+                  label: 'Papel contextual',
+                  initialWidth: 180,
+                  minWidth: 140,
+                  maxWidth: 280,
+                  sortable: true,
+                  cellBuilder: (context, item) => Text(item.roleSummary),
+                ),
+              if (tableView == PersonDirectoryTableView.grouped)
+                CoeloAdminTableColumn(
+                  id: PersonDirectorySortColumn.authLink.databaseValue,
+                  label: 'Auth',
+                  initialWidth: 140,
+                  minWidth: 112,
+                  maxWidth: 180,
+                  sortable: true,
+                  cellBuilder: (context, item) =>
+                      Text(item.isEditable ? item.authLink.label : 'Somente leitura'),
+                ),
+              if (tableView == PersonDirectoryTableView.grouped ||
+                  tableView == PersonDirectoryTableView.activities)
+                CoeloAdminTableColumn(
+                  id: 'activity',
+                  label: 'Atividades',
+                  initialWidth: 180,
+                  minWidth: 140,
+                  maxWidth: 280,
+                  cellBuilder: (context, item) => Text(
+                    item.activitySummary.isEmpty ? 'Não informado' : item.activitySummary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
             ],
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,8 +32,18 @@ void main() {
 
     expect(find.text('Criar grupo'), findsWidgets);
     expect(find.text('Ativo'), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('group-handle-field')), findsOneWidget);
+    expect(find.byKey(const Key('group-primary-color-field')), findsOneWidget);
+    expect(find.byKey(const Key('group-secondary-color-field')), findsOneWidget);
+    expect(find.byKey(const Key('group-activity-links')), findsOneWidget);
+    expect(find.text('Hierarquia'), findsOneWidget);
+    expect(find.text('Identidade'), findsOneWidget);
+    expect(find.text('Vínculos e aparência'), findsOneWidget);
+    expect(find.textContaining('protótipos locais efêmeros'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
     await tester.enterText(find.byKey(const Key('group-type-field')), 'class');
+    await tester.enterText(find.byKey(const Key('group-handle-field')), '@girassol');
     await tester.tap(find.byKey(const Key('group-form-save')));
     await tester.pumpAndSettle();
 

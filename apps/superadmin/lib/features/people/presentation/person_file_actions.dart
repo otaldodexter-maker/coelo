@@ -4,20 +4,31 @@ import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
+import '../domain/person_directory.dart';
 
 final class PersonFileActions extends StatelessWidget {
-  const PersonFileActions({required this.activityController, this.compact = false, super.key});
+  const PersonFileActions({
+    required this.activityController,
+    this.tableView = PersonDirectoryTableView.grouped,
+    this.compact = false,
+    super.key,
+  });
 
   final SuperadminActivityController activityController;
+  final PersonDirectoryTableView tableView;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
     void export(SuperadminExportFormat format) {
-      activityController.completeDemoExport(format, subject: 'Pessoas', fileBaseName: 'pessoas');
+      activityController.completeDemoExport(
+        format,
+        subject: 'Pessoas · ${tableView.label}',
+        fileBaseName: 'pessoas',
+      );
       showSuperadminNotice(
         context,
-        'A exportação está em andamento. Acompanhe pelo sininho.',
+        'Preview de exportação: ${tableView.label}. Acompanhe pelo sininho.',
         icon: Icons.download_outlined,
       );
     }

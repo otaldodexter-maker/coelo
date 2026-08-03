@@ -3,7 +3,7 @@ title: Diretório de grupos do Superadmin
 knowledge_id: superadmin-group-directory
 source: docs/superpowers/specs/2026-07-29-superadmin-group-directory-design.md
 status: validated
-generated_at: 2026-07-29
+generated_at: 2026-08-03
 audience: team
 surfaces: [superadmin, groups]
 visibility: internal
@@ -12,8 +12,9 @@ review_owner: Coelo Product
 
 # Diretório de grupos do Superadmin
 
-No Superadmin, grupo é a entidade canônica e turma é um tipo de grupo. Cada
-grupo pertence a uma instituição e a uma unidade; na criação, a unidade só
+No Superadmin, grupo é a entidade canônica e `Turma` é seu termo equivalente
+de apresentação no contexto escolar, nunca uma entidade-pai. Cada grupo
+pertence a uma instituição e a uma unidade; na criação, a unidade só
 pode ser selecionada dentro da instituição escolhida. Durante a edição,
 instituição e unidade ficam somente leitura até que exista regra aprovada para
 movimentação hierárquica.

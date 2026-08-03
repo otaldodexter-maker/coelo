@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_user.dart';
 
@@ -52,6 +53,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   String? _institutionId;
   bool _saving = false;
   bool _dirty = false;
+  double _footerHeight = 0;
 
   bool get _editing => widget.internalUserId != null;
   PlatformUserRecord? get _record =>
@@ -64,7 +66,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     if (record != null) {
       _firstName.text = record.firstName;
       _lastName.text = record.lastName;
-      _email.text = record.email;
+      _email.text = record.maskedEmail;
       _role = record.role;
       _scope = record.scope;
       _institutionId = record.institutionId;
@@ -92,7 +94,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
 
   void _continue() {
     if (_step == 0 && !_validateIdentity()) return;
-    if (_step == 1 && _scope == PlatformUserScope.institution && _institutionId == null) {
+    if (_step == 3 && _scope == PlatformUserScope.institution && _institutionId == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Selecione a instituição do escopo.')));
@@ -175,6 +177,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
               ? 'Separe identidade global, vínculo e acesso.'
               : 'Cadastre um vínculo interno somente no preview.',
           currentDestination: 'internal-users',
+          chatLauncherBottomInset: _footerHeight,
           onDestinationSelected: widget.onDestinationSelected,
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -185,19 +188,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
                   : CoeloSpacing.space4;
               return Form(
                 key: _formKey,
-                child: ListView(
-                  padding: EdgeInsets.all(inset),
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    if (!_editing) _stepHeader(),
-                    if (!_editing) const SizedBox(height: CoeloSpacing.space6),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(CoeloSpacing.space6),
-                        child: _editing ? _editContent() : _createStep(),
+                    ListView(
+                      key: const Key('platform-user-form-scroll'),
+                      padding: EdgeInsets.fromLTRB(
+                        inset,
+                        inset,
+                        inset,
+                        inset + _footerHeight + CoeloSpacing.space4,
                       ),
+                      children: [
+                        _stepHeader(),
+                        const SizedBox(height: CoeloSpacing.space6),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(CoeloSpacing.space6),
+                            child: _flowStep(),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    _footer(),
+                    Positioned(left: inset, right: inset, bottom: inset, child: _footer()),
                   ],
                 ),
               );
@@ -209,9 +222,9 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Widget _stepHeader() {
-    const labels = ['Identidade', 'Acesso', 'Revisão'];
+    const labels = ['Identidade', 'Membership de plataforma', 'Papel', 'Escopo', 'Revisão'];
     return Semantics(
-      label: 'Etapa ${_step + 1} de 3: ${labels[_step]}',
+      label: 'Etapa ${_step + 1} de 5: ${labels[_step]}',
       child: Row(
         children: [
           for (var index = 0; index < labels.length; index++) ...[
@@ -228,7 +241,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
                     child: Text('${index + 1}'),
                   ),
                   const SizedBox(height: CoeloSpacing.space1),
-                  Text(labels[index]),
+                  Text(labels[index], textAlign: TextAlign.center),
                 ],
               ),
             ),
@@ -239,27 +252,95 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     );
   }
 
-  Widget _createStep() => switch (_step) {
-    0 => _identitySection(title: 'Identidade e contato'),
-    1 => _accessSection(title: 'Acesso interno'),
+  Widget _flowStep() => switch (_step) {
+    0 => _identitySection(title: 'Identidade'),
+    1 => _membershipSection(),
+    2 => _roleSection(),
+    3 => _scopeSection(),
     _ => _reviewSection(),
   };
 
-  Widget _editContent() {
+  Widget _membershipSection() {
+    final status = _record?.status ?? PlatformMembershipStatus.invited;
+    final invitation = _record?.invitationStatus ?? PlatformInvitationStatus.pending;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _identitySection(title: 'Dados globais da pessoa'),
-        const SizedBox(height: CoeloSpacing.space8),
-        _accessSection(title: 'Vínculo interno'),
-        const SizedBox(height: CoeloSpacing.space8),
+        Text('Membership de plataforma', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: CoeloSpacing.space4),
+        _summary('Status', status.label),
+        _summary('Convite', invitation.label),
+        const SizedBox(height: CoeloSpacing.space2),
+        const Text(
+          'Este vínculo interno é local ao preview. Status e convite não são editáveis aqui.',
+        ),
+      ],
+    );
+  }
+
+  Widget _roleSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Papel', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloAdminSingleSelectField<PlatformUserRole>(
+          label: 'Papel',
+          value: _role,
+          options: PlatformUserRole.values,
+          optionLabel: (value) => value.label,
+          onChanged: (value) {
+            setState(() => _role = value);
+            _changed();
+          },
+          prefixIcon: Icons.admin_panel_settings_outlined,
+        ),
+        const SizedBox(height: CoeloSpacing.space6),
         Text('Permissões derivadas do papel', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space2),
         Text(_role.permissions.join(' · ')),
         const SizedBox(height: CoeloSpacing.space1),
         const Text('Overrides não são editáveis neste preview.'),
-        const SizedBox(height: CoeloSpacing.space6),
-        const Text('O status de acesso só pode ser alterado pelas ações contextuais.'),
+      ],
+    );
+  }
+
+  Widget _scopeSection() {
+    final institutionIds = widget.institutions.keys.toList(growable: false);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Escopo', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloAdminSingleSelectField<PlatformUserScope>(
+          label: 'Escopo',
+          value: _scope,
+          options: PlatformUserScope.values,
+          optionLabel: (value) => value.label,
+          onChanged: (value) {
+            setState(() {
+              _scope = value;
+              if (value == PlatformUserScope.platform) _institutionId = null;
+            });
+            _changed();
+          },
+          prefixIcon: Icons.layers_outlined,
+        ),
+        if (_scope == PlatformUserScope.institution) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloAdminSingleSelectField<String?>(
+            key: const Key('platform-user-institution'),
+            label: 'Instituição',
+            value: _institutionId,
+            options: [null, ...institutionIds],
+            optionLabel: (value) => value == null ? 'Selecione' : widget.institutions[value]!,
+            onChanged: (value) {
+              setState(() => _institutionId = value);
+              _changed();
+            },
+            prefixIcon: Icons.account_balance_outlined,
+          ),
+        ],
       ],
     );
   }
@@ -302,59 +383,6 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
           validator: (value) =>
               value == null || !value.contains('@') ? 'Informe um e-mail válido.' : null,
         ),
-      ],
-    );
-  }
-
-  Widget _accessSection({required String title}) {
-    final institutionIds = widget.institutions.keys.toList(growable: false);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: CoeloSpacing.space4),
-        _responsiveFields([
-          CoeloAdminSingleSelectField<PlatformUserRole>(
-            label: 'Papel',
-            value: _role,
-            options: PlatformUserRole.values,
-            optionLabel: (value) => value.label,
-            onChanged: (value) {
-              setState(() => _role = value);
-              _changed();
-            },
-            prefixIcon: Icons.admin_panel_settings_outlined,
-          ),
-          CoeloAdminSingleSelectField<PlatformUserScope>(
-            label: 'Escopo',
-            value: _scope,
-            options: PlatformUserScope.values,
-            optionLabel: (value) => value.label,
-            onChanged: (value) {
-              setState(() {
-                _scope = value;
-                if (value == PlatformUserScope.platform) _institutionId = null;
-              });
-              _changed();
-            },
-            prefixIcon: Icons.layers_outlined,
-          ),
-        ]),
-        if (_scope == PlatformUserScope.institution) ...[
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloAdminSingleSelectField<String?>(
-            key: const Key('platform-user-institution'),
-            label: 'Instituição',
-            value: _institutionId,
-            options: [null, ...institutionIds],
-            optionLabel: (value) => value == null ? 'Selecione' : widget.institutions[value]!,
-            onChanged: (value) {
-              setState(() => _institutionId = value);
-              _changed();
-            },
-            prefixIcon: Icons.account_balance_outlined,
-          ),
-        ],
       ],
     );
   }
@@ -426,23 +454,32 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   }
 
   Widget _footer() {
-    return Row(
-      children: [
-        OutlinedButton(onPressed: _cancel, child: const Text('Cancelar')),
-        const Spacer(),
-        if (!_editing && _step > 0)
-          TextButton(onPressed: () => setState(() => _step--), child: const Text('Voltar')),
-        const SizedBox(width: CoeloSpacing.space2),
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('platform-user-form-footer-surface'),
+      onHeightChanged: (height) {
+        if ((_footerHeight - height).abs() < .5) return;
+        setState(() => _footerHeight = height);
+      },
+      tertiaryAction: TextButton(
+        onPressed: _saving ? null : _cancel,
+        child: const Text('Cancelar'),
+      ),
+      continuationActions: [
+        if (_step > 0)
+          OutlinedButton(
+            onPressed: _saving ? null : () => setState(() => _step--),
+            child: const Text('Voltar'),
+          ),
         FilledButton(
-          onPressed: _saving ? null : (_editing || _step == 2 ? _save : _continue),
+          onPressed: _saving ? null : (_step == 4 ? _save : _continue),
           child: Text(
             _saving
                 ? 'Salvando…'
+                : _step < 4
+                ? 'Continuar'
                 : _editing
                 ? 'Salvar alterações'
-                : _step == 2
-                ? 'Salvar preview'
-                : 'Continuar',
+                : 'Salvar preview',
           ),
         ),
       ],

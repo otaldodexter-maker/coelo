@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
@@ -175,6 +176,13 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   if (widget.viewModel.page.isDemo ||
                       (query.domain == AccessProfileDomain.principal && widget.viewModel.isDemo))
                     const SizedBox(height: CoeloSpacing.space4),
+                  if (query.domain != AccessProfileDomain.principal) ...[
+                    Text(
+                      'Perfil define teto; atribuição define contexto efetivo',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                  ],
                   _AccessProfileResults(
                     viewModel: widget.viewModel,
                     compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth,
@@ -317,22 +325,18 @@ final class _AccessProfileToolbar extends StatelessWidget {
         actions: [
           SizedBox(
             height: CoeloSize.touchMin,
-            child: SegmentedButton<AccessProfileLayout>(
-              segments: const [
-                ButtonSegment(
-                  value: AccessProfileLayout.cards,
-                  tooltip: 'Exibir como cards',
-                  icon: Icon(Icons.grid_view_rounded),
-                ),
-                ButtonSegment(
-                  value: AccessProfileLayout.table,
-                  tooltip: 'Exibir como tabela',
-                  icon: Icon(Icons.table_rows_rounded),
-                ),
+            child: SuperadminDirectoryViewToggle<AccessProfileTableView>(
+              cardsSelected: query.layout == AccessProfileLayout.cards,
+              groupedView: AccessProfileTableView.grouped,
+              selectedTableView: viewModel.tableView,
+              tableViews: [
+                for (final view in AccessProfileTableView.values)
+                  SuperadminDirectoryTableViewOption(value: view, label: view.label),
               ],
-              selected: {query.layout},
-              showSelectedIcon: false,
-              onSelectionChanged: (value) => viewModel.setLayout(value.single),
+              cardsKey: const Key('access-profile-view-cards'),
+              tableKey: const Key('access-profile-view-table'),
+              onCardsSelected: () => viewModel.setLayout(AccessProfileLayout.cards),
+              onTableViewSelected: viewModel.setTableView,
             ),
           ),
         ],
@@ -450,6 +454,7 @@ final class _AccessProfileResults extends StatelessWidget {
         } else {
           result = _AccessProfileTable(
             items: viewModel.page.items,
+            tableView: viewModel.tableView,
             onCreate: onCreate,
             onOpen: onOpen,
           );
@@ -628,6 +633,12 @@ final class _AccessProfileCardState extends State<_AccessProfileCard> {
                           label: 'Vínculos',
                           value: '${item.membershipCount}',
                         ),
+                        const SizedBox(height: CoeloSpacing.space3),
+                        _ProfileMetricRow(
+                          icon: Icons.verified_outlined,
+                          label: 'Tipo',
+                          value: item.isSystem ? 'Predefinido' : 'Personalizado',
+                        ),
                       ],
                     ),
                   ),
@@ -680,9 +691,15 @@ final class _ProfileMetricRow extends StatelessWidget {
 }
 
 final class _AccessProfileTable extends StatelessWidget {
-  const _AccessProfileTable({required this.items, required this.onCreate, required this.onOpen});
+  const _AccessProfileTable({
+    required this.items,
+    required this.tableView,
+    required this.onCreate,
+    required this.onOpen,
+  });
 
   final List<AccessProfile> items;
+  final AccessProfileTableView tableView;
   final VoidCallback onCreate;
   final ValueChanged<String> onOpen;
 
@@ -719,46 +736,92 @@ final class _AccessProfileTable extends StatelessWidget {
             ],
           ),
         ),
-        columns: [
-          CoeloAdminTableColumn(
-            id: 'description',
-            label: 'Descrição',
-            initialWidth: 340,
-            minWidth: 220,
-            maxWidth: 520,
-            cellBuilder: (context, item) =>
-                Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
-          ),
-          CoeloAdminTableColumn(
-            id: 'scope',
-            label: 'Escopo máximo',
-            initialWidth: 180,
-            minWidth: 140,
-            maxWidth: 240,
-            cellBuilder: (context, item) => Text(item.maxScope.label),
-          ),
-          CoeloAdminTableColumn(
-            id: 'status',
-            label: 'Status',
-            initialWidth: 150,
-            minWidth: 120,
-            maxWidth: 200,
-            cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
-          ),
-          CoeloAdminTableColumn(
-            id: 'memberships',
-            label: 'Vínculos',
-            initialWidth: 120,
-            minWidth: 96,
-            maxWidth: 180,
-            cellBuilder: (context, item) => Text('${item.membershipCount}'),
-          ),
-        ],
+        columns: tableView == AccessProfileTableView.grouped
+            ? [
+                CoeloAdminTableColumn(
+                  id: 'description',
+                  label: 'Descrição',
+                  initialWidth: 340,
+                  minWidth: 220,
+                  maxWidth: 520,
+                  cellBuilder: (context, item) =>
+                      Text(item.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'scope',
+                  label: 'Escopo máximo',
+                  initialWidth: 180,
+                  minWidth: 140,
+                  maxWidth: 240,
+                  cellBuilder: (context, item) => Text(item.maxScope.label),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'status',
+                  label: 'Status',
+                  initialWidth: 150,
+                  minWidth: 120,
+                  maxWidth: 200,
+                  cellBuilder: (context, item) => _ProfileStatusChip(status: item.status),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'memberships',
+                  label: 'Vínculos',
+                  initialWidth: 120,
+                  minWidth: 96,
+                  maxWidth: 180,
+                  cellBuilder: (context, item) => Text('${item.membershipCount}'),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'type',
+                  label: 'Tipo',
+                  initialWidth: 150,
+                  minWidth: 120,
+                  maxWidth: 200,
+                  cellBuilder: (context, item) => Text(
+                    item.isSystem ? 'Predefinido' : 'Personalizado',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ]
+            : [
+                _assignmentColumn(
+                  'institution',
+                  'Instituição',
+                  AccessAssignmentContext.institution,
+                ),
+                _assignmentColumn('unit', 'Unidade', AccessAssignmentContext.unit),
+                _assignmentColumn('group', 'Grupo', AccessAssignmentContext.group),
+                _assignmentColumn('activity', 'Atividade', AccessAssignmentContext.activity),
+              ],
         headerHeight: 56,
         rowHeight: 64,
         onRowPressed: (item) => onOpen(item.id),
       ),
     ],
+  );
+
+  CoeloAdminTableColumn<AccessProfile> _assignmentColumn(
+    String id,
+    String label,
+    AccessAssignmentContext assignmentContext,
+  ) => CoeloAdminTableColumn(
+    id: id,
+    label: label,
+    initialWidth: 220,
+    minWidth: 160,
+    maxWidth: 360,
+    cellBuilder: (context, item) {
+      final labels = item.localAssignments
+          .where((assignment) => assignment.context == assignmentContext)
+          .map((assignment) => assignment.label)
+          .toList(growable: false);
+      return Text(
+        labels.isEmpty ? '—' : labels.join(', '),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    },
   );
 }
 

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -8,6 +7,8 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_user.dart';
 import 'platform_user_file_actions.dart';
@@ -38,14 +39,18 @@ final class PlatformUserDirectoryPage extends StatefulWidget {
 
 final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryPage> {
   final _searchController = TextEditingController();
+  final GlobalKey _footerKey = GlobalKey();
   Timer? _debounce;
   PlatformUserDirectoryView _view = PlatformUserDirectoryView.cards;
+  PlatformUserTableView _tableView = PlatformUserTableView.grouped;
   Set<PlatformUserRole> _roles = {};
   Set<PlatformMembershipStatus> _statuses = {};
   int _page = 1;
   int _pageSize = PlatformUserQuery.cardsPageSize;
   bool _loading = true;
   Object? _error;
+  double _footerHeight = 0;
+  bool _measurementScheduled = false;
   PlatformUserPage _result = const PlatformUserPage(
     items: [],
     totalCount: 0,
@@ -125,6 +130,33 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
     unawaited(_load());
   }
 
+  void _changeTableView(PlatformUserTableView view) {
+    setState(() {
+      _view = PlatformUserDirectoryView.table;
+      _tableView = view;
+      _page = 1;
+      _pageSize = PlatformUserQuery.tablePageSize;
+    });
+    unawaited(_load());
+  }
+
+  void _measureFooter(bool visible) {
+    if (_measurementScheduled) return;
+    _measurementScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _measurementScheduled = false;
+      if (!mounted) return;
+      var height = 0.0;
+      if (visible) {
+        final renderObject = _footerKey.currentContext?.findRenderObject();
+        if (renderObject is! RenderBox || !renderObject.hasSize) return;
+        height = renderObject.size.height;
+      }
+      if ((height - _footerHeight).abs() < .5) return;
+      setState(() => _footerHeight = height);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SuperadminShell(
@@ -133,7 +165,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
       subtitle: 'Gerencie o vínculo da equipe própria Coelo.',
       currentDestination: 'internal-users',
       onDestinationSelected: widget.onDestinationSelected,
-      chatLauncherBottomInset: _result.totalCount > 0 ? 92 : 0,
+      chatLauncherBottomInset: _footerHeight,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
@@ -146,17 +178,14 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
               _error == null &&
               widget.capability != PlatformUserCapability.unauthorized &&
               _result.totalCount > 0;
+          _measureFooter(showFooter);
+          final footerInset = showFooter ? _footerHeight + CoeloSpacing.space4 : 0.0;
           return Stack(
             fit: StackFit.expand,
             children: [
               ListView(
                 key: const Key('platform-user-directory-content-scroll'),
-                padding: EdgeInsets.fromLTRB(
-                  padding,
-                  padding,
-                  padding,
-                  padding + (showFooter ? 104 : 0),
-                ),
+                padding: EdgeInsets.fromLTRB(padding, padding, padding, padding + footerInset),
                 children: [
                   if (widget.capability != PlatformUserCapability.unauthorized)
                     _toolbar(constraints.maxWidth),
@@ -166,7 +195,21 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
                 ],
               ),
               if (showFooter)
-                Positioned(left: 0, right: 0, bottom: 0, child: _paginationFooter(padding)),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SizeChangedLayoutNotifier(
+                    key: _footerKey,
+                    child: NotificationListener<SizeChangedLayoutNotification>(
+                      onNotification: (_) {
+                        _measureFooter(true);
+                        return true;
+                      },
+                      child: _paginationFooter(padding),
+                    ),
+                  ),
+                ),
             ],
           );
         },
@@ -250,26 +293,25 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
         SizedBox(
           key: const Key('platform-user-display-toggle'),
           height: CoeloSize.touchMin,
-          child: SegmentedButton<PlatformUserDirectoryView>(
-            segments: const [
-              ButtonSegment(
-                value: PlatformUserDirectoryView.cards,
-                tooltip: 'Exibir como cards',
-                icon: Icon(Icons.grid_view_rounded, key: Key('platform-user-view-cards')),
-              ),
-              ButtonSegment(
-                value: PlatformUserDirectoryView.table,
-                tooltip: 'Exibir como tabela',
-                icon: Icon(Icons.table_rows_rounded, key: Key('platform-user-view-table')),
-              ),
+          child: SuperadminDirectoryViewToggle<PlatformUserTableView>(
+            cardsSelected: _view == PlatformUserDirectoryView.cards,
+            groupedView: PlatformUserTableView.grouped,
+            selectedTableView: _tableView,
+            tableViews: [
+              for (final view in PlatformUserTableView.values)
+                SuperadminDirectoryTableViewOption(value: view, label: view.label),
             ],
-            selected: {_view},
-            showSelectedIcon: false,
-            onSelectionChanged: (selection) => _changeView(selection.single),
+            cardsKey: const Key('platform-user-view-cards'),
+            tableKey: const Key('platform-user-view-table'),
+            onCardsSelected: () => _changeView(PlatformUserDirectoryView.cards),
+            onTableViewSelected: _changeTableView,
           ),
         ),
         if (widget.capability == PlatformUserCapability.owner)
-          PlatformUserFileActions(compact: compact),
+          PlatformUserFileActions(
+            compact: compact,
+            viewLabel: _view == PlatformUserDirectoryView.cards ? 'Cards' : _tableView.label,
+          ),
       ],
     );
   }
@@ -383,28 +425,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             items: _result.items,
             rowKey: (item) => 'platform-user-table-row-${item.id}',
             pinnedColumn: _column('person', 'Pessoa', 260, _personCell),
-            columns: [
-              _column('role', 'Papel', 150, (context, item) => _textCell(item.role.label)),
-              _column('scope', 'Escopo', 190, (context, item) => _textCell(item.scopeLabel)),
-              _column(
-                'status',
-                'Status',
-                150,
-                (context, item) => _statusChip(context, item.status),
-              ),
-              _column(
-                'invitation',
-                'Convite',
-                150,
-                (context, item) => _textCell(item.invitationStatus.label),
-              ),
-              _column(
-                'reviewed',
-                'Revisado em',
-                150,
-                (context, item) => _textCell(_formatDate(item.lastReviewedAt)),
-              ),
-            ],
+            columns: _tableColumns(),
             headerHeight: 56,
             rowHeight: 64,
             onRowPressed: (item) => widget.onView?.call(item.id),
@@ -412,6 +433,39 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
         ),
       ],
     );
+  }
+
+  List<CoeloAdminTableColumn<PlatformUserRecord>> _tableColumns() {
+    if (_tableView == PlatformUserTableView.scopes) {
+      return [
+        _column('scope', 'Escopo', 150, (context, item) => _textCell(item.scope.label)),
+        _column(
+          'institution',
+          'Instituição vinculada',
+          220,
+          (context, item) => _textCell(item.institutionName ?? 'Todas as instituições'),
+        ),
+        _column('role', 'Papel', 150, (context, item) => _textCell(item.role.label)),
+        _column('status', 'Status', 150, (context, item) => _statusChip(context, item.status)),
+      ];
+    }
+    return [
+      _column('role', 'Papel', 150, (context, item) => _textCell(item.role.label)),
+      _column('scope', 'Escopo', 190, (context, item) => _textCell(item.scopeLabel)),
+      _column('status', 'Status', 150, (context, item) => _statusChip(context, item.status)),
+      _column(
+        'invitation',
+        'Convite',
+        150,
+        (context, item) => _textCell(item.invitationStatus.label),
+      ),
+      _column(
+        'reviewed',
+        'Revisado em',
+        150,
+        (context, item) => _textCell(_formatDate(item.lastReviewedAt)),
+      ),
+    ];
   }
 
   CoeloAdminTableColumn<PlatformUserRecord> _column(
@@ -464,57 +518,39 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   );
 
   Widget _paginationFooter(double horizontalPadding) {
-    final colors = Theme.of(context).colorScheme;
-    return ClipRect(
-      key: const Key('platform-user-pagination-footer'),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            CoeloSpacing.space3,
-            horizontalPadding,
-            CoeloSpacing.space3,
-          ),
-          decoration: BoxDecoration(
-            color: colors.surface.withValues(alpha: 0.88),
-            border: Border(top: BorderSide(color: colors.outlineVariant)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: CoeloAdminPagination(
-              currentPage: _result.page.clamp(1, _result.pageCount),
-              totalPages: _result.pageCount,
-              onPrevious: _page > 1
-                  ? () {
-                      _page--;
-                      unawaited(_load());
-                    }
-                  : null,
-              onNext: _page < _result.pageCount
-                  ? () {
-                      _page++;
-                      unawaited(_load());
-                    }
-                  : null,
-              onPageSelected: (page) {
-                _page = page;
+    return SuperadminListingPaginationFooter(
+      semanticKey: const Key('platform-user-pagination-footer'),
+      horizontalPadding: horizontalPadding,
+      child: CoeloAdminPagination(
+        currentPage: _result.page.clamp(1, _result.pageCount),
+        totalPages: _result.pageCount,
+        onPrevious: _page > 1
+            ? () {
+                _page--;
                 unawaited(_load());
-              },
-              pageSize: _pageSize,
-              pageSizeOptions: _view == PlatformUserDirectoryView.cards
-                  ? const [11, 20, 50, 100]
-                  : const [8, 20, 50, 100],
-              onPageSizeChanged: (pageSize) {
-                setState(() {
-                  _pageSize = pageSize;
-                  _page = 1;
-                });
+              }
+            : null,
+        onNext: _page < _result.pageCount
+            ? () {
+                _page++;
                 unawaited(_load());
-              },
-            ),
-          ),
-        ),
+              }
+            : null,
+        onPageSelected: (page) {
+          _page = page;
+          unawaited(_load());
+        },
+        pageSize: _pageSize,
+        pageSizeOptions: _view == PlatformUserDirectoryView.cards
+            ? const [11, 20, 50, 100]
+            : const [8, 20, 50, 100],
+        onPageSizeChanged: (pageSize) {
+          setState(() {
+            _pageSize = pageSize;
+            _page = 1;
+          });
+          unawaited(_load());
+        },
       ),
     );
   }

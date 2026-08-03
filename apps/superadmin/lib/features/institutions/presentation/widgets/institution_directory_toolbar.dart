@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
+import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_directory_repository.dart';
+import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
 import 'institution_file_actions.dart';
 
@@ -20,7 +22,9 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
     required this.activityController,
     required this.searchController,
     required this.display,
+    required this.tableView,
     required this.onDisplayChanged,
+    required this.onTableViewChanged,
     required this.onClearFilters,
     super.key,
   });
@@ -29,7 +33,9 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
   final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final InstitutionDirectoryDisplay display;
+  final InstitutionDirectoryTableView tableView;
   final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<InstitutionDirectoryTableView> onTableViewChanged;
   final VoidCallback onClearFilters;
 
   @override
@@ -164,39 +170,39 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
+              SuperadminDirectoryViewToggle<InstitutionDirectoryTableView>(
                 key: const Key('institution-display-toggle'),
-                height: CoeloSize.touchMin,
-                child: SegmentedButton<InstitutionDirectoryDisplay>(
-                  style: const ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(
-                      Size(CoeloSize.touchMin, CoeloSize.touchMin),
-                    ),
-                    padding: WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                    ),
+                cardsKey: const Key('institution-view-cards'),
+                tableKey: const Key('institution-view-table'),
+                cardsSelected: display == InstitutionDirectoryDisplay.cards,
+                groupedView: InstitutionDirectoryTableView.grouped,
+                selectedTableView: tableView,
+                tableViews: const [
+                  SuperadminDirectoryTableViewOption(
+                    value: InstitutionDirectoryTableView.grouped,
+                    label: 'Agrupado',
                   ),
-                  segments: const [
-                    ButtonSegment(
-                      value: InstitutionDirectoryDisplay.cards,
-                      tooltip: 'Exibir como cards',
-                      icon: Icon(key: Key('institution-view-cards'), Icons.grid_view_rounded),
-                    ),
-                    ButtonSegment(
-                      value: InstitutionDirectoryDisplay.table,
-                      tooltip: 'Exibir como tabela',
-                      icon: Icon(key: Key('institution-view-table'), Icons.table_rows_rounded),
-                    ),
-                  ],
-                  selected: {display},
-                  showSelectedIcon: false,
-                  onSelectionChanged: (selection) => onDisplayChanged(selection.single),
-                ),
+                  SuperadminDirectoryTableViewOption(
+                    value: InstitutionDirectoryTableView.units,
+                    label: 'Unidades',
+                  ),
+                  SuperadminDirectoryTableViewOption(
+                    value: InstitutionDirectoryTableView.groups,
+                    label: 'Grupos',
+                  ),
+                  SuperadminDirectoryTableViewOption(
+                    value: InstitutionDirectoryTableView.activities,
+                    label: 'Atividades',
+                  ),
+                ],
+                onCardsSelected: () => onDisplayChanged(InstitutionDirectoryDisplay.cards),
+                onTableViewSelected: onTableViewChanged,
               ),
               const SizedBox(width: CoeloSpacing.space2),
               InstitutionFileActions(
                 activityController: activityController,
                 compact: compactFileAction,
+                viewLabel: display == InstitutionDirectoryDisplay.cards ? 'Cards' : tableView.label,
               ),
             ],
           ),

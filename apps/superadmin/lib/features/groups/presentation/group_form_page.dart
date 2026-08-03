@@ -8,6 +8,7 @@ import '../../auth/domain/logout_action.dart';
 import '../../institutions/data/fake_institution_directory_repository.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../support/domain/support_ticket.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../domain/group_directory.dart';
 
 enum GroupFormSaveResult { created, updated }
@@ -42,6 +43,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _typeController;
+  late final TextEditingController _handleController;
+  late final TextEditingController _primaryColorController;
+  late final TextEditingController _secondaryColorController;
   late InstitutionRecord _institution;
   late InstitutionUnit _unit;
   late GroupStatus _status;
@@ -49,6 +53,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   bool _dirty = false;
   bool _saving = false;
   String? _saveError;
+  final Set<String> _activityLinks = {'Música'};
 
   bool get _editing => widget.groupId != null;
 
@@ -66,12 +71,20 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     _status = record?.status ?? GroupStatus.active;
     _nameController = TextEditingController(text: record?.name ?? '');
     _typeController = TextEditingController(text: record?.groupType ?? '');
+    _handleController = TextEditingController(
+      text: record == null ? '' : '@${record.name.toLowerCase().replaceAll(' ', '.')}',
+    );
+    _primaryColorController = TextEditingController(text: '#D63C00');
+    _secondaryColorController = TextEditingController(text: '#3F4549');
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _typeController.dispose();
+    _handleController.dispose();
+    _primaryColorController.dispose();
+    _secondaryColorController.dispose();
     super.dispose();
   }
 
@@ -255,19 +268,27 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               ),
             ],
             const SizedBox(height: CoeloSpacing.space6),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final twoColumns = constraints.maxWidth >= 600;
-                final width = twoColumns
-                    ? (constraints.maxWidth - CoeloSpacing.space3) / 2
-                    : constraints.maxWidth;
-                final fields = _fields();
-                return Wrap(
-                  spacing: CoeloSpacing.space3,
-                  runSpacing: CoeloSpacing.space4,
-                  children: [for (final field in fields) SizedBox(width: width, child: field)],
-                );
-              },
+            _formSection(
+              key: const Key('group-hierarchy-section'),
+              title: 'Hierarquia',
+              description: 'Instituição → Unidade → Grupo (Turma).',
+              child: _fieldGrid(_hierarchyFields()),
+            ),
+            const SizedBox(height: CoeloSpacing.space5),
+            _formSection(
+              key: const Key('group-identity-section'),
+              title: 'Identidade',
+              description: 'Defina nome, tipo e status do grupo.',
+              child: _fieldGrid(_identityFields()),
+            ),
+            const SizedBox(height: CoeloSpacing.space5),
+            _formSection(
+              key: const Key('group-links-section'),
+              title: 'Vínculos e aparência',
+              description:
+                  'Arroba, cores e vínculos de atividades são protótipos locais efêmeros; '
+                  'não são persistidos ao salvar.',
+              child: _fieldGrid(_prototypeFields()),
             ),
           ],
         ),
@@ -275,7 +296,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     );
   }
 
-  List<Widget> _fields() {
+  List<Widget> _hierarchyFields() {
     final locked = _editing;
     return [
       IgnorePointer(
@@ -317,64 +338,161 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           ),
         ),
       ),
-      CoeloFormTextField(
-        fieldKey: const Key('group-name-field'),
-        controller: _nameController,
-        labelText: 'Nome do grupo',
-        prefixIcon: Icons.groups_outlined,
-        textInputAction: TextInputAction.next,
-        validator: _required('Informe o nome do grupo.'),
-        onChanged: (_) => _markDirty(),
-      ),
-      CoeloFormTextField(
-        fieldKey: const Key('group-type-field'),
-        controller: _typeController,
-        labelText: 'Tipo do grupo',
-        hintText: 'Ex.: class',
-        prefixIcon: Icons.category_outlined,
-        textInputAction: TextInputAction.done,
-        validator: _required('Informe o tipo do grupo.'),
-        onChanged: (_) => _markDirty(),
-        onFieldSubmitted: (_) => _save(),
-      ),
-      CoeloAdminSingleSelectField<GroupStatus>(
-        key: const Key('group-status-field'),
-        label: 'Status',
-        value: _status,
-        options: GroupStatus.values,
-        optionLabel: (value) => value.label,
-        prefixIcon: Icons.toggle_on_outlined,
-        onChanged: (value) => setState(() {
-          _status = value;
-          _dirty = true;
-        }),
-      ),
     ];
   }
+
+  List<Widget> _identityFields() => [
+    CoeloFormTextField(
+      fieldKey: const Key('group-name-field'),
+      controller: _nameController,
+      labelText: 'Nome do grupo',
+      prefixIcon: Icons.groups_outlined,
+      textInputAction: TextInputAction.next,
+      validator: _required('Informe o nome do grupo.'),
+      onChanged: (_) => _markDirty(),
+    ),
+    CoeloFormTextField(
+      fieldKey: const Key('group-type-field'),
+      controller: _typeController,
+      labelText: 'Tipo do grupo',
+      hintText: 'Ex.: class',
+      prefixIcon: Icons.category_outlined,
+      textInputAction: TextInputAction.done,
+      validator: _required('Informe o tipo do grupo.'),
+      onChanged: (_) => _markDirty(),
+      onFieldSubmitted: (_) => _save(),
+    ),
+    CoeloAdminSingleSelectField<GroupStatus>(
+      key: const Key('group-status-field'),
+      label: 'Status',
+      value: _status,
+      options: GroupStatus.values,
+      optionLabel: (value) => value.label,
+      prefixIcon: Icons.toggle_on_outlined,
+      onChanged: (value) => setState(() {
+        _status = value;
+        _dirty = true;
+      }),
+    ),
+  ];
+
+  List<Widget> _prototypeFields() => [
+    CoeloFormTextField(
+      fieldKey: const Key('group-handle-field'),
+      controller: _handleController,
+      labelText: 'Arroba do grupo',
+      hintText: '@grupo',
+      prefixIcon: Icons.alternate_email_rounded,
+      onChanged: (_) => _markDirty(),
+    ),
+    CoeloFormTextField(
+      fieldKey: const Key('group-primary-color-field'),
+      controller: _primaryColorController,
+      labelText: 'Cor principal',
+      prefixIcon: Icons.palette_outlined,
+      onChanged: (_) => _markDirty(),
+    ),
+    CoeloFormTextField(
+      fieldKey: const Key('group-secondary-color-field'),
+      controller: _secondaryColorController,
+      labelText: 'Cor de apoio',
+      prefixIcon: Icons.color_lens_outlined,
+      onChanged: (_) => _markDirty(),
+    ),
+    Container(
+      key: const Key('group-activity-links'),
+      padding: const EdgeInsets.all(CoeloSpacing.space3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Vínculos de atividades', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: CoeloSpacing.space2),
+          for (final activity in const ['Música', 'Leitura', 'Movimento'])
+            Material(
+              color: Colors.transparent,
+              child: CheckboxListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(activity),
+                value: _activityLinks.contains(activity),
+                onChanged: (selected) => setState(() {
+                  if (selected ?? false) {
+                    _activityLinks.add(activity);
+                  } else {
+                    _activityLinks.remove(activity);
+                  }
+                  _dirty = true;
+                }),
+              ),
+            ),
+        ],
+      ),
+    ),
+  ];
+
+  Widget _formSection({
+    required Key key,
+    required String title,
+    required String description,
+    required Widget child,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      key: key,
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(
+            description,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _fieldGrid(List<Widget> fields) => LayoutBuilder(
+    builder: (context, constraints) {
+      final twoColumns = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
+      final width = twoColumns
+          ? (constraints.maxWidth - CoeloSpacing.space3) / 2
+          : constraints.maxWidth;
+      return Wrap(
+        spacing: CoeloSpacing.space3,
+        runSpacing: CoeloSpacing.space4,
+        children: [for (final field in fields) SizedBox(width: width, child: field)],
+      );
+    },
+  );
 
   FormFieldValidator<String> _required(String message) =>
       (value) => value == null || value.trim().isEmpty ? message : null;
 
   Widget _footer() {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
+    return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 880),
-      padding: const EdgeInsets.all(CoeloSpacing.space3),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Wrap(
-        alignment: WrapAlignment.end,
-        spacing: CoeloSpacing.space3,
-        runSpacing: CoeloSpacing.space2,
-        children: [
-          OutlinedButton(
-            key: const Key('group-form-cancel'),
-            onPressed: _saving ? null : _cancel,
-            child: const Text('Cancelar'),
-          ),
+      child: SuperadminFormActionFooter(
+        surfaceKey: const Key('group-form-footer-surface'),
+        tertiaryAction: TextButton(
+          key: const Key('group-form-cancel'),
+          onPressed: _saving ? null : _cancel,
+          child: const Text('Cancelar'),
+        ),
+        continuationActions: [
           FilledButton.icon(
             key: const Key('group-form-save'),
             onPressed: _saving ? null : _save,

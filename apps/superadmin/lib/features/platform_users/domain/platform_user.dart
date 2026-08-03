@@ -65,6 +65,15 @@ extension PlatformUserScopeLabel on PlatformUserScope {
 
 enum PlatformUserDirectoryView { cards, table }
 
+enum PlatformUserTableView { grouped, scopes }
+
+extension PlatformUserTableViewLabel on PlatformUserTableView {
+  String get label => switch (this) {
+    PlatformUserTableView.grouped => 'Agrupado',
+    PlatformUserTableView.scopes => 'Detalhado por escopos',
+  };
+}
+
 enum PlatformUserCapability { owner, auditor, unauthorized }
 
 final class PlatformUserRecord {

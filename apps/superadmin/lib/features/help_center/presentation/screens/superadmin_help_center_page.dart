@@ -414,10 +414,21 @@ class _StackedHistory extends StatelessWidget {
           children: [
             Expanded(
               child: MenuAnchor(
+                style: MenuStyle(
+                  backgroundColor: WidgetStatePropertyAll(colors.surface),
+                  surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+                  elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
+                  padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+                  side: WidgetStatePropertyAll(BorderSide(color: colors.outlineVariant)),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+                  ),
+                ),
                 menuChildren: [
                   for (final conversation in conversations)
                     MenuItemButton(
                       onPressed: () => onConversationSelected(conversation.id),
+                      style: _discreteMenuItemStyle(colors),
                       leadingIcon: Icon(
                         conversation.id == selectedId
                             ? Icons.chat_rounded
@@ -846,5 +857,34 @@ ButtonStyle _discreteIconButtonStyle(ColorScheme colors) {
     hoverColor: colors.primaryContainer,
     focusColor: colors.primaryContainer,
     highlightColor: colors.primaryContainer,
+  );
+}
+
+ButtonStyle _discreteMenuItemStyle(ColorScheme colors) {
+  final highlightedBackground = WidgetStateProperty.resolveWith<Color?>((states) {
+    if (states.contains(WidgetState.hovered) ||
+        states.contains(WidgetState.focused) ||
+        states.contains(WidgetState.pressed)) {
+      return colors.primaryContainer;
+    }
+    return Colors.transparent;
+  });
+  final highlightedForeground = WidgetStateProperty.resolveWith<Color?>((states) {
+    if (states.contains(WidgetState.hovered) ||
+        states.contains(WidgetState.focused) ||
+        states.contains(WidgetState.pressed)) {
+      return colors.primary;
+    }
+    return colors.onSurface;
+  });
+  return ButtonStyle(
+    backgroundColor: highlightedBackground,
+    foregroundColor: highlightedForeground,
+    iconColor: highlightedForeground,
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+    minimumSize: const WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
+    shape: WidgetStatePropertyAll(
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+    ),
   );
 }

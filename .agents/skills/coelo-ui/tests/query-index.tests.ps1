@@ -76,6 +76,8 @@ Assert-QueryContains -Query 'password' `
     -ExpectedId 'core.form-text-field'
 Assert-QueryContains -Query 'view toggle cards table' `
     -ExpectedId 'pattern.admin-directory'
+Assert-QueryContains -Query 'table views grouped detailed' `
+    -ExpectedId 'pattern.admin-directory'
 Assert-QueryContains -Query 'hover card institutions' `
     -ExpectedId 'pattern.admin-directory'
 Assert-QueryContains -Query 'gap create banner table' `

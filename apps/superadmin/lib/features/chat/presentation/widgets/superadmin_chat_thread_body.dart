@@ -156,9 +156,12 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
         subtitle: 'Demonstração local',
         compact: true,
         onClose: () => Navigator.pop(dialogContext, false),
-        footer: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        footer: SuperadminChatDialogActions(
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
+            ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               style: FilledButton.styleFrom(
@@ -166,11 +169,6 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
                 foregroundColor: Theme.of(dialogContext).colorScheme.onError,
               ),
               child: Text(isGroup ? 'Excluir grupo' : 'Excluir conversa'),
-            ),
-            const SizedBox(height: CoeloSpacing.space1),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
             ),
           ],
         ),

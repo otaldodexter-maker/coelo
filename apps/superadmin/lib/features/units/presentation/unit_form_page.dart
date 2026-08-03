@@ -9,6 +9,7 @@ import '../../auth/domain/logout_action.dart';
 import '../../institutions/data/institution_location_service.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../domain/unit_directory.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
@@ -40,8 +41,8 @@ final class UnitFormPage extends StatefulWidget {
 }
 
 final class _UnitFormPageState extends State<UnitFormPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _footerKey = GlobalKey();
+  final _profileFormKey = GlobalKey<FormState>();
+  final _locationFormKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {};
   late final UnitFormController _formController;
   late final InstitutionLocationService _locationService;
@@ -57,7 +58,6 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   bool _hasCover = false;
   bool _lookingUpPostalCode = false;
   double _footerHeight = 0;
-  bool _footerMeasurementScheduled = false;
 
   static const _fields = [
     'brandDisplayName',
@@ -192,14 +192,22 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   }
 
   void _continue() {
-    if (!_formController.validateCurrentStep(_formKey)) {
+    final formKey = switch (_formController.currentStep) {
+      UnitFormStep.profile => _profileFormKey,
+      UnitFormStep.location => _locationFormKey,
+      _ => null,
+    };
+    if (formKey != null && !_formController.validateCurrentStep(formKey)) {
       return;
     }
     _formController.nextStep();
   }
 
   Future<void> _save() async {
-    if (!_formController.validateForSave(_formKey)) {
+    if (!_formController.validateForSave(
+      profileFormKey: _profileFormKey,
+      locationFormKey: _locationFormKey,
+    )) {
       return;
     }
     _formController.setSaving(true);
@@ -330,7 +338,6 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         onAction: widget.onCancel,
       );
     }
-    _scheduleFooterMeasurement();
     return AnimatedBuilder(
       animation: _formController,
       builder: (context, child) => PopScope(
@@ -338,121 +345,103 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) _cancel();
         },
-        child: Form(
-          key: _formKey,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final desktop = outerConstraints.maxWidth >= CoeloBreakpoints.large.minWidth;
-              final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-                  ? CoeloSpacing.space10
-                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                  ? CoeloSpacing.space6
-                  : CoeloSpacing.space4;
-              return Padding(
-                padding: EdgeInsets.fromLTRB(
-                  contentInset,
-                  contentInset,
-                  contentInset,
-                  CoeloSpacing.space4,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (desktop) ...[
-                      UnitFormNavigation(controller: _formController),
-                      const SizedBox(width: CoeloSpacing.space6),
-                    ],
-                    Expanded(
-                      child: Column(
-                        children: [
-                          if (!desktop) ...[
-                            UnitFormNavigation(controller: _formController),
-                            const SizedBox(height: CoeloSpacing.space4),
-                          ],
-                          Expanded(
-                            child: SingleChildScrollView(
-                              key: const Key('unit-form-scroll'),
-                              padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                              child: Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 880),
-                                  child: _section(),
-                                ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final desktop = outerConstraints.maxWidth >= CoeloBreakpoints.large.minWidth;
+            final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                ? CoeloSpacing.space10
+                : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                ? CoeloSpacing.space6
+                : CoeloSpacing.space4;
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                contentInset,
+                contentInset,
+                contentInset,
+                CoeloSpacing.space4,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (desktop) ...[
+                    UnitFormNavigation(controller: _formController),
+                    const SizedBox(width: CoeloSpacing.space6),
+                  ],
+                  Expanded(
+                    child: Column(
+                      children: [
+                        if (!desktop) ...[
+                          UnitFormNavigation(controller: _formController),
+                          const SizedBox(height: CoeloSpacing.space4),
+                        ],
+                        Expanded(
+                          child: SingleChildScrollView(
+                            key: const Key('unit-form-scroll'),
+                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 880),
+                                child: _section(),
                               ),
                             ),
                           ),
-                          _footer(),
-                        ],
-                      ),
+                        ),
+                        _footer(),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _scheduleFooterMeasurement() {
-    if (_footerMeasurementScheduled) return;
-    _footerMeasurementScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _footerMeasurementScheduled = false;
-      if (!mounted) return;
-      final renderObject = _footerKey.currentContext?.findRenderObject();
-      if (renderObject is! RenderBox || !renderObject.hasSize) return;
-      final nextHeight = renderObject.size.height;
-      if ((nextHeight - _footerHeight).abs() < 0.5) return;
-      setState(() => _footerHeight = nextHeight);
-    });
-  }
-
-  Widget _section() {
-    return AnimatedSwitcher(
-      duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short,
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0.025, 0),
-            end: Offset.zero,
-          ).animate(animation),
-          child: child,
-        ),
-      ),
-      child: Column(
-        key: ValueKey(_formController.currentStep),
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (_formController.saveError != null) ...[
-            Semantics(
-              liveRegion: true,
-              child: MaterialBanner(
-                key: const Key('unit-form-save-error'),
-                content: Text(_formController.saveError!),
-                actions: [
-                  TextButton(
-                    onPressed: () => _formController.setSaveError(null),
-                    child: const Text('Fechar'),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-          ],
-          switch (_formController.currentStep) {
-            UnitFormStep.branding => _branding(),
-            UnitFormStep.profile => _profile(),
-            UnitFormStep.location => _location(),
-            UnitFormStep.plan => _planSection(),
-            UnitFormStep.review => _review(),
+            );
           },
-        ],
+        ),
       ),
     );
   }
+
+  Widget _section() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_formController.saveError != null) ...[
+          Semantics(
+            liveRegion: true,
+            child: MaterialBanner(
+              key: const Key('unit-form-save-error'),
+              content: Text(_formController.saveError!),
+              actions: [
+                TextButton(
+                  onPressed: () => _formController.setSaveError(null),
+                  child: const Text('Fechar'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
+        Stack(
+          children: [
+            for (final step in UnitFormStep.values)
+              Offstage(
+                offstage: step != _formController.currentStep,
+                child: TickerMode(
+                  enabled: step == _formController.currentStep,
+                  child: KeyedSubtree(key: ValueKey(step), child: _stepContent(step)),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _stepContent(UnitFormStep step) => switch (step) {
+    UnitFormStep.branding => _branding(),
+    UnitFormStep.profile => _profile(),
+    UnitFormStep.location => _location(),
+    UnitFormStep.plan => _planSection(),
+    UnitFormStep.review => _review(),
+  };
 
   Widget _heading(String title, String description) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,7 +476,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _heading('Identidade visual', 'Defina como a unidade será reconhecida no Coelo.'),
+        _heading('Identidade', 'Defina como a unidade será reconhecida no Coelo.'),
         _UnitBrandPreview(
           displayName: displayName,
           institutionName: _institution.publicName,
@@ -571,69 +560,72 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     );
   }
 
-  Widget _profile() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _heading('Perfil da unidade', 'Informe instituição, tipo e status operacional.'),
-      _responsiveFields([
-        IgnorePointer(
-          ignoring: _original != null,
-          child: Opacity(
-            opacity: _original == null ? 1 : .65,
-            child: CoeloAdminSingleSelectField<InstitutionRecord>(
-              key: const Key('unit-institution-field'),
-              label: 'Instituição',
-              value: _institution,
-              options: _institutionOptions,
-              optionLabel: (value) => value.publicName,
-              onChanged: (value) => setState(() {
-                _institution = value;
-                _plan = value.plan;
-                _typeId = value.typeId;
-                _formController.markDirty();
-              }),
-              prefixIcon: Icons.account_balance_outlined,
+  Widget _profile() => Form(
+    key: _profileFormKey,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _heading('Hierarquia', 'Informe instituição, unidade, tipo e status operacional.'),
+        _responsiveFields([
+          IgnorePointer(
+            ignoring: _original != null,
+            child: Opacity(
+              opacity: _original == null ? 1 : .65,
+              child: CoeloAdminSingleSelectField<InstitutionRecord>(
+                key: const Key('unit-institution-field'),
+                label: 'Instituição',
+                value: _institution,
+                options: _institutionOptions,
+                optionLabel: (value) => value.publicName,
+                onChanged: (value) => setState(() {
+                  _institution = value;
+                  _plan = value.plan;
+                  _typeId = value.typeId;
+                  _formController.markDirty();
+                }),
+                prefixIcon: Icons.account_balance_outlined,
+              ),
             ),
           ),
-        ),
-        _field(
-          'name',
-          'Nome da unidade',
-          Icons.apartment_outlined,
-          key: const Key('unit-name-field'),
-          required: true,
-        ),
-        _field(
-          'slug',
-          'Identificador',
-          Icons.alternate_email_rounded,
-          key: const Key('unit-slug-field'),
-          required: true,
-        ),
-        CoeloAdminSingleSelectField<InstitutionRecord>(
-          label: 'Tipo',
-          value: _typeOptions.firstWhere((value) => value.typeId == _typeId),
-          options: _typeOptions,
-          optionLabel: (value) => value.typeName,
-          onChanged: (value) => setState(() {
-            _typeId = value.typeId;
-            _formController.markDirty();
-          }),
-          prefixIcon: Icons.category_outlined,
-        ),
-        CoeloAdminSingleSelectField<UnitStatus>(
-          label: 'Status operacional',
-          value: _status,
-          options: UnitStatus.values,
-          optionLabel: (value) => value.label,
-          onChanged: (value) => setState(() {
-            _status = value;
-            _formController.markDirty();
-          }),
-          prefixIcon: Icons.toggle_on_outlined,
-        ),
-      ]),
-    ],
+          _field(
+            'name',
+            'Nome da unidade',
+            Icons.apartment_outlined,
+            key: const Key('unit-name-field'),
+            required: true,
+          ),
+          _field(
+            'slug',
+            'Identificador',
+            Icons.alternate_email_rounded,
+            key: const Key('unit-slug-field'),
+            required: true,
+          ),
+          CoeloAdminSingleSelectField<InstitutionRecord>(
+            label: 'Tipo',
+            value: _typeOptions.firstWhere((value) => value.typeId == _typeId),
+            options: _typeOptions,
+            optionLabel: (value) => value.typeName,
+            onChanged: (value) => setState(() {
+              _typeId = value.typeId;
+              _formController.markDirty();
+            }),
+            prefixIcon: Icons.category_outlined,
+          ),
+          CoeloAdminSingleSelectField<UnitStatus>(
+            label: 'Status operacional',
+            value: _status,
+            options: UnitStatus.values,
+            optionLabel: (value) => value.label,
+            onChanged: (value) => setState(() {
+              _status = value;
+              _formController.markDirty();
+            }),
+            prefixIcon: Icons.toggle_on_outlined,
+          ),
+        ]),
+      ],
+    ),
   );
 
   Future<void> _lookupPostalCode() async {
@@ -666,44 +658,47 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     }
   }
 
-  Widget _location() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _heading('Localização e contato', 'Cadastre endereço e canais da unidade.'),
-      _responsiveFields([
-        _field(
-          'postalCode',
-          'CEP',
-          Icons.location_searching_outlined,
-          suffixIcon: IconButton(
-            tooltip: 'Buscar CEP',
-            onPressed: _lookingUpPostalCode ? null : _lookupPostalCode,
-            icon: _lookingUpPostalCode
-                ? const SizedBox.square(
-                    key: Key('unit-postal-code-loading'),
-                    dimension: CoeloSize.iconMd,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.travel_explore_rounded),
+  Widget _location() => Form(
+    key: _locationFormKey,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _heading('Localização', 'Cadastre endereço e canais da unidade.'),
+        _responsiveFields([
+          _field(
+            'postalCode',
+            'CEP',
+            Icons.location_searching_outlined,
+            suffixIcon: IconButton(
+              tooltip: 'Buscar CEP',
+              onPressed: _lookingUpPostalCode ? null : _lookupPostalCode,
+              icon: _lookingUpPostalCode
+                  ? const SizedBox.square(
+                      key: Key('unit-postal-code-loading'),
+                      dimension: CoeloSize.iconMd,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.travel_explore_rounded),
+            ),
           ),
-        ),
-        _field('country', 'País', Icons.public_outlined),
-        _field('state', 'UF', Icons.map_outlined),
-        _field('city', 'Município', Icons.location_city_outlined),
-        _field('district', 'Bairro', Icons.place_outlined),
-        _field('street', 'Logradouro', Icons.signpost_outlined),
-        _field('addressNumber', 'Número', Icons.numbers_outlined),
-        _field('complement', 'Complemento', Icons.add_home_outlined),
-        _field(
-          'contactEmail',
-          'E-mail',
-          Icons.email_outlined,
-          key: const Key('unit-contact-email-field'),
-        ),
-        _field('contactPhone', 'Telefone', Icons.phone_outlined),
-        _field('contactMobilePhone', 'Celular', Icons.smartphone_outlined),
-      ]),
-    ],
+          _field('country', 'País', Icons.public_outlined),
+          _field('state', 'UF', Icons.map_outlined),
+          _field('city', 'Município', Icons.location_city_outlined),
+          _field('district', 'Bairro', Icons.place_outlined),
+          _field('street', 'Logradouro', Icons.signpost_outlined),
+          _field('addressNumber', 'Número', Icons.numbers_outlined),
+          _field('complement', 'Complemento', Icons.add_home_outlined),
+          _field(
+            'contactEmail',
+            'E-mail',
+            Icons.email_outlined,
+            key: const Key('unit-contact-email-field'),
+          ),
+          _field('contactPhone', 'Telefone', Icons.phone_outlined),
+          _field('contactMobilePhone', 'Celular', Icons.smartphone_outlined),
+        ]),
+      ],
+    ),
   );
 
   Widget _planSection() => Column(
@@ -779,7 +774,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       _heading('Revisão', 'Confira os dados antes de concluir. Você pode editar qualquer grupo.'),
       _UnitReviewCard(
         editKey: const Key('unit-review-edit-profile'),
-        title: 'Perfil da unidade',
+        title: 'Hierarquia',
         summary:
             '${_text('name')} · ${_institution.publicName}\n'
             '${_typeOptions.firstWhere((value) => value.typeId == _typeId).typeName} · '
@@ -788,7 +783,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       ),
       _UnitReviewCard(
         editKey: const Key('unit-review-edit-location'),
-        title: 'Localização e contato',
+        title: 'Localização',
         summary: _text('city').isEmpty && _text('state').isEmpty
             ? 'Não informado'
             : '${_text('city')} / ${_text('state')}',
@@ -804,7 +799,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       ),
       _UnitReviewCard(
         editKey: const Key('unit-review-edit-branding'),
-        title: 'Identidade visual',
+        title: 'Identidade',
         summary: _inheritBranding
             ? 'Herdada de ${_institution.publicName}'
             : (_text('brandDisplayName').isEmpty
@@ -932,65 +927,23 @@ final class _UnitFormPageState extends State<UnitFormPage> {
               dimension: CoeloSize.iconSm,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Text('Salvar alterações'),
+          : const Text('Salvar'),
     );
-    return SafeArea(
-      top: false,
-      child: Container(
-        key: _footerKey,
-        padding: const EdgeInsets.all(CoeloSpacing.space3),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < 720) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_original != null && !last) ...[
-                    saveCurrentButton,
-                    const SizedBox(height: CoeloSpacing.space2),
-                  ],
-                  primary,
-                  const SizedBox(height: CoeloSpacing.space2),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: _formController.isSaving ? null : _cancel,
-                        child: const Text('Cancelar'),
-                      ),
-                      const Spacer(),
-                      if (previous != null)
-                        OutlinedButton(onPressed: previous, child: const Text('Anterior')),
-                    ],
-                  ),
-                ],
-              );
-            }
-            return Row(
-              children: [
-                TextButton(
-                  onPressed: _formController.isSaving ? null : _cancel,
-                  child: const Text('Cancelar'),
-                ),
-                const Spacer(),
-                if (previous != null) ...[
-                  OutlinedButton(onPressed: previous, child: const Text('Anterior')),
-                  const SizedBox(width: CoeloSpacing.space2),
-                ],
-                primary,
-                if (_original != null && !last) ...[
-                  const SizedBox(width: CoeloSpacing.space2),
-                  saveCurrentButton,
-                ],
-              ],
-            );
-          },
-        ),
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('unit-form-footer'),
+      onHeightChanged: (height) {
+        if ((_footerHeight - height).abs() < 0.5) return;
+        setState(() => _footerHeight = height);
+      },
+      tertiaryAction: TextButton(
+        onPressed: _formController.isSaving ? null : _cancel,
+        child: const Text('Cancelar'),
       ),
+      continuationActions: [
+        if (previous != null) OutlinedButton(onPressed: previous, child: const Text('Anterior')),
+        primary,
+        if (_original != null && !last) saveCurrentButton,
+      ],
     );
   }
 }
@@ -1302,9 +1255,12 @@ final class _UnitPlanCard extends StatelessWidget {
                   width: selected ? 2 : 1,
                 ),
               ),
-              backgroundColor: WidgetStatePropertyAll(
-                selected ? colors.primaryContainer : colors.surface,
-              ),
+              backgroundColor: WidgetStateProperty.resolveWith((states) {
+                final highlighted =
+                    states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+                return selected || highlighted ? colors.primaryContainer : colors.surface;
+              }),
+              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
             ),
         child: Row(
           children: [

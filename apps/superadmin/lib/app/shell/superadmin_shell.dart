@@ -405,18 +405,21 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     final openConversations =
         widget.onOpenConversations ??
         (destinationHandler == null ? () {} : () => destinationHandler('conversations'));
+    final launcherReservedBottom = widget.chatLauncherBottomInset > 0
+        ? _shellGutter + widget.chatLauncherBottomInset
+        : 0.0;
+    final launcherBottom = CoeloSpacing.space4 + launcherReservedBottom;
     return Stack(
       fit: StackFit.expand,
       children: [
         child,
         Positioned(
           right: CoeloSpacing.space4,
-          bottom:
-              CoeloSpacing.space4 +
-              (widget.chatLauncherBottomInset > 0
-                  ? _shellGutter + widget.chatLauncherBottomInset
-                  : 0),
-          child: SuperadminChatLauncher(onOpenConversations: openConversations),
+          bottom: launcherBottom,
+          child: SuperadminChatLauncher(
+            onOpenConversations: openConversations,
+            bottomClearance: launcherReservedBottom,
+          ),
         ),
       ],
     );

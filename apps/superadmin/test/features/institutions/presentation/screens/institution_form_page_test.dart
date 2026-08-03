@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/features/institutions/data/institution_location_service.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_form_navigation.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,59 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
+  testWidgets('uses the measured shared footer and keeps the launcher above it', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    final footer = find.byType(SuperadminFormActionFooter);
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    expect(footer, findsOneWidget);
+    expect(launcher, findsOneWidget);
+    expect(
+      tester.getBottomLeft(launcher).dy,
+      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+    );
+  });
+
+  testWidgets('aligns the rounded notes icon at the bio top-left', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('institution-form-continue')));
+    await tester.pump(const Duration(seconds: 1));
+
+    final field = find.byKey(const Key('institution-field-profileBio'));
+    final decorator = find.descendant(of: field, matching: find.byType(InputDecorator));
+    final icon = find.descendant(of: decorator, matching: find.byIcon(Icons.notes_rounded));
+    expect(icon, findsOneWidget);
+    expect(tester.getTopLeft(icon).dy, lessThan(tester.getCenter(field).dy));
+    expect(find.byKey(const Key('institution-bio-emoji-picker')), findsOneWidget);
+    expect(find.text('0/220'), findsOneWidget);
+  });
+
   testWidgets('uses the same empty form for institution creation', (tester) async {
     await tester.pumpWidget(
       _app(
@@ -965,7 +1019,8 @@ void main() {
 
     await tester.tap(find.text('Administradores'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-add-administrator')));
+    final addAdministrator = find.byKey(const Key('institution-add-administrator'));
+    tester.widget<OutlinedButton>(addAdministrator).onPressed!();
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('institution-person-avatar-picker')), findsOneWidget);
     expect(find.text('Adicionar foto'), findsOneWidget);
@@ -1059,7 +1114,10 @@ void main() {
       await tester.tap(find.byKey(const Key('institution-form-continue')));
       await tester.pumpAndSettle();
     }
-    await tester.tap(find.byKey(const Key('institution-add-legal-representative')));
+    final addRepresentative = find.byKey(const Key('institution-add-legal-representative'));
+    await tester.ensureVisible(addRepresentative);
+    await tester.pump();
+    await tester.tap(addRepresentative);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-person-dialog-save')));
     await tester.pumpAndSettle();

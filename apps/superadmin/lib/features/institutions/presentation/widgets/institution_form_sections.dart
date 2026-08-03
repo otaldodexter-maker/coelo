@@ -2610,7 +2610,7 @@ IconData _iconFor(InstitutionFormField field) => switch (field) {
   InstitutionFormField.tradeName ||
   InstitutionFormField.legalName ||
   InstitutionFormField.brandDisplayName ||
-  InstitutionFormField.profileBio => Icons.notes_outlined,
+  InstitutionFormField.profileBio => Icons.notes_rounded,
   InstitutionFormField.typeName || InstitutionFormField.documentType => Icons.category_outlined,
   InstitutionFormField.document => Icons.badge_outlined,
   InstitutionFormField.slug => Icons.alternate_email_rounded,

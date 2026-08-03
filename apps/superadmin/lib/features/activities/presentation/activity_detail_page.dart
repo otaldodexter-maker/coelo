@@ -16,6 +16,7 @@ final class ActivityDetailPage extends StatefulWidget {
     required this.repository,
     required this.logout,
     required this.onBack,
+    this.onEdit,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     super.key,
@@ -25,6 +26,7 @@ final class ActivityDetailPage extends StatefulWidget {
   final ActivityDirectoryRepository repository;
   final LogoutAction logout;
   final VoidCallback onBack;
+  final VoidCallback? onEdit;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
@@ -129,19 +131,31 @@ final class _ActivityDetailPageState extends State<ActivityDetailPage> {
       actionLabel: 'Tentar novamente',
       onAction: _load,
     ),
-    _ActivityDetailState.success => _ActivityDetailContent(detail: _detail!),
+    _ActivityDetailState.success => _ActivityDetailContent(detail: _detail!, onEdit: widget.onEdit),
   };
 }
 
 final class _ActivityDetailContent extends StatelessWidget {
-  const _ActivityDetailContent({required this.detail});
+  const _ActivityDetailContent({required this.detail, required this.onEdit});
 
   final ActivityDetail detail;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      if (onEdit != null) ...[
+        Align(
+          alignment: Alignment.centerRight,
+          child: FilledButton.icon(
+            onPressed: onEdit,
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Editar atividade'),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
       _DetailSection(
         title: 'Identidade',
         icon: Icons.badge_outlined,

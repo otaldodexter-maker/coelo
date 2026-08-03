@@ -877,8 +877,16 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   sair, excluir e deletar ficam abaixo de divisor, com respiro `space1`.
 - O toggle cards/tabela é um controle segmentado único, não dois botões soltos.
   Cada segmento preserva alvo mínimo de 48 px e nome acessível.
-- O rodapé sticky de Instituições é composição privada. Cards oferecem
-  `11, 20, 50, 100`; tabela oferece `8, 20, 50, 100`.
+- Clicar diretamente em Tabela abre a visão `Agrupado`. Quando o diretório
+  possui detalhes hierárquicos, hover ou foco nesse segmento abre um flyout
+  `surface`, sem tint, com borda, raio e elevação Coelo; toque e teclado devem
+  oferecer o mesmo caminho, sem depender apenas de hover.
+- O rodapé sticky de paginação é composição privada reutilizável nos diretórios
+  do Superadmin. Usa `surface` translúcida a 84% no tema claro e 88% no escuro,
+  blur `CoeloSpacing.space3`, sem borda ou linha superior e com altura medida
+  para não cobrir conteúdo ou launcher. Cards oferecem `11, 20, 50, 100`;
+  tabela oferece `8, 20, 50, 100`. Paginação inline não sticky fica fora desse
+  contrato.
 
 ### Baselines visuais aprovadas do Superadmin
 

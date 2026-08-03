@@ -19,6 +19,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
   final AccessProfileRepository _repository;
 
   AccessProfileQuery query = const AccessProfileQuery();
+  AccessProfileTableView tableView = AccessProfileTableView.grouped;
   AccessProfilePage page = const AccessProfilePage.empty();
   List<PrincipalCapability> capabilities = const [];
   AccessProfileLoadState state = AccessProfileLoadState.initial;
@@ -118,6 +119,16 @@ final class AccessProfileViewModel extends ChangeNotifier {
   Future<void> setLayout(AccessProfileLayout value) async {
     final pageSize = value == AccessProfileLayout.cards ? 11 : 8;
     query = query.copyWith(layout: value, pageSize: pageSize, resetPage: true);
+    await load();
+  }
+
+  Future<void> setTableView(AccessProfileTableView value) async {
+    tableView = value;
+    query = query.copyWith(
+      layout: AccessProfileLayout.table,
+      pageSize: AccessProfileQueryTableSizes.table,
+      resetPage: true,
+    );
     await load();
   }
 

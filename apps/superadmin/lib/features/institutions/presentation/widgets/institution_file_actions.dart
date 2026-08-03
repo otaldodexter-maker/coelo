@@ -6,10 +6,16 @@ import '../../../../app/activity/superadmin_activity.dart';
 import '../../../../app/shell/superadmin_notice.dart';
 
 class InstitutionFileActions extends StatelessWidget {
-  const InstitutionFileActions({required this.activityController, this.compact = false, super.key});
+  const InstitutionFileActions({
+    required this.activityController,
+    this.compact = false,
+    this.viewLabel,
+    super.key,
+  });
 
   final SuperadminActivityController activityController;
   final bool compact;
+  final String? viewLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,12 @@ class InstitutionFileActions extends StatelessWidget {
         ? 0.0
         : -128.0;
     void export(SuperadminExportFormat format) {
-      activityController.completeDemoExport(format);
+      final label = viewLabel;
+      activityController.completeDemoExport(
+        format,
+        subject: label == null ? 'Instituições' : 'Instituições · $label',
+        fileBaseName: label == null ? 'instituicoes' : 'instituicoes-${_viewFileSuffix(label)}',
+      );
       showSuperadminNotice(
         context,
         'A exportação está em andamento. Acompanhe pelo sininho.',
@@ -82,6 +93,15 @@ class InstitutionFileActions extends StatelessWidget {
     );
   }
 }
+
+String _viewFileSuffix(String value) => switch (value) {
+  'Atividades' => 'atividades',
+  'Agrupado' => 'agrupado',
+  'Unidades' => 'unidades',
+  'Grupos' => 'grupos',
+  'Cards' => 'cards',
+  _ => 'visao',
+};
 
 MenuStyle _fileMenuStyle(BuildContext context, {required bool compact}) {
   final colors = Theme.of(context).colorScheme;

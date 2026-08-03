@@ -3,6 +3,7 @@ source: "Solicitação aprovada em 2026-07-28 para reduzir a tabela de Institui�
 status: "approved"
 generated_at: "2026-07-28"
 updated_at: "2026-07-29"
+revised_at: "2026-08-03"
 ---
 
 # Paginação fixa do diretório de Instituições
@@ -21,8 +22,8 @@ referência.
 
 - Fixar a paginação na parte inferior da área de conteúdo de Instituições.
 - Preservar a paginação centralizada nos modos cards e tabela.
-- Aplicar ao rodapé uma superfície `glass` local, com blur, cor semântica
-  translúcida e divisor superior discreto.
+- Aplicar ao rodapé uma superfície `glass` local, sem divisor superior, com
+  blur e cor semântica translúcida.
 - Reservar no conteúdo rolável uma área inferior equivalente ao rodapé mais o
   espaçamento de segurança, para que cards, linhas e scrollbars não fiquem
   ocultos.
@@ -37,7 +38,7 @@ referência.
   de texto normal.
 - Criar componente, variante ou token global para rodapés com blur.
 - Alterar cards, colunas, dados exibidos, filtros ou regras de ordenação.
-- Alterar a paginação de outras telas administrativas.
+- Alterar paginação inline de Suporte, quando ela não for sticky/glass.
 - Mudar consultas, policies, RLS ou contratos de banco além do valor
   `pageSize` já aceito pelo diretório.
 
@@ -72,13 +73,15 @@ uma composição local:
    atualizam o inset reservado.
 
 O rodapé usa `ClipRect` e `BackdropFilter`, com blur baseado em
-`CoeloSpacing.space2`. A superfície usa `colorScheme.surface` translúcida, com
-opacidade local de `0.88`, e divisor superior em
-`colorScheme.outlineVariant`. O conteúdo recebe padding vertical por tokens,
-`SafeArea` e o mesmo alinhamento horizontal já aprovado para a paginação.
+`CoeloSpacing.space3`. A superfície usa `colorScheme.surface` translúcida, com
+opacidade local de `0.84` no tema claro e `0.88` no escuro, sem borda ou linha
+superior. O conteúdo recebe padding vertical por tokens, `SafeArea` e o mesmo
+alinhamento horizontal já aprovado para a paginação.
 
-O tratamento permanece privado ao app Superadmin. Ele não oficializa um novo
-padrão reutilizável no Coelo UI.
+O tratamento permanece privado ao app Superadmin e é reutilizado por seus
+diretórios sticky de Instituições, Unidades, Grupos, Atividades, Pessoas,
+Usuários Internos e Perfis e Permissões. Ele não cria variante pública em
+`coelo_ui_admin`.
 
 ## Estados de UX
 
@@ -127,8 +130,8 @@ de apresentação e tamanho de página.
 - Conteúdo curto mantém a paginação alinhada ao fim da área disponível.
 - O último card e a última linha ficam totalmente visíveis e não são encobertos
   pelo rodapé.
-- A superfície fixa apresenta blur, fundo semântico translúcido, divisor e
-  espaçamento coerentes em light e dark.
+- A superfície fixa apresenta blur, fundo semântico translúcido e espaçamento
+  coerentes em light e dark, sem linha superior.
 - O menu de tamanho de página abre acima da faixa e continua interativo.
 - Não existe mudança na API pública de `CoeloAdminPagination`.
 
@@ -150,5 +153,5 @@ de apresentação e tamanho de página.
   faixa do rodapé.
 - A altura da paginação varia conforme a largura. O inset não deve usar altura
   fixa; deve acompanhar o tamanho renderizado.
-- Não há pergunta de produto aberta. Uma eventual reutilização desse rodapé em
-  outras telas exige proposta separada ao Coelo UI.
+- Não há pergunta de produto aberta. A reutilização aprovada permanece privada
+  ao Superadmin; uma promoção para API pública exige proposta separada.

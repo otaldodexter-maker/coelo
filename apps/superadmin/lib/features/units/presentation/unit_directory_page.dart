@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +6,9 @@ import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../domain/unit_directory.dart';
+import 'unit_directory_table_view.dart';
 import 'unit_directory_view_model.dart';
 import 'widgets/unit_directory_cards.dart';
 import 'widgets/unit_directory_pagination.dart';
@@ -47,6 +47,7 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
   UnitDirectoryDisplay _display = UnitDirectoryDisplay.cards;
+  UnitDirectoryTableView _tableView = UnitDirectoryTableView.grouped;
   bool _noticeShown = false;
   double _paginationFooterHeight = 0;
 
@@ -59,6 +60,17 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
       display == UnitDirectoryDisplay.cards ? 11 : 8,
       resetSort: display == UnitDirectoryDisplay.cards,
     );
+  }
+
+  void _changeTableView(UnitDirectoryTableView view) {
+    final wasCards = _display == UnitDirectoryDisplay.cards;
+    setState(() {
+      _display = UnitDirectoryDisplay.table;
+      _tableView = view;
+    });
+    if (wasCards) {
+      _viewModel.setPageSize(8, resetSort: false);
+    }
   }
 
   void _handlePaginationFooterHeightChanged(double height) {
@@ -122,7 +134,9 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
             activityController: _activityController,
             searchController: _searchController,
             display: _display,
+            tableView: _tableView,
             onDisplayChanged: _changeDisplay,
+            onTableViewChanged: _changeTableView,
             onCreate: widget.onCreate ?? () {},
             onEdit: widget.onEdit ?? (_) {},
             onFooterHeightChanged: _handlePaginationFooterHeightChanged,
@@ -143,7 +157,9 @@ final class _UnitDirectoryContent extends StatefulWidget {
     required this.activityController,
     required this.searchController,
     required this.display,
+    required this.tableView,
     required this.onDisplayChanged,
+    required this.onTableViewChanged,
     required this.onCreate,
     required this.onEdit,
     required this.onFooterHeightChanged,
@@ -154,7 +170,9 @@ final class _UnitDirectoryContent extends StatefulWidget {
   final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final UnitDirectoryDisplay display;
+  final UnitDirectoryTableView tableView;
   final ValueChanged<UnitDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<UnitDirectoryTableView> onTableViewChanged;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
   final ValueChanged<double> onFooterHeightChanged;
@@ -227,13 +245,16 @@ final class _UnitDirectoryContentState extends State<_UnitDirectoryContent> {
                       activityController: widget.activityController,
                       searchController: widget.searchController,
                       display: widget.display,
+                      tableView: widget.tableView,
                       onDisplayChanged: widget.onDisplayChanged,
+                      onTableViewChanged: widget.onTableViewChanged,
                       onClearFilters: widget.onClearFilters,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                     _UnitDirectoryResults(
                       viewModel: widget.viewModel,
                       display: widget.display,
+                      tableView: widget.tableView,
                       onCreate: widget.onCreate,
                       onEdit: widget.onEdit,
                     ),
@@ -272,12 +293,14 @@ final class _UnitDirectoryResults extends StatelessWidget {
   const _UnitDirectoryResults({
     required this.viewModel,
     required this.display,
+    required this.tableView,
     required this.onCreate,
     required this.onEdit,
   });
 
   final UnitDirectoryViewModel viewModel;
   final UnitDirectoryDisplay display;
+  final UnitDirectoryTableView tableView;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
 
@@ -299,6 +322,7 @@ final class _UnitDirectoryResults extends StatelessWidget {
                   sortColumn: viewModel.query.sortColumn,
                   sortAscending: viewModel.query.sortAscending,
                   onSort: viewModel.setSort,
+                  view: tableView,
                 )
               : UnitDirectoryCards(
                   items: viewModel.page.items,
@@ -324,33 +348,14 @@ final class _UnitDirectoryPaginationFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return ClipRect(
-      key: const Key('unit-directory-pagination-footer'),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
-        child: Container(
-          key: const Key('unit-directory-pagination-footer-surface'),
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            CoeloSpacing.space3,
-            horizontalPadding,
-            CoeloSpacing.space3,
-          ),
-          decoration: BoxDecoration(
-            color: colors.surface.withValues(alpha: .88),
-            border: Border(top: BorderSide(color: colors.outlineVariant)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: UnitDirectoryPagination(
-              viewModel: viewModel,
-              pageSizeOptions: display == UnitDirectoryDisplay.cards
-                  ? const [11, 20, 50, 100]
-                  : const [8, 20, 50, 100],
-            ),
-          ),
-        ),
+    return SuperadminListingPaginationFooter(
+      semanticKey: const Key('unit-directory-pagination-footer'),
+      horizontalPadding: horizontalPadding,
+      child: UnitDirectoryPagination(
+        viewModel: viewModel,
+        pageSizeOptions: display == UnitDirectoryDisplay.cards
+            ? const [11, 20, 50, 100]
+            : const [8, 20, 50, 100],
       ),
     );
   }

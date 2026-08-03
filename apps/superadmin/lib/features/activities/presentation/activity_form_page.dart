@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
@@ -61,9 +62,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     setState(() => _state = _ActivityFormLoadState.loading);
     try {
       final options = await widget.repository.fetchFormOptions();
-      final detail = _isEditing
-          ? await widget.repository.fetchById(widget.activityId!)
-          : null;
+      final detail = _isEditing ? await widget.repository.fetchById(widget.activityId!) : null;
       if (!mounted) return;
       if (_isEditing && detail == null) {
         setState(() => _state = _ActivityFormLoadState.notFound);
@@ -96,9 +95,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
             title: 'Sair sem salvar?',
             closeTooltip: 'Fechar confirmação',
             closeButtonKey: const Key('activity-dialog-close'),
-            body: const Text(
-              'As alterações feitas nesta atividade serão descartadas.',
-            ),
+            body: const Text('As alterações feitas nesta atividade serão descartadas.'),
             secondaryAction: OutlinedButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text('Continuar editando'),
@@ -129,9 +126,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     controller.markSubmitted();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Protótipo visual — nenhuma alteração foi salva.'),
-      ),
+      const SnackBar(content: Text('Protótipo visual — nenhuma alteração foi salva.')),
     );
     controller.setSubmitting(false);
     widget.onPrototypeSubmitted();
@@ -147,17 +142,13 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
         : 'Adicione uma nova atividade ao Coelo.',
     currentDestination: 'activities',
     showChatLauncher: false,
-    onDestinationSelected: widget.onDestinationSelected == null
-        ? null
-        : _selectDestination,
+    onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
     onBugReportSubmitted: widget.onBugReportSubmitted,
     child: _body(),
   );
 
   Widget _body() => switch (_state) {
-    _ActivityFormLoadState.loading => const Center(
-      child: CircularProgressIndicator(),
-    ),
+    _ActivityFormLoadState.loading => const Center(child: CircularProgressIndicator()),
     _ActivityFormLoadState.notFound => CoeloStatePanel(
       title: 'Atividade não encontrada',
       message: 'O registro pode não existir ou não estar visível para sua conta.',
@@ -212,12 +203,7 @@ final class _ActivityFormBody extends StatelessWidget {
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
           return Padding(
-            padding: EdgeInsets.fromLTRB(
-              inset,
-              inset,
-              inset,
-              CoeloSpacing.space4,
-            ),
+            padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
             child: Column(
               children: [
                 Expanded(
@@ -227,18 +213,12 @@ final class _ActivityFormBody extends StatelessWidget {
                     child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 880),
-                        child: Form(
-                          child: _ActivityFields(controller: controller),
-                        ),
+                        child: Form(child: _ActivityFields(controller: controller)),
                       ),
                     ),
                   ),
                 ),
-                _ActivityFormFooter(
-                  controller: controller,
-                  onCancel: onCancel,
-                  onSubmit: onSubmit,
-                ),
+                _ActivityFormFooter(controller: controller, onCancel: onCancel, onSubmit: onSubmit),
               ],
             ),
           );
@@ -261,24 +241,21 @@ final class _ActivityFields extends StatelessWidget {
       children: [
         Text(
           'Dados da atividade',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: CoeloSpacing.space1),
         Text(
           controller.isEditing
               ? 'Altere somente os campos confirmados pelo domínio.'
               : 'Informe a identidade e a unidade inicial da atividade.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
+        const SizedBox(height: CoeloSpacing.space5),
+        _ActivitySuggestions(controller: controller),
         const SizedBox(height: CoeloSpacing.space5),
         LayoutBuilder(
           builder: (context, constraints) {
-            final compact =
-                constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+            final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
             final width = compact
                 ? constraints.maxWidth
                 : (constraints.maxWidth - CoeloSpacing.space3) / 2;
@@ -308,9 +285,7 @@ final class _ActivityFields extends StatelessWidget {
                   value: controller.selectedInstitutionId ?? '',
                   options: [
                     '',
-                    ...controller.options.institutions.map(
-                      (institution) => institution.id,
-                    ),
+                    ...controller.options.institutions.map((institution) => institution.id),
                   ],
                   optionLabel: (id) => id.isEmpty
                       ? 'Selecione a instituição'
@@ -330,9 +305,7 @@ final class _ActivityFields extends StatelessWidget {
                   options: ['', ...controller.units.map((unit) => unit.id)],
                   optionLabel: (id) => id.isEmpty
                       ? 'Selecione a unidade'
-                      : controller.units
-                            .firstWhere((option) => option.id == id)
-                            .name,
+                      : controller.units.firstWhere((option) => option.id == id).name,
                   onChanged: controller.selectUnit,
                   prefixIcon: Icons.business_outlined,
                   errorText: controller.unitError,
@@ -340,6 +313,7 @@ final class _ActivityFields extends StatelessWidget {
                   searchable: true,
                   searchHintText: 'Buscar unidade',
                 ),
+                _ActivityContextPreview(controller: controller),
               ] else
                 _ActivityEditContext(detail: controller.detail!),
             ];
@@ -349,7 +323,7 @@ final class _ActivityFields extends StatelessWidget {
               children: [
                 for (final field in fields)
                   SizedBox(
-                    width: field is _ActivityEditContext
+                    width: field is _ActivityEditContext || field is _ActivityContextPreview
                         ? constraints.maxWidth
                         : width,
                     child: field,
@@ -358,7 +332,236 @@ final class _ActivityFields extends StatelessWidget {
             );
           },
         ),
+        const SizedBox(height: CoeloSpacing.space5),
+        _ActivityCommunicationPreviews(controller: controller),
       ],
+    );
+  }
+}
+
+final class _ActivitySuggestions extends StatelessWidget {
+  const _ActivitySuggestions({required this.controller});
+
+  final ActivityFormController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    const catalog = <String, Map<String, List<(String, String)>>>{
+      'Acadêmicas': {
+        'Linguagens': [
+          ('Português', 'Leitura, escrita e comunicação em língua portuguesa.'),
+          ('Inglês', 'Vivências e comunicação em língua inglesa.'),
+        ],
+        'Exatas': [
+          ('Matemática', 'Raciocínio lógico e resolução de problemas.'),
+          ('Robótica', 'Construção, programação e raciocínio lógico.'),
+        ],
+      },
+      'Esportes': {
+        'Aquáticos': [('Natação', 'Prática aquática orientada e segura.')],
+        'Lutas': [('Judô', 'Disciplina, equilíbrio e prática corporal.')],
+        'Campo': [('Futebol', 'Prática coletiva, coordenação e convivência.')],
+      },
+      'Artes': {
+        'Visuais': [('Desenho', 'Expressão visual com diferentes técnicas.')],
+      },
+      'Natureza': {
+        'Educação ambiental': [('Horta', 'Cuidado e educação ambiental.')],
+      },
+    };
+    return Column(
+      key: const Key('activity-suggestions'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Sugestões locais', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space3),
+        for (final supercategory in catalog.entries) ...[
+          Text(supercategory.key, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: CoeloSpacing.space2),
+          for (final category in supercategory.value.entries) ...[
+            Text(category.key, style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: CoeloSpacing.space1),
+            Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                for (final suggestion in category.value)
+                  ActionChip(
+                    label: Text(suggestion.$1),
+                    onPressed: () {
+                      controller.name.text = suggestion.$1;
+                      controller.description.text = suggestion.$2;
+                    },
+                  ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+          ],
+          const SizedBox(height: CoeloSpacing.space2),
+        ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ActionChip(
+            label: const Text('Outro'),
+            onPressed: () {
+              controller.name.clear();
+              controller.description.clear();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+final class _ActivityCommunicationPreviews extends StatelessWidget {
+  const _ActivityCommunicationPreviews({required this.controller});
+
+  final ActivityFormController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final activityName = controller.name.text.trim().isEmpty
+        ? 'Nova atividade'
+        : controller.name.text.trim();
+    final groupName = controller.detail?.groups.firstOrNull?.name ?? 'selecionado';
+    final publicationContext = 'Atividade $activityName · Grupo $groupName';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Recursos contextuais — prévia local', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(
+          'Estas ações são demonstrativas e não enviam mídia, mensagens ou publicações.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+            final width = compact
+                ? constraints.maxWidth
+                : (constraints.maxWidth - CoeloSpacing.space3 * 2) / 3;
+            return Wrap(
+              spacing: CoeloSpacing.space3,
+              runSpacing: CoeloSpacing.space3,
+              children: [
+                SizedBox(
+                  width: width,
+                  child: const _ActivityPrototypePreview(
+                    previewKey: Key('activity-photo-preview'),
+                    icon: Icons.add_a_photo_outlined,
+                    title: 'Foto da atividade',
+                    description: 'Prévia sem upload ou mídia real.',
+                  ),
+                ),
+                SizedBox(
+                  width: width,
+                  child: const _ActivityPrototypePreview(
+                    previewKey: Key('activity-conversation-preview'),
+                    icon: Icons.forum_outlined,
+                    title: 'Conversa',
+                    description: 'Prévia do contexto de conversa, sem envio.',
+                  ),
+                ),
+                SizedBox(
+                  width: width,
+                  child: _ActivityPrototypePreview(
+                    previewKey: const Key('activity-publication-preview'),
+                    icon: Icons.campaign_outlined,
+                    title: 'Publicação',
+                    description: publicationContext,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+final class _ActivityPrototypePreview extends StatelessWidget {
+  const _ActivityPrototypePreview({
+    required this.previewKey,
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+
+  final Key previewKey;
+  final IconData icon;
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    key: previewKey,
+    padding: const EdgeInsets.all(CoeloSpacing.space4),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(title, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(description),
+      ],
+    ),
+  );
+}
+
+final class _ActivityContextPreview extends StatelessWidget {
+  const _ActivityContextPreview({required this.controller});
+
+  final ActivityFormController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final institutionId = controller.selectedInstitutionId;
+    final unitId = controller.selectedUnitId;
+    final institution = institutionId == null || institutionId.isEmpty
+        ? null
+        : controller.options.institutions.firstWhere((option) => option.id == institutionId);
+    final unit = unitId == null || unitId.isEmpty
+        ? null
+        : controller.options.units.firstWhere((option) => option.id == unitId);
+    return Container(
+      key: const Key('activity-context-preview'),
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.account_tree_outlined),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Prévia contextual', style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: CoeloSpacing.space1),
+                Text(
+                  institution == null
+                      ? 'Escolha uma instituição e sua unidade inicial.'
+                      : '${institution.name} → ${unit?.name ?? 'Selecione a unidade'}',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -451,40 +654,12 @@ final class _ActivityFormFooter extends StatelessWidget {
               dimension: CoeloSize.iconSm,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : Text(
-              controller.isEditing
-                  ? 'Salvar alterações'
-                  : 'Criar atividade',
-            ),
+          : Text(controller.isEditing ? 'Salvar alterações' : 'Criar atividade'),
     );
-    return SafeArea(
-      top: false,
-      child: Container(
-        padding: const EdgeInsets.all(CoeloSpacing.space3),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth <
-                CoeloBreakpoints.medium.minWidth) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  submit,
-                  const SizedBox(height: CoeloSpacing.space2),
-                  Align(alignment: Alignment.centerLeft, child: cancel),
-                ],
-              );
-            }
-            return Row(children: [cancel, const Spacer(), submit]);
-          },
-        ),
-      ),
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('activity-form-footer-surface'),
+      tertiaryAction: cancel,
+      continuationActions: [submit],
     );
   }
 }

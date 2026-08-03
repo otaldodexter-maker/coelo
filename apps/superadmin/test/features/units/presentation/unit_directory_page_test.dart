@@ -3,6 +3,9 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart' as domain;
 import 'package:coelo_superadmin/features/units/presentation/unit_directory_page.dart';
+import 'package:coelo_superadmin/features/units/presentation/widgets/unit_status_presentation.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +13,93 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('offers grouped, groups, and activities table views with local metrics', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitDirectoryPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('unit-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('unit-directory-table-grouped')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-groups')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-activities')), findsOneWidget);
+    for (final id in ['administrators', 'team', 'guardians', 'children']) {
+      expect(find.byKey(Key('coelo-admin-table-header-$id')), findsOneWidget);
+    }
+
+    await tester.longPress(find.byKey(const Key('unit-view-table')));
+    await tester.pumpAndSettle();
+    for (final label in ['Agrupado', 'Por grupos', 'Por atividades']) {
+      expect(find.widgetWithText(MenuItemButton, label), findsOneWidget);
+    }
+
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Por grupos'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('unit-directory-table-groups')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-group-name')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-activities')), findsNothing);
+    expect(_unitDetailRows('groups'), findsWidgets);
+
+    await tester.longPress(find.byKey(const Key('unit-view-table')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Por atividades'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('unit-directory-table-activities')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-group-name')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-activity-name')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-groups')), findsNothing);
+    expect(_unitDetailRows('activities'), findsWidgets);
+  });
+
+  testWidgets('uses the shared pagination footer', (tester) async {
+    final institutions = FakeInstitutionDirectoryRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitDirectoryPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminListingPaginationFooter), findsOneWidget);
+  });
+
+  testWidgets('renders active status as lightweight text and icon without green fill', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: const Scaffold(body: UnitStatusChip(status: domain.UnitStatus.active)),
+      ),
+    );
+
+    expect(find.text('Ativa'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle_outline_rounded), findsOneWidget);
+    final surface = tester.widget<Container>(find.byKey(const Key('unit-status-chip-active')));
+    expect((surface.decoration! as BoxDecoration).color, Colors.transparent);
+  });
+
   testWidgets('renders the unit card contract and switches to the canonical table', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -181,7 +271,7 @@ void main() {
     final trigger = find.byKey(const Key('unit-status-filter'));
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Ativa'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Ativa'));
     await tester.pumpAndSettle();
     expect(find.text('Aplicar'), findsOneWidget);
     expect(find.text('Limpar filtros'), findsNothing);
@@ -267,3 +357,8 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 }
+
+Finder _unitDetailRows(String level) => find.byWidgetPredicate((widget) {
+  final key = widget.key;
+  return key is ValueKey<String> && key.value.startsWith('unit-detail-row-$level-');
+});

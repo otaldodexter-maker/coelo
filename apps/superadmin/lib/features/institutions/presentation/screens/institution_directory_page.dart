@@ -8,6 +8,7 @@ import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../domain/institution_directory_repository.dart';
+import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
 import '../widgets/institution_directory_cards.dart';
 import '../widgets/institution_directory_pagination.dart';
@@ -54,6 +55,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
   InstitutionDirectoryDisplay _display = InstitutionDirectoryDisplay.cards;
+  InstitutionDirectoryTableView _tableView = InstitutionDirectoryTableView.grouped;
   bool _noticeShown = false;
   double _paginationFooterHeight = 0;
 
@@ -66,6 +68,17 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
       display == InstitutionDirectoryDisplay.cards ? 11 : 8,
       resetSort: display == InstitutionDirectoryDisplay.cards,
     );
+  }
+
+  void _changeTableView(InstitutionDirectoryTableView view) {
+    final wasCards = _display == InstitutionDirectoryDisplay.cards;
+    setState(() {
+      _display = InstitutionDirectoryDisplay.table;
+      _tableView = view;
+    });
+    if (wasCards) {
+      _viewModel.setPageSize(8);
+    }
   }
 
   void _handlePaginationFooterHeightChanged(double height) {
@@ -138,8 +151,10 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
             activityController: _activityController,
             searchController: _searchController,
             display: _display,
+            tableView: _tableView,
             avoidChatLauncher: widget.onConversationsOpen != null,
             onDisplayChanged: _changeDisplay,
+            onTableViewChanged: _changeTableView,
             onCreate: widget.onCreate ?? () {},
             onEdit: widget.onEdit ?? (_) {},
             onFooterHeightChanged: _handlePaginationFooterHeightChanged,
@@ -160,8 +175,10 @@ class _InstitutionDirectoryContent extends StatefulWidget {
     required this.activityController,
     required this.searchController,
     required this.display,
+    required this.tableView,
     required this.avoidChatLauncher,
     required this.onDisplayChanged,
+    required this.onTableViewChanged,
     required this.onCreate,
     required this.onEdit,
     required this.onFooterHeightChanged,
@@ -172,8 +189,10 @@ class _InstitutionDirectoryContent extends StatefulWidget {
   final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final InstitutionDirectoryDisplay display;
+  final InstitutionDirectoryTableView tableView;
   final bool avoidChatLauncher;
   final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<InstitutionDirectoryTableView> onTableViewChanged;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
   final ValueChanged<double> onFooterHeightChanged;
@@ -246,13 +265,16 @@ class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryConte
                       activityController: widget.activityController,
                       searchController: widget.searchController,
                       display: widget.display,
+                      tableView: widget.tableView,
                       onDisplayChanged: widget.onDisplayChanged,
+                      onTableViewChanged: widget.onTableViewChanged,
                       onClearFilters: widget.onClearFilters,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                     _InstitutionDirectoryResults(
                       viewModel: widget.viewModel,
                       display: widget.display,
+                      tableView: widget.tableView,
                       onCreate: widget.onCreate,
                       onEdit: widget.onEdit,
                     ),
@@ -291,12 +313,14 @@ class _InstitutionDirectoryResults extends StatelessWidget {
   const _InstitutionDirectoryResults({
     required this.viewModel,
     required this.display,
+    required this.tableView,
     required this.onCreate,
     required this.onEdit,
   });
 
   final InstitutionDirectoryViewModel viewModel;
   final InstitutionDirectoryDisplay display;
+  final InstitutionDirectoryTableView tableView;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
 
@@ -313,6 +337,7 @@ class _InstitutionDirectoryResults extends StatelessWidget {
           successContent: display == InstitutionDirectoryDisplay.table
               ? InstitutionDirectoryTable(
                   items: viewModel.page.items,
+                  view: tableView,
                   createAction: InstitutionCreateBanner(onPressed: onCreate),
                   onEdit: (item) => onEdit(item.id),
                   sortColumn: viewModel.query.sortColumn,

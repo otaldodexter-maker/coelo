@@ -53,6 +53,27 @@ void main() {
     await failure.load();
     expect(failure.state, ActivityDirectoryLoadState.failure);
   });
+
+  test('clears descendant unit and group filters when the institution changes', () async {
+    final viewModel = ActivityDirectoryViewModel(
+      FakeActivityDirectoryRepository(),
+      searchDebounce: Duration.zero,
+    );
+    addTearDown(viewModel.dispose);
+    await viewModel.load();
+
+    await viewModel.setInstitutions({'institution-1'});
+    final unit = viewModel.unitOptions.first;
+    viewModel.setUnits({unit.id});
+    final group = viewModel.groupOptions.first;
+    viewModel.setGroups({group.id});
+    expect(viewModel.selectedUnitIds, {unit.id});
+    expect(viewModel.selectedGroupIds, {group.id});
+
+    await viewModel.setInstitutions({'institution-2'});
+    expect(viewModel.selectedUnitIds, isEmpty);
+    expect(viewModel.selectedGroupIds, isEmpty);
+  });
 }
 
 final class _EmptyRepository implements ActivityDirectoryRepository {

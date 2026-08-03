@@ -2,6 +2,7 @@
 source: "Solicitação aprovada em 2026-07-29; docs/product/prd-superadmin.md; specs/014-atividade-contextual.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md"
 status: "approved"
 generated_at: "2026-07-29"
+updated_at: "2026-08-03"
 ---
 
 # Diretório e visualização de Atividades do Superadmin
@@ -21,10 +22,14 @@ reais de `activity_definitions`.
 - Estados loading, vazio, sem resultados, erro, sem permissão e não encontrado.
 - Rotas `/activities`, `/activities/:activityId` e equivalentes de
   desenvolvimento.
+- Rotas locais demonstrativas `/activities/new`,
+  `/activities/:activityId/edit` e equivalentes de desenvolvimento, sem
+  persistência ou autorização produtiva.
 
 ## Fora de escopo
 
-- Criar, editar, arquivar, promover ou alterar atividades no Superadmin.
+- Persistir, arquivar, promover ou alterar atividades produtivamente no
+  Superadmin.
 - Importar, exportar, anexar arquivos ou gerir mídia.
 - Expor nomes de profissionais, crianças ou participantes.
 - Recorrência, agenda, duração, horário, tipo de atividade, publicação,
@@ -54,8 +59,9 @@ Cards usam 11 itens por página e oferecem `11, 20, 50, 100`; tabela usa 8 e
 oferece `8, 20, 50, 100`. O rodapé sticky mede sua altura e desloca o launcher
 de mensagens para impedir sobreposição.
 
-Nenhum tile ou banner de criação e nenhuma ação de arquivos são exibidos.
-Card e linha anunciam e executam apenas `Visualizar atividade`.
+O diretório exibe tile e banner de criação demonstrativa e ação local de
+edição. Card e linha preservam `Visualizar atividade`; a ação `Editar` abre o
+protótipo local sem alegar gravação.
 
 ## Visualização
 
@@ -78,18 +84,21 @@ O Superadmin lê pelas policies existentes de `platform.read`. Erros explícitos
 vazio ou não encontrado. A interface não consulta helpers privados, não usa
 `service_role` e não infere autorização de metadata do cliente.
 
-Criar e editar continuam no Admin e dependem de memberships e capacidades
-institucionais `activities.create` e `activities.manage`.
+Criar e editar produtivamente continuam no Admin e dependem de memberships e
+capacidades institucionais `activities.create` e `activities.manage`. O
+protótipo do Superadmin não amplia autorização, não persiste e não consulta
+novos dados remotos.
 
 ## Critérios de aceite
 
 - A estética de Instituições é preservada em 375, 768, 1024 e 1440 px,
   light/dark e texto a 200%.
-- Busca, filtros, cards, tabela e paginação usam somente dados reais.
+- Busca, filtros, cards, tabela e paginação preservam o contrato existente;
+  novos detalhes, sugestões e formulários usam fixtures locais explícitas.
 - Tabela mantém coluna fixa, resize e rolagem horizontal.
 - Filtros preservam rascunho, Aplicar, Limpar, Escape e restauração de foco.
 - Rodapé e launcher não se sobrepõem.
-- Nenhuma ação de escrita, arquivo ou campo não modelado é exibida.
+- Ações demonstrativas deixam claro que nenhuma alteração será salva.
 - O detalhe não expõe nomes de pessoas ou crianças.
 
 ## Testes exigidos

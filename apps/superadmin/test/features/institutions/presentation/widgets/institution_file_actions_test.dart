@@ -5,6 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('names the current directory view in the export preview', (tester) async {
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: InstitutionFileActions(activityController: controller, viewLabel: 'Grupos'),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-export-csv')));
+    await tester.pump();
+
+    expect(controller.activities.single.subject, 'Instituições · Grupos');
+    expect(controller.activities.single.fileName, 'instituicoes-grupos.csv');
+  });
+
   testWidgets('renders file toolbar previews in both themes and layouts', (tester) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 

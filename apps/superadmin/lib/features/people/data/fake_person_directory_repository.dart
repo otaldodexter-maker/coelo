@@ -15,6 +15,14 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
 
   static final samplePeople = List<PersonDirectoryItem>.generate(24, (index) {
     final type = PersonType.values[index % PersonType.values.length];
+    final dualProfile = index % 5 == 0;
+    final primaryRole = type == PersonType.child
+        ? 'student'
+        : dualProfile
+        ? 'guardian'
+        : index.isEven
+        ? 'educator'
+        : 'guardian';
     return PersonDirectoryItem(
       id: 'person-$index',
       firstName: type == PersonType.service ? null : 'Pessoa',
@@ -30,6 +38,14 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
       authLink: type == PersonType.adult && index.isEven
           ? AuthLinkStatus.linked
           : AuthLinkStatus.unlinked,
+      maskedContact: type == PersonType.child
+          ? null
+          : index.isEven
+          ? 'p***${index + 1}@exemplo.test'
+          : '(11) 9****-${(1000 + index).toString().padLeft(4, '0')}',
+      stateCode: index.isEven ? 'SP' : 'RJ',
+      municipalityId: index.isEven ? 'municipality-sp' : 'municipality-rj',
+      neighborhoodId: index.isEven ? 'neighborhood-centro' : 'neighborhood-jardim',
       memberships: [
         PersonMembership(
           id: 'membership-$index-a',
@@ -39,17 +55,37 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
           unitName: 'Unidade ${index % 3 + 1}',
           groupId: 'group-${index % 4}',
           groupName: 'Grupo ${index % 4 + 1}',
-          role: type == PersonType.child ? 'student' : 'guardian',
+          activityId: 'activity-${index % 2}',
+          activityName: index.isEven ? 'Música' : 'Esportes',
+          role: primaryRole,
         ),
         PersonMembership(
           id: 'membership-$index-b',
           institutionId: 'institution-2',
           institutionName: 'Instituição 3',
-          role: type == PersonType.service ? 'integration' : 'member',
+          activityId: 'activity-${(index + 1) % 2}',
+          activityName: index.isEven ? 'Esportes' : 'Música',
+          role: type == PersonType.service
+              ? 'integration'
+              : dualProfile
+              ? 'educator'
+              : 'member',
         ),
       ],
       platformMembershipSummary: type == PersonType.service ? 'Serviço interno' : null,
       guardianLinksSummary: type == PersonType.child ? '2 responsáveis vinculados' : null,
+      linkedChildrenCount: type == PersonType.adult && primaryRole == 'guardian'
+          ? index % 3 + 1
+          : 0,
+      accompaniedStudentsCount:
+          type == PersonType.adult && (primaryRole == 'educator' || dualProfile)
+          ? 8 + index % 9
+          : 0,
+      linkedGuardiansCount: type == PersonType.child
+          ? 2
+          : type == PersonType.adult && (primaryRole == 'educator' || dualProfile)
+          ? 6 + index % 5
+          : 0,
       updatedAt: DateTime.utc(2026, 7, 29, 12, 0, index),
     );
   });
@@ -76,16 +112,30 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
     if (query.authLinks.isNotEmpty) {
       values = values.where((item) => query.authLinks.contains(item.authLink));
     }
+    if (query.segment != PersonDirectorySegment.all) {
+      values = values.where((item) => item.matchesSegment(query.segment));
+    }
     bool membershipMatches(PersonMembership membership) =>
         (query.institutionIds.isEmpty || query.institutionIds.contains(membership.institutionId)) &&
         (query.unitIds.isEmpty || query.unitIds.contains(membership.unitId)) &&
         (query.groupIds.isEmpty || query.groupIds.contains(membership.groupId)) &&
+        (query.activityIds.isEmpty || query.activityIds.contains(membership.activityId)) &&
         (query.contextualRoles.isEmpty || query.contextualRoles.contains(membership.role));
     if (query.institutionIds.isNotEmpty ||
         query.unitIds.isNotEmpty ||
         query.groupIds.isNotEmpty ||
+        query.activityIds.isNotEmpty ||
         query.contextualRoles.isNotEmpty) {
       values = values.where((item) => item.memberships.any(membershipMatches));
+    }
+    if (query.stateCodes.isNotEmpty) {
+      values = values.where((item) => query.stateCodes.contains(item.stateCode));
+    }
+    if (query.municipalityIds.isNotEmpty) {
+      values = values.where((item) => query.municipalityIds.contains(item.municipalityId));
+    }
+    if (query.neighborhoodIds.isNotEmpty) {
+      values = values.where((item) => query.neighborhoodIds.contains(item.neighborhoodId));
     }
     final sorted = values.toList()
       ..sort((a, b) {
@@ -131,13 +181,52 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
         PersonFilterOption('institution-1', 'Instituição 2'),
         PersonFilterOption('institution-2', 'Instituição 3'),
       ],
-      units: [PersonFilterOption('unit-0', 'Unidade 1', institutionId: 'institution-0')],
+      units: [
+        PersonFilterOption('unit-0', 'Unidade 1', institutionId: 'institution-0'),
+        PersonFilterOption('unit-1', 'Unidade 2', institutionId: 'institution-1'),
+      ],
       groups: [
         PersonFilterOption('group-0', 'Grupo 1', institutionId: 'institution-0', unitId: 'unit-0'),
+        PersonFilterOption('group-1', 'Grupo 2', institutionId: 'institution-1', unitId: 'unit-1'),
       ],
       roles: [
         PersonFilterOption('guardian', 'Responsável', institutionId: 'institution-0'),
         PersonFilterOption('student', 'Aluno', institutionId: 'institution-0'),
+      ],
+      activities: [
+        PersonFilterOption(
+          'activity-0',
+          'Música',
+          institutionId: 'institution-0',
+          unitId: 'unit-0',
+          groupId: 'group-0',
+        ),
+        PersonFilterOption(
+          'activity-1',
+          'Esportes',
+          institutionId: 'institution-1',
+          unitId: 'unit-1',
+          groupId: 'group-1',
+        ),
+      ],
+      states: [PersonFilterOption('SP', 'São Paulo'), PersonFilterOption('RJ', 'Rio de Janeiro')],
+      municipalities: [
+        PersonFilterOption('municipality-sp', 'São Paulo', stateCode: 'SP'),
+        PersonFilterOption('municipality-rj', 'Rio de Janeiro', stateCode: 'RJ'),
+      ],
+      neighborhoods: [
+        PersonFilterOption(
+          'neighborhood-centro',
+          'Centro',
+          stateCode: 'SP',
+          municipalityId: 'municipality-sp',
+        ),
+        PersonFilterOption(
+          'neighborhood-jardim',
+          'Jardim',
+          stateCode: 'RJ',
+          municipalityId: 'municipality-rj',
+        ),
       ],
     );
   }

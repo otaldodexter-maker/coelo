@@ -96,12 +96,12 @@ final class SuperadminChatActionMenu extends StatelessWidget {
                       ? colors.primary
                       : colors.onSurface,
                 ),
-                backgroundColor: WidgetStateProperty.resolveWith(
-                  (states) =>
-                      states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-                      ? colors.primaryContainer
-                      : Colors.transparent,
-                ),
+                backgroundColor: WidgetStateProperty.resolveWith((states) {
+                  final highlighted =
+                      states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+                  if (!highlighted) return Colors.transparent;
+                  return action.destructive ? colors.errorContainer : colors.primaryContainer;
+                }),
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
               ),
               child: Text(action.label),

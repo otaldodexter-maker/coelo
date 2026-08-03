@@ -41,6 +41,40 @@ class SettingsPage extends StatelessWidget {
                     title: 'Aparência',
                     description: 'Escolha como o Coelo deve nascer neste dispositivo.',
                     child: SegmentedButton<ThemeMode>(
+                      expandedInsets: EdgeInsets.zero,
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.selected) ||
+                              states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused)) {
+                            return Theme.of(context).colorScheme.primaryContainer;
+                          }
+                          return Theme.of(context).colorScheme.surface;
+                        }),
+                        foregroundColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.selected) ||
+                              states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused)) {
+                            return Theme.of(context).colorScheme.primary;
+                          }
+                          return Theme.of(context).colorScheme.onSurfaceVariant;
+                        }),
+                        iconColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.selected) ||
+                              states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused)) {
+                            return Theme.of(context).colorScheme.primary;
+                          }
+                          return Theme.of(context).colorScheme.onSurfaceVariant;
+                        }),
+                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                        minimumSize: const WidgetStatePropertyAll(
+                          Size(CoeloSize.touchMin, CoeloSize.touchMin),
+                        ),
+                        side: WidgetStatePropertyAll(
+                          BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                        ),
+                      ),
                       segments: const [
                         ButtonSegment(
                           value: ThemeMode.system,
@@ -87,9 +121,7 @@ class SettingsPage extends StatelessWidget {
                                   Text(
                                     'Também respeitamos a preferência de movimento do sistema.',
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],

@@ -1,5 +1,4 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/unit_directory.dart';
@@ -10,13 +9,21 @@ import '../../domain/unit_directory.dart';
       theme.extension<CoeloStatusColors>() ??
       (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
   return switch (status) {
-    UnitStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
-    UnitStatus.suspended => (statusColors.errorContainer, statusColors.onErrorContainer),
-    UnitStatus.draft => (statusColors.warningContainer, statusColors.onWarningContainer),
+    UnitStatus.active => (Colors.transparent, statusColors.onSuccessContainer),
+    UnitStatus.suspended => (Colors.transparent, statusColors.onErrorContainer),
+    UnitStatus.draft => (Colors.transparent, statusColors.onWarningContainer),
     UnitStatus.inactive ||
-    UnitStatus.archived => (theme.colorScheme.surfaceContainer, theme.colorScheme.onSurfaceVariant),
+    UnitStatus.archived => (Colors.transparent, theme.colorScheme.onSurfaceVariant),
   };
 }
+
+IconData unitStatusIcon(UnitStatus status) => switch (status) {
+  UnitStatus.active => Icons.check_circle_outline_rounded,
+  UnitStatus.suspended => Icons.pause_circle_outline_rounded,
+  UnitStatus.draft => Icons.edit_note_rounded,
+  UnitStatus.inactive => Icons.remove_circle_outline_rounded,
+  UnitStatus.archived => Icons.archive_outlined,
+};
 
 final class UnitStatusChip extends StatelessWidget {
   const UnitStatusChip({required this.status, super.key});
@@ -25,62 +32,53 @@ final class UnitStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = unitStatusColors(context, status);
-    return CoeloStatusChip(
-      label: status.label,
-      backgroundColor: colors.$1,
-      foregroundColor: colors.$2,
-    );
+    return _LightUnitStatus(status: status, surfaceKey: Key('unit-status-chip-${status.name}'));
   }
 }
 
-final class ExpandableUnitStatusIndicator extends StatefulWidget {
+final class ExpandableUnitStatusIndicator extends StatelessWidget {
   const ExpandableUnitStatusIndicator({required this.itemId, required this.status, super.key});
 
   final String itemId;
   final UnitStatus status;
 
   @override
-  State<ExpandableUnitStatusIndicator> createState() => _ExpandableUnitStatusIndicatorState();
+  Widget build(BuildContext context) {
+    return _LightUnitStatus(status: status, surfaceKey: Key('unit-status-$itemId'));
+  }
 }
 
-final class _ExpandableUnitStatusIndicatorState extends State<ExpandableUnitStatusIndicator> {
-  bool _highlighted = false;
+final class _LightUnitStatus extends StatelessWidget {
+  const _LightUnitStatus({required this.status, required this.surfaceKey});
+
+  final UnitStatus status;
+  final Key surfaceKey;
 
   @override
   Widget build(BuildContext context) {
-    final colors = unitStatusColors(context, widget.status);
-    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short;
+    final colors = unitStatusColors(context, status);
     return Semantics(
-      label: 'Status: ${widget.status.label}',
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: AnimatedContainer(
-            key: Key('unit-status-${widget.itemId}'),
-            duration: duration,
-            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-            padding: EdgeInsets.symmetric(horizontal: _highlighted ? CoeloSpacing.space2 : 0),
-            decoration: BoxDecoration(
-              color: colors.$1,
-              borderRadius: BorderRadius.circular(CoeloRadius.full),
-              border: Border.all(color: colors.$2.withValues(alpha: .3)),
+      label: 'Status: ${status.label}',
+      child: Container(
+        key: surfaceKey,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space1,
+          vertical: CoeloSpacing.spaceHalf,
+        ),
+        decoration: BoxDecoration(
+          color: colors.$1,
+          borderRadius: BorderRadius.circular(CoeloRadius.full),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(unitStatusIcon(status), size: CoeloSize.iconSm, color: colors.$2),
+            const SizedBox(width: CoeloSpacing.space1),
+            Text(
+              status.label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.$2),
             ),
-            alignment: Alignment.center,
-            child: _highlighted
-                ? Text(
-                    widget.status.label,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.$2),
-                  )
-                : SizedBox.square(
-                    dimension: CoeloSpacing.space2,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(color: colors.$2, shape: BoxShape.circle),
-                    ),
-                  ),
-          ),
+          ],
         ),
       ),
     );

@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -7,7 +6,11 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/activity/superadmin_activity.dart';
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
+import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
@@ -15,11 +18,15 @@ import 'activity_directory_view_model.dart';
 
 enum ActivityDirectoryDisplay { cards, table }
 
+enum ActivityDirectoryTableView { grouped, units, groups }
+
 final class ActivityDirectoryPage extends StatefulWidget {
   const ActivityDirectoryPage({
     required this.repository,
     required this.logout,
     required this.onView,
+    this.onCreate,
+    this.onEdit,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     super.key,
@@ -28,6 +35,8 @@ final class ActivityDirectoryPage extends StatefulWidget {
   final ActivityDirectoryRepository repository;
   final LogoutAction logout;
   final ValueChanged<String> onView;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
@@ -40,6 +49,7 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
   late final SuperadminActivityController _activityController;
   late final TextEditingController _searchController;
   ActivityDirectoryDisplay _display = ActivityDirectoryDisplay.cards;
+  ActivityDirectoryTableView _tableView = ActivityDirectoryTableView.grouped;
   double _footerHeight = 0;
 
   @override
@@ -65,6 +75,14 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     _viewModel.setPageSize(display == ActivityDirectoryDisplay.cards ? 11 : 8);
   }
 
+  void _setTableView(ActivityDirectoryTableView tableView) {
+    setState(() {
+      _display = ActivityDirectoryDisplay.table;
+      _tableView = tableView;
+    });
+    _viewModel.setPageSize(8);
+  }
+
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
@@ -78,9 +96,14 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     onBugReportSubmitted: widget.onBugReportSubmitted,
     child: _ActivityDirectoryContent(
       viewModel: _viewModel,
+      activityController: _activityController,
       searchController: _searchController,
       display: _display,
+      tableView: _tableView,
       onDisplayChanged: _setDisplay,
+      onTableViewChanged: _setTableView,
+      onCreate: widget.onCreate ?? () {},
+      onEdit: widget.onEdit ?? widget.onView,
       onView: widget.onView,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() >= .5) {
@@ -94,17 +117,27 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
 final class _ActivityDirectoryContent extends StatefulWidget {
   const _ActivityDirectoryContent({
     required this.viewModel,
+    required this.activityController,
     required this.searchController,
     required this.display,
+    required this.tableView,
     required this.onDisplayChanged,
+    required this.onTableViewChanged,
+    required this.onCreate,
+    required this.onEdit,
     required this.onView,
     required this.onFooterHeightChanged,
   });
 
   final ActivityDirectoryViewModel viewModel;
+  final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final ActivityDirectoryDisplay display;
+  final ActivityDirectoryTableView tableView;
   final ValueChanged<ActivityDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onEdit;
   final ValueChanged<String> onView;
   final ValueChanged<double> onFooterHeightChanged;
 
@@ -162,14 +195,20 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                 children: [
                   _ActivityToolbar(
                     viewModel: widget.viewModel,
+                    activityController: widget.activityController,
                     searchController: widget.searchController,
                     display: widget.display,
+                    tableView: widget.tableView,
                     onDisplayChanged: widget.onDisplayChanged,
+                    onTableViewChanged: widget.onTableViewChanged,
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   _ActivityResults(
                     viewModel: widget.viewModel,
                     display: widget.display,
+                    tableView: widget.tableView,
+                    onCreate: widget.onCreate,
+                    onEdit: widget.onEdit,
                     onView: widget.onView,
                   ),
                 ],
@@ -205,15 +244,21 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
 final class _ActivityToolbar extends StatelessWidget {
   const _ActivityToolbar({
     required this.viewModel,
+    required this.activityController,
     required this.searchController,
     required this.display,
+    required this.tableView,
     required this.onDisplayChanged,
+    required this.onTableViewChanged,
   });
 
   final ActivityDirectoryViewModel viewModel;
+  final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final ActivityDirectoryDisplay display;
+  final ActivityDirectoryTableView tableView;
   final ValueChanged<ActivityDirectoryDisplay> onDisplayChanged;
+  final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -268,6 +313,26 @@ final class _ActivityToolbar extends StatelessWidget {
           optionLabel: (option) => option.label,
           onChanged: (value) => viewModel.setInstitutions(value.map((option) => option.id).toSet()),
         ),
+        filter<ActivityHierarchyFilterOption>(
+          key: const Key('activity-unit-filter'),
+          label: 'Unidades',
+          values: viewModel.unitOptions,
+          selected: viewModel.unitOptions
+              .where((option) => viewModel.selectedUnitIds.contains(option.id))
+              .toSet(),
+          optionLabel: (option) => option.label,
+          onChanged: (value) => viewModel.setUnits(value.map((option) => option.id).toSet()),
+        ),
+        filter<ActivityHierarchyFilterOption>(
+          key: const Key('activity-group-filter'),
+          label: 'Grupos',
+          values: viewModel.groupOptions,
+          selected: viewModel.groupOptions
+              .where((option) => viewModel.selectedGroupIds.contains(option.id))
+              .toSet(),
+          optionLabel: (option) => option.label,
+          onChanged: (value) => viewModel.setGroups(value.map((option) => option.id).toSet()),
+        ),
         filter<ActivityStatus>(
           key: const Key('activity-status-filter'),
           label: 'Status',
@@ -284,7 +349,9 @@ final class _ActivityToolbar extends StatelessWidget {
           optionLabel: (origin) => origin.label,
           onChanged: viewModel.setOrigins,
         ),
-        if (viewModel.query.hasActiveFilters)
+        if (viewModel.query.hasActiveFilters ||
+            viewModel.selectedUnitIds.isNotEmpty ||
+            viewModel.selectedGroupIds.isNotEmpty)
           TextButton.icon(
             onPressed: () {
               searchController.clear();
@@ -304,28 +371,57 @@ final class _ActivityToolbar extends StatelessWidget {
         ),
         filters: const [],
         actions: [
-          SegmentedButton<ActivityDirectoryDisplay>(
-            style: const ButtonStyle(
-              minimumSize: WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
-              padding: WidgetStatePropertyAll(
-                EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+          SuperadminDirectoryViewToggle<ActivityDirectoryTableView>(
+            cardsSelected: display == ActivityDirectoryDisplay.cards,
+            groupedView: ActivityDirectoryTableView.grouped,
+            selectedTableView: tableView,
+            tableViews: const [
+              SuperadminDirectoryTableViewOption(
+                value: ActivityDirectoryTableView.grouped,
+                label: 'Agrupado',
               ),
-            ),
-            segments: const [
-              ButtonSegment(
-                value: ActivityDirectoryDisplay.cards,
-                icon: Icon(key: Key('activity-view-cards'), Icons.grid_view_rounded),
-                tooltip: 'Exibir como cards',
+              SuperadminDirectoryTableViewOption(
+                value: ActivityDirectoryTableView.units,
+                label: 'Por Unidades',
               ),
-              ButtonSegment(
-                value: ActivityDirectoryDisplay.table,
-                icon: Icon(key: Key('activity-view-table'), Icons.table_rows_rounded),
-                tooltip: 'Exibir como tabela',
+              SuperadminDirectoryTableViewOption(
+                value: ActivityDirectoryTableView.groups,
+                label: 'Por Grupos',
               ),
             ],
-            selected: {display},
-            showSelectedIcon: false,
-            onSelectionChanged: (value) => onDisplayChanged(value.single),
+            cardsKey: const Key('activity-view-cards'),
+            tableKey: const Key('activity-view-table'),
+            onCardsSelected: () => onDisplayChanged(ActivityDirectoryDisplay.cards),
+            onTableViewSelected: onTableViewChanged,
+          ),
+          CoeloAdminFileActions(
+            compact: compact,
+            actions: [
+              CoeloAdminFileAction(
+                key: const Key('activity-files-export-xlsx'),
+                label: 'Exportar XLSX',
+                icon: Icons.grid_on_outlined,
+                onPressed: () {
+                  final viewLabel = display == ActivityDirectoryDisplay.cards
+                      ? 'Cards'
+                      : switch (tableView) {
+                          ActivityDirectoryTableView.grouped => 'Agrupado',
+                          ActivityDirectoryTableView.units => 'Por Unidades',
+                          ActivityDirectoryTableView.groups => 'Por Grupos',
+                        };
+                  activityController.completeDemoExport(
+                    SuperadminExportFormat.xlsx,
+                    subject: 'Atividades · $viewLabel',
+                    fileBaseName: 'atividades-${tableView.name}',
+                  );
+                  showSuperadminNotice(
+                    context,
+                    'Preview de exportação: $viewLabel. Nenhum arquivo real foi gerado.',
+                    icon: Icons.download_outlined,
+                  );
+                },
+              ),
+            ],
           ),
         ],
       );
@@ -334,10 +430,20 @@ final class _ActivityToolbar extends StatelessWidget {
 }
 
 final class _ActivityResults extends StatelessWidget {
-  const _ActivityResults({required this.viewModel, required this.display, required this.onView});
+  const _ActivityResults({
+    required this.viewModel,
+    required this.display,
+    required this.tableView,
+    required this.onCreate,
+    required this.onEdit,
+    required this.onView,
+  });
 
   final ActivityDirectoryViewModel viewModel;
   final ActivityDirectoryDisplay display;
+  final ActivityDirectoryTableView tableView;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onEdit;
   final ValueChanged<String> onView;
 
   @override
@@ -363,12 +469,10 @@ final class _ActivityResults extends StatelessWidget {
       final empty = viewModel.state == ActivityDirectoryLoadState.empty;
       return CoeloStatePanel(
         title: empty ? 'Nenhuma atividade cadastrada' : 'Nenhuma atividade encontrada',
-        message: empty
-            ? 'As atividades disponíveis aparecerão aqui.'
-            : 'Ajuste ou limpe os filtros.',
+        message: empty ? 'Crie a primeira atividade da plataforma.' : 'Ajuste ou limpe os filtros.',
         icon: Icons.local_activity_outlined,
-        actionLabel: empty ? null : 'Limpar filtros',
-        onAction: empty ? null : viewModel.clearFilters,
+        actionLabel: empty ? 'Criar atividade' : 'Limpar filtros',
+        onAction: empty ? onCreate : viewModel.clearFilters,
       );
     }
     return Column(
@@ -379,17 +483,59 @@ final class _ActivityResults extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space4),
         if (viewModel.state == ActivityDirectoryLoadState.success)
           display == ActivityDirectoryDisplay.cards
-              ? _ActivityCards(items: viewModel.page.items, onView: onView)
-              : _ActivityTable(items: viewModel.page.items, viewModel: viewModel, onView: onView),
+              ? _ActivityCards(
+                  items: viewModel.visibleItems,
+                  onCreate: onCreate,
+                  onEdit: onEdit,
+                  onView: onView,
+                )
+              : Column(
+                  children: [
+                    SuperadminDirectoryCreateBanner(
+                      label: 'Criar atividade',
+                      description: 'Adicionar nova atividade ao sistema.',
+                      onPressed: onCreate,
+                      bannerKey: const Key('create-activity-banner'),
+                      surfaceKey: const Key('create-activity-banner-surface'),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    switch (tableView) {
+                      ActivityDirectoryTableView.grouped => _ActivityTable(
+                        items: viewModel.visibleItems,
+                        viewModel: viewModel,
+                        onView: onEdit,
+                      ),
+                      ActivityDirectoryTableView.units => _ActivityHierarchyTable(
+                        key: const Key('activity-unit-directory-table'),
+                        items: viewModel.visibleItems,
+                        level: ActivityDirectoryTableView.units,
+                        onEdit: onEdit,
+                      ),
+                      ActivityDirectoryTableView.groups => _ActivityHierarchyTable(
+                        key: const Key('activity-group-directory-table'),
+                        items: viewModel.visibleItems,
+                        level: ActivityDirectoryTableView.groups,
+                        onEdit: onEdit,
+                      ),
+                    },
+                  ],
+                ),
       ],
     );
   }
 }
 
 final class _ActivityCards extends StatelessWidget {
-  const _ActivityCards({required this.items, required this.onView});
+  const _ActivityCards({
+    required this.items,
+    required this.onCreate,
+    required this.onEdit,
+    required this.onView,
+  });
 
   final List<ActivityDirectoryItem> items;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onEdit;
   final ValueChanged<String> onView;
 
   @override
@@ -402,10 +548,25 @@ final class _ActivityCards extends StatelessWidget {
         spacing: CoeloSpacing.space6,
         runSpacing: CoeloSpacing.space6,
         children: [
+          SizedBox(
+            width: width,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 216),
+              child: CoeloAdminCreateAction(
+                label: 'Criar atividade',
+                icon: Icons.local_activity_rounded,
+                onPressed: onCreate,
+              ),
+            ),
+          ),
           for (final item in items)
             SizedBox(
               width: width,
-              child: _ActivityCard(item: item, onPressed: () => onView(item.id)),
+              child: _ActivityCard(
+                item: item,
+                onPressed: () => onView(item.id),
+                onEdit: () => onEdit(item.id),
+              ),
             ),
         ],
       );
@@ -414,10 +575,11 @@ final class _ActivityCards extends StatelessWidget {
 }
 
 final class _ActivityCard extends StatefulWidget {
-  const _ActivityCard({required this.item, required this.onPressed});
+  const _ActivityCard({required this.item, required this.onPressed, required this.onEdit});
 
   final ActivityDirectoryItem item;
   final VoidCallback onPressed;
+  final VoidCallback onEdit;
 
   @override
   State<_ActivityCard> createState() => _ActivityCardState();
@@ -431,6 +593,7 @@ final class _ActivityCardState extends State<_ActivityCard> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final item = widget.item;
+    final hierarchy = ActivityDirectoryHierarchy.from(item);
     final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
     return Semantics(
       button: true,
@@ -489,7 +652,7 @@ final class _ActivityCardState extends State<_ActivityCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _ActivityCardHeader(item: item, colors: colors),
+                          _ActivityCardHeader(item: item, colors: colors, onEdit: widget.onEdit),
                           const SizedBox(height: CoeloSpacing.space4),
                           const Divider(height: 1),
                           const SizedBox(height: CoeloSpacing.space4),
@@ -509,13 +672,13 @@ final class _ActivityCardState extends State<_ActivityCard> {
                           _DetailRow(
                             first: _ActivityDetail(
                               icon: Icons.apartment_outlined,
-                              label: 'Unidades',
-                              value: '${item.activeUnitCount}',
+                              label: 'Unidades vinculadas',
+                              value: hierarchy.unit.label,
                             ),
                             second: _ActivityDetail(
                               icon: Icons.groups_outlined,
-                              label: 'Grupos',
-                              value: '${item.activeGroupCount}',
+                              label: 'Grupos vinculados',
+                              value: hierarchy.group.label,
                             ),
                           ),
                         ],
@@ -533,10 +696,11 @@ final class _ActivityCardState extends State<_ActivityCard> {
 }
 
 final class _ActivityCardHeader extends StatelessWidget {
-  const _ActivityCardHeader({required this.item, required this.colors});
+  const _ActivityCardHeader({required this.item, required this.colors, required this.onEdit});
 
   final ActivityDirectoryItem item;
   final ColorScheme colors;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -575,7 +739,13 @@ final class _ActivityCardHeader extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space2),
           Align(
             alignment: Alignment.centerRight,
-            child: _ActivityStatusChip(status: item.status),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _ActivityStatusChip(status: item.status),
+                _editButton(),
+              ],
+            ),
           ),
         ],
       );
@@ -585,9 +755,17 @@ final class _ActivityCardHeader extends StatelessWidget {
         Expanded(child: identity),
         const SizedBox(width: CoeloSpacing.space2),
         _ActivityStatusChip(status: item.status),
+        _editButton(),
       ],
     );
   }
+
+  Widget _editButton() => IconButton(
+    key: Key('activity-card-edit-${item.id}'),
+    tooltip: 'Editar atividade',
+    onPressed: onEdit,
+    icon: const Icon(Icons.edit_outlined),
+  );
 }
 
 final class _ActivityIcon extends StatelessWidget {
@@ -756,6 +934,69 @@ final class _ActivityTable extends StatelessWidget {
   }
 }
 
+final class _ActivityHierarchyTable extends StatelessWidget {
+  const _ActivityHierarchyTable({
+    required this.items,
+    required this.level,
+    required this.onEdit,
+    super.key,
+  });
+
+  final List<ActivityDirectoryItem> items;
+  final ActivityDirectoryTableView level;
+  final ValueChanged<String> onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    String hierarchyLabel(ActivityDirectoryItem item) {
+      final hierarchy = ActivityDirectoryHierarchy.from(item);
+      return level == ActivityDirectoryTableView.units
+          ? hierarchy.unit.label
+          : hierarchy.group.label;
+    }
+
+    CoeloAdminTableColumn<ActivityDirectoryItem> column(
+      String id,
+      String label,
+      String Function(ActivityDirectoryItem) value, {
+      double width = 190,
+    }) => CoeloAdminTableColumn(
+      id: id,
+      label: label,
+      initialWidth: width,
+      minWidth: 120,
+      maxWidth: 380,
+      cellBuilder: (context, item) =>
+          Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) => SizedBox(
+        width: constraints.maxWidth,
+        child: CoeloAdminResizableTable<ActivityDirectoryItem>(
+          items: items,
+          rowKey: (item) => 'activity-hierarchy-row-${item.id}',
+          headerHeight: 56,
+          rowHeight: 64,
+          onRowPressed: (item) => onEdit(item.id),
+          pinnedColumn: column(
+            'hierarchy',
+            level == ActivityDirectoryTableView.units ? 'Unidade' : 'Grupo',
+            hierarchyLabel,
+            width: 240,
+          ),
+          columns: [
+            column('activity', 'Atividade', (item) => item.name, width: 240),
+            column('institution', 'Instituição', (item) => item.institutionName, width: 240),
+            column('origin', 'Origem', (item) => item.origin.label),
+            column('status', 'Status', (item) => item.status.label),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 final class _ActivityStatusChip extends StatelessWidget {
   const _ActivityStatusChip({required this.status});
 
@@ -792,46 +1033,26 @@ final class _ActivityPaginationFooter extends StatelessWidget {
   final double horizontalPadding;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return ClipRect(
-      key: const Key('activity-directory-pagination-footer'),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            CoeloSpacing.space3,
-            horizontalPadding,
-            CoeloSpacing.space3,
-          ),
-          decoration: BoxDecoration(
-            color: colors.surface.withValues(alpha: .88),
-            border: Border(top: BorderSide(color: colors.outlineVariant)),
-          ),
-          child: SafeArea(
-            top: false,
-            child: CoeloAdminPagination(
-              currentPage: viewModel.page.page + 1,
-              totalPages: viewModel.page.totalPages,
-              pageSize: viewModel.query.pageSize,
-              pageSizeOptions: display == ActivityDirectoryDisplay.cards
-                  ? const [11, 20, 50, 100]
-                  : const [8, 20, 50, 100],
-              onPageSelected: (page) => viewModel.setPage(page - 1),
-              onPageSizeChanged: viewModel.setPageSize,
-              onPrevious: viewModel.page.page == 0
-                  ? null
-                  : () => viewModel.setPage(viewModel.page.page - 1),
-              onNext: viewModel.page.page + 1 >= viewModel.page.totalPages
-                  ? null
-                  : () => viewModel.setPage(viewModel.page.page + 1),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SuperadminListingPaginationFooter(
+    semanticKey: const Key('activity-directory-pagination-footer'),
+    horizontalPadding: horizontalPadding,
+    child: CoeloAdminPagination(
+      currentPage: viewModel.page.page + 1,
+      totalPages: viewModel.page.totalPages,
+      pageSize: viewModel.query.pageSize,
+      pageSizeOptions: display == ActivityDirectoryDisplay.cards
+          ? const [11, 20, 50, 100]
+          : const [8, 20, 50, 100],
+      onPageSelected: (page) => viewModel.setPage(page - 1),
+      onPageSizeChanged: viewModel.setPageSize,
+      onPrevious: viewModel.page.page == 0
+          ? null
+          : () => viewModel.setPage(viewModel.page.page - 1),
+      onNext: viewModel.page.page + 1 >= viewModel.page.totalPages
+          ? null
+          : () => viewModel.setPage(viewModel.page.page + 1),
+    ),
+  );
 }
 
 String _formatDate(DateTime date) =>

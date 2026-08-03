@@ -25,7 +25,7 @@ final class SuperadminListingPaginationFooter extends StatelessWidget {
     return ClipRect(
       key: semanticKey,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space2, sigmaY: CoeloSpacing.space2),
+        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space3, sigmaY: CoeloSpacing.space3),
         child: Container(
           padding: EdgeInsets.fromLTRB(
             horizontalPadding,
@@ -34,8 +34,9 @@ final class SuperadminListingPaginationFooter extends StatelessWidget {
             CoeloSpacing.space3,
           ),
           decoration: BoxDecoration(
-            color: colors.surface.withValues(alpha: 0.88),
-            border: Border(top: BorderSide(color: colors.outlineVariant)),
+            color: colors.surface.withValues(
+              alpha: Theme.brightnessOf(context) == Brightness.light ? 0.84 : 0.88,
+            ),
           ),
           child: SafeArea(top: false, child: child),
         ),

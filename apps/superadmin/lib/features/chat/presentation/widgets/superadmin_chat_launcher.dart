@@ -12,9 +12,14 @@ import 'superadmin_chat_flow_dialog.dart';
 import 'superadmin_chat_message_bubble.dart';
 
 final class SuperadminChatLauncher extends StatefulWidget {
-  const SuperadminChatLauncher({required this.onOpenConversations, super.key});
+  const SuperadminChatLauncher({
+    required this.onOpenConversations,
+    this.bottomClearance = 0,
+    super.key,
+  }) : assert(bottomClearance >= 0);
 
   final VoidCallback onOpenConversations;
+  final double bottomClearance;
 
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
@@ -24,10 +29,12 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   late final SuperadminChatController _controller;
   final _focusNode = FocusNode(debugLabel: 'Launcher de conversas');
   final _overlayFocusNode = FocusNode(debugLabel: 'Painel de conversas');
+  final _launcherKey = GlobalKey(debugLabel: 'Launcher móvel de conversas');
   OverlayEntry? _entry;
   var _hovered = false;
   var _focused = false;
   var _compactSheetOpen = false;
+  var _positionOffset = Offset.zero;
 
   @override
   void initState() {
@@ -98,7 +105,10 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
           },
           child: Stack(
             children: [
-              GestureDetector(behavior: HitTestBehavior.translucent, onTap: _closeOverlay),
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () => _closeOverlay(restoreFocus: false),
+              ),
               Positioned(
                 top: top,
                 right: right,
@@ -133,59 +143,132 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     _overlayFocusNode.requestFocus();
   }
 
-  void _closeOverlay() {
+  void _closeOverlay({bool restoreFocus = true}) {
     _entry?.remove();
     _entry = null;
-    if (mounted) _focusNode.requestFocus();
+    if (!mounted) return;
+    if (restoreFocus) {
+      _focusNode.requestFocus();
+    } else {
+      _focusNode.unfocus();
+      setState(() {});
+    }
+  }
+
+  KeyEventResult _handleLauncherKey(FocusNode _, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (event.logicalKey == LogicalKeyboardKey.home) {
+      _resetPosition();
+      return KeyEventResult.handled;
+    }
+    if (!HardwareKeyboard.instance.isAltPressed) return KeyEventResult.ignored;
+    final delta = switch (event.logicalKey) {
+      LogicalKeyboardKey.arrowLeft => const Offset(-CoeloSpacing.space3, 0),
+      LogicalKeyboardKey.arrowRight => const Offset(CoeloSpacing.space3, 0),
+      LogicalKeyboardKey.arrowUp => const Offset(0, -CoeloSpacing.space3),
+      LogicalKeyboardKey.arrowDown => const Offset(0, CoeloSpacing.space3),
+      _ => null,
+    };
+    if (delta == null) return KeyEventResult.ignored;
+    _moveBy(delta);
+    return KeyEventResult.handled;
+  }
+
+  void _resetPosition() {
+    if (_positionOffset == Offset.zero) return;
+    setState(() => _positionOffset = Offset.zero);
+  }
+
+  void _moveBy(Offset delta) {
+    final renderObject = _launcherKey.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox || !renderObject.hasSize) return;
+    final media = MediaQuery.of(context);
+    final rect = renderObject.localToGlobal(Offset.zero) & renderObject.size;
+    final minLeft = media.padding.left + CoeloSpacing.space2;
+    final maxLeft = media.size.width - media.padding.right - CoeloSpacing.space2 - rect.width;
+    final minTop = media.padding.top + CoeloSpacing.space2;
+    final maxTop =
+        media.size.height -
+        media.padding.bottom -
+        widget.bottomClearance -
+        CoeloSpacing.space2 -
+        rect.height;
+    final clampedMaxLeft = maxLeft < minLeft ? minLeft : maxLeft;
+    final clampedMaxTop = maxTop < minTop ? minTop : maxTop;
+    final targetLeft = (rect.left + delta.dx).clamp(minLeft, clampedMaxLeft).toDouble();
+    final targetTop = (rect.top + delta.dy).clamp(minTop, clampedMaxTop).toDouble();
+    final applied = Offset(targetLeft - rect.left, targetTop - rect.top);
+    if (applied == Offset.zero) return;
+    setState(() => _positionOffset += applied);
   }
 
   @override
   Widget build(BuildContext context) {
     if (_compactSheetOpen) return const SizedBox.shrink();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _moveBy(Offset.zero));
     final colors = Theme.of(context).colorScheme;
-    final highlighted = _hovered || _focused;
+    final highlighted = _hovered || _focused || _entry != null;
     final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
+    final expanded = !compact && highlighted;
     final foreground = highlighted ? colors.onPrimary : colors.onSurface;
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: Tooltip(
-        message: 'Abrir conversas',
-        child: Semantics(
-          button: true,
-          label: 'Abrir conversas. 3 mensagens não lidas.',
-          child: Material(
-            key: const Key('superadmin-chat-launcher-surface'),
-            color: highlighted ? colors.primary : colors.surfaceContainerHighest,
-            shape: StadiumBorder(side: BorderSide(color: colors.outlineVariant)),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              focusNode: _focusNode,
-              onTap: _open,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: CoeloSize.touchMin,
-                  minWidth: CoeloSize.touchMin,
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: compact ? CoeloSpacing.space3 : CoeloSpacing.space2,
-                  ),
-                  child: compact
-                      ? Icon(Icons.forum_outlined, color: foreground)
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Badge(
-                              label: const Text('3'),
-                              child: Icon(Icons.send_outlined, color: foreground),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            Text('Mensagens', style: TextStyle(color: foreground)),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            _LauncherAvatars(foreground: foreground),
-                          ],
+    return Transform.translate(
+      offset: _positionOffset,
+      child: GestureDetector(
+        key: _launcherKey,
+        behavior: HitTestBehavior.opaque,
+        onPanUpdate: (details) => _moveBy(details.delta),
+        child: Focus(
+          onKeyEvent: _handleLauncherKey,
+          child: MouseRegion(
+            onEnter: (_) => setState(() => _hovered = true),
+            onExit: (_) => setState(() => _hovered = false),
+            child: Tooltip(
+              message: 'Abrir conversas',
+              child: Semantics(
+                button: true,
+                label: 'Abrir conversas. 3 mensagens não lidas. Alt mais setas move.',
+                child: Material(
+                  key: const Key('superadmin-chat-launcher-surface'),
+                  color: highlighted ? colors.primary : colors.surfaceContainerHighest,
+                  shape: StadiumBorder(side: BorderSide(color: colors.outlineVariant)),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    focusNode: _focusNode,
+                    onTap: _open,
+                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                    child: AnimatedSize(
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : CoeloMotion.short,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: CoeloSize.touchMin,
+                          minWidth: CoeloSize.touchMin,
                         ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
+                          child: expanded
+                              ? Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Badge(
+                                      label: const Text('3'),
+                                      child: Icon(Icons.send_outlined, color: foreground),
+                                    ),
+                                    const SizedBox(width: CoeloSpacing.space2),
+                                    Text('Mensagens', style: TextStyle(color: foreground)),
+                                    const SizedBox(width: CoeloSpacing.space2),
+                                    _LauncherAvatars(foreground: foreground),
+                                  ],
+                                )
+                              : Badge(
+                                  label: const Text('3'),
+                                  child: Icon(Icons.send_outlined, color: foreground),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

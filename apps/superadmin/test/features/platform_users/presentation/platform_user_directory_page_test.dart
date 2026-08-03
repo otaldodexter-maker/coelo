@@ -4,6 +4,8 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/platform_users/data/fake_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/domain/platform_user.dart';
 import 'package:coelo_superadmin/features/platform_users/presentation/platform_user_directory_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final toggle = tester.widget<SuperadminDirectoryViewToggle<PlatformUserTableView>>(
+      find.byType(SuperadminDirectoryViewToggle<PlatformUserTableView>),
+    );
+    toggle.onTableViewSelected(PlatformUserTableView.scopes);
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     expect(find.text('Importar'), findsOneWidget);
@@ -86,13 +93,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('platform-user-files-export-csv')));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Exportação CSV preparada somente no preview. Nenhum arquivo real foi gerado.'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('visão: Detalhado por escopos'), findsOneWidget);
   });
 
-  testWidgets('switches to the canonical table and keeps eight rows', (tester) async {
+  testWidgets('switches between grouped and detailed scope tables', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -110,6 +114,10 @@ void main() {
     await tester.tap(find.byKey(const Key('platform-user-view-table')));
     await tester.pumpAndSettle();
 
+    final toggle = tester.widget<SuperadminDirectoryViewToggle<PlatformUserTableView>>(
+      find.byType(SuperadminDirectoryViewToggle<PlatformUserTableView>),
+    );
+    expect(toggle.tableViews.map((option) => option.label), ['Agrupado', 'Detalhado por escopos']);
     expect(find.byKey(const Key('platform-user-directory-table')), findsOneWidget);
     expect(find.text('Pessoa'), findsWidgets);
     expect(find.text('Papel'), findsWidgets);
@@ -117,6 +125,34 @@ void main() {
     expect(find.text('Convite'), findsWidgets);
     expect(find.text('Revisado em'), findsWidgets);
     expect(find.byKey(const Key('platform-user-table-page-size-8')), findsOneWidget);
+
+    toggle.onTableViewSelected(PlatformUserTableView.scopes);
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição vinculada'), findsOneWidget);
+    expect(find.text('Convite'), findsNothing);
+  });
+
+  testWidgets('uses the measured shared pagination footer', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PlatformUserDirectoryPage(
+          repository: FakePlatformUserRepository(),
+          capability: PlatformUserCapability.owner,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminListingPaginationFooter), findsOneWidget);
+    final scroll = tester.widget<ListView>(
+      find.byKey(const Key('platform-user-directory-content-scroll')),
+    );
+    expect((scroll.padding! as EdgeInsets).bottom, greaterThan(CoeloSpacing.space4));
   });
 
   testWidgets('shows no permission without exposing create', (tester) async {

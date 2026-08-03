@@ -126,9 +126,11 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
 - Consultar `admin.pagination` e reutilizar `CoeloAdminPagination`.
 - O controle público centraliza as quebras, ações, páginas numeradas e seletor
   compacto; o consumidor escolhe os tamanhos permitidos.
-- Instituições exemplifica cards com 11 itens e tabela com 8. Seu rodapé
-  sticky/glass é composição privada descrita na spec especializada: não
-  promover blur, inset ou fixação para variante pública.
+- Instituições exemplifica cards com 11 itens e tabela com 8. O rodapé
+  sticky/glass privado é reutilizado nos diretórios do Superadmin: `surface`
+  translúcida a 84% no claro e 88% no escuro, blur `CoeloSpacing.space3` e
+  nenhuma borda ou linha superior. Não promover blur, alpha, inset ou fixação
+  para variante pública. Paginação inline não sticky fica fora desse contrato.
 - Nessa superfície, a altura medida também desloca o launcher de chat para
   cima; rodapé e launcher não podem compartilhar a mesma área interativa.
 - Validar texto a 200%, teclado, foco, semântica e menu em viewport compacto.

@@ -5,6 +5,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
+import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../data/fake_institution_directory_repository.dart';
 import '../../data/institution_location_service.dart';
@@ -43,6 +44,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   InstitutionFormController? _controller;
   late final InstitutionLocationService _locationService;
   bool _missingInstitution = false;
+  double _footerHeight = 0;
 
   @override
   void initState() {
@@ -124,6 +126,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
         subtitle: widget.institutionId == null
             ? 'Adicione uma nova instituição ao Coelo.'
             : 'Atualize os dados da instituição selecionada.',
+        chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
         onDestinationSelected: _selectDestination,
         child: _missingInstitution
             ? CoeloStatePanel(
@@ -139,6 +142,10 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
                 onCancel: _requestExit,
                 onSave: _save,
                 locationService: _locationService,
+                onFooterHeightChanged: (height) {
+                  if (_footerHeight > 0) return;
+                  setState(() => _footerHeight = height);
+                },
                 desktopNavigation: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
               ),
       ),
@@ -152,6 +159,7 @@ final class _FormBody extends StatelessWidget {
     required this.onCancel,
     required this.onSave,
     required this.locationService,
+    required this.onFooterHeightChanged,
     required this.desktopNavigation,
   });
 
@@ -159,6 +167,7 @@ final class _FormBody extends StatelessWidget {
   final VoidCallback onCancel;
   final VoidCallback onSave;
   final InstitutionLocationService locationService;
+  final ValueChanged<double> onFooterHeightChanged;
   final bool desktopNavigation;
 
   @override
@@ -219,7 +228,12 @@ final class _FormBody extends StatelessWidget {
                         ),
                       ),
                     ),
-                    _FormFooter(controller: controller, onCancel: onCancel, onSave: onSave),
+                    _FormFooter(
+                      controller: controller,
+                      onCancel: onCancel,
+                      onSave: onSave,
+                      onHeightChanged: onFooterHeightChanged,
+                    ),
                   ],
                 ),
               );
@@ -247,10 +261,16 @@ final class _FormBody extends StatelessWidget {
 }
 
 final class _FormFooter extends StatelessWidget {
-  const _FormFooter({required this.controller, required this.onCancel, required this.onSave});
+  const _FormFooter({
+    required this.controller,
+    required this.onCancel,
+    required this.onSave,
+    required this.onHeightChanged,
+  });
   final InstitutionFormController controller;
   final VoidCallback onCancel;
   final VoidCallback onSave;
+  final ValueChanged<double> onHeightChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -297,56 +317,15 @@ final class _FormFooter extends StatelessWidget {
             )
           : const Text('Salvar alterações'),
     );
-    return SafeArea(
-      top: false,
-      child: Container(
-        padding: const EdgeInsets.all(CoeloSpacing.space3),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (controller.isEditing && !last) ...[
-                    saveCurrentButton,
-                    const SizedBox(height: CoeloSpacing.space2),
-                  ],
-                  primaryButton,
-                  const SizedBox(height: CoeloSpacing.space2),
-                  Row(
-                    children: [
-                      cancelButton,
-                      const Spacer(),
-                      if (controller.currentStep.index > 0) previousButton,
-                    ],
-                  ),
-                ],
-              );
-            }
-            return Row(
-              children: [
-                cancelButton,
-                const Spacer(),
-                if (controller.currentStep.index > 0) previousButton,
-                const SizedBox(width: CoeloSpacing.space2),
-                if (controller.isEditing && !last) ...[
-                  primaryButton,
-                  const SizedBox(width: CoeloSpacing.space2),
-                  saveCurrentButton,
-                ] else ...[
-                  primaryButton,
-                ],
-              ],
-            );
-          },
-        ),
-      ),
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('institution-form-footer-surface'),
+      onHeightChanged: onHeightChanged,
+      tertiaryAction: cancelButton,
+      continuationActions: [
+        if (controller.currentStep.index > 0) previousButton,
+        primaryButton,
+        if (controller.isEditing && !last) saveCurrentButton,
+      ],
     );
   }
 }

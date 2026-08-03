@@ -2,7 +2,10 @@ import 'dart:ui' show PointerDeviceKind, SemanticsAction;
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
+import 'package:coelo_superadmin/features/people/domain/person_directory.dart'
+    show PersonDirectoryTableView, PersonFilterOption;
 import 'package:coelo_superadmin/features/people/presentation/person_directory_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -12,6 +15,100 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  testWidgets('offers approved people segments and progressive filter chains', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    for (final label in const [
+      'Todos',
+      'Equipe institucional',
+      'Responsáveis',
+      'Crianças',
+      'Perfil duplo',
+    ]) {
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(find.byKey(const Key('people-unit-filter')), findsNothing);
+    expect(find.byKey(const Key('people-group-filter')), findsNothing);
+    expect(find.byKey(const Key('people-activity-filter')), findsNothing);
+    expect(find.byKey(const Key('people-municipality-filter')), findsNothing);
+    expect(find.byKey(const Key('people-neighborhood-filter')), findsNothing);
+
+    final institutionFilter = tester.widget<CoeloAdminMultiSelectFilter<PersonFilterOption>>(
+      find.descendant(
+        of: find.byKey(const Key('people-institution-filter')),
+        matching: find.byType(CoeloAdminMultiSelectFilter<PersonFilterOption>),
+      ),
+    );
+    institutionFilter.onChanged({institutionFilter.options.first});
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('people-unit-filter')), findsOneWidget);
+
+    final stateFilter = tester.widget<CoeloAdminMultiSelectFilter<PersonFilterOption>>(
+      find.descendant(
+        of: find.byKey(const Key('people-state-filter')),
+        matching: find.byType(CoeloAdminMultiSelectFilter<PersonFilterOption>),
+      ),
+    );
+    stateFilter.onChanged({stateFilter.options.first});
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('people-municipality-filter')), findsOneWidget);
+  });
+
+  testWidgets('uses directory toggle and exposes grouped institution unit group activity tables', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final finder = find.byType(SuperadminDirectoryViewToggle<PersonDirectoryTableView>);
+    expect(finder, findsOneWidget);
+    final toggle = tester.widget<SuperadminDirectoryViewToggle<PersonDirectoryTableView>>(finder);
+    expect(
+      toggle.tableViews.map((option) => option.label),
+      containsAll(const ['Instituições', 'Unidades', 'Grupos', 'Atividades']),
+    );
+    toggle.onTableViewSelected(PersonDirectoryTableView.activities);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: find.byKey(const Key('people-table')), matching: find.text('Atividades')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('cards show masked fictional contact and pertinent metrics only', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        repository: FakePersonDirectoryRepository(
+          seed: [
+            FakePersonDirectoryRepository.samplePeople[0],
+            FakePersonDirectoryRepository.samplePeople[1],
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('***'), findsWidgets);
+    final child = find.byKey(const Key('person-card-person-1'));
+    expect(child, findsOneWidget);
+    expect(find.descendant(of: child, matching: find.text('Contato')), findsNothing);
+    expect(
+      find.descendant(of: child, matching: find.text('Responsáveis vinculados')),
+      findsOneWidget,
+    );
+
+    final adult = find.byKey(const Key('person-card-person-0'));
+    expect(find.descendant(of: adult, matching: find.text('Crianças vinculadas')), findsOneWidget);
+    expect(find.descendant(of: adult, matching: find.text('Alunos acompanhados')), findsOneWidget);
+  });
+
   testWidgets('shows eleven cards, avatar, banner and file actions', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -162,7 +259,8 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app(onConversationsOpen: () {}));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
 
     final scroll = find.byKey(const Key('people-directory-scroll'));
     final scrollable = find.descendant(of: scroll, matching: find.byType(Scrollable)).first;
@@ -173,7 +271,8 @@ void main() {
     );
     await tester.scrollUntilVisible(cards.last, 400, scrollable: scrollable);
     await tester.drag(scroll, const Offset(0, -1000));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
 
     final footerTop = tester
         .getTopLeft(find.byKey(const Key('people-directory-pagination-footer')))

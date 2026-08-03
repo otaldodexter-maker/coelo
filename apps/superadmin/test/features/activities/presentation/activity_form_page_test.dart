@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -26,11 +27,43 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Criar atividade'), findsOneWidget);
+    expect(find.text('Criar atividade'), findsWidgets);
     expect(find.byType(CoeloFormTextField), findsNWidgets(2));
     expect(find.byType(CoeloAdminSingleSelectField<String>), findsNWidgets(2));
     expect(find.text('Status'), findsNothing);
     expect(find.text('Recorrência'), findsNothing);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('activity-suggestions')), findsOneWidget);
+    for (final label in [
+      'Acadêmicas',
+      'Linguagens',
+      'Português',
+      'Inglês',
+      'Exatas',
+      'Matemática',
+      'Robótica',
+      'Esportes',
+      'Aquáticos',
+      'Natação',
+      'Lutas',
+      'Judô',
+      'Campo',
+      'Futebol',
+      'Artes',
+      'Visuais',
+      'Desenho',
+      'Natureza',
+      'Educação ambiental',
+      'Horta',
+      'Outro',
+    ]) {
+      expect(find.text(label), findsWidgets);
+    }
+    expect(find.byKey(const Key('activity-context-preview')), findsOneWidget);
+    expect(find.byKey(const Key('activity-photo-preview')), findsOneWidget);
+    expect(find.byKey(const Key('activity-conversation-preview')), findsOneWidget);
+    expect(find.byKey(const Key('activity-publication-preview')), findsOneWidget);
+    expect(find.text('Atividade Nova atividade · Grupo selecionado'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('activity-form-submit')));
     await tester.pump();
@@ -59,7 +92,7 @@ void main() {
 
     expect(find.text('Editar atividade'), findsOneWidget);
     expect(find.text('Casa Nuvem'), findsOneWidget);
-    expect(find.text('Instituição'), findsOneWidget);
+    expect(find.text('Instituição'), findsWidgets);
     expect(find.text('Origem'), findsOneWidget);
     expect(find.byType(CoeloAdminSingleSelectField<String>), findsNothing);
     expect(tester.takeException(), isNull);

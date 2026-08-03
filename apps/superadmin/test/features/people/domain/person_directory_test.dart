@@ -1,7 +1,41 @@
+import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('segments classify institutional team, guardians, children and dual profiles', () {
+    final people = FakePersonDirectoryRepository.samplePeople;
+
+    expect(
+      people.where((person) => person.matchesSegment(PersonDirectorySegment.institutionalTeam)),
+      isNotEmpty,
+    );
+    expect(
+      people.where((person) => person.matchesSegment(PersonDirectorySegment.guardians)),
+      isNotEmpty,
+    );
+    expect(
+      people.where((person) => person.matchesSegment(PersonDirectorySegment.children)),
+      isNotEmpty,
+    );
+    expect(
+      people.where((person) => person.matchesSegment(PersonDirectorySegment.dualProfile)),
+      isNotEmpty,
+    );
+    expect(people.every((person) => person.matchesSegment(PersonDirectorySegment.all)), isTrue);
+  });
+
+  test('query reports progressive context and location filters as active', () {
+    final query = PersonDirectoryQuery(
+      activityIds: {'activity-0'},
+      stateCodes: {'SP'},
+      municipalityIds: {'municipality-sp'},
+      neighborhoodIds: {'neighborhood-centro'},
+    );
+
+    expect(query.hasActiveFilters, isTrue);
+  });
+
   test('cards and table use the approved default page sizes', () {
     expect(PersonDirectoryQuery.cards().pageSize, 11);
     expect(PersonDirectoryQuery.table().pageSize, 8);

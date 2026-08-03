@@ -68,7 +68,8 @@ void main() {
 
     router.go(SuperadminRoutes.devActivityCreate);
     await tester.pumpAndSettle();
-    expect(find.text('Criar atividade'), findsOneWidget);
+    expect(find.byKey(const Key('activity-form-scroll')), findsOneWidget);
+    expect(find.text('Criar atividade'), findsWidgets);
 
     router.go('/dev/activities/activity-1');
     await tester.pumpAndSettle();

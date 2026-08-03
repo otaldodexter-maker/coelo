@@ -10,6 +10,7 @@ import 'package:coelo_superadmin/features/institutions/domain/institution_direct
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_directory_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,70 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('offers grouped, units, groups, and activities table views', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
+      findsOneWidget,
+    );
+    await tester.longPress(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+
+    for (final label in ['Agrupado', 'Unidades', 'Grupos', 'Atividades']) {
+      expect(find.widgetWithText(MenuItemButton, label), findsOneWidget);
+    }
+
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Unidades'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-directory-table-units')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-unit-name')), findsOneWidget);
+    expect(_institutionDetailRows('units'), findsWidgets);
+
+    await tester.longPress(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Grupos'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-directory-table-groups')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-unit-name')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-group-name')), findsOneWidget);
+    expect(_institutionDetailRows('groups'), findsWidgets);
+
+    await tester.longPress(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Atividades'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-directory-table-activities')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-unit-name')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-group-name')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-table-header-activity-name')), findsOneWidget);
+    expect(_institutionDetailRows('activities'), findsWidgets);
+  });
+
+  testWidgets('shows each deduplicated local institution metric once in grouped view', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+
+    for (final label in [
+      'Representantes legais',
+      'Administradores',
+      'Equipe institucional',
+      'Responsáveis',
+      'Crianças',
+    ]) {
+      expect(find.text(label), findsOneWidget);
+    }
+  });
+
   testWidgets('starts with cards and the approved dependent filter order', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -132,14 +197,21 @@ void main() {
         findsOneWidget,
       );
       final surface = tester.widget<Container>(
-        find.byKey(const Key('institution-directory-pagination-footer-surface')),
+        find
+            .ancestor(
+              of: find.byKey(const Key('institution-directory-pagination-footer-surface')),
+              matching: find.byType(Container),
+            )
+            .first,
       );
       final decoration = surface.decoration! as BoxDecoration;
       final colors = brightness == Brightness.light
           ? CoeloTheme.light.colorScheme
           : CoeloTheme.dark.colorScheme;
-      expect(decoration.color, colors.surface.withValues(alpha: 0.88));
-      expect(decoration.border!.top.color, colors.outlineVariant);
+      expect(
+        decoration.color,
+        colors.surface.withValues(alpha: brightness == Brightness.light ? 0.84 : 0.88),
+      );
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
@@ -956,7 +1028,7 @@ void main() {
     expect(after, lessThan(before));
   });
 
-  testWidgets('paginates the directory in groups of ten items', (tester) async {
+  testWidgets('paginates the directory in groups of eleven items', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -964,7 +1036,7 @@ void main() {
       _app(
         repository: FakeInstitutionDirectoryRepository(
           items: List.generate(
-            11,
+            12,
             (index) => InstitutionDirectoryItem(
               id: 'institution-$index',
               publicName: 'Instituição ${(index + 1).toString().padLeft(2, '0')}',
@@ -988,7 +1060,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.byKey(const Key('coelo-pagination-page-1')),
+      find.byKey(const Key('coelo-admin-pagination-page-1')),
       600,
       scrollable: find
           .descendant(
@@ -998,12 +1070,12 @@ void main() {
           .first,
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-pagination-page-1')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsOneWidget);
     await tester.tap(find.text('Próxima'));
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.byKey(const Key('coelo-pagination-page-2')),
+      find.byKey(const Key('coelo-admin-pagination-page-2')),
       600,
       scrollable: find
           .descendant(
@@ -1013,8 +1085,8 @@ void main() {
           .first,
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-pagination-page-2')), findsOneWidget);
-    expect(find.text('Instituição 11'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-2')), findsOneWidget);
+    expect(find.text('Instituição 12'), findsOneWidget);
   });
 
   testWidgets('uses the same paginated records in cards and table views', (tester) async {
@@ -1048,20 +1120,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
-    for (var index = 0; index < 10; index += 1) {
+    for (var index = 0; index < 11; index += 1) {
       expect(find.byKey(Key('institution-card-institution-$index')), findsOneWidget);
     }
-    expect(find.byKey(const Key('institution-card-institution-10')), findsNothing);
 
     await tester.tap(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
-    for (var index = 0; index < 10; index += 1) {
+    for (var index = 0; index < 8; index += 1) {
       expect(find.byKey(Key('institution-table-row-institution-$index')), findsOneWidget);
     }
-    expect(find.byKey(const Key('institution-table-row-institution-10')), findsNothing);
+    expect(find.byKey(const Key('institution-table-row-institution-8')), findsNothing);
 
     await tester.scrollUntilVisible(
-      find.byKey(const Key('coelo-pagination-page-2')),
+      find.byKey(const Key('coelo-admin-pagination-page-2')),
       600,
       scrollable: find
           .descendant(
@@ -1070,23 +1141,25 @@ void main() {
           )
           .first,
     );
-    await tester.ensureVisible(find.byKey(const Key('coelo-pagination-page-2')));
+    await tester.ensureVisible(find.byKey(const Key('coelo-admin-pagination-page-2')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('coelo-pagination-page-2')));
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-2')));
     await tester.pumpAndSettle();
 
     expect(repository.queries.last.page, 1);
-    expect(repository.queries.last.pageSize, 10);
+    expect(repository.queries.last.pageSize, 8);
     expect(find.byKey(const Key('institution-table-row-institution-10')), findsOneWidget);
 
     final requestsBeforeSwitch = repository.queries.length;
     await tester.tap(find.byKey(const Key('institution-view-cards')));
     await tester.pumpAndSettle();
-    expect(repository.queries, hasLength(requestsBeforeSwitch));
+    expect(repository.queries, hasLength(requestsBeforeSwitch + 1));
+    expect(repository.queries.last.page, 0);
+    expect(repository.queries.last.pageSize, 11);
     expect(find.byKey(const Key('institution-card-institution-10')), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.byKey(const Key('coelo-pagination-page-size')),
+      find.byKey(const Key('coelo-admin-pagination-page-size')),
       600,
       scrollable: find
           .descendant(
@@ -1095,7 +1168,7 @@ void main() {
           )
           .first,
     );
-    await tester.tap(find.byKey(const Key('coelo-pagination-page-size')));
+    await tester.tap(find.byKey(const Key('coelo-admin-pagination-page-size')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('50').last);
     await tester.pumpAndSettle();
@@ -1118,7 +1191,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('coelo-pagination-page-size')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
   });
 
   testWidgets('hides the page-size selector for empty and no-results states', (tester) async {
@@ -1127,7 +1200,7 @@ void main() {
 
     await tester.pumpWidget(_app(repository: FakeInstitutionDirectoryRepository(items: [])));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
@@ -1139,12 +1212,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-pagination-page-size')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'no matches');
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
   });
 
   testWidgets('centers pagination below cards and table', (tester) async {
@@ -1384,6 +1457,11 @@ Finder _institutionTableRows() {
     return key is ValueKey<String> && key.value.startsWith('institution-table-row-');
   });
 }
+
+Finder _institutionDetailRows(String level) => find.byWidgetPredicate((widget) {
+  final key = widget.key;
+  return key is ValueKey<String> && key.value.startsWith('institution-detail-row-$level-');
+});
 
 Widget _app({
   Key? pageKey,

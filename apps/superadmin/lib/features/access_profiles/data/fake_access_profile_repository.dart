@@ -198,6 +198,12 @@ const demoAccessProfiles = <AccessProfile>[
     membershipCount: 1,
     isSystem: true,
     permissions: _platformPermissions,
+    localAssignments: [
+      AccessProfileAssignment(
+        context: AccessAssignmentContext.institution,
+        label: 'Colégio Horizonte',
+      ),
+    ],
   ),
   AccessProfile(
     id: 'demo-support',
@@ -211,6 +217,12 @@ const demoAccessProfiles = <AccessProfile>[
     membershipCount: 4,
     isSystem: true,
     permissions: _platformPermissions,
+    localAssignments: [
+      AccessProfileAssignment(
+        context: AccessAssignmentContext.activity,
+        label: 'Atendimento de implantação',
+      ),
+    ],
   ),
   AccessProfile(
     id: 'demo-admin-owner',
@@ -224,6 +236,9 @@ const demoAccessProfiles = <AccessProfile>[
     membershipCount: 8,
     isSystem: true,
     permissions: _institutionPermissions,
+    localAssignments: [
+      AccessProfileAssignment(context: AccessAssignmentContext.unit, label: 'Unidade Centro'),
+    ],
   ),
   AccessProfile(
     id: 'demo-coordinator',
@@ -236,6 +251,9 @@ const demoAccessProfiles = <AccessProfile>[
     version: 1,
     membershipCount: 16,
     permissions: _institutionPermissions,
+    localAssignments: [
+      AccessProfileAssignment(context: AccessAssignmentContext.group, label: 'Turma Girassol'),
+    ],
   ),
 ];
 

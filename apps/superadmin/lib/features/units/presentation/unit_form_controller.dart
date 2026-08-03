@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
 enum UnitFormStep {
-  branding('Identidade visual'),
-  profile('Perfil da unidade'),
-  location('Localização e contato'),
+  branding('Identidade'),
+  profile('Hierarquia'),
+  location('Localização'),
   plan('Plano'),
   review('Revisão');
 
@@ -103,13 +103,20 @@ final class UnitFormController extends ChangeNotifier {
     return valid;
   }
 
-  bool validateForSave(GlobalKey<FormState> formKey) {
-    final valid = formKey.currentState?.validate() ?? false;
-    if (!valid) {
-      _setStepError(_currentStep, true);
+  bool validateForSave({
+    required GlobalKey<FormState> profileFormKey,
+    required GlobalKey<FormState> locationFormKey,
+  }) {
+    final profileValid = profileFormKey.currentState?.validate() ?? false;
+    final locationValid = locationFormKey.currentState?.validate() ?? false;
+    _setStepError(UnitFormStep.profile, !profileValid);
+    _setStepError(UnitFormStep.location, !locationValid);
+    if (!profileValid) {
       selectStep(UnitFormStep.profile);
+    } else if (!locationValid) {
+      selectStep(UnitFormStep.location);
     }
-    return valid;
+    return profileValid && locationValid;
   }
 
   void setLoadStatus(UnitFormLoadStatus value) {

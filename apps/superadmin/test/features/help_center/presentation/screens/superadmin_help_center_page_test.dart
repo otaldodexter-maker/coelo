@@ -336,6 +336,44 @@ void main() {
     expect(find.descendant(of: sendFinder, matching: find.byType(Transform)), findsNothing);
   });
 
+  testWidgets('uses the canonical surface and discrete hover in the mobile history flyout', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('superadmin-help-composer-field')),
+      'Como cadastro uma instituição?',
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    final anchorFinder = find.descendant(
+      of: find.byKey(const Key('superadmin-help-history-stacked')),
+      matching: find.byType(MenuAnchor),
+    );
+    final anchor = tester.widget<MenuAnchor>(anchorFinder);
+    final colors = Theme.of(tester.element(anchorFinder)).colorScheme;
+    expect(anchor.style?.backgroundColor?.resolve({}), colors.surface);
+    expect(anchor.style?.surfaceTintColor?.resolve({}), Colors.transparent);
+    expect(anchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
+
+    final item = anchor.menuChildren.single as MenuItemButton;
+    expect(item.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
+    expect(item.style?.backgroundColor?.resolve({WidgetState.focused}), colors.primaryContainer);
+    expect(item.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
+    expect(item.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(
+      item.style?.minimumSize?.resolve({}),
+      const Size(CoeloSize.touchMin, CoeloSize.touchMin),
+    );
+  });
+
   testWidgets('supports dark theme, 200% text and reduced motion without overflow', (tester) async {
     for (final configuration in [
       (size: const Size(1440, 900), mode: ThemeMode.dark, scaler: TextScaler.noScaling),

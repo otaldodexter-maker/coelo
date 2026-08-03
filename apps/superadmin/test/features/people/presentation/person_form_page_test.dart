@@ -2,17 +2,85 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_form_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
-  testWidgets('create form has three responsive steps and no sensitive fields', (tester) async {
+  testWidgets('form keeps a local address section out of the persisted identity contract', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Endereço local'), findsOneWidget);
+    expect(find.byKey(const Key('person-address-postal-code')), findsOneWidget);
+    expect(find.byKey(const Key('person-address-street')), findsOneWidget);
+    expect(find.byKey(const Key('person-address-city')), findsOneWidget);
+    expect(find.textContaining('não será persistido'), findsOneWidget);
+  });
+
+  testWidgets('relationship demo searches adults masked and children without contact data', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
+    for (final entry in const {
+      'person-first-name-field': 'Ana',
+      'person-last-name-field': 'Lima',
+      'person-display-name-field': 'Ana Lima',
+      'person-legal-name-field': 'Ana Lima',
+    }.entries) {
+      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
+    }
+    await tester.tap(find.text('Vínculos contextuais').first);
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Buscar adulto existente'), findsOneWidget);
+    expect(find.textContaining('dados mascarados'), findsOneWidget);
+    expect(find.text('Buscar criança existente'), findsOneWidget);
+    expect(find.textContaining('nome, identificador ou contexto'), findsOneWidget);
+    expect(find.textContaining('E-mail obrigatório'), findsNothing);
+    expect(find.textContaining('Celular obrigatório'), findsNothing);
+
+    await tester.enterText(find.byKey(const Key('person-adult-link-search')), '@ana.coelo');
+    await tester.pump();
+    expect(find.text('Ana Souza'), findsOneWidget);
+    expect(find.textContaining('***.456.***-**'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('person-adult-link-result-adult-ana')));
+    await tester.pump();
+    expect(find.text('Vínculo selecionado: Ana Souza'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('person-child-link-search')), 'Girassol');
+    await tester.pump();
+    expect(find.text('Lia Coelo'), findsOneWidget);
+    expect(find.textContaining('Turma Girassol'), findsOneWidget);
+  });
+
+  testWidgets('uses measured glass footer and reserves scroll content', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byKey(const Key('person-form-scroll')),
+    );
+    expect((scroll.padding! as EdgeInsets).bottom, greaterThan(CoeloSpacing.space6));
+  });
+
+  testWidgets('create form has three responsive steps and no sensitive fields', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Identidade'), findsWidgets);
     expect(find.text('Etapa 1 de 3'), findsOneWidget);
@@ -26,16 +94,16 @@ void main() {
     await tester.enterText(find.byKey(const Key('person-display-name-field')), 'Ana Lima');
     await tester.enterText(find.byKey(const Key('person-legal-name-field')), 'Ana Lima');
     await tester.tap(find.byKey(const Key('person-form-continue')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     expect(find.textContaining('Vínculos contextuais', skipOffstage: false), findsWidgets);
   });
 
   testWidgets('requires identity fields before advancing', (tester) async {
     await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     await tester.tap(find.byKey(const Key('person-form-continue')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Informe os campos obrigatórios.'), findsOneWidget);
     expect(find.byKey(const Key('person-first-name-field')), findsOneWidget);
@@ -43,7 +111,7 @@ void main() {
 
   testWidgets('context step requires explicit adult membership selections', (tester) async {
     await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     for (final entry in const {
       'person-first-name-field': 'Ana',
       'person-last-name-field': 'Lima',
@@ -53,7 +121,7 @@ void main() {
       await tester.enterText(find.byKey(Key(entry.key)), entry.value);
     }
     await tester.tap(find.byKey(const Key('person-form-continue')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.byKey(const Key('person-membership-institution')), findsOneWidget);
     expect(find.byKey(const Key('person-membership-unit')), findsOneWidget);
@@ -68,7 +136,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app(original: original));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Tipo'), findsWidgets);
     expect(find.text('Status'), findsWidgets);
@@ -87,7 +155,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app(original: original));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     final navigationX = tester.getTopLeft(find.byKey(const Key('person-form-navigation'))).dx;
     final contentX = tester.getTopLeft(find.text('Informe somente os dados globais aprovados.')).dx;
@@ -103,14 +171,14 @@ void main() {
       (item) => item.type == PersonType.service,
     );
     await tester.pumpWidget(_app(original: service));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Pessoa de serviço — somente leitura'), findsOneWidget);
     expect(find.byKey(const Key('person-form-save')), findsNothing);
     expect(find.byKey(const Key('person-first-name-field')), findsNothing);
 
     await tester.tap(find.text('Vínculos contextuais').first);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     expect(find.byKey(const Key('person-add-membership')), findsNothing);
     expect(find.text('Pessoa de serviço — somente leitura'), findsOneWidget);
   });
@@ -119,10 +187,10 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     await tester.tap(find.text('Revisão').first);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Informe os campos obrigatórios.'), findsOneWidget);
     expect(find.byKey(const Key('person-first-name-field')), findsOneWidget);
@@ -135,10 +203,10 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app(original: child));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     await tester.tap(find.text('Vínculos contextuais').first);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Papel contextual'), findsNothing);
     expect(find.text('Revogar vínculo'), findsNothing);
@@ -148,7 +216,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app(repository: _FilterFailureRepository()));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     for (final entry in const {
       'person-first-name-field': 'Ana',
@@ -159,7 +227,7 @@ void main() {
       await tester.enterText(find.byKey(Key(entry.key)), entry.value);
     }
     await tester.tap(find.text('Vínculos contextuais').first);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(tester.takeException(), isNull);
     expect(find.text('Não foi possível carregar os vínculos'), findsOneWidget);

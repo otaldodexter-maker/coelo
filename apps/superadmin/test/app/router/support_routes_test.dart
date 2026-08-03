@@ -40,7 +40,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-navigation-support')), findsOneWidget);
   });
 
-  testWidgets('protects dev support without a session', (tester) async {
+  testWidgets('opens dev support without a session', (tester) async {
     final session = SuperadminSession();
     final router = _router(session);
     addTearDown(router.dispose);
@@ -48,8 +48,8 @@ void main() {
     router.go(SuperadminRoutes.devSupport);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
-    expect(find.byType(SupportPage), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devSupport);
+    expect(find.byType(SupportPage), findsOneWidget);
   });
 
   testWidgets('keeps reports and navigation in one injected support session', (tester) async {
@@ -82,8 +82,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.support);
 
-    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
-    await tester.pumpAndSettle();
+    if (find.byKey(const Key('superadmin-navigation-institutions')).evaluate().isEmpty) {
+      await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+      await tester.pumpAndSettle();
+    }
     await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);

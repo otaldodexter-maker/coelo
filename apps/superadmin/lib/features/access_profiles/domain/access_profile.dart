@@ -41,6 +41,24 @@ enum AccessProfileScope {
 
 enum AccessProfileLayout { cards, table }
 
+enum AccessProfileTableView { grouped, assignments }
+
+extension AccessProfileTableViewLabel on AccessProfileTableView {
+  String get label => switch (this) {
+    AccessProfileTableView.grouped => 'Agrupado',
+    AccessProfileTableView.assignments => 'Detalhado por atribuições',
+  };
+}
+
+enum AccessAssignmentContext { institution, unit, group, activity }
+
+final class AccessProfileAssignment {
+  const AccessProfileAssignment({required this.context, required this.label});
+
+  final AccessAssignmentContext context;
+  final String label;
+}
+
 final class AccessPermission {
   const AccessPermission({
     required this.code,
@@ -113,6 +131,7 @@ final class AccessProfile {
     this.links = const [],
     this.auditEvents = const [],
     this.auditAvailable = false,
+    this.localAssignments = const [],
   });
 
   factory AccessProfile.fromJson(AccessProfileDomain domain, Map<String, dynamic> json) {
@@ -161,6 +180,7 @@ final class AccessProfile {
   final List<AccessProfileLink> links;
   final List<AccessAuditEvent> auditEvents;
   final bool auditAvailable;
+  final List<AccessProfileAssignment> localAssignments;
 
   AccessProfile copyWith({
     String? id,
@@ -177,6 +197,7 @@ final class AccessProfile {
     List<AccessProfileLink>? links,
     List<AccessAuditEvent>? auditEvents,
     bool? auditAvailable,
+    List<AccessProfileAssignment>? localAssignments,
   }) => AccessProfile(
     id: id ?? this.id,
     domain: domain,
@@ -193,6 +214,7 @@ final class AccessProfile {
     links: links ?? this.links,
     auditEvents: auditEvents ?? this.auditEvents,
     auditAvailable: auditAvailable ?? this.auditAvailable,
+    localAssignments: localAssignments ?? this.localAssignments,
   );
 
   Map<String, dynamic> toDraftJson() => {
@@ -304,6 +326,10 @@ final class AccessProfileQuery {
     pageSize: pageSize ?? this.pageSize,
     layout: layout ?? this.layout,
   );
+}
+
+abstract final class AccessProfileQueryTableSizes {
+  static const int table = 8;
 }
 
 final class AccessProfilePage {

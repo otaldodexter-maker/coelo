@@ -2,6 +2,7 @@
 source: "Solicitacao do fundador em 2026-07-29; specs/012-superadmin-mvp.md; docs/product/prd-master.md; packages/coelo_database/migrations/20260623191021_superadmin_foundation_v1.sql; Instituicoes como referencia visual aprovada"
 status: "approved"
 generated_at: "2026-07-29"
+updated_at: "2026-08-03"
 ---
 
 # Grupos (Turmas) no Superadmin
@@ -10,8 +11,9 @@ generated_at: "2026-07-29"
 
 Entregar a listagem, criacao e edicao local de grupos no Superadmin com a
 mesma linguagem visual e os mesmos contratos de interacao aprovados para
-Instituicoes. Grupo continua sendo a entidade canonica; turma e um tipo de
-grupo.
+Instituicoes. Grupo continua sendo a entidade canonica; `Turma` é seu termo
+equivalente de apresentação no contexto escolar e nunca representa uma
+entidade-pai ou outro nível da hierarquia.
 
 ## Escopo
 

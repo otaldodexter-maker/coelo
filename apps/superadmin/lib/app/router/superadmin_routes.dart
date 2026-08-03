@@ -21,8 +21,12 @@ abstract final class SuperadminRoutes {
   static const groupEditName = 'group-edit';
   static const activities = '/activities';
   static const activitiesName = 'activities';
+  static const activityCreate = '/activities/new';
+  static const activityCreateName = 'activity-create';
   static const activityDetail = '/activities/:activityId';
   static const activityDetailName = 'activity-detail';
+  static const activityEdit = '/activities/:activityId/edit';
+  static const activityEditName = 'activity-edit';
   static const people = '/people';
   static const peopleName = 'people';
   static const personCreate = '/people/new';
@@ -81,8 +85,12 @@ abstract final class SuperadminRoutes {
   static const devGroupEditName = 'dev-group-edit';
   static const devActivities = '/dev/activities';
   static const devActivitiesName = 'dev-activities';
+  static const devActivityCreate = '/dev/activities/new';
+  static const devActivityCreateName = 'dev-activity-create';
   static const devActivityDetail = '/dev/activities/:activityId';
   static const devActivityDetailName = 'dev-activity-detail';
+  static const devActivityEdit = '/dev/activities/:activityId/edit';
+  static const devActivityEditName = 'dev-activity-edit';
   static const devPeople = '/dev/people';
   static const devPeopleName = 'dev-people';
   static const devPersonCreate = '/dev/people/new';

@@ -17,6 +17,21 @@ void main() {
 
     expect(result.items.map((item) => item.id), ['active-platform', 'inactive-institution']);
   });
+
+  test('keeps deterministic local assignments for every supported context', () async {
+    final repository = FakeAccessProfileRepository();
+
+    final platform = await repository.fetchProfiles(const AccessProfileQuery());
+    final admin = await repository.fetchProfiles(
+      const AccessProfileQuery(domain: AccessProfileDomain.institution),
+    );
+    final contexts = [
+      ...platform.items,
+      ...admin.items,
+    ].expand((profile) => profile.localAssignments).map((assignment) => assignment.context).toSet();
+
+    expect(contexts, AccessAssignmentContext.values.toSet());
+  });
 }
 
 const _activePlatform = AccessProfile(
