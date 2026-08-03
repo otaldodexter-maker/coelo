@@ -22,7 +22,9 @@ variante ou componente público.
    216 px; padding horizontal `space6` e vertical `space4`.
 4. Tabela: `CoeloAdminCreateAction.banner`, `CoeloSpacing.space4` e
    `CoeloAdminResizableTable`, nessa ordem. Não colar a faixa de criação na
-   tabela nem inventar outro gap.
+   tabela nem inventar outro gap. A superfície usa a largura natural das colunas
+   até o limite disponível; somente expande ou rola horizontalmente quando o
+   conteúdo realmente exigir.
 5. Entre toolbar e conteúdo usar `CoeloSpacing.space4`.
 6. A paginação usa `CoeloAdminPagination` em rodapé sticky privado, sem borda
    superior, com blur `CoeloSpacing.space3`, `surface` a 84% no tema claro e

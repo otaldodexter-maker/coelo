@@ -9,6 +9,32 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('uses the natural table width when columns are narrower than the viewport', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 900,
+            child: CoeloAdminResizableTable<TestRow>(
+              items: const [TestRow('row-1', 'Alpha', 'Ativa')],
+              rowKey: (row) => row.id,
+              pinnedColumn: _nameColumn,
+              columns: [_statusColumn],
+              headerHeight: 56,
+              rowHeight: 64,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(find.byType(Card)).width, 340);
+  });
+
   testWidgets('keeps a pinned duplicate over a horizontally scrollable table', (tester) async {
     await _pumpTable(tester);
 

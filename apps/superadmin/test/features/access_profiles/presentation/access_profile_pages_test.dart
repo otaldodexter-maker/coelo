@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/access_profiles/presentation/access_pr
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_underline_tabs.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,15 @@ void main() {
     expect(find.byKey(const Key('access-profile-demo-notice')), findsOneWidget);
     expect(find.text('Perfil define teto; atribuição define contexto efetivo'), findsOneWidget);
     expect(find.text('Predefinido'), findsWidgets);
+    expect(find.byType(SuperadminUnderlineTabs<AccessProfileDomain>), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.byKey(const Key('access-profile-toolbar'))).dy,
+      lessThan(tester.getTopLeft(find.byKey(const Key('access-profile-domain-selector'))).dy),
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('create-access-profile-card'))).height,
+      tester.getSize(find.byKey(const Key('access-profile-card-demo-owner'))).height,
+    );
 
     await tester.tap(find.byKey(const Key('access-profile-view-table')));
     await tester.pumpAndSettle();

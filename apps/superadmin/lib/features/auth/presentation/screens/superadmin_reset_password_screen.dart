@@ -10,7 +10,6 @@ import '../widgets/login_feedback.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_security_notice.dart';
 import '../widgets/login_submit_button.dart';
-import '../widgets/login_theme_toggle_button.dart';
 import '../widgets/superadmin_reset_password_form.dart';
 
 enum RecoveryLinkState { processing, valid, invalid }
@@ -122,22 +121,13 @@ class _SuperadminResetPasswordScreenState extends State<SuperadminResetPasswordS
       (RecoveryLinkState.valid, false) => _buildForm(),
     };
 
-    return Stack(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            body,
-            const SizedBox(height: CoeloSpacing.space6),
-            const LoginSecurityNotice(),
-          ],
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: LoginThemeToggleButton(onThemeModeChanged: widget.onThemeModeChanged),
-        ),
+        body,
+        const SizedBox(height: CoeloSpacing.space6),
+        const LoginSecurityNotice(),
       ],
     );
   }

@@ -5,6 +5,7 @@ import 'package:coelo_superadmin/features/support/presentation/view_models/suppo
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -44,7 +45,100 @@ void main() {
 
     await tester.tap(find.byKey(const Key('support-detail-expand')));
     await tester.pumpAndSettle();
-    expect(find.byType(Dialog), findsOneWidget);
+    expect(find.byKey(const Key('support-expanded-detail')), findsOneWidget);
+  });
+
+  testWidgets('closes the expanded detail without exposing an empty fullscreen state', (
+    tester,
+  ) async {
+    final controller = SupportPrototypeController(initialTickets: _tickets(1));
+    addTearDown(controller.dispose);
+    await _pump(tester, controller);
+
+    await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('support-detail-expand')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('support-detail-close')).last);
+    await tester.pump();
+
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('support-expanded-detail')),
+        matching: find.text('Selecione um chamado'),
+      ),
+      findsNothing,
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('support-expanded-detail')), findsNothing);
+    expect(find.byKey(const Key('support-page-content')), findsOneWidget);
+    expect(find.byKey(const Key('support-card-SUP-001')), findsOneWidget);
+  });
+
+  testWidgets('moves the expanded detail by dragging its header and keeps it in the viewport', (
+    tester,
+  ) async {
+    final controller = SupportPrototypeController(initialTickets: _tickets(1));
+    addTearDown(controller.dispose);
+    await _pump(tester, controller);
+
+    await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('support-detail-expand')));
+    await tester.pumpAndSettle();
+
+    final panel = find.byKey(const Key('support-expanded-detail'));
+    final handle = find.byKey(const Key('support-detail-drag-handle'));
+    final initialTopLeft = tester.getTopLeft(panel);
+    await tester.drag(handle, const Offset(120, 80));
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(panel), isNot(initialTopLeft));
+
+    await tester.drag(handle, const Offset(5000, 5000));
+    await tester.pumpAndSettle();
+    final rect = tester.getRect(panel);
+    expect(rect.left, greaterThanOrEqualTo(0));
+    expect(rect.top, greaterThanOrEqualTo(0));
+    expect(rect.right, lessThanOrEqualTo(1440));
+    expect(rect.bottom, lessThanOrEqualTo(900));
+  });
+
+  testWidgets('moves and resets the expanded detail from the keyboard', (tester) async {
+    final controller = SupportPrototypeController(initialTickets: _tickets(1));
+    addTearDown(controller.dispose);
+    await _pump(tester, controller);
+
+    await tester.tap(find.byKey(const Key('support-card-SUP-001')));
+    await tester.pump(kDoubleTapTimeout);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('support-detail-expand')));
+    await tester.pumpAndSettle();
+
+    final panel = find.byKey(const Key('support-expanded-detail'));
+    final handle = find.byKey(const Key('support-detail-drag-handle'));
+    final initialTopLeft = tester.getTopLeft(panel);
+    await tester.tap(handle);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
+    await tester.pump();
+    expect(tester.getTopLeft(panel).dx, greaterThan(initialTopLeft.dx));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.home);
+    await tester.pump();
+    expect(tester.getTopLeft(panel), initialTopLeft);
+  });
+
+  testWidgets('labels the support workspace as Support and implementation', (tester) async {
+    final controller = SupportPrototypeController(initialTickets: _tickets(1));
+    addTearDown(controller.dispose);
+    await _pump(tester, controller);
+
+    expect(find.text('Suporte e implantação'), findsWidgets);
   });
 }
 

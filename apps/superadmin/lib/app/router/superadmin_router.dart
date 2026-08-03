@@ -801,6 +801,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devActivitiesName);
                 } else if (destination == 'people') {
                   context.goNamed(SuperadminRoutes.devPeopleName);
+                } else if (destination == 'catalog') {
+                  context.goNamed(SuperadminRoutes.devCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
                 } else if (destination == 'conversations') {
@@ -824,8 +826,7 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devInstitutionEditName,
                 pathParameters: {'institutionId': id},
               ),
-              onCatalogOpen: () =>
-                  openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+              onCatalogOpen: () => context.goNamed(SuperadminRoutes.devCatalogName),
               onSupportOpen: () => context.goNamed(SuperadminRoutes.devSupportName),
               onBugReportSubmitted: sessionSupportController.submitReport,
               onConversationsOpen: () => context.goNamed(
@@ -916,7 +917,7 @@ GoRouter createSuperadminRouter({
                 } else if (destination == 'people') {
                   context.goNamed(SuperadminRoutes.devPeopleName);
                 } else if (destination == 'catalog') {
-                  openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog);
+                  context.goNamed(SuperadminRoutes.devCatalogName);
                 } else if (destination == 'support') {
                   context.goNamed(SuperadminRoutes.devSupportName);
                 } else if (destination == 'conversations') {
@@ -1215,6 +1216,24 @@ GoRouter createSuperadminRouter({
             },
           ),
           GoRoute(
+            path: SuperadminRoutes.devCatalog,
+            name: SuperadminRoutes.devCatalogName,
+            builder: (context, state) => CatalogHostPage(
+              catalogUrl: catalogUrl,
+              localPreview: true,
+              logout: _previewLogout,
+              onHomeOpen: () => context.goNamed(SuperadminRoutes.devHomeName),
+              onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.devInstitutionsName),
+              onUnitsOpen: () => context.goNamed(SuperadminRoutes.devUnitsName),
+              onSupportOpen: () => context.goNamed(SuperadminRoutes.devSupportName),
+              onBugReportSubmitted: sessionSupportController.submitReport,
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.devConversationsName,
+                queryParameters: const {'from': 'catalog'},
+              ),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devSupport,
             name: SuperadminRoutes.devSupportName,
             builder: (context, state) => SupportPage(
@@ -1223,8 +1242,7 @@ GoRouter createSuperadminRouter({
               onHomeOpen: () => context.goNamed(SuperadminRoutes.devHomeName),
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.devInstitutionsName),
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.devUnitsName),
-              onCatalogOpen: () =>
-                  openConfiguredCatalogExternally(catalogUrl, openExternally: openExternalCatalog),
+              onCatalogOpen: () => context.goNamed(SuperadminRoutes.devCatalogName),
               onConversationsOpen: () => context.goNamed(
                 SuperadminRoutes.devConversationsName,
                 queryParameters: const {'from': 'support'},
@@ -1251,6 +1269,8 @@ GoRouter createSuperadminRouter({
                   context.goNamed(SuperadminRoutes.devUnitsName);
                 } else if (destination == 'groups') {
                   context.goNamed(SuperadminRoutes.devGroupsName);
+                } else if (destination == 'catalog') {
+                  context.goNamed(SuperadminRoutes.devCatalogName);
                 }
               },
             ),
@@ -1518,6 +1538,8 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
     case 'settings':
       context.goNamed(SuperadminRoutes.settingsName);
   }
+    case 'catalog':
+      context.goNamed(SuperadminRoutes.devCatalogName);
 }
 
 void _navigateFromDevelopmentShell(BuildContext context, String destination) {

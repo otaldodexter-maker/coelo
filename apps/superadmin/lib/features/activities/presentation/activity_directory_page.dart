@@ -104,7 +104,6 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
       onTableViewChanged: _setTableView,
       onCreate: widget.onCreate ?? () {},
       onEdit: widget.onEdit ?? widget.onView,
-      onView: widget.onView,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() >= .5) {
           setState(() => _footerHeight = height);
@@ -125,7 +124,6 @@ final class _ActivityDirectoryContent extends StatefulWidget {
     required this.onTableViewChanged,
     required this.onCreate,
     required this.onEdit,
-    required this.onView,
     required this.onFooterHeightChanged,
   });
 
@@ -138,7 +136,6 @@ final class _ActivityDirectoryContent extends StatefulWidget {
   final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
-  final ValueChanged<String> onView;
   final ValueChanged<double> onFooterHeightChanged;
 
   @override
@@ -209,7 +206,6 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                     tableView: widget.tableView,
                     onCreate: widget.onCreate,
                     onEdit: widget.onEdit,
-                    onView: widget.onView,
                   ),
                 ],
               ),
@@ -436,7 +432,6 @@ final class _ActivityResults extends StatelessWidget {
     required this.tableView,
     required this.onCreate,
     required this.onEdit,
-    required this.onView,
   });
 
   final ActivityDirectoryViewModel viewModel;
@@ -444,7 +439,6 @@ final class _ActivityResults extends StatelessWidget {
   final ActivityDirectoryTableView tableView;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
-  final ValueChanged<String> onView;
 
   @override
   Widget build(BuildContext context) {
@@ -483,12 +477,7 @@ final class _ActivityResults extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space4),
         if (viewModel.state == ActivityDirectoryLoadState.success)
           display == ActivityDirectoryDisplay.cards
-              ? _ActivityCards(
-                  items: viewModel.visibleItems,
-                  onCreate: onCreate,
-                  onEdit: onEdit,
-                  onView: onView,
-                )
+              ? _ActivityCards(items: viewModel.visibleItems, onCreate: onCreate, onEdit: onEdit)
               : Column(
                   children: [
                     SuperadminDirectoryCreateBanner(
@@ -526,17 +515,11 @@ final class _ActivityResults extends StatelessWidget {
 }
 
 final class _ActivityCards extends StatelessWidget {
-  const _ActivityCards({
-    required this.items,
-    required this.onCreate,
-    required this.onEdit,
-    required this.onView,
-  });
+  const _ActivityCards({required this.items, required this.onCreate, required this.onEdit});
 
   final List<ActivityDirectoryItem> items;
   final VoidCallback onCreate;
   final ValueChanged<String> onEdit;
-  final ValueChanged<String> onView;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -562,11 +545,7 @@ final class _ActivityCards extends StatelessWidget {
           for (final item in items)
             SizedBox(
               width: width,
-              child: _ActivityCard(
-                item: item,
-                onPressed: () => onView(item.id),
-                onEdit: () => onEdit(item.id),
-              ),
+              child: _ActivityCard(item: item, onPressed: () => onEdit(item.id)),
             ),
         ],
       );
@@ -575,11 +554,10 @@ final class _ActivityCards extends StatelessWidget {
 }
 
 final class _ActivityCard extends StatefulWidget {
-  const _ActivityCard({required this.item, required this.onPressed, required this.onEdit});
+  const _ActivityCard({required this.item, required this.onPressed});
 
   final ActivityDirectoryItem item;
   final VoidCallback onPressed;
-  final VoidCallback onEdit;
 
   @override
   State<_ActivityCard> createState() => _ActivityCardState();
@@ -593,7 +571,7 @@ final class _ActivityCardState extends State<_ActivityCard> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final item = widget.item;
-    final hierarchy = ActivityDirectoryHierarchy.from(item);
+    final prototype = _ActivityCardPrototype.from(item);
     final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
     return Semantics(
       button: true,
@@ -652,33 +630,37 @@ final class _ActivityCardState extends State<_ActivityCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _ActivityCardHeader(item: item, colors: colors, onEdit: widget.onEdit),
+                          _ActivityCardHeader(
+                            item: item,
+                            colors: colors,
+                            location: prototype.location,
+                          ),
                           const SizedBox(height: CoeloSpacing.space4),
                           const Divider(height: 1),
                           const SizedBox(height: CoeloSpacing.space4),
                           _DetailRow(
                             first: _ActivityDetail(
-                              icon: Icons.account_balance_outlined,
-                              label: 'Instituição',
-                              value: item.institutionName,
+                              icon: Icons.apartment_outlined,
+                              label: 'Unidades',
+                              value: '${item.activeUnitCount}',
                             ),
                             second: _ActivityDetail(
-                              icon: Icons.hub_outlined,
-                              label: 'Origem',
-                              value: item.origin.label,
+                              icon: Icons.groups_outlined,
+                              label: 'Grupos',
+                              value: '${item.activeGroupCount}',
                             ),
                           ),
                           const SizedBox(height: CoeloSpacing.space3),
                           _DetailRow(
                             first: _ActivityDetail(
-                              icon: Icons.apartment_outlined,
-                              label: 'Unidades vinculadas',
-                              value: hierarchy.unit.label,
+                              icon: Icons.badge_outlined,
+                              label: 'Equipe institucional',
+                              value: '${prototype.teamCount}',
                             ),
                             second: _ActivityDetail(
-                              icon: Icons.groups_outlined,
-                              label: 'Grupos vinculados',
-                              value: hierarchy.group.label,
+                              icon: Icons.child_care_outlined,
+                              label: 'Crianças',
+                              value: '${prototype.childrenCount}',
                             ),
                           ),
                         ],
@@ -696,11 +678,11 @@ final class _ActivityCardState extends State<_ActivityCard> {
 }
 
 final class _ActivityCardHeader extends StatelessWidget {
-  const _ActivityCardHeader({required this.item, required this.colors, required this.onEdit});
+  const _ActivityCardHeader({required this.item, required this.colors, required this.location});
 
   final ActivityDirectoryItem item;
   final ColorScheme colors;
-  final VoidCallback onEdit;
+  final String location;
 
   @override
   Widget build(BuildContext context) {
@@ -716,7 +698,7 @@ final class _ActivityCardHeader extends StatelessWidget {
             style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           Text(
-            item.distribution.label,
+            'Local: $location',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
@@ -739,13 +721,7 @@ final class _ActivityCardHeader extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space2),
           Align(
             alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _ActivityStatusChip(status: item.status),
-                _editButton(),
-              ],
-            ),
+            child: _ActivityStatusChip(status: item.status),
           ),
         ],
       );
@@ -755,17 +731,31 @@ final class _ActivityCardHeader extends StatelessWidget {
         Expanded(child: identity),
         const SizedBox(width: CoeloSpacing.space2),
         _ActivityStatusChip(status: item.status),
-        _editButton(),
       ],
     );
   }
+}
 
-  Widget _editButton() => IconButton(
-    key: Key('activity-card-edit-${item.id}'),
-    tooltip: 'Editar atividade',
-    onPressed: onEdit,
-    icon: const Icon(Icons.edit_outlined),
-  );
+final class _ActivityCardPrototype {
+  const _ActivityCardPrototype({
+    required this.location,
+    required this.teamCount,
+    required this.childrenCount,
+  });
+
+  factory _ActivityCardPrototype.from(ActivityDirectoryItem item) {
+    const locations = ['Sala de Informática', 'Piscina', 'Quadra', 'Horta'];
+    final seed = item.id.codeUnits.fold<int>(0, (sum, value) => sum + value);
+    return _ActivityCardPrototype(
+      location: locations[seed % locations.length],
+      teamCount: 2 + seed % 5,
+      childrenCount: 8 + seed % 17,
+    );
+  }
+
+  final String location;
+  final int teamCount;
+  final int childrenCount;
 }
 
 final class _ActivityIcon extends StatelessWidget {
@@ -873,8 +863,10 @@ final class _ActivityTable extends StatelessWidget {
       initialWidth: width,
       minWidth: 100,
       maxWidth: 360,
-      cellBuilder: (context, item) =>
-          Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+      cellBuilder: (context, item) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
     );
     return LayoutBuilder(
       builder: (context, constraints) => SizedBox(
@@ -966,8 +958,10 @@ final class _ActivityHierarchyTable extends StatelessWidget {
       initialWidth: width,
       minWidth: 120,
       maxWidth: 380,
-      cellBuilder: (context, item) =>
-          Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+      cellBuilder: (context, item) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
     );
 
     return LayoutBuilder(
@@ -989,7 +983,20 @@ final class _ActivityHierarchyTable extends StatelessWidget {
             column('activity', 'Atividade', (item) => item.name, width: 240),
             column('institution', 'Instituição', (item) => item.institutionName, width: 240),
             column('origin', 'Origem', (item) => item.origin.label),
-            column('status', 'Status', (item) => item.status.label),
+            CoeloAdminTableColumn(
+              id: 'status',
+              label: 'Status',
+              initialWidth: 176,
+              minWidth: 120,
+              maxWidth: 260,
+              cellBuilder: (context, item) => Align(
+                alignment: Alignment.centerLeft,
+                child: _ActivityStatusChip(
+                  key: Key('activity-detail-status-${item.id}'),
+                  status: item.status,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -998,7 +1005,7 @@ final class _ActivityHierarchyTable extends StatelessWidget {
 }
 
 final class _ActivityStatusChip extends StatelessWidget {
-  const _ActivityStatusChip({required this.status});
+  const _ActivityStatusChip({required this.status, super.key});
 
   final ActivityStatus status;
 

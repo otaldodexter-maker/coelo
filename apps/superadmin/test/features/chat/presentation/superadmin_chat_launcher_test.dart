@@ -13,6 +13,12 @@ void main() {
 
     expect(find.text('Mensagens'), findsNothing);
     expect(find.text('3'), findsOne);
+    expect(
+      tester
+          .widget<Material>(find.byKey(const Key('superadmin-chat-launcher-surface')))
+          .clipBehavior,
+      Clip.none,
+    );
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(
@@ -68,6 +74,45 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.home);
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(launcher), initial);
+  });
+
+  testWidgets('keeps the dragged position when a routed page recreates the launcher', (
+    tester,
+  ) async {
+    _viewport(tester, 1024);
+    final secondPage = ValueNotifier(false);
+    final position = SuperadminChatLauncherPositionController();
+    addTearDown(secondPage.dispose);
+    addTearDown(position.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: ValueListenableBuilder<bool>(
+            valueListenable: secondPage,
+            builder: (context, value, _) => Align(
+              alignment: Alignment.bottomRight,
+              child: SuperadminChatLauncher(
+                key: ValueKey(value),
+                positionController: position,
+                onOpenConversations: () {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    final initial = tester.getTopLeft(launcher);
+    await tester.drag(launcher, const Offset(-180, -120));
+    await tester.pumpAndSettle();
+    final moved = tester.getTopLeft(launcher);
+    expect(moved.dx, lessThan(initial.dx));
+
+    secondPage.value = true;
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(launcher), moved);
   });
 
   testWidgets('opens compact inbox with canonical search and three audience tabs', (tester) async {

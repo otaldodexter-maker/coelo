@@ -85,17 +85,17 @@ class SuperadminShell extends StatefulWidget {
 class _SuperadminShellState extends State<SuperadminShell> with TickerProviderStateMixin {
   bool _sidebarCollapsed = false;
   late final AnimationController _sidebarController;
-  late final AnimationController _contentController;
   late final SuperadminActivityController _activityController;
+  late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
   late final bool _ownsActivityController;
 
   @override
   void initState() {
     super.initState();
     _sidebarController = AnimationController(vsync: this, duration: _sidebarMotionDuration);
-    _contentController = AnimationController(vsync: this, duration: CoeloMotion.short, value: 1);
     _ownsActivityController = widget.activityController == null;
     _activityController = widget.activityController ?? SuperadminActivityController();
+    _chatLauncherPositionController = SuperadminChatLauncherPositionController();
   }
 
   @override
@@ -104,31 +104,15 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     if (_reduceMotion && _sidebarController.isAnimating) {
       _sidebarController.value = _sidebarCollapsed ? 1 : 0;
     }
-    if (_reduceMotion && _contentController.value != 1) {
-      _contentController.value = 1;
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant SuperadminShell oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!widget.isHost || oldWidget.currentDestination == widget.currentDestination) {
-      return;
-    }
-    if (_reduceMotion) {
-      _contentController.value = 1;
-      return;
-    }
-    unawaited(_contentController.forward(from: 0));
   }
 
   @override
   void dispose() {
     _sidebarController.dispose();
-    _contentController.dispose();
     if (_ownsActivityController) {
       _activityController.dispose();
     }
+    _chatLauncherPositionController.dispose();
     super.dispose();
   }
 
@@ -347,11 +331,8 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     return _SuperadminShellHostScope(
       isDesktop: isDesktop,
       onDestinationSelected: widget.onDestinationSelected!,
-      child: FadeTransition(
-        key: const Key('superadmin-content-transition'),
-        opacity: _contentController,
-        child: child,
-      ),
+      chatLauncherPositionController: _chatLauncherPositionController,
+      child: KeyedSubtree(key: const Key('superadmin-content-transition'), child: child),
     );
   }
 
@@ -394,10 +375,18 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               Expanded(child: pageBody),
             ],
           );
-    return _withChatLauncher(content, onDestinationSelected: hostScope.onDestinationSelected);
+    return _withChatLauncher(
+      content,
+      onDestinationSelected: hostScope.onDestinationSelected,
+      positionController: hostScope.chatLauncherPositionController,
+    );
   }
 
-  Widget _withChatLauncher(Widget child, {ValueChanged<String>? onDestinationSelected}) {
+  Widget _withChatLauncher(
+    Widget child, {
+    ValueChanged<String>? onDestinationSelected,
+    SuperadminChatLauncherPositionController? positionController,
+  }) {
     final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
     if (!widget.showChatLauncher || widget.currentDestination == 'conversations') {
       return child;
@@ -419,6 +408,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
           child: SuperadminChatLauncher(
             onOpenConversations: openConversations,
             bottomClearance: launcherReservedBottom,
+            positionController: positionController ?? _chatLauncherPositionController,
           ),
         ),
       ],
@@ -430,11 +420,13 @@ class _SuperadminShellHostScope extends InheritedWidget {
   const _SuperadminShellHostScope({
     required this.isDesktop,
     required this.onDestinationSelected,
+    required this.chatLauncherPositionController,
     required super.child,
   });
 
   final bool isDesktop;
   final ValueChanged<String> onDestinationSelected;
+  final SuperadminChatLauncherPositionController chatLauncherPositionController;
 
   static _SuperadminShellHostScope? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_SuperadminShellHostScope>();
@@ -443,7 +435,8 @@ class _SuperadminShellHostScope extends InheritedWidget {
   @override
   bool updateShouldNotify(_SuperadminShellHostScope oldWidget) {
     return isDesktop != oldWidget.isDesktop ||
-        onDestinationSelected != oldWidget.onDestinationSelected;
+        onDestinationSelected != oldWidget.onDestinationSelected ||
+        chatLauncherPositionController != oldWidget.chatLauncherPositionController;
   }
 }
 
@@ -748,7 +741,12 @@ const _navigationSections = <_NavigationSectionData>[
     _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined),
   ]),
   _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
-    _NavigationDestinationData('support', 'Suporte', Icons.support_agent_outlined, active: true),
+    _NavigationDestinationData(
+      'support',
+      'Suporte e implantação',
+      Icons.support_agent_outlined,
+      active: true,
+    ),
     _NavigationDestinationData('audit', 'Auditoria', Icons.security_outlined),
     _NavigationDestinationData('catalog', 'Catálogo', Icons.widgets_outlined, active: true),
   ]),

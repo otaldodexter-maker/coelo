@@ -9,6 +9,29 @@ import 'package:flutter_test/flutter_test.dart';
 enum _View { grouped, units, groups }
 
 void main() {
+  testWidgets('keeps the approved compact segmented trigger without visible instruction', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(onSelected: (_) {}));
+
+    expect(find.byType(SegmentedButton<bool>), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is Tooltip && widget.message?.contains('Mantenha pressionado') == true,
+      ),
+      findsNothing,
+    );
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: tester.getCenter(find.byKey(const Key('table-segment'))));
+    await tester.pumpAndSettle();
+    final menu = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
+    expect(
+      menu.style?.padding?.resolve(<WidgetState>{}),
+      const EdgeInsets.all(CoeloSpacing.space2),
+    );
+  });
+
   testWidgets('selects grouped when the table segment is tapped directly', (tester) async {
     _View? selected;
     await tester.pumpWidget(_app(onSelected: (value) => selected = value));
@@ -45,7 +68,9 @@ void main() {
     await tester.tapAt(const Offset(4, 4));
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
     await tester.pumpAndSettle();
     expect(find.text('Detalhado por Unidades'), findsOneWidget);
   });

@@ -8,6 +8,7 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_director
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,6 +101,36 @@ void main() {
     expect((surface.decoration! as BoxDecoration).color, Colors.transparent);
   });
 
+  testWidgets('unit card status starts circular and expands on hover', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: const Scaffold(
+          body: Center(
+            child: ExpandableUnitStatusIndicator(
+              itemId: 'unit-1',
+              status: domain.UnitStatus.active,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final surface = find.byKey(const Key('unit-status-unit-1'));
+    expect(tester.getSize(surface).width, 24);
+    expect(find.text('Ativa'), findsNothing);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer(location: Offset.zero);
+    await mouse.moveTo(tester.getCenter(surface));
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(surface).width, greaterThan(24));
+    expect(find.text('Ativa'), findsOneWidget);
+  });
+
   testWidgets('renders the unit card contract and switches to the canonical table', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -130,6 +161,10 @@ void main() {
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
 
     final firstCard = find.byKey(Key('unit-card-${firstItem.id}'));
+    expect(
+      tester.getSize(find.byKey(const Key('create-unit-card'))).height,
+      closeTo(tester.getSize(firstCard).height, 0.5),
+    );
     await tester.tap(firstCard);
     expect(editedId, firstItem.id);
 

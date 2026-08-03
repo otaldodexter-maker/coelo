@@ -105,6 +105,8 @@ abstract final class SuperadminRoutes {
   static const devProfileDetailName = 'dev-access-profile-detail';
   static const devProfileEdit = '/dev/profiles/:domain/:profileId/edit';
   static const devProfileEditName = 'dev-access-profile-edit';
+  static const devCatalog = '/dev/catalog';
+  static const devCatalogName = 'dev-catalog';
   static const devInternalUsers = '/dev/internal-users';
   static const devInternalUsersName = 'dev-internal-users';
   static const devInternalUserCreate = '/dev/internal-users/new';

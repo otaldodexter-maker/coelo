@@ -31,7 +31,7 @@ void main() {
     expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 88);
 
     router.go(SuperadminRoutes.support);
-    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.pump();
 
     expect(tester.state(shell), same(initialState));
@@ -40,7 +40,7 @@ void main() {
     expect(find.byKey(const Key('support-page-content')), findsOneWidget);
   });
 
-  testWidgets('fades only protected content over the short motion token', (tester) async {
+  testWidgets('swaps protected content without a perceptible opacity transition', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signIn();
@@ -52,17 +52,11 @@ void main() {
     await tester.pumpAndSettle();
 
     router.go(SuperadminRoutes.support);
-    await tester.pump();
-    final transition = find.byKey(const Key('superadmin-content-transition'));
-    final firstOpacity = tester.widget<FadeTransition>(transition).opacity.value;
-    expect(firstOpacity, 0);
-
-    await tester.pump(Duration(milliseconds: CoeloMotion.short.inMilliseconds ~/ 2));
-    final middleOpacity = tester.widget<FadeTransition>(transition).opacity.value;
-    expect(middleOpacity, inExclusiveRange(0, 1));
-
     await tester.pumpAndSettle();
-    expect(tester.widget<FadeTransition>(transition).opacity.value, 1);
+    final content = find.byKey(const Key('superadmin-content-transition'));
+    expect(content, findsOneWidget);
+    expect(tester.widget(content), isA<KeyedSubtree>());
+    expect(find.byKey(const Key('support-page-content')), findsOneWidget);
   });
 
   testWidgets('switches protected content immediately under reduced motion', (tester) async {
@@ -80,13 +74,9 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(
-      tester
-          .widget<FadeTransition>(find.byKey(const Key('superadmin-content-transition')))
-          .opacity
-          .value,
-      1,
-    );
+    final content = find.byKey(const Key('superadmin-content-transition'));
+    expect(content, findsOneWidget);
+    expect(tester.widget(content), isA<KeyedSubtree>());
     expect(find.byKey(const Key('support-page-content')), findsOneWidget);
   });
 

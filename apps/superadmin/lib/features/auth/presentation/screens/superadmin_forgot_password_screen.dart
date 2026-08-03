@@ -11,7 +11,6 @@ import '../widgets/login_header.dart';
 import '../widgets/login_security_notice.dart';
 import '../widgets/login_submit_button.dart';
 import '../widgets/login_text_field.dart';
-import '../widgets/login_theme_toggle_button.dart';
 import '../widgets/superadmin_login_form.dart';
 
 class SuperadminForgotPasswordScreen extends StatefulWidget {
@@ -87,40 +86,29 @@ class _SuperadminForgotPasswordScreenState extends State<SuperadminForgotPasswor
                       child: ListenableBuilder(
                         listenable: _viewModel,
                         builder: (context, child) {
-                          return Stack(
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  if (_viewModel.isSuccess)
-                                    _PasswordRecoverySuccess(
-                                      viewModel: _viewModel,
-                                      onBackToLogin: widget.onBackToLogin,
-                                      onResend: _resend,
-                                    )
-                                  else
-                                    AutofillGroup(
-                                      child: _PasswordRecoveryForm(
-                                        formKey: _formKey,
-                                        emailController: _emailController,
-                                        emailFocusNode: _emailFocusNode,
-                                        viewModel: _viewModel,
-                                        onSubmit: _submit,
-                                        onBackToLogin: widget.onBackToLogin,
-                                      ),
-                                    ),
-                                  const SizedBox(height: CoeloSpacing.space6),
-                                  const LoginSecurityNotice(),
-                                ],
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: LoginThemeToggleButton(
-                                  onThemeModeChanged: widget.onThemeModeChanged,
+                              if (_viewModel.isSuccess)
+                                _PasswordRecoverySuccess(
+                                  viewModel: _viewModel,
+                                  onBackToLogin: widget.onBackToLogin,
+                                  onResend: _resend,
+                                )
+                              else
+                                AutofillGroup(
+                                  child: _PasswordRecoveryForm(
+                                    formKey: _formKey,
+                                    emailController: _emailController,
+                                    emailFocusNode: _emailFocusNode,
+                                    viewModel: _viewModel,
+                                    onSubmit: _submit,
+                                    onBackToLogin: widget.onBackToLogin,
+                                  ),
                                 ),
-                              ),
+                              const SizedBox(height: CoeloSpacing.space6),
+                              const LoginSecurityNotice(),
                             ],
                           );
                         },

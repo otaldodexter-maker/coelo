@@ -51,6 +51,12 @@ void main() {
     expect(tester.getSize(submit).height, greaterThanOrEqualTo(CoeloSize.touchMin));
   }
 
+  testWidgets('does not expose theme switching from new password', (tester) async {
+    await pumpResetPassword(tester);
+
+    expect(find.byKey(const ValueKey('superadmin-login-theme-toggle')), findsNothing);
+  });
+
   testWidgets('renders the reset password form with Coelo auth context', (tester) async {
     await pumpResetPassword(tester);
 

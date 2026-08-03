@@ -78,3 +78,63 @@ updated_at: "2026-08-03"
 
 - Commitar somente o conjunto intencional revisado, encerrar o processo Flutter
   atual e iniciar um novo web-server local na mesma porta, validando PID, porta e logs.
+
+## Revisão visual adicional dos anexos 1–15
+
+### Concluído
+
+- Restaurado o toggle Cards/Tabela segmentado aprovado, sem texto instrucional visível;
+  flyout alinhado ao espaçamento dos menus Tour, Arquivos e Perfil.
+- Tabelas detalhadas usam a largura natural das colunas, células alinhadas ao centro
+  vertical/esquerda e status semântico consistente.
+- Cards de Unidade, Grupo e Atividade foram alinhados à geometria de Instituição;
+  ações de criação acompanham a altura do card vizinho.
+- Pessoas e Perfis/Permissões usam abas sublinhadas abaixo dos filtros; cards de
+  Pessoas exibem apenas relações quantitativas, sem Contato ou Papéis.
+- Launcher do Chat não recorta ícone/badge e preserva a posição arrastada entre rotas
+  durante a navegação local.
+- O shell não aplica fade próprio ao trocar destinos.
+- Suporte foi renomeado para `Suporte e implantação`; o detalhe expandido fecha sem
+  branco e pode ser movido por arraste ou teclado dentro da viewport/SafeArea.
+- Login, recuperação e nova senha não exibem seletor de tema.
+- `/dev/catalog` abre preview local sem depender do domínio externo.
+
+### Em andamento
+
+- Verificação integrada final, revisão do diff e reinício do localhost.
+
+### Pendente
+
+- A análise global conclui com exit code 0 e oito avisos informativos
+  preexistentes/concorrentes em `health_safety`, fora deste lote; a análise focada
+  dos arquivos desta revisão permanece limpa.
+
+### Testes
+
+- Toggle compartilhado: 5/5 GREEN.
+- Tabela redimensionável compartilhada: 16/16 GREEN.
+- Launcher de Chat: 11/11 GREEN.
+- Unidades, Grupos e Atividades: 29/29 GREEN.
+- Pessoas, Perfis/Permissões e shell: 77/77 GREEN.
+- Suporte, Auth e Catálogo: 64/64 GREEN nos lotes focados; correções de integração
+  de Suporte/Catálogo repetidas com 16/16 GREEN.
+- `dart analyze` global: exit code 0, somente oito infos concorrentes de
+  `health_safety`; análise focada do lote e do pacote de tabela: sem issues.
+- Gates Coelo UI de índice e superfícies: PASS; gate de memória Coelo: PASS com
+  `no-op`, pois nenhuma nova regra de produto ou permissão foi criada.
+- O gate de sincronização do Catálogo atualizou o fingerprint da tabela, mas a
+  árvore concorrente ainda exporta `CoeloAdminFlyout` e
+  `CoeloAdminInteractiveCard` sem entradas de índice; esses componentes não
+  pertencem a este lote e foram preservados sem integração antecipada.
+
+### Decisões
+
+- O ajuste adicional permanece exclusivamente local e visual; nenhum artefato
+  Supabase foi consultado ou alterado.
+- Artefatos em `failures/` e mudanças concorrentes de Attendance, Daily Routine e
+  Health/Safety permanecem preservados e fora do escopo desta revisão.
+
+### Próximo ponto seguro
+
+- Finalizar gates focados, selecionar somente o escopo intencional para commit,
+  encerrar o localhost anterior e iniciar uma nova instância validada.

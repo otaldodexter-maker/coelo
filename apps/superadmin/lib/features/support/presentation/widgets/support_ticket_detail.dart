@@ -18,6 +18,9 @@ final class SupportTicketDetail extends StatefulWidget {
     required this.onExpand,
     required this.onSend,
     required this.onClose,
+    this.onHeaderDragUpdate,
+    this.onHeaderMoveRequested,
+    this.onHeaderResetRequested,
     super.key,
   });
 
@@ -28,6 +31,9 @@ final class SupportTicketDetail extends StatefulWidget {
   final VoidCallback? onExpand;
   final ValueChanged<String> onSend;
   final VoidCallback onClose;
+  final GestureDragUpdateCallback? onHeaderDragUpdate;
+  final ValueChanged<Offset>? onHeaderMoveRequested;
+  final VoidCallback? onHeaderResetRequested;
 
   @override
   State<SupportTicketDetail> createState() => _SupportTicketDetailState();
@@ -35,6 +41,7 @@ final class SupportTicketDetail extends StatefulWidget {
 
 final class _SupportTicketDetailState extends State<SupportTicketDetail> {
   final _composer = TextEditingController();
+  final _dragHandleFocusNode = FocusNode(debugLabel: 'support-detail-drag-handle');
 
   @override
   void didUpdateWidget(covariant SupportTicketDetail oldWidget) {
@@ -47,6 +54,7 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
   @override
   void dispose() {
     _composer.dispose();
+    _dragHandleFocusNode.dispose();
     super.dispose();
   }
 
@@ -98,7 +106,7 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
 
   Widget _header(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Padding(
+    final header = Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,6 +175,47 @@ final class _SupportTicketDetailState extends State<SupportTicketDetail> {
           const SizedBox(height: CoeloSpacing.space2),
           Align(alignment: Alignment.centerLeft, child: widget.statusBuilder(widget.ticket)),
         ],
+      ),
+    );
+    if (widget.onHeaderDragUpdate == null) {
+      return header;
+    }
+    return Focus(
+      focusNode: _dragHandleFocusNode,
+      onKeyEvent: (_, event) {
+        if (event is! KeyDownEvent) {
+          return KeyEventResult.ignored;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.home) {
+          widget.onHeaderResetRequested?.call();
+          return KeyEventResult.handled;
+        }
+        if (!HardwareKeyboard.instance.isAltPressed) {
+          return KeyEventResult.ignored;
+        }
+        final delta = switch (event.logicalKey) {
+          LogicalKeyboardKey.arrowLeft => const Offset(-CoeloSpacing.space3, 0),
+          LogicalKeyboardKey.arrowRight => const Offset(CoeloSpacing.space3, 0),
+          LogicalKeyboardKey.arrowUp => const Offset(0, -CoeloSpacing.space3),
+          LogicalKeyboardKey.arrowDown => const Offset(0, CoeloSpacing.space3),
+          _ => null,
+        };
+        if (delta == null) {
+          return KeyEventResult.ignored;
+        }
+        widget.onHeaderMoveRequested?.call(delta);
+        return KeyEventResult.handled;
+      },
+      child: Semantics(
+        label: 'Mover painel do chamado. Alt mais setas move; Home redefine.',
+        child: GestureDetector(
+          key: const Key('support-detail-drag-handle'),
+          behavior: HitTestBehavior.opaque,
+          onTap: _dragHandleFocusNode.requestFocus,
+          onPanStart: (_) => _dragHandleFocusNode.requestFocus(),
+          onPanUpdate: widget.onHeaderDragUpdate,
+          child: MouseRegion(cursor: SystemMouseCursors.move, child: header),
+        ),
       ),
     );
   }

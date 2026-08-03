@@ -43,16 +43,23 @@ void main() {
       find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
       findsOneWidget,
     );
-    expect(find.text('Instituição'), findsWidgets);
-    expect(find.text('Unidades vinculadas'), findsWidgets);
-    expect(find.text('Grupos vinculados'), findsWidgets);
+    expect(find.textContaining('Local:'), findsWidgets);
+    expect(find.text('Unidades'), findsWidgets);
+    expect(find.text('Grupos'), findsWidgets);
+    expect(find.text('Equipe institucional'), findsWidgets);
+    expect(find.text('Crianças'), findsWidgets);
+
+    expect(
+      tester.getSize(find.byType(CoeloAdminCreateAction)).height,
+      closeTo(tester.getSize(find.byKey(const Key('activity-card-activity-10'))).height, 0.5),
+    );
 
     await tester.tap(find.text('Criar atividade'));
     expect(createCount, 1);
     await tester.tap(find.byKey(const Key('activity-card-activity-10')));
-    expect(viewedId, 'activity-10');
-    await tester.tap(find.byKey(const Key('activity-card-edit-activity-10')));
     expect(editedId, 'activity-10');
+    expect(viewedId, isNull);
+    expect(find.byKey(const Key('activity-card-edit-activity-10')), findsNothing);
   });
 
   testWidgets('switches between grouped, unit and group table views', (tester) async {
@@ -85,6 +92,7 @@ void main() {
     await tester.tap(find.text('Por Grupos'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-group-directory-table')), findsOneWidget);
+    expect(find.byKey(const Key('activity-detail-status-activity-10')), findsOneWidget);
   });
 
   testWidgets('switches to the canonical resizable table and keeps sticky pagination', (
@@ -115,11 +123,10 @@ void main() {
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    final tableSegment = find.descendant(
-      of: find.byKey(const Key('activity-view-table')),
-      matching: find.byType(InkWell),
+    final toggle = tester.widget<SuperadminDirectoryViewToggle<ActivityDirectoryTableView>>(
+      find.byType(SuperadminDirectoryViewToggle<ActivityDirectoryTableView>),
     );
-    tester.widget<InkWell>(tableSegment).onTap!();
+    toggle.onTableViewSelected(ActivityDirectoryTableView.grouped);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-directory-table')), findsOneWidget);
     expect(find.byKey(const Key('create-activity-banner')), findsOneWidget);

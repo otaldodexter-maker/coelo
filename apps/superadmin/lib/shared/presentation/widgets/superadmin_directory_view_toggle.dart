@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 final class SuperadminDirectoryTableViewOption<T> {
   const SuperadminDirectoryTableViewOption({required this.value, required this.label});
@@ -37,29 +38,6 @@ final class SuperadminDirectoryViewToggle<T> extends StatefulWidget {
 
 final class _SuperadminDirectoryViewToggleState<T> extends State<SuperadminDirectoryViewToggle<T>> {
   final _menuController = MenuController();
-  final _cardsFocusNode = FocusNode(debugLabel: 'Exibir como cards');
-  final _tableFocusNode = FocusNode(debugLabel: 'Exibir como tabela');
-
-  @override
-  void initState() {
-    super.initState();
-    _tableFocusNode.addListener(_openForTableFocus);
-  }
-
-  @override
-  void dispose() {
-    _tableFocusNode
-      ..removeListener(_openForTableFocus)
-      ..dispose();
-    _cardsFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _openForTableFocus() {
-    if (_tableFocusNode.hasFocus && mounted) {
-      _menuController.open();
-    }
-  }
 
   void _selectTableView(T value) {
     widget.onTableViewSelected(value);
@@ -75,8 +53,8 @@ final class _SuperadminDirectoryViewToggleState<T> extends State<SuperadminDirec
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(colors.surface),
         surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-        elevation: const WidgetStatePropertyAll(4),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space1)),
+        elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CoeloRadius.lg),
@@ -86,27 +64,25 @@ final class _SuperadminDirectoryViewToggleState<T> extends State<SuperadminDirec
       ),
       menuChildren: [
         for (final option in widget.tableViews)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
+          SizedBox(
+            width: 220,
             child: MenuItemButton(
               onPressed: () => _selectTableView(option.value),
               style: ButtonStyle(
-                minimumSize: const WidgetStatePropertyAll(Size(220, CoeloSize.touchMin)),
+                minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
                 foregroundColor: WidgetStateProperty.resolveWith((states) {
-                  final active = option.value == widget.selectedTableView;
-                  return active ||
-                          states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused)
-                      ? colors.primary
-                      : colors.onSurface;
+                  final highlighted =
+                      option.value == widget.selectedTableView ||
+                      states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused);
+                  return highlighted ? colors.primary : colors.onSurfaceVariant;
                 }),
                 backgroundColor: WidgetStateProperty.resolveWith((states) {
-                  final active = option.value == widget.selectedTableView;
-                  return active ||
-                          states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused)
-                      ? colors.primaryContainer
-                      : Colors.transparent;
+                  final highlighted =
+                      option.value == widget.selectedTableView ||
+                      states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused);
+                  return highlighted ? colors.primaryContainer : Colors.transparent;
                 }),
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                 shape: WidgetStatePropertyAll(
@@ -117,89 +93,52 @@ final class _SuperadminDirectoryViewToggleState<T> extends State<SuperadminDirec
             ),
           ),
       ],
-      builder: (context, controller, _) => Container(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          border: Border.all(color: colors.outlineVariant),
-          borderRadius: BorderRadius.circular(CoeloRadius.full),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _Segment(
-              key: widget.cardsKey,
-              focusNode: _cardsFocusNode,
-              selected: widget.cardsSelected,
-              tooltip: 'Exibir como cards',
-              icon: Icons.grid_view_rounded,
-              onTap: widget.onCardsSelected,
+      builder: (context, controller, _) => Focus(
+        onKeyEvent: (_, event) {
+          if (event is KeyDownEvent &&
+              HardwareKeyboard.instance.isAltPressed &&
+              event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            controller.open();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: SegmentedButton<bool>(
+          style: const ButtonStyle(
+            minimumSize: WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
+            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: CoeloSpacing.space3)),
+          ),
+          segments: [
+            ButtonSegment(
+              value: true,
+              icon: Semantics(
+                label: 'Exibir como cards',
+                child: Icon(key: widget.cardsKey, Icons.grid_view_rounded),
+              ),
             ),
-            SizedBox(
-              height: CoeloSize.touchMin,
-              child: VerticalDivider(width: 1, color: colors.outlineVariant),
-            ),
-            MouseRegion(
-              onEnter: (_) => controller.open(),
-              child: _Segment(
-                key: widget.tableKey,
-                focusNode: _tableFocusNode,
-                selected: !widget.cardsSelected,
-                tooltip: 'Exibir como tabela. Mantenha pressionado para escolher a visão.',
-                icon: Icons.table_rows_rounded,
-                onTap: () => _selectTableView(widget.groupedView),
-                onLongPress: controller.open,
+            ButtonSegment(
+              value: false,
+              icon: MouseRegion(
+                onEnter: (_) => controller.open(),
+                child: GestureDetector(
+                  onLongPress: controller.open,
+                  child: Semantics(
+                    label: 'Exibir como tabela',
+                    child: Icon(key: widget.tableKey, Icons.table_rows_rounded),
+                  ),
+                ),
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-final class _Segment extends StatelessWidget {
-  const _Segment({
-    required this.focusNode,
-    required this.selected,
-    required this.tooltip,
-    required this.icon,
-    required this.onTap,
-    this.onLongPress,
-    super.key,
-  });
-
-  final FocusNode focusNode;
-  final bool selected;
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onTap;
-  final VoidCallback? onLongPress;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Tooltip(
-      message: tooltip,
-      child: Semantics(
-        button: true,
-        selected: selected,
-        label: tooltip,
-        child: Material(
-          color: selected ? colors.primaryContainer : Colors.transparent,
-          child: InkWell(
-            focusNode: focusNode,
-            onTap: onTap,
-            onLongPress: onLongPress,
-            hoverColor: colors.primaryContainer,
-            focusColor: colors.primaryContainer,
-            splashColor: Colors.transparent,
-            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-            child: SizedBox.square(
-              dimension: CoeloSize.touchMin,
-              child: Icon(icon, color: selected ? colors.primary : colors.onSurface),
-            ),
-          ),
+          selected: {widget.cardsSelected},
+          showSelectedIcon: false,
+          onSelectionChanged: (selection) {
+            if (selection.single) {
+              widget.onCardsSelected();
+            } else {
+              _selectTableView(widget.groupedView);
+            }
+          },
         ),
       ),
     );

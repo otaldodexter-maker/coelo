@@ -678,23 +678,29 @@ final class _GroupCardState extends State<_GroupCard> {
                             ),
                             const SizedBox(width: CoeloSpacing.space3),
                             Expanded(
-                              child: Text(
-                                item.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  _CardContextLine(label: 'Unidade', value: item.unitName),
+                                  _CardContextLine(
+                                    label: 'Instituição',
+                                    value: item.institutionName,
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(width: CoeloSpacing.space2),
                             _GroupStatusChip(status: item.status),
                           ],
                         ),
-                        const SizedBox(height: CoeloSpacing.space2),
-                        _CardContextLine(label: 'Unidade', value: item.unitName),
-                        const SizedBox(height: CoeloSpacing.spaceHalf),
-                        _CardContextLine(label: 'Instituição', value: item.institutionName),
                         const SizedBox(height: CoeloSpacing.space4),
                         const Divider(height: 1),
                         const SizedBox(height: CoeloSpacing.space4),
@@ -759,15 +765,19 @@ final class _CardContextLine extends StatelessWidget {
   final String value;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
-      ),
-      const SizedBox(width: CoeloSpacing.space2),
-      Expanded(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis)),
-    ],
+  Widget build(BuildContext context) => Text.rich(
+    TextSpan(
+      children: [
+        TextSpan(
+          text: '$label: ',
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        TextSpan(text: value),
+      ],
+    ),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: Theme.of(context).textTheme.bodySmall,
   );
 }
 
@@ -873,8 +883,10 @@ final class _GroupTable extends StatelessWidget {
       minWidth: 100,
       maxWidth: 360,
       sortable: true,
-      cellBuilder: (context, item) =>
-          Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+      cellBuilder: (context, item) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
     );
 
     return LayoutBuilder(
@@ -996,7 +1008,10 @@ final class _GroupActivityTable extends StatelessWidget {
       initialWidth: width,
       minWidth: 120,
       maxWidth: 360,
-      cellBuilder: (context, row) => Text(value(row), maxLines: 1, overflow: TextOverflow.ellipsis),
+      cellBuilder: (context, row) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(value(row), maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
     );
 
     return LayoutBuilder(
@@ -1018,6 +1033,17 @@ final class _GroupActivityTable extends StatelessWidget {
             column('team', 'Equipe institucional', (row) => row.prototype.team, width: 220),
             column('guardians', 'Responsáveis', (row) => '${row.prototype.guardianCount}'),
             column('children', 'Crianças', (row) => '${row.prototype.childCount}'),
+            CoeloAdminTableColumn(
+              id: 'status',
+              label: 'Status',
+              initialWidth: 176,
+              minWidth: 120,
+              maxWidth: 260,
+              cellBuilder: (context, row) => Align(
+                alignment: Alignment.centerLeft,
+                child: _GroupStatusChip(status: row.group.status),
+              ),
+            ),
           ],
         ),
       ),

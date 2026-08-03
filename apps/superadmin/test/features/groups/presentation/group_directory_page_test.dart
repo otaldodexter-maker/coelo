@@ -31,8 +31,8 @@ void main() {
 
     expect(find.text('Grupos'), findsWidgets);
     expect(find.text('Gerencie os grupos da plataforma.'), findsOneWidget);
-    expect(find.text('Instituição'), findsWidgets);
-    expect(find.text('Unidade'), findsWidgets);
+    expect(find.textContaining('Instituição:'), findsWidgets);
+    expect(find.textContaining('Unidade:'), findsWidgets);
     expect(find.text('Tipos'), findsWidgets);
     expect(find.text('Status'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
@@ -44,6 +44,11 @@ void main() {
     expect(find.text('Atividades'), findsWidgets);
     expect(find.text('Responsáveis'), findsWidgets);
     expect(find.text('Crianças'), findsWidgets);
+
+    expect(
+      tester.getSize(find.byType(CoeloAdminCreateAction)).height,
+      closeTo(tester.getSize(find.byKey(Key('group-card-${first.id}'))).height, 0.5),
+    );
 
     await tester.tap(find.byKey(Key('group-card-${first.id}')));
     expect(editedId, first.id);
@@ -62,6 +67,7 @@ void main() {
     expect(find.byKey(const Key('group-activity-directory-table')), findsOneWidget);
     expect(find.text('Atividade'), findsWidgets);
     expect(find.text('Equipe institucional'), findsWidgets);
+    expect(find.byKey(const Key('coelo-admin-table-header-status')), findsOneWidget);
   });
 
   testWidgets('keeps sticky pagination usable at 200 percent text on compact width', (

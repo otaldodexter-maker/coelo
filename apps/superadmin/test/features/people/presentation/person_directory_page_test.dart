@@ -3,9 +3,10 @@ import 'dart:ui' show PointerDeviceKind, SemanticsAction;
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart'
-    show PersonDirectoryTableView, PersonFilterOption;
+    show PersonDirectorySegment, PersonDirectoryTableView, PersonFilterOption;
 import 'package:coelo_superadmin/features/people/presentation/person_directory_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_underline_tabs.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -30,6 +31,11 @@ void main() {
     ]) {
       expect(find.text(label), findsOneWidget);
     }
+    expect(find.byType(SuperadminUnderlineTabs<PersonDirectorySegment>), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.byKey(const Key('people-filter-toolbar'))).dy,
+      lessThan(tester.getTopLeft(find.byKey(const Key('people-segment-selector'))).dy),
+    );
     expect(find.byKey(const Key('people-unit-filter')), findsNothing);
     expect(find.byKey(const Key('people-group-filter')), findsNothing);
     expect(find.byKey(const Key('people-activity-filter')), findsNothing);
@@ -80,7 +86,9 @@ void main() {
     );
   });
 
-  testWidgets('cards show masked fictional contact and pertinent metrics only', (tester) async {
+  testWidgets('cards show deduplicated quantitative relations without contact or roles', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -95,16 +103,20 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('***'), findsWidgets);
     final child = find.byKey(const Key('person-card-person-1'));
     expect(child, findsOneWidget);
     expect(find.descendant(of: child, matching: find.text('Contato')), findsNothing);
+    expect(find.descendant(of: child, matching: find.text('Papéis')), findsNothing);
+    expect(find.descendant(of: child, matching: find.text('Instituição 1')), findsNothing);
+    expect(find.descendant(of: child, matching: find.text('Instituições')), findsOneWidget);
     expect(
       find.descendant(of: child, matching: find.text('Responsáveis vinculados')),
       findsOneWidget,
     );
 
     final adult = find.byKey(const Key('person-card-person-0'));
+    expect(find.descendant(of: adult, matching: find.text('Contato')), findsNothing);
+    expect(find.descendant(of: adult, matching: find.text('Papéis')), findsNothing);
     expect(find.descendant(of: adult, matching: find.text('Crianças vinculadas')), findsOneWidget);
     expect(find.descendant(of: adult, matching: find.text('Alunos acompanhados')), findsOneWidget);
   });
@@ -120,6 +132,10 @@ void main() {
     final create = tester.widget<CoeloAdminCreateAction>(find.byType(CoeloAdminCreateAction));
     expect(create.variant, CoeloAdminCreateActionVariant.tile);
     expect(find.byKey(const Key('create-person-card')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('create-person-card'))).height,
+      tester.getSize(find.byKey(const Key('person-card-person-0'))).height,
+    );
     expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     expect(find.text('Arquivos'), findsOneWidget);
   });

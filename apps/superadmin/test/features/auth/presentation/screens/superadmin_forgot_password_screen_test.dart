@@ -37,6 +37,15 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('does not expose theme switching from password recovery', (tester) async {
+    await pumpForgotPassword(
+      tester,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+    );
+
+    expect(find.byKey(const ValueKey('superadmin-login-theme-toggle')), findsNothing);
+  });
+
   testWidgets('renders the recovery form with existing auth components', (tester) async {
     await pumpForgotPassword(
       tester,

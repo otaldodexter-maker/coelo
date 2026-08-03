@@ -52,7 +52,7 @@ class _SupportPageState extends State<SupportPage> {
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
-    title: 'Suporte',
+    title: 'Suporte e implantação',
     subtitle: 'Acompanhe os chamados enviados pelo botão de bug.',
     logout: widget.logout,
     currentDestination: 'support',
@@ -158,25 +158,44 @@ class _SupportPageState extends State<SupportPage> {
     widget.controller.selectTicket(ticket.id);
   }
 
-  void _openFullscreen(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus) {
+  Future<void> _openFullscreen(
+    SupportTicket ticket,
+    SupportFocusRestoreCallback restoreFocus,
+  ) async {
     _restoreDetailOriginFocus = restoreFocus;
     widget.controller.selectTicket(ticket.id);
-    showDialog<void>(
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (_) => AnimatedBuilder(
-        animation: widget.controller,
-        builder: (context, _) => Dialog.fullscreen(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          child: SafeArea(child: _details(compact: true)),
+      builder: (dialogContext) => _DraggableSupportDialog(
+        builder: (onDragUpdate, onMoveRequested, onResetRequested) => AnimatedBuilder(
+          animation: widget.controller,
+          builder: (context, _) => _details(
+            compact: true,
+            fallbackTicket: ticket,
+            onClose: () => Navigator.of(dialogContext).pop(),
+            onHeaderDragUpdate: onDragUpdate,
+            onHeaderMoveRequested: onMoveRequested,
+            onHeaderResetRequested: onResetRequested,
+          ),
         ),
       ),
     );
+    if (mounted) {
+      _closeDetails();
+    }
   }
 
-  Widget _details({bool compact = false}) {
-    final ticket = widget.controller.selectedTicket;
+  Widget _details({
+    bool compact = false,
+    SupportTicket? fallbackTicket,
+    VoidCallback? onClose,
+    GestureDragUpdateCallback? onHeaderDragUpdate,
+    ValueChanged<Offset>? onHeaderMoveRequested,
+    VoidCallback? onHeaderResetRequested,
+  }) {
+    final ticket = widget.controller.selectedTicket ?? fallbackTicket;
     if (ticket == null) {
       return const CoeloStatePanel(
         title: 'Selecione um chamado',
@@ -193,14 +212,14 @@ class _SupportPageState extends State<SupportPage> {
           ? null
           : () => _openFullscreen(ticket, _restoreDetailOriginFocus ?? () => false),
       onSend: (message) => widget.controller.sendReply(ticket.id, message),
-      onClose: () => _closeDetails(compact: compact),
+      onClose: onClose ?? _closeDetails,
+      onHeaderDragUpdate: onHeaderDragUpdate,
+      onHeaderMoveRequested: onHeaderMoveRequested,
+      onHeaderResetRequested: onHeaderResetRequested,
     );
   }
 
-  void _closeDetails({required bool compact}) {
-    if (compact) {
-      Navigator.of(context).pop();
-    }
+  void _closeDetails() {
     widget.controller.selectTicket(null);
     final restoreFocus = _restoreDetailOriginFocus;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -228,9 +247,9 @@ class _SupportPageState extends State<SupportPage> {
   Future<void> _createSupport() async {
     final draft = await showSuperadminBugReportDialog(
       context,
-      currentScreen: 'Suporte',
+      currentScreen: 'Suporte e implantação',
       sections: const {
-        'Suporte': ['Chamados', 'Outro'],
+        'Suporte e implantação': ['Chamados', 'Outro'],
         'Outros': [],
       },
     );
@@ -325,6 +344,87 @@ class _SupportPageState extends State<SupportPage> {
     ],
     child: _chip(ticket.status),
   );
+}
+
+typedef _DraggableSupportDialogBuilder =
+    Widget Function(
+      GestureDragUpdateCallback onDragUpdate,
+      ValueChanged<Offset> onMoveRequested,
+      VoidCallback onResetRequested,
+    );
+
+final class _DraggableSupportDialog extends StatefulWidget {
+  const _DraggableSupportDialog({required this.builder});
+
+  final _DraggableSupportDialogBuilder builder;
+
+  @override
+  State<_DraggableSupportDialog> createState() => _DraggableSupportDialogState();
+}
+
+final class _DraggableSupportDialogState extends State<_DraggableSupportDialog> {
+  Offset _offset = Offset.zero;
+  Rect _movementBounds = Rect.zero;
+
+  Offset _clamp(Offset value) => Offset(
+    value.dx.clamp(_movementBounds.left, _movementBounds.right).toDouble(),
+    value.dy.clamp(_movementBounds.top, _movementBounds.bottom).toDouble(),
+  );
+
+  void _moveBy(Offset delta) {
+    setState(() => _offset = _clamp(_offset + delta));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final colors = Theme.of(context).colorScheme;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final margin = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth
+            ? CoeloSpacing.space20
+            : CoeloSpacing.space4;
+        final safeWidth = constraints.maxWidth - media.padding.left - media.padding.right;
+        final safeHeight = constraints.maxHeight - media.padding.top - media.padding.bottom;
+        final availableWidth = (safeWidth - (margin * 2)).clamp(0, double.infinity);
+        final availableHeight = (safeHeight - (margin * 2)).clamp(0, double.infinity);
+        final panelWidth = availableWidth.clamp(0, CoeloBreakpoints.expanded.maxWidth).toDouble();
+        final panelHeight = availableHeight.toDouble();
+        final maxDx = ((safeWidth - panelWidth) / 2).clamp(0, double.infinity).toDouble();
+        final maxDy = ((safeHeight - panelHeight) / 2).clamp(0, double.infinity).toDouble();
+        _movementBounds = Rect.fromLTRB(-maxDx, -maxDy, maxDx, maxDy);
+        _offset = _clamp(_offset);
+
+        final initialLeft = media.padding.left + ((safeWidth - panelWidth) / 2);
+        final initialTop = media.padding.top + ((safeHeight - panelHeight) / 2);
+        return Stack(
+          children: [
+            Positioned(
+              left: initialLeft + _offset.dx,
+              top: initialTop + _offset.dy,
+              width: panelWidth,
+              height: panelHeight,
+              child: Material(
+                key: const Key('support-expanded-detail'),
+                color: colors.surface,
+                surfaceTintColor: Colors.transparent,
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                  side: BorderSide(color: colors.outlineVariant),
+                ),
+                child: widget.builder(
+                  (details) => _moveBy(details.delta),
+                  _moveBy,
+                  () => setState(() => _offset = Offset.zero),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 String _statusLabel(SupportTicketStatus s) => switch (s) {

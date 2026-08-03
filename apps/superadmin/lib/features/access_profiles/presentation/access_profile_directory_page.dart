@@ -9,6 +9,7 @@ import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/access_profile.dart';
@@ -157,17 +158,17 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   horizontalPadding + footerInset,
                 ),
                 children: [
+                  _AccessProfileToolbar(
+                    viewModel: widget.viewModel,
+                    searchController: widget.searchController,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
                   _DomainSelector(
                     value: query.domain,
                     onChanged: (value) {
                       widget.searchController.clear();
                       widget.viewModel.setDomain(value);
                     },
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _AccessProfileToolbar(
-                    viewModel: widget.viewModel,
-                    searchController: widget.searchController,
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   if (widget.viewModel.page.isDemo ||
@@ -226,21 +227,14 @@ final class _DomainSelector extends StatelessWidget {
   final ValueChanged<AccessProfileDomain> onChanged;
 
   @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.centerLeft,
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SegmentedButton<AccessProfileDomain>(
-        key: const Key('access-profile-domain-selector'),
-        segments: [
-          for (final domain in AccessProfileDomain.values)
-            ButtonSegment(value: domain, label: Text(domain.label)),
-        ],
-        selected: {value},
-        showSelectedIcon: false,
-        onSelectionChanged: (selection) => onChanged(selection.single),
-      ),
-    ),
+  Widget build(BuildContext context) => SuperadminUnderlineTabs<AccessProfileDomain>(
+    key: const Key('access-profile-domain-selector'),
+    tabs: [
+      for (final domain in AccessProfileDomain.values)
+        SuperadminUnderlineTab(value: domain, label: domain.label),
+    ],
+    selected: value,
+    onSelected: onChanged,
   );
 }
 
@@ -484,29 +478,39 @@ final class _AccessProfileCards extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final columns = math.max(1, (constraints.maxWidth / 340).floor());
-      final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-      return Wrap(
+      final cards = <Widget>[
+        ConstrainedBox(
+          key: const Key('create-access-profile-card'),
+          constraints: const BoxConstraints(minHeight: 216),
+          child: CoeloAdminCreateAction(
+            label: 'Criar perfil',
+            icon: Icons.manage_accounts_outlined,
+            onPressed: onCreate,
+          ),
+        ),
+        for (final item in items) _AccessProfileCard(item: item, onPressed: () => onOpen(item.id)),
+      ];
+      return Column(
         key: const Key('access-profile-card-grid'),
-        spacing: CoeloSpacing.space6,
-        runSpacing: CoeloSpacing.space6,
         children: [
-          SizedBox(
-            width: width,
-            child: ConstrainedBox(
-              key: const Key('create-access-profile-card'),
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar perfil',
-                icon: Icons.manage_accounts_outlined,
-                onPressed: onCreate,
+          for (var start = 0; start < cards.length; start += columns) ...[
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var column = 0; column < columns; column++) ...[
+                    Expanded(
+                      child: start + column < cards.length
+                          ? cards[start + column]
+                          : const SizedBox.shrink(),
+                    ),
+                    if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+                  ],
+                ],
               ),
             ),
-          ),
-          for (final item in items)
-            SizedBox(
-              width: width,
-              child: _AccessProfileCard(item: item, onPressed: () => onOpen(item.id)),
-            ),
+            if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
+          ],
         ],
       );
     },

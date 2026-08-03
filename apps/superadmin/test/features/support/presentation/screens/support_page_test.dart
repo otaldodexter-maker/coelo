@@ -289,7 +289,7 @@ void main() {
     await tester.pump(kDoubleTapTimeout);
     await tester.pumpAndSettle();
 
-    expect(find.byType(Dialog), findsOneWidget);
+    expect(find.byKey(const Key('support-expanded-detail')), findsOneWidget);
     expect(controller.selectedTicket?.id, 'SUP-001');
   });
 

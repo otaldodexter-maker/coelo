@@ -11,7 +11,6 @@ import '../widgets/login_card.dart';
 import '../widgets/login_feedback.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_security_notice.dart';
-import '../widgets/login_theme_toggle_button.dart';
 import '../widgets/superadmin_login_form.dart';
 
 class SuperadminLoginScreen extends StatefulWidget {
@@ -103,42 +102,31 @@ class _SuperadminLoginScreenState extends State<SuperadminLoginScreen> {
                         listenable: _viewModel,
                         builder: (context, child) {
                           return AutofillGroup(
-                            child: Stack(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    const LoginHeader(),
-                                    if (_viewModel.errorMessage case final message?) ...[
-                                      const SizedBox(height: CoeloSpacing.space5),
-                                      LoginFeedback(message: message),
-                                    ],
-                                    const SizedBox(
-                                      key: ValueKey('superadmin-login-gap-header-form'),
-                                      height: CoeloSpacing.space4,
-                                    ),
-                                    SuperadminLoginForm(
-                                      formKey: _formKey,
-                                      emailController: _emailController,
-                                      passwordController: _passwordController,
-                                      emailFocusNode: _emailFocusNode,
-                                      passwordFocusNode: _passwordFocusNode,
-                                      viewModel: _viewModel,
-                                      onSubmit: _submit,
-                                      onForgotPassword: widget.onForgotPassword,
-                                    ),
-                                    const SizedBox(height: CoeloSpacing.space6),
-                                    const LoginSecurityNotice(),
-                                  ],
+                                const LoginHeader(),
+                                if (_viewModel.errorMessage case final message?) ...[
+                                  const SizedBox(height: CoeloSpacing.space5),
+                                  LoginFeedback(message: message),
+                                ],
+                                const SizedBox(
+                                  key: ValueKey('superadmin-login-gap-header-form'),
+                                  height: CoeloSpacing.space4,
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: LoginThemeToggleButton(
-                                    onThemeModeChanged: widget.onThemeModeChanged,
-                                  ),
+                                SuperadminLoginForm(
+                                  formKey: _formKey,
+                                  emailController: _emailController,
+                                  passwordController: _passwordController,
+                                  emailFocusNode: _emailFocusNode,
+                                  passwordFocusNode: _passwordFocusNode,
+                                  viewModel: _viewModel,
+                                  onSubmit: _submit,
+                                  onForgotPassword: widget.onForgotPassword,
                                 ),
+                                const SizedBox(height: CoeloSpacing.space6),
+                                const LoginSecurityNotice(),
                               ],
                             ),
                           );

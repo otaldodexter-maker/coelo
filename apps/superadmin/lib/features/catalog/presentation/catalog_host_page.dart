@@ -24,6 +24,7 @@ final class CatalogHostPage extends StatelessWidget {
     this.onSupportOpen,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
+    this.localPreview = false,
     super.key,
   });
 
@@ -35,6 +36,7 @@ final class CatalogHostPage extends StatelessWidget {
   final VoidCallback? onSupportOpen;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
+  final bool localPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ final class CatalogHostPage extends StatelessWidget {
         }
       },
       actions: [
-        if (uri != null)
+        if (uri != null && !localPreview)
           OutlinedButton.icon(
             key: const Key('catalog-open-external'),
             onPressed: catalogEmbeddingSupported ? () => openCatalogExternally(uri) : null,
@@ -67,14 +69,26 @@ final class CatalogHostPage extends StatelessWidget {
           ),
       ],
       compactActions: [
-        if (uri != null)
+        if (uri != null && !localPreview)
           IconButton(
             tooltip: 'Abrir catálogo em nova aba',
             onPressed: catalogEmbeddingSupported ? () => openCatalogExternally(uri) : null,
             icon: const Icon(Icons.open_in_new_outlined),
           ),
       ],
-      child: uri == null
+      child: localPreview
+          ? const Center(
+              child: Padding(
+                padding: EdgeInsets.all(CoeloSpacing.space6),
+                child: CoeloStatePanel(
+                  key: Key('catalog-local-preview'),
+                  title: 'Catálogo local',
+                  message: 'Preview local disponível sem depender do domínio externo.',
+                  icon: Icons.widgets_outlined,
+                ),
+              ),
+            )
+          : uri == null
           ? const CoeloStatePanel(
               title: 'Endereço do catálogo indisponível',
               message: 'Configure uma origem HTTPS própria para o catálogo.',

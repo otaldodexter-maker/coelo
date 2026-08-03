@@ -318,6 +318,12 @@ final class PersonDirectoryItem {
       .toSet()
       .join(', ');
 
+  int get institutionCount => memberships.map((item) => item.institutionId).toSet().length;
+  int get unitCount => memberships.map((item) => item.unitId).whereType<String>().toSet().length;
+  int get groupCount => memberships.map((item) => item.groupId).whereType<String>().toSet().length;
+  int get activityCount =>
+      memberships.map((item) => item.activityId).whereType<String>().toSet().length;
+
   bool get isGuardian => memberships.any((item) => item.role == 'guardian');
   bool get isInstitutionalTeam =>
       memberships.any((item) => !const {'guardian', 'student'}.contains(item.role));

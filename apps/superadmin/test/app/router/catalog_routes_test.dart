@@ -26,7 +26,9 @@ void main() {
     expect(find.byType(CatalogHostPage), findsNothing);
   });
 
-  testWidgets('opens the protected catalog and never adds a dev bypass', (tester) async {
+  testWidgets('opens production catalog when authenticated and local preview without a session', (
+    tester,
+  ) async {
     final session = SuperadminSession()..signIn();
     final router = _router(session);
     addTearDown(router.dispose);
@@ -37,12 +39,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(CatalogHostPage), findsOneWidget);
 
-    router.go('/dev/catalog');
+    session.signOut();
+    router.go(SuperadminRoutes.devCatalog);
     await tester.pumpAndSettle();
-    expect(find.byType(CatalogHostPage), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devCatalog);
+    expect(find.byType(CatalogHostPage), findsOneWidget);
+    expect(find.byKey(const Key('catalog-local-preview')), findsOneWidget);
   });
 
-  testWidgets('keeps institutions open when catalog launches externally', (tester) async {
+  testWidgets('opens the local catalog preview from development navigation', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
@@ -61,9 +66,10 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-navigation-catalog')));
     await tester.pumpAndSettle();
 
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutions);
-    expect(find.byType(CatalogHostPage), findsNothing);
-    expect(openedCatalogs, [Uri.parse('https://catalog.coelo.me/')]);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devCatalog);
+    expect(find.byType(CatalogHostPage), findsOneWidget);
+    expect(find.byKey(const Key('catalog-local-preview')), findsOneWidget);
+    expect(openedCatalogs, isEmpty);
   });
 
   testWidgets('opens the protected catalog from authenticated persistent navigation', (

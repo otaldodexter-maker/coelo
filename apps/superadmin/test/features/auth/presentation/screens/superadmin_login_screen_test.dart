@@ -328,11 +328,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('switches the app theme from the login screen', (tester) async {
+  testWidgets('does not expose theme switching from the login screen', (tester) async {
     final session = SuperadminSession();
     addTearDown(session.dispose);
 
-    ThemeMode? selectedMode;
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -343,22 +342,13 @@ void main() {
             session: session,
             login: unavailableSuperadminLogin,
             onForgotPassword: () {},
-            onThemeModeChanged: (mode) => selectedMode = mode,
+            onThemeModeChanged: (_) {},
           ),
         ),
       ),
     );
 
     final themeToggle = find.byKey(const ValueKey('superadmin-login-theme-toggle'));
-    expect(themeToggle, findsOneWidget);
-    final toggleButton = tester.widget<IconButton>(themeToggle);
-    expect(
-      toggleButton.style?.minimumSize?.resolve(<WidgetState>{}),
-      const Size.square(CoeloSize.touchMin),
-    );
-    await tester.tap(themeToggle);
-    await tester.pump();
-
-    expect(selectedMode, ThemeMode.dark);
+    expect(themeToggle, findsNothing);
   });
 }

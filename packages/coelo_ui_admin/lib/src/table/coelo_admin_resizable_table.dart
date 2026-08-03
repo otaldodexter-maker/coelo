@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -88,47 +90,54 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
   Widget build(BuildContext context) {
     final tableWidth = _allColumns.fold<double>(0, (width, column) => width + _widths[column.id]!);
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: const {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.trackpad,
-          },
-        ),
-        child: Stack(
-          children: [
-            Scrollbar(
-              controller: _scrollController,
-              thumbVisibility: true,
-              child: SingleChildScrollView(
-                key: const Key('coelo-admin-table-scroll'),
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: tableWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _headerRow(context),
-                      ...widget.items.map((item) => _dataRow(context, item)),
-                      const SizedBox(height: CoeloSpacing.space3),
-                    ],
+    return LayoutBuilder(
+      builder: (context, constraints) => Align(
+        alignment: AlignmentDirectional.topStart,
+        child: SizedBox(
+          width: math.min(tableWidth, constraints.maxWidth),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: const {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                  PointerDeviceKind.stylus,
+                  PointerDeviceKind.trackpad,
+                },
+              ),
+              child: Stack(
+                children: [
+                  Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: SingleChildScrollView(
+                      key: const Key('coelo-admin-table-scroll'),
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: tableWidth,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _headerRow(context),
+                            ...widget.items.map((item) => _dataRow(context, item)),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    width: _widths[widget.pinnedColumn.id],
+                    height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
+                    child: _pinnedColumn(context),
+                  ),
+                ],
               ),
             ),
-            Positioned(
-              left: 0,
-              top: 0,
-              width: _widths[widget.pinnedColumn.id],
-              height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
-              child: _pinnedColumn(context),
-            ),
-          ],
+          ),
         ),
       ),
     );

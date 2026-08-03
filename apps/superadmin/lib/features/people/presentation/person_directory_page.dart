@@ -10,6 +10,7 @@ import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/person_directory.dart';
@@ -183,13 +184,13 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
                   horizontalPadding + footerInset,
                 ),
                 children: [
-                  _PersonSegmentSelector(viewModel: widget.viewModel),
-                  const SizedBox(height: CoeloSpacing.space4),
                   _PersonToolbar(
                     viewModel: widget.viewModel,
                     searchController: widget.searchController,
                     activityController: widget.activityController,
                   ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  _PersonSegmentSelector(viewModel: widget.viewModel),
                   const SizedBox(height: CoeloSpacing.space4),
                   _PersonResults(
                     viewModel: widget.viewModel,
@@ -231,18 +232,14 @@ final class _PersonSegmentSelector extends StatelessWidget {
   final PersonDirectoryViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    child: SegmentedButton<PersonDirectorySegment>(
-      key: const Key('people-segment-selector'),
-      segments: [
-        for (final segment in PersonDirectorySegment.values)
-          ButtonSegment(value: segment, label: Text(segment.label)),
-      ],
-      selected: {viewModel.query.segment},
-      showSelectedIcon: false,
-      onSelectionChanged: (values) => viewModel.setSegment(values.single),
-    ),
+  Widget build(BuildContext context) => SuperadminUnderlineTabs<PersonDirectorySegment>(
+    key: const Key('people-segment-selector'),
+    tabs: [
+      for (final segment in PersonDirectorySegment.values)
+        SuperadminUnderlineTab(value: segment, label: segment.label),
+    ],
+    selected: viewModel.query.segment,
+    onSelected: viewModel.setSegment,
   );
 }
 
@@ -548,29 +545,39 @@ final class _PersonCards extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final columns = math.max(1, (constraints.maxWidth / 340).floor());
-      final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-      return Wrap(
+      final cards = <Widget>[
+        ConstrainedBox(
+          key: const Key('create-person-card'),
+          constraints: const BoxConstraints(minHeight: 216),
+          child: CoeloAdminCreateAction(
+            label: 'Criar pessoa',
+            icon: Icons.person_add_alt_1_outlined,
+            onPressed: onCreate,
+          ),
+        ),
+        for (final item in items) _PersonCard(item: item, onEdit: onEdit),
+      ];
+      return Column(
         key: const Key('people-card-grid'),
-        spacing: CoeloSpacing.space6,
-        runSpacing: CoeloSpacing.space6,
         children: [
-          SizedBox(
-            width: cardWidth,
-            child: ConstrainedBox(
-              key: const Key('create-person-card'),
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar pessoa',
-                icon: Icons.person_add_alt_1_outlined,
-                onPressed: onCreate,
+          for (var start = 0; start < cards.length; start += columns) ...[
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var column = 0; column < columns; column++) ...[
+                    Expanded(
+                      child: start + column < cards.length
+                          ? cards[start + column]
+                          : const SizedBox.shrink(),
+                    ),
+                    if (column + 1 < columns) const SizedBox(width: CoeloSpacing.space6),
+                  ],
+                ],
               ),
             ),
-          ),
-          for (final item in items)
-            SizedBox(
-              width: cardWidth,
-              child: _PersonCard(item: item, onEdit: onEdit),
-            ),
+            if (start + columns < cards.length) const SizedBox(height: CoeloSpacing.space6),
+          ],
         ],
       );
     },
@@ -601,33 +608,18 @@ final class _PersonCardState extends State<_PersonCard> {
     final item = widget.item;
     final colors = Theme.of(context).colorScheme;
     final metrics = <Widget>[
-      if (item.maskedContact != null)
-        _PersonDetail(
-          icon: Icons.contact_mail_outlined,
-          label: 'Contato',
-          value: item.maskedContact!,
-        ),
       _PersonDetail(
         icon: Icons.account_balance_outlined,
         label: 'Instituições',
-        value: item.institutionSummary.isEmpty ? 'Não informado' : item.institutionSummary,
+        value: '${item.institutionCount}',
       ),
-      if (item.unitSummary.isNotEmpty)
-        _PersonDetail(icon: Icons.apartment_outlined, label: 'Unidades', value: item.unitSummary),
-      if (item.groupSummary.isNotEmpty)
-        _PersonDetail(icon: Icons.groups_outlined, label: 'Grupos', value: item.groupSummary),
-      if (item.activitySummary.isNotEmpty)
-        _PersonDetail(
-          icon: Icons.local_activity_outlined,
-          label: 'Atividades',
-          value: item.activitySummary,
-        ),
-      if (item.type != PersonType.child)
-        _PersonDetail(
-          icon: Icons.badge_outlined,
-          label: 'Papéis',
-          value: item.roleSummary.isEmpty ? 'Não informado' : item.roleSummary,
-        ),
+      _PersonDetail(icon: Icons.apartment_outlined, label: 'Unidades', value: '${item.unitCount}'),
+      _PersonDetail(icon: Icons.groups_outlined, label: 'Grupos', value: '${item.groupCount}'),
+      _PersonDetail(
+        icon: Icons.local_activity_outlined,
+        label: 'Atividades',
+        value: '${item.activityCount}',
+      ),
       if (item.linkedChildrenCount > 0)
         _PersonDetail(
           icon: Icons.family_restroom_outlined,

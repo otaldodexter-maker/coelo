@@ -148,7 +148,7 @@ void main() {
       'access': ['Pessoas', 'Usuários internos', 'Perfis e permissões'],
       'operations': ['Planos', 'Importações'],
       'communication': ['Convites', 'Avisos'],
-      'governance': ['Suporte', 'Auditoria'],
+      'governance': ['Suporte e implantação', 'Auditoria'],
     }.entries) {
       await tester.tap(find.byKey(Key('superadmin-navigation-section-${entry.key}')));
       await tester.pumpAndSettle();

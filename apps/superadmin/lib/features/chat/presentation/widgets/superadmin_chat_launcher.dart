@@ -11,15 +11,23 @@ import 'superadmin_chat_composer.dart';
 import 'superadmin_chat_flow_dialog.dart';
 import 'superadmin_chat_message_bubble.dart';
 
+final class SuperadminChatLauncherPositionController extends ValueNotifier<Offset?> {
+  SuperadminChatLauncherPositionController() : super(null);
+
+  void reset() => value = null;
+}
+
 final class SuperadminChatLauncher extends StatefulWidget {
   const SuperadminChatLauncher({
     required this.onOpenConversations,
     this.bottomClearance = 0,
+    this.positionController,
     super.key,
   }) : assert(bottomClearance >= 0);
 
   final VoidCallback onOpenConversations;
   final double bottomClearance;
+  final SuperadminChatLauncherPositionController? positionController;
 
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
@@ -35,11 +43,15 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   var _focused = false;
   var _compactSheetOpen = false;
   var _positionOffset = Offset.zero;
+  late final SuperadminChatLauncherPositionController _positionController;
+  late final bool _ownsPositionController;
 
   @override
   void initState() {
     super.initState();
     _controller = SuperadminChatController(superadminChatConversations);
+    _ownsPositionController = widget.positionController == null;
+    _positionController = widget.positionController ?? SuperadminChatLauncherPositionController();
     _focusNode.addListener(_handleFocus);
   }
 
@@ -51,6 +63,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
       ..dispose();
     _overlayFocusNode.dispose();
     _controller.dispose();
+    if (_ownsPositionController) _positionController.dispose();
     super.dispose();
   }
 
@@ -175,7 +188,8 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   }
 
   void _resetPosition() {
-    if (_positionOffset == Offset.zero) return;
+    if (_positionOffset == Offset.zero && _positionController.value == null) return;
+    _positionController.reset();
     setState(() => _positionOffset = Offset.zero);
   }
 
@@ -187,25 +201,33 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     final minLeft = media.padding.left + CoeloSpacing.space2;
     final maxLeft = media.size.width - media.padding.right - CoeloSpacing.space2 - rect.width;
     final minTop = media.padding.top + CoeloSpacing.space2;
-    final maxTop =
-        media.size.height -
-        media.padding.bottom -
-        widget.bottomClearance -
-        CoeloSpacing.space2 -
-        rect.height;
+    final maxTop = media.size.height - media.padding.bottom - CoeloSpacing.space2 - rect.height;
     final clampedMaxLeft = maxLeft < minLeft ? minLeft : maxLeft;
     final clampedMaxTop = maxTop < minTop ? minTop : maxTop;
     final targetLeft = (rect.left + delta.dx).clamp(minLeft, clampedMaxLeft).toDouble();
     final targetTop = (rect.top + delta.dy).clamp(minTop, clampedMaxTop).toDouble();
     final applied = Offset(targetLeft - rect.left, targetTop - rect.top);
-    if (applied == Offset.zero) return;
-    setState(() => _positionOffset += applied);
+    if (applied != Offset.zero) setState(() => _positionOffset += applied);
+    _positionController.value = Offset(targetLeft, targetTop);
+  }
+
+  void _restorePosition() {
+    final desired = _positionController.value;
+    if (desired == null) {
+      _moveBy(Offset.zero);
+      _positionController.reset();
+      return;
+    }
+    final renderObject = _launcherKey.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox || !renderObject.hasSize) return;
+    final current = renderObject.localToGlobal(Offset.zero);
+    _moveBy(desired - current);
   }
 
   @override
   Widget build(BuildContext context) {
     if (_compactSheetOpen) return const SizedBox.shrink();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _moveBy(Offset.zero));
+    WidgetsBinding.instance.addPostFrameCallback((_) => _restorePosition());
     final colors = Theme.of(context).colorScheme;
     final highlighted = _hovered || _focused || _entry != null;
     final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
@@ -231,10 +253,11 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
                   key: const Key('superadmin-chat-launcher-surface'),
                   color: highlighted ? colors.primary : colors.surfaceContainerHighest,
                   shape: StadiumBorder(side: BorderSide(color: colors.outlineVariant)),
-                  clipBehavior: Clip.antiAlias,
+                  clipBehavior: Clip.none,
                   child: InkWell(
                     focusNode: _focusNode,
                     onTap: _open,
+                    customBorder: const StadiumBorder(),
                     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                     child: AnimatedSize(
                       duration: MediaQuery.disableAnimationsOf(context)
