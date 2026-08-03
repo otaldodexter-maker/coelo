@@ -47,6 +47,15 @@ final class _ApprovedSuperadminSurfacesFoundation extends StatelessWidget {
             'hover cinza; status inicia como ponto e revela o texto por hover, foco ou toque.',
       ),
       _ApprovedSurface(
+        keyName: 'people-directory-tabs',
+        title: 'Acessos › Pessoas',
+        baseline: 'Toolbar em faixa própria, tabs lineares e conteúdo com gaps tokenizados.',
+        golden: 'people-segment-selector + person_directory_page_test.dart',
+        rule:
+            'Categorias irmãs usam tabs lineares: label e underline laranja na seleção, '
+            'hover tonal sutil sem cinza e sem cápsula; não confundir com Cards/Tabela.',
+      ),
+      _ApprovedSurface(
         keyName: 'home',
         title: 'Home',
         baseline: 'Conversas à esquerda, ajuda central, sugestões e compositor inferior.',

@@ -14,7 +14,7 @@ review_owner: Coelo Product
 
 Hover não é uma regra visual única. Toda superfície deve ser classificada antes
 da implementação: ação primária, tonal, item discreto, linha contínua, card
-interativo, ação negativa ou toggle segmentado. Cinza/HEX local e hover genérico
+interativo, ação negativa, toggle segmentado ou tab linear de diretório. Cinza/HEX local e hover genérico
 do Material não são padrões Coelo.
 
 Ação primária usa botão laranja preenchido; `OutlinedButton` em `surface` com
@@ -59,3 +59,10 @@ famílias, consultar
 `.agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md`,
 o golden indicado e o padrão específico antes de alterar a composição. Pastas
 `failures/` contêm somente diagnóstico de regressão e não são referência.
+
+Categorias irmãs que filtram o mesmo diretório sem trocar de página usam a
+baseline de `Acessos > Pessoas`: tabs lineares sobre `surface`, linha-base
+`outlineVariant`, seleção por label e underline `primary`, e hover/foco tonal
+primário sutil sem cinza. Há `space4` entre toolbar, tabs e conteúdo. Esse
+padrão é diferente do toggle Cards/Tabela em cápsula, de filtros/chips e da
+navegação entre rotas. No Superadmin, reutilizar `SuperadminUnderlineTabs`.

@@ -1205,8 +1205,11 @@ void _handleDestinationTap(
   _NavigationDestinationData destination,
   ValueChanged<String>? onDestinationSelected,
 ) {
+  final prototypePath = _prototypeDestinationPath(context, destination.id);
   if (!_destinationAvailable(context, destination)) {
     _showMessage(context, '${destination.label} será implementado em breve.');
+  } else if (prototypePath != null && GoRouter.maybeOf(context) != null) {
+    GoRouter.of(context).go(prototypePath);
   } else if (destination.id == 'internal-users' && _isDevelopmentRoute(context)) {
     context.go('/dev/internal-users');
   } else {
@@ -1216,6 +1219,21 @@ void _handleDestinationTap(
   if (scaffold?.isDrawerOpen ?? false) {
     Navigator.of(context).pop();
   }
+}
+
+String? _prototypeDestinationPath(BuildContext context, String destination) {
+  final development = _isDevelopmentRoute(context);
+  final prefix = development ? '/dev' : '';
+  return switch (destination) {
+    'health-safety' => '$prefix/health-safety',
+    'catalog' => development ? '/dev/catalog' : '/governance/catalog',
+    'plans' => '/dev/plans',
+    'import' => '/dev/imports',
+    'invites' => '/dev/invites',
+    'notices' => '/dev/notices',
+    'audit' => '/dev/audit',
+    _ => null,
+  };
 }
 
 bool _destinationAvailable(BuildContext context, _NavigationDestinationData destination) {

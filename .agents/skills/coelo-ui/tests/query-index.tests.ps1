@@ -97,6 +97,8 @@ Assert-QueryContains -Query 'hover card institutions' `
     -ExpectedId 'pattern.admin-directory'
 Assert-QueryContains -Query 'institution card status compact 24 hover focus touch' `
     -ExpectedId 'pattern.institution-card-status'
+Assert-QueryContains -Query 'acessos pessoas tabs lineares categorias underline toolbar' `
+    -ExpectedId 'pattern.directory-linear-tabs'
 Assert-QueryContains -Query 'gap create banner table' `
     -ExpectedId 'pattern.admin-directory'
 Assert-QueryContains -Query 'flyout profile logout divider' `

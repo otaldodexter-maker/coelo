@@ -36,6 +36,12 @@ silenciosamente.
    remover, deletar ou excluir, consultar também `pattern.negative-actions`;
    toda ação negativa habilitada permanece na hierarquia
    `errorContainer`/`error`, independentemente do verbo escolhido.
+   Quando mencionar tabs, abas, categorias irmãs, segmentos de diretório ou
+   `Acessos > Pessoas`, ler também o
+   [contrato de tabs lineares de diretório](references/directory-linear-tabs-contract.md)
+   e consultar `pattern.directory-linear-tabs`. Esse padrão é condicional:
+   filtra o mesmo diretório sem trocar a toolbar ou a página; não substitui o
+   toggle em cápsula de Cards/Tabela, filtros, chips ou navegação entre rotas.
    Quando popup ou dialog tiver uma, duas ou três ações, consultar
    `pattern.dialog-actions`: ações irmãs têm larguras iguais; uma ocupa 100%,
    duas dividem 50/50 e três dividem em terços, com gaps tokenizados. Empilhar
@@ -80,6 +86,11 @@ silenciosamente.
    expande para revelar o rótulo em hover, foco ou toque; usa cores semânticas,
    não depende apenas da cor e elimina a animação não essencial com reduced
    motion. Não substituir esse comportamento por chip sempre aberto.
+   Categorias irmãs de um mesmo diretório no Superadmin reutilizam
+   `SuperadminUnderlineTabs`: superfície transparente, linha-base neutra,
+   seleção laranja por label + underline e hover/foco tonal primário sutil, sem
+   cápsula e sem cinza. Preservar `space4` entre toolbar, tabs e conteúdo. Não
+   recriar `TabBar` ou `InkWell` local enquanto o compartilhado atender.
    Não criar campo textual ou single-select local quando
    `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Medidas de
    grid, gaps, padding e rodapé devem citar tokens existentes ou uma referência

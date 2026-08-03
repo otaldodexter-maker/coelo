@@ -855,6 +855,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.governanceCatalogName,
             builder: (context, state) => CatalogHostPage(
               catalogUrl: catalogUrl,
+              localPreview: true,
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
@@ -1364,6 +1365,27 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               modelId: state.pathParameters['modelId'],
               activityController: attendanceActivities,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthSafety,
+            name: SuperadminRoutes.devHealthSafetyName,
+            builder: (context, state) => HealthSafetyDirectoryPage(
+              controller: HealthSafetyController(healthSafetyRepository),
+              logout: _previewLogout,
+              onChildSelected: (childId) => context.pushNamed(
+                SuperadminRoutes.devHealthSafetyDetailName,
+                pathParameters: {'childId': childId},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthSafetyDetail,
+            name: SuperadminRoutes.devHealthSafetyDetailName,
+            builder: (context, state) => HealthSafetyDetailPage(
+              controller: HealthSafetyController(healthSafetyRepository),
+              childId: state.pathParameters['childId']!,
+              logout: _previewLogout,
             ),
           ),
           GoRoute(

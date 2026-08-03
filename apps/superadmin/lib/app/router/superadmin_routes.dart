@@ -123,6 +123,10 @@ abstract final class SuperadminRoutes {
   static const devDailyRoutineCreateName = 'dev-daily-routine-create';
   static const devDailyRoutineEdit = '/dev/daily-routine/:modelId/edit';
   static const devDailyRoutineEditName = 'dev-daily-routine-edit';
+  static const devHealthSafety = '/dev/health-safety';
+  static const devHealthSafetyName = 'dev-health-safety';
+  static const devHealthSafetyDetail = '/dev/health-safety/:childId';
+  static const devHealthSafetyDetailName = 'dev-health-safety-detail';
   static const devPeople = '/dev/people';
   static const devPeopleName = 'dev-people';
   static const devPersonCreate = '/dev/people/new';

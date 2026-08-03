@@ -589,6 +589,21 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 | Tabs | Scroll horizontal quando necessário. | Até 5 tabs visíveis; underline/indicator primary. |
 | Breadcrumb | Evitar no app mobile. | Admin e fluxos hierárquicos profundos. |
 
+## Tabs lineares de diretório
+
+- Use para três ou mais categorias irmãs que filtram o mesmo diretório sem
+  trocar toolbar, cards/tabela ou contexto de página. `Acessos > Pessoas` é a
+  baseline aprovada.
+- A faixa permanece sobre `surface`, sem cápsula: linha-base de 1 px em
+  `outlineVariant`; tab selecionada com label `primary` em peso 700 e underline
+  `primary` de 2 px; inativas usam `onSurfaceVariant` em peso 400.
+- Cada tab preserva alvo mínimo de 48 px e padding horizontal `space4`. Use
+  `space4` entre toolbar e tabs e novamente entre tabs e conteúdo.
+- Hover/foco usam realce `primaryContainer` sutil, sem cinza; seleção continua
+  evidente por texto e underline. Em compact, usar rolagem horizontal.
+- Não confundir com o toggle segmentado Cards/Tabela, com filtros/chips ou com
+  navegação entre páginas independentes.
+
 ## Navegação principal do App
 
 | Destino | Conteúdo | Ícone sugerido |

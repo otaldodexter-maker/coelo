@@ -25,6 +25,7 @@ goldens, testes e regras abaixo são a evidência canônica. Não usar imagens e
 | 29 | Configurações: largura central, cards, tema segmentado e reduzir animações | `apps/superadmin/test/features/account/presentation/screens/goldens/settings_1440_dark.png`; `account_pages_golden_test.dart`; `settings_page_test.dart` |
 | 30 | Bug: popup neutro, X vermelho, selects, texto, anexo, ajuda e Enviar disabled | goldens `*_bug_open_light_1440.png`; `CoeloAdminDialogShell`; `pattern.overlay-surfaces` |
 | 31–32 | Criar/Editar instituição: stepper lateral, conteúdo, uploads, campos e rodapé de tela | `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_form_create_light_375.png`; `institution_form_edit_dark_1440.png`; `institution_form_page_golden_test.dart` |
+| Aprovação 2026-08-03 | Acessos > Pessoas: toolbar em faixa própria e tabs lineares sutis para categorias irmãs | `apps/superadmin/lib/shared/presentation/widgets/superadmin_underline_tabs.dart`; `person_directory_page_test.dart`; contrato `pattern.directory-linear-tabs` |
 
 ## Regras que os anexos tornam explícitas
 
@@ -69,6 +70,10 @@ goldens, testes e regras abaixo são a evidência canônica. Não usar imagens e
 - `X`, Sair, Desligar, Encerrar, Fechar, Remover, Deletar e Excluir usam
   `error` em repouso e `errorContainer` no hover/foco. Ações terminais ficam em
   grupo inferior separado por divisor.
+- Em `Acessos > Pessoas`, categorias irmãs usam tabs lineares sem cápsula:
+  linha-base neutra, label e underline laranja somente na seleção, hover/foco
+  tonal primário sutil e `space4` separando toolbar, tabs e conteúdo. Esse
+  padrão não substitui o toggle Cards/Tabela nem filtros/chips.
 
 ### Perfil, Configurações, Home e formulários
 

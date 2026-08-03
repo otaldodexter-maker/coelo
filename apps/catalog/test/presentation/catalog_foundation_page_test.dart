@@ -44,6 +44,8 @@ void main() {
     await _pumpFoundation(tester, entries, foundations, 'pattern.approved-superadmin-surfaces');
     expect(find.byType(CoeloAdminInteractiveCard), findsOneWidget);
     expect(find.byType(CoeloAdminExpandableStatusIndicator), findsOneWidget);
+    expect(find.text('Acessos › Pessoas'), findsOneWidget);
+    expect(find.textContaining('tabs lineares'), findsAtLeastNWidgets(1));
 
     await _pumpFoundation(tester, entries, foundations, 'pattern.action-hierarchy');
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
