@@ -6,6 +6,11 @@ generated_at: "2026-08-03"
 
 # Enforcement dos contratos visuais administrativos Coelo
 
+> Revisão de escopo aprovada em 2026-08-03: esta implantação cria prevenção,
+> componentes, catálogo e gates. Nenhuma tela existente será migrada ou
+> corrigida antes do review visual solicitado pelo usuário; ocorrências atuais
+> ficam registradas como baseline temporária e contada.
+
 ## Objetivo
 
 Impedir que novas telas administrativas sejam entregues com hover Material

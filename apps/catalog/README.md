@@ -20,7 +20,17 @@ Validacao estrutural a partir deste diretorio:
 C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_catalog_index.dart assets/coelo-ui.index.jsonl ..\..
 C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_package_boundaries.dart assets/coelo-ui.index.jsonl ..\..
 C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_catalog_sync.dart assets/coelo-ui.index.jsonl lib/catalog/catalog_registry.dart assets/catalog-sync-report.json ..\..
+rtk proxy C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_admin_visual_contracts.dart ..\.. assets/admin-visual-contract-allowlist.json
 ```
+
+O ultimo comando e um gate bloqueante para novas interacoes administrativas
+fora do padrao Coelo. Ele impede novos usos crus de `PopupMenuButton`,
+`PopupMenuItem`, `MenuAnchor`, `MenuItemButton` e `InkWell` nas features do
+Superadmin. O estado legado permanece registrado por arquivo, simbolo, contagem
+maxima e justificativa em `assets/admin-visual-contract-allowlist.json`.
+Reduzir a contagem e permitido; aumentar, criar uma entrada ou alterar uma
+justificativa exige review visual explicito. A allowlist nao aprova o visual
+legado e nao deve ser usada para desenvolver uma nova tela.
 
 ## Acesso e publicacao
 

@@ -14,6 +14,15 @@ generated_at: "2026-08-03"
 
 **Tech Stack:** Flutter/Dart, `flutter_test`, PowerShell para consulta do índice, JSONL do catálogo, Markdown com frontmatter.
 
+## Revisão de escopo aprovada em 2026-08-03
+
+O usuário determinou que esta implantação seja exclusivamente preventiva. As
+telas existentes — inclusive Assiduidade, Rotina diária, Saúde e segurança e
+demais superfícies novas — não serão corrigidas nem migradas nesta execução.
+Os Tasks 5 e 6 abaixo ficam adiados para o review visual futuro. O validador
+deve registrar os usos atuais em baseline contada e justificada, mas reprovar
+qualquer nova ocorrência acima dessa baseline.
+
 ## Global Constraints
 
 - Preservar integralmente alterações não relacionadas já presentes no worktree.

@@ -63,6 +63,12 @@ silenciosamente.
    `Consultei o índice Coelo UI para <contexto>.`
 3. Abrir somente arquivos e documentos apontados pelos resultados relevantes.
 4. Reutilizar ou compor tokens, componentes e padrões antes de propor algo novo.
+   Card administrativo clicável usa `CoeloAdminInteractiveCard`; flyout de
+   ações usa `CoeloAdminFlyout` e marca itens terminais/destrutivos com
+   `CoeloAdminFlyoutTone.negative`. Não recriar essas superfícies com `Card` +
+   `InkWell`, `PopupMenuButton`, `MenuAnchor` ou `MenuItemButton` dentro de uma
+   feature. Exceção legada exige entrada contada e justificada na allowlist;
+   conveniência local não é justificativa.
    Não criar campo textual ou single-select local quando
    `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Medidas de
    grid, gaps, padding e rodapé devem citar tokens existentes ou uma referência
@@ -92,7 +98,10 @@ silenciosamente.
 7. Registrar o padrão aprovado antes do código.
 8. Implementar; atualizar índice, catálogo, exemplos e testes.
 9. Executar a [verificação proporcional](references/verification.md) e relatar
-   pendências.
+   pendências. Toda criação ou alteração de UI do Superadmin deve executar o
+   validador bloqueante `apps/catalog/tool/validate_admin_visual_contracts.dart`.
+   Ocorrência nova de widget bruto fora da allowlist bloqueia a entrega; não
+   ampliar contagem ou allowlist para fazer o gate passar.
 
 Consulta somente leitura não exige autorização. Componente, API pública,
 variante, token semântico ou mudança de padrão exigem aprovação explícita.

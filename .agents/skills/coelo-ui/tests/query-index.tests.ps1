@@ -22,6 +22,21 @@ function Assert-QueryContains {
     }
 }
 
+function Assert-Equal {
+    param(
+        [Parameter(Mandatory)]
+        $Actual,
+        [Parameter(Mandatory)]
+        $Expected,
+        [Parameter(Mandatory)]
+        [string]$Message
+    )
+
+    if ($Actual -ne $Expected) {
+        throw "$Message Esperado: '$Expected'. Recebido: '$Actual'."
+    }
+}
+
 Assert-QueryContains -Query 'disabled' -ExpectedId 'core.search-field'
 Assert-QueryContains -Query 'color.action.focus-ring' `
     -ExpectedId 'admin.resizable-table'
@@ -112,5 +127,48 @@ Assert-QueryContains -Query 'profile settings avatar theme reduced motion' `
     -ExpectedId 'pattern.approved-superadmin-surfaces'
 Assert-QueryContains -Query 'institution create edit wizard footer' `
     -ExpectedId 'pattern.approved-superadmin-surfaces'
+
+$broadQuery = 'hover cinza reto flyout instituicoes card'
+$broadResult = & $queryScript -Query $broadQuery | ConvertFrom-Json
+$broadIds = @($broadResult.entries | ForEach-Object { $_.id })
+
+if ($broadResult.count -eq 0) {
+    throw "Consulta ampla '$broadQuery' deveria usar correspondencias parciais."
+}
+
+Assert-Equal -Actual $broadIds[0] -Expected 'pattern.admin-directory' `
+    -Message 'A correspondencia parcial com mais termos deve aparecer primeiro.'
+
+$fixturePath = Join-Path ([System.IO.Path]::GetTempPath()) (
+    "coelo-ui-query-$([guid]::NewGuid().ToString('N')).jsonl"
+)
+
+try {
+    @(
+        '{"id":"z.partial","name":"alpha beta","category":"pattern","status":"approved","purpose":"","useWhen":"","doNotUseWhen":"","ownerPackage":"test","consumers":[],"variants":[],"states":[],"tokens":[],"accessibility":"","publicFile":"","tests":[],"example":"","replacement":null}',
+        '{"id":"a.partial","name":"alpha beta","category":"pattern","status":"approved","purpose":"","useWhen":"","doNotUseWhen":"","ownerPackage":"test","consumers":[],"variants":[],"states":[],"tokens":[],"accessibility":"","publicFile":"","tests":[],"example":"","replacement":null}',
+        '{"id":"exact.match","name":"alpha beta gamma","category":"pattern","status":"approved","purpose":"","useWhen":"","doNotUseWhen":"","ownerPackage":"test","consumers":[],"variants":[],"states":[],"tokens":[],"accessibility":"","publicFile":"","tests":[],"example":"","replacement":null}'
+    ) | Set-Content -LiteralPath $fixturePath -Encoding UTF8
+
+    $exactResult = & $queryScript -Query 'alpha beta gamma' `
+        -IndexPath $fixturePath | ConvertFrom-Json
+    $exactIds = @($exactResult.entries | ForEach-Object { $_.id })
+    Assert-Equal -Actual $exactResult.count -Expected 1 `
+        -Message 'Correspondencias exatas devem ter precedencia sobre o fallback.'
+    Assert-Equal -Actual $exactIds[0] -Expected 'exact.match' `
+        -Message 'A consulta exata retornou uma entrada inesperada.'
+
+    $rankedResult = & $queryScript -Query 'alpha beta ausente' `
+        -IndexPath $fixturePath | ConvertFrom-Json
+    $rankedIds = @($rankedResult.entries | ForEach-Object { $_.id })
+    Assert-Equal -Actual ($rankedIds -join ',') `
+        -Expected 'a.partial,exact.match,z.partial' `
+        -Message 'Empates no fallback devem ser ordenados por id.'
+}
+finally {
+    if (Test-Path -LiteralPath $fixturePath) {
+        Remove-Item -LiteralPath $fixturePath -Force
+    }
+}
 
 Write-Output 'query-index.tests.ps1: PASS'

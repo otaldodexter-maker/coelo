@@ -864,6 +864,14 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 
 - Instituições é a referência canônica de diretório: toolbar; busca e filtros;
   toggle cards/tabela; arquivos; conteúdo; paginação sticky.
+- Card administrativo clicável usa `CoeloAdminInteractiveCard`. Ele preserva
+  `surface` e `radius.lg`; hover/foco enfatizam somente borda e sombra na
+  hierarquia primária. Não compor `Card` + `InkWell` local nem aceitar overlay
+  Material cinza ou hover retangular.
+- Flyout de ações usa `CoeloAdminFlyout`. Itens comuns usam o hover discreto
+  arredondado; itens terminais/destrutivos usam
+  `CoeloAdminFlyoutTone.negative`, `error` em repouso e `errorContainer` no
+  hover/foco, com divisor antes do grupo.
 - Entre toolbar e conteúdo usar `CoeloSpacing.space4`.
 - Cards usam `CoeloSpacing.space6` nos dois eixos, largura de referência mínima
   de 340 px, altura mínima de 216 px e padding horizontal `space6`/vertical
@@ -887,6 +895,19 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   para não cobrir conteúdo ou launcher. Cards oferecem `11, 20, 50, 100`;
   tabela oferece `8, 20, 50, 100`. Paginação inline não sticky fica fora desse
   contrato.
+
+#### Gate de criação administrativa
+
+Toda criação ou alteração visual em `apps/superadmin/lib/features` executa,
+a partir de `apps/catalog`:
+
+```text
+rtk proxy C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_admin_visual_contracts.dart ../.. assets/admin-visual-contract-allowlist.json
+```
+
+O gate bloqueia novas composições brutas de card interativo e flyout. A
+allowlist registra somente legado existente, com caminho, símbolo, contagem
+máxima e justificativa; ela não pode crescer para acomodar código novo.
 
 ### Baselines visuais aprovadas do Superadmin
 

@@ -3,7 +3,7 @@ title: Hierarquia de interação administrativa Coelo
 knowledge_id: coelo-admin-interaction-hierarchy
 source: docs/design/design-system.md
 status: validated
-generated_at: 2026-07-29
+generated_at: 2026-08-03
 audience: team
 surfaces: [admin, superadmin, catalog]
 visibility: internal
@@ -37,6 +37,12 @@ Flyouts usam `surface`, sem tint, borda, `radius.lg`, elevação e padding
 tokenizado. Perfil e Configurações formam o grupo padrão; ações terminais ou
 destrutivas ficam abaixo de divisor. O popup de Bug é a referência modal; Tour,
 Perfil e Arquivos são referências de flyout.
+
+Na implementação, cards administrativos clicáveis usam
+`CoeloAdminInteractiveCard` e menus ancorados usam `CoeloAdminFlyout`. Itens
+negativos definem `CoeloAdminFlyoutTone.negative`. Um validador bloqueante do
+catálogo impede novas composições Material brutas; a allowlist é exclusiva do
+legado contado e justificado e não deve crescer para acomodar tela nova.
 
 Login, Instituições, Home, navegação, Conta, overlays e o wizard de
 Criar/Editar instituição possuem uma matriz visual aprovada única. Para essas

@@ -35,8 +35,16 @@ $hasFilter = -not (
     [string]::IsNullOrWhiteSpace($Status)
 )
 
-$matches = @(
-    $entries | Where-Object {
+$queryTerms = @(
+    if (-not [string]::IsNullOrWhiteSpace($Query)) {
+        $Query.Trim() -split '\s+' | Where-Object {
+            -not [string]::IsNullOrWhiteSpace($_)
+        }
+    }
+)
+
+$candidates = @(
+    $entries | ForEach-Object {
         $entry = $_
         $matchesId = [string]::IsNullOrWhiteSpace($Id) -or $entry.id -eq $Id
         $matchesConsumer = (
@@ -51,47 +59,62 @@ $matches = @(
             [string]::IsNullOrWhiteSpace($Status) -or
             $entry.status -eq $Status
         )
-        $haystack = @(
-            $entry.id,
-            $entry.name,
-            $entry.category,
-            $entry.status,
-            $entry.purpose,
-            $entry.useWhen,
-            $entry.doNotUseWhen,
-            $entry.ownerPackage,
-            (@($entry.consumers) -join ' '),
-            (@($entry.variants) -join ' '),
-            (@($entry.states) -join ' '),
-            (@($entry.tokens) -join ' '),
-            $entry.accessibility,
-            $entry.publicFile,
-            (@($entry.tests) -join ' '),
-            $entry.example,
-            $entry.replacement
-        ) -join ' '
-        $queryTerms = @(
-            if (-not [string]::IsNullOrWhiteSpace($Query)) {
-                $Query.Trim() -split '\s+' | Where-Object {
-                    -not [string]::IsNullOrWhiteSpace($_)
-                }
-            }
-        )
-        $matchesQuery = (
-            $queryTerms.Count -eq 0 -or
-            @(
+        if (
+            $matchesId -and $matchesConsumer -and $matchesOwner -and
+            $matchesStatus
+        ) {
+            $haystack = @(
+                $entry.id,
+                $entry.name,
+                $entry.category,
+                $entry.status,
+                $entry.purpose,
+                $entry.useWhen,
+                $entry.doNotUseWhen,
+                $entry.ownerPackage,
+                (@($entry.consumers) -join ' '),
+                (@($entry.variants) -join ' '),
+                (@($entry.states) -join ' '),
+                (@($entry.tokens) -join ' '),
+                $entry.accessibility,
+                $entry.publicFile,
+                (@($entry.tests) -join ' '),
+                $entry.example,
+                $entry.replacement
+            ) -join ' '
+            $matchedTermCount = @(
                 $queryTerms | Where-Object {
                     $haystack.IndexOf(
                         $_,
                         [System.StringComparison]::OrdinalIgnoreCase
-                    ) -lt 0
+                    ) -ge 0
                 }
-            ).Count -eq 0
-        )
-        $matchesId -and $matchesConsumer -and $matchesOwner -and
-            $matchesStatus -and $matchesQuery
+            ).Count
+            [pscustomobject]@{
+                entry = $entry
+                matchedTermCount = $matchedTermCount
+            }
+        }
     }
 )
+
+$matches = @(
+    $candidates | Where-Object {
+        $_.matchedTermCount -eq $queryTerms.Count
+    } | ForEach-Object { $_.entry }
+)
+
+if ($queryTerms.Count -gt 0 -and $matches.Count -eq 0) {
+    $matches = @(
+        $candidates |
+            Where-Object { $_.matchedTermCount -gt 0 } |
+            Sort-Object -Property @(
+                @{ Expression = 'matchedTermCount'; Descending = $true },
+                @{ Expression = { $_.entry.id }; Ascending = $true }
+            ) |
+            ForEach-Object { $_.entry }
+    )
+}
 
 if (-not $hasFilter) {
     $matches = @(

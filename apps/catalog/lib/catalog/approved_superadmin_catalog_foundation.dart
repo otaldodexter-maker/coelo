@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import 'catalog_foundation.dart';
@@ -13,6 +14,8 @@ Map<String, CatalogFoundation> buildApprovedSuperadminFoundationRegistry() {
         'admin.listing-toolbar',
         'admin.file-actions',
         'admin.dialog-shell',
+        'admin.interactive-card',
+        'admin.flyout',
         'admin.pagination',
       ],
       builder: (_) => const _ApprovedSuperadminSurfacesFoundation(),
@@ -85,6 +88,8 @@ final class _ApprovedSuperadminSurfacesFoundation extends StatelessWidget {
           'e os componentes/tokens como implementação canônica.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
+        const _CanonicalInteractionPreview(),
+        const SizedBox(height: CoeloSpacing.space4),
         LayoutBuilder(
           builder: (context, constraints) {
             final columns = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth
@@ -106,6 +111,59 @@ final class _ApprovedSuperadminSurfacesFoundation extends StatelessWidget {
               ],
             );
           },
+        ),
+      ],
+    );
+  }
+}
+
+final class _CanonicalInteractionPreview extends StatelessWidget {
+  const _CanonicalInteractionPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CoeloSpacing.space4,
+      runSpacing: CoeloSpacing.space4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        SizedBox(
+          width: 320,
+          child: CoeloAdminInteractiveCard(
+            semanticLabel: 'Exemplo canônico de card administrativo',
+            onPressed: () {},
+            child: const Padding(
+              padding: EdgeInsets.all(CoeloSpacing.space4),
+              child: Text('Card real: surface preservada; hover/foco apenas na borda e sombra.'),
+            ),
+          ),
+        ),
+        CoeloAdminFlyout<String>(
+          items: const [
+            CoeloAdminFlyoutItem(
+              value: 'profile',
+              label: 'Perfil',
+              icon: Icons.person_outline_rounded,
+            ),
+            CoeloAdminFlyoutItem(
+              value: 'settings',
+              label: 'Configurações',
+              icon: Icons.settings_outlined,
+            ),
+            CoeloAdminFlyoutItem(
+              value: 'logout',
+              label: 'Sair',
+              icon: Icons.logout_rounded,
+              startsGroup: true,
+              tone: CoeloAdminFlyoutTone.negative,
+            ),
+          ],
+          onSelected: (_) {},
+          builder: (context, controller) => OutlinedButton.icon(
+            onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+            icon: const Icon(Icons.more_horiz_rounded),
+            label: const Text('Abrir flyout real'),
+          ),
         ),
       ],
     );
