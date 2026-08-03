@@ -727,6 +727,12 @@ const _navigationSections = <_NavigationSectionData>[
     ),
   ]),
   _NavigationSectionData('operations', 'Operação', Icons.tune_outlined, [
+    _NavigationDestinationData(
+      'health-safety',
+      'Saúde e Segurança',
+      Icons.health_and_safety_outlined,
+      active: true,
+    ),
     _NavigationDestinationData('plans', 'Planos', Icons.loyalty_outlined),
     _NavigationDestinationData('import', 'Importações', Icons.upload_file_outlined),
   ]),

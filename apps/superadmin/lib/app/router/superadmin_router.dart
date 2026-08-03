@@ -39,6 +39,10 @@ import '../../features/groups/data/fake_group_directory_repository.dart';
 import '../../features/groups/presentation/group_directory_page.dart';
 import '../../features/groups/presentation/group_form_page.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
+import '../../features/health_safety/data/demo_health_safety_repository.dart';
+import '../../features/health_safety/presentation/health_safety_controller.dart';
+import '../../features/health_safety/presentation/health_safety_detail_page.dart';
+import '../../features/health_safety/presentation/health_safety_directory_page.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
@@ -106,6 +110,7 @@ GoRouter createSuperadminRouter({
   final unitRepository = FakeUnitDirectoryRepository(prototypeRepository);
   final groupRepository = FakeGroupDirectoryRepository(prototypeRepository);
   final activityPreviewRepository = FakeActivityDirectoryRepository();
+  final healthSafetyRepository = DemoHealthSafetyRepository();
   final accessProfilePreviewRepository = FakeAccessProfileRepository();
   final peoplePreviewRepository = FakePersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
@@ -524,6 +529,27 @@ GoRouter createSuperadminRouter({
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthSafety,
+            name: SuperadminRoutes.healthSafetyName,
+            builder: (context, state) => HealthSafetyDirectoryPage(
+              controller: HealthSafetyController(healthSafetyRepository),
+              logout: logout,
+              onChildSelected: (childId) => context.pushNamed(
+                SuperadminRoutes.healthSafetyDetailName,
+                pathParameters: {'childId': childId},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthSafetyDetail,
+            name: SuperadminRoutes.healthSafetyDetailName,
+            builder: (context, state) => HealthSafetyDetailPage(
+              controller: HealthSafetyController(healthSafetyRepository),
+              childId: state.pathParameters['childId']!,
+              logout: logout,
             ),
           ),
           GoRoute(
@@ -1494,6 +1520,9 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/activities')) {
     return 'activities';
   }
+  if (location.startsWith('/health-safety')) {
+    return 'health-safety';
+  }
   if (location.startsWith('/people')) {
     return 'people';
   }
@@ -1523,6 +1552,8 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.groupsName);
     case 'activities':
       context.goNamed(SuperadminRoutes.activitiesName);
+    case 'health-safety':
+      context.goNamed(SuperadminRoutes.healthSafetyName);
     case 'people':
       context.goNamed(SuperadminRoutes.peopleName);
     case 'profiles':

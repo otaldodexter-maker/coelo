@@ -27,6 +27,10 @@ abstract final class SuperadminRoutes {
   static const activityDetailName = 'activity-detail';
   static const activityEdit = '/activities/:activityId/edit';
   static const activityEditName = 'activity-edit';
+  static const healthSafety = '/health-safety';
+  static const healthSafetyName = 'health-safety';
+  static const healthSafetyDetail = '/health-safety/:childId';
+  static const healthSafetyDetailName = 'health-safety-detail';
   static const people = '/people';
   static const peopleName = 'people';
   static const personCreate = '/people/new';
