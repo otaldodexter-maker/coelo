@@ -84,6 +84,11 @@ identidade diferente deve ser comparada e proposta ao Owner antes do código.
 Sem aprovação explícita, prevalece a baseline aprovada e não se cria variante,
 golden ou allowlist divergente.
 
+Desde a confirmação do Owner em 2026-08-04, a baseline de Criar/Editar
+Instituição corresponde ao render atual completo dos goldens: a tela, o
+shell/menu como existem hoje e o chat fazem parte da mesma verdade visual. Não
+substituir o menu atual por uma composição histórica ao aplicar essa referência.
+
 Os 14 padrões rejeitados bloqueiam faixas cinza genéricas em hover/seleção,
 controles Material crus, date picker desproporcional, rodapé inventado e zero
 gap entre cards/seções. Novos usos de `DropdownButton`,

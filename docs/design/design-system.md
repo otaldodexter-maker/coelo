@@ -970,11 +970,15 @@ aproximação local com widgets Material semelhantes.
 | Navegação | menu expandido, rail compacto, seleção por nível e flyouts |
 | Conta | flyout, Perfil, ajuste de foto e Configurações |
 | Overlays | popup de Bug como anatomia modal; X sempre negativo |
-| Criar/Editar Instituição | baseline automática de toda criação/edição: formulário ou wizard, conteúdo, campos, uploads, responsividade e rodapé de tela com ações nos extremos |
+| Criar/Editar Instituição | baseline automática de toda criação/edição: estado atual completo, incluindo shell/menu atual e chat, formulário ou wizard, conteúdo, campos, uploads, responsividade e rodapé de tela com ações nos extremos |
 
 Os goldens aprovados são evidência visual, não licença para copiar números
 locais. Componentes e tokens continuam sendo a implementação canônica. Arquivos
 em diretórios `failures/` são diagnósticos transitórios e nunca baseline.
+Para Criar/Editar Instituição, a confirmação de 2026-08-04 torna canônico o
+render atual completo dos dois goldens, inclusive o menu/shell e o chat como
+aparecem hoje. Uma mudança futura nessas superfícies compartilhadas exige
+revisão visual explícita antes de atualizar os goldens.
 
 ### Padrões visuais rejeitados
 

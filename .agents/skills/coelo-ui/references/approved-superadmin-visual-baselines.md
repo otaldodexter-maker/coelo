@@ -1,7 +1,7 @@
 ---
-source: "Aprovação visual do Owner Coelo em 2026-07-29; docs/design/design-system.md; goldens e testes do Superadmin"
+source: "Aprovação visual do Owner Coelo em 2026-07-29 e confirmação em 2026-08-04; docs/design/design-system.md; goldens e testes do Superadmin"
 status: "active"
-generated_at: "2026-07-29"
+generated_at: "2026-08-04"
 ---
 
 # Baselines visuais aprovadas do Superadmin
@@ -31,7 +31,7 @@ também deve ser comparada com os
 | 28 | Ajustar foto: cabeçalho, X vermelho, crop, reset, slider e ações 50/50 | `apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart`; contratos `pattern.overlay-surfaces` e `pattern.dialog-actions` |
 | 29 | Configurações: largura central, cards, tema segmentado e reduzir animações | `apps/superadmin/test/features/account/presentation/screens/goldens/settings_1440_dark.png`; `account_pages_golden_test.dart`; `settings_page_test.dart` |
 | 30 | Bug: popup neutro, X vermelho, selects, texto, anexo, ajuda e Enviar disabled | goldens `*_bug_open_light_1440.png`; `CoeloAdminDialogShell`; `pattern.overlay-surfaces` |
-| 31–32 | Criar/Editar instituição: baseline obrigatória de qualquer tela que crie ou edite uma entidade; stepper lateral, conteúdo, uploads, campos e rodapé de tela | `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_form_create_light_375.png`; `institution_form_edit_dark_1440.png`; `institution_form_page_golden_test.dart` |
+| 31–32 | Criar/Editar instituição: baseline obrigatória de qualquer tela que crie ou edite uma entidade; estado atual completo, incluindo shell/menu atual, chat, stepper lateral, conteúdo, uploads, campos e rodapé de tela | `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_form_create_light_375.png`; `institution_form_edit_dark_1440.png`; `institution_form_page_golden_test.dart` |
 | Aprovação 2026-08-03 | Acessos > Pessoas: toolbar em faixa própria e tabs lineares sutis para categorias irmãs | `apps/superadmin/lib/shared/presentation/widgets/superadmin_underline_tabs.dart`; `person_directory_page_test.dart`; contrato `pattern.directory-linear-tabs` |
 
 ## Regras que os anexos tornam explícitas
@@ -96,6 +96,10 @@ também deve ser comparada com os
   fica no extremo esquerdo e o grupo Anterior/Continuar/Salvar no direito.
   `OutlinedButton` é secundário, `TextButton` é terciário e somente uma ação
   preenchida é primária.
+- Por confirmação do Owner em 2026-08-04, os goldens de Criar/Editar registram
+  a tela como existe hoje por inteiro. O shell, o menu atual e o chat exibidos
+  nesses goldens também pertencem à referência; não devem ser removidos,
+  substituídos ou aproximados por uma versão antiga ao reutilizar a baseline.
 - Qualquer divergência de composição ou identidade deve ser proposta ao Owner
   antes do código, com comparação, componentes, estados, tokens,
   responsividade e testes. Sem aprovação explícita, preservar esta baseline.
