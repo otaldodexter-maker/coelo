@@ -76,7 +76,9 @@ final class CatalogHostPage extends StatelessWidget {
             icon: const Icon(Icons.open_in_new_outlined),
           ),
       ],
-      child: localPreview
+      child: localPreview && uri != null && _isLocalCatalog(uri)
+          ? buildCatalogPlatformHost(uri)
+          : localPreview
           ? const Center(
               child: Padding(
                 padding: EdgeInsets.all(CoeloSpacing.space6),
@@ -99,6 +101,9 @@ final class CatalogHostPage extends StatelessWidget {
           : _CatalogPlatformFallback(uri: uri),
     );
   }
+
+  static bool _isLocalCatalog(Uri uri) =>
+      uri.scheme == 'http' && (uri.host == '127.0.0.1' || uri.host == 'localhost');
 }
 
 final class _CatalogPlatformFallback extends StatelessWidget {
