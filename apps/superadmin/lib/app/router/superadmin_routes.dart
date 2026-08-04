@@ -183,6 +183,20 @@ abstract final class SuperadminRoutes {
   static const devProfileName = 'dev-profile';
   static const devSettings = '/dev/settings';
   static const devSettingsName = 'dev-settings';
+  static const devAgenda = '/dev/agenda';
+  static const devAgendaName = 'dev-agenda';
+  static const devAgendaEvents = '/dev/agenda/events';
+  static const devAgendaEventsName = 'dev-agenda-events';
+  static const devAgendaEventCreate = '/dev/agenda/events/new';
+  static const devAgendaEventCreateName = 'dev-agenda-event-create';
+  static const devAgendaEventDetail = '/dev/agenda/events/:eventId';
+  static const devAgendaEventDetailName = 'dev-agenda-event-detail';
+  static const devAgendaEventEdit = '/dev/agenda/events/:eventId/edit';
+  static const devAgendaEventEditName = 'dev-agenda-event-edit';
+  static const devAgendaRequests = '/dev/agenda/requests';
+  static const devAgendaRequestsName = 'dev-agenda-requests';
+  static const devAgendaPermissions = '/dev/agenda/permissions';
+  static const devAgendaPermissionsName = 'dev-agenda-permissions';
   static const devError = '/dev/errors/:code';
   static const devErrorName = 'dev-error';
 

@@ -26,6 +26,13 @@ import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/access_profiles/presentation/access_profile_detail_page.dart';
 import '../../features/access_profiles/presentation/access_profile_directory_page.dart';
 import '../../features/access_profiles/presentation/access_profile_form_page.dart';
+import '../../features/agenda/data/agenda_prototype_store.dart';
+import '../../features/agenda/presentation/agenda_calendar_page.dart';
+import '../../features/agenda/presentation/agenda_event_form_page.dart';
+import '../../features/agenda/presentation/agenda_events_page.dart';
+import '../../features/agenda/presentation/agenda_module_shell.dart';
+import '../../features/agenda/presentation/agenda_permissions_page.dart';
+import '../../features/agenda/presentation/agenda_requests_page.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
@@ -120,6 +127,7 @@ GoRouter createSuperadminRouter({
   final importRepository = FakeImportRepository();
   final inviteRepository = FakeInviteRepository(prototypeStore: operationalStore);
   final noticeRepository = FakeNoticeRepository(store: operationalStore);
+  final agendaPrototypeStore = AgendaPrototypeStore.seeded();
   final accountController = AccountController(
     repository: InMemoryAccountProfileRepository(),
     activities: accountActivities,
@@ -188,6 +196,24 @@ GoRouter createSuperadminRouter({
     onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
     child: child,
   );
+
+  void openAgendaArea(BuildContext context, AgendaModuleArea area) {
+    context.goNamed(switch (area) {
+      AgendaModuleArea.calendar => SuperadminRoutes.devAgendaName,
+      AgendaModuleArea.events => SuperadminRoutes.devAgendaEventsName,
+      AgendaModuleArea.requests => SuperadminRoutes.devAgendaRequestsName,
+      AgendaModuleArea.permissions => SuperadminRoutes.devAgendaPermissionsName,
+    });
+  }
+
+  Widget agendaAreaShell(BuildContext context, AgendaModuleArea area, Widget child) =>
+      AgendaModuleShell(
+        logout: _previewLogout,
+        selectedArea: area,
+        onAreaSelected: (value) => openAgendaArea(context, value),
+        onDestinationSelected: (destination) => _navigateFromDevelopmentShell(context, destination),
+        child: child,
+      );
 
   return GoRouter(
     initialLocation: SuperadminRoutes.login,
@@ -1873,6 +1899,115 @@ GoRouter createSuperadminRouter({
             },
           ),
           GoRoute(
+            path: SuperadminRoutes.devAgenda,
+            name: SuperadminRoutes.devAgendaName,
+            builder: (context, state) => AgendaCalendarPage(
+              store: agendaPrototypeStore,
+              logout: _previewLogout,
+              onAreaSelected: (area) => openAgendaArea(context, area),
+              onCreateItem: () => context.goNamed(SuperadminRoutes.devAgendaEventCreateName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaEvents,
+            name: SuperadminRoutes.devAgendaEventsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.events,
+              AgendaEventsPage(
+                store: agendaPrototypeStore,
+                onCreate: () => context.goNamed(SuperadminRoutes.devAgendaEventCreateName),
+                onOpen: (id) => context.goNamed(
+                  SuperadminRoutes.devAgendaEventDetailName,
+                  pathParameters: {'eventId': id},
+                ),
+                onEdit: (id) => context.goNamed(
+                  SuperadminRoutes.devAgendaEventEditName,
+                  pathParameters: {'eventId': id},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaEventCreate,
+            name: SuperadminRoutes.devAgendaEventCreateName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.events,
+              AgendaEventFormPage(
+                store: agendaPrototypeStore,
+                onCancel: () => context.goNamed(SuperadminRoutes.devAgendaEventsName),
+                onSaved: (id) => context.goNamed(
+                  SuperadminRoutes.devAgendaEventDetailName,
+                  pathParameters: {'eventId': id},
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaEventEdit,
+            name: SuperadminRoutes.devAgendaEventEditName,
+            builder: (context, state) {
+              final eventId = state.pathParameters['eventId']!;
+              return agendaAreaShell(
+                context,
+                AgendaModuleArea.events,
+                AgendaEventFormPage(
+                  store: agendaPrototypeStore,
+                  eventId: eventId,
+                  onCancel: () => context.goNamed(
+                    SuperadminRoutes.devAgendaEventDetailName,
+                    pathParameters: {'eventId': eventId},
+                  ),
+                  onSaved: (id) => context.goNamed(
+                    SuperadminRoutes.devAgendaEventDetailName,
+                    pathParameters: {'eventId': id},
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaEventDetail,
+            name: SuperadminRoutes.devAgendaEventDetailName,
+            builder: (context, state) {
+              final eventId = state.pathParameters['eventId']!;
+              return agendaAreaShell(
+                context,
+                AgendaModuleArea.events,
+                AgendaEventDetailPage(
+                  store: agendaPrototypeStore,
+                  eventId: eventId,
+                  onBack: () => context.goNamed(SuperadminRoutes.devAgendaEventsName),
+                  onEdit: () => context.goNamed(
+                    SuperadminRoutes.devAgendaEventEditName,
+                    pathParameters: {'eventId': eventId},
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaRequests,
+            name: SuperadminRoutes.devAgendaRequestsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.requests,
+              AgendaRequestsPage(store: agendaPrototypeStore),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaPermissions,
+            name: SuperadminRoutes.devAgendaPermissionsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.permissions,
+              AgendaPermissionsPage(store: agendaPrototypeStore),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devError,
             name: SuperadminRoutes.devErrorName,
             builder: (context, state) {
@@ -2058,6 +2193,8 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devProfilesName);
     case 'plans':
       context.goNamed(SuperadminRoutes.devPlansName);
+    case 'agenda':
+      context.goNamed(SuperadminRoutes.devAgendaName);
     case 'import':
       context.goNamed(SuperadminRoutes.devImportsName);
     case 'invites':
@@ -2070,8 +2207,6 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devCatalogName);
     case 'internal-users':
       context.goNamed(SuperadminRoutes.devInternalUsersName);
-    case 'catalog':
-      context.goNamed(SuperadminRoutes.devCatalogName);
     case 'support':
       context.goNamed(SuperadminRoutes.devSupportName);
     case 'conversations':
