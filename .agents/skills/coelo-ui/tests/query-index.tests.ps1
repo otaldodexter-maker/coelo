@@ -99,6 +99,8 @@ Assert-QueryContains -Query 'institution card status compact 24 hover focus touc
     -ExpectedId 'pattern.institution-card-status'
 Assert-QueryContains -Query 'acessos pessoas tabs lineares categorias underline toolbar' `
     -ExpectedId 'pattern.directory-linear-tabs'
+Assert-QueryContains -Query 'anti padrao hover cinza filtro cinza date picker radio checkbox rodape sem espacamento' `
+    -ExpectedId 'pattern.rejected-visual-patterns'
 Assert-QueryContains -Query 'gap create banner table' `
     -ExpectedId 'pattern.admin-directory'
 Assert-QueryContains -Query 'flyout profile logout divider' `

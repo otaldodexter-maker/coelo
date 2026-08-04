@@ -17,6 +17,18 @@ Widget build() => Column(children: [
   MenuAnchor(builder: (_, controller, child) => child!),
   MenuItemButton(onPressed: () {}, child: Text('a')),
   InkWell(onTap: () {}, child: Text('card')),
+  DropdownButton<String>(items: []),
+  DropdownButtonFormField<String>(items: []),
+  RadioListTile<String>(value: 'a', groupValue: 'a', onChanged: (_) {}),
+  CheckboxListTile(value: true, onChanged: (_) {}),
+  Builder(builder: (context) => TextButton(
+    onPressed: () => showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2026),
+      lastDate: DateTime(2027),
+    ),
+    child: const Text('Data'),
+  )),
 ]);
 ''');
       fixture.writeAllowlist(const []);
@@ -34,9 +46,14 @@ Widget build() => Column(children: [
           'MenuAnchor',
           'MenuItemButton',
           'InkWell',
+          'DropdownButton',
+          'DropdownButtonFormField',
+          'RadioListTile',
+          'CheckboxListTile',
+          'showDateRangePicker',
         ]),
       );
-      expect(diagnostics, hasLength(5));
+      expect(diagnostics, hasLength(10));
     });
 
     test('ignores comments, strings and canonical component imports', () {

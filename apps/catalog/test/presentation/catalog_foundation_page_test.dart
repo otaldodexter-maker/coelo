@@ -65,6 +65,16 @@ void main() {
     expect(find.byType(CoeloStatePanel), findsOneWidget);
   });
 
+  testWidgets('documents rejected visual patterns and canonical replacements', (tester) async {
+    await _pumpFoundation(tester, entries, foundations, 'pattern.rejected-visual-patterns');
+
+    expect(find.text('Nunca usar como padrão Coelo'), findsOneWidget);
+    expect(find.textContaining('hover ou seleção cinza'), findsOneWidget);
+    expect(find.textContaining('Criar/Editar instituição'), findsAtLeastNWidgets(1));
+    expect(find.textContaining('showDateRangePicker'), findsOneWidget);
+    expect(find.textContaining('gaps tokenizados'), findsOneWidget);
+  });
+
   testWidgets('documents the canonical registration and editing form contract', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

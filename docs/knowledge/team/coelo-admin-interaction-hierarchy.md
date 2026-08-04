@@ -66,3 +66,18 @@ baseline de `Acessos > Pessoas`: tabs lineares sobre `surface`, linha-base
 primário sutil sem cinza. Há `space4` entre toolbar, tabs e conteúdo. Esse
 padrão é diferente do toggle Cards/Tabela em cápsula, de filtros/chips e da
 navegação entre rotas. No Superadmin, reutilizar `SuperadminUnderlineTabs`.
+
+Ao criar, refazer, refatorar ou corrigir UI do Superadmin, a equipe declara uma
+baseline principal entre Login, Instituições, Home, Menu/Flyouts,
+Perfil/Configurações, Popup de Bug e Criar/Editar instituição. A comparação
+abrange estado interativo, componente, seção e página inteira. Quando uma tela
+é nomeada como referência, consultar código real, componentes compartilhados,
+testes e golden; aproximação visual não é suficiente.
+
+Os 14 padrões rejeitados bloqueiam faixas cinza genéricas em hover/seleção,
+controles Material crus, date picker desproporcional, rodapé inventado e zero
+gap entre cards/seções. Novos usos de `DropdownButton`,
+`DropdownButtonFormField`, `RadioListTile`, `CheckboxListTile` e
+`showDateRangePicker` dentro de features são barrados pelo gate visual; legado
+permanece contado e não autoriza ampliar a allowlist. Sem componente adequado,
+registrar proposta em vez de usar o default Material.

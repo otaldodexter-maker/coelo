@@ -928,7 +928,8 @@ a partir de `apps/catalog`:
 rtk proxy C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe run tool/validate_admin_visual_contracts.dart ../.. assets/admin-visual-contract-allowlist.json
 ```
 
-O gate bloqueia novas composições brutas de card interativo e flyout. A
+O gate bloqueia novas composições Material brutas de card, flyout, dropdown,
+radio, checkbox e seletor de intervalo de datas. A
 allowlist registra somente legado existente, com caminho, símbolo, contagem
 máxima e justificativa; ela não pode crescer para acomodar código novo.
 
@@ -937,7 +938,17 @@ máxima e justificativa; ela não pode crescer para acomodar código novo.
 As superfícies abaixo foram aprovadas em conjunto pelo Owner Coelo em
 2026-07-29. A matriz operacional completa e os caminhos dos goldens ficam em
 `.agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md`.
-Ela é obrigatória para revisão ou implementação dessas famílias:
+Ela é obrigatória ao criar, refazer, refatorar, corrigir ou revisar qualquer
+UI do Superadmin. A referência se aplica em quatro escalas: estado interativo,
+componente/widget, composição de seção e arquitetura da página inteira. Mesmo
+quando não há widget idêntico para reutilizar, o conceito repetitivo e a
+hierarquia da família aprovada continuam obrigatórios.
+
+Quando uma solicitação nomear uma tela como referência, consultar sua
+implementação, componentes compartilhados, testes e golden antes do código.
+“Basear-se em Instituições” inclui de fato toolbar, busca, filtros, toggle,
+Arquivos, flyouts, cards, status, tabela, gaps e paginação; não autoriza uma
+aproximação local com widgets Material semelhantes.
 
 | Família | Baseline aprovada |
 | --- | --- |
@@ -952,6 +963,26 @@ Ela é obrigatória para revisão ou implementação dessas famílias:
 Os goldens aprovados são evidência visual, não licença para copiar números
 locais. Componentes e tokens continuam sendo a implementação canônica. Arquivos
 em diretórios `failures/` são diagnósticos transitórios e nunca baseline.
+
+### Padrões visuais rejeitados
+
+Os 14 anexos rejeitados pelo Owner Coelo estão formalizados em
+`.agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md` e no
+catálogo como `pattern.rejected-visual-patterns`. Toda mudança deve comparar a
+proposta com essa matriz antes do código.
+
+- Hover, foco ou seleção não usam faixa/fundo cinza genérico.
+- `DropdownButton`, `DropdownButtonFormField`, `RadioListTile`,
+  `CheckboxListTile` e `showDateRangePicker` não entram diretamente em feature
+  nova; usar componente Coelo indexado ou proposta aprovada.
+- Rodapé de página segue Criar/Editar instituição: saída/cancelar à esquerda e
+  continuidade à direita no amplo; composição empilhada no compacto.
+- Dialog segue Popup de Bug/Ajustar foto, inclusive ações proporcionais e `X`
+  negativo; `OK` genérico e título truncado são regressões.
+- Cards e seções independentes preservam gaps/paddings `CoeloSpacing`; bordas
+  encostadas e zero gap não são densidade, são falha de hierarquia.
+- Se nenhuma baseline aprovada atender, a implementação para e abre proposta.
+  Default Material e aumento de allowlist não são alternativas.
 
 ### Ações negativas
 
@@ -1186,6 +1217,9 @@ A nomenclatura separa três camadas: primitive (valor físico), semantic (funç�
 
 | Pergunta | Sim/Não |
 | --- | --- |
+| A mudança declarou qual das sete famílias aprovadas é a baseline principal? | □ |
+| A comparação cobre estado, widget, seção e página inteira? | □ |
+| Os 14 padrões rejeitados foram verificados e estão ausentes? | □ |
 | Existe uma única ação primária claramente identificada? | □ |
 | O contexto ativo (instituição, papel, criança/grupo) está claro? | □ |
 | A tela usa tokens semânticos e componentes oficiais? | □ |

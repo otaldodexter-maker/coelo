@@ -7,6 +7,11 @@ const _prohibitedSymbols = <String, String>{
   'MenuAnchor': 'CoeloAdminFlyout',
   'MenuItemButton': 'CoeloAdminFlyoutItem',
   'InkWell': 'CoeloAdminInteractiveCard ou componente Coelo especializado',
+  'DropdownButton': 'CoeloAdminSingleSelectField ou componente Coelo especializado',
+  'DropdownButtonFormField': 'CoeloAdminSingleSelectField ou componente Coelo especializado',
+  'RadioListTile': 'controle de selecao Coelo compartilhado ou composicao aprovada',
+  'CheckboxListTile': 'controle de selecao Coelo compartilhado ou composicao aprovada',
+  'showDateRangePicker': 'seletor responsivo Coelo aprovado antes do uso na feature',
 };
 
 class AdminVisualDiagnostic {

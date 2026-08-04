@@ -2,7 +2,7 @@
 name: coelo-ui
 description: Use when creating, changing, or reviewing Coelo UI in Flutter or future Astro surfaces, including screens, widgets, components, tokens, themes, states, responsiveness, accessibility, catalog examples, and visual regressions.
 metadata:
-  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
+  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
   status: "active"
   generated_at: "2026-07-29"
 ---
@@ -25,6 +25,14 @@ silenciosamente.
    e consultar `pattern.approved-superadmin-surfaces`. O anexo temporário
    registra a aprovação; o golden e o teste indicados na matriz são a evidência
    persistente. Nunca usar `failures/` como referência.
+   Para **qualquer** criação ou alteração visual no Superadmin — inclusive novo
+   widget, protótipo ou superfície não citada acima — ler também os
+   [padrões visuais rejeitados](references/rejected-visual-patterns-inbox.md) e
+   consultar `pattern.rejected-visual-patterns`. Antes de implementar, declarar
+   qual família de `pattern.approved-superadmin-surfaces` é a baseline principal:
+   Login; Instituições; Home; Menu/Flyouts; Perfil/Configurações; Popup de Bug;
+   ou Criar/Editar instituição. Se nenhuma família atender, seguir proposta e
+   aguardar aprovação; default Material nunca preenche essa lacuna.
    Quando mencionar listagem, diretório, cards/tabela, card hover, table hover,
    view toggle, arquivos, flyout, perfil, configurações, tour, sair, excluir ou
    deletar, ler também o
@@ -70,13 +78,29 @@ silenciosamente.
    `scripts/query-index.ps1 -Query "<termo>"`. Informar ao usuário:
    `Consultei o índice Coelo UI para <contexto>.`
 3. Abrir somente arquivos e documentos apontados pelos resultados relevantes.
+   Quando o usuário disser “baseie-se”, “use como referência” ou nomear uma
+   tela aprovada, a consulta é literal: abrir o código real da tela, componentes
+   compartilhados usados, testes funcionais e golden aplicável antes de editar.
+   Reutilizar esses componentes quando atenderem; se uma peça nova for
+   necessária, preservar anatomia, tokens, estados, espaçamento e hierarquia da
+   referência. Uma aproximação visual ou widget Material “parecido” não atende.
 4. Reutilizar ou compor tokens, componentes e padrões antes de propor algo novo.
+   O checklist de entrada é bloqueante: (a) baseline aprovada escolhida;
+   (b) anti-padrões rejeitados comparados; (c) componente canônico localizado;
+   (d) gaps, padding, estados e ações mapeados a tokens. Omitir qualquer item
+   bloqueia código. “É só protótipo”, “depois ajustamos” e “o default funciona”
+   não são exceções.
    Card administrativo clicável usa `CoeloAdminInteractiveCard`; flyout de
    ações usa `CoeloAdminFlyout` e marca itens terminais/destrutivos com
    `CoeloAdminFlyoutTone.negative`. Não recriar essas superfícies com `Card` +
    `InkWell`, `PopupMenuButton`, `MenuAnchor` ou `MenuItemButton` dentro de uma
    feature. Exceção legada exige entrada contada e justificada na allowlist;
    conveniência local não é justificativa.
+   Quando Instituições for a referência, verificar explicitamente
+   `CoeloAdminListingToolbar`, busca, filtros, toggle Cards/Tabela,
+   `CoeloAdminFileActions`, `CoeloAdminFlyout`, `CoeloAdminInteractiveCard`,
+   `CoeloAdminExpandableStatusIndicator`, tabela e paginação antes de criar
+   qualquer substituto local.
    O card de Instituições define o contrato visual de todo card de diretório e
    deve ser implementado com `CoeloAdminInteractiveCard`:
    a superfície continua `surface`, o raio é preservado e hover/foco alteram
@@ -114,6 +138,11 @@ silenciosamente.
    local ou uma regra universal a famílias diferentes. Ação negativa habilitada
    nunca usa `primary`, grafite ou cinza: ícone, item e botão preservam o
    vermelho semântico também no repouso.
+   Em `apps/superadmin/lib/features`, não introduzir `DropdownButton`,
+   `DropdownButtonFormField`, `RadioListTile`, `CheckboxListTile` ou
+   `showDateRangePicker` diretamente. Reutilizar o componente Coelo indexado;
+   quando não existir seletor especializado aprovado, registrar proposta em vez
+   de aceitar o default Material. Não ampliar allowlist para fazer o gate passar.
 5. Respeitar [fronteiras de pacote](references/package-boundaries.md).
 6. Se nada atender, seguir o
    [contrato de proposta](references/component-proposal.md) e aguardar aprovação.

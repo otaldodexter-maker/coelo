@@ -7,6 +7,7 @@ import 'catalog_foundation.dart';
 import 'admin_directory_catalog_foundations.dart';
 import 'approved_superadmin_catalog_foundation.dart';
 import 'error_page_catalog_foundation.dart';
+import 'rejected_visual_patterns_catalog_foundation.dart';
 import 'surface_interaction_catalog_foundations.dart';
 
 const showroomContentDestinations = <String, String>{
@@ -61,6 +62,7 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
     ...buildSurfaceInteractionFoundationRegistry(),
     ...buildAdminDirectoryFoundationRegistry(),
     ...buildApprovedSuperadminFoundationRegistry(),
+    ...buildRejectedVisualPatternsFoundationRegistry(),
   };
 }
 

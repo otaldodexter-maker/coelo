@@ -11,6 +11,13 @@ persistente. Os anexos temporários serviram para a aprovação; depois dela, os
 goldens, testes e regras abaixo são a evidência canônica. Não usar imagens em
 `failures/` como referência.
 
+Esta matriz é obrigatória para criar, refazer, refatorar ou corrigir qualquer
+UI do Superadmin, do estado interativo à página inteira. Quando o usuário
+nomear uma tela como referência, abrir sua implementação, componentes
+compartilhados, testes e golden; não basta imitar a aparência. Toda proposta
+também deve ser comparada com os
+[padrões rejeitados](rejected-visual-patterns-inbox.md).
+
 ## Matriz de aprovação
 
 | Anexos | Superfície e estados aprovados | Evidência persistente |
