@@ -2,7 +2,7 @@
 name: coelo-ui
 description: Use when creating, changing, or reviewing Coelo UI in Flutter or future Astro surfaces, including screens, widgets, components, tokens, themes, states, responsiveness, accessibility, catalog examples, and visual regressions.
 metadata:
-  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
+  source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
   status: "active"
   generated_at: "2026-07-29"
 ---
@@ -92,6 +92,17 @@ silenciosamente.
    Reutilizar esses componentes quando atenderem; se uma peça nova for
    necessária, preservar anatomia, tokens, estados, espaçamento e hierarquia da
    referência. Uma aproximação visual ou widget Material “parecido” não atende.
+   Antes de qualquer código visual, ler também a
+   [matriz de evidência dos estados interativos](references/interactive-state-evidence-matrix.md)
+   e preencher mentalmente, para cada estado pedido ou alcançável no controle:
+   implementação real,
+   componente/contrato, teste comportamental e golden exato. Os quatro campos
+   são bloqueantes. Não limitar o inventário ao verbo do pedido: introduzir um
+   filtro, flyout, card ou botão inclui todos os estados que o usuário consegue
+   alcançar. Golden geral da página não substitui evidência de hover,
+   foco, seleção, menu aberto, expansão ou ação negativa. Se o golden específico
+   não existir, parar e propor a referência; não programar primeiro para depois
+   decidir qual imagem deveria ser verdadeira.
 4. Reutilizar ou compor tokens, componentes e padrões antes de propor algo novo.
    O checklist de entrada é bloqueante: (a) baseline aprovada escolhida;
    (b) anti-padrões rejeitados comparados; (c) componente canônico localizado;
@@ -158,6 +169,12 @@ silenciosamente.
    `showDateRangePicker` diretamente. Reutilizar o componente Coelo indexado;
    quando não existir seletor especializado aprovado, registrar proposta em vez
    de aceitar o default Material. Não ampliar allowlist para fazer o gate passar.
+   Em mobile e tablet no tema claro de Superadmin, Admin ou Principal, a base da
+   página usa `colorScheme.surface`. Instagram e Airbnb são referências
+   conceituais de limpeza e hierarquia por conteúdo/espaço, não de identidade:
+   cinza não é fundo-base padrão. Reservar `surfaceContainer*` para superfícies
+   secundárias com função explícita, campos, estados, skeletons ou separação
+   local. No dark theme, usar papéis semânticos escuros; nunca branco literal.
 5. Respeitar [fronteiras de pacote](references/package-boundaries.md).
 6. Se nada atender, seguir o
    [contrato de proposta](references/component-proposal.md) e aguardar aprovação.

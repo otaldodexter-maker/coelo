@@ -188,6 +188,88 @@ void main() {
     );
     await mouse.removePointer();
   });
+
+  testWidgets('matches approved interactive directory state references', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.pumpAndSettle();
+    final filterMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await filterMouse.addPointer();
+    await filterMouse.moveTo(tester.getCenter(find.text('Ativa').last));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_filter_option_hover_light_1440.png'),
+    );
+    await filterMouse.removePointer();
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-files-action')));
+    await tester.pumpAndSettle();
+    final filesMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await filesMouse.addPointer();
+    await filesMouse.moveTo(
+      tester.getCenter(find.byKey(const Key('institution-files-export-csv'))),
+    );
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_files_hover_light_1440.png'),
+    );
+    await filesMouse.removePointer();
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-status-demo-institution-casa-nuvem')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_status_expanded_light_1440.png'),
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('institution-view-table')));
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('institution-directory-table')), findsOneWidget);
+    final tableMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await tableMouse.addPointer();
+    await tableMouse.moveTo(
+      tester.getCenter(find.byKey(const Key('institution-table-row-demo-institution-horizonte'))),
+    );
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_table_row_hover_light_1440.png'),
+    );
+    await tableMouse.removePointer();
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+    final profileMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await profileMouse.addPointer();
+    await profileMouse.moveTo(tester.getCenter(find.byKey(const Key('superadmin-logout-action'))));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_logout_hover_light_1440.png'),
+    );
+    await profileMouse.removePointer();
+  });
 }
 
 Widget _goldenApp({

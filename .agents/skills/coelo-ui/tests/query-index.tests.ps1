@@ -143,6 +143,10 @@ Assert-QueryContains -Query 'novo widget de formulario' `
     -ExpectedId 'pattern.rejected-visual-patterns'
 Assert-QueryContains -Query 'rodape criar editar SuperadminFormActionFooter' `
     -ExpectedId 'superadmin.form-action-footer'
+Assert-QueryContains -Query 'matriz evidencia visual estado flyout filtro hover golden codigo real' `
+    -ExpectedId 'pattern.interactive-state-evidence'
+Assert-QueryContains -Query 'mobile tablet fundo base branco instagram airbnb superficie clara' `
+    -ExpectedId 'foundation.mobile-surface-hierarchy'
 
 $broadQuery = 'hover cinza reto flyout instituicoes card'
 $broadResult = & $queryScript -Query $broadQuery | ConvertFrom-Json

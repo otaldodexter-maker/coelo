@@ -89,6 +89,17 @@ Instituição corresponde ao render atual completo dos goldens: a tela, o
 shell/menu como existem hoje e o chat fazem parte da mesma verdade visual. Não
 substituir o menu atual por uma composição histórica ao aplicar essa referência.
 
+Todo estado interativo solicitado deve ser rastreado, antes do código, até a
+implementação real, componente ou contrato, teste comportamental e golden
+específico na matriz `interactive-state-evidence-matrix.md`. Um golden geral da
+página não substitui evidência de hover, foco, seleção, menu aberto, expansão ou
+ação negativa. Estado sem evidência visual exige proposta, não improvisação.
+
+Em mobile e tablet, Superadmin, Admin e Principal usam no tema claro uma base
+`colorScheme.surface`, inspirada conceitualmente na limpeza estrutural de
+Instagram e Airbnb. Cinza não é fundo-base padrão; `surfaceContainer*` serve a
+regiões secundárias com função explícita. Dark theme usa seus papéis semânticos.
+
 Os 14 padrões rejeitados bloqueiam faixas cinza genéricas em hover/seleção,
 controles Material crus, date picker desproporcional, rodapé inventado e zero
 gap entre cards/seções. Novos usos de `DropdownButton`,

@@ -980,6 +980,23 @@ render atual completo dos dois goldens, inclusive o menu/shell e o chat como
 aparecem hoje. Uma mudança futura nessas superfícies compartilhadas exige
 revisão visual explícita antes de atualizar os goldens.
 
+Cada estado interativo aprovado deve ser consultado pela matriz
+`.agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md`. Antes
+do código, o estado precisa estar ligado à implementação real, ao componente ou
+contrato, ao teste comportamental e ao golden exato. Golden genérico de página
+não comprova hover, foco, seleção, menu aberto, expansão ou ação negativa.
+
+### Superfície-base em mobile e tablet
+
+Instagram e Airbnb são referências conceituais de arquitetura mobile para
+Superadmin, Admin e Principal: conteúdo legível, base limpa e hierarquia criada
+por espaço, divisores e superfícies locais. No tema claro, a base da página usa
+`colorScheme.surface`; cinza não é o fundo-base padrão. Papéis
+`surfaceContainer*` ficam reservados a regiões secundárias com função explícita,
+campos, estados, skeletons e separação local. No tema escuro, usar os papéis
+semânticos escuros correspondentes, sem branco literal. A referência não
+autoriza copiar marca, paleta, navegação ou componentes dos produtos citados.
+
 ### Padrões visuais rejeitados
 
 Os 14 anexos rejeitados pelo Owner Coelo estão formalizados em

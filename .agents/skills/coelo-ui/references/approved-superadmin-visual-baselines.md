@@ -17,6 +17,9 @@ nomear uma tela como referência, abrir sua implementação, componentes
 compartilhados, testes e golden; não basta imitar a aparência. Toda proposta
 também deve ser comparada com os
 [padrões rejeitados](rejected-visual-patterns-inbox.md).
+Para estados interativos, usar obrigatoriamente também a
+[matriz de evidência](interactive-state-evidence-matrix.md), que liga cada
+estado ao código real, componente, teste e golden exato.
 
 ## Matriz de aprovação
 
@@ -116,3 +119,5 @@ Antes de concluir mudança nessas superfícies:
 4. validar light/dark, hover, foco, teclado, texto a 200% e reduced motion;
 5. executar teste funcional antes do golden e nunca atualizar golden para
    esconder regressão.
+6. não aceitar golden geral da página como prova de hover, foco, seleção, menu
+   aberto, expansão ou ação negativa; usar o arquivo exato da matriz.
