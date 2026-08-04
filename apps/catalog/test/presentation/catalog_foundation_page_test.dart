@@ -105,11 +105,13 @@ void main() {
     final footer = tester.getRect(find.byKey(const Key('foundation-form-action-footer-row')));
     final cancel = tester.getRect(find.widgetWithText(TextButton, 'Cancelar'));
     final previous = tester.getRect(find.widgetWithText(OutlinedButton, 'Anterior'));
+    final continueAction = tester.getRect(find.widgetWithText(OutlinedButton, 'Continuar'));
     final save = tester.getRect(find.widgetWithText(FilledButton, 'Salvar alterações'));
     expect(cancel.left, footer.left);
     expect(save.right, footer.right);
     expect(cancel.right, lessThan(previous.left));
-    expect(previous.right, lessThan(save.left));
+    expect(previous.right, lessThan(continueAction.left));
+    expect(continueAction.right, lessThan(save.left));
   });
 
   testWidgets('stacks the canonical screen footer primary first on compact', (tester) async {
@@ -125,10 +127,13 @@ void main() {
 
     final primary = tester.getRect(find.widgetWithText(FilledButton, 'Salvar alterações'));
     final previous = tester.getRect(find.widgetWithText(OutlinedButton, 'Anterior'));
+    final continueAction = tester.getRect(find.widgetWithText(OutlinedButton, 'Continuar'));
     final cancel = tester.getRect(find.widgetWithText(TextButton, 'Cancelar'));
-    expect(primary.width, previous.width);
+    expect(primary.width, continueAction.width);
+    expect(continueAction.width, previous.width);
     expect(previous.width, cancel.width);
-    expect(primary.bottom, lessThan(previous.top));
+    expect(primary.bottom, lessThan(continueAction.top));
+    expect(continueAction.bottom, lessThan(previous.top));
     expect(previous.bottom, lessThan(cancel.top));
   });
 

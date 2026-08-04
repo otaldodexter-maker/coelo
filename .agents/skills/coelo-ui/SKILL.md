@@ -59,6 +59,11 @@ silenciosamente.
    contorno leve é secundário; `TextButton` em `surface` sem contorno é
    terciário. Em rodapé de tela ampla, terciária fica no extremo esquerdo e o
    grupo de continuidade no direito; não aplicar o 50/50 de dialogs à tela.
+   A anatomia completa é `Cancelar` (`TextButton`) no extremo esquerdo e
+   `Anterior` + `Continuar` (`OutlinedButton`) + `Salvar alterações`
+   (`FilledButton`) no extremo direito; estados com menos ações são
+   subconjuntos dessa ordem. Não centralizar, igualar larguras no desktop,
+   distribuir em terços/quartos ou substituir por faixa cinza.
    Quando mencionar formulário, cadastro, edição, input, campo, select, upload,
    avatar, wizard, step form, rodapé ou color picker, ler obrigatoriamente o
    [contrato de formulários](references/form-layout-contracts.md), consultar
@@ -69,6 +74,10 @@ silenciosamente.
    referência. Abrir `institution_form_page.dart`, sua navegação, seções,
    `SuperadminFormActionFooter`, testes funcionais e goldens mobile light e
    desktop dark; autenticação continua sendo a referência do campo-base.
+   Para `paginação`, `paginar`, `etapas`, `stepper` ou `wizard`, distinguir:
+   progresso sequencial usa `pattern.form-step-navigation`; troca de página de
+   registros usa `pattern.directory-pagination`. Ambos derivam das referências
+   de Instituições e não podem ser trocados entre si.
    Se uma regra real do produto exigir identidade ou composição diferente,
    parar antes do código, apresentar a comparação e a proposta visual ao
    usuário e aguardar aprovação explícita. Não implementar a divergência como
@@ -142,9 +151,9 @@ silenciosamente.
    `SuperadminFormActionFooter`: `TextButton` terciário no extremo esquerdo e
    `OutlinedButton`/uma única ação `FilledButton` no grupo direito; no compacto,
    ações em largura total com a primária primeiro. A navegação de etapas de
-   Instituições é referência de anatomia e responsividade, não um convite para
-   importar widgets específicos de domínio; se for necessário generalizá-la,
-   seguir o contrato de proposta e pedir aprovação antes de criar a API.
+   Instituições é a anatomia aprovada; novas features do Superadmin reutilizam
+   `SuperadminFormStepNavigation`, já extraído para completed/current/error/
+   incomplete e responsividade. Não importar o widget específico de domínio.
    Popup, dialog, menu e overlay usam `colorScheme.surface` com
    `surfaceTintColor: Colors.transparent`; `primaryContainer`, laranja-claro e
    cinza são proibidos como fundo-base. Antes de concluir, comparar visualmente

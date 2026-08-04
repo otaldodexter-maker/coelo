@@ -36,6 +36,9 @@ estado ao código real, componente, teste e golden exato.
 | 30 | Bug: popup neutro, X vermelho, selects, texto, anexo, ajuda e Enviar disabled | goldens `*_bug_open_light_1440.png`; `CoeloAdminDialogShell`; `pattern.overlay-surfaces` |
 | 31–32 | Criar/Editar instituição: baseline obrigatória de qualquer tela que crie ou edite uma entidade; estado atual completo, incluindo shell/menu atual, chat, stepper lateral, conteúdo, uploads, campos e rodapé de tela | `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_form_create_light_375.png`; `institution_form_edit_dark_1440.png`; `institution_form_page_golden_test.dart` |
 | Aprovação 2026-08-03 | Acessos > Pessoas: toolbar em faixa própria e tabs lineares sutis para categorias irmãs | `apps/superadmin/lib/shared/presentation/widgets/superadmin_underline_tabs.dart`; `person_directory_page_test.dart`; contrato `pattern.directory-linear-tabs` |
+| Aprovação 2026-08-04 | Rodapé de fluxo: `Cancelar` no extremo esquerdo; `Anterior` + `Continuar` outlined e `Salvar alterações` filled no extremo direito; estados menores preservam a ordem | `SuperadminFormActionFooter`; `pattern.form-controls`; testes do componente e do catálogo |
+| Aprovação 2026-08-04 | Mídia e marca: ajuste circular de foto, ajuste retangular de capa e seletor avançado de cores | `AvatarCropDialog`; `CoverCropDialog`; `showSuperadminAdvancedColorPicker`; `pattern.media-adjustment`; `pattern.advanced-color-picker` |
+| Aprovação 2026-08-04 | Navegação paginada de qualquer fluxo sequencial: concluída, atual tonal e pendente; paginação de registros permanece um contrato distinto | `SuperadminFormStepNavigation`; `pattern.form-step-navigation`; `pattern.directory-pagination` |
 
 ## Regras que os anexos tornam explícitas
 

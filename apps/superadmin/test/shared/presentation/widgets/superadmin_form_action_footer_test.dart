@@ -9,11 +9,17 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
 
-    final cancel = tester.getCenter(find.byKey(const Key('cancel'))).dx;
-    final previous = tester.getCenter(find.byKey(const Key('previous'))).dx;
-    final save = tester.getCenter(find.byKey(const Key('save'))).dx;
-    expect(cancel, lessThan(previous));
-    expect(previous, lessThan(save));
+    final footer = tester.getRect(find.byKey(const Key('form-footer-surface')));
+    final cancel = tester.getRect(find.byKey(const Key('cancel')));
+    final continueAction = tester.getRect(find.byKey(const Key('continue')));
+    final save = tester.getRect(find.byKey(const Key('save')));
+    expect(cancel.left, closeTo(footer.left + CoeloSpacing.space3, 1));
+    expect(save.right, closeTo(footer.right - CoeloSpacing.space3, 1));
+    expect(cancel.right, lessThan(continueAction.left));
+    expect(continueAction.right, lessThan(save.left));
+    expect(find.widgetWithText(TextButton, 'Cancelar'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Continuar'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Salvar alterações'), findsOneWidget);
   });
 
   testWidgets('stacks full-width actions with primary first when compact', (tester) async {
@@ -22,7 +28,7 @@ void main() {
     await tester.pumpWidget(_app());
 
     final saveRect = tester.getRect(find.byKey(const Key('save')));
-    final previousRect = tester.getRect(find.byKey(const Key('previous')));
+    final previousRect = tester.getRect(find.byKey(const Key('continue')));
     final cancelRect = tester.getRect(find.byKey(const Key('cancel')));
     expect(saveRect.top, lessThan(previousRect.top));
     expect(previousRect.top, lessThan(cancelRect.top));
@@ -60,11 +66,15 @@ Widget _app({ValueChanged<double>? onHeightChanged}) {
           ),
           continuationActions: [
             OutlinedButton(
-              key: const Key('previous'),
+              key: const Key('continue'),
               onPressed: () {},
-              child: const Text('Anterior'),
+              child: const Text('Continuar'),
             ),
-            FilledButton(key: const Key('save'), onPressed: () {}, child: const Text('Salvar')),
+            FilledButton(
+              key: const Key('save'),
+              onPressed: () {},
+              child: const Text('Salvar alterações'),
+            ),
           ],
         ),
       ),

@@ -509,7 +509,8 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   refatoração, correção e novos widgets/seções. O domínio pode mudar conteúdo,
   etapas e validações; não muda sozinho a identidade visual.
 - Antes de implementar, consultar o código real de `InstitutionFormPage`,
-  `InstitutionFormNavigation`, `SuperadminFormActionFooter`, testes funcionais
+  `InstitutionFormNavigation`, seu equivalente reutilizável
+  `SuperadminFormStepNavigation`, `SuperadminFormActionFooter`, testes funcionais
   e os goldens aprovados mobile light e desktop dark. Reutilizar os componentes
   compartilhados e preservar a anatomia dos widgets específicos de domínio.
 - Se uma necessidade real não couber nessa baseline, parar antes do código,
@@ -528,6 +529,15 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   `outlineVariant` e `surface`. Em compact, a ação primária ocupa a
   largura e precede cancelar/anterior; em medium ou maior, cancelar fica à
   esquerda e navegação/continuidade à direita.
+- A anatomia completa é `Cancelar` terciário no extremo esquerdo e `Anterior`
+  + `Continuar` outlined + `Salvar alterações` filled no extremo direito.
+  Estados com menos ações são subconjuntos dessa ordem. A igualdade de
+  larguras de dialogs não se aplica a rodapé de tela.
+- Navegação de formulário por etapas replica Criar/Editar Instituição:
+  concluída com check, atual em `primaryContainer` arredondado com indicador e
+  texto `primary`, pendente com círculo/texto neutros. Preservar ordem, retorno
+  sem perda e adaptação compacta; não trocar por menu cinza ou controle cru.
+  No Superadmin, reutilizar `SuperadminFormStepNavigation`.
 - Diálogo administrativo usa `CoeloAdminDialogShell`, derivado do popup de bug,
   com cabeçalho dividido, fechar acessível, corpo rolável e rodapé persistente.
   Uma ação ocupa toda a largura útil; duas ações dividem a largura igualmente,
@@ -565,6 +575,16 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   administrador. Usa o recorte circular padrão de perfil; a confirmação do
   recorte apresenta `Cancelar` e `Aplicar` em ações 50/50, e o reset é uma ação
   circular por ícone com tooltip, semântica e alvo mínimo.
+- Toda inserção ou troca de foto/avatar usa o ajuste aprovado do Perfil:
+  dialog neutro, `X` vermelho, reset, recorte circular, zoom e ações
+  `Cancelar`/`Aplicar` em 50/50. Capa usa a mesma shell e interação, com
+  recorte retangular 16:9; nunca usa círculo. Outra proporção exige nova
+  decisão aprovada.
+  No Superadmin, usar `AvatarCropDialog` e `CoverCropDialog`, respectivamente.
+- O seletor de cores canônico usa superfície neutra, plano de
+  saturação/valor, matiz contínua, amostras `Nova`/`Atual`, HSV, RGB e
+  hexadecimal, com `Cancelar`/`Usar cor` em 50/50. Reutilizar o componente
+  indexado; não criar seletor Material ou simplificado na feature.
 - Sincronizações entre representante e administrador devem nomear a direção:
   `Copiar dados do representante` para representante → administrador e
   `Copiar dados para o representante` para administrador → representante.

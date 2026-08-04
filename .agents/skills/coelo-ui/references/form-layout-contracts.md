@@ -16,7 +16,8 @@ existente. O domínio pode mudar conteúdo, quantidade de etapas e validações;
 não muda sozinho a identidade visual aprovada.
 
 Antes do código, abrir a implementação real de `InstitutionFormPage`,
-`InstitutionFormNavigation`, `InstitutionFormSection`,
+`InstitutionFormNavigation`, o componente compartilhado equivalente
+`SuperadminFormStepNavigation`, `InstitutionFormSection`,
 `SuperadminFormActionFooter`, os testes funcionais e os goldens
 `institution_form_create_light_375.png` e
 `institution_form_edit_dark_1440.png`. Reutilizar componentes compartilhados;
@@ -30,6 +31,13 @@ podem virar API genérica após proposta e aprovação.
 - Organizar a página em título e descrição, grupos relacionados, campos e
   rodapé. Em fluxo por etapas, informar etapa atual e permitir retorno sem
   perder dados.
+- O navegador de etapas segue literalmente Criar/Editar Instituição:
+  concluída usa check; atual usa indicador e texto `primary` sobre
+  `primaryContainer` arredondado; pendente usa círculo e texto neutros. A ordem
+  vertical permanece estável e clicar numa etapa permitida não descarta dados.
+  No compacto, adaptar a mesma semântica sem dropdown Material ou faixa cinza.
+  No Superadmin, reutilizar `SuperadminFormStepNavigation`; não copiar
+  `InstitutionFormNavigation` para outra feature.
 - Usar `CoeloFormTextField`; não recriar decoração, hover ou foco localmente.
 - Grid amplo: até duas colunas, gap horizontal `CoeloSpacing.space3` (12 px),
   gap vertical `CoeloSpacing.space4` (16 px) e
@@ -55,9 +63,19 @@ podem virar API genérica após proposta e aprovação.
 
 - Avatar institucional: arquivo 1:1 em PNG, JPG ou WebP, máximo de 2 MB, com
   prévia circular. Persistência privada segue o fluxo server-side de mídia.
+- Inserir ou trocar foto/avatar usa obrigatoriamente `AvatarCropDialog`,
+  conforme Perfil: título `Ajustar foto`, `X` vermelho, instrução, reset,
+  recorte circular, zoom e `Cancelar`/`Aplicar` em 50/50. Não criar picker ou
+  crop local na feature.
+- Inserir ou trocar capa usa a mesma shell e hierarquia do ajuste de foto, mas
+  com janela de recorte retangular 16:9. No Superadmin, reutilizar
+  `CoverCropDialog`, que fixa essa proporção. Capa nunca reutiliza máscara
+  circular; uma nova proporção exige proposta e aprovação antes do código.
 - Seletor de cor avançado: superfície neutra sem tint, área quadrada de
-  saturação/valor, faixa contínua de matiz, amostras atual e nova e edição HSV,
-  RGB e hexadecimal.
+  saturação/valor, faixa contínua de matiz, amostras `Nova` e `Atual` e
+  edição HSV, RGB e hexadecimal. Reutilizar
+  `showSuperadminAdvancedColorPicker`; o rodapé é `Cancelar`/`Usar cor` em
+  50/50. Não usar color picker Material ou variante simplificada local.
 - Bio com limite conta grafemas. Um ícone com tooltip e semântica abre a paleta
   compacta de emojis, inserindo a escolha no cursor sem substituir o teclado do
   sistema.
@@ -88,6 +106,11 @@ podem virar API genérica após proposta e aprovação.
 - Em medium ou maior, cancelar/terciária fica no extremo esquerdo; navegação,
   secundárias e a única primária ficam agrupadas no extremo direito. Em compact,
   a primária ocupa 100% e precede as demais.
+- A anatomia completa do fluxo usa `Cancelar` como `TextButton` no extremo
+  esquerdo; `Anterior` e `Continuar` como `OutlinedButton`, seguidos de
+  `Salvar alterações` como o único `FilledButton`, agrupados no extremo
+  direito. Estados com menos ações preservam esse recorte e essa ordem. Essa
+  composição não usa frações iguais no desktop.
 - Diálogo administrativo usa `CoeloAdminDialogShell`. Uma ação ocupa toda a
   largura útil; duas ações dividem igualmente a largura com gap
   `CoeloSpacing.space3`; três dividem em terços. Se não couberem, todas empilham

@@ -19,6 +19,12 @@ colunas, que colapsam responsivamente. A bio aceita emoji, respeita 220
 grafemas e um ícone acessível abre a seleção compacta para inserir no cursor sem
 substituir o teclado nativo.
 
+A navegação lateral é a baseline reutilizável de qualquer fluxo sequencial,
+não somente de Criar/Editar: etapa concluída usa check, etapa atual usa
+indicador e texto laranja em fundo tonal arredondado e etapa pendente permanece
+neutra. Retornar a uma etapa não descarta o rascunho. Paginação de registros é
+outro contrato, baseado no diretório de Instituições.
+
 A foto de perfil deve ser PNG, JPG ou WebP, quadrada e ter no máximo 2 MB. A
 prévia local usa recorte circular. Esta entrega permanece um protótipo local:
 não cria persistência, convite real ou ativação de identidade.
@@ -34,7 +40,9 @@ transparente. O formulário não usa faixas cinzas decorativas em cards, conteú
 ou rodapé.
 
 O seletor de cor oferece área quadrada de saturação/valor, matiz contínua,
-amostras atual e nova e edição HSV, RGB e hexadecimal. A localização oferece
+amostras atual e nova e edição HSV, RGB e hexadecimal, com
+`Cancelar`/`Usar cor` em 50/50. Foto/avatar usa o ajuste circular do Perfil;
+capa usa a mesma shell com recorte retangular 16:9. A localização oferece
 busca contextual por CEP. O aviso de convite e ativação usa
 `primaryContainer`; esta é uma ênfase informativa deliberada, não o fundo de um
 popup. Plano não possui justificativa.

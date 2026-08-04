@@ -237,6 +237,8 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
                     TextButton(onPressed: () {}, child: const Text('Cancelar'));
                 Widget previousButton() =>
                     OutlinedButton(onPressed: () {}, child: const Text('Anterior'));
+                Widget continueButton() =>
+                    OutlinedButton(onPressed: () {}, child: const Text('Continuar'));
                 Widget saveButton() =>
                     FilledButton(onPressed: () {}, child: const Text('Salvar alterações'));
 
@@ -245,6 +247,8 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       saveButton(),
+                      const SizedBox(height: CoeloSpacing.space2),
+                      continueButton(),
                       const SizedBox(height: CoeloSpacing.space2),
                       previousButton(),
                       const SizedBox(height: CoeloSpacing.space2),
@@ -258,6 +262,8 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
                     cancelButton(),
                     const Spacer(),
                     previousButton(),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    continueButton(),
                     const SizedBox(width: CoeloSpacing.space2),
                     saveButton(),
                   ],

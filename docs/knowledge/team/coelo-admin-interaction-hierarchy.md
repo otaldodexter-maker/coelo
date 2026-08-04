@@ -23,6 +23,11 @@ Em rodapé de tela amplo, terciária/cancelar fica no extremo esquerdo e o grupo
 de continuidade no direito. Em compacto, a primária ocupa a largura antes das
 demais.
 
+A composição completa aprovada é `Cancelar` terciário no extremo esquerdo e
+`Anterior` + `Continuar` outlined seguidos de `Salvar alterações` filled no
+extremo direito. Estados com menos ações preservam essa ordem. A regra 50/50,
+terços ou quartos pertence a popup, não a rodapé de tela.
+
 Em popup, largura não comunica prioridade: uma ação ocupa 100%; duas dividem
 50/50; três dividem em terços, com gaps tokenizados. Quando constraints ou texto
 ampliado não comportarem a linha, todas empilham em 100%; não existe quebra 2+1.

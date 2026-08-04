@@ -21,6 +21,11 @@ com cor livre. A foto aceita PNG, JPG ou WebP de até 2 MB. Arraste e zoom são
 preservados na prévia; sigla e cor continuam como fallback. O texto alterna
 automaticamente entre preto e branco conforme o maior contraste.
 
+Inserir ou trocar foto/avatar sempre reutiliza `AvatarCropDialog`: dialog
+neutro, `X` vermelho, reset, recorte circular, zoom e ações
+`Cancelar`/`Aplicar` em 50/50. Capa reutiliza essa anatomia com recorte
+retangular 16:9; nunca recebe a máscara circular do avatar.
+
 Trocar e-mail cria uma solicitação pendente na central de atividades e mantém o
 e-mail atual ativo. Nesta versão do protótipo, qualquer Owner pode aprovar ou
 recusar, inclusive o próprio solicitante.
