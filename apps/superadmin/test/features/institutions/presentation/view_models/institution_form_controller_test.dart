@@ -562,4 +562,18 @@ void main() {
     expect(saved.profileLinks.single.label, 'Portal');
     expect(saved.profileLinks.single.url, 'https://portal.example');
   });
+
+  test('loads masked contacts and persists phone and celular as E.164', () {
+    final source = FakeInstitutionDirectoryRepository().records.first;
+    final controller = InstitutionFormController(record: source);
+    addTearDown(controller.dispose);
+
+    expect(controller.text(InstitutionFormField.contactPhone), startsWith('+55 ('));
+    controller.setText(InstitutionFormField.contactPhone, '+55 (11) 3333-4444');
+    controller.setText(InstitutionFormField.whatsappNumber, '+55 (11) 99999-4444');
+
+    final saved = controller.toRecord(id: source.id);
+    expect(saved.contactPhone, '+551133334444');
+    expect(saved.whatsappNumber, '+5511999994444');
+  });
 }

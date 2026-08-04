@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:characters/characters.dart' as characters;
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'dart:typed_data';
 
 import '../../domain/institution_directory_item.dart';
@@ -133,6 +134,8 @@ final class InstitutionFormController extends ChangeNotifier {
   Uint8List? logoBytes;
   String? logoFileName;
   String? logoError;
+  double logoScale = 1;
+  Offset logoOffset = Offset.zero;
   Uint8List? coverBytes;
   String? coverFileName;
   String? coverError;
@@ -268,9 +271,16 @@ final class InstitutionFormController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setLogo({required Uint8List bytes, required String fileName}) {
+  void setLogo({
+    required Uint8List bytes,
+    required String fileName,
+    double scale = 1,
+    Offset offset = Offset.zero,
+  }) {
     logoBytes = bytes;
     logoFileName = fileName;
+    logoScale = scale;
+    logoOffset = offset;
     logoError = null;
     hasSimulatedLogo = true;
     notifyListeners();
@@ -285,6 +295,8 @@ final class InstitutionFormController extends ChangeNotifier {
     logoBytes = null;
     logoFileName = null;
     logoError = null;
+    logoScale = 1;
+    logoOffset = Offset.zero;
     hasSimulatedLogo = false;
     notifyListeners();
   }
@@ -623,7 +635,7 @@ final class InstitutionFormController extends ChangeNotifier {
     if (field == InstitutionFormField.contactPhone &&
         value.isEmpty &&
         text(InstitutionFormField.whatsappNumber).isEmpty) {
-      return 'Informe pelo menos um telefone ou WhatsApp institucional.';
+      return 'Informe pelo menos um telefone ou celular institucional.';
     }
     return null;
   }
@@ -724,9 +736,13 @@ final class InstitutionFormController extends ChangeNotifier {
       addressNumber: text(InstitutionFormField.addressNumber),
       complement: text(InstitutionFormField.complement),
       contactEmail: text(InstitutionFormField.contactEmail),
-      contactPhone: text(InstitutionFormField.contactPhone),
+      contactPhone: CoeloBrazilianPhoneInputFormatter.toE164(
+        text(InstitutionFormField.contactPhone),
+      ),
       contactMobilePhone: text(InstitutionFormField.contactMobilePhone),
-      whatsappNumber: text(InstitutionFormField.whatsappNumber),
+      whatsappNumber: CoeloBrazilianPhoneInputFormatter.toE164(
+        text(InstitutionFormField.whatsappNumber),
+      ),
       websiteUrl: text(InstitutionFormField.websiteUrl),
       ownerFirstName: primaryRepresentative?.firstName ?? '',
       ownerLastName: primaryRepresentative?.lastName ?? '',
@@ -801,6 +817,8 @@ final class InstitutionFormController extends ChangeNotifier {
     trialEnd?.toIso8601String() ?? '',
     '$hasSimulatedLogo',
     logoFileName ?? '',
+    '$logoScale',
+    '${logoOffset.dx}:${logoOffset.dy}',
     '$hasSimulatedCover',
     coverFileName ?? '',
     for (final representative in _legalRepresentatives)
@@ -960,9 +978,13 @@ Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
   InstitutionFormField.addressNumber: record?.addressNumber ?? '',
   InstitutionFormField.complement: record?.complement ?? '',
   InstitutionFormField.contactEmail: record?.contactEmail ?? '',
-  InstitutionFormField.contactPhone: record?.contactPhone ?? '',
+  InstitutionFormField.contactPhone: CoeloBrazilianPhoneInputFormatter.format(
+    record?.contactPhone ?? '',
+  ),
   InstitutionFormField.contactMobilePhone: record?.contactMobilePhone ?? '',
-  InstitutionFormField.whatsappNumber: record?.whatsappNumber ?? '',
+  InstitutionFormField.whatsappNumber: CoeloBrazilianPhoneInputFormatter.format(
+    record?.whatsappNumber ?? '',
+  ),
   InstitutionFormField.websiteUrl: record?.websiteUrl ?? '',
   InstitutionFormField.ownerFirstName: record?.ownerFirstName ?? '',
   InstitutionFormField.ownerLastName: record?.ownerLastName ?? '',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 final class CoeloFormTextField extends StatefulWidget {
   const CoeloFormTextField({
@@ -20,6 +21,7 @@ final class CoeloFormTextField extends StatefulWidget {
     this.enableSuggestions = true,
     this.autocorrect = true,
     this.maxLines = 1,
+    this.inputFormatters,
     this.onChanged,
     this.onFieldSubmitted,
     super.key,
@@ -43,6 +45,7 @@ final class CoeloFormTextField extends StatefulWidget {
   final bool enableSuggestions;
   final bool autocorrect;
   final int maxLines;
+  final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onFieldSubmitted;
 
@@ -96,6 +99,8 @@ final class _CoeloFormTextFieldState extends State<CoeloFormTextField> {
         enableSuggestions: widget.enableSuggestions,
         autocorrect: widget.autocorrect,
         maxLines: widget.maxLines,
+        textAlignVertical: widget.maxLines > 1 ? TextAlignVertical.top : null,
+        inputFormatters: widget.inputFormatters,
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,

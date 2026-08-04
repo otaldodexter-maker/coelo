@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
@@ -80,19 +79,6 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
                     .map((option) => _FilterMenuOption(value: option.id, label: option.label))
                     .toList(growable: false),
                 onApply: viewModel.filterOptions.types.isEmpty ? null : viewModel.setTypes,
-              ),
-            ),
-            SizedBox(
-              width: filterWidth,
-              child: _DirectoryFilterMenu<InstitutionStatus>(
-                triggerKey: const Key('institution-status-filter'),
-                anchorKey: const Key('institution-status-filter-anchor'),
-                values: viewModel.query.statuses,
-                allLabel: 'Todos os status',
-                items: InstitutionStatus.values
-                    .map((status) => _FilterMenuOption(value: status, label: status.label))
-                    .toList(growable: false),
-                onApply: viewModel.setStatuses,
               ),
             ),
             SizedBox(
@@ -188,7 +174,7 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
                   ),
                   SuperadminDirectoryTableViewOption(
                     value: InstitutionDirectoryTableView.groups,
-                    label: 'Grupos',
+                    label: 'Turmas',
                   ),
                   SuperadminDirectoryTableViewOption(
                     value: InstitutionDirectoryTableView.activities,

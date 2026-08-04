@@ -7,4 +7,6 @@ final class InstitutionLogoFile {
   final Uint8List bytes;
 }
 
+typedef InstitutionLogoPicker = Future<InstitutionLogoFile?> Function();
+
 Future<InstitutionLogoFile?> pickInstitutionLogo() async => null;

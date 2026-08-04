@@ -35,7 +35,10 @@ podem virar API genérica após proposta e aprovação.
   concluída usa check; atual usa indicador e texto `primary` sobre
   `primaryContainer` arredondado; pendente usa círculo e texto neutros. A ordem
   vertical permanece estável e clicar numa etapa permitida não descarta dados.
-  No compacto, adaptar a mesma semântica sem dropdown Material ou faixa cinza.
+  Em telas amplas e médias, a navegação permanece lateral/vertical; o stepper
+  horizontal com números distribuídos pela largura é um padrão reprovado. No
+  compacto, adaptar a mesma semântica em resumo acessível, sem linha horizontal
+  comprimida, dropdown Material ou faixa cinza.
   No Superadmin, reutilizar `SuperadminFormStepNavigation`; não copiar
   `InstitutionFormNavigation` para outra feature.
 - Usar `CoeloFormTextField`; não recriar decoração, hover ou foco localmente.
@@ -61,8 +64,10 @@ podem virar API genérica após proposta e aprovação.
 
 ## Conteúdo especializado
 
-- Avatar institucional: arquivo 1:1 em PNG, JPG ou WebP, máximo de 2 MB, com
-  prévia circular. Persistência privada segue o fluxo server-side de mídia.
+- Avatar institucional: arquivo PNG, JPG ou WebP, máximo de 2 MB, com ajuste e
+  prévia circulares que produzem a composição visual 1:1. O arquivo de origem
+  não precisa chegar quadrado. Persistência privada segue o fluxo server-side
+  de mídia quando existir; esta correção permanece local e não cria integração.
 - Inserir ou trocar foto/avatar usa obrigatoriamente `AvatarCropDialog`,
   conforme Perfil: título `Ajustar foto`, `X` vermelho, instrução, reset,
   recorte circular, zoom e `Cancelar`/`Aplicar` em 50/50. Não criar picker ou
@@ -79,6 +84,13 @@ podem virar API genérica após proposta e aprovação.
 - Bio com limite conta grafemas. Um ícone com tooltip e semântica abre a paleta
   compacta de emojis, inserindo a escolha no cursor sem substituir o teclado do
   sistema.
+- Campo multilinha compartilhado alinha texto, cursor e ícone explicitamente ao
+  topo e mantém todo o conteúdo dentro da caixa com texto a 200%.
+- Telefone e celular brasileiros usam o formatador compartilhado
+  `CoeloBrazilianPhoneInputFormatter`: `+55 (DD) 3333-4444` para telefone e
+  `+55 (DD) 99999-9999` para celular. A interface de Instituições usa o rótulo
+  `Celular`; a persistência existente em `whatsapp_number` permanece e é
+  normalizada para E.164 ao salvar.
 - Avatar opcional do administrador é configurado no cadastro e na edição: usa o
   recorte circular padrão de perfil, confirmação `Cancelar`/`Aplicar` em 50/50
   e reset por ícone circular com tooltip, semântica e alvo mínimo.

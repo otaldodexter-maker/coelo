@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -79,5 +80,53 @@ void main() {
       tester.getTopLeft(find.byIcon(Icons.notes_rounded)).dy,
       closeTo(tester.getTopLeft(multilineEditable).dy, 1),
     );
+    expect(
+      tester
+          .widget<TextField>(find.descendant(of: multilineField, matching: find.byType(TextField)))
+          .textAlignVertical,
+      TextAlignVertical.top,
+    );
+  });
+
+  testWidgets('forwards input formatters and contains multiline content at 200 percent', (
+    tester,
+  ) async {
+    final controller = TextEditingController(
+      text: 'Bio preenchida em duas linhas\nsem sair da caixa',
+    );
+    addTearDown(controller.dispose);
+    final formatter = FilteringTextInputFormatter.digitsOnly;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: SizedBox(
+              width: 500,
+              child: CoeloFormTextField(
+                controller: controller,
+                labelText: 'Bio',
+                prefixIcon: Icons.notes_rounded,
+                maxLines: 4,
+                inputFormatters: [formatter],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final field = find.byType(TextFormField);
+    final editable = find.descendant(of: field, matching: find.byType(EditableText));
+    expect(
+      tester
+          .widget<TextField>(find.descendant(of: field, matching: find.byType(TextField)))
+          .inputFormatters,
+      contains(formatter),
+    );
+    expect(tester.getTopLeft(editable).dy, greaterThanOrEqualTo(tester.getTopLeft(field).dy));
+    expect(tester.getBottomRight(editable).dy, lessThanOrEqualTo(tester.getBottomRight(field).dy));
   });
 }

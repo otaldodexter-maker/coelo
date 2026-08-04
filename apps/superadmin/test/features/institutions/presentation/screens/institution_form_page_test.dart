@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/data/institution_location_service.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_form_page.dart';
+import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_logo_picker.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_form_navigation.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -84,7 +86,7 @@ void main() {
 
     expect(find.text('Criar instituição'), findsOneWidget);
     expect(find.text('Identidade visual'), findsWidgets);
-    expect(find.text('Imagem quadrada em PNG, JPG ou WebP, com até 2 MB.'), findsOneWidget);
+    expect(find.text('Imagem em PNG, JPG ou WebP, com até 2 MB.'), findsNWidgets(2));
     expect(find.byKey(const Key('institution-logo-picker')), findsOneWidget);
     final handle = tester.widget<InputDecorator>(
       find.descendant(
@@ -221,9 +223,88 @@ void main() {
     expect(find.text('UF'), findsOneWidget);
     expect(find.text('Município'), findsOneWidget);
     expect(find.byKey(const Key('institution-field-whatsappNumber')), findsOneWidget);
+    expect(find.text('Celular'), findsOneWidget);
+    expect(find.text('WhatsApp'), findsNothing);
     expect(find.byKey(const Key('institution-field-websiteUrl')), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('institution-field-contactPhone')), '1133334444');
+    await tester.enterText(
+      find.byKey(const Key('institution-field-whatsappNumber')),
+      '11999994444',
+    );
+    expect(find.text('+55 (11) 3333-4444'), findsOneWidget);
+    expect(find.text('+55 (11) 99999-4444'), findsOneWidget);
   });
 
+  testWidgets('opens the approved local avatar adjustment after choosing institution photo', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final bytes = await tester.runAsync(() async {
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder);
+      canvas.drawRect(
+        const Rect.fromLTWH(0, 0, 32, 32),
+        Paint()..color = CoeloTheme.light.colorScheme.primary,
+      );
+      final image = await recorder.endRecording().toImage(32, 32);
+      final data = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      return data!.buffer.asUint8List();
+    });
+
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+          imagePicker: () async => InstitutionLogoFile(name: 'instituicao.png', bytes: bytes!),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-logo-picker')));
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+    await tester.pumpAndSettle();
+    expect(find.text('Não foi possível ler essa imagem.'), findsNothing);
+    expect(find.text('Ajustar foto'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-avatar-crop-view')), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ajustar foto'), findsNothing);
+    expect(find.byType(Image), findsWidgets);
+  });
+
+  testWidgets('rejects unsupported institution photo formats before opening adjustment', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+          imagePicker: () async =>
+              InstitutionLogoFile(name: 'instituicao.gif', bytes: base64Decode('AA==')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('institution-logo-picker')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Use uma imagem em PNG, JPG ou WebP.'), findsOneWidget);
+    expect(find.text('Ajustar foto'), findsNothing);
+  });
   testWidgets('empty creation associates required errors with UF and municipality selects', (
     tester,
   ) async {

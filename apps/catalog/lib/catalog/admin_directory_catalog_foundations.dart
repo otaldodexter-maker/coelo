@@ -47,6 +47,7 @@ final class _AdminDirectoryFoundationState extends State<_AdminDirectoryFoundati
   var _showTable = true;
   var _page = 1;
   var _pageSize = 8;
+  var _status = 'Todos';
 
   @override
   void dispose() {
@@ -61,7 +62,8 @@ final class _AdminDirectoryFoundationState extends State<_AdminDirectoryFoundati
       children: [
         const Text(
           'Instituições é a referência: toolbar, filtros, toggle, arquivos, '
-          'cards ou tabela, espaçamento e paginação formam uma composição.',
+          'tabs exclusivas de status, cards ou tabela, espaçamento e paginação '
+          'formam uma composição.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloAdminListingToolbar(
@@ -74,7 +76,7 @@ final class _AdminDirectoryFoundationState extends State<_AdminDirectoryFoundati
               hintText: 'Buscar por nome',
             ),
           ),
-          filters: [OutlinedButton(onPressed: () {}, child: const Text('Todos os status'))],
+          filters: [OutlinedButton(onPressed: () {}, child: const Text('Todos os tipos'))],
           actions: [
             SegmentedButton<bool>(
               key: const Key('admin-directory-view-toggle'),
@@ -99,6 +101,7 @@ final class _AdminDirectoryFoundationState extends State<_AdminDirectoryFoundati
                   BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
                 ),
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                fixedSize: const WidgetStatePropertyAll(Size(64, 48)),
               ),
               segments: const [
                 ButtonSegment(
@@ -137,6 +140,14 @@ final class _AdminDirectoryFoundationState extends State<_AdminDirectoryFoundati
               ],
             ),
           ],
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        _DirectoryStatusTabs(
+          selected: _status,
+          onSelected: (value) => setState(() {
+            _status = value;
+            _page = 1;
+          }),
         ),
         const SizedBox(height: CoeloSpacing.space4),
         if (_showTable) ...[
@@ -212,6 +223,74 @@ final class _AdminDirectoryFoundationState extends State<_AdminDirectoryFoundati
           }),
         ),
       ],
+    );
+  }
+}
+
+final class _DirectoryStatusTabs extends StatelessWidget {
+  const _DirectoryStatusTabs({required this.selected, required this.onSelected});
+
+  static const _labels = ['Todos', 'Ativos', 'Em Implantação', 'Inativos'];
+
+  final String selected;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return SingleChildScrollView(
+      key: const Key('admin-directory-status-tabs'),
+      scrollDirection: Axis.horizontal,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final label in _labels)
+              Semantics(
+                button: true,
+                selected: selected == label,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: selected == label
+                        ? Border(bottom: BorderSide(color: colors.primary, width: 2))
+                        : null,
+                  ),
+                  child: TextButton(
+                    key: Key('admin-directory-status-$label'),
+                    onPressed: () => onSelected(label),
+                    style: ButtonStyle(
+                      minimumSize: const WidgetStatePropertyAll(Size(0, CoeloSize.touchMin)),
+                      padding: const WidgetStatePropertyAll(
+                        EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
+                      ),
+                      foregroundColor: WidgetStatePropertyAll(
+                        selected == label ? colors.primary : colors.onSurfaceVariant,
+                      ),
+                      backgroundColor: WidgetStateProperty.resolveWith(
+                        (states) =>
+                            states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused)
+                            ? colors.primaryContainer.withValues(alpha: 0.48)
+                            : Colors.transparent,
+                      ),
+                      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                      shape: const WidgetStatePropertyAll(RoundedRectangleBorder()),
+                      textStyle: WidgetStatePropertyAll(
+                        Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: selected == label ? FontWeight.w700 : FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    child: Text(label),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

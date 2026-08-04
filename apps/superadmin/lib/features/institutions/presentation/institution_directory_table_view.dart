@@ -1,7 +1,7 @@
 enum InstitutionDirectoryTableView {
   grouped('Agrupado'),
   units('Unidades'),
-  groups('Grupos'),
+  groups('Turmas'),
   activities('Atividades');
 
   const InstitutionDirectoryTableView(this.label);

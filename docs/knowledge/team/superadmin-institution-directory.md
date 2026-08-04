@@ -40,9 +40,25 @@ cards/tabela e arquivos; há `space4` entre toolbar e conteúdo. Cards usam
 mínima de 216 px e padding horizontal `space6`/vertical `space4`. No modo
 tabela, a faixa de criação precede `space4` e a tabela redimensionável.
 
+O status não concorre com a toolbar em um dropdown. Entre toolbar e resultados,
+tabs lineares exclusivas oferecem `Todos`, `Ativos`, `Em Implantação` e
+`Inativos`. `Todos` não aplica filtro e continua exibindo também rascunhos,
+suspensas e arquivadas; as demais tabs correspondem, respectivamente, a
+`active`, `onboarding` e `inactive`.
+
+Cada segmento do toggle Cards/Tabela mede 64 × 48 px. O menu de visões
+reutiliza `CoeloAdminFlyout`, com o mesmo espaçamento dos demais flyouts
+administrativos. Na tabela, a largura natural nasce centralizada quando for
+menor que a viewport; quando ocupar ou exceder a área, preenche e rola
+normalmente. Scrollbar e track horizontais permanecem visíveis desde a primeira
+coluna e são pintados acima da cópia visual fixa. A faixa de criação continua
+em largura total.
+
 Hover do card preserva `surface` e enfatiza borda/sombra com `primary`; hover de
 linha usa `primaryContainer` sem raio ou gap. O toggle segmentado usa
 `surface`/`outlineVariant`, com seleção, hover e foco em
-`primaryContainer`/`primary`. Clicar diretamente em Tabela abre `Agrupado`;
-hover ou foco pode abrir as visões detalhadas, com caminho equivalente por
-toque e teclado. Arquivos reutiliza `CoeloAdminFileActions`.
+`primaryContainer`/`primary`. Clicar diretamente em Tabela ou ativá-la com Enter/Espaço abre `Agrupado`;
+as visões detalhadas abrem por hover no segmento inteiro, pressão longa em toda
+a área de 64 × 48 px ou `Alt+↓` com foco. `Esc` fecha e devolve foco ao gatilho,
+e a opção atual expõe `selected` semanticamente. Arquivos reutiliza
+`CoeloAdminFileActions`.

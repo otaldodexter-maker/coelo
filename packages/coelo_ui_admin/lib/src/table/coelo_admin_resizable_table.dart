@@ -92,7 +92,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
 
     return LayoutBuilder(
       builder: (context, constraints) => Align(
-        alignment: AlignmentDirectional.topStart,
+        alignment: AlignmentDirectional.topCenter,
         child: SizedBox(
           width: math.min(tableWidth, constraints.maxWidth),
           child: Card(
@@ -106,12 +106,13 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                   PointerDeviceKind.trackpad,
                 },
               ),
-              child: Stack(
-                children: [
-                  Scrollbar(
-                    controller: _scrollController,
-                    thumbVisibility: true,
-                    child: SingleChildScrollView(
+              child: Scrollbar(
+                controller: _scrollController,
+                thumbVisibility: true,
+                trackVisibility: true,
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
                       key: const Key('coelo-admin-table-scroll'),
                       controller: _scrollController,
                       scrollDirection: Axis.horizontal,
@@ -126,15 +127,15 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    width: _widths[widget.pinnedColumn.id],
-                    height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
-                    child: _pinnedColumn(context),
-                  ),
-                ],
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      width: _widths[widget.pinnedColumn.id],
+                      height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
+                      child: _pinnedColumn(context),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

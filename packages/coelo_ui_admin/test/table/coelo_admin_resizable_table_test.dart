@@ -33,6 +33,55 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.getSize(find.byType(Card)).width, 340);
+    expect(
+      tester.getCenter(find.byType(Card)).dx,
+      closeTo(tester.getCenter(find.byType(CoeloAdminResizableTable<TestRow>)).dx, 0.01),
+    );
+  });
+
+  testWidgets('centers natural width and keeps the scrollbar across responsive widths', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [300.0, 375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 600));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(
+            body: CoeloAdminResizableTable<TestRow>(
+              items: const [TestRow('row-1', 'Alpha', 'Ativa')],
+              rowKey: (row) => row.id,
+              pinnedColumn: _nameColumn,
+              columns: const [_statusColumn],
+              headerHeight: 56,
+              rowHeight: 64,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final table = find.byType(CoeloAdminResizableTable<TestRow>);
+      final card = find.byType(Card);
+      final scrollbar = find.byType(Scrollbar);
+      expect(tester.getSize(card).width, width < 340 ? width : 340, reason: 'viewport $width');
+      expect(
+        tester.getCenter(card).dx,
+        closeTo(tester.getCenter(table).dx, 0.01),
+        reason: 'viewport $width',
+      );
+      expect(
+        tester.getSize(scrollbar).width,
+        tester.getSize(card).width,
+        reason: 'viewport $width',
+      );
+      expect(
+        tester.getTopLeft(scrollbar).dx,
+        closeTo(tester.getTopLeft(card).dx, 0.01),
+        reason: 'viewport $width',
+      );
+    }
   });
 
   testWidgets('keeps a pinned duplicate over a horizontally scrollable table', (tester) async {
@@ -46,6 +95,14 @@ void main() {
     expect(scroll.scrollDirection, Axis.horizontal);
     expect(scroll.controller!.position.maxScrollExtent, greaterThan(0));
     expect(scrollbar.thumbVisibility, isTrue);
+    expect(scrollbar.trackVisibility, isTrue);
+    expect(
+      find.ancestor(
+        of: find.byKey(const Key('coelo-admin-table-pinned-column')),
+        matching: find.byType(Scrollbar),
+      ),
+      findsOneWidget,
+    );
     expect(find.byType(Card), findsOneWidget);
     expect(tester.widget<Card>(find.byType(Card)).clipBehavior, Clip.antiAlias);
     expect(

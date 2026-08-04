@@ -153,13 +153,33 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(_goldenApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.tap(find.byKey(const Key('institution-type-filter')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Ativa').last);
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Escola'));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),
       matchesGoldenFile('goldens/institution_directory_filter_selected_light_1440.png'),
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Em Implantação'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_status_tabs_light_1440.png'),
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_goldenApp());
+    await tester.pumpAndSettle();
+    await tester.longPress(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('institution-directory-golden-root')),
+      matchesGoldenFile('goldens/institution_directory_table_flyout_open_light_1440.png'),
     );
   });
 
@@ -197,11 +217,11 @@ void main() {
 
     await tester.pumpWidget(_goldenApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.tap(find.byKey(const Key('institution-type-filter')));
     await tester.pumpAndSettle();
     final filterMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await filterMouse.addPointer();
-    await filterMouse.moveTo(tester.getCenter(find.text('Ativa').last));
+    await filterMouse.moveTo(tester.getCenter(find.widgetWithText(MenuItemButton, 'Escola')));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),

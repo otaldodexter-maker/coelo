@@ -241,7 +241,7 @@ class _InstitutionCardState extends State<_InstitutionCard> {
                           second: _CardDetail(
                             key: Key('institution-card-detail-groups-${item.id}'),
                             icon: Icons.groups_outlined,
-                            label: 'Grupos (Turmas)',
+                            label: 'Turmas',
                             value: '${item.groupsCount}',
                           ),
                         ),

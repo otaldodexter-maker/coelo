@@ -431,7 +431,7 @@ Cada tela deve ter uma ação primária clara. O uso excessivo de botões preenc
 | Secondary / tonal | Fundo #FFF3EE · texto #742100 | Fundo #742100 · texto #FFE0D5 | Ação importante, mas não dominante. |
 | Outlined | Transparente · borda #C4C9CC · texto #3F4549 | Transparente · borda #596166 · texto #F5F7F8 | Cancelar, filtrar, alternar. |
 | Text | Sem fundo · texto #B83300 | Sem fundo · texto #FFB59B | Ação contextual de baixa ênfase. |
-| Danger | Fundo #B42318 · texto branco | Fundo #FFB4AB · texto #690005 | Excluir, revogar ou encerrar. |
+| Danger | Fundo #B42318 · texto branco | Fundo #FFB4AB · texto #690005 | Excluir, revogar convite/acesso/vínculo/autorização ou encerrar. |
 
 ### Hierarquia operacional
 
@@ -536,7 +536,10 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 - Navegação de formulário por etapas replica Criar/Editar Instituição:
   concluída com check, atual em `primaryContainer` arredondado com indicador e
   texto `primary`, pendente com círculo/texto neutros. Preservar ordem, retorno
-  sem perda e adaptação compacta; não trocar por menu cinza ou controle cru.
+  sem perda. Em wide e medium, ela permanece lateral/vertical; stepper
+  horizontal distribuído pela largura é reprovado. No compacto, usar resumo
+  acessível da mesma hierarquia; não trocar por linha comprimida, menu cinza ou
+  controle cru.
   No Superadmin, reutilizar `SuperadminFormStepNavigation`.
 - Diálogo administrativo usa `CoeloAdminDialogShell`, derivado do popup de bug,
   com cabeçalho dividido, fechar acessível, corpo rolável e rodapé persistente.
@@ -556,10 +559,10 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 - Formulários não usam faixas `surfaceContainer` ou cinza apenas para preencher
   espaço. Agrupamento vem de espaçamento, borda e hierarquia; aviso informativo
   pode usar `primaryContainer` quando seu significado justificar o destaque.
-- Foto de perfil institucional aceita PNG, JPG ou WebP quadrado de até 2 MB.
-  O quadrado evita recorte ambíguo no avatar circular; 2 MB preserva qualidade
-  para exibição em alta densidade sem transferência excessiva. Rejeitar antes
-  do upload e explicar formato, proporção e limite junto ao controle.
+- Foto de perfil institucional aceita PNG, JPG ou WebP de até 2 MB. A seleção
+  abre o ajuste circular aprovado do Perfil, que produz a composição visual 1:1;
+  o arquivo de origem não precisa chegar quadrado. Rejeitar formato ou limite
+  inválido antes do ajuste e explicá-los junto ao controle.
 - Cor institucional aceita hexadecimal `#RRGGBB` e seleção visual por área
   bidimensional de saturação/valor com controle de matiz, amostras atual e
   nova e edição HSV e RGB. A amostra nunca substitui o valor textual, para
@@ -625,7 +628,9 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 
 - Use para três ou mais categorias irmãs que filtram o mesmo diretório sem
   trocar toolbar, cards/tabela ou contexto de página. `Acessos > Pessoas` é a
-  baseline aprovada.
+  baseline estrutural. Em `Instituições`, as categorias de status aprovadas são
+  `Todos`, `Ativos`, `Em Implantação` e `Inativos`; estados excepcionais
+  continuam acessíveis em `Todos`.
 - A faixa permanece sobre `surface`, sem cápsula: linha-base de 1 px em
   `outlineVariant`; tab selecionada com label `primary` em peso 700 e underline
   `primary` de 2 px; inativas usam `onSurfaceVariant` em peso 400.
@@ -633,8 +638,10 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   `space4` entre toolbar e tabs e novamente entre tabs e conteúdo.
 - Hover/foco usam realce `primaryContainer` sutil, sem cinza; seleção continua
   evidente por texto e underline. Em compact, usar rolagem horizontal.
-- Não confundir com o toggle segmentado Cards/Tabela, com filtros/chips ou com
-  navegação entre páginas independentes.
+- Não confundir com o toggle segmentado Cards/Tabela, com filtros independentes
+  ou chips multi-select, nem com navegação entre páginas independentes. Status
+  pode usar tabs somente quando for uma segmentação principal, exclusiva e
+  aprovada do mesmo conjunto de resultados, como em `Instituições`.
 
 ## Navegação principal do App
 
@@ -817,13 +824,18 @@ referência de composição é a tabela de Instituições. Não substituir por u
 | Cabeçalho | `colorScheme.surfaceContainer`, 12–14 px SemiBold e rótulos acessíveis; manter a mesma geometria das colunas de dados. |
 | Linha | 64 px mais divisor de 1 px `colorScheme.outlineVariant`; linhas contínuas, sem zebra, raio ou espaçamento entre si. Hover, foco e seleção usam `colorScheme.primaryContainer`. |
 | Coluna fixa | A primeira coluna é uma coluna fixa visual durante o scroll horizontal; a duplicação visual não pode duplicar a semântica no leitor de tela. |
-| Overflow | Exibir scrollbar horizontal visível quando necessário, permitir mouse, toque, caneta e trackpad e preservar o clip do card. |
+| Overflow | Exibir scrollbar e track horizontais visíveis quando necessário, de ponta a ponta e acima da cópia visual da coluna fixa; permitir mouse, toque, caneta e trackpad e preservar o clip do card. |
 | Redimensionamento | Cada coluna redimensionável oferece redimensionamento por mouse e teclado, cursor de coluna, foco visível e rótulo semântico para aumentar ou reduzir a largura. |
 | Texto longo | Usar truncamento sem quebra (`ellipsis`), sem wrap; tooltip somente para informação não crítica. |
 | Status | Status semântico usa chip: texto sempre acompanha cor e ícone opcional. |
 | Ações | Usar ações compactas: no máximo duas ações rápidas ou menu contextual; separar ações sensíveis. |
 | Números | Alinhar à direita; usar tabular figures quando disponível. |
 | Responsividade | Priorizar colunas; no compact, usar cards quando necessário. Se a tabela continuar, manter scroll horizontal em vez de ocultar informação crítica. |
+
+A largura natural da tabela fica centralizada quando for menor que a viewport.
+Quando ocupar ou exceder o espaço disponível, a tabela continua preenchendo a
+área e rolando normalmente. A faixa `CoeloAdminCreateAction.banner` preserva a
+largura total do diretório e não acompanha essa centralização.
 
 ## 17.2 Paginação administrativa
 
@@ -915,10 +927,18 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   `surface` e `radius.lg`; hover/foco enfatizam somente borda e sombra na
   hierarquia primária. Não compor `Card` + `InkWell` local nem aceitar overlay
   Material cinza ou hover retangular.
-- A baseline de Instituições é obrigatória para todo card de diretório
-  administrativo; usar `CoeloAdminInteractiveCard`. Quando houver status
-  semântico, usar `CoeloAdminExpandableStatusIndicator`: o indicador começa circular
-  em 24 × 24 e sem texto; hover, foco por teclado ou toque no indicador o
+- A baseline de Instituições é automática para todo card do Coelo, seja
+  administrativo, informativo, de diretório ou de conteúdo. Em
+  Admin/Superadmin, usar `CoeloAdminInteractiveCard` no card clicável e
+  `CoeloAdminCreateAction.tile` no card de criação tracejado; card informativo
+  compartilha a anatomia, sem semântica de botão. Principal implementa o mesmo
+  contrato no próprio pacote e nunca importa `coelo_ui_admin`. Outra anatomia
+  exige que o usuário indique
+  explicitamente outro padrão aprovado. Quando houver status semântico, o
+  indicador começa circular em 24 × 24 e sem texto. Em Admin/Superadmin, usar
+  `CoeloAdminExpandableStatusIndicator`; no Principal, implementar o mesmo
+  contrato no pacote próprio, sem importar `coelo_ui_admin`. Hover, foco por
+  teclado ou toque no indicador o
   expande para revelar o rótulo. A cor segue o token semântico do status e o
   texto impede dependência exclusiva de cor. Com reduced motion, a expansão
   acontece sem animação não essencial. Não usar chip sempre aberto como
@@ -938,12 +958,18 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 - Flyouts de Tour e Perfil são as referências de menu ancorado: `surface`, sem
   tint, `radius.lg`, borda, elevação e padding `space2`. Ações destrutivas como
   sair, excluir e deletar ficam abaixo de divisor, com respiro `space1`.
+- `Revogar convite`, acesso, vínculo ou autorização também é negativo. Em um
+  flyout de convite, `Reenviar convite` permanece padrão e `Revogar convite`
+  fica abaixo de divisor, com conteúdo `error` e hover/foco `errorContainer`;
+  nunca grafite sobre faixa cinza retangular.
 - O toggle cards/tabela é um controle segmentado único, não dois botões soltos.
-  Cada segmento preserva alvo mínimo de 48 px e nome acessível.
-- Clicar diretamente em Tabela abre a visão `Agrupado`. Quando o diretório
-  possui detalhes hierárquicos, hover ou foco nesse segmento abre um flyout
-  `surface`, sem tint, com borda, raio e elevação Coelo; toque e teclado devem
-  oferecer o mesmo caminho, sem depender apenas de hover.
+  Cada segmento mede 64 × 48 px e preserva nome acessível. O flyout de visões
+  reutiliza `CoeloAdminFlyout`; não compor `MenuAnchor` local na feature.
+- Clicar diretamente em Tabela ou ativá-la com Enter/Espaço abre a visão
+  `Agrupado`. Quando o diretório possui detalhes hierárquicos, o flyout abre por
+  hover no segmento inteiro, pressão longa em toda a área de 64 × 48 px ou
+  `Alt+↓` com foco; nunca restringir o gesto ao ícone. `Esc` fecha e devolve o
+  foco ao gatilho. A opção atual expõe `selected` semanticamente, além da cor.
 - O rodapé sticky de paginação é composição privada reutilizável nos diretórios
   do Superadmin. Usa `surface` translúcida a 84% no tema claro e 88% no escuro,
   blur `CoeloSpacing.space3`, sem borda ou linha superior e com altura medida

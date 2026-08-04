@@ -38,10 +38,13 @@ silenciosamente.
    deletar, ler também o
    [contrato de diretórios e flyouts](references/admin-directory-flyout-contracts.md)
    e consultar `pattern.admin-directory`, `pattern.flyout-actions` e
-   `pattern.interaction-states`. Para qualquer card de diretório administrativo,
-   Instituições é baseline obrigatória e deve ser consultado também
-   `pattern.institution-card-status`. Para `X`, sair, desligar, encerrar, fechar,
-   remover, deletar ou excluir, consultar também `pattern.negative-actions`;
+   `pattern.interaction-states`. Para qualquer card, independentemente da
+   feature ou finalidade, Instituições é a baseline automática e deve ser
+   consultado também `pattern.institution-card-status`. Só divergir quando o
+   usuário indicar explicitamente outro padrão aprovado; contexto implícito não
+   autoriza inventar outra anatomia. Para `X`, sair, desligar, encerrar, fechar,
+   revogar convite, acesso, vínculo ou autorização, remover, deletar ou excluir,
+   consultar também `pattern.negative-actions`;
    toda ação negativa habilitada permanece na hierarquia
    `errorContainer`/`error`, independentemente do verbo escolhido.
    Quando mencionar tabs, abas, categorias irmãs, segmentos de diretório ou
@@ -49,7 +52,9 @@ silenciosamente.
    [contrato de tabs lineares de diretório](references/directory-linear-tabs-contract.md)
    e consultar `pattern.directory-linear-tabs`. Esse padrão é condicional:
    filtra o mesmo diretório sem trocar a toolbar ou a página; não substitui o
-   toggle em cápsula de Cards/Tabela, filtros, chips ou navegação entre rotas.
+   toggle em cápsula de Cards/Tabela, filtros independentes, chips ou navegação
+   entre rotas. Instituições é a exceção de status aprovada: `Todos`, `Ativos`,
+   `Em Implantação` e `Inativos` usam tabs exclusivas, sem dropdown concorrente.
    Quando popup ou dialog tiver uma, duas ou três ações, consultar
    `pattern.dialog-actions`: ações irmãs têm larguras iguais; uma ocupa 100%,
    duas dividem 50/50 e três dividem em terços, com gaps tokenizados. Empilhar
@@ -75,9 +80,12 @@ silenciosamente.
    `SuperadminFormActionFooter`, testes funcionais e goldens mobile light e
    desktop dark; autenticação continua sendo a referência do campo-base.
    Para `paginação`, `paginar`, `etapas`, `stepper` ou `wizard`, distinguir:
-   progresso sequencial usa `pattern.form-step-navigation`; troca de página de
-   registros usa `pattern.directory-pagination`. Ambos derivam das referências
-   de Instituições e não podem ser trocados entre si.
+   progresso sequencial usa `pattern.form-step-navigation`, com navegação
+   lateral/vertical de Criar/Editar Instituição em wide e medium; troca de
+   página de registros usa `pattern.directory-pagination`. Stepper horizontal
+   disperso é reprovado. No compacto, usar resumo acessível da mesma hierarquia,
+   nunca linha comprimida ou menu Material cru. Os contratos não podem ser
+   trocados entre si.
    Se uma regra real do produto exigir identidade ou composição diferente,
    parar antes do código, apresentar a comparação e a proposta visual ao
    usuário e aguardar aprovação explícita. Não implementar a divergência como
@@ -129,12 +137,17 @@ silenciosamente.
    `CoeloAdminFileActions`, `CoeloAdminFlyout`, `CoeloAdminInteractiveCard`,
    `CoeloAdminExpandableStatusIndicator`, tabela e paginação antes de criar
    qualquer substituto local.
-   O card de Instituições define o contrato visual de todo card de diretório e
-   deve ser implementado com `CoeloAdminInteractiveCard`:
+   O card de Instituições define a anatomia visual de todo card do Coelo.
+   Em Admin/Superadmin, card clicável usa `CoeloAdminInteractiveCard` e card de
+   criação usa `CoeloAdminCreateAction.tile`; card apenas informativo herda a
+   anatomia sem receber semântica interativa. Principal reproduz a anatomia em
+   seu próprio pacote e nunca importa `coelo_ui_admin`. Em todos os casos,
    a superfície continua `surface`, o raio é preservado e hover/foco alteram
    somente borda e sombra; overlay/splash permanece transparente, sem cinza. Quando o card
-   possui status semântico, usar `CoeloAdminExpandableStatusIndicator`; o
-   indicador começa compacto em 24 × 24 sem texto e
+   possui status semântico, preservar o indicador compacto de 24 × 24. Em
+   Admin/Superadmin, usar `CoeloAdminExpandableStatusIndicator`; no Principal,
+   reproduzir o mesmo contrato aprovado em componente do próprio pacote, sem
+   importar `coelo_ui_admin`. O indicador começa sem texto e
    expande para revelar o rótulo em hover, foco ou toque; usa cores semânticas,
    não depende apenas da cor e elimina a animação não essencial com reduced
    motion. Não substituir esse comportamento por chip sempre aberto.
@@ -143,6 +156,14 @@ silenciosamente.
    seleção laranja por label + underline e hover/foco tonal primário sutil, sem
    cápsula e sem cinza. Preservar `space4` entre toolbar, tabs e conteúdo. Não
    recriar `TabBar` ou `InkWell` local enquanto o compartilhado atender.
+   O toggle Cards/Tabela usa segmentos imutáveis de 64 × 48 px e seu menu de
+   visões deve reutilizar `CoeloAdminFlyout`. Clicar ou ativar Tabela com
+   Enter/Espaço seleciona diretamente `Agrupado`; as variações abrem por hover
+   no segmento inteiro, pressão longa em toda a área de 64 × 48 ou `Alt+↓` com
+   foco. Nunca limitar o gesto ao ícone. O item atual do flyout expõe
+   `Semantics(selected: true)` e `Esc` fecha devolvendo o foco ao gatilho.
+   `CoeloAdminResizableTable` centraliza a largura natural quando houver sobra
+   e pinta scrollbar/track acima da coluna fixa.
    Não criar campo textual ou single-select local quando
    `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Medidas de
    grid, gaps, padding e rodapé devem citar tokens existentes ou uma referência

@@ -92,37 +92,40 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
     final hoverBackground = negative ? colors.errorContainer : colors.primaryContainer;
     final hoverForeground = negative ? colors.error : colors.primary;
 
-    return MenuItemButton(
-      onPressed: item.enabled ? () => onSelected(item.value) : null,
-      leadingIcon: item.icon == null ? null : Icon(item.icon, size: CoeloSize.iconSm),
-      style: ButtonStyle(
-        minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
-        padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: CoeloSpacing.space3, vertical: CoeloSpacing.space2),
+    return Semantics(
+      selected: item.selected,
+      child: MenuItemButton(
+        onPressed: item.enabled ? () => onSelected(item.value) : null,
+        leadingIcon: item.icon == null ? null : Icon(item.icon, size: CoeloSize.iconSm),
+        style: ButtonStyle(
+          minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: CoeloSpacing.space3, vertical: CoeloSpacing.space2),
+          ),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+          ),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (!item.enabled) return colors.onSurface.withValues(alpha: 0.38);
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                item.selected) {
+              return hoverForeground;
+            }
+            return foreground;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                item.selected) {
+              return hoverBackground;
+            }
+            return Colors.transparent;
+          }),
         ),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-        ),
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        foregroundColor: WidgetStateProperty.resolveWith((states) {
-          if (!item.enabled) return colors.onSurface.withValues(alpha: 0.38);
-          if (states.contains(WidgetState.hovered) ||
-              states.contains(WidgetState.focused) ||
-              item.selected) {
-            return hoverForeground;
-          }
-          return foreground;
-        }),
-        backgroundColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.hovered) ||
-              states.contains(WidgetState.focused) ||
-              item.selected) {
-            return hoverBackground;
-          }
-          return Colors.transparent;
-        }),
+        child: Text(item.label),
       ),
-      child: Text(item.label),
     );
   }
 }

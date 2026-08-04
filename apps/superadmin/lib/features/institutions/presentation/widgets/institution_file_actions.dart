@@ -98,7 +98,7 @@ String _viewFileSuffix(String value) => switch (value) {
   'Atividades' => 'atividades',
   'Agrupado' => 'agrupado',
   'Unidades' => 'unidades',
-  'Grupos' => 'grupos',
+  'Turmas' => 'turmas',
   'Cards' => 'cards',
   _ => 'visao',
 };

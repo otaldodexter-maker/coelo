@@ -15,13 +15,16 @@ com underline. Ele não usa cápsula, card, chip ou fundo cinza.
 
 Use quando três ou mais categorias irmãs preservarem a mesma toolbar, o mesmo
 conjunto de resultados e a mesma estrutura de cards/tabela. Exemplos aprovados:
-`Todos`, `Equipe institucional`, `Responsáveis`, `Crianças` e `Perfil duplo`.
+`Todos`, `Equipe institucional`, `Responsáveis`, `Crianças` e `Perfil duplo` em
+Pessoas; `Todos`, `Ativos`, `Em Implantação` e `Inativos` em Instituições.
 
 Não use:
 
 - para Cards/Tabela, que é um toggle segmentado em cápsula;
-- para filtros independentes, status ou escolhas curtas, que usam filtros,
-  chips ou controles de seleção;
+- para filtros independentes, status multi-select ou escolhas curtas, que usam
+  filtros, chips ou controles de seleção. Status só usa tabs quando for a
+  segmentação principal, exclusiva e aprovada do mesmo diretório, como em
+  Instituições;
 - para destinos com rota, título ou contexto próprios, que usam navegação de
   página;
 - quando existirem apenas duas opções binárias de modo.
@@ -62,6 +65,7 @@ Não recriar `TabBar`, `InkWell` ou indicadores locais dentro de uma feature
 enquanto esse compartilhado atender. Ele é uma composição compartilhada do
 Superadmin, não uma API pública de `coelo_ui_admin`.
 
-O exemplo real permanece em `Acessos > Pessoas`, no
-`people-segment-selector`. A tela não deve ser alterada para documentar o
-padrão; seus testes e o widget compartilhado são a evidência executável.
+O exemplo estrutural permanece em `Acessos > Pessoas`, no
+`people-segment-selector`. Instituições reutiliza o mesmo componente para a
+segmentação exclusiva de status, sem manter um dropdown concorrente. Os testes
+e goldens de cada tela são a evidência executável.

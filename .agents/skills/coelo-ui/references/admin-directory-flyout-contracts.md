@@ -14,8 +14,9 @@ implementação canônica é pública em `coelo_ui_admin`: usar
 menus ancorados. Features não recriam essas superfícies com widgets Material
 brutos.
 
-Instituições não é apenas exemplo ilustrativo: é a baseline obrigatória para
-todo card de diretório administrativo, inclusive em novas features.
+Instituições não é apenas exemplo ilustrativo: é a baseline automática para
+todo card do Coelo, inclusive fora de diretórios e em novas features. Somente
+uma indicação explícita do usuário por outro padrão aprovado permite divergir.
 
 ## Anatomia do diretório
 
@@ -44,12 +45,21 @@ todo card de diretório administrativo, inclusive em novas features.
   não usa checkbox. Reutilizar os componentes administrativos indexados.
 - O toggle cards/tabela é um controle segmentado único: contêiner pill em
   `surface`, borda e divisória `outlineVariant`; selecionado, hover e foco usam
-  a hierarquia `primaryContainer`/`primary`. Cada segmento tem alvo mínimo de
-  48 px e nome acessível. Não usar dois botões soltos nem cor cinza local.
-- Clicar diretamente em Tabela seleciona `Agrupado`. Quando houver visões
-  detalhadas, hover ou foco no segmento abre um flyout Coelo com as opções;
-  toque, Enter e Espaço oferecem caminho equivalente. O flyout usa `surface`,
-  tint transparente, borda, `CoeloRadius.lg` e elevação semântica.
+  a hierarquia `primaryContainer`/`primary`. Cada segmento mede 64 × 48 px e
+  tem nome acessível. Não usar dois botões soltos nem cor cinza local.
+- Clicar diretamente em Tabela ou ativá-la com Enter/Espaço seleciona
+  `Agrupado`. Quando houver visões detalhadas, o flyout abre por hover no
+  segmento inteiro, pressão longa em toda a área de 64 × 48 px ou `Alt+↓` com
+  foco. Nunca limitar hover ou pressão longa ao ícone. `Esc` fecha e devolve o
+  foco ao gatilho. O flyout usa `surface`, tint transparente, borda,
+  `CoeloRadius.lg` e elevação semântica; a opção atual expõe semanticamente
+  `selected: true`, sem depender somente da cor.
+- O flyout de visões usa `CoeloAdminFlyout`; `MenuAnchor` local na feature não é
+  uma variante permitida.
+- A largura natural de `CoeloAdminResizableTable` nasce centralizada quando for
+  menor que a viewport. Scrollbar e track horizontais são pintados acima da
+  coluna fixa e permanecem visíveis desde a primeira coluna. A faixa de criação
+  continua em largura total.
 - Arquivos usa `CoeloAdminFileActions`. O flyout agrupa importação e exportações
   em `surface`, sem tint, e seus itens seguem o hover de item discreto.
 
@@ -64,7 +74,7 @@ cinza local, HEX local ou uma regra única aplicada a tudo bloqueiam a entrega.
 | Ação tonal | `primaryContainer`/`onPrimaryContainer`, sem overlay extra | forma do controle | sugestões e envio antecipado |
 | Item discreto | fundo `primaryContainer`, conteúdo `primary` | `radius.md` e `spaceHalf` entre itens | menu lateral, Tour, Perfil e Arquivos |
 | Linha contínua | fundo `primaryContainer` | sem raio e sem gap | opções de filtro e linhas de tabela |
-| Card interativo | mantém `surface`; borda passa a `primary` translúcido e a sombra ganha ênfase primária sutil | preserva `radius.lg`; não preencher todo o card | cards de Instituições |
+| Card interativo | mantém `surface`; borda passa a `primary` translúcido e a sombra ganha ênfase primária sutil | preserva `radius.lg`; não preencher todo o card | qualquer card, por padrão |
 | Ação negativa | fundo `errorContainer`, conteúdo `error` | varia por ícone, item ou botão; grupo de menu separado por divisor | X do Bug e `Sair` no Perfil |
 | Toggle segmentado | segmento usa `primaryContainer`/`primary` | pill externa e divisória contínua | cards/tabela de Instituições |
 
@@ -80,8 +90,10 @@ transparentes.
 - Hover e foco preservam `radius.lg` e comunicam interatividade somente pela
   borda primária translúcida, sombra primária sutil e foco visível.
 - Quando existe status semântico, seu indicador inicia como ponto circular de
-  24 × 24, sem texto. Implementar com `CoeloAdminExpandableStatusIndicator`;
-  não recriar o estado localmente. Em hover, foco por teclado ou ativação por toque no
+  24 × 24, sem texto. Em Admin/Superadmin, implementar com
+  `CoeloAdminExpandableStatusIndicator` e não recriar o estado localmente. No
+  Principal, implementar o mesmo contrato no pacote próprio e nunca importar
+  `coelo_ui_admin`. Em hover, foco por teclado ou ativação por toque no
   indicador, ele expande e revela o rótulo do status.
 - O estado expandido preserva a cor semântica correspondente e inclui texto;
   nunca comunicar Ativa, Suspensa, Em implantação ou outro status apenas pela
@@ -100,12 +112,16 @@ transparentes.
 - Flyout usa `colorScheme.surface`, `surfaceTintColor: Colors.transparent`,
   `CoeloRadius.lg`, borda `outlineVariant`, elevação e padding `space2`.
 - Tour da tela/menu/completo usa o flyout de Tour como referência.
-- Perfil e Configurações formam o grupo padrão. `Sair`, excluir ou deletar
+- Perfil e Configurações formam o grupo padrão. `Sair`, revogar convite,
+  acesso, vínculo ou autorização, excluir ou deletar
   pertencem a um grupo destrutivo inferior, separado por `Divider` e respiro
   `space1`.
 - Itens padrão seguem item discreto. Itens destrutivos usam
   `errorContainer`/`error` no hover e foco. Nunca tornar o flyout inteiro
   vermelho e nunca misturar ação destrutiva no grupo padrão.
+- Em ações de convite, `Reenviar convite` é item padrão. `Revogar convite` usa
+  `startsGroup: true` e `tone: CoeloAdminFlyoutTone.negative`; o divisor e a
+  hierarquia vermelha são obrigatórios mesmo quando a revogação for reversível.
 - Ícone, texto, hover, foco e área clicável pertencem ao mesmo alvo mínimo de
   48 px. `Esc` fecha e devolve o foco ao gatilho.
 

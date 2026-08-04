@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,9 @@ void main() {
     await tester.pumpWidget(_app(onSelected: (_) {}));
 
     expect(find.byType(SegmentedButton<bool>), findsOneWidget);
+    expect(find.byType(CoeloAdminFlyout<_View>), findsOneWidget);
+    final toggle = find.byType(SegmentedButton<bool>);
+    expect(tester.getSize(toggle), const Size(128, 48));
     expect(
       find.byWidgetPredicate(
         (widget) => widget is Tooltip && widget.message?.contains('Mantenha pressionado') == true,
@@ -48,7 +52,9 @@ void main() {
     await tester.pumpWidget(_app(onSelected: (value) => selected = value));
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
-    await mouse.addPointer(location: tester.getCenter(find.byKey(const Key('table-segment'))));
+    addTearDown(mouse.removePointer);
+    final toggleRect = tester.getRect(find.byType(SegmentedButton<bool>));
+    await mouse.addPointer(location: Offset(toggleRect.right - 2, toggleRect.center.dy));
     await tester.pumpAndSettle();
 
     expect(find.text('Agrupado'), findsOneWidget);
@@ -61,16 +67,15 @@ void main() {
   testWidgets('offers equivalent touch and keyboard paths to the variations', (tester) async {
     await tester.pumpWidget(_app(onSelected: (_) {}));
 
-    await tester.longPress(find.byKey(const Key('table-segment')));
+    final toggleRect = tester.getRect(find.byType(SegmentedButton<bool>));
+    await tester.longPressAt(Offset(toggleRect.right - 2, toggleRect.center.dy));
     await tester.pumpAndSettle();
     expect(find.text('Detalhado por Unidades'), findsOneWidget);
 
     await tester.tapAt(const Offset(4, 4));
     await tester.pumpAndSettle();
+    expect(find.text('Detalhado por Unidades'), findsNothing);
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-    await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
     await tester.pumpAndSettle();
     expect(find.text('Detalhado por Unidades'), findsOneWidget);
   });

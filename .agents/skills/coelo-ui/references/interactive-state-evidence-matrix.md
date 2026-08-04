@@ -25,6 +25,8 @@ não completar a lacuna com Material default, memória ou aproximação.
 | Seleção em rascunho | `institution_directory_toolbar.dart` | `pattern.selection-controls` | `institution_directory_page_test.dart` | `institution_directory_filter_selected_light_1440.png` |
 | Arquivos aberto/hover | `institution_file_actions.dart` | `CoeloAdminFileActions`; `CoeloAdminFlyout` | `institution_file_actions_test.dart`; `coelo_admin_file_actions_test.dart` | `institution_directory_files_hover_light_1440.png` |
 | Toggle Cards/Tabela | `institution_directory_toolbar.dart`; `superadmin_directory_view_toggle.dart` | `pattern.admin-directory` | `superadmin_directory_view_toggle_test.dart` | goldens base de cards e tabela |
+| Tabs de status | `institution_directory_page.dart` | `SuperadminUnderlineTabs`; `pattern.directory-linear-tabs` | `institution_directory_page_test.dart` | `institution_directory_status_tabs_light_1440.png` |
+| Flyout de visões aberto | `superadmin_directory_view_toggle.dart` | `CoeloAdminFlyout`; `pattern.flyout-actions` | `superadmin_directory_view_toggle_test.dart` | `institution_directory_table_flyout_open_light_1440.png` |
 | Tabela default/responsiva | `institution_directory_table.dart` | `CoeloAdminResizableTable` | `coelo_admin_resizable_table_test.dart` | `institution_directory_table_{light,dark}_{375,768,1024,1440}.png` |
 | Linha de tabela hover | `institution_directory_table.dart` | `pattern.interaction-states` | `coelo_admin_resizable_table_test.dart` | `institution_directory_table_row_hover_light_1440.png` |
 | Paginação disabled/menu aberto | `institution_directory_pagination.dart`; `superadmin_listing_pagination_footer.dart` | `CoeloAdminPagination` | `coelo_admin_pagination_test.dart` | `institution_directory_pagination_disabled_light_1440.png`; `institution_directory_pagination_page_size_open_light_1440.png` |
@@ -50,13 +52,14 @@ são gerados por `institution_directory_page_golden_test.dart`.
 | --- | --- | --- | --- | --- |
 | Criar compacto light | `institution_form_page.dart`; navegação e seções | `CoeloFormTextField`; `CoeloAdminSingleSelectField`; `SuperadminFormActionFooter` | `institution_form_page_test.dart` | `institution_form_create_light_375.png` |
 | Editar desktop dark com menu atual e chat | mesmos arquivos | mesmos componentes | `institution_form_page_test.dart` | `institution_form_edit_dark_1440.png` |
+| Ajustar foto institucional | `institution_form_sections.dart` | `AvatarCropDialog`; `pattern.media-adjustment` | `institution_form_page_test.dart` | `institution_form_avatar_crop_open_light_1440.png` |
 
 ## Lacunas controladas
 
 Ausência de um golden específico não autoriza improvisação. Hover/foco dark,
-menu em outros breakpoints, toggle com flyout aberto, dialog de foto e estados
-internos do popup de Bug permanecem cobertos por contrato/teste, mas exigem
-aprovação e golden dedicado antes de servir como nova referência visual.
+menu em outros breakpoints e estados internos do popup de Bug permanecem
+cobertos por contrato/teste, mas exigem aprovação e golden dedicado antes de
+servir como nova referência visual.
 
 Também existe dívida de convergência quando a implementação real ainda compõe
 um controle local apesar de haver componente canônico. A matriz exige abrir os

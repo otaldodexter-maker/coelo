@@ -7,6 +7,8 @@ import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
+import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_directory_repository.dart';
 import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
@@ -271,6 +273,8 @@ class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryConte
                       onClearFilters: widget.onClearFilters,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
+                    _InstitutionStatusTabs(viewModel: widget.viewModel),
+                    const SizedBox(height: CoeloSpacing.space4),
                     _InstitutionDirectoryResults(
                       viewModel: widget.viewModel,
                       display: widget.display,
@@ -305,6 +309,28 @@ class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryConte
           },
         );
       },
+    );
+  }
+}
+
+class _InstitutionStatusTabs extends StatelessWidget {
+  const _InstitutionStatusTabs({required this.viewModel});
+
+  final InstitutionDirectoryViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = viewModel.query.statuses.length == 1 ? viewModel.query.statuses.single : null;
+    return SuperadminUnderlineTabs<InstitutionStatus?>(
+      key: const Key('institution-status-tabs'),
+      selected: selected,
+      tabs: const [
+        SuperadminUnderlineTab(value: null, label: 'Todos'),
+        SuperadminUnderlineTab(value: InstitutionStatus.active, label: 'Ativos'),
+        SuperadminUnderlineTab(value: InstitutionStatus.onboarding, label: 'Em Implantação'),
+        SuperadminUnderlineTab(value: InstitutionStatus.inactive, label: 'Inativos'),
+      ],
+      onSelected: (status) => viewModel.setStatuses(status == null ? const {} : {status}),
     );
   }
 }

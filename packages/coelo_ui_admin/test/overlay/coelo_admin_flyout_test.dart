@@ -11,7 +11,12 @@ void main() {
         home: Scaffold(
           body: CoeloAdminFlyout<String>(
             items: const [
-              CoeloAdminFlyoutItem(value: 'profile', label: 'Perfil', icon: Icons.person_outline),
+              CoeloAdminFlyoutItem(
+                value: 'profile',
+                label: 'Perfil',
+                icon: Icons.person_outline,
+                selected: true,
+              ),
               CoeloAdminFlyoutItem(
                 value: 'exit',
                 label: 'Sair',
@@ -51,6 +56,10 @@ void main() {
       colors.errorContainer,
     );
     expect(find.byType(Divider), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.selected == true),
+      findsOneWidget,
+    );
   });
 
   testWidgets('returns the selected value and closes the flyout', (tester) async {

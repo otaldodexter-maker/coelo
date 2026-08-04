@@ -13,6 +13,7 @@ import '../view_models/institution_form_controller.dart';
 import '../widgets/institution_form_dialogs.dart';
 import '../widgets/institution_form_navigation.dart';
 import '../widgets/institution_form_sections.dart';
+import '../widgets/institution_logo_picker.dart';
 
 enum InstitutionFormSaveResult { created, updated }
 
@@ -25,6 +26,7 @@ final class InstitutionFormPage extends StatefulWidget {
     this.institutionId,
     this.locationService,
     this.onDestinationSelected,
+    this.imagePicker,
     super.key,
   });
 
@@ -35,6 +37,7 @@ final class InstitutionFormPage extends StatefulWidget {
   final VoidCallback onCancel;
   final ValueChanged<InstitutionFormSaveResult> onSaved;
   final ValueChanged<String>? onDestinationSelected;
+  final InstitutionLogoPicker? imagePicker;
 
   @override
   State<InstitutionFormPage> createState() => _InstitutionFormPageState();
@@ -142,6 +145,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
                 onCancel: _requestExit,
                 onSave: _save,
                 locationService: _locationService,
+                imagePicker: widget.imagePicker ?? pickInstitutionLogo,
                 onFooterHeightChanged: (height) {
                   if (_footerHeight > 0) return;
                   setState(() => _footerHeight = height);
@@ -159,6 +163,7 @@ final class _FormBody extends StatelessWidget {
     required this.onCancel,
     required this.onSave,
     required this.locationService,
+    required this.imagePicker,
     required this.onFooterHeightChanged,
     required this.desktopNavigation,
   });
@@ -167,6 +172,7 @@ final class _FormBody extends StatelessWidget {
   final VoidCallback onCancel;
   final VoidCallback onSave;
   final InstitutionLocationService locationService;
+  final InstitutionLogoPicker imagePicker;
   final ValueChanged<double> onFooterHeightChanged;
   final bool desktopNavigation;
 
@@ -221,6 +227,7 @@ final class _FormBody extends StatelessWidget {
                                 child: InstitutionFormSection(
                                   controller: controller,
                                   locationService: locationService,
+                                  imagePicker: imagePicker,
                                 ),
                               ),
                             ),

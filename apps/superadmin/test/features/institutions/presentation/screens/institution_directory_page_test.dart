@@ -31,7 +31,7 @@ void main() {
     await tester.longPress(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
 
-    for (final label in ['Agrupado', 'Unidades', 'Grupos', 'Atividades']) {
+    for (final label in ['Agrupado', 'Unidades', 'Turmas', 'Atividades']) {
       expect(find.widgetWithText(MenuItemButton, label), findsOneWidget);
     }
 
@@ -43,7 +43,7 @@ void main() {
 
     await tester.longPress(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MenuItemButton, 'Grupos'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Turmas'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('institution-directory-table-groups')), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-table-header-unit-name')), findsOneWidget);
@@ -94,24 +94,18 @@ void main() {
     expect(find.text('Gerencie as instituições da plataforma.'), findsOneWidget);
     expect(find.byKey(const Key('institution-filter-toolbar')), findsOneWidget);
     expect(find.text('Todos os tipos'), findsOneWidget);
-    expect(find.text('Todos os status'), findsOneWidget);
+    expect(find.byKey(const Key('institution-status-tabs')), findsOneWidget);
+    expect(find.byKey(const Key('institution-status-filter')), findsNothing);
+    for (final label in ['Todos', 'Ativos', 'Em Implantação', 'Inativos']) {
+      expect(find.text(label), findsOneWidget);
+    }
     expect(find.text('Todas as UFs'), findsOneWidget);
     expect(find.text('Todos os planos'), findsNothing);
     expect(find.byKey(const Key('institution-city-filter')), findsNothing);
     expect(find.byKey(const Key('institution-district-filter')), findsNothing);
     final typeLeft = tester.getTopLeft(find.byKey(const Key('institution-type-filter'))).dx;
-    final statusLeft = tester.getTopLeft(find.byKey(const Key('institution-status-filter'))).dx;
     final stateLeft = tester.getTopLeft(find.byKey(const Key('institution-state-filter'))).dx;
-    expect(
-      typeLeft,
-      lessThan(statusLeft),
-      reason: 'type=$typeLeft status=$statusLeft state=$stateLeft',
-    );
-    expect(
-      statusLeft,
-      lessThan(stateLeft),
-      reason: 'type=$typeLeft status=$statusLeft state=$stateLeft',
-    );
+    expect(typeLeft, lessThan(stateLeft), reason: 'type=$typeLeft state=$stateLeft');
     final searchField = tester.widget<TextField>(find.byType(TextField));
     expect(searchField.decoration?.hintText, 'Buscar por nome');
     expect(searchField.decoration?.hintText, isNot(contains('domínio')));
@@ -128,6 +122,23 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(createRequested, isTrue);
+  });
+
+  testWidgets('filters institutions through the approved exclusive status tabs', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _RecordingDirectoryRepository(FakeInstitutionDirectoryRepository());
+
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Em Implantação'));
+    await tester.pumpAndSettle();
+    expect(repository.queries.last.statuses, {InstitutionStatus.onboarding});
+
+    await tester.tap(find.text('Todos'));
+    await tester.pumpAndSettle();
+    expect(repository.queries.last.statuses, isEmpty);
   });
 
   testWidgets('starts with eleven card items and switches to eight table rows', (tester) async {
@@ -386,12 +397,12 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.tap(find.byKey(const Key('institution-type-filter')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Ativa'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Escola'));
     await tester.pumpAndSettle();
     expect(find.text('Aplicar'), findsOneWidget);
-    await tester.tap(find.text('Em implantação'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Colégio'));
     await tester.pump();
     expect(find.text('Aplicar'), findsOneWidget);
 
@@ -400,8 +411,6 @@ void main() {
 
     expect(find.text('2 selecionados'), findsOneWidget);
     expect(find.text('Limpar filtros'), findsOneWidget);
-    expect(find.text('Instituto Aurora'), findsOneWidget);
-    expect(find.text('Centro Horizonte'), findsOneWidget);
   });
 
   testWidgets('discards unapplied selections and supports local clear', (tester) async {
@@ -410,28 +419,25 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    final trigger = find.byKey(const Key('institution-status-filter'));
+    final trigger = find.byKey(const Key('institution-type-filter'));
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Ativa'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Escola'));
     await tester.pumpAndSettle();
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    expect(find.text('Todos os status'), findsOneWidget);
+    expect(find.text('Todos os tipos'), findsOneWidget);
 
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    final activeOption = find.ancestor(
-      of: find.text('Ativa'),
-      matching: find.byType(MenuItemButton),
-    );
+    final activeOption = find.widgetWithText(MenuItemButton, 'Escola');
     expect(
       tester
           .widget<Checkbox>(find.descendant(of: activeOption, matching: find.byType(Checkbox)))
           .value,
       isFalse,
     );
-    await tester.tap(find.text('Ativa'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Escola'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Limpar'));
     await tester.pump();
@@ -449,17 +455,15 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.tap(find.byKey(const Key('institution-type-filter')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Ativa'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Escola'));
     await tester.pumpAndSettle();
 
-    final row = tester.widget<MenuItemButton>(
-      find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
-    );
+    final row = tester.widget<MenuItemButton>(find.widgetWithText(MenuItemButton, 'Escola'));
     final checkbox = tester.widget<Checkbox>(
       find.descendant(
-        of: find.ancestor(of: find.text('Ativa'), matching: find.byType(MenuItemButton)),
+        of: find.widgetWithText(MenuItemButton, 'Escola'),
         matching: find.byType(Checkbox),
       ),
     );
@@ -481,17 +485,18 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    final anchorFinder = find.byKey(const Key('institution-status-filter-anchor'));
+    final anchorFinder = find.byKey(const Key('institution-type-filter-anchor'));
     final anchor = tester.widget<MenuAnchor>(anchorFinder);
     final shape = anchor.style!.shape!.resolve({})! as RoundedRectangleBorder;
     expect(shape.borderRadius, BorderRadius.circular(CoeloRadius.lg));
 
-    final triggerBottom = tester
-        .getBottomLeft(find.byKey(const Key('institution-status-filter')))
-        .dy;
-    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    final triggerBottom = tester.getBottomLeft(find.byKey(const Key('institution-type-filter'))).dy;
+    await tester.tap(find.byKey(const Key('institution-type-filter')));
     await tester.pumpAndSettle();
-    expect(tester.getTopLeft(find.text('Rascunho')).dy, greaterThanOrEqualTo(triggerBottom));
+    expect(
+      tester.getTopLeft(find.widgetWithText(MenuItemButton, 'Escola')).dy,
+      greaterThanOrEqualTo(triggerBottom),
+    );
   });
 
   testWidgets('keeps the rounded toolbar aligned at the desktop reference width', (tester) async {
@@ -576,7 +581,7 @@ void main() {
       'institution': 'Instituição',
       'type': 'Tipo',
       'units': 'Unidades',
-      'groups': 'Grupos',
+      'groups': 'Turmas',
       'plan': 'Plano',
       'status': 'Status',
       'email': 'E-mail',
@@ -662,7 +667,7 @@ void main() {
       find.descendant(of: auroraCard, matching: find.text('Instituto Aurora Educação LTDA')),
       findsNothing,
     );
-    for (final label in ['Tipo', 'Plano', 'Unidades', 'Grupos (Turmas)']) {
+    for (final label in ['Tipo', 'Plano', 'Unidades', 'Turmas']) {
       expect(find.descendant(of: auroraCard, matching: find.text(label)), findsOneWidget);
     }
     expect(find.descendant(of: auroraCard, matching: find.text('Domínio')), findsNothing);
@@ -970,10 +975,7 @@ void main() {
     expect(tester.getTopLeft(pinned).dy, tester.getTopLeft(row).dy);
     expect(tester.getSize(pinned).height, tester.getSize(row).height);
     final table = find.byKey(const Key('institution-directory-table'));
-    expect(
-      tester.getBottomLeft(table).dy - tester.getBottomLeft(pinnedColumn).dy,
-      CoeloSpacing.space3,
-    );
+    expect(tester.getBottomLeft(table).dy - tester.getBottomLeft(pinnedColumn).dy, 0);
     await tester.drag(
       find.byKey(const Key('institution-directory-content-scroll')),
       const Offset(0, -300),
@@ -1003,7 +1005,7 @@ void main() {
     final viewport = find.byKey(const Key('institution-directory-table-viewport'));
     expect(viewport, findsOneWidget);
     expect(tester.getSize(viewport).width, lessThanOrEqualTo(1024));
-    expect(find.byType(Scrollbar), findsOneWidget);
+    expect(find.descendant(of: viewport, matching: find.byType(Scrollbar)), findsOneWidget);
 
     final scrollable = find.byKey(const Key('coelo-admin-table-scroll'));
     await tester.scrollUntilVisible(
@@ -1307,13 +1309,13 @@ void main() {
     expect(editableText.widget.focusNode.hasFocus, isTrue);
   });
 
-  testWidgets('Escape closes the status filter menu', (tester) async {
+  testWidgets('Escape closes the type filter menu', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('institution-status-filter')));
+    await tester.tap(find.byKey(const Key('institution-type-filter')));
     await tester.pumpAndSettle();
     expect(find.text('Aplicar'), findsOneWidget);
 

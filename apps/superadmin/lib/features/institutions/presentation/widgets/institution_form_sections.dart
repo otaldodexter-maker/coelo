@@ -1,10 +1,10 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../data/institution_location_service.dart';
@@ -19,11 +19,13 @@ final class InstitutionFormSection extends StatelessWidget {
   const InstitutionFormSection({
     required this.controller,
     required this.locationService,
+    required this.imagePicker,
     super.key,
   });
 
   final InstitutionFormController controller;
   final InstitutionLocationService locationService;
+  final InstitutionLogoPicker imagePicker;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,10 @@ final class InstitutionFormSection extends StatelessWidget {
       ),
       InstitutionFormStep.administrators => _AdministratorsSection(controller: controller),
       InstitutionFormStep.plan => _PlanSection(controller: controller),
-      InstitutionFormStep.branding => _BrandingSection(controller: controller),
+      InstitutionFormStep.branding => _BrandingSection(
+        controller: controller,
+        imagePicker: imagePicker,
+      ),
       InstitutionFormStep.review => _ReviewSection(controller: controller),
     };
   }
@@ -228,8 +233,20 @@ final class _LocationSectionState extends State<_LocationSection> {
                 'E-mail institucional',
                 inputType: TextInputType.emailAddress,
               ),
-              _field(controller, InstitutionFormField.contactPhone, 'Telefone'),
-              _field(controller, InstitutionFormField.whatsappNumber, 'WhatsApp'),
+              _field(
+                controller,
+                InstitutionFormField.contactPhone,
+                'Telefone',
+                inputType: TextInputType.phone,
+                inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
+              ),
+              _field(
+                controller,
+                InstitutionFormField.whatsappNumber,
+                'Celular',
+                inputType: TextInputType.phone,
+                inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
+              ),
               _field(
                 controller,
                 InstitutionFormField.websiteUrl,
@@ -1374,8 +1391,9 @@ final class _PlanSection extends StatelessWidget {
 }
 
 final class _BrandingSection extends StatelessWidget {
-  const _BrandingSection({required this.controller});
+  const _BrandingSection({required this.controller, required this.imagePicker});
   final InstitutionFormController controller;
+  final InstitutionLogoPicker imagePicker;
 
   @override
   Widget build(BuildContext context) {
@@ -1396,7 +1414,7 @@ final class _BrandingSection extends StatelessWidget {
         children: [
           _InstitutionBrandPreview(controller: controller, accent: accent, secondary: secondary),
           const SizedBox(height: CoeloSpacing.space5),
-          _LogoPicker(controller: controller, accent: accent),
+          _LogoPicker(controller: controller, accent: accent, imagePicker: imagePicker),
           const SizedBox(height: CoeloSpacing.space4),
           _CoverPicker(controller: controller, accent: accent),
           const SizedBox(height: CoeloSpacing.space5),
@@ -1550,12 +1568,9 @@ final class _InstitutionBrandPreview extends StatelessWidget {
                 CircleAvatar(
                   backgroundColor: accent.withValues(alpha: 0.18),
                   foregroundColor: colors.onSurface,
-                  backgroundImage: controller.logoBytes == null
-                      ? null
-                      : MemoryImage(controller.logoBytes!),
                   child: controller.logoBytes == null
                       ? Text(_initials(controller.text(InstitutionFormField.publicName)))
-                      : null,
+                      : _InstitutionLogoImage(controller: controller),
                 ),
               if (controller.hasSimulatedLogo) const SizedBox(width: CoeloSpacing.space3),
               Expanded(
@@ -1578,6 +1593,27 @@ final class _InstitutionBrandPreview extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+final class _InstitutionLogoImage extends StatelessWidget {
+  const _InstitutionLogoImage({required this.controller});
+
+  final InstitutionFormController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: SizedBox.expand(
+        child: Transform(
+          transform: Matrix4.identity()
+            ..translateByDouble(controller.logoOffset.dx, controller.logoOffset.dy, 0, 1)
+            ..scaleByDouble(controller.logoScale, controller.logoScale, 1, 1),
+          alignment: Alignment.center,
+          child: Image.memory(controller.logoBytes!, fit: BoxFit.cover),
+        ),
       ),
     );
   }
@@ -1679,15 +1715,21 @@ final class _BioField extends StatelessWidget {
 }
 
 final class _LogoPicker extends StatelessWidget {
-  const _LogoPicker({required this.controller, required this.accent});
+  const _LogoPicker({required this.controller, required this.accent, required this.imagePicker});
 
   static const maxBytes = 2 * 1024 * 1024;
   final InstitutionFormController controller;
   final Color accent;
+  final InstitutionLogoPicker imagePicker;
 
   Future<void> _pick(BuildContext context) async {
-    final file = await pickInstitutionLogo();
+    final file = await imagePicker();
     if (file == null || !context.mounted) {
+      return;
+    }
+    final extension = file.name.toLowerCase().split('.').last;
+    if (!const {'png', 'jpg', 'jpeg', 'webp'}.contains(extension)) {
+      controller.setLogoError('Use uma imagem em PNG, JPG ou WebP.');
       return;
     }
     if (file.bytes.lengthInBytes > maxBytes) {
@@ -1697,17 +1739,25 @@ final class _LogoPicker extends StatelessWidget {
     try {
       final codec = await ui.instantiateImageCodec(file.bytes);
       final frame = await codec.getNextFrame();
-      final square = frame.image.width == frame.image.height;
       frame.image.dispose();
       codec.dispose();
-      if (!square) {
-        controller.setLogoError('Escolha uma imagem quadrada para o recorte circular.');
-        return;
-      }
-      controller.setLogo(bytes: file.bytes, fileName: file.name);
     } on Exception {
       controller.setLogoError('Não foi possível ler essa imagem.');
+      return;
     }
+    if (!context.mounted) return;
+    final adjusted = await showDialog<AvatarCropResult>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (context) => AvatarCropDialog(bytes: file.bytes),
+    );
+    if (adjusted == null || !context.mounted) return;
+    controller.setLogo(
+      bytes: adjusted.bytes,
+      fileName: file.name,
+      scale: adjusted.scale,
+      offset: adjusted.offset,
+    );
   }
 
   @override
@@ -1728,12 +1778,9 @@ final class _LogoPicker extends StatelessWidget {
           CircleAvatar(
             radius: CoeloSize.touchMin,
             backgroundColor: accent.withValues(alpha: 0.16),
-            backgroundImage: controller.logoBytes == null
-                ? null
-                : MemoryImage(controller.logoBytes!),
             child: controller.logoBytes == null
                 ? Icon(Icons.apartment_rounded, color: colors.primary, size: CoeloSize.iconLg)
-                : null,
+                : _InstitutionLogoImage(controller: controller),
           ),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
@@ -1743,7 +1790,7 @@ final class _LogoPicker extends StatelessWidget {
                 Text('Foto de perfil', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: CoeloSpacing.spaceHalf),
                 Text(
-                  controller.logoFileName ?? 'Imagem quadrada em PNG, JPG ou WebP, com até 2 MB.',
+                  controller.logoFileName ?? 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (controller.logoError != null) ...[
@@ -1788,6 +1835,7 @@ final class _CoverPicker extends StatelessWidget {
     if (file == null || !context.mounted) {
       return;
     }
+
     if (file.bytes.lengthInBytes > maxBytes) {
       controller.setCoverError('A imagem deve ter no máximo 2 MB.');
       return;
@@ -2296,7 +2344,7 @@ final class _ReviewSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Section(
       title: 'Revisão',
-      description: 'Confira os dados antes de concluir. Você pode editar qualquer grupo.',
+      description: 'Confira os dados antes de concluir. Você pode editar qualquer seção.',
       child: Column(
         children: [
           _ReviewCard(
@@ -2587,6 +2635,7 @@ Widget _field(
   String? errorText,
   bool enabled = true,
   ValueChanged<String>? onChanged,
+  List<TextInputFormatter>? inputFormatters,
 }) {
   final fieldWidget = CoeloFormTextField(
     controller: controller.controllerOf(field),
@@ -2600,6 +2649,7 @@ Widget _field(
     maxLines: maxLines,
     errorText: errorText ?? controller.errorFor(field),
     enabled: enabled,
+    inputFormatters: inputFormatters,
     onChanged: onChanged ?? (value) => controller.setText(field, value, userInitiated: true),
   );
   return wide ? _WideField(child: fieldWidget) : fieldWidget;
