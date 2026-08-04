@@ -31,7 +31,7 @@ também deve ser comparada com os
 | 28 | Ajustar foto: cabeçalho, X vermelho, crop, reset, slider e ações 50/50 | `apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart`; contratos `pattern.overlay-surfaces` e `pattern.dialog-actions` |
 | 29 | Configurações: largura central, cards, tema segmentado e reduzir animações | `apps/superadmin/test/features/account/presentation/screens/goldens/settings_1440_dark.png`; `account_pages_golden_test.dart`; `settings_page_test.dart` |
 | 30 | Bug: popup neutro, X vermelho, selects, texto, anexo, ajuda e Enviar disabled | goldens `*_bug_open_light_1440.png`; `CoeloAdminDialogShell`; `pattern.overlay-surfaces` |
-| 31–32 | Criar/Editar instituição: stepper lateral, conteúdo, uploads, campos e rodapé de tela | `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_form_create_light_375.png`; `institution_form_edit_dark_1440.png`; `institution_form_page_golden_test.dart` |
+| 31–32 | Criar/Editar instituição: baseline obrigatória de qualquer tela que crie ou edite uma entidade; stepper lateral, conteúdo, uploads, campos e rodapé de tela | `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_form_create_light_375.png`; `institution_form_edit_dark_1440.png`; `institution_form_page_golden_test.dart` |
 | Aprovação 2026-08-03 | Acessos > Pessoas: toolbar em faixa própria e tabs lineares sutis para categorias irmãs | `apps/superadmin/lib/shared/presentation/widgets/superadmin_underline_tabs.dart`; `person_directory_page_test.dart`; contrato `pattern.directory-linear-tabs` |
 
 ## Regras que os anexos tornam explícitas
@@ -90,10 +90,15 @@ também deve ser comparada com os
   segmentos de tema iguais e switch de reduzir animações.
 - Home preserva painel de conversas, área central de orientação e compositor
   inferior; sugestões são ações tonais e o envio mantém a hierarquia laranja.
-- Criar/Editar instituição é wizard de página, não dialog. Em desktop, Cancelar
+- Criar/Editar instituição é a verdade visual padrão de toda criação/edição no
+  Superadmin, seja formulário simples ou wizard de página. O domínio altera
+  conteúdo e regras, não autoriza uma identidade paralela. Em desktop, Cancelar
   fica no extremo esquerdo e o grupo Anterior/Continuar/Salvar no direito.
   `OutlinedButton` é secundário, `TextButton` é terciário e somente uma ação
   preenchida é primária.
+- Qualquer divergência de composição ou identidade deve ser proposta ao Owner
+  antes do código, com comparação, componentes, estados, tokens,
+  responsividade e testes. Sem aprovação explícita, preservar esta baseline.
 - Em dialogs: uma ação ocupa 100%, duas dividem 50/50 e três dividem em terços.
   Em tela ampla: usar extremos; não aplicar a regra 50/50 do dialog ao rodapé.
 

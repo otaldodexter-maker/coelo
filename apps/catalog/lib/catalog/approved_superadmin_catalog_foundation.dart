@@ -18,6 +18,8 @@ Map<String, CatalogFoundation> buildApprovedSuperadminFoundationRegistry() {
         'admin.expandable-status-indicator',
         'admin.flyout',
         'admin.pagination',
+        'admin.single-select-field',
+        'superadmin.form-action-footer',
       ],
       builder: (_) => const _ApprovedSuperadminSurfacesFoundation(),
     ),
@@ -85,10 +87,14 @@ final class _ApprovedSuperadminSurfacesFoundation extends StatelessWidget {
       ),
       _ApprovedSurface(
         keyName: 'institution-form',
-        title: 'Criar e editar instituição',
-        baseline: 'Stepper lateral, conteúdo especializado, campos, uploads e rodapé.',
+        title: 'Criar e editar qualquer entidade',
+        baseline:
+            'Criar/Editar instituição é a baseline automática: stepper, conteúdo '
+            'especializado, campos, uploads, responsividade e rodapé.',
         golden: 'institution_form_create_light_375.png / institution_form_edit_dark_1440.png',
-        rule: 'Cancelar à esquerda; continuidade à direita; uma única ação preenchida.',
+        rule:
+            'Cancelar à esquerda; continuidade à direita; uma única ação preenchida. '
+            'Divergência exige proposta e aprovação antes do código.',
       ),
     ];
 

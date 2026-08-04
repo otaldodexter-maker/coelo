@@ -63,8 +63,16 @@ silenciosamente.
    avatar, wizard, step form, rodapé ou color picker, ler obrigatoriamente o
    [contrato de formulários](references/form-layout-contracts.md), consultar
    `pattern.form-controls`, `pattern.selection-controls`, a seção “Formulários
-   e entradas” do Design System e os exemplos do catálogo. Comparar com
-   Instituições e autenticação.
+   e entradas” do Design System e os exemplos do catálogo. Toda tela que crie
+   ou edite qualquer entidade do Superadmin adota automaticamente Criar/Editar
+   instituição como baseline principal, mesmo quando o pedido não citar essa
+   referência. Abrir `institution_form_page.dart`, sua navegação, seções,
+   `SuperadminFormActionFooter`, testes funcionais e goldens mobile light e
+   desktop dark; autenticação continua sendo a referência do campo-base.
+   Se uma regra real do produto exigir identidade ou composição diferente,
+   parar antes do código, apresentar a comparação e a proposta visual ao
+   usuário e aguardar aprovação explícita. Não implementar a divergência como
+   experimento, protótipo ou solução temporária.
    Quando mencionar página de erro, error page, fullscreen error, 403, 404,
    500, 503, rota não encontrada, acesso negado ou indisponibilidade, consultar
    `pattern.error-pages` e ler obrigatoriamente o
@@ -119,6 +127,13 @@ silenciosamente.
    `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Medidas de
    grid, gaps, padding e rodapé devem citar tokens existentes ou uma referência
    visual aprovada; números locais sem justificativa bloqueiam a implementação.
+   Em tela de criar/editar do Superadmin, reutilizar
+   `SuperadminFormActionFooter`: `TextButton` terciário no extremo esquerdo e
+   `OutlinedButton`/uma única ação `FilledButton` no grupo direito; no compacto,
+   ações em largura total com a primária primeiro. A navegação de etapas de
+   Instituições é referência de anatomia e responsividade, não um convite para
+   importar widgets específicos de domínio; se for necessário generalizá-la,
+   seguir o contrato de proposta e pedir aprovação antes de criar a API.
    Popup, dialog, menu e overlay usam `colorScheme.surface` com
    `surfaceTintColor: Colors.transparent`; `primaryContainer`, laranja-claro e
    cinza são proibidos como fundo-base. Antes de concluir, comparar visualmente

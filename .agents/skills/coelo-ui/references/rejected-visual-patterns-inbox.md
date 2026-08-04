@@ -26,7 +26,7 @@ uma família visual Coelo.
 | Navegação, sidebar, rail, submenu ou flyout | Menu e flyouts, anexos 20–26 |
 | Conta, dados pessoais, segurança, tema ou acessibilidade | Perfil e Configurações, anexos 27–29 |
 | Popup, dialog, dismiss ou anexo | Popup de Bug e Ajustar foto, anexos 28 e 30 |
-| Cadastro, edição, wizard, upload, seleção ou rodapé de tela | Criar/Editar instituição, anexos 31–32 |
+| Qualquer cadastro, edição, wizard, upload, seleção ou rodapé de tela | Criar/Editar instituição, anexos 31–32; a baseline é automática para qualquer entidade |
 
 Se nenhuma família for aplicável, parar e registrar uma proposta visual para
 aprovação. Não preencher a lacuna com um widget Material cru.
@@ -96,6 +96,8 @@ transição para a próxima seção devem preservar a hierarquia espacial aprova
 - fundo ou faixa cinza genérica para hover, foco, seleção ou checkbox;
 - dropdown, date picker, radio e checkbox Material crus em telas Coelo;
 - rodapé de formulário que ignora a baseline Criar/Editar instituição;
+- identidade visual própria de criação/edição implementada antes de proposta e
+  aprovação explícita do Owner;
 - dialogs com ações desproporcionais, truncadas ou linguagem `OK` genérica;
 - controles desalinhados ou deformados para preencher espaço;
 - cards, campos ou seções sem gaps e paddings tokenizados;

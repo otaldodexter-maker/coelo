@@ -84,6 +84,8 @@ void main() {
     expect(find.byKey(const Key('foundation-form-responsive-grid')), findsOneWidget);
     expect(find.byKey(const Key('foundation-form-action-footer')), findsOneWidget);
     expect(find.textContaining('Instituições é a referência canônica'), findsOneWidget);
+    expect(find.textContaining('Toda tela que cria ou edita'), findsOneWidget);
+    expect(find.textContaining('aprovação antes do código'), findsOneWidget);
     expect(find.textContaining('375, 768, 1024 e 1440'), findsOneWidget);
     expect(find.textContaining('texto a 200%'), findsAtLeastNWidgets(1));
 
@@ -101,14 +103,16 @@ void main() {
     await tester.pumpAndSettle();
 
     final footer = tester.getRect(find.byKey(const Key('foundation-form-action-footer-row')));
-    final exit = tester.getRect(find.widgetWithText(OutlinedButton, 'Sair sem salvar'));
-    final continueEditing = tester.getRect(find.widgetWithText(FilledButton, 'Continuar editando'));
-    expect(exit.left, footer.left);
-    expect(continueEditing.right, footer.right);
-    expect(exit.right, lessThan(continueEditing.left));
+    final cancel = tester.getRect(find.widgetWithText(TextButton, 'Cancelar'));
+    final previous = tester.getRect(find.widgetWithText(OutlinedButton, 'Anterior'));
+    final save = tester.getRect(find.widgetWithText(FilledButton, 'Salvar alterações'));
+    expect(cancel.left, footer.left);
+    expect(save.right, footer.right);
+    expect(cancel.right, lessThan(previous.left));
+    expect(previous.right, lessThan(save.left));
   });
 
-  testWidgets('stacks screen footer primary before the negative action on compact', (tester) async {
+  testWidgets('stacks the canonical screen footer primary first on compact', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -119,10 +123,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final primary = tester.getRect(find.widgetWithText(FilledButton, 'Continuar editando'));
-    final exit = tester.getRect(find.widgetWithText(OutlinedButton, 'Sair sem salvar'));
-    expect(primary.width, exit.width);
-    expect(primary.bottom, lessThan(exit.top));
+    final primary = tester.getRect(find.widgetWithText(FilledButton, 'Salvar alterações'));
+    final previous = tester.getRect(find.widgetWithText(OutlinedButton, 'Anterior'));
+    final cancel = tester.getRect(find.widgetWithText(TextButton, 'Cancelar'));
+    expect(primary.width, previous.width);
+    expect(previous.width, cancel.width);
+    expect(primary.bottom, lessThan(previous.top));
+    expect(previous.bottom, lessThan(cancel.top));
   });
 
   testWidgets('keeps migrated action, form, selection and theme guidance interactive', (

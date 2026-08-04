@@ -74,6 +74,16 @@ abrange estado interativo, componente, seção e página inteira. Quando uma tel
 é nomeada como referência, consultar código real, componentes compartilhados,
 testes e golden; aproximação visual não é suficiente.
 
+Qualquer tela que crie ou edite uma entidade escolhe automaticamente
+Criar/Editar Instituição como baseline, mesmo que o pedido não a nomeie. Isso
+inclui novos widgets, seções, correções e refatorações. Reutilizar
+`SuperadminFormActionFooter`, `CoeloFormTextField` e
+`CoeloAdminSingleSelectField`; a navegação e as seções específicas de
+Instituições definem anatomia e responsividade. Uma necessidade real de
+identidade diferente deve ser comparada e proposta ao Owner antes do código.
+Sem aprovação explícita, prevalece a baseline aprovada e não se cria variante,
+golden ou allowlist divergente.
+
 Os 14 padrões rejeitados bloqueiam faixas cinza genéricas em hover/seleção,
 controles Material crus, date picker desproporcional, rodapé inventado e zero
 gap entre cards/seções. Novos usos de `DropdownButton`,

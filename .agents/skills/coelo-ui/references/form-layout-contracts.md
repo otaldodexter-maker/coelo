@@ -10,6 +10,19 @@ Consulta obrigatória para formulário, cadastro, edição, input, campo, select
 upload, avatar, color picker, wizard, step form ou rodapé de ações. Instituições
 no Superadmin é a referência canônica; autenticação é a referência do campo-base.
 
+Essa escolha é automática para qualquer tela que crie ou edite uma entidade,
+inclusive ao refatorar, corrigir ou acrescentar widget/seção a uma tela
+existente. O domínio pode mudar conteúdo, quantidade de etapas e validações;
+não muda sozinho a identidade visual aprovada.
+
+Antes do código, abrir a implementação real de `InstitutionFormPage`,
+`InstitutionFormNavigation`, `InstitutionFormSection`,
+`SuperadminFormActionFooter`, os testes funcionais e os goldens
+`institution_form_create_light_375.png` e
+`institution_form_edit_dark_1440.png`. Reutilizar componentes compartilhados;
+widgets específicos de Instituições servem como anatomia de referência e só
+podem virar API genérica após proposta e aprovação.
+
 ## Composição
 
 - Usar `colorScheme.surface` no conteúdo, cards auxiliares e rodapé. Não criar
@@ -60,6 +73,8 @@ no Superadmin é a referência canônica; autenticação é a referência do cam
 ## Rodapé e confirmação
 
 - Rodapé usa `surface`, borda sutil e padding semântico; não é uma faixa cinza.
+- No Superadmin, reutilizar `SuperadminFormActionFooter`; não reconstruir o
+  rodapé localmente nem trocar sua hierarquia por conveniência da feature.
 - Ação primária usa botão laranja preenchido para o único compromisso dominante
   do contexto: salvar, criar, continuar, aplicar ou confirmar.
 - Ação secundária usa `OutlinedButton`: fundo é a `surface` visível do tema
@@ -85,8 +100,11 @@ no Superadmin é a referência canônica; autenticação é a referência do cam
 - Conferir 375, 768, 1024 e 1440 px; light e dark; texto a 200%; teclado, foco,
   semântica e reduced motion quando houver animação.
 - Proteger no mínimo mobile light e desktop dark com golden.
-- Comparar com Instituições e autenticação. Se a composição divergir, explicar
-  qual regra de produto exige a diferença.
+- Comparar com Criar/Editar Instituição e autenticação. Se uma regra real do
+  produto exigir composição ou identidade diferente, parar antes do código,
+  apresentar ao usuário a diferença, a proposta visual, componentes, estados,
+  tokens e impactos, e aguardar aprovação explícita. Sem aprovação, prevalece a
+  baseline de Instituições; não criar variante, golden ou allowlist divergente.
 - Em autenticação, `CoeloFormTextField` com label flutuante e hint complementar
   é a baseline aprovada, sem variante `auth`. Usar os goldens de login,
   recuperação e nova senha como evidência; nunca usar `failures/`.

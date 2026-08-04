@@ -133,6 +133,16 @@ Assert-QueryContains -Query 'profile settings avatar theme reduced motion' `
     -ExpectedId 'pattern.approved-superadmin-surfaces'
 Assert-QueryContains -Query 'institution create edit wizard footer' `
     -ExpectedId 'pattern.approved-superadmin-surfaces'
+Assert-QueryContains -Query 'criar rotina nova tela wizard' `
+    -ExpectedId 'pattern.form-controls'
+Assert-QueryContains -Query 'editar atividade formulario' `
+    -ExpectedId 'pattern.form-controls'
+Assert-QueryContains -Query 'refatorar tela de cadastro' `
+    -ExpectedId 'pattern.form-controls'
+Assert-QueryContains -Query 'novo widget de formulario' `
+    -ExpectedId 'pattern.rejected-visual-patterns'
+Assert-QueryContains -Query 'rodape criar editar SuperadminFormActionFooter' `
+    -ExpectedId 'superadmin.form-action-footer'
 
 $broadQuery = 'hover cinza reto flyout instituicoes card'
 $broadResult = & $queryScript -Query $broadQuery | ConvertFrom-Json

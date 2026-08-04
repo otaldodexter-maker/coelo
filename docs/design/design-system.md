@@ -504,6 +504,18 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 
 ## Padrão de formulário de cadastro e edição
 
+- Criar/Editar Instituição é a baseline automática e a verdade visual para
+  qualquer tela do Superadmin que crie ou edite uma entidade, incluindo
+  refatoração, correção e novos widgets/seções. O domínio pode mudar conteúdo,
+  etapas e validações; não muda sozinho a identidade visual.
+- Antes de implementar, consultar o código real de `InstitutionFormPage`,
+  `InstitutionFormNavigation`, `SuperadminFormActionFooter`, testes funcionais
+  e os goldens aprovados mobile light e desktop dark. Reutilizar os componentes
+  compartilhados e preservar a anatomia dos widgets específicos de domínio.
+- Se uma necessidade real não couber nessa baseline, parar antes do código,
+  apresentar comparação e proposta de nova identidade visual ao Owner e
+  aguardar aprovação explícita. Sem aprovação, não criar variante, componente,
+  golden ou exceção de allowlist divergente.
 - Usar `CoeloFormTextField` para entrada textual em autenticação, cadastro e
   edição. O componente preserva label flutuante, ícone inicial, hint
   contextual, hover, foco, erro e disabled sem estilos locais concorrentes.
@@ -958,7 +970,7 @@ aproximação local com widgets Material semelhantes.
 | Navegação | menu expandido, rail compacto, seleção por nível e flyouts |
 | Conta | flyout, Perfil, ajuste de foto e Configurações |
 | Overlays | popup de Bug como anatomia modal; X sempre negativo |
-| Instituição | wizard de criar/editar e rodapé de tela com ações nos extremos |
+| Criar/Editar Instituição | baseline automática de toda criação/edição: formulário ou wizard, conteúdo, campos, uploads, responsividade e rodapé de tela com ações nos extremos |
 
 Os goldens aprovados são evidência visual, não licença para copiar números
 locais. Componentes e tokens continuam sendo a implementação canônica. Arquivos
@@ -977,6 +989,8 @@ proposta com essa matriz antes do código.
   nova; usar componente Coelo indexado ou proposta aprovada.
 - Rodapé de página segue Criar/Editar instituição: saída/cancelar à esquerda e
   continuidade à direita no amplo; composição empilhada no compacto.
+- Uma identidade diferente em tela de criação/edição interrompe o fluxo antes
+  do código e exige comparação e aprovação explícita do Owner.
 - Dialog segue Popup de Bug/Ajustar foto, inclusive ações proporcionais e `X`
   negativo; `OK` genérico e título truncado são regressões.
 - Cards e seções independentes preservam gaps/paddings `CoeloSpacing`; bordas
@@ -1218,6 +1232,8 @@ A nomenclatura separa três camadas: primitive (valor físico), semantic (funç�
 | Pergunta | Sim/Não |
 | --- | --- |
 | A mudança declarou qual das sete famílias aprovadas é a baseline principal? | □ |
+| Se cria ou edita uma entidade, adotou Criar/Editar Instituição automaticamente? | □ |
+| Qualquer divergência visual foi proposta e aprovada antes do código? | □ |
 | A comparação cobre estado, widget, seção e página inteira? | □ |
 | Os 14 padrões rejeitados foram verificados e estão ausentes? | □ |
 | Existe uma única ação primária claramente identificada? | □ |

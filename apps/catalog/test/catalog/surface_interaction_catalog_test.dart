@@ -30,6 +30,14 @@ void main() {
       foundations['pattern.form-controls']!.referencedComponentIds,
       contains('admin.dialog-shell'),
     );
+    expect(
+      foundations['pattern.form-controls']!.referencedComponentIds,
+      contains('admin.single-select-field'),
+    );
+    expect(
+      foundations['pattern.form-controls']!.referencedComponentIds,
+      contains('superadmin.form-action-footer'),
+    );
   });
 
   for (final themeCase in <({String name, ThemeData theme})>[

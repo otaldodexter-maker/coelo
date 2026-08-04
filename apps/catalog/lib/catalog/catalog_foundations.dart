@@ -32,6 +32,8 @@ Map<String, CatalogFoundation> buildCatalogFoundationRegistry() {
       referencedComponentIds: const [
         'core.form-text-field',
         'core.search-field',
+        'admin.single-select-field',
+        'superadmin.form-action-footer',
         'admin.dialog-shell',
       ],
       builder: (_) => const _FormControlsFoundation(),
@@ -151,6 +153,12 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
           'Cadastro, edição e autenticação usam o mesmo campo-base com label '
           'persistente, ícone, hint, hover, foco, erro e autofill.',
         ),
+        const SizedBox(height: CoeloSpacing.space2),
+        const Text(
+          'Toda tela que cria ou edita uma entidade usa Criar/Editar instituição '
+          'como baseline automática. Identidade diferente exige proposta e '
+          'aprovação antes do código.',
+        ),
         const SizedBox(height: CoeloSpacing.space4),
         DecoratedBox(
           key: const Key('foundation-form-neutral-surface'),
@@ -225,39 +233,34 @@ final class _FormControlsFoundationState extends State<_FormControlsFoundation> 
             padding: const EdgeInsets.all(CoeloSpacing.space3),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                Widget exitButton() => OutlinedButton(
-                  style: ButtonStyle(
-                    foregroundColor: WidgetStatePropertyAll(colors.error),
-                    side: WidgetStatePropertyAll(BorderSide(color: colors.error)),
-                    backgroundColor: WidgetStateProperty.resolveWith(
-                      (states) =>
-                          states.contains(WidgetState.hovered) ||
-                              states.contains(WidgetState.focused)
-                          ? colors.errorContainer
-                          : Colors.transparent,
-                    ),
-                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  ),
-                  onPressed: () {},
-                  child: const Text('Sair sem salvar'),
-                );
-                Widget continueButton() =>
-                    FilledButton(onPressed: () {}, child: const Text('Continuar editando'));
+                Widget cancelButton() =>
+                    TextButton(onPressed: () {}, child: const Text('Cancelar'));
+                Widget previousButton() =>
+                    OutlinedButton(onPressed: () {}, child: const Text('Anterior'));
+                Widget saveButton() =>
+                    FilledButton(onPressed: () {}, child: const Text('Salvar alterações'));
 
                 if (constraints.maxWidth < 520) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      continueButton(),
+                      saveButton(),
                       const SizedBox(height: CoeloSpacing.space2),
-                      exitButton(),
+                      previousButton(),
+                      const SizedBox(height: CoeloSpacing.space2),
+                      cancelButton(),
                     ],
                   );
                 }
                 return Row(
                   key: const Key('foundation-form-action-footer-row'),
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [exitButton(), continueButton()],
+                  children: [
+                    cancelButton(),
+                    const Spacer(),
+                    previousButton(),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    saveButton(),
+                  ],
                 );
               },
             ),
