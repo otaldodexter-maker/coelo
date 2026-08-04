@@ -29,7 +29,8 @@ neutra. Retornar a uma etapa não descarta o rascunho. Paginação de registros 
 outro contrato, baseado no diretório de Instituições.
 
 A foto institucional deve ser PNG, JPG ou WebP e ter no máximo 2 MB. Escolher
-ou trocar a imagem abre o `AvatarCropDialog` usado no Perfil, com recorte
+ou trocar usa o mesmo `FilePicker` com bytes do Perfil e então abre o
+`AvatarCropDialog`, com recorte
 circular, ajuste de escala e deslocamento antes de aplicar a prévia. Remover e
 trocar permanecem disponíveis. O ajuste desta entrega permanece local e não
 cria novo fluxo de persistência, convite real ou ativação de identidade.

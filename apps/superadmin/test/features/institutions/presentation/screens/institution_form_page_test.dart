@@ -66,8 +66,11 @@ void main() {
     final field = find.byKey(const Key('institution-field-profileBio'));
     final decorator = find.descendant(of: field, matching: find.byType(InputDecorator));
     final icon = find.descendant(of: decorator, matching: find.byIcon(Icons.notes_rounded));
+    final editable = find.descendant(of: field, matching: find.byType(EditableText));
     expect(icon, findsOneWidget);
     expect(tester.getTopLeft(icon).dy, lessThan(tester.getCenter(field).dy));
+    expect(tester.getRect(icon).right, lessThanOrEqualTo(tester.getRect(editable).left));
+    expect(tester.getRect(editable).right, lessThanOrEqualTo(tester.getRect(field).right));
     expect(find.byKey(const Key('institution-bio-emoji-picker')), findsOneWidget);
     expect(find.text('0/220'), findsOneWidget);
   });

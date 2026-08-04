@@ -4,7 +4,7 @@ knowledge_id: superadmin-institution-directory
 source: docs/design/design-system.md
 status: validated
 generated_at: 2026-07-29
-revised_at: 2026-08-03
+revised_at: 2026-08-04
 audience: team
 surfaces: [superadmin, institutions]
 visibility: internal
@@ -47,8 +47,9 @@ suspensas e arquivadas; as demais tabs correspondem, respectivamente, a
 `active`, `onboarding` e `inactive`.
 
 Cada segmento do toggle Cards/Tabela mede 64 × 48 px. O menu de visões
-reutiliza `CoeloAdminFlyout`, com o mesmo espaçamento dos demais flyouts
-administrativos. Na tabela, a largura natural nasce centralizada quando for
+reutiliza `CoeloAdminFlyout`: cada item mantém a largura útil padrão de 220 px
+e itens interativos consecutivos têm `CoeloSpacing.spaceHalf` de separação,
+impedindo que seleção e hover laranja se unam. Na tabela, a largura natural nasce centralizada quando for
 menor que a viewport; quando ocupar ou exceder a área, preenche e rola
 normalmente. Scrollbar e track horizontais permanecem visíveis desde a primeira
 coluna e são pintados acima da cópia visual fixa. A faixa de criação continua

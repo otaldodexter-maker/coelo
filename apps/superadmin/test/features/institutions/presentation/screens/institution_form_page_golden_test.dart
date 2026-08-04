@@ -58,6 +58,39 @@ void main() {
     );
   });
 
+  testWidgets('matches the contained institution bio reference', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('institution-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('institution-field-profileBio')),
+      'Uma instituição acolhedora, conectada às famílias\n'
+      'e comprometida com cada etapa do desenvolvimento.',
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('institution-form-golden-root')),
+      matchesGoldenFile('goldens/institution_form_bio_light_1440.png'),
+    );
+  });
+
   testWidgets('matches the approved institution avatar adjustment', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 900);

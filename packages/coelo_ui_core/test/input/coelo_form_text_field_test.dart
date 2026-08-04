@@ -127,6 +127,9 @@ void main() {
       contains(formatter),
     );
     expect(tester.getTopLeft(editable).dy, greaterThanOrEqualTo(tester.getTopLeft(field).dy));
+    final icon = find.byIcon(Icons.notes_rounded);
     expect(tester.getBottomRight(editable).dy, lessThanOrEqualTo(tester.getBottomRight(field).dy));
+    expect(tester.getRect(icon).right, lessThanOrEqualTo(tester.getRect(editable).left));
+    expect(tester.getRect(editable).right, lessThanOrEqualTo(tester.getRect(field).right));
   });
 }

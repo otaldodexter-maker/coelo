@@ -177,6 +177,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.longPress(find.byKey(const Key('institution-view-table')));
     await tester.pumpAndSettle();
+    final flyoutMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(flyoutMouse.removePointer);
+    await flyoutMouse.addPointer(location: tester.getCenter(find.widgetWithText(MenuItemButton, 'Unidades')));
+    await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),
       matchesGoldenFile('goldens/institution_directory_table_flyout_open_light_1440.png'),

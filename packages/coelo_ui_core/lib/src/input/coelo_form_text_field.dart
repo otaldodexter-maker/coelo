@@ -1,3 +1,4 @@
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -78,6 +79,7 @@ final class _CoeloFormTextFieldState extends State<CoeloFormTextField> {
         maxLines: 1,
       )..layout();
       prefixIcon = SizedBox(
+        width: CoeloSize.touchMin,
         height: linePainter.height * widget.maxLines,
         child: Align(alignment: Alignment.topCenter, child: prefixIcon),
       );

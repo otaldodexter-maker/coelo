@@ -111,6 +111,11 @@ transparentes.
   `tone: CoeloAdminFlyoutTone.negative`.
 - Flyout usa `colorScheme.surface`, `surfaceTintColor: Colors.transparent`,
   `CoeloRadius.lg`, borda `outlineVariant`, elevação e padding `space2`.
+- A anatomia padrão usa itens com largura útil de 220 px. O contêiner não pode
+  encolher para a largura intrínseca do texto. Entre itens interativos
+  consecutivos existe exatamente `CoeloSpacing.spaceHalf`; assim seleção,
+  hover e foco arredondados nunca se unem visualmente. Quando `startsGroup` for
+  usado, prevalece o divisor com seu próprio respiro, sem gap duplicado.
 - Tour da tela/menu/completo usa o flyout de Tour como referência.
 - Perfil e Configurações formam o grupo padrão. `Sair`, revogar convite,
   acesso, vínculo ou autorização, excluir ou deletar

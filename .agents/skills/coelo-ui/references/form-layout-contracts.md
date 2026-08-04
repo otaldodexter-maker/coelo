@@ -68,10 +68,11 @@ podem virar API genérica após proposta e aprovação.
   prévia circulares que produzem a composição visual 1:1. O arquivo de origem
   não precisa chegar quadrado. Persistência privada segue o fluxo server-side
   de mídia quando existir; esta correção permanece local e não cria integração.
-- Inserir ou trocar foto/avatar usa obrigatoriamente `AvatarCropDialog`,
-  conforme Perfil: título `Ajustar foto`, `X` vermelho, instrução, reset,
-  recorte circular, zoom e `Cancelar`/`Aplicar` em 50/50. Não criar picker ou
-  crop local na feature.
+- Inserir ou trocar foto/avatar usa obrigatoriamente o fluxo do Perfil:
+  `FilePicker` com `withData: true`, extensões PNG/JPG/JPEG/WebP e, após a
+  escolha, `AvatarCropDialog` com título `Ajustar foto`, `X` vermelho,
+  instrução, reset, recorte circular, zoom e `Cancelar`/`Aplicar` em 50/50.
+  Não criar seletor `dart:html`, picker ou crop paralelo na feature.
 - Inserir ou trocar capa usa a mesma shell e hierarquia do ajuste de foto, mas
   com janela de recorte retangular 16:9. No Superadmin, reutilizar
   `CoverCropDialog`, que fixa essa proporção. Capa nunca reutiliza máscara

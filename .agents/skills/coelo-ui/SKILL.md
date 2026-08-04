@@ -132,6 +132,11 @@ silenciosamente.
    `InkWell`, `PopupMenuButton`, `MenuAnchor` ou `MenuItemButton` dentro de uma
    feature. Exceção legada exige entrada contada e justificada na allowlist;
    conveniência local não é justificativa.
+   `CoeloAdminFlyout` preserva a anatomia ampla aprovada: item com largura útil
+   padrão de 220 px e `CoeloSpacing.spaceHalf` entre itens interativos
+   consecutivos. O menu não encolhe para o texto, e estados arredondados de
+   seleção, hover ou foco nunca podem ficar colados. Grupo iniciado por divisor
+   usa somente o respiro próprio do divisor, sem duplicar o gap.
    Quando Instituições for a referência, verificar explicitamente
    `CoeloAdminListingToolbar`, busca, filtros, toggle Cards/Tabela,
    `CoeloAdminFileActions`, `CoeloAdminFlyout`, `CoeloAdminInteractiveCard`,
@@ -165,7 +170,11 @@ silenciosamente.
    `CoeloAdminResizableTable` centraliza a largura natural quando houver sobra
    e pinta scrollbar/track acima da coluna fixa.
    Não criar campo textual ou single-select local quando
-   `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Medidas de
+   `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Campo
+   multilinha restringe explicitamente o slot do ícone e mantém ícone, texto e
+   cursor contidos na caixa, inclusive a 200%. Foto/avatar no Superadmin usa o
+   mesmo `FilePicker` com bytes do Perfil antes de abrir `AvatarCropDialog`;
+   seletor `dart:html` local não é permitido. Medidas de
    grid, gaps, padding e rodapé devem citar tokens existentes ou uma referência
    visual aprovada; números locais sem justificativa bloqueiam a implementação.
    Em tela de criar/editar do Superadmin, reutilizar

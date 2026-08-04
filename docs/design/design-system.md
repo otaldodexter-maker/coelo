@@ -50,7 +50,7 @@ Este documento transforma a identidade do Coelo em regras práticas para telas, 
 
 ## Base interna utilizada
 
-O sistema segue a Product Vision (“simples, familiar e confiável”), a história da marca (cuidado, escuta, proteção e comunicação) e os módulos oficiais Flow, Now e Moments. Também incorpora o princípio “privado por padrão” dos PRDs de App e LGPD.
+O sistema segue a Product Vision (“simples, familiar e confiável”), a história da marca (cuidado, escuta, proteção e comunicação) e os módulos oficiais Happens, Now e Moments. Também incorpora o princípio “privado por padrão” dos PRDs de App e LGPD.
 
 # 2. Princípios de experiência
 
@@ -336,7 +336,7 @@ O sistema usa unidade base de 4 px/dp e ritmo preferencial de 8. A escala evita 
 
 | Contexto | Largura recomendada | Regra |
 | --- | --- | --- |
-| Flow / conteúdo social | 560–680 px | Não esticar posts no desktop; usar coluna lateral para contexto. |
+| Happens / conteúdo social | 560–680 px | Não esticar posts no desktop; usar coluna lateral para contexto. |
 | Formulário simples | 480–640 px | Uma coluna; labels acima dos campos. |
 | Modal | 360–560 px | Tarefa curta; para fluxos longos usar página ou sheet. |
 | Tabela administrativa | 960–1440 px | Permitir scroll horizontal apenas quando indispensável. |
@@ -578,8 +578,9 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
   administrador. Usa o recorte circular padrão de perfil; a confirmação do
   recorte apresenta `Cancelar` e `Aplicar` em ações 50/50, e o reset é uma ação
   circular por ícone com tooltip, semântica e alvo mínimo.
-- Toda inserção ou troca de foto/avatar usa o ajuste aprovado do Perfil:
-  dialog neutro, `X` vermelho, reset, recorte circular, zoom e ações
+- Toda inserção ou troca de foto/avatar usa o fluxo aprovado do Perfil: seleção
+  por `FilePicker` com bytes em memória, seguida do dialog neutro, `X` vermelho,
+  reset, recorte circular, zoom e ações
   `Cancelar`/`Aplicar` em 50/50. Capa usa a mesma shell e interação, com
   recorte retangular 16:9; nunca usa círculo. Outra proporção exige nova
   decisão aprovada.
@@ -647,7 +648,7 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 
 | Destino | Conteúdo | Ícone sugerido |
 | --- | --- | --- |
-| Flow | Posts, comunicados, Now e entrada para Moments. | home / dynamic_feed |
+| Happens | Posts, comunicados, Now e entrada para Moments. | home / dynamic_feed |
 | Rotina | Diário e histórico por criança. | event_note / checklist |
 | Chat | Conversas e canais autorizados. | chat_bubble_outline |
 | Agenda | Eventos, respostas e autorizações. | calendar_month |
@@ -661,9 +662,9 @@ Formulários devem parecer simples mesmo quando o domínio é complexo. O usuár
 
 - Usar avatar/identidade da instituição e texto claro; não depender apenas de cor para indicar o contexto.
 
-# 14. Componentes do produto: Flow, Now e Moments
+# 14. Componentes do produto: Happens, Now e Moments
 
-## 14.1 Flow
+## 14.1 Happens
 
 | Parte | Regra visual |
 | --- | --- |
@@ -824,7 +825,7 @@ referência de composição é a tabela de Instituições. Não substituir por u
 | Cabeçalho | `colorScheme.surfaceContainer`, 12–14 px SemiBold e rótulos acessíveis; manter a mesma geometria das colunas de dados. |
 | Linha | 64 px mais divisor de 1 px `colorScheme.outlineVariant`; linhas contínuas, sem zebra, raio ou espaçamento entre si. Hover, foco e seleção usam `colorScheme.primaryContainer`. |
 | Coluna fixa | A primeira coluna é uma coluna fixa visual durante o scroll horizontal; a duplicação visual não pode duplicar a semântica no leitor de tela. |
-| Overflow | Exibir scrollbar e track horizontais visíveis quando necessário, de ponta a ponta e acima da cópia visual da coluna fixa; permitir mouse, toque, caneta e trackpad e preservar o clip do card. |
+| Overflow | Exibir scrollbar horizontal visível e track horizontal quando necessário, de ponta a ponta e acima da cópia visual da coluna fixa; permitir mouse, toque, caneta e trackpad e preservar o clip do card. |
 | Redimensionamento | Cada coluna redimensionável oferece redimensionamento por mouse e teclado, cursor de coluna, foco visível e rótulo semântico para aumentar ou reduzir a largura. |
 | Texto longo | Usar truncamento sem quebra (`ellipsis`), sem wrap; tooltip somente para informação não crítica. |
 | Status | Status semântico usa chip: texto sempre acompanha cor e ícone opcional. |
@@ -902,6 +903,11 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   `colorScheme.primaryContainer` no hover e foco visível, conteúdo destacado em
   `colorScheme.primary`, `CoeloRadius.md` e margem vertical
   `CoeloSpacing.spaceHalf` entre itens consecutivos.
+- Flyouts administrativos preservam a anatomia ampla aprovada: cada item ocupa
+  a largura útil padrão de 220 px. Superfícies interativas consecutivas mantêm
+  exatamente `CoeloSpacing.spaceHalf` de separação, inclusive quando seleção e
+  hover deixam dois itens adjacentes em `primaryContainer`; grupos com divisor
+  usam somente o respiro próprio do divisor.
 - O overlay ou splash adicional é transparente: não adicionar camada cinza sobre
   o estado destacado. O estado desabilitado não recebe hover.
 - Opções de filtro e linhas de tabelas densas são a exceção: permanecem linhas

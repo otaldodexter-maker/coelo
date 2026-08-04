@@ -64,13 +64,18 @@ final class CoeloAdminFlyout<T> extends StatelessWidget {
         ),
       ),
       menuChildren: [
-        for (final item in items) ...[
-          if (item.startsGroup)
+        for (var index = 0; index < items.length; index++) ...[
+          if (index > 0 && !items[index].startsGroup)
+            const SizedBox(height: CoeloSpacing.spaceHalf),
+          if (items[index].startsGroup)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
               child: Divider(height: 1, color: colors.outlineVariant),
             ),
-          _FlyoutMenuItem<T>(item: item, onSelected: onSelected),
+          SizedBox(
+            width: itemWidth,
+            child: _FlyoutMenuItem<T>(item: items[index], onSelected: onSelected),
+          ),
         ],
       ],
       builder: (context, controller, child) => builder(context, controller),

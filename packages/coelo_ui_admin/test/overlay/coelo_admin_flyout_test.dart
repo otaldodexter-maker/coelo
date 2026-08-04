@@ -62,6 +62,47 @@ void main() {
     );
   });
 
+  testWidgets('preserves the wide anatomy and separates adjacent highlighted items', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminFlyout<String>(
+            items: const [
+              CoeloAdminFlyoutItem(value: 'grouped', label: 'Agrupado', selected: true),
+              CoeloAdminFlyoutItem(value: 'units', label: 'Unidades'),
+              CoeloAdminFlyoutItem(value: 'groups', label: 'Turmas'),
+            ],
+            onSelected: (_) {},
+            builder: (context, controller) =>
+                TextButton(onPressed: controller.open, child: const Text('Abrir')),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Abrir'));
+    await tester.pumpAndSettle();
+
+    final items = tester.widgetList<MenuItemButton>(find.byType(MenuItemButton)).toList();
+    final itemFinders = find.byType(MenuItemButton).evaluate().toList();
+    final firstRect = tester.getRect(find.byWidget(items[0]));
+    final secondRect = tester.getRect(find.byWidget(items[1]));
+    final colors = CoeloTheme.light.colorScheme;
+
+    expect(itemFinders, hasLength(3));
+    expect(firstRect.width, 220);
+    expect(secondRect.width, 220);
+    expect(secondRect.top - firstRect.bottom, CoeloSpacing.spaceHalf);
+    expect(items[0].style!.backgroundColor!.resolve({}), colors.primaryContainer);
+    expect(
+      items[1].style!.backgroundColor!.resolve({WidgetState.hovered}),
+      colors.primaryContainer,
+    );
+  });
+
   testWidgets('returns the selected value and closes the flyout', (tester) async {
     String? selected;
     await tester.pumpWidget(
