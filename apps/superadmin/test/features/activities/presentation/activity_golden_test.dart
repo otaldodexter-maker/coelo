@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_detail_page.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_directory_page.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -166,6 +169,100 @@ void main() {
     }
   });
 
+  testWidgets('matches create mobile light and edit desktop dark forms', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final configuration in [
+      (width: 375.0, height: 900.0, brightness: Brightness.light, activityId: null),
+      (width: 1440.0, height: 1000.0, brightness: Brightness.dark, activityId: 'activity-3'),
+    ]) {
+      tester.view.physicalSize = Size(configuration.width, configuration.height);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(
+        _formApp(brightness: configuration.brightness, activityId: configuration.activityId),
+      );
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byKey(const Key('activity-golden-frame')),
+        matchesGoldenFile(
+          '../../../goldens/activities/'
+          'activity_form_${configuration.activityId == null ? 'create' : 'edit'}_'
+          '${configuration.brightness.name}_${configuration.width.toInt()}.png',
+        ),
+      );
+    }
+  });
+
+  testWidgets('matches internal location dialog on mobile', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_formApp(brightness: Brightness.light));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('activity-form-institution')),
+        )
+        .onChanged('institution-1');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.pump();
+    await tester.ensureVisible(find.byKey(const Key('activity-create-location')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-create-location')));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('activity-golden-frame')),
+      matchesGoldenFile('../../../goldens/activities/activity_form_location_dialog_light_375.png'),
+    );
+  });
+
+  testWidgets('matches professional permissions by class on desktop', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_formApp(brightness: Brightness.dark));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('activity-form-institution')),
+        )
+        .onChanged('institution-1');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-group-institution-1-group-1')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-invite-institution-1-group-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-professional-professional-1')));
+    await tester.pump();
+    await tester.tap(find.text('Concluir convite'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('activity-golden-frame')),
+      matchesGoldenFile('../../../goldens/activities/activity_form_professionals_dark_1440.png'),
+    );
+  });
+
   testWidgets('matches text at 200 percent without sticky overlap', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(375, 900);
@@ -204,6 +301,21 @@ Widget _detailApp({required Brightness brightness}) => _app(
     logout: _logout,
     onBack: () {},
     onBugReportSubmitted: (_) {},
+  ),
+);
+
+Widget _formApp({required Brightness brightness, String? activityId}) => _app(
+  brightness: brightness,
+  child: ActivityFormPage(
+    activityId: activityId,
+    repository: FakeActivityDirectoryRepository(),
+    logout: _logout,
+    onCancel: () {},
+    onSaveDraft: (_) async {},
+    onSubmit: (_) async {},
+    onCreateLocation: (draft) async =>
+        ActivityFormLocationOption(id: 'golden-location', unitId: draft.unitId, name: draft.name),
+    imagePicker: () async => null,
   ),
 );
 

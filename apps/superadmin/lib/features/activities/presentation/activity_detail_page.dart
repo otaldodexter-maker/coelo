@@ -210,10 +210,10 @@ final class _ActivityDetailContent extends StatelessWidget {
       ),
       const SizedBox(height: CoeloSpacing.space4),
       _DetailSection(
-        title: 'Grupos vinculados',
+        title: 'Turmas vinculadas',
         icon: Icons.groups_outlined,
         child: detail.groups.isEmpty
-            ? const Text('Nenhum grupo vinculado.')
+            ? const Text('Nenhuma turma vinculada.')
             : Column(
                 children: [
                   for (final group in detail.groups)

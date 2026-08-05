@@ -45,7 +45,7 @@ void main() {
     );
     expect(find.textContaining('Local:'), findsWidgets);
     expect(find.text('Unidades'), findsWidgets);
-    expect(find.text('Grupos'), findsWidgets);
+    expect(find.text('Turmas'), findsWidgets);
     expect(find.text('Equipe institucional'), findsWidgets);
     expect(find.text('Crianças'), findsWidgets);
 
@@ -82,14 +82,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Agrupado'), findsOneWidget);
     expect(find.text('Por Unidades'), findsOneWidget);
-    expect(find.text('Por Grupos'), findsOneWidget);
+    expect(find.text('Por Turmas'), findsOneWidget);
     await tester.tap(find.text('Por Unidades'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-unit-directory-table')), findsOneWidget);
 
     await tester.longPress(find.byKey(const Key('activity-view-table')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Por Grupos'));
+    await tester.tap(find.text('Por Turmas'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-group-directory-table')), findsOneWidget);
     expect(find.byKey(const Key('activity-detail-status-activity-10')), findsOneWidget);
@@ -151,14 +151,14 @@ void main() {
 
     await tester.longPress(find.byKey(const Key('activity-view-table')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Por Grupos'));
+    await tester.tap(find.text('Por Turmas'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-files-export-xlsx')));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Por Grupos'), findsOneWidget);
+    expect(find.textContaining('Por Turmas'), findsOneWidget);
     expect(find.textContaining('Nenhum arquivo real foi gerado'), findsOneWidget);
   });
 
@@ -182,7 +182,11 @@ void main() {
     expect(find.byKey(const Key('activity-institution-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-unit-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-group-filter')), findsOneWidget);
-    expect(find.byKey(const Key('activity-status-filter')), findsOneWidget);
+    expect(find.byKey(const Key('activity-status-filter')), findsNothing);
+    expect(find.byKey(const Key('activity-status-tabs')), findsOneWidget);
+    for (final label in ['Todos', 'Ativos', 'Em Implantação', 'Inativos']) {
+      expect(find.text(label), findsOneWidget);
+    }
     expect(find.byKey(const Key('activity-origin-filter')), findsOneWidget);
     expect(find.text('Tipo'), findsNothing);
     expect(find.text('Recorrência'), findsNothing);
@@ -190,6 +194,32 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('status tabs are visual and keep the same activity results', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ActivityDirectoryPage(
+          repository: FakeActivityDirectoryRepository(),
+          logout: () async => const LogoutResult.success(),
+          onCreate: () {},
+          onView: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final initialCards = find.byType(CoeloAdminInteractiveCard).evaluate().length;
+    expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
+
+    await tester.tap(find.text('Inativos'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminInteractiveCard), findsNWidgets(initialCards));
+    expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
   });
 
   testWidgets('uses the approved hover treatment without changing card geometry', (tester) async {

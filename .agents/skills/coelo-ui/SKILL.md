@@ -174,6 +174,9 @@ silenciosamente.
    `CoeloAdminMultiSelectField<T>`: menu na largura do gatilho, rascunho,
    busca opcional, Limpar/Aplicar, alvos de 48 px, teclado, `Esc` e retorno de
    foco. Não improvisar checkbox/radio Material cru.
+   Campos booleanos administrativos reutilizam `CoeloAdminToggleField`: rotulo
+   associado, estado `toggled`/`enabled`, alvo minimo de 48 px e overlay
+   transparente. Em features, nao compor `Text` + `Switch` localmente.
    Status Histórico usa `CoeloStatusColors.historyContainer` e
    `onHistoryContainer` em light/dark, sempre acompanhado por texto e ícone.
    Não criar campo textual ou single-select local quando

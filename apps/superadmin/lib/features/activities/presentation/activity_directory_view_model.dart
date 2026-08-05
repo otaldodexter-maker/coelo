@@ -37,7 +37,7 @@ final class ActivityDirectoryHierarchy {
       ),
       group: ActivityHierarchyFilterOption(
         id: '$unitId-group-${index % 3 + 1}',
-        label: 'Grupo ${index % 3 + 1}',
+        label: 'Turma ${index % 3 + 1}',
         parentId: unitId,
       ),
     );

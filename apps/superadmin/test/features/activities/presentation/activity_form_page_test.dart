@@ -1,100 +1,194 @@
 import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('creates a visual prototype with only confirmed fields', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(375, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    var submitted = false;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: ActivityFormPage(
-          repository: FakeActivityDirectoryRepository(),
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onPrototypeSubmitted: () => submitted = true,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Criar atividade'), findsWidgets);
-    expect(find.byType(CoeloFormTextField), findsNWidgets(2));
-    expect(find.byType(CoeloAdminSingleSelectField<String>), findsNWidgets(2));
-    expect(find.text('Status'), findsNothing);
-    expect(find.text('Recorrência'), findsNothing);
-    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
-    expect(find.byKey(const Key('activity-suggestions')), findsOneWidget);
-    for (final label in [
-      'Acadêmicas',
-      'Linguagens',
-      'Português',
-      'Inglês',
-      'Exatas',
-      'Matemática',
-      'Robótica',
-      'Esportes',
-      'Aquáticos',
-      'Natação',
-      'Lutas',
-      'Judô',
-      'Campo',
-      'Futebol',
-      'Artes',
-      'Visuais',
-      'Desenho',
-      'Natureza',
-      'Educação ambiental',
-      'Horta',
-      'Outro',
-    ]) {
-      expect(find.text(label), findsWidgets);
-    }
-    expect(find.byKey(const Key('activity-context-preview')), findsOneWidget);
-    expect(find.byKey(const Key('activity-photo-preview')), findsOneWidget);
-    expect(find.byKey(const Key('activity-conversation-preview')), findsOneWidget);
-    expect(find.byKey(const Key('activity-publication-preview')), findsOneWidget);
-    expect(find.text('Atividade Nova atividade · Grupo selecionado'), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('activity-form-submit')));
-    await tester.pump();
-    expect(find.text('Informe o nome da atividade.'), findsOneWidget);
-    expect(submitted, isFalse);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('hydrates edit and keeps institutional context read-only', (tester) async {
+  testWidgets('uses the four-step institution baseline and chained categories', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(
+      tester.getRect(find.byKey(const Key('step-identidade'))).right,
+      lessThan(tester.getRect(find.byKey(const Key('activity-form-name'))).left),
+    );
+    for (final label in [
+      'Identidade',
+      'Estrutura e locais',
+      'Vínculos',
+      'Profissionais e revisão',
+    ]) {
+      expect(find.text(label), findsWidgets);
+    }
+    expect(find.byKey(const Key('activity-form-name')), findsOneWidget);
+    expect(find.byKey(const Key('activity-form-category')), findsOneWidget);
+    expect(find.text('Simples/Opcional'), findsOneWidget);
+
+    final category = tester.widget<CoeloAdminSingleSelectField<ActivityCategory?>>(
+      find.byKey(const Key('activity-form-category')),
+    );
+    category.onChanged(ActivityCategory.languages);
+    await tester.pump();
+    final suggestion = tester.widget<CoeloAdminSingleSelectField<String>>(
+      find.byKey(const Key('activity-form-suggestion')),
+    );
+    expect(suggestion.options, ['', 'Português', 'Inglês', 'Outro']);
+    suggestion.onChanged('Outro');
+    await tester.pump();
+    expect(find.byKey(const Key('activity-form-other')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('saves a minimum draft then completes links and professional permissions', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    ActivityFormDraft? savedDraft;
+    ActivityFormDraft? submittedDraft;
+
     await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.dark,
-        home: ActivityFormPage(
-          activityId: 'activity-1',
-          repository: FakeActivityDirectoryRepository(),
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onPrototypeSubmitted: () {},
-        ),
+      _app(
+        onSaveDraft: (draft) async => savedDraft = draft,
+        onSubmit: (draft) async => submittedDraft = draft,
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Editar atividade'), findsOneWidget);
-    expect(find.text('Casa Nuvem'), findsOneWidget);
-    expect(find.text('Instituição'), findsWidgets);
-    expect(find.text('Origem'), findsOneWidget);
-    expect(find.byType(CoeloAdminSingleSelectField<String>), findsNothing);
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+
+    final institution = tester.widget<CoeloAdminSingleSelectField<String>>(
+      find.byKey(const Key('activity-form-institution')),
+    );
+    institution.onChanged('institution-1');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+    expect(savedDraft?.unitIds, {'institution-1-unit-1'});
+
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-group-institution-1-group-1')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('activity-invite-institution-1-group-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-professional-professional-1')));
+    await tester.pump();
+    await tester.tap(find.text('Concluir convite'));
+    await tester.pumpAndSettle();
+
+    final toggles = tester
+        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
+        .toList();
+    expect(toggles, hasLength(4));
+
+    await tester.tap(find.byKey(const Key('activity-form-submit')));
+    await tester.pumpAndSettle();
+    expect(submittedDraft?.groupIds, {'institution-1-group-1'});
+    expect(submittedDraft?.assignments.single.permissions.happens, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('creates a unit-scoped local and keeps edit institution fixed', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Música');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('activity-form-institution')),
+        )
+        .onChanged('institution-1');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-create-location')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('activity-create-location-dialog')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('activity-location-name')), 'Sala maker');
+    await tester.tap(find.byKey(const Key('activity-location-submit')));
+    await tester.pumpAndSettle();
+    expect(find.text('Sala maker'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(_app(activityId: 'activity-3'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('step-identidade')));
+    await tester.pump();
+    final governance = tester.widget<CoeloAdminSingleSelectField<ActivityGovernance>>(
+      find.byKey(const Key('activity-form-governance')),
+    );
+    expect(governance.enabled, isFalse);
+    expect(governance.value, ActivityGovernance.fixed);
+  });
+
+  testWidgets('stacks local selector and create action at full width on compact screens', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('activity-form-institution')),
+        )
+        .onChanged('institution-1');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.pump();
+
+    final selectorRect = tester.getRect(find.byKey(const Key('activity-form-location')));
+    final actionRect = tester.getRect(find.byKey(const Key('activity-create-location')));
+    expect(actionRect.top, greaterThan(selectorRect.bottom));
+    expect(actionRect.width, closeTo(selectorRect.width, 1));
     expect(tester.takeException(), isNull);
   });
 }
+
+Widget _app({
+  String? activityId,
+  Future<void> Function(ActivityFormDraft)? onSaveDraft,
+  Future<void> Function(ActivityFormDraft)? onSubmit,
+}) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: ActivityFormPage(
+    activityId: activityId,
+    repository: FakeActivityDirectoryRepository(),
+    logout: () async => const LogoutResult.success(),
+    onCancel: () {},
+    onSaveDraft: onSaveDraft ?? (_) async {},
+    onSubmit: onSubmit ?? (_) async {},
+    onCreateLocation: (draft) async =>
+        ActivityFormLocationOption(id: 'session-location', unitId: draft.unitId, name: draft.name),
+    imagePicker: () async => null,
+  ),
+);

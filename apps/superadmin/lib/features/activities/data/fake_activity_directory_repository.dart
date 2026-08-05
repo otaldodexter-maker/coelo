@@ -53,25 +53,53 @@ final class FakeActivityDirectoryRepository implements ActivityDirectoryReposito
   @override
   Future<ActivityFormOptions> fetchFormOptions() async {
     final institutions = <String, String>{
-      for (final detail in _details)
-        detail.item.institutionId: detail.item.institutionName,
+      for (final detail in _details) detail.item.institutionId: detail.item.institutionName,
     };
-    final institutionOptions = institutions.entries
-        .map(
-          (entry) =>
-              ActivityFormInstitutionOption(id: entry.key, name: entry.value),
-        )
-        .toList()
-      ..sort((left, right) => left.name.compareTo(right.name));
+    final institutionOptions =
+        institutions.entries
+            .map((entry) => ActivityFormInstitutionOption(id: entry.key, name: entry.value))
+            .toList()
+          ..sort((left, right) => left.name.compareTo(right.name));
     return ActivityFormOptions(
       institutions: institutionOptions,
       units: [
         for (final institution in institutionOptions)
-          ActivityFormUnitOption(
-            id: '${institution.id}-unit-1',
-            institutionId: institution.id,
-            name: 'Unidade Centro',
+          for (final index in [1, 2])
+            ActivityFormUnitOption(
+              id: '${institution.id}-unit-$index',
+              institutionId: institution.id,
+              name: index == 1 ? 'Unidade Centro' : 'Unidade Norte',
+            ),
+      ],
+      locations: [
+        for (final institution in institutionOptions)
+          ActivityFormLocationOption(
+            id: '${institution.id}-unit-1-location-1',
+            unitId: '${institution.id}-unit-1',
+            name: 'Laboratório de informática',
           ),
+      ],
+      groups: [
+        for (final institution in institutionOptions)
+          for (final index in [1, 2])
+            ActivityFormGroupOption(
+              id: '${institution.id}-group-$index',
+              unitId: '${institution.id}-unit-${index == 1 ? 1 : 2}',
+              name: 'Turma $index',
+              participantCount: 14 + index,
+            ),
+      ],
+      professionals: const [
+        ActivityFormProfessionalOption(
+          id: 'professional-1',
+          name: 'Marina Costa',
+          role: 'Professora',
+        ),
+        ActivityFormProfessionalOption(
+          id: 'professional-2',
+          name: 'Rafael Lima',
+          role: 'Coordenador',
+        ),
       ],
     );
   }
@@ -167,7 +195,7 @@ ActivityDetail _detail({
       for (var group = 0; group < groupCount; group++)
         ActivityGroupLink(
           id: '$id-group-$group',
-          name: 'Grupo ${group + 1}',
+          name: 'Turma ${group + 1}',
           unitName: 'Unidade Centro',
           status: ActivityStatus.active,
           participation: group.isEven ? ActivityParticipation.all : ActivityParticipation.selected,

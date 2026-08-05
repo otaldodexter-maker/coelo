@@ -99,6 +99,20 @@ import '../dev_menu/dev_menu_overlay.dart';
 import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
 
+
+void _returnToOr(
+  BuildContext context,
+  GoRouterState state,
+  String fallbackRouteName, {
+  Object? extra,
+}) {
+  final returnTo = state.uri.queryParameters['returnTo'];
+  if (returnTo != null && returnTo.startsWith('/')) {
+    context.go(returnTo);
+    return;
+  }
+  context.goNamed(fallbackRouteName, extra: extra);
+}
 GoRouter createSuperadminRouter({
   required SuperadminSession session,
   required LoginAction login,
@@ -568,9 +582,13 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.activityCreateName,
             builder: (context, state) => ActivityFormPage(
               repository: activityDirectoryRepository,
+              initialInstitutionId: state.uri.queryParameters['institutionId'],
+              initialUnitId: state.uri.queryParameters['unitId'],
               logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.activitiesName),
-              onPrototypeSubmitted: () => context.goNamed(SuperadminRoutes.activitiesName),
+              onCancel: () => _returnToOr(context, state, SuperadminRoutes.activitiesName),
+              onSaveDraft: (_) async {},
+              onSubmit: (_) async => _returnToOr(context, state, SuperadminRoutes.activitiesName),
+              onCreateLocation: _createPreviewActivityLocation,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
@@ -600,14 +618,20 @@ GoRouter createSuperadminRouter({
               activityId: state.pathParameters['activityId']!,
               repository: activityDirectoryRepository,
               logout: logout,
-              onCancel: () => context.goNamed(
-                SuperadminRoutes.activityDetailName,
-                pathParameters: {'activityId': state.pathParameters['activityId']!},
-              ),
-              onPrototypeSubmitted: () => context.goNamed(
-                SuperadminRoutes.activityDetailName,
-                pathParameters: {'activityId': state.pathParameters['activityId']!},
-              ),
+              onCancel: () => state.uri.queryParameters.containsKey('returnTo')
+                  ? _returnToOr(context, state, SuperadminRoutes.activitiesName)
+                  : context.goNamed(
+                      SuperadminRoutes.activityDetailName,
+                      pathParameters: {'activityId': state.pathParameters['activityId']!},
+                    ),
+              onSaveDraft: (_) async {},
+              onSubmit: (_) async => state.uri.queryParameters.containsKey('returnTo')
+                  ? _returnToOr(context, state, SuperadminRoutes.activitiesName)
+                  : context.goNamed(
+                      SuperadminRoutes.activityDetailName,
+                      pathParameters: {'activityId': state.pathParameters['activityId']!},
+                    ),
+              onCreateLocation: _createPreviewActivityLocation,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
@@ -1322,9 +1346,14 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devActivityCreateName,
             builder: (context, state) => ActivityFormPage(
               repository: activityPreviewRepository,
+              initialInstitutionId: state.uri.queryParameters['institutionId'],
+              initialUnitId: state.uri.queryParameters['unitId'],
               logout: _previewLogout,
-              onCancel: () => context.goNamed(SuperadminRoutes.devActivitiesName),
-              onPrototypeSubmitted: () => context.goNamed(SuperadminRoutes.devActivitiesName),
+              onCancel: () => _returnToOr(context, state, SuperadminRoutes.devActivitiesName),
+              onSaveDraft: (_) async {},
+              onSubmit: (_) async =>
+                  _returnToOr(context, state, SuperadminRoutes.devActivitiesName),
+              onCreateLocation: _createPreviewActivityLocation,
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
@@ -1358,11 +1387,13 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devActivityDetailName,
                 pathParameters: {'activityId': state.pathParameters['activityId']!},
               ),
-              onPrototypeSubmitted: () => context.goNamed(
+              onSaveDraft: (_) async {},
+              onSubmit: (_) async => context.goNamed(
                 SuperadminRoutes.devActivityDetailName,
                 pathParameters: {'activityId': state.pathParameters['activityId']!},
               ),
               onDestinationSelected: (destination) =>
+              onCreateLocation: _createPreviewActivityLocation,
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
             ),
@@ -2387,3 +2418,11 @@ Widget _invalidAccessProfileRoute(BuildContext context, String destination) =>
     );
 
 Future<LogoutResult> _previewLogout() async => const LogoutResult.success();
+
+Future<ActivityFormLocationOption> _createPreviewActivityLocation(
+  ActivityLocationDraft draft,
+) async => ActivityFormLocationOption(
+  id: 'preview-${draft.unitId}-${draft.name.hashCode}',
+  unitId: draft.unitId,
+  name: draft.name,
+);

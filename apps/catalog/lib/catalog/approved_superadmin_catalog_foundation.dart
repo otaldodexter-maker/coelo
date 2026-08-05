@@ -19,7 +19,9 @@ Map<String, CatalogFoundation> buildApprovedSuperadminFoundationRegistry() {
         'admin.flyout',
         'admin.pagination',
         'admin.single-select-field',
+        'admin.toggle-field',
         'superadmin.form-action-footer',
+        'superadmin.form-step-navigation',
       ],
       builder: (_) => const _ApprovedSuperadminSurfacesFoundation(),
     ),
@@ -93,6 +95,7 @@ final class _ApprovedSuperadminSurfacesFoundation extends StatelessWidget {
             'especializado, campos, uploads, responsividade e rodapé.',
         golden: 'institution_form_create_light_375.png / institution_form_edit_dark_1440.png',
         rule:
+            'Etapas ficam laterais em medium/wide e viram resumo acessível no compact. '
             'Cancelar à esquerda; continuidade à direita; uma única ação preenchida. '
             'Divergência exige proposta e aprovação antes do código.',
       ),

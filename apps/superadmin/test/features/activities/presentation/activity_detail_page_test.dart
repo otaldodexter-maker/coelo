@@ -29,7 +29,7 @@ void main() {
     expect(find.text('Identidade'), findsOneWidget);
     expect(find.text('Governança'), findsWidgets);
     expect(find.text('Unidades vinculadas'), findsOneWidget);
-    expect(find.text('Grupos vinculados'), findsOneWidget);
+    expect(find.text('Turmas vinculadas'), findsOneWidget);
     expect(find.text('Profissionais atribuídos'), findsWidgets);
     expect(find.text('Participantes'), findsWidgets);
     expect(find.text('Editar atividade'), findsOneWidget);

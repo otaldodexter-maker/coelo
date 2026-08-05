@@ -31,7 +31,7 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      if (constraints.maxWidth >= CoeloBreakpoints.large.minWidth) {
+      if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
         return SizedBox(
           width: 248,
           child: Column(
@@ -40,54 +40,55 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
           ),
         );
       }
-      if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (var index = 0; index < steps.length; index++)
-                Padding(
-                  padding: const EdgeInsets.only(right: CoeloSpacing.space2),
-                  child: _button(context, index, compact: true),
-                ),
-            ],
-          ),
-        );
-      }
-      return Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Etapa ${currentIndex + 1} de ${steps.length}',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-                Text(steps[currentIndex].label, style: Theme.of(context).textTheme.titleMedium),
-              ],
-            ),
-          ),
-          MenuAnchor(
-            menuChildren: [
-              for (var index = 0; index < steps.length; index++)
-                MenuItemButton(
-                  onPressed: steps[index].enabled ? () => onStepSelected(index) : null,
-                  child: Text(steps[index].label),
-                ),
-            ],
-            builder: (context, menu, child) => IconButton(
-              tooltip: 'Selecionar etapa',
-              onPressed: () => menu.isOpen ? menu.close() : menu.open(),
-              icon: const Icon(Icons.format_list_bulleted_rounded),
-            ),
-          ),
-        ],
-      );
+      return _compactSummary(context);
     },
   );
 
-  Widget _button(BuildContext context, int index, {bool compact = false}) {
+  Widget _compactSummary(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final step = steps[currentIndex];
+    final statusLabel = _statusLabel(step.status);
+    return Semantics(
+      key: const Key('superadmin-form-step-summary'),
+      container: true,
+      selected: true,
+      label: 'Etapa ${currentIndex + 1} de ${steps.length}. ${step.label}, $statusLabel',
+      child: Container(
+        constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space3,
+          vertical: CoeloSpacing.space2,
+        ),
+        decoration: BoxDecoration(
+          color: colors.primaryContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.radio_button_checked_rounded, color: colors.primary),
+            const SizedBox(width: CoeloSpacing.space2),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Etapa ${currentIndex + 1} de ${steps.length}',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                  ),
+                  Text(step.label, style: Theme.of(context).textTheme.labelLarge),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _button(BuildContext context, int index) {
     final step = steps[index];
     final colors = Theme.of(context).colorScheme;
     final current = step.status == SuperadminFormStepStatus.current;
@@ -97,12 +98,7 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
       SuperadminFormStepStatus.error => Icons.error_outline_rounded,
       SuperadminFormStepStatus.incomplete => Icons.radio_button_unchecked_rounded,
     };
-    final statusLabel = switch (step.status) {
-      SuperadminFormStepStatus.current => 'selecionada',
-      SuperadminFormStepStatus.complete => 'completa',
-      SuperadminFormStepStatus.error => 'com erro',
-      SuperadminFormStepStatus.incomplete => 'incompleta',
-    };
+    final statusLabel = _statusLabel(step.status);
     final keyLabel = step.label.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
     return Semantics(
       button: true,
@@ -110,7 +106,7 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
       enabled: step.enabled,
       label: '${step.label}, $statusLabel',
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: compact ? 0 : CoeloSpacing.spaceHalf),
+        padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
         child: TextButton.icon(
           key: Key('step-$keyLabel'),
           onPressed: step.enabled ? () => onStepSelected(index) : null,
@@ -147,4 +143,11 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
       ),
     );
   }
+
+  String _statusLabel(SuperadminFormStepStatus status) => switch (status) {
+    SuperadminFormStepStatus.current => 'selecionada',
+    SuperadminFormStepStatus.complete => 'completa',
+    SuperadminFormStepStatus.error => 'com erro',
+    SuperadminFormStepStatus.incomplete => 'incompleta',
+  };
 }

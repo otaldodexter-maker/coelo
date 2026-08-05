@@ -10,12 +10,7 @@ final class SuperadminUnderlineTab<T> {
 
 /// App-local selector for lightweight directory categories.
 final class SuperadminUnderlineTabs<T> extends StatelessWidget {
-  const SuperadminUnderlineTabs({
-    required this.tabs,
-    required this.selected,
-    required this.onSelected,
-    super.key,
-  });
+  const SuperadminUnderlineTabs({required this.tabs, required this.selected, required this.onSelected, super.key});
 
   final List<SuperadminUnderlineTab<T>> tabs;
   final T selected;
@@ -39,17 +34,21 @@ final class SuperadminUnderlineTabs<T> extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
+                    borderRadius: BorderRadius.circular(CoeloRadius.md),
                     onTap: () => onSelected(tab.value),
                     overlayColor: WidgetStateProperty.resolveWith((states) {
                       if (states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused)) {
-                        return colors.primaryContainer.withValues(alpha: .48);
+                          states.contains(WidgetState.focused) ||
+                          states.contains(WidgetState.pressed) ||
+                          states.contains(WidgetState.selected)) {
+                        return Colors.transparent;
                       }
                       return Colors.transparent;
                     }),
                     child: Container(
                       constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
                       alignment: Alignment.center,
+                      height: CoeloSize.touchMin,
                       padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
                       decoration: BoxDecoration(
                         border: Border(
@@ -58,6 +57,9 @@ final class SuperadminUnderlineTabs<T> extends StatelessWidget {
                             width: 2,
                           ),
                         ),
+                        color: tab.value == selected
+                            ? colors.primaryContainer.withValues(alpha: .26)
+                            : Colors.transparent,
                       ),
                       child: Text(
                         tab.label,

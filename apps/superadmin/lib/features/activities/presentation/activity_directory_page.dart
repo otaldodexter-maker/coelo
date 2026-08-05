@@ -11,6 +11,7 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
@@ -19,6 +20,8 @@ import 'activity_directory_view_model.dart';
 enum ActivityDirectoryDisplay { cards, table }
 
 enum ActivityDirectoryTableView { grouped, units, groups }
+
+enum _ActivityStatusTab { all, active, onboarding, inactive }
 
 final class ActivityDirectoryPage extends StatefulWidget {
   const ActivityDirectoryPage({
@@ -146,6 +149,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
   final GlobalKey _footerKey = GlobalKey();
   double _footerHeight = 0;
   bool _measurementScheduled = false;
+  _ActivityStatusTab _selectedStatus = _ActivityStatusTab.all;
 
   void _measureFooter(bool visible) {
     if (_measurementScheduled) return;
@@ -198,6 +202,21 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                     tableView: widget.tableView,
                     onDisplayChanged: widget.onDisplayChanged,
                     onTableViewChanged: widget.onTableViewChanged,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  SuperadminUnderlineTabs<_ActivityStatusTab>(
+                    key: const Key('activity-status-tabs'),
+                    selected: _selectedStatus,
+                    tabs: const [
+                      SuperadminUnderlineTab(value: _ActivityStatusTab.all, label: 'Todos'),
+                      SuperadminUnderlineTab(value: _ActivityStatusTab.active, label: 'Ativos'),
+                      SuperadminUnderlineTab(
+                        value: _ActivityStatusTab.onboarding,
+                        label: 'Em Implantação',
+                      ),
+                      SuperadminUnderlineTab(value: _ActivityStatusTab.inactive, label: 'Inativos'),
+                    ],
+                    onSelected: (status) => setState(() => _selectedStatus = status),
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   _ActivityResults(
@@ -321,21 +340,13 @@ final class _ActivityToolbar extends StatelessWidget {
         ),
         filter<ActivityHierarchyFilterOption>(
           key: const Key('activity-group-filter'),
-          label: 'Grupos',
+          label: 'Turmas',
           values: viewModel.groupOptions,
           selected: viewModel.groupOptions
               .where((option) => viewModel.selectedGroupIds.contains(option.id))
               .toSet(),
           optionLabel: (option) => option.label,
           onChanged: (value) => viewModel.setGroups(value.map((option) => option.id).toSet()),
-        ),
-        filter<ActivityStatus>(
-          key: const Key('activity-status-filter'),
-          label: 'Status',
-          values: ActivityStatus.values,
-          selected: viewModel.query.statuses,
-          optionLabel: (status) => status.label,
-          onChanged: viewModel.setStatuses,
         ),
         filter<ActivityOrigin>(
           key: const Key('activity-origin-filter'),
@@ -382,7 +393,7 @@ final class _ActivityToolbar extends StatelessWidget {
               ),
               SuperadminDirectoryTableViewOption(
                 value: ActivityDirectoryTableView.groups,
-                label: 'Por Grupos',
+                label: 'Por Turmas',
               ),
             ],
             cardsKey: const Key('activity-view-cards'),
@@ -403,7 +414,7 @@ final class _ActivityToolbar extends StatelessWidget {
                       : switch (tableView) {
                           ActivityDirectoryTableView.grouped => 'Agrupado',
                           ActivityDirectoryTableView.units => 'Por Unidades',
-                          ActivityDirectoryTableView.groups => 'Por Grupos',
+                          ActivityDirectoryTableView.groups => 'Por Turmas',
                         };
                   activityController.completeDemoExport(
                     SuperadminExportFormat.xlsx,
@@ -646,7 +657,7 @@ final class _ActivityCardState extends State<_ActivityCard> {
                             ),
                             second: _ActivityDetail(
                               icon: Icons.groups_outlined,
-                              label: 'Grupos',
+                              label: 'Turmas',
                               value: '${item.activeGroupCount}',
                             ),
                           ),
@@ -902,7 +913,7 @@ final class _ActivityTable extends StatelessWidget {
             columns: [
               column('institution', 'Instituição', (item) => item.institutionName, width: 240),
               column('units', 'Unidades', (item) => '${item.activeUnitCount}', width: 132),
-              column('groups', 'Grupos', (item) => '${item.activeGroupCount}', width: 132),
+              column('groups', 'Turmas', (item) => '${item.activeGroupCount}', width: 132),
               column('origin', 'Origem', (item) => item.origin.label),
               column('distribution', 'Distribuição', (item) => item.distribution.label, width: 210),
               column('governance', 'Governança', (item) => item.governance.label, width: 176),
@@ -975,7 +986,7 @@ final class _ActivityHierarchyTable extends StatelessWidget {
           onRowPressed: (item) => onEdit(item.id),
           pinnedColumn: column(
             'hierarchy',
-            level == ActivityDirectoryTableView.units ? 'Unidade' : 'Grupo',
+            level == ActivityDirectoryTableView.units ? 'Unidade' : 'Turma',
             hierarchyLabel,
             width: 240,
           ),

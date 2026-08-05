@@ -55,7 +55,7 @@ enum ActivityGovernance {
 }
 
 enum ActivityParticipation {
-  all('all', 'Todo o grupo'),
+  all('all', 'Toda a turma'),
   selected('selected', 'Participantes selecionados');
 
   const ActivityParticipation(this.databaseValue, this.label);
@@ -244,29 +244,79 @@ final class ActivityFormInstitutionOption {
 }
 
 final class ActivityFormUnitOption {
-  const ActivityFormUnitOption({
-    required this.id,
-    required this.institutionId,
-    required this.name,
-  });
+  const ActivityFormUnitOption({required this.id, required this.institutionId, required this.name});
 
   final String id;
   final String institutionId;
   final String name;
 }
 
+enum ActivityCategory {
+  languages('Idiomas', ['Português', 'Inglês', 'Outro']),
+  exactSciences('Exatas', ['Matemática', 'Robótica', 'Outro']),
+  martialArts('Lutas', ['Judô', 'Outro']),
+  arts('Artes', ['Desenho', 'Outro']);
+
+  const ActivityCategory(this.label, this.suggestions);
+
+  final String label;
+  final List<String> suggestions;
+}
+
+final class ActivityFormLocationOption {
+  const ActivityFormLocationOption({required this.id, required this.unitId, required this.name});
+
+  final String id;
+  final String unitId;
+  final String name;
+}
+
+final class ActivityLocationDraft {
+  const ActivityLocationDraft({required this.unitId, required this.name});
+
+  final String unitId;
+  final String name;
+}
+
+final class ActivityFormGroupOption {
+  const ActivityFormGroupOption({
+    required this.id,
+    required this.unitId,
+    required this.name,
+    required this.participantCount,
+  });
+
+  final String id;
+  final String unitId;
+  final String name;
+  final int participantCount;
+}
+
+final class ActivityFormProfessionalOption {
+  const ActivityFormProfessionalOption({required this.id, required this.name, required this.role});
+
+  final String id;
+  final String name;
+  final String role;
+}
+
 final class ActivityFormOptions {
   const ActivityFormOptions({
     this.institutions = const [],
     this.units = const [],
+    this.locations = const [],
+    this.groups = const [],
+    this.professionals = const [],
   });
 
   final List<ActivityFormInstitutionOption> institutions;
   final List<ActivityFormUnitOption> units;
+  final List<ActivityFormLocationOption> locations;
+  final List<ActivityFormGroupOption> groups;
+  final List<ActivityFormProfessionalOption> professionals;
 
-  List<ActivityFormUnitOption> unitsFor(String institutionId) => units
-      .where((unit) => unit.institutionId == institutionId)
-      .toList(growable: false);
+  List<ActivityFormUnitOption> unitsFor(String institutionId) =>
+      units.where((unit) => unit.institutionId == institutionId).toList(growable: false);
 }
 
 abstract interface class ActivityDirectoryRepository {
