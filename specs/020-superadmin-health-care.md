@@ -77,6 +77,13 @@ fixture com justificativa, mas não age em nome da instituição.
 - formulário de página com `SuperadminFormActionFooter`;
 - token semântico Histórico em light/dark.
 
+A correção visual aprovada em 2026-08-05 está detalhada em
+`docs/superpowers/specs/2026-08-05-superadmin-health-care-ui-correction-design.md`.
+Ela acrescenta Arquivos aos dois diretórios, remove o banner demonstrativo que
+compete com a listagem de Perfis, mantém o toggle compartilhado de 64 × 48 px,
+reforça a centralização e a scrollbar da tabela e leva criar, editar e detalhe
+para a família visual de Instituição + Unidade com navegação por etapas.
+
 Validar 375, 768, 1024 e 1440 px, light/dark, texto a 200%, teclado, mouse,
 toque, foco, Esc, semântica e reduced motion. Não usar hover cinza nem controle
 Material cru na feature.
