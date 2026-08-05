@@ -7,6 +7,8 @@ import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../safety/domain/child_safety.dart';
+import '../../safety/presentation/safety_pages.dart';
 import '../domain/person_directory.dart';
 import 'person_form_view_model.dart';
 
@@ -51,8 +53,8 @@ const _childLinkCandidates = [
   _DemoLinkCandidate(
     id: 'child-noah',
     name: 'Noah Coelo',
-    searchableData: 'noah coelo crianca-027 grupo ipê unidade jardins',
-    summary: 'ID criança-027 · Grupo Ipê · Unidade Jardins',
+    searchableData: 'noah coelo crianca-027 turma ipê grupo unidade jardins',
+    summary: 'ID criança-027 · Turma Ipê · Unidade Jardins',
   ),
 ];
 
@@ -64,6 +66,8 @@ final class PersonFormPage extends StatefulWidget {
     this.onCancel,
     this.onSaved,
     this.onDestinationSelected,
+    this.childSafetyStore,
+    this.onOpenChildSecurity,
     super.key,
   });
 
@@ -73,6 +77,8 @@ final class PersonFormPage extends StatefulWidget {
   final VoidCallback? onCancel;
   final ValueChanged<PersonDirectoryItem>? onSaved;
   final ValueChanged<String>? onDestinationSelected;
+  final ChildSafetyStore? childSafetyStore;
+  final VoidCallback? onOpenChildSecurity;
 
   @override
   State<PersonFormPage> createState() => _PersonFormPageState();
@@ -205,6 +211,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   PersonFilterOption _selectedGroup = _emptyOption;
   PersonFilterOption _selectedRole = _emptyOption;
   String? _identityError;
+  String? _modeError;
   bool _loadingOptions = true;
   Object? _optionsError;
   double _footerHeight = 0;
@@ -283,6 +290,15 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   }
 
   void _continue() {
+    if (_viewModel.step == PersonFormStep.mode) {
+      if (!_viewModel.isModeSelectionReady) {
+        setState(() => _modeError = 'Selecione um tipo de cadastro.');
+        return;
+      }
+      setState(() => _modeError = null);
+      _viewModel.next();
+      return;
+    }
     _syncIdentity();
     if (_viewModel.step == PersonFormStep.identity &&
         [
@@ -300,7 +316,11 @@ final class _PersonFormPageState extends State<PersonFormPage> {
 
   void _selectStep(PersonFormStep step) {
     if (_viewModel.isReadOnly || step == _viewModel.step) return;
-    if (step.index < _viewModel.step.index) {
+    final steps = _viewModel.steps;
+    final currentIndex = steps.indexOf(_viewModel.step);
+    final targetIndex = steps.indexOf(step);
+    if (currentIndex < 0 || targetIndex < 0) return;
+    if (targetIndex < currentIndex) {
       setState(() => _viewModel.step = step);
       return;
     }
@@ -396,12 +416,13 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   Widget _navigation() => LayoutBuilder(
     key: const Key('person-form-navigation'),
     builder: (context, constraints) {
+      final steps = _viewModel.steps;
       if (constraints.maxWidth >= CoeloBreakpoints.large.minWidth) {
         return SizedBox(
           width: 248,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [for (final step in PersonFormStep.values) _stepButton(step)],
+            children: [for (final step in steps) _stepButton(step)],
           ),
         );
       }
@@ -410,7 +431,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              for (final step in PersonFormStep.values)
+              for (final step in steps)
                 Padding(
                   padding: const EdgeInsets.only(right: CoeloSpacing.space2),
                   child: _stepButton(step, compact: true),
@@ -426,7 +447,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Etapa ${_viewModel.step.index + 1} de ${PersonFormStep.values.length}',
+                  'Etapa ${steps.indexOf(_viewModel.step) + 1} de ${steps.length}',
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
                 Text(_viewModel.step.label, style: Theme.of(context).textTheme.titleMedium),
@@ -435,7 +456,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           ),
           MenuAnchor(
             menuChildren: [
-              for (final step in PersonFormStep.values)
+              for (final step in steps)
                 MenuItemButton(
                   onPressed: _viewModel.isReadOnly ? null : () => _selectStep(step),
                   child: Text(step.label),
@@ -500,11 +521,64 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   Widget _section() => AnimatedSwitcher(
     duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short,
     child: switch (_viewModel.step) {
+      PersonFormStep.mode => _creationMode(),
       PersonFormStep.identity => _identity(),
       PersonFormStep.contexts => _contexts(),
       PersonFormStep.review => _review(),
     },
   );
+
+  Widget _creationMode() {
+    return Column(
+      key: const ValueKey(PersonFormStep.mode),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _heading(
+          'Tipo de cadastro',
+          'Selecione um ponto de entrada para orientar o fluxo e validações iniciais.',
+        ),
+        if (_modeError case final error?)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+            child: Text(error),
+          ),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [for (final option in PersonCreationMode.values) _creationModeChip(option)],
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloStatePanel(
+          title: 'Observação',
+          message:
+              'Nesta versão UI/UX esta etapa permanece local e guia o início do cadastro. As opções podem evoluir em etapas seguintes.',
+          icon: Icons.info_outline_rounded,
+        ),
+      ],
+    );
+  }
+
+  Widget _creationModeChip(PersonCreationMode mode) {
+    final selected = _viewModel.creationMode == mode;
+    return ChoiceChip(
+      label: Text(mode.label),
+      selected: selected,
+      onSelected: (value) {
+        if (value) {
+          setState(() {
+            _viewModel.setCreationMode(mode);
+            _modeError = null;
+          });
+        }
+      },
+      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+      labelPadding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space2,
+        vertical: CoeloSpacing.space2,
+      ),
+      tooltip: mode.tooltip,
+    );
+  }
 
   Widget _heading(String title, String description) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -658,7 +732,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           'Vínculos contextuais',
           _viewModel.type == PersonType.child
               ? 'Gerencie contextos institucionais da criança separadamente de papéis adultos.'
-              : 'Associe instituições, unidades, grupos e papéis sem alterar outros vínculos.',
+              : 'Associe instituições, unidades, turmas e papéis sem alterar outros vínculos.',
         ),
         const _DemoRelationshipSearch(),
         const SizedBox(height: CoeloSpacing.space5),
@@ -741,7 +815,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
             ),
             CoeloAdminSingleSelectField<PersonFilterOption>(
               key: const Key('person-membership-group'),
-              label: 'Grupo',
+              label: 'Turma',
               value: _selectedGroup,
               options: [_emptyOption, ..._groupOptions],
               optionLabel: (value) => value.label,
@@ -776,6 +850,16 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         ],
         if (_viewModel.type == PersonType.child) ...[
           const SizedBox(height: CoeloSpacing.space4),
+          if (widget.original != null &&
+              widget.childSafetyStore != null &&
+              widget.onOpenChildSecurity != null) ...[
+            ChildSecuritySummaryCard(
+              childId: widget.original!.id,
+              store: widget.childSafetyStore!,
+              onOpen: widget.onOpenChildSecurity!,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
           const CoeloStatePanel(
             title: 'Vínculos de responsável',
             message: 'Os vínculos de responsável permanecem somente leitura nesta etapa.',
@@ -835,7 +919,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
             ),
             const SizedBox(height: CoeloSpacing.space3),
             CoeloAdminSingleSelectField<PersonFilterOption>(
-              label: 'Grupo',
+              label: 'Turma',
               value: selectedGroup ?? _emptyOption,
               options: [_emptyOption, ...groupOptions],
               optionLabel: (value) => value.label,
@@ -916,6 +1000,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       _heading('Revisão', 'Confira os dados antes de salvar como rascunho.'),
+      if (_viewModel.isCreateFlow && _viewModel.modeHint.isNotEmpty) _reviewLine('Tipo de cadastro', _viewModel.modeHint),
       _reviewLine('Nome de exibição', _controllers['displayName']!.text),
       _reviewLine('Tipo', _viewModel.type.label),
       _reviewLine('Status', widget.original?.status.label ?? PersonStatus.draft.label),
@@ -985,6 +1070,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
       );
     }
     final last = _viewModel.step == PersonFormStep.review;
+    final currentStepIndex = _viewModel.steps.indexOf(_viewModel.step);
     return SuperadminFormActionFooter(
       surfaceKey: const Key('person-form-footer-surface'),
       onHeightChanged: _setFooterHeight,
@@ -993,7 +1079,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         child: const Text('Cancelar'),
       ),
       continuationActions: [
-        if (_viewModel.step.index > 0)
+        if (currentStepIndex > 0)
           OutlinedButton(
             onPressed: _viewModel.saving ? null : _viewModel.previous,
             child: const Text('Anterior'),

@@ -3,6 +3,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../auth/domain/logout_action.dart';
+import '../../safety/domain/child_safety.dart';
 import '../domain/person_directory.dart';
 import 'person_form_page.dart';
 
@@ -14,6 +15,8 @@ final class PersonEditRoutePage extends StatefulWidget {
     this.onCancel,
     this.onSaved,
     this.onDestinationSelected,
+    this.childSafetyStore,
+    this.onOpenChildSecurity,
     super.key,
   });
 
@@ -23,6 +26,8 @@ final class PersonEditRoutePage extends StatefulWidget {
   final VoidCallback? onCancel;
   final ValueChanged<PersonDirectoryItem>? onSaved;
   final ValueChanged<String>? onDestinationSelected;
+  final ChildSafetyStore? childSafetyStore;
+  final VoidCallback? onOpenChildSecurity;
 
   @override
   State<PersonEditRoutePage> createState() => _PersonEditRoutePageState();
@@ -62,6 +67,8 @@ final class _PersonEditRoutePageState extends State<PersonEditRoutePage> {
           onCancel: widget.onCancel,
           onSaved: widget.onSaved,
           onDestinationSelected: widget.onDestinationSelected,
+          childSafetyStore: widget.childSafetyStore,
+          onOpenChildSecurity: widget.onOpenChildSecurity,
         );
       }
       final error = snapshot.error;

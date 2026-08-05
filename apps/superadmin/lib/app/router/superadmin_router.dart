@@ -20,6 +20,7 @@ import '../../features/account/presentation/account_controller.dart';
 import '../../features/account/presentation/screens/profile_page.dart';
 import '../../features/account/presentation/screens/settings_page.dart';
 import '../../features/account/presentation/user_preferences_controller.dart';
+import '../../features/imports/domain/import_job.dart';
 import '../../features/access_profiles/data/fake_access_profile_repository.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
@@ -90,6 +91,8 @@ import '../../features/people/domain/person_directory.dart' hide PersonDirectory
 import '../../features/people/presentation/person_directory_page.dart';
 import '../../features/people/presentation/person_edit_route_page.dart';
 import '../../features/people/presentation/person_form_page.dart';
+import '../../features/safety/domain/child_safety.dart';
+import '../../features/safety/presentation/safety_pages.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
 import '../../features/units/data/fake_unit_directory_repository.dart';
@@ -98,7 +101,6 @@ import '../../features/units/presentation/unit_form_page.dart';
 import '../dev_menu/dev_menu_overlay.dart';
 import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
-
 
 void _returnToOr(
   BuildContext context,
@@ -113,6 +115,7 @@ void _returnToOr(
   }
   context.goNamed(fallbackRouteName, extra: extra);
 }
+
 GoRouter createSuperadminRouter({
   required SuperadminSession session,
   required LoginAction login,
@@ -171,6 +174,7 @@ GoRouter createSuperadminRouter({
   final healthCareRepository = DemoHealthCareRepository();
   final accessProfilePreviewRepository = FakeAccessProfileRepository();
   final peoplePreviewRepository = FakePersonDirectoryRepository();
+  final childSafetyStore = ChildSafetyStore.demo();
   FakePlatformUserRepository? platformUserPreviewRepository;
   FakePlatformUserRepository previewPlatformUsers() =>
       platformUserPreviewRepository ??= FakePlatformUserRepository();
@@ -192,8 +196,8 @@ GoRouter createSuperadminRouter({
 
   String? groupSuccessMessage(Object? extra) {
     return switch (extra) {
-      GroupFormSaveResult.created => 'Grupo criado com sucesso.',
-      GroupFormSaveResult.updated => 'Alterações do grupo salvas com sucesso.',
+      GroupFormSaveResult.created => 'Turma criada com sucesso.',
+      GroupFormSaveResult.updated => 'Alterações da turma salvas com sucesso.',
       _ => null,
     };
   }
@@ -264,22 +268,22 @@ GoRouter createSuperadminRouter({
       ShellRoute(
         builder: (context, state, child) {
           final location = state.matchedLocation;
+          final developmentPreview = location.startsWith('/dev/');
           final routedChild = _usesPersistentShell(location)
               ? SuperadminShell.host(
                   key: const Key('superadmin-persistent-shell'),
-                  logout: logout,
+                  logout: developmentPreview ? _previewLogout : logout,
                   currentDestination: _destinationForLocation(location),
-                  onDestinationSelected: (destination) =>
-                      _navigateFromPersistentShell(context, destination),
+                  onDestinationSelected: (destination) => developmentPreview
+                      ? _navigateFromDevelopmentShell(context, destination)
+                      : _navigateFromPersistentShell(context, destination),
                   onBugReportSubmitted: sessionSupportController.submitReport,
                   child: child,
                 )
               : child;
           return DevMenuOverlay(
             onNavigate: context.go,
-            showTrigger:
-                location != SuperadminRoutes.conversations &&
-                location != SuperadminRoutes.devConversations,
+            showTrigger: location != SuperadminRoutes.conversations,
             child: routedChild,
           );
         },
@@ -472,6 +476,32 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => UnitFormPage(
               repository: unitRepository,
               logout: logout,
+              onCreateGroup: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.groupCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditGroup: (id) => context.goNamed(
+                SuperadminRoutes.groupEditName,
+                pathParameters: {'groupId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
+              onCreateActivity: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.activityCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditActivity: (id) => context.goNamed(
+                SuperadminRoutes.activityEditName,
+                pathParameters: {'activityId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
               onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
               onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
               onDestinationSelected: (destination) {
@@ -496,6 +526,32 @@ GoRouter createSuperadminRouter({
               repository: unitRepository,
               unitId: state.pathParameters['unitId'],
               logout: logout,
+              onCreateGroup: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.groupCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditGroup: (id) => context.goNamed(
+                SuperadminRoutes.groupEditName,
+                pathParameters: {'groupId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
+              onCreateActivity: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.activityCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditActivity: (id) => context.goNamed(
+                SuperadminRoutes.activityEditName,
+                pathParameters: {'activityId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
               onCancel: () => context.goNamed(SuperadminRoutes.unitsName),
               onSaved: (result) => context.goNamed(SuperadminRoutes.unitsName, extra: result),
               onDestinationSelected: (destination) {
@@ -534,9 +590,12 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => GroupFormPage(
               institutions: prototypeRepository,
               repository: groupRepository,
+              initialInstitutionId: state.uri.queryParameters['institutionId'],
+              initialUnitId: state.uri.queryParameters['unitId'],
               logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.groupsName),
-              onSaved: (result) => context.goNamed(SuperadminRoutes.groupsName, extra: result),
+              onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
+              onSaved: (result) =>
+                  _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
               onBugReportSubmitted: sessionSupportController.submitReport,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
@@ -550,8 +609,9 @@ GoRouter createSuperadminRouter({
               repository: groupRepository,
               groupId: state.pathParameters['groupId'],
               logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.groupsName),
-              onSaved: (result) => context.goNamed(SuperadminRoutes.groupsName, extra: result),
+              onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
+              onSaved: (result) =>
+                  _returnToOr(context, state, SuperadminRoutes.groupsName, extra: result),
               onBugReportSubmitted: sessionSupportController.submitReport,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
@@ -664,6 +724,10 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.attendanceCallName,
                 pathParameters: {'callId': id},
               ),
+              initialInstitutionId: state.uri.queryParameters['institution'],
+              initialUnitId: state.uri.queryParameters['unit'],
+              initialGroupId: state.uri.queryParameters['group'],
+              initialActivityId: state.uri.queryParameters['activity'],
               activityController: attendanceActivities,
             ),
           ),
@@ -849,6 +913,32 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
+            path: SuperadminRoutes.safety,
+            name: SuperadminRoutes.safetyName,
+            builder: (context, state) => SafetyLandingPage(
+              store: childSafetyStore,
+              logout: logout,
+              onOpenChild: (id) => context.goNamed(
+                SuperadminRoutes.safetyChildName,
+                pathParameters: {'childId': id},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.safetyChild,
+            name: SuperadminRoutes.safetyChildName,
+            builder: (context, state) => ChildSecurityPage(
+              childId: state.pathParameters['childId']!,
+              store: childSafetyStore,
+              logout: logout,
+              onBack: () => context.goNamed(SuperadminRoutes.safetyName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.personCreate,
             name: SuperadminRoutes.personCreateName,
             builder: (context, state) => PersonFormPage(
@@ -875,6 +965,11 @@ GoRouter createSuperadminRouter({
               ),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
+              childSafetyStore: childSafetyStore,
+              onOpenChildSecurity: () => context.goNamed(
+                SuperadminRoutes.safetyChildName,
+                pathParameters: {'childId': state.pathParameters['personId']!},
+              ),
             ),
           ),
           GoRoute(
@@ -1234,6 +1329,32 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => UnitFormPage(
               repository: unitRepository,
               logout: _previewLogout,
+              onCreateGroup: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.devGroupCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditGroup: (id) => context.goNamed(
+                SuperadminRoutes.devGroupEditName,
+                pathParameters: {'groupId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
+              onCreateActivity: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.devActivityCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditActivity: (id) => context.goNamed(
+                SuperadminRoutes.devActivityEditName,
+                pathParameters: {'activityId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
               onCancel: () => context.goNamed(SuperadminRoutes.devUnitsName),
               onSaved: (result) => context.goNamed(SuperadminRoutes.devUnitsName, extra: result),
               onDestinationSelected: (destination) {
@@ -1258,6 +1379,32 @@ GoRouter createSuperadminRouter({
               repository: unitRepository,
               unitId: state.pathParameters['unitId'],
               logout: _previewLogout,
+              onCreateGroup: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.devGroupCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditGroup: (id) => context.goNamed(
+                SuperadminRoutes.devGroupEditName,
+                pathParameters: {'groupId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
+              onCreateActivity: (institutionId, unitId) => context.goNamed(
+                SuperadminRoutes.devActivityCreateName,
+                queryParameters: {
+                  'institutionId': institutionId,
+                  if (unitId != null) 'unitId': unitId,
+                  'returnTo': state.uri.toString(),
+                },
+              ),
+              onEditActivity: (id) => context.goNamed(
+                SuperadminRoutes.devActivityEditName,
+                pathParameters: {'activityId': id},
+                queryParameters: {'returnTo': state.uri.toString()},
+              ),
               onCancel: () => context.goNamed(SuperadminRoutes.devUnitsName),
               onSaved: (result) => context.goNamed(SuperadminRoutes.devUnitsName, extra: result),
               onDestinationSelected: (destination) {
@@ -1298,9 +1445,12 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => GroupFormPage(
               institutions: prototypeRepository,
               repository: groupRepository,
+              initialInstitutionId: state.uri.queryParameters['institutionId'],
+              initialUnitId: state.uri.queryParameters['unitId'],
               logout: _previewLogout,
-              onCancel: () => context.goNamed(SuperadminRoutes.devGroupsName),
-              onSaved: (result) => context.goNamed(SuperadminRoutes.devGroupsName, extra: result),
+              onCancel: () => _returnToOr(context, state, SuperadminRoutes.devGroupsName),
+              onSaved: (result) =>
+                  _returnToOr(context, state, SuperadminRoutes.devGroupsName, extra: result),
               onBugReportSubmitted: sessionSupportController.submitReport,
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
@@ -1314,8 +1464,9 @@ GoRouter createSuperadminRouter({
               repository: groupRepository,
               groupId: state.pathParameters['groupId'],
               logout: _previewLogout,
-              onCancel: () => context.goNamed(SuperadminRoutes.devGroupsName),
-              onSaved: (result) => context.goNamed(SuperadminRoutes.devGroupsName, extra: result),
+              onCancel: () => _returnToOr(context, state, SuperadminRoutes.devGroupsName),
+              onSaved: (result) =>
+                  _returnToOr(context, state, SuperadminRoutes.devGroupsName, extra: result),
               onBugReportSubmitted: sessionSupportController.submitReport,
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
@@ -1392,8 +1543,8 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devActivityDetailName,
                 pathParameters: {'activityId': state.pathParameters['activityId']!},
               ),
-              onDestinationSelected: (destination) =>
               onCreateLocation: _createPreviewActivityLocation,
+              onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: sessionSupportController.submitReport,
             ),
@@ -1425,6 +1576,10 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devAttendanceCallName,
                 pathParameters: {'callId': id},
               ),
+              initialInstitutionId: state.uri.queryParameters['institution'],
+              initialUnitId: state.uri.queryParameters['unit'],
+              initialGroupId: state.uri.queryParameters['group'],
+              initialActivityId: state.uri.queryParameters['activity'],
               activityController: attendanceActivities,
             ),
           ),
@@ -1611,6 +1766,32 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
+            path: SuperadminRoutes.devSafety,
+            name: SuperadminRoutes.devSafetyName,
+            builder: (context, state) => SafetyLandingPage(
+              store: childSafetyStore,
+              logout: _previewLogout,
+              onOpenChild: (id) => context.goNamed(
+                SuperadminRoutes.devSafetyChildName,
+                pathParameters: {'childId': id},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devSafetyChild,
+            name: SuperadminRoutes.devSafetyChildName,
+            builder: (context, state) => ChildSecurityPage(
+              childId: state.pathParameters['childId']!,
+              store: childSafetyStore,
+              logout: _previewLogout,
+              onBack: () => context.goNamed(SuperadminRoutes.devSafetyName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devPersonCreate,
             name: SuperadminRoutes.devPersonCreateName,
             builder: (context, state) => PersonFormPage(
@@ -1639,6 +1820,11 @@ GoRouter createSuperadminRouter({
               ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
+              childSafetyStore: childSafetyStore,
+              onOpenChildSecurity: () => context.goNamed(
+                SuperadminRoutes.devSafetyChildName,
+                pathParameters: {'childId': state.pathParameters['personId']!},
+              ),
             ),
           ),
           GoRoute(
@@ -1774,26 +1960,34 @@ GoRouter createSuperadminRouter({
               destination: 'import',
               child: ImportDirectoryPage(
                 repository: importRepository,
-                onNewImport: () => context.goNamed(SuperadminRoutes.devImportCreateName),
+                onNewImport: (preset) =>
+                    context.goNamed(SuperadminRoutes.devImportCreateName, extra: preset),
               ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.devImportCreate,
             name: SuperadminRoutes.devImportCreateName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Nova importação',
-              subtitle: 'Simule o envio e a validação de um arquivo.',
-              destination: 'import',
-              child: ImportWizardPage(
-                controller: ImportWizardController(
-                  repository: importRepository,
-                  store: operationalStore,
+            builder: (context, state) {
+              final preset = state.extra is ImportCreationPreset
+                  ? state.extra as ImportCreationPreset
+                  : ImportCreationPreset.institutions;
+              return operationalPage(
+                context,
+                title: 'Nova importação',
+                subtitle: 'Simule o envio e a validação de um arquivo.',
+                destination: 'import',
+                child: ImportWizardPage(
+                  controller: ImportWizardController(
+                    repository: importRepository,
+                    store: operationalStore,
+                    initialEntity: preset.defaultEntity,
+                    initialContext: preset.defaultContext,
+                  ),
+                  onFinished: () => context.goNamed(SuperadminRoutes.devImportsName),
                 ),
-                onFinished: () => context.goNamed(SuperadminRoutes.devImportsName),
-              ),
-            ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devInvites,
@@ -1823,6 +2017,7 @@ GoRouter createSuperadminRouter({
               destination: 'invites',
               child: InviteFormPage(
                 repository: inviteRepository,
+                onCancel: () => context.goNamed(SuperadminRoutes.devInvitesName),
                 onSent: (_) => context.goNamed(SuperadminRoutes.devInvitesName),
               ),
             ),
@@ -2249,6 +2444,8 @@ void _navigateFromAccount(
       context.goNamed(SuperadminRoutes.activitiesName);
     case 'people':
       context.goNamed(SuperadminRoutes.peopleName);
+    case 'safety':
+      context.goNamed(SuperadminRoutes.safetyName);
     case 'catalog':
       context.goNamed(SuperadminRoutes.governanceCatalogName);
     case 'support':
@@ -2266,13 +2463,19 @@ void _navigateFromAccount(
 }
 
 bool _usesPersistentShell(String location) {
-  return !location.startsWith('/dev/') &&
-      location != SuperadminRoutes.login &&
+  return location != SuperadminRoutes.login &&
       location != SuperadminRoutes.forgotPassword &&
-      location != SuperadminRoutes.resetPassword;
+      location != SuperadminRoutes.resetPassword &&
+      location != SuperadminRoutes.devLogin &&
+      location != SuperadminRoutes.devForgotPassword &&
+      location != SuperadminRoutes.devResetPassword &&
+      !location.startsWith('/dev/errors/');
 }
 
 String _destinationForLocation(String location) {
+  if (location.startsWith('/dev/')) {
+    return _destinationForLocation(location.substring('/dev'.length));
+  }
   if (location.startsWith('/institutions')) {
     return 'institutions';
   }
@@ -2300,14 +2503,38 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/people')) {
     return 'people';
   }
+  if (location.startsWith('/safety')) {
+    return 'safety';
+  }
   if (location.startsWith('/profiles')) {
     return 'profiles';
   }
+  if (location.startsWith('/internal-users')) {
+    return 'internal-users';
+  }
+  if (location.startsWith('/plans')) {
+    return 'plans';
+  }
+  if (location.startsWith('/imports')) {
+    return 'import';
+  }
+  if (location.startsWith('/invites')) {
+    return 'invites';
+  }
+  if (location.startsWith('/notices')) {
+    return 'notices';
+  }
+  if (location.startsWith('/audit')) {
+    return 'audit';
+  }
+  if (location.startsWith('/agenda')) {
+    return 'agenda';
+  }
   return switch (location) {
-    SuperadminRoutes.home => 'home',
-    SuperadminRoutes.governanceCatalog => 'catalog',
+    SuperadminRoutes.home || '/home' => 'home',
+    SuperadminRoutes.governanceCatalog || '/catalog' => 'catalog',
     SuperadminRoutes.support => 'support',
-    SuperadminRoutes.conversations => 'conversations',
+    SuperadminRoutes.conversations || '/conversations' => 'conversations',
     SuperadminRoutes.profile => 'profile',
     SuperadminRoutes.settings => 'settings',
     _ => 'home',
@@ -2336,6 +2563,8 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.healthMedicationPlansName);
     case 'people':
       context.goNamed(SuperadminRoutes.peopleName);
+    case 'safety':
+      context.goNamed(SuperadminRoutes.safetyName);
     case 'profiles':
       context.goNamed(SuperadminRoutes.profilesName);
     case 'catalog':
@@ -2373,6 +2602,8 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devHealthMedicationPlansName);
     case 'people':
       context.goNamed(SuperadminRoutes.devPeopleName);
+    case 'safety':
+      context.goNamed(SuperadminRoutes.devSafetyName);
     case 'profiles':
       context.goNamed(SuperadminRoutes.devProfilesName);
     case 'plans':

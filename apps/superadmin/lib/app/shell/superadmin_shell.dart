@@ -84,6 +84,7 @@ class SuperadminShell extends StatefulWidget {
 
 class _SuperadminShellState extends State<SuperadminShell> with TickerProviderStateMixin {
   bool _sidebarCollapsed = false;
+  bool _drawerOpen = false;
   late final AnimationController _sidebarController;
   late final SuperadminActivityController _activityController;
   late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
@@ -95,7 +96,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     _sidebarController = AnimationController(vsync: this, duration: _sidebarMotionDuration);
     _ownsActivityController = widget.activityController == null;
     _activityController = widget.activityController ?? SuperadminActivityController();
-    _chatLauncherPositionController = SuperadminChatLauncherPositionController();
+    _chatLauncherPositionController = SuperadminChatLauncherPositionController(persist: true);
   }
 
   @override
@@ -131,6 +132,9 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
 
   Future<void> _handleLogout() async {
     final result = await widget.logout();
+    if (result.isSuccess) {
+      _chatLauncherPositionController.reset();
+    }
     if (!mounted || result.isSuccess) {
       return;
     }
@@ -195,6 +199,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 currentScreen: widget.title,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
               ),
+              onDrawerChanged: (open) => setState(() => _drawerOpen = open),
               drawer: Drawer(
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
@@ -375,11 +380,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               Expanded(child: pageBody),
             ],
           );
-    return _withChatLauncher(
-      content,
-      onDestinationSelected: hostScope.onDestinationSelected,
-      positionController: hostScope.chatLauncherPositionController,
-    );
+    return content;
   }
 
   Widget _withChatLauncher(
@@ -402,15 +403,16 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       fit: StackFit.expand,
       children: [
         child,
-        Positioned(
-          right: CoeloSpacing.space4,
-          bottom: launcherBottom,
-          child: SuperadminChatLauncher(
-            onOpenConversations: openConversations,
-            bottomClearance: launcherReservedBottom,
-            positionController: positionController ?? _chatLauncherPositionController,
+        if (!_drawerOpen)
+          Positioned(
+            right: CoeloSpacing.space4,
+            bottom: launcherBottom,
+            child: SuperadminChatLauncher(
+              onOpenConversations: openConversations,
+              bottomClearance: launcherReservedBottom,
+              positionController: positionController ?? _chatLauncherPositionController,
+            ),
           ),
-        ),
       ],
     );
   }
@@ -708,7 +710,7 @@ const _navigationSections = <_NavigationSectionData>[
       active: true,
     ),
     _NavigationDestinationData('units', 'Unidades', Icons.apartment_outlined, active: true),
-    _NavigationDestinationData('groups', 'Grupos', Icons.groups_outlined, active: true),
+    _NavigationDestinationData('groups', 'Turmas', Icons.groups_outlined, active: true),
     _NavigationDestinationData(
       'activities',
       'Atividades',
@@ -732,6 +734,12 @@ const _navigationSections = <_NavigationSectionData>[
   ]),
   _NavigationSectionData('access', 'Acessos', Icons.manage_accounts_outlined, [
     _NavigationDestinationData('people', 'Pessoas', Icons.people_outline, active: true),
+    _NavigationDestinationData(
+      'safety',
+      'Segurança da criança',
+      Icons.shield_outlined,
+      active: true,
+    ),
     _NavigationDestinationData('internal-users', 'Usuários internos', Icons.badge_outlined),
     _NavigationDestinationData(
       'profiles',
@@ -1235,6 +1243,7 @@ String? _prototypeDestinationPath(BuildContext context, String destination) {
   return switch (destination) {
     'health-care-profiles' => '$prefix/health-care/profiles',
     'health-medication-plans' => '$prefix/health-care/medication-plans',
+    'safety' => '$prefix/safety',
     'catalog' => development ? '/dev/catalog' : '/governance/catalog',
     'plans' => '/dev/plans',
     'import' => '/dev/imports',
@@ -2339,10 +2348,7 @@ class _ProfileSummary extends StatelessWidget {
       menuChildren: [
         SingleChildScrollView(
           primary: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: menuItems,
-          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: menuItems),
         ),
       ],
       builder: (context, controller, child) {

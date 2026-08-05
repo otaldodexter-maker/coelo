@@ -63,6 +63,10 @@ abstract final class SuperadminRoutes {
   static const personCreateName = 'person-create';
   static const personEdit = '/people/:personId/edit';
   static const personEditName = 'person-edit';
+  static const safety = '/safety';
+  static const safetyName = 'safety';
+  static const safetyChild = '/safety/children/:childId';
+  static const safetyChildName = 'safety-child';
   static const profiles = '/profiles';
   static const profilesName = 'profiles';
   static const profileCreate = '/profiles/new/:domain';
@@ -157,6 +161,10 @@ abstract final class SuperadminRoutes {
   static const devPersonCreateName = 'dev-person-create';
   static const devPersonEdit = '/dev/people/:personId/edit';
   static const devPersonEditName = 'dev-person-edit';
+  static const devSafety = '/dev/safety';
+  static const devSafetyName = 'dev-safety';
+  static const devSafetyChild = '/dev/safety/children/:childId';
+  static const devSafetyChildName = 'dev-safety-child';
   static const devProfiles = '/dev/profiles';
   static const devProfilesName = 'dev-profiles';
   static const devProfileCreate = '/dev/profiles/new/:domain';
