@@ -1,106 +1,95 @@
-﻿# Handoff - Correções UI/UX da tela Importações (Superadmin)
+# Handoff - Correções UI/UX da tela Suporte (Superadmin)
 
 ## Encerramento em seguro
 - data-hora: 2026-08-05 10:24:00 -03:00
-- objetivo original: corrigir e ajustar a UI/UX da tela **Importações** no escopo Superadmin, mantendo o padrão Coelo (marca #D63C00, grafite #3F4549, Nunito Sans, acessibilidade e tokens semânticos), com foco em uma listagem única em tabela para auditoria.
-- escopo efetivamente trabalhado: tela **Importações** em `apps/superadmin`, sem alteração de regra de negócio ou arquitetura.
+- objetivo original: corrigir e ajustar a UI/UX da tela **Suporte** em `apps/superadmin`, mantendo o padrão Coelo.
+- escopo efetivamente trabalhado: tela **Suporte** (kanban + tabela) e suporte de drag no card base em `coelo_ui_admin`, sem mudanças de regra de negócio.
 
 ## Decisões de produto/UI que devem ser preservadas
-- A tela de Importações deve ser tabela única (sem card), com visual e controle centralizados no padrão Coelo-admin.
-- Filtro de status segue os rótulos: `Todos`, `Ativos`, `Em Implantação`, `Inativos`.
-- Preservar busca, filtros por entidade/arquivo/período e ações de exportação.
-- O fluxo de criação permanece por popup de escopo de importação com presets, antes de chegar ao wizard.
-- Ações de linha usam `CoeloAdminFlyout` padronizado, com rótulos claros e sem hover cinza indevido.
-- Em mobile/tablet o fundo da tela deve ser limpo e claro, com abordagem branca/surface.
-- Estado vazio mantém CTA principal e painel orientativo.
+- Foco apenas em correções de apresentação e comportamento de interação.
+- Manter padrão de tokens semânticos, marca (`#D63C00`), grafite (`#3F4549`) e tipografia já padronizada no projeto.
+- Em mobile e tablet, fundo limpo/alto contraste com `surface` (abordagem clara, próxima a Instagram/Airbnb).
+- Estrutura de alternância deve continuar com visual de padrão Coelo para listas/tabelas em desktop.
 
-## Referências e documentos consultados
+## Referências consultadas
 - `C:/Users/adrie/Documents/Coelo/.agents/skills/coelo-ui/SKILL.md`
 - `C:/Users/adrie/Documents/Coelo/.agents/skills/ui-ux-pro-max/SKILL.md`
 - `C:/Users/adrie/Documents/Coelo/.agents/skills/ponytail/SKILL.md`
 - `C:/Users/adrie/Documents/Coelo/.agents/skills/flutter-build-responsive-layout/SKILL.md`
 - `C:/Users/adrie/Documents/Coelo/.agents/skills/rtk/SKILL.md`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/imports/import_directory_page_test.dart`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/app/router/superadmin_router.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/support/presentation/screens/support_page.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/support/presentation/widgets/support_ticket_table.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/app/shell/superadmin_bug_report_dialog.dart`
+- `C:/Users/adrie/Documents/Coelo/packages/coelo_ui_admin/lib/src/kanban/coelo_admin_work_item_card.dart`
 
 ## Arquivos criados
-- Nenhum arquivo novo para esta etapa.
+- Nenhum arquivo novo.
 
 ## Arquivos alterados
-- `apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`
-- `apps/superadmin/test/features/imports/import_directory_page_test.dart`
+- Atualização final do registro de continuidade em `docs/handoffs/current-task-handoff.md`.
 
-## Componentes, rotas ou superfícies afetadas
-- `ImportDirectoryPage` (`apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`).
-- Rota de listagem de importações em `superadmin_router.dart` (continua consumindo callback `ValueChanged<ImportCreationPreset>`).
+## Componentes/rotas/superfícies afetadas
+- `SupportPage`
+- `SupportFilterToolbar`
+- `SupportTicketTable`
+- `CoeloAdminWorkItemCard`
+- Diálogo de criação em `showSuperadminBugReportDialog`
+- Tela não alterada fora do fluxo superadmin de suporte.
 
 ## O que foi concluído
-1. Tela migrada para listagem única em tabela.
-2. Removida a lógica de alternância para card, mantendo tabela padrão.
-3. Implementado filtros adicionais (busca, escopo/arquivo/período) com estado de filtro ativo e limpeza.
-4. Ajustado status em tabs com os rótulos solicitados.
-5. Incluída exportação da listagem em CSV/XLSX.
-6. Inclusão de popup de nova importação com presets:
-   - Unidades
-   - Instituições
-   - Nova instituição
-   - Nova família
-   - Upload por etapa
-7. Ajustado flyout de linha para padrão de ações no Coelo-admin.
-8. Ajustes de hover/semântica no fluxo de criação.
-9. Fundo responsivo mobile/tablet com cor branca/surface.
-10. Teste da tela atualizado para validar seleção de preset no novo modal.
+1. Confirmação da correção da tela de suporte com:
+   - fundo claro em mobile/tablet;
+   - tabela com scrollbar horizontal ativa;
+   - flyout de status com padrão Coelo;
+   - botão "Criar suporte" chamando diálogo com título "Novo chamado";
+   - card com suporte a drag em touch + desktop;
+   - toggle de visualização com padrão do diretório de superadmin.
+2. Não há nova mudança estrutural fora do escopo pedido para esta etapa.
 
 ## O que ficou parcialmente concluído
-- Validação visual manual via execução local (localhost/preview) não foi realizada nesta etapa.
+- Nenhum bloqueio técnico no escopo da tela Suporte identificado nesta retomada.
 
 ## O que ainda não foi iniciado
-- Captura de golden/QA visual final da tela após mudanças.
-- Conferência final com time de design das micro-contradições de spacing local no desktop se necessário.
+- Validação visual manual completa em ambiente local (localhost) por limitação do fluxo atual.
 
 ## Verificações executadas e resultados
-- `git status --short` executado para registrar estado atual do repositório.
-- `git diff -- apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart` confirmado com a refatoração esperada.
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart`
-  - sucesso.
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test test/features/imports/import_directory_page_test.dart` (em `apps/superadmin`)
-  - sucesso: 1 teste passou.
+- `git status --short --short` (semântica de segurança): no arquivo fora do escopo de suporte marcado como modificado.
+- Verificações de presença de recursos:
+  - `rg` confirmou `SuperadminDirectoryViewToggle` em `support_filter_toolbar.dart`;
+  - `rg` confirmou `showHorizontalScrollbar: true` em `support_ticket_table.dart`;
+  - `rg` confirmou `CoeloAdminFlyout` em `support_page.dart`;
+  - `rg` confirmou `dialogTitle` em `superadmin_bug_report_dialog.dart`;
+  - `rg` confirmou `LongPressDraggable`/`Draggable` em `coelo_admin_work_item_card.dart`.
+- Diferença (working tree) focada na tela suporte: sem deltas pendentes.
 
 ## Erros ou avisos ainda existentes
-- O repositório geral está com muitas alterações paralelas de outras tarefas.
-- Há aviso de normalização LF/CRLF em arquivos tocados.
+- Há muitas mudanças simultâneas no repositório em andamento de outras frentes (contexto geral).
 
 ## Bloqueios encontrados
-- Nenhum bloqueio para o escopo desta etapa.
+- Nenhum bloqueio direto da tela Suporte.
 
 ## Débitos técnicos conscientes
-- Não há implementação de screenshot/golden para esta etapa.
+- Sem validação pixel-perfect local nesta etapa.
 
 ## Estado atual
-- Funcional para o escopo implementado, sem dependências quebradas no fluxo alvo.
+- Tela Suporte considerada finalizada no escopo de ajustes UI/UX pedidos; pronta para encerramento desta etapa.
 
 ## Resumo do git diff
-- `apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`: refatoração completa da UI da tela, filtros/tabs, tabela, actions e popup de nova importação.
-- `apps/superadmin/test/features/imports/import_directory_page_test.dart`: teste atualizado para validar navegação do fluxo de preset.
+- `git diff --name-only HEAD -- apps/superadmin/lib/features/support/...` não retornou alterações pendentes.
+- `docs/handoffs/current-task-handoff.md` contém o estado atual e fechamento.
 
 ## Próximo passo exato
-- Abrir a tela Importações em ambiente local e validar visualmente tabela, scroll horizontal, alinhamento não-agrupado, ações de linha e fluxo de criação em desktop/tablet/mobile.
+- Se necessário, abrir tela Suporte em ambiente local para inspeção final de espaçamento de tabela desktop e comportamento de drag.
 
 ## Primeiro arquivo para abrir na retomada
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`
+- `C:/Users/adrie/Documents/Coelo/docs/handoffs/current-task-handoff.md`
 
-## Comandos necessários para validar/retomar
+## Comandos para validar/retomar
 - `git -C "C:/Users/adrie/Documents/Coelo" status --short`
-- `git -C "C:/Users/adrie/Documents/Coelo" diff -- apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart`
-- `git -C "C:/Users/adrie/Documents/Coelo" -c core.autocrlf=false diff --check`
-- `cd "C:/Users/adrie/Documents/Coelo/apps/superadmin"`
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart`
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test test/features/imports/import_directory_page_test.dart`
+- `git -C "C:/Users/adrie/Documents/Coelo" diff --name-only HEAD -- apps/superadmin/lib/features/support/presentation/screens/support_page.dart apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart apps/superadmin/lib/features/support/presentation/widgets/support_ticket_table.dart apps/superadmin/lib/app/shell/superadmin_bug_report_dialog.dart packages/coelo_ui_admin/lib/src/kanban/coelo_admin_work_item_card.dart`
+- `git -C "C:/Users/adrie/Documents/Coelo" show --stat --oneline HEAD`
 
-## Critérios para considerar a próxima etapa concluída
-- A tela carrega com lista em tabela única sem opção card.
-- Status tabs e filtros funcionais com estado consistente.
-- Popup de nova importação abre e retorna preset correto.
-- Ações de linha têm hover/espaçamento coerente com padrão.
-- Validação manual confirma scroll horizontal visível e layout centralizado no estado não-agrupado.
+## Critérios para considerar esta etapa concluída
+- A tela Suporte está alinhada ao padrão Coelo no contexto solicitado e sem novos arquivos fora do escopo.
+- Sem pendências funcionais na interação da interface pedida nesta etapa.
