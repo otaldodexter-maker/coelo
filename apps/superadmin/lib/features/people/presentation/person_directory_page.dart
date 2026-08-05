@@ -956,152 +956,155 @@ final class _PersonTable extends StatelessWidget {
         const SizedBox(height: CoeloSpacing.space4),
         SizedBox(
           key: const Key('people-table-viewport'),
-          width: constraints.maxWidth,
-          child: CoeloAdminResizableTable<PersonDirectoryItem>(
-            key: const Key('people-table'),
-            items: items,
-            rowKey: (item) => 'people-table-row-${item.id}',
-            headerHeight: 56,
-            rowHeight: 64,
-            onRowPressed: (item) {
-              onEdit(item.id);
-            },
-            pinnedColumn: CoeloAdminTableColumn(
-              id: 'display_name',
-              label: 'Pessoa',
-              initialWidth: 240,
-              minWidth: 180,
-              maxWidth: 360,
-              sortable: true,
-              cellBuilder: (context, item) => Row(
-                children: [
-                  CoeloAvatar(
-                    initials: item.initials,
-                    semanticLabel: 'Avatar de ${item.displayName}',
-                    size: CoeloAvatarSize.small,
-                  ),
-                  const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(
-                    child: Text(item.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ),
-                ],
-              ),
-            ),
-            sortColumnId: sortColumn.databaseValue,
-            sortAscending: sortAscending,
-            onSort: (id) {
-              final column = PersonDirectorySortColumn.values
-                  .where((item) => item.databaseValue == id)
-                  .firstOrNull;
-              if (column != null) onSort(column);
-            },
-            columns: [
-              if (tableView == PersonDirectoryTableView.grouped)
-                CoeloAdminTableColumn(
-                  id: 'type',
-                  label: 'Tipo',
-                  initialWidth: 128,
-                  minWidth: 112,
-                  maxWidth: 180,
-                  sortable: true,
-                  cellBuilder: (context, item) => Text(item.type.label),
-                ),
-              if (tableView == PersonDirectoryTableView.grouped)
-                CoeloAdminTableColumn(
-                  id: 'status',
-                  label: 'Status',
-                  initialWidth: 128,
-                  minWidth: 112,
-                  maxWidth: 180,
-                  sortable: true,
-                  cellBuilder: (context, item) {
-                    final (background, foreground) = _personStatusColors(context, item.status);
-                    return CoeloStatusChip(
-                      label: item.status.label,
-                      backgroundColor: background,
-                      foregroundColor: foreground,
-                    );
-                  },
-                ),
-              CoeloAdminTableColumn(
-                id: PersonDirectorySortColumn.institution.databaseValue,
-                label: 'Instituição',
-                initialWidth: 220,
-                minWidth: 160,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: CoeloAdminResizableTable<PersonDirectoryItem>(
+              key: const Key('people-table'),
+              items: items,
+              rowKey: (item) => 'people-table-row-${item.id}',
+              headerHeight: 56,
+              rowHeight: 64,
+              showHorizontalScrollbar: true,
+              onRowPressed: (item) {
+                onEdit(item.id);
+              },
+              pinnedColumn: CoeloAdminTableColumn(
+                id: 'display_name',
+                label: 'Pessoa',
+                initialWidth: 240,
+                minWidth: 180,
                 maxWidth: 360,
                 sortable: true,
-                cellBuilder: (context, item) => Text(
-                  item.institutionSummary.isEmpty ? 'Não informado' : item.institutionSummary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                cellBuilder: (context, item) => Row(
+                  children: [
+                    CoeloAvatar(
+                      initials: item.initials,
+                      semanticLabel: 'Avatar de ${item.displayName}',
+                      size: CoeloAvatarSize.small,
+                    ),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    Expanded(
+                      child: Text(item.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
+                  ],
                 ),
               ),
-              if (tableView != PersonDirectoryTableView.institutions)
+              sortColumnId: sortColumn.databaseValue,
+              sortAscending: sortAscending,
+              onSort: (id) {
+                final column = PersonDirectorySortColumn.values
+                    .where((item) => item.databaseValue == id)
+                    .firstOrNull;
+                if (column != null) onSort(column);
+              },
+              columns: [
+                if (tableView == PersonDirectoryTableView.grouped)
+                  CoeloAdminTableColumn(
+                    id: 'type',
+                    label: 'Tipo',
+                    initialWidth: 128,
+                    minWidth: 112,
+                    maxWidth: 180,
+                    sortable: true,
+                    cellBuilder: (context, item) => Text(item.type.label),
+                  ),
+                if (tableView == PersonDirectoryTableView.grouped)
+                  CoeloAdminTableColumn(
+                    id: 'status',
+                    label: 'Status',
+                    initialWidth: 128,
+                    minWidth: 112,
+                    maxWidth: 180,
+                    sortable: true,
+                    cellBuilder: (context, item) {
+                      final (background, foreground) = _personStatusColors(context, item.status);
+                      return CoeloStatusChip(
+                        label: item.status.label,
+                        backgroundColor: background,
+                        foregroundColor: foreground,
+                      );
+                    },
+                  ),
                 CoeloAdminTableColumn(
-                  id: PersonDirectorySortColumn.unit.databaseValue,
-                  label: 'Unidade',
-                  initialWidth: 180,
-                  minWidth: 140,
-                  maxWidth: 280,
+                  id: PersonDirectorySortColumn.institution.databaseValue,
+                  label: 'Instituição',
+                  initialWidth: 220,
+                  minWidth: 160,
+                  maxWidth: 360,
                   sortable: true,
                   cellBuilder: (context, item) => Text(
-                    item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
+                    item.institutionSummary.isEmpty ? 'Não informado' : item.institutionSummary,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              if (tableView == PersonDirectoryTableView.grouped ||
-                  tableView == PersonDirectoryTableView.groups ||
-                  tableView == PersonDirectoryTableView.activities)
-                CoeloAdminTableColumn(
-                  id: PersonDirectorySortColumn.group.databaseValue,
-                  label: 'Grupo',
-                  initialWidth: 180,
-                  minWidth: 140,
-                  maxWidth: 280,
-                  sortable: true,
-                  cellBuilder: (context, item) => Text(
-                    item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                if (tableView != PersonDirectoryTableView.institutions)
+                  CoeloAdminTableColumn(
+                    id: PersonDirectorySortColumn.unit.databaseValue,
+                    label: 'Unidade',
+                    initialWidth: 180,
+                    minWidth: 140,
+                    maxWidth: 280,
+                    sortable: true,
+                    cellBuilder: (context, item) => Text(
+                      item.unitSummary.isEmpty ? 'Não informado' : item.unitSummary,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              if (tableView == PersonDirectoryTableView.grouped)
-                CoeloAdminTableColumn(
-                  id: PersonDirectorySortColumn.role.databaseValue,
-                  label: 'Papel contextual',
-                  initialWidth: 180,
-                  minWidth: 140,
-                  maxWidth: 280,
-                  sortable: true,
-                  cellBuilder: (context, item) => Text(item.roleSummary),
-                ),
-              if (tableView == PersonDirectoryTableView.grouped)
-                CoeloAdminTableColumn(
-                  id: PersonDirectorySortColumn.authLink.databaseValue,
-                  label: 'Auth',
-                  initialWidth: 140,
-                  minWidth: 112,
-                  maxWidth: 180,
-                  sortable: true,
-                  cellBuilder: (context, item) =>
-                      Text(item.isEditable ? item.authLink.label : 'Somente leitura'),
-                ),
-              if (tableView == PersonDirectoryTableView.grouped ||
-                  tableView == PersonDirectoryTableView.activities)
-                CoeloAdminTableColumn(
-                  id: 'activity',
-                  label: 'Atividades',
-                  initialWidth: 180,
-                  minWidth: 140,
-                  maxWidth: 280,
-                  cellBuilder: (context, item) => Text(
-                    item.activitySummary.isEmpty ? 'Não informado' : item.activitySummary,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                if (tableView == PersonDirectoryTableView.grouped ||
+                    tableView == PersonDirectoryTableView.groups ||
+                    tableView == PersonDirectoryTableView.activities)
+                  CoeloAdminTableColumn(
+                    id: PersonDirectorySortColumn.group.databaseValue,
+                    label: 'Grupo',
+                    initialWidth: 180,
+                    minWidth: 140,
+                    maxWidth: 280,
+                    sortable: true,
+                    cellBuilder: (context, item) => Text(
+                      item.groupSummary.isEmpty ? 'Não informado' : item.groupSummary,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-            ],
+                if (tableView == PersonDirectoryTableView.grouped)
+                  CoeloAdminTableColumn(
+                    id: PersonDirectorySortColumn.role.databaseValue,
+                    label: 'Papel contextual',
+                    initialWidth: 180,
+                    minWidth: 140,
+                    maxWidth: 280,
+                    sortable: true,
+                    cellBuilder: (context, item) => Text(item.roleSummary),
+                  ),
+                if (tableView == PersonDirectoryTableView.grouped)
+                  CoeloAdminTableColumn(
+                    id: PersonDirectorySortColumn.authLink.databaseValue,
+                    label: 'Auth',
+                    initialWidth: 140,
+                    minWidth: 112,
+                    maxWidth: 180,
+                    sortable: true,
+                    cellBuilder: (context, item) =>
+                        Text(item.isEditable ? item.authLink.label : 'Somente leitura'),
+                  ),
+                if (tableView == PersonDirectoryTableView.grouped ||
+                    tableView == PersonDirectoryTableView.activities)
+                  CoeloAdminTableColumn(
+                    id: 'activity',
+                    label: 'Atividades',
+                    initialWidth: 180,
+                    minWidth: 140,
+                    maxWidth: 280,
+                    cellBuilder: (context, item) => Text(
+                      item.activitySummary.isEmpty ? 'Não informado' : item.activitySummary,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ],

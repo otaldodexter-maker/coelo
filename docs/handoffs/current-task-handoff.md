@@ -4,81 +4,91 @@ status: "completed"
 generated_at: "2026-08-05"
 ---
 
-# Handoff - Correcoes UI/UX da tela Avisos (Superadmin)
+# Handoff - Correcoes UI/UX da tela Pessoas (Superadmin)
 
 ## Encerramento seguro
-- data-hora: 2026-08-05
-- objetivo original: corrigir e ajustar a UI/UX da tela Avisos no Superadmin, mantendo o Design System Coelo.
-- escopo efetivamente trabalhado: listagem de avisos, editor contextual, preview do popup e responsividade da propria tela; sem mudanca de regra de negocio.
+- data-hora: 2026-08-05 14:02
+- objetivo original: corrigir e ajustar a UI/UX da tela Pessoas no Superadmin, com foco no listagem/tabela e acoes de arquivo, sem alterar regra de negocio.
+- escopo efetivamente trabalhado: lista e tabela de Pessoas (Superadmin), incluindo acoes de arquivo e ajuste do layout da tabela.
 
 ## Decisoes de produto e UI/UX preservadas
-- Fluxo unico de listagem + editor contextual.
-- Cards no desktop, densidade adaptativa no tablet e lista compacta no mobile.
-- Desktop com editor lateral; mobile/tablet com superficie clara e fundo branco no tema claro, inspirado conceitualmente em Instagram/Airbnb.
-- Marca laranja #D63C00, grafite #3F4549, Nunito Sans e tokens semanticos Coelo.
-- Reuso de componentes Coelo para toolbar, cards, chips, campos, toggles e dialogos.
-- Conteudo do aviso, visual, alcance, agendamento, recorrencia, comportamento, status e preview permanecem no mesmo fluxo.
+- Manter fidelidade ao padrao Coelo (marca #D63C00, grafite #3F4549, tipografia existente e componentes do coelo_ui_admin).
+- Nao alterar backend/supabase nesta etapa.
+- Reuso de componente padrao para acoes de arquivo (CoeloAdminFileActions).
 
 ## Referencias consultadas
-- `.agents/skills/coelo-ui/SKILL.md`
-- `.agents/skills/ponytail/SKILL.md`
-- `.agents/skills/flutter-build-responsive-layout/SKILL.md`
-- `.agents/skills/rtk/SKILL.md`
-- `apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart`
-- `apps/superadmin/lib/features/notices/presentation/notice_form_page.dart`
-- `apps/superadmin/lib/features/notices/presentation/notice_preview_dialog.dart`
+- .agents/skills/coelo-ui/SKILL.md
+- .agents/skills/ponytail/SKILL.md
+- .agents/skills/flutter-build-responsive-layout/SKILL.md
+- .agents/skills/rtk/SKILL.md
+- apps/superadmin/lib/features/people/presentation/person_directory_page.dart
+- apps/superadmin/lib/features/people/presentation/person_file_actions.dart
 
 ## Arquivos criados
-- Nenhum arquivo de codigo novo.
+- Nenhum.
 
-## Arquivos alterados e commit
-- `apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart`
-- `apps/superadmin/lib/features/notices/presentation/notice_form_page.dart`
-- `apps/superadmin/lib/features/notices/presentation/notice_preview_dialog.dart`
-- Este handoff.
-- Commit: `84f22c5 feat(superadmin): finalize notices uiux screen`
+## Arquivos alterados
+- apps/superadmin/lib/features/people/presentation/person_directory_page.dart
+- apps/superadmin/lib/features/people/presentation/person_file_actions.dart
+- docs/handoffs/current-task-handoff.md
 
-## Componentes, rotas e superficies afetadas
-- Tela de diretorio de Avisos do Superadmin.
-- Formulario de criacao/edicao de Avisos.
-- Dialogo de preview do popup.
+## Componentes, rotas ou superficies afetadas
+- Tela: PersonDirectoryPage (Superadmin).
+- Componente de acoes: PersonFileActions.
 
-## Concluido
-- Layout de listagem com cards e editor contextual.
-- Preview visual do popup e configuracoes de conteudo/imagem/cores.
-- Estados, alcance, agendamento e recorrencia apresentados no formulario.
-- Fundo claro mobile/tablet ajustado para `Colors.white`, preservando superficie semantica no dark theme.
-- Correcoes de compatibilidade de callbacks e campos Flutter.
-- Formatacao aplicada nos tres arquivos de tela.
+## O que foi concluido
+- Ajuste da tabela em person_directory_page.dart:
+  - removido width: constraints.maxWidth no container de viewport;
+  - aplicado Align(alignment: Alignment.topCenter, ...);
+  - adicionado showHorizontalScrollbar: true em CoeloAdminResizableTable.
+- Ajuste para evitar caracteres quebrados no bloco da tabela e manter texto com acentuacao correta.
+- Ajuste de person_file_actions.dart para estado interno com tipos bool e alinhamento a padrao de componente.
 
 ## Parcialmente concluido
-- Recorrencia e agendamento permanecem como composicao de UI; regras de dominio/backend nao foram alteradas.
+- Nenhuma pendencia funcional restante no escopo minimo desta etapa.
 
 ## Nao iniciado
-- Validacao visual pixel-perfect em localhost, explicitamente fora desta etapa.
+- Nao foram tocadas rotinas de backend/Supabase.
+- Nao foi executada validacao visual em localhost.
 
-## Verificacoes executadas
-- `dart format` nos tres arquivos: concluido.
-- `dart analyze` nos tres arquivos: `No issues found`.
-- Busca RTK por widgets Material proibidos nos arquivos de Avisos: nenhum encontrado.
-- Busca RTK por recursos responsivos: `LayoutBuilder`, `MediaQuery` e `Expanded` presentes; `Flexible` nao necessario.
-- `rtk --version`: executado nesta validacao.
-- `rtk git status --short`, `rtk git show --stat --oneline HEAD` e `rtk git show --name-only --format='' 84f22c5`: executados nesta validacao.
+## Verificacoes executadas e resultados
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format "apps/superadmin/lib/shared/presentation/widgets/superadmin_directory_view_toggle.dart" "apps/superadmin/lib/features/people/presentation/person_file_actions.dart" "apps/superadmin/lib/features/people/presentation/person_directory_page.dart"`
+  - resultado: Formatado com sucesso (1 changed).
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe analyze apps/superadmin/lib/features/people/presentation/person_directory_page.dart`
+  - resultado: No issues found.
+- `C:\src\flutter\bin\flutter.bat test apps/superadmin/test/features/people/presentation/person_directory_page_test.dart`
+  - resultado: timeout no ambiente.
+- `C:\src\flutter\bin\flutter.bat test apps/superadmin/test/features/people/presentation/person_file_actions_test.dart`
+  - resultado: timeout no ambiente.
 
-## Erros, avisos e bloqueios
-- Nenhum erro de analise conhecido no escopo.
-- Nao foi aberto localhost conforme solicitado.
-- O repositorio possui outras mudancas preexistentes fora do escopo; nao foram alteradas.
+## Erros/avisos e bloqueios
+- Bloqueio operacional: testes Flutter nao concluem dentro do timeout de execucao da sessao.
+
+## Debitos tecnicos conscientes
+- Validacao automatizada da rotina Pessoas ainda precisa rodar em ambiente sem timeout.
 
 ## Estado atual
-- Tela Avisos funcional e validada estaticamente no escopo de UI/UX.
-- Commit criado; nao houve push, merge ou alteracao de branch.
+- Funcional para o escopo solicitado, validado por analise estatica.
+
+## Git status resumido no encerramento
+- git status --short mostra muitas alteracoes fora deste escopo em andamento no repositorio.
+- Neste ponto, foram atualizados apenas os arquivos listados em "Arquivos alterados".
+
+## Resumo do git diff
+- person_directory_page.dart: alterado layout da tabela (topCenter + scrollbar horizontal).
+- person_file_actions.dart: ajuste de estado local e padronizacao.
 
 ## Proximo passo exato
-- Nenhum passo obrigatorio para esta entrega. Qualquer nova alteracao deve ser uma tarefa separada e restrita a Avisos.
+- Commitar estes arquivos e, se possivel, executar testes da tela de Pessoas em ambiente com maior tempo limite.
 
 ## Primeiro arquivo para abrir na retomada
-- `apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart`
+- apps/superadmin/lib/features/people/presentation/person_directory_page.dart
 
-## Criterio de conclusao
-- A tela Avisos permanece alinhada ao Design System Coelo, responsiva nos breakpoints previstos, sem widgets Material proibidos e com o fluxo listagem + editor entregue no commit indicado.
+## Comandos necessarios para validacao
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe analyze apps/superadmin/lib/features/people/presentation/person_directory_page.dart`
+- `C:\src\flutter\bin\flutter.bat test apps/superadmin/test/features/people/presentation/person_directory_page_test.dart`
+
+## Criterios para considerar esta etapa concluida
+- Tabela de Pessoas nao agrupada aparece centralizada e com scrollbar horizontal.
+- Acoes de arquivo seguem componente padrao.
+- Commit criado com os arquivos desta continuidade.

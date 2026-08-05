@@ -79,8 +79,8 @@ final class _PersonImportDialog extends StatefulWidget {
 }
 
 final class _PersonImportDialogState extends State<_PersonImportDialog> {
-  var _fileSelected = false;
-  var _reviewing = false;
+  bool _fileSelected = false;
+  bool _reviewing = false;
 
   void _startImport() {
     widget.activityController.startDemoImport(
