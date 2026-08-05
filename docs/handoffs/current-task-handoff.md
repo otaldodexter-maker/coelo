@@ -1,89 +1,106 @@
-﻿# Handoff - Correção UI/UX da tela Auditoria (Superadmin)
+﻿# Handoff - Correções UI/UX da tela Importações (Superadmin)
 
 ## Encerramento em seguro
-- data-hora: 2026-08-05 10:08:15 -03:00
-- objetivo original: corrigir e ajustar a UI/UX da tela `Auditoria` (Superadmin) com escopo único, sem mudanças de regra de negócio.
-- escopo efetivamente trabalhado: tela `Auditoria` em Superadmin, com foco em tabela de eventos em tempo real, hierarquia/contexto, responsividade e exportação fake.
+- data-hora: 2026-08-05 10:24:00 -03:00
+- objetivo original: corrigir e ajustar a UI/UX da tela **Importações** no escopo Superadmin, mantendo o padrão Coelo (marca #D63C00, grafite #3F4549, Nunito Sans, acessibilidade e tokens semânticos), com foco em uma listagem única em tabela para auditoria.
+- escopo efetivamente trabalhado: tela **Importações** em `apps/superadmin`, sem alteração de regra de negócio ou arquitetura.
 
-## Decisões de produto e UI/UX que devem ser preservadas
-- manter fidelidade ao Design System Coelo (marca `#D63C00`, grafite `#3F4549`, tipografia `Nunito Sans`, tokens semânticos e acessibilidade).
-- manter exportação como placeholder visual/UX: texto `Exportar (em breve)`.
-- manter comportamento não funcional do botão (sem gerar arquivo), com feedback de indisponibilidade.
-- manter estrutura de tabela única em todos os breakpoints, com rolagem horizontal em telas pequenas.
-- aplicar padrões Coelo existentes em vez de componentes genéricos improvisados.
-- preservar o status de atualização contínua da tela (`Ao vivo`) com feedback não intrusivo.
+## Decisões de produto/UI que devem ser preservadas
+- A tela de Importações deve ser tabela única (sem card), com visual e controle centralizados no padrão Coelo-admin.
+- Filtro de status segue os rótulos: `Todos`, `Ativos`, `Em Implantação`, `Inativos`.
+- Preservar busca, filtros por entidade/arquivo/período e ações de exportação.
+- O fluxo de criação permanece por popup de escopo de importação com presets, antes de chegar ao wizard.
+- Ações de linha usam `CoeloAdminFlyout` padronizado, com rótulos claros e sem hover cinza indevido.
+- Em mobile/tablet o fundo da tela deve ser limpo e claro, com abordagem branca/surface.
+- Estado vazio mantém CTA principal e painel orientativo.
 
-## Arquivos de referência e documentos consultados
-- `C:\Users\adrie\Documents\Coelo\.agents\skills\coelo-ui\SKILL.md`
-- `C:\Users\adrie\Documents\Coelo\.agents\skills\ui-ux-pro-max\SKILL.md`
-- `C:\Users\adrie\Documents\Coelo\.agents\skills\flutter-build-responsive-layout\SKILL.md`
-- `C:\Users\adrie\Documents\Coelo\apps\superadmin\lib\features\audit\presentation\audit_directory_page.dart`
-- `C:\Users\adrie\Documents\Coelo\docs\design\design-system.md`
+## Referências e documentos consultados
+- `C:/Users/adrie/Documents/Coelo/.agents/skills/coelo-ui/SKILL.md`
+- `C:/Users/adrie/Documents/Coelo/.agents/skills/ui-ux-pro-max/SKILL.md`
+- `C:/Users/adrie/Documents/Coelo/.agents/skills/ponytail/SKILL.md`
+- `C:/Users/adrie/Documents/Coelo/.agents/skills/flutter-build-responsive-layout/SKILL.md`
+- `C:/Users/adrie/Documents/Coelo/.agents/skills/rtk/SKILL.md`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/imports/import_directory_page_test.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/app/router/superadmin_router.dart`
 
 ## Arquivos criados
-- Nenhum arquivo novo nesta etapa.
+- Nenhum arquivo novo para esta etapa.
 
 ## Arquivos alterados
-- `apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart`
-- `docs/handoffs/current-task-handoff.md`
+- `apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`
+- `apps/superadmin/test/features/imports/import_directory_page_test.dart`
 
 ## Componentes, rotas ou superfícies afetadas
-- Tela: `Auditoria` do Superadmin (`/audit`).
-- Componentes: toolbar/cabeçalho, botão de exportação, tabela de eventos, badges de atualização e cartões de linha.
-- Sem alteração de rotas, modelos ou serviços de backend.
+- `ImportDirectoryPage` (`apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`).
+- Rota de listagem de importações em `superadmin_router.dart` (continua consumindo callback `ValueChanged<ImportCreationPreset>`).
 
 ## O que foi concluído
-1. Ajuste do botão de exportação para estado fake (`Exportar (em breve)`) com ação de bloqueio acessível.
-2. Implementação de feedback amigável via `showSuperadminNotice` ao clicar em exportar.
-3. Removida qualquer ação de geração/baixa efetiva de arquivo nesta tela.
-4. Reforço do estado `Ao vivo` com texto de atualização relativa.
-5. Consolidação da tabela única com comportamento de scroll horizontal e organização de colunas priorizando data/hora, ator, ação, recurso/contexto e risco.
-6. Aplicações de estilos com contraste/semântica e sem quebrar o padrão visual do Coelo.
+1. Tela migrada para listagem única em tabela.
+2. Removida a lógica de alternância para card, mantendo tabela padrão.
+3. Implementado filtros adicionais (busca, escopo/arquivo/período) com estado de filtro ativo e limpeza.
+4. Ajustado status em tabs com os rótulos solicitados.
+5. Incluída exportação da listagem em CSV/XLSX.
+6. Inclusão de popup de nova importação com presets:
+   - Unidades
+   - Instituições
+   - Nova instituição
+   - Nova família
+   - Upload por etapa
+7. Ajustado flyout de linha para padrão de ações no Coelo-admin.
+8. Ajustes de hover/semântica no fluxo de criação.
+9. Fundo responsivo mobile/tablet com cor branca/surface.
+10. Teste da tela atualizado para validar seleção de preset no novo modal.
 
 ## O que ficou parcialmente concluído
-- validação visual final em runtime e captura de screenshots não foram executadas nesta etapa (sem `localhost`, conforme solicitado).
-- ajustes finos de microcopy e peso tipográfico podem ser refinados em iteração de polish.
+- Validação visual manual via execução local (localhost/preview) não foi realizada nesta etapa.
 
 ## O que ainda não foi iniciado
-- validação visual com concorrentes e checklist final de acessibilidade automatizada nesta tela.
-- criação de testes de interface desta alteração.
+- Captura de golden/QA visual final da tela após mudanças.
+- Conferência final com time de design das micro-contradições de spacing local no desktop se necessário.
 
-## Verificações executadas
-- `git -C "C:\Users\adrie\Documents\Coelo" diff --check -- apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart`
-- `rg -n "Exportar \(em breve\)|showSuperadminNotice|Ao vivo|Exportar" "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart`
-- `git -C "C:\Users\adrie\Documents\Coelo" log --oneline --pretty=format:"%h %s" -- "apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart" | Select-Object -First 3`
+## Verificações executadas e resultados
+- `git status --short` executado para registrar estado atual do repositório.
+- `git diff -- apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart` confirmado com a refatoração esperada.
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart`
+  - sucesso.
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test test/features/imports/import_directory_page_test.dart` (em `apps/superadmin`)
+  - sucesso: 1 teste passou.
 
 ## Erros ou avisos ainda existentes
-- Nenhum erro novo no código da tela de Auditoria.
-- O repositório tem grande volume de alterações não relacionadas já em andamento fora do escopo desta atividade.
+- O repositório geral está com muitas alterações paralelas de outras tarefas.
+- Há aviso de normalização LF/CRLF em arquivos tocados.
 
 ## Bloqueios encontrados
-- Nenhum bloqueio técnico novo.
+- Nenhum bloqueio para o escopo desta etapa.
 
 ## Débitos técnicos conscientes
-- Falta validação no runtime para fechar critérios de percepção visual em dispositivo real.
-- Não foram atualizados testes automatizados, por manter a alteração como ajuste de UX/estado placeholder.
+- Não há implementação de screenshot/golden para esta etapa.
 
-## Estado atual do git status
-- `git status --short` mostra múltiplas alterações fora de escopo no workspace.
-- nesta tarefa, os arquivos de Auditoria já constam do commit já executado anteriormente.
+## Estado atual
+- Funcional para o escopo implementado, sem dependências quebradas no fluxo alvo.
 
 ## Resumo do git diff
-- `apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart`: exportação fake, estado Ao vivo e ajustes de texto/legibilidade na tabela.
-- `docs/handoffs/current-task-handoff.md`: este registro de continuidade atualizado para a tela de Auditoria.
+- `apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`: refatoração completa da UI da tela, filtros/tabs, tabela, actions e popup de nova importação.
+- `apps/superadmin/test/features/imports/import_directory_page_test.dart`: teste atualizado para validar navegação do fluxo de preset.
 
-## Próxima ação exata
-- Encerrar com commit de handoff desta unidade e manter a tela de Auditoria pronta para validação manual no ciclo seguinte.
+## Próximo passo exato
+- Abrir a tela Importações em ambiente local e validar visualmente tabela, scroll horizontal, alinhamento não-agrupado, ações de linha e fluxo de criação em desktop/tablet/mobile.
 
 ## Primeiro arquivo para abrir na retomada
-- `C:\Users\adrie\Documents\Coelo\apps\superadmin\lib\features\audit\presentation\audit_directory_page.dart`
+- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/imports/presentation/import_directory_page.dart`
 
-## Comandos necessários para validação/retomada
-- `git -C "C:\Users\adrie\Documents\Coelo" status --short`
-- `git -C "C:\Users\adrie\Documents\Coelo" diff -- docs/handoffs/current-task-handoff.md apps/superadmin/lib/features/audit/presentation/audit_directory_page.dart`
-- `rg -n "Exportar \(em breve\)|showSuperadminNotice|Ao vivo" "C:\Users\adrie\Documents\Coelo\apps\superadmin\lib\features\audit\presentation\audit_directory_page.dart"
+## Comandos necessários para validar/retomar
+- `git -C "C:/Users/adrie/Documents/Coelo" status --short`
+- `git -C "C:/Users/adrie/Documents/Coelo" diff -- apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart`
+- `git -C "C:/Users/adrie/Documents/Coelo" -c core.autocrlf=false diff --check`
+- `cd "C:/Users/adrie/Documents/Coelo/apps/superadmin"`
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format apps/superadmin/lib/features/imports/presentation/import_directory_page.dart apps/superadmin/test/features/imports/import_directory_page_test.dart`
+- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe C:\src\flutter\packages\flutter_tools\bin\flutter_tools.dart test test/features/imports/import_directory_page_test.dart`
 
-## Critérios para considerar próxima etapa concluída
-- exportação permanece não operacional e com mensagem explícita de indisponibilidade.
-- tabela de auditoria mantém estrutura única, clara e responsiva.
-- estado `Ao vivo` continua visível sem alterar backend.
+## Critérios para considerar a próxima etapa concluída
+- A tela carrega com lista em tabela única sem opção card.
+- Status tabs e filtros funcionais com estado consistente.
+- Popup de nova importação abre e retorna preset correto.
+- Ações de linha têm hover/espaçamento coerente com padrão.
+- Validação manual confirma scroll horizontal visível e layout centralizado no estado não-agrupado.
