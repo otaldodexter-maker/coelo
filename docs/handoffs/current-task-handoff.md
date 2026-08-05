@@ -1,95 +1,84 @@
-# Handoff - Correções UI/UX da tela Suporte (Superadmin)
+---
+source: "Coelo UI/UX implementation handoff"
+status: "completed"
+generated_at: "2026-08-05"
+---
 
-## Encerramento em seguro
-- data-hora: 2026-08-05 10:24:00 -03:00
-- objetivo original: corrigir e ajustar a UI/UX da tela **Suporte** em `apps/superadmin`, mantendo o padrão Coelo.
-- escopo efetivamente trabalhado: tela **Suporte** (kanban + tabela) e suporte de drag no card base em `coelo_ui_admin`, sem mudanças de regra de negócio.
+# Handoff - Correcoes UI/UX da tela Avisos (Superadmin)
 
-## Decisões de produto/UI que devem ser preservadas
-- Foco apenas em correções de apresentação e comportamento de interação.
-- Manter padrão de tokens semânticos, marca (`#D63C00`), grafite (`#3F4549`) e tipografia já padronizada no projeto.
-- Em mobile e tablet, fundo limpo/alto contraste com `surface` (abordagem clara, próxima a Instagram/Airbnb).
-- Estrutura de alternância deve continuar com visual de padrão Coelo para listas/tabelas em desktop.
+## Encerramento seguro
+- data-hora: 2026-08-05
+- objetivo original: corrigir e ajustar a UI/UX da tela Avisos no Superadmin, mantendo o Design System Coelo.
+- escopo efetivamente trabalhado: listagem de avisos, editor contextual, preview do popup e responsividade da propria tela; sem mudanca de regra de negocio.
 
-## Referências consultadas
-- `C:/Users/adrie/Documents/Coelo/.agents/skills/coelo-ui/SKILL.md`
-- `C:/Users/adrie/Documents/Coelo/.agents/skills/ui-ux-pro-max/SKILL.md`
-- `C:/Users/adrie/Documents/Coelo/.agents/skills/ponytail/SKILL.md`
-- `C:/Users/adrie/Documents/Coelo/.agents/skills/flutter-build-responsive-layout/SKILL.md`
-- `C:/Users/adrie/Documents/Coelo/.agents/skills/rtk/SKILL.md`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/support/presentation/screens/support_page.dart`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/features/support/presentation/widgets/support_ticket_table.dart`
-- `C:/Users/adrie/Documents/Coelo/apps/superadmin/lib/app/shell/superadmin_bug_report_dialog.dart`
-- `C:/Users/adrie/Documents/Coelo/packages/coelo_ui_admin/lib/src/kanban/coelo_admin_work_item_card.dart`
+## Decisoes de produto e UI/UX preservadas
+- Fluxo unico de listagem + editor contextual.
+- Cards no desktop, densidade adaptativa no tablet e lista compacta no mobile.
+- Desktop com editor lateral; mobile/tablet com superficie clara e fundo branco no tema claro, inspirado conceitualmente em Instagram/Airbnb.
+- Marca laranja #D63C00, grafite #3F4549, Nunito Sans e tokens semanticos Coelo.
+- Reuso de componentes Coelo para toolbar, cards, chips, campos, toggles e dialogos.
+- Conteudo do aviso, visual, alcance, agendamento, recorrencia, comportamento, status e preview permanecem no mesmo fluxo.
+
+## Referencias consultadas
+- `.agents/skills/coelo-ui/SKILL.md`
+- `.agents/skills/ponytail/SKILL.md`
+- `.agents/skills/flutter-build-responsive-layout/SKILL.md`
+- `.agents/skills/rtk/SKILL.md`
+- `apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart`
+- `apps/superadmin/lib/features/notices/presentation/notice_form_page.dart`
+- `apps/superadmin/lib/features/notices/presentation/notice_preview_dialog.dart`
 
 ## Arquivos criados
-- Nenhum arquivo novo.
+- Nenhum arquivo de codigo novo.
 
-## Arquivos alterados
-- Atualização final do registro de continuidade em `docs/handoffs/current-task-handoff.md`.
+## Arquivos alterados e commit
+- `apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart`
+- `apps/superadmin/lib/features/notices/presentation/notice_form_page.dart`
+- `apps/superadmin/lib/features/notices/presentation/notice_preview_dialog.dart`
+- Este handoff.
+- Commit: `84f22c5 feat(superadmin): finalize notices uiux screen`
 
-## Componentes/rotas/superfícies afetadas
-- `SupportPage`
-- `SupportFilterToolbar`
-- `SupportTicketTable`
-- `CoeloAdminWorkItemCard`
-- Diálogo de criação em `showSuperadminBugReportDialog`
-- Tela não alterada fora do fluxo superadmin de suporte.
+## Componentes, rotas e superficies afetadas
+- Tela de diretorio de Avisos do Superadmin.
+- Formulario de criacao/edicao de Avisos.
+- Dialogo de preview do popup.
 
-## O que foi concluído
-1. Confirmação da correção da tela de suporte com:
-   - fundo claro em mobile/tablet;
-   - tabela com scrollbar horizontal ativa;
-   - flyout de status com padrão Coelo;
-   - botão "Criar suporte" chamando diálogo com título "Novo chamado";
-   - card com suporte a drag em touch + desktop;
-   - toggle de visualização com padrão do diretório de superadmin.
-2. Não há nova mudança estrutural fora do escopo pedido para esta etapa.
+## Concluido
+- Layout de listagem com cards e editor contextual.
+- Preview visual do popup e configuracoes de conteudo/imagem/cores.
+- Estados, alcance, agendamento e recorrencia apresentados no formulario.
+- Fundo claro mobile/tablet ajustado para `Colors.white`, preservando superficie semantica no dark theme.
+- Correcoes de compatibilidade de callbacks e campos Flutter.
+- Formatacao aplicada nos tres arquivos de tela.
 
-## O que ficou parcialmente concluído
-- Nenhum bloqueio técnico no escopo da tela Suporte identificado nesta retomada.
+## Parcialmente concluido
+- Recorrencia e agendamento permanecem como composicao de UI; regras de dominio/backend nao foram alteradas.
 
-## O que ainda não foi iniciado
-- Validação visual manual completa em ambiente local (localhost) para revisão de espaçamento e microinterações.
+## Nao iniciado
+- Validacao visual pixel-perfect em localhost, explicitamente fora desta etapa.
 
-## Verificações executadas e resultados
-- `git status --short --short` (semântica de segurança): no arquivo fora do escopo de suporte marcado como modificado.
-- Verificações de presença de recursos:
-  - `rg` confirmou `SuperadminDirectoryViewToggle` em `support_filter_toolbar.dart`;
-  - `rg` confirmou `showHorizontalScrollbar: true` em `support_ticket_table.dart`;
-  - `rg` confirmou `CoeloAdminFlyout` em `support_page.dart`;
-  - `rg` confirmou `dialogTitle` em `superadmin_bug_report_dialog.dart`;
-  - `rg` confirmou `LongPressDraggable`/`Draggable` em `coelo_admin_work_item_card.dart`.
-- Diferença (working tree) focada na tela suporte: sem deltas pendentes.
+## Verificacoes executadas
+- `dart format` nos tres arquivos: concluido.
+- `dart analyze` nos tres arquivos: `No issues found`.
+- Busca RTK por widgets Material proibidos nos arquivos de Avisos: nenhum encontrado.
+- Busca RTK por recursos responsivos: `LayoutBuilder`, `MediaQuery` e `Expanded` presentes; `Flexible` nao necessario.
+- `rtk --version`: executado nesta validacao.
+- `rtk git status --short`, `rtk git show --stat --oneline HEAD` e `rtk git show --name-only --format='' 84f22c5`: executados nesta validacao.
 
-## Erros ou avisos ainda existentes
-- Há muitas mudanças simultâneas no repositório em andamento de outras frentes (contexto geral).
-
-## Bloqueios encontrados
-- Nenhum bloqueio direto da tela Suporte.
-
-## Débitos técnicos conscientes
-- Sem validação pixel-perfect local nesta etapa.
+## Erros, avisos e bloqueios
+- Nenhum erro de analise conhecido no escopo.
+- Nao foi aberto localhost conforme solicitado.
+- O repositorio possui outras mudancas preexistentes fora do escopo; nao foram alteradas.
 
 ## Estado atual
-- Tela Suporte considerada finalizada no escopo de ajustes UI/UX pedidos; pronta para encerramento desta etapa, restando apenas revisão visual opcional em ambiente local.
+- Tela Avisos funcional e validada estaticamente no escopo de UI/UX.
+- Commit criado; nao houve push, merge ou alteracao de branch.
 
-## Resumo do git diff
-- `git diff --name-only HEAD -- apps/superadmin/lib/features/support/...` não retornou alterações pendentes.
-- `docs/handoffs/current-task-handoff.md` contém o estado atual e fechamento.
-
-## Próximo passo exato
-- Se necessário, abrir tela Suporte em ambiente local para inspeção final de espaçamento de tabela desktop e comportamento de drag.
+## Proximo passo exato
+- Nenhum passo obrigatorio para esta entrega. Qualquer nova alteracao deve ser uma tarefa separada e restrita a Avisos.
 
 ## Primeiro arquivo para abrir na retomada
-- `C:/Users/adrie/Documents/Coelo/docs/handoffs/current-task-handoff.md`
+- `apps/superadmin/lib/features/notices/presentation/notice_directory_page.dart`
 
-## Comandos para validar/retomar
-- `git -C "C:/Users/adrie/Documents/Coelo" status --short`
-- `git -C "C:/Users/adrie/Documents/Coelo" diff --name-only HEAD -- apps/superadmin/lib/features/support/presentation/screens/support_page.dart apps/superadmin/lib/features/support/presentation/widgets/support_filter_toolbar.dart apps/superadmin/lib/features/support/presentation/widgets/support_ticket_table.dart apps/superadmin/lib/app/shell/superadmin_bug_report_dialog.dart packages/coelo_ui_admin/lib/src/kanban/coelo_admin_work_item_card.dart`
-- `git -C "C:/Users/adrie/Documents/Coelo" show --stat --oneline HEAD`
-
-## Critérios para considerar esta etapa concluída
-- A tela Suporte está alinhada ao padrão Coelo no contexto solicitado e sem novos arquivos fora do escopo.
-- Sem pendências funcionais na interação da interface pedida nesta etapa.
+## Criterio de conclusao
+- A tela Avisos permanece alinhada ao Design System Coelo, responsiva nos breakpoints previstos, sem widgets Material proibidos e com o fluxo listagem + editor entregue no commit indicado.
