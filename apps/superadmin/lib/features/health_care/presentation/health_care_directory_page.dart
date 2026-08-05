@@ -6,6 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import 'health_care_responsive_surface.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -124,7 +125,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
         );
       },
     ),
-  );
+  ).withHealthCareResponsiveSurface();
 
   Widget _demoBanner(BuildContext context) => Card(
     color: Theme.of(context).colorScheme.surface,

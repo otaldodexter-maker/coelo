@@ -6,6 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import 'health_care_responsive_surface.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/health_care.dart';
@@ -143,7 +144,7 @@ final class _HealthMedicationPlanDirectoryPageState
         );
       },
     ),
-  );
+  ).withHealthCareResponsiveSurface();
 
   Widget _toolbar() => CoeloAdminListingToolbar(
     search: ConstrainedBox(

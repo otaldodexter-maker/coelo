@@ -4,6 +4,8 @@ import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_detail_page.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -154,6 +156,44 @@ void main() {
     expect(plansOpened, isTrue);
   });
 
+  for (final width in [375.0, 768.0]) {
+    testWidgets('health care uses a clean light surface at $width px', (tester) async {
+      await _setViewport(tester, Size(width, 1000));
+      final controller = HealthCareController(DemoHealthCareRepository());
+      addTearDown(controller.dispose);
+
+      for (final page in <Widget>[
+        HealthCareProfileDirectoryPage(
+          controller: controller,
+          logout: unavailableSuperadminLogout,
+          onCreate: () {},
+        ),
+        HealthMedicationPlanDirectoryPage(
+          controller: controller,
+          logout: unavailableSuperadminLogout,
+          onCreate: () {},
+          onPlanSelected: (_) {},
+        ),
+        HealthCareProfileFormPage(
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onSaved: () async {},
+        ),
+        HealthMedicationPlanFormPage(
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onSaved: () async {},
+        ),
+      ]) {
+        await _pump(tester, page);
+
+        final scaffoldContext = tester.element(find.byType(Scaffold).first);
+        final theme = Theme.of(scaffoldContext);
+        expect(theme.scaffoldBackgroundColor, theme.colorScheme.surface);
+        expect(theme.appBarTheme.backgroundColor, theme.colorScheme.surface);
+      }
+    });
+  }
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     testWidgets('profile directory has no overflow at $width with 200% text', (tester) async {
       await _setViewport(tester, Size(width, 1000));

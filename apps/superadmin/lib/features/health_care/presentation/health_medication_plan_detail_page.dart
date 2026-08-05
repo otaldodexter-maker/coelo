@@ -3,6 +3,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import 'health_care_responsive_surface.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/health_care.dart';
 import 'health_care_controller.dart';
@@ -175,7 +176,7 @@ final class _HealthMedicationPlanDetailPageState extends State<HealthMedicationP
         );
       },
     ),
-  );
+  ).withHealthCareResponsiveSurface();
 }
 
 final class _DetailSection extends StatelessWidget {
