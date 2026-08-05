@@ -75,6 +75,32 @@ void main() {
       );
     }
   });
+
+  testWidgets('matches protected Owner actions flyout', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final repository = FakePlatformUserRepository();
+    await tester.pumpWidget(
+      _goldenApp(
+        Brightness.dark,
+        PlatformUserDetailPage(
+          repository: repository,
+          internalUserId: repository.records.first.id,
+          capability: PlatformUserCapability.owner,
+          logout: _logout,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('platform-user-actions')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('platform-user-pages-golden-root')),
+      matchesGoldenFile('goldens/platform_user_detail_actions_open_dark_1440.png'),
+    );
+  });
 }
 
 Widget _goldenApp(Brightness brightness, Widget page) {

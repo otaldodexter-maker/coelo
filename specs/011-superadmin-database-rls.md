@@ -7,6 +7,16 @@ generated_at: "2026-07-24"
 
 # Superadmin MVP Database e RLS
 
+## Nota de substituição para Usuários Internos — 2026-08-05
+
+A ADR 0019 e a spec 023 substituem, exclusivamente para Usuários Internos do
+Superadmin, a raiz `people + person_auth_links + platform_memberships` descrita
+nesta foundation. O modelo físico abaixo permanece como registro do que foi
+implementado, mas não deve orientar uma integração produtiva dessa feature.
+Nenhuma migration, policy, função ou RLS é alterada pelo preview local; uma
+spec técnica futura deverá definir identidade, credencial, vínculo, convite,
+perfil, escopo e associação opcional antes de qualquer mudança no banco.
+
 ## Objetivo
 
 Definir o desenho fisico inicial de banco, RLS, funcoes administrativas e testes para o Superadmin MVP.

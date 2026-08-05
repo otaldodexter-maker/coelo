@@ -9,8 +9,9 @@ generated_at: "2026-07-29"
 ## Objetivo
 
 Entregar somente em `/dev` o diretório e os fluxos Criar, Visualizar e Editar
-de pessoas globais vinculadas à equipe própria Coelo por
-`platform_memberships`. Usuário interno não é usuário institucional,
+de identidades internas exclusivas do Superadmin. A ADR 0019 substitui a
+composição anterior baseada em pessoa global e `platform_memberships`.
+Usuário interno não é cadastro de Pessoas, usuário institucional,
 administrador de tenant ou responsável familiar.
 
 ## Escopo
@@ -24,10 +25,10 @@ administrador de tenant ou responsável familiar.
 - permissões somente derivadas do catálogo confirmado do papel;
 - e-mail mascarado e última revisão quando existente.
 
-MFA, último acesso, banimento Auth, CPF, telefone completo, dados familiares e
-mutações produtivas ficam fora. A toolbar oferece Arquivos com importação e
-exportação estritamente demonstrativas: não há seleção real, parser, download,
-persistência, convite ou alteração de identidade/papel.
+MFA, último acesso, banimento Auth, dados familiares e mutações produtivas
+ficam fora. CPF, contatos, informações profissionais e endereço existem apenas
+no repositório fake. Importação e exportação foram removidas por não possuírem
+contrato local útil e inequívoco.
 
 ## Referência visual obrigatória
 
@@ -39,7 +40,15 @@ os flyouts de Perfil e Tour. Nenhum Design System paralelo é autorizado.
 Arquivos reutiliza `CoeloAdminFileActions`; o diálogo demonstrativo de
 importação usa `CoeloAdminDialogShell`.
 
-## Comportamento
+## Comportamento substituto aprovado em 2026-08-05
+
+O contrato vigente passa a ser
+`specs/023-superadmin-internal-users-local-preview.md`. Identidade, credencial,
+vínculo, perfil, escopo e convite são independentes; perfis vêm do catálogo
+Superadmin; revogação é terminal; o último Owner é protegido também pelos
+comandos fake.
+
+## Comportamento anterior preservado como histórico
 
 Cards usam 11 itens e tabela 8. Busca por nome e e-mail mascarado possui
 debounce de 300 ms. Os únicos filtros são Papel e Status. Card, linha, Enter e

@@ -70,29 +70,6 @@ void main() {
       matchesGoldenFile('goldens/platform_user_directory_filter_open_light_1440.png'),
     );
   });
-
-  testWidgets('matches the approved files flyout and import popup references', (tester) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(1440, 900);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    await tester.pumpWidget(_goldenApp(Brightness.light));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byKey(const Key('platform-user-directory-golden-root')),
-      matchesGoldenFile('goldens/platform_user_directory_files_open_light_1440.png'),
-    );
-
-    await tester.tap(find.byKey(const Key('platform-user-files-import')));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byKey(const Key('platform-user-directory-golden-root')),
-      matchesGoldenFile('goldens/platform_user_import_dialog_light_1440.png'),
-    );
-  });
 }
 
 Widget _goldenApp(Brightness brightness, {PlatformUserRepository? repository}) {

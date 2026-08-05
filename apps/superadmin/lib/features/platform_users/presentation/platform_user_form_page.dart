@@ -6,7 +6,10 @@ import 'package:flutter/services.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../institutions/presentation/widgets/institution_logo_picker.dart';
+import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../domain/platform_user.dart';
 
 final class PlatformUserFormPage extends StatefulWidget {
@@ -45,12 +48,30 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
+  final _displayName = TextEditingController();
+  final _birthDate = TextEditingController();
+  final _cpf = TextEditingController();
   final _email = TextEditingController();
+  final _mobile = TextEditingController();
+  final _additionalPhone = TextEditingController();
+  final _jobTitle = TextEditingController();
+  final _department = TextEditingController();
+  final _internalFunction = TextEditingController();
+  final _notes = TextEditingController();
+  final _postalCode = TextEditingController();
+  final _street = TextEditingController();
+  final _number = TextEditingController();
+  final _complement = TextEditingController();
+  final _neighborhood = TextEditingController();
+  final _city = TextEditingController();
+  final _state = TextEditingController();
+  final _country = TextEditingController(text: 'Brasil');
   final _firstFocus = FocusNode();
   int _step = 0;
-  PlatformUserRole _role = PlatformUserRole.operations;
-  PlatformUserScope _scope = PlatformUserScope.platform;
-  String? _institutionId;
+  late PlatformAccessProfile _profile;
+  PlatformUserScope _scope = PlatformUserScope.limited;
+  Set<String> _scopeIds = {};
+  List<int>? _avatarBytes;
   bool _saving = false;
   bool _dirty = false;
   double _footerHeight = 0;
@@ -62,14 +83,33 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   @override
   void initState() {
     super.initState();
+    _profile = widget.repository.profiles.firstWhere((item) => item.id == 'operations');
     final record = _record;
     if (record != null) {
       _firstName.text = record.firstName;
       _lastName.text = record.lastName;
-      _email.text = record.maskedEmail;
-      _role = record.role;
+      _displayName.text = record.identity.displayName;
+      _birthDate.text = _formatInputDate(record.identity.birthDate);
+      _cpf.text = record.identity.cpf;
+      _email.text = record.email;
+      _mobile.text = record.identity.mobile;
+      _additionalPhone.text = record.identity.additionalPhone;
+      _jobTitle.text = record.identity.jobTitle;
+      _department.text = record.identity.department;
+      _internalFunction.text = record.identity.internalFunction;
+      _notes.text = record.identity.professionalNotes;
+      _postalCode.text = record.identity.postalCode;
+      _street.text = record.identity.street;
+      _number.text = record.identity.number;
+      _complement.text = record.identity.complement;
+      _neighborhood.text = record.identity.neighborhood;
+      _city.text = record.identity.city;
+      _state.text = record.identity.state;
+      _country.text = record.identity.country;
+      _avatarBytes = record.identity.avatarBytes;
+      _profile = record.profile;
       _scope = record.scope;
-      _institutionId = record.institutionId;
+      _scopeIds = record.membership.scopeIds.toSet();
     }
   }
 
@@ -77,7 +117,24 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   void dispose() {
     _firstName.dispose();
     _lastName.dispose();
+    _displayName.dispose();
+    _birthDate.dispose();
+    _cpf.dispose();
     _email.dispose();
+    _mobile.dispose();
+    _additionalPhone.dispose();
+    _jobTitle.dispose();
+    _department.dispose();
+    _internalFunction.dispose();
+    _notes.dispose();
+    _postalCode.dispose();
+    _street.dispose();
+    _number.dispose();
+    _complement.dispose();
+    _neighborhood.dispose();
+    _city.dispose();
+    _state.dispose();
+    _country.dispose();
     _firstFocus.dispose();
     super.dispose();
   }
@@ -92,50 +149,94 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     return valid;
   }
 
+  bool get _addressStarted => [
+    _postalCode,
+    _street,
+    _number,
+    _complement,
+    _neighborhood,
+    _city,
+    _state,
+  ].any((controller) => controller.text.trim().isNotEmpty);
+
+  String? _validateAddressPart(String? value, String label) {
+    if (!_addressStarted) return null;
+    if (value == null || value.trim().isEmpty) return 'Informe $label.';
+    return null;
+  }
+
   void _continue() {
-    if (_step == 0 && !_validateIdentity()) return;
-    if (_step == 3 && _scope == PlatformUserScope.institution && _institutionId == null) {
+    if ((_step == 0 || _step == 1) && !_validateIdentity()) {
+      return;
+    }
+    if (_step == 2 && _scope == PlatformUserScope.limited && _scopeIds.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Selecione a instituição do escopo.')));
+      ).showSnackBar(const SnackBar(content: Text('Selecione ao menos um escopo permitido.')));
       return;
     }
     setState(() => _step++);
   }
+
+  PlatformUserDraft _draft() => PlatformUserDraft(
+    identity: InternalUserIdentity(
+      id: _record?.id ?? '',
+      firstName: _firstName.text,
+      lastName: _lastName.text,
+      displayName: _displayName.text,
+      birthDate: _parseInputDate(_birthDate.text),
+      cpf: _cpf.text,
+      professionalEmail: _email.text,
+      mobile: _mobile.text,
+      additionalPhone: _additionalPhone.text,
+      jobTitle: _jobTitle.text,
+      department: _department.text,
+      internalFunction: _internalFunction.text,
+      professionalNotes: _notes.text,
+      postalCode: _postalCode.text,
+      street: _street.text,
+      number: _number.text,
+      complement: _complement.text,
+      neighborhood: _neighborhood.text,
+      city: _city.text,
+      state: _state.text,
+      country: _country.text,
+      avatarBytes: _avatarBytes,
+    ),
+    profile: _profile,
+    scope: _scope,
+    scopeIds: _scopeIds.toList(),
+    scopeNames: _scopeIds.map((id) => widget.institutions[id]!).toList(),
+  );
 
   Future<void> _save() async {
     if (widget.capability != PlatformUserCapability.owner || !_validateIdentity()) return;
     setState(() => _saving = true);
     try {
       if (_editing) {
-        final record = _record!;
-        final updated = record.copyWith(
-          firstName: _firstName.text.trim(),
-          lastName: _lastName.text.trim(),
-          role: _role,
-          scope: _scope,
-          institutionId: _institutionId,
-          institutionName: _institutionId == null ? null : widget.institutions[_institutionId],
-        );
-        await widget.repository.update(updated);
-        if (mounted) widget.onUpdated?.call(updated);
+        final updated = await widget.repository.update(widget.internalUserId!, _draft());
+        if (mounted) {
+          widget.onUpdated?.call(updated);
+        }
       } else {
-        final result = await widget.repository.create(
-          PlatformUserDraft(
-            firstName: _firstName.text,
-            lastName: _lastName.text,
-            email: _email.text,
-            role: _role,
-            scope: _scope,
-            institutionId: _institutionId,
-            institutionName: _institutionId == null ? null : widget.institutions[_institutionId],
-          ),
-        );
-        if (mounted) widget.onCreated?.call(result);
+        final result = await widget.repository.create(_draft());
+        if (mounted) {
+          widget.onCreated?.call(result);
+        }
       }
       _dirty = false;
+    } on PlatformUserConflictException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      }
+    } on PlatformUserRuleException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) {
+        setState(() => _saving = false);
+      }
     }
   }
 
@@ -174,8 +275,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
           logout: widget.logout,
           title: title,
           subtitle: _editing
-              ? 'Separe identidade global, vínculo e acesso.'
-              : 'Cadastre um vínculo interno somente no preview.',
+              ? 'Atualize a identidade e o acesso exclusivos do Superadmin.'
+              : 'Crie um acesso interno exclusivo ao Superadmin.',
           currentDestination: 'internal-users',
           chatLauncherBottomInset: _footerHeight,
           onDestinationSelected: widget.onDestinationSelected,
@@ -186,32 +287,26 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
                   : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
                   ? CoeloSpacing.space6
                   : CoeloSpacing.space4;
-              return Form(
-                key: _formKey,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ListView(
-                      key: const Key('platform-user-form-scroll'),
-                      padding: EdgeInsets.fromLTRB(
-                        inset,
-                        inset,
-                        inset,
-                        inset + _footerHeight + CoeloSpacing.space4,
-                      ),
-                      children: [
-                        _stepHeader(),
-                        const SizedBox(height: CoeloSpacing.space6),
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(CoeloSpacing.space6),
-                            child: _flowStep(),
-                          ),
+              return ColoredBox(
+                color: Theme.of(context).colorScheme.surface,
+                child: Form(
+                  key: _formKey,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ListView(
+                        key: const Key('platform-user-form-scroll'),
+                        padding: EdgeInsets.fromLTRB(
+                          inset,
+                          inset,
+                          inset,
+                          inset + _footerHeight + CoeloSpacing.space4,
                         ),
-                      ],
-                    ),
-                    Positioned(left: inset, right: inset, bottom: inset, child: _footer()),
-                  ],
+                        children: [_formBody(constraints.maxWidth)],
+                      ),
+                      Positioned(left: inset, right: inset, bottom: inset, child: _footer()),
+                    ],
+                  ),
                 ),
               );
             },
@@ -221,135 +316,114 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     );
   }
 
-  Widget _stepHeader() {
-    const labels = ['Identidade', 'Membership de plataforma', 'Papel', 'Escopo', 'Revisão'];
-    return Semantics(
-      label: 'Etapa ${_step + 1} de 5: ${labels[_step]}',
-      child: Row(
-        children: [
-          for (var index = 0; index < labels.length; index++) ...[
-            Expanded(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: index <= _step
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.surfaceContainerHighest,
-                    foregroundColor: index <= _step
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                    child: Text('${index + 1}'),
-                  ),
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(labels[index], textAlign: TextAlign.center),
-                ],
-              ),
-            ),
-            if (index < labels.length - 1) const SizedBox(width: CoeloSpacing.space2),
-          ],
-        ],
-      ),
+  Widget _formBody(double width) {
+    final navigation = SuperadminFormStepNavigation(
+      steps: _steps(),
+      currentIndex: _step,
+      onStepSelected: (index) {
+        if (index <= _step) setState(() => _step = index);
+      },
     );
+    final content = Card(
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(padding: const EdgeInsets.all(CoeloSpacing.space6), child: _flowStep()),
+    );
+    if (width < CoeloBreakpoints.medium.minWidth) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          navigation,
+          const SizedBox(height: CoeloSpacing.space4),
+          content,
+        ],
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        navigation,
+        const SizedBox(width: CoeloSpacing.space6),
+        Expanded(child: content),
+      ],
+    );
+  }
+
+  List<SuperadminFormStep> _steps() {
+    const labels = [
+      'Identidade',
+      'Contato, trabalho e endereço',
+      'Acesso ao Superadmin',
+      'Revisão e convite',
+    ];
+    return [
+      for (var index = 0; index < labels.length; index++)
+        SuperadminFormStep(
+          label: labels[index],
+          status: index == _step
+              ? SuperadminFormStepStatus.current
+              : index < _step
+              ? SuperadminFormStepStatus.complete
+              : SuperadminFormStepStatus.incomplete,
+          enabled: index <= _step,
+        ),
+    ];
   }
 
   Widget _flowStep() => switch (_step) {
-    0 => _identitySection(title: 'Identidade'),
-    1 => _membershipSection(),
-    2 => _roleSection(),
-    3 => _scopeSection(),
+    0 => _identitySection(),
+    1 => _contactSection(),
+    2 => _accessSection(),
     _ => _reviewSection(),
   };
 
-  Widget _membershipSection() {
-    final status = _record?.status ?? PlatformMembershipStatus.invited;
-    final invitation = _record?.invitationStatus ?? PlatformInvitationStatus.pending;
+  Widget _identitySection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Membership de plataforma', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: CoeloSpacing.space4),
-        _summary('Status', status.label),
-        _summary('Convite', invitation.label),
-        const SizedBox(height: CoeloSpacing.space2),
-        const Text(
-          'Este vínculo interno é local ao preview. Status e convite não são editáveis aqui.',
-        ),
-      ],
-    );
-  }
-
-  Widget _roleSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Papel', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloAdminSingleSelectField<PlatformUserRole>(
-          label: 'Papel',
-          value: _role,
-          options: PlatformUserRole.values,
-          optionLabel: (value) => value.label,
-          onChanged: (value) {
-            setState(() => _role = value);
-            _changed();
-          },
-          prefixIcon: Icons.admin_panel_settings_outlined,
-        ),
-        const SizedBox(height: CoeloSpacing.space6),
-        Text('Permissões derivadas do papel', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: CoeloSpacing.space2),
-        Text(_role.permissions.join(' · ')),
-        const SizedBox(height: CoeloSpacing.space1),
-        const Text('Overrides não são editáveis neste preview.'),
-      ],
-    );
-  }
-
-  Widget _scopeSection() {
-    final institutionIds = widget.institutions.keys.toList(growable: false);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Escopo', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloAdminSingleSelectField<PlatformUserScope>(
-          label: 'Escopo',
-          value: _scope,
-          options: PlatformUserScope.values,
-          optionLabel: (value) => value.label,
-          onChanged: (value) {
-            setState(() {
-              _scope = value;
-              if (value == PlatformUserScope.platform) _institutionId = null;
-            });
-            _changed();
-          },
-          prefixIcon: Icons.layers_outlined,
-        ),
-        if (_scope == PlatformUserScope.institution) ...[
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloAdminSingleSelectField<String?>(
-            key: const Key('platform-user-institution'),
-            label: 'Instituição',
-            value: _institutionId,
-            options: [null, ...institutionIds],
-            optionLabel: (value) => value == null ? 'Selecione' : widget.institutions[value]!,
-            onChanged: (value) {
-              setState(() => _institutionId = value);
-              _changed();
-            },
-            prefixIcon: Icons.account_balance_outlined,
+        Text('Identidade interna', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: CoeloSpacing.space3),
+        Container(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
           ),
-        ],
-      ],
-    );
-  }
-
-  Widget _identitySection({required String title}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleLarge),
+          child: const Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.shield_outlined),
+              SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Text(
+                  'Você está criando um acesso interno exclusivo ao Superadmin. '
+                  'Este cadastro não cria Admin, Principal, @ ou Pessoa e não compartilha credenciais.',
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CoeloSpacing.space4,
+          runSpacing: CoeloSpacing.space3,
+          children: [
+            CircleAvatar(
+              radius: 36,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              backgroundImage: _avatarBytes == null
+                  ? null
+                  : MemoryImage(Uint8List.fromList(_avatarBytes!)),
+              child: _avatarBytes == null ? const Icon(Icons.person_outline, size: 32) : null,
+            ),
+            OutlinedButton.icon(
+              key: const Key('platform-user-avatar-action'),
+              onPressed: _pickAvatar,
+              icon: const Icon(Icons.add_a_photo_outlined),
+              label: Text(_avatarBytes == null ? 'Adicionar foto' : 'Trocar foto'),
+            ),
+          ],
+        ),
         const SizedBox(height: CoeloSpacing.space4),
         _responsiveFields([
           CoeloFormTextField(
@@ -372,17 +446,233 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
           ),
         ]),
         const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          fieldKey: const Key('platform-user-email'),
-          controller: _email,
-          labelText: 'E-mail',
-          prefixIcon: Icons.mail_outline,
-          enabled: !_editing,
+        _responsiveFields([
+          _field(
+            _displayName,
+            'Nome de exibição (opcional)',
+            Icons.badge_outlined,
+            key: const Key('platform-user-display-name'),
+          ),
+          _field(
+            _birthDate,
+            'Data de nascimento (opcional)',
+            Icons.cake_outlined,
+            key: const Key('platform-user-birth-date'),
+            keyboardType: TextInputType.datetime,
+            validator: _validateBirthDate,
+          ),
+        ]),
+        const SizedBox(height: CoeloSpacing.space4),
+        _responsiveFields([
+          _field(
+            _cpf,
+            'CPF',
+            Icons.fingerprint,
+            key: const Key('platform-user-cpf'),
+            keyboardType: TextInputType.number,
+            validator: (value) =>
+                value == null || !isValidPlatformUserCpf(value) ? 'Informe um CPF válido.' : null,
+          ),
+        ]),
+      ],
+    );
+  }
+
+  Future<void> _pickAvatar() async {
+    final file = await pickInstitutionLogo();
+    if (file == null || !mounted) return;
+    final adjusted = await showDialog<AvatarCropResult>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()?.scrim ?? Colors.black54,
+      builder: (context) => AvatarCropDialog(bytes: file.bytes),
+    );
+    if (adjusted == null || !mounted) return;
+    setState(() => _avatarBytes = adjusted.bytes);
+    _changed();
+  }
+
+  Widget _contactSection() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text('Contato e informações profissionais', style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(
+          _email,
+          'E-mail profissional',
+          Icons.mail_outline,
+          key: const Key('platform-user-email'),
+          enabled: !_editing || _record!.credentialStatus != SuperadminCredentialStatus.active,
           keyboardType: TextInputType.emailAddress,
-          onChanged: _changed,
           validator: (value) =>
               value == null || !value.contains('@') ? 'Informe um e-mail válido.' : null,
         ),
+        _field(_mobile, 'Celular', Icons.phone_android_outlined, keyboardType: TextInputType.phone),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(
+          _additionalPhone,
+          'Telefone adicional',
+          Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
+        ),
+        _field(
+          _jobTitle,
+          'Cargo',
+          Icons.work_outline,
+          key: const Key('platform-user-job-title'),
+          validator: (value) => value == null || value.trim().isEmpty ? 'Informe o cargo.' : null,
+        ),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(_department, 'Departamento ou área', Icons.apartment_outlined),
+        _field(_internalFunction, 'Função interna', Icons.assignment_ind_outlined),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      _field(_notes, 'Observações profissionais', Icons.notes_outlined, maxLines: 3),
+      const SizedBox(height: CoeloSpacing.space6),
+      Text('Endereço', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(
+          _postalCode,
+          'CEP',
+          Icons.location_on_outlined,
+          keyboardType: TextInputType.number,
+          validator: (value) => _validateAddressPart(value, 'o CEP'),
+        ),
+        _field(
+          _street,
+          'Logradouro',
+          Icons.signpost_outlined,
+          validator: (value) => _validateAddressPart(value, 'o logradouro'),
+        ),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(
+          _number,
+          'Número',
+          Icons.numbers_outlined,
+          validator: (value) => _validateAddressPart(value, 'o número'),
+        ),
+        _field(_complement, 'Complemento', Icons.home_work_outlined),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(
+          _neighborhood,
+          'Bairro',
+          Icons.location_city_outlined,
+          validator: (value) => _validateAddressPart(value, 'o bairro'),
+        ),
+        _field(
+          _city,
+          'Cidade',
+          Icons.location_city_outlined,
+          validator: (value) => _validateAddressPart(value, 'a cidade'),
+        ),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      _responsiveFields([
+        _field(
+          _state,
+          'Estado',
+          Icons.map_outlined,
+          validator: (value) => _validateAddressPart(value, 'o estado'),
+        ),
+        _field(
+          _country,
+          'País',
+          Icons.public_outlined,
+          validator: (value) => _validateAddressPart(value, 'o país'),
+        ),
+      ]),
+    ],
+  );
+
+  Widget _accessSection() {
+    final institutionIds = widget.institutions.keys.toList(growable: false);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Acesso ao Superadmin', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: CoeloSpacing.space2),
+        const Text('Permissões são derivadas do perfil e não podem ser ampliadas neste cadastro.'),
+        const SizedBox(height: CoeloSpacing.space4),
+        _responsiveFields([
+          CoeloAdminSingleSelectField<PlatformAccessProfile>(
+            label: 'Perfil Superadmin',
+            value: _profile,
+            options: widget.repository.profiles,
+            optionLabel: (value) => value.name,
+            onChanged: (value) {
+              setState(() {
+                _profile = value;
+                if (!value.allowsGlobal && _scope == PlatformUserScope.platform) {
+                  _scope = PlatformUserScope.limited;
+                }
+              });
+              _changed();
+            },
+            prefixIcon: Icons.admin_panel_settings_outlined,
+          ),
+          CoeloAdminSingleSelectField<PlatformUserScope>(
+            label: 'Alcance',
+            value: _scope,
+            options: PlatformUserScope.values,
+            optionLabel: (value) => value.label,
+            onChanged: (value) {
+              if (value == PlatformUserScope.platform && !_profile.allowsGlobal) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('O perfil ${_profile.name} não autoriza acesso global.')),
+                );
+                return;
+              }
+              setState(() {
+                _scope = value;
+                if (value == PlatformUserScope.platform) _scopeIds = {};
+              });
+              _changed();
+            },
+            prefixIcon: Icons.layers_outlined,
+          ),
+        ]),
+        if (!_profile.allowsGlobal) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Text('Acesso global indisponível: o perfil ${_profile.name} exige escopo limitado.'),
+        ],
+        if (_scope == PlatformUserScope.limited) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloAdminMultiSelectField<String>(
+            key: const Key('platform-user-scopes'),
+            label: 'Instituições permitidas',
+            options: institutionIds,
+            selectedValues: _scopeIds,
+            optionLabel: (id) => widget.institutions[id]!,
+            onChanged: (values) {
+              setState(() => _scopeIds = values);
+              _changed();
+            },
+            searchable: true,
+          ),
+        ],
+        const SizedBox(height: CoeloSpacing.space6),
+        Text('Permissões derivadas', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space2),
+        for (final permission in _profile.permissions)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle_outline, size: 20),
+                const SizedBox(width: CoeloSpacing.space2),
+                Expanded(child: Text(permission)),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -393,12 +683,19 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       children: [
         Text('Revisão', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: CoeloSpacing.space4),
-        _summary('Pessoa', '${_firstName.text.trim()} ${_lastName.text.trim()}'),
+        _summary('Identidade', '${_firstName.text.trim()} ${_lastName.text.trim()}'),
+        _summary('CPF', maskPlatformUserCpf(_cpf.text)),
         _summary('E-mail', maskPlatformUserEmail(_email.text.trim())),
-        _summary('Papel', _role.label),
+        _summary('Cargo', _jobTitle.text.trim()),
+        _summary('Perfil', _profile.name),
+        _summary('Alcance', _scope.label),
+        if (_scopeIds.isNotEmpty)
+          _summary('Escopos', _scopeIds.map((id) => widget.institutions[id]!).join(', ')),
+        _summary('Vínculo', (_record?.status ?? PlatformMembershipStatus.invited).label),
+        _summary('Convite', (_record?.invitationStatus ?? PlatformInvitationStatus.pending).label),
         _summary(
-          'Escopo',
-          _institutionId == null ? _scope.label : widget.institutions[_institutionId]!,
+          'Credencial',
+          (_record?.credentialStatus ?? SuperadminCredentialStatus.noAccess).label,
         ),
         const SizedBox(height: CoeloSpacing.space4),
         const Card(
@@ -408,7 +705,11 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
               children: [
                 Icon(Icons.visibility_outlined),
                 SizedBox(width: CoeloSpacing.space3),
-                Expanded(child: Text('Nenhum convite real será enviado.')),
+                Expanded(
+                  child: Text(
+                    'Demonstração local: o convite será preparado para o e-mail profissional, mas nenhum e-mail real será enviado.',
+                  ),
+                ),
               ],
             ),
           ),
@@ -416,6 +717,27 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       ],
     );
   }
+
+  Widget _field(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    Key? key,
+    bool enabled = true,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) => CoeloFormTextField(
+    fieldKey: key,
+    controller: controller,
+    labelText: label,
+    prefixIcon: icon,
+    enabled: enabled,
+    keyboardType: keyboardType,
+    maxLines: maxLines,
+    onChanged: _changed,
+    validator: validator,
+  );
 
   Widget _summary(String label, String value) => Padding(
     padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
@@ -471,15 +793,15 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
             child: const Text('Voltar'),
           ),
         FilledButton(
-          onPressed: _saving ? null : (_step == 4 ? _save : _continue),
+          onPressed: _saving ? null : (_step == 3 ? _save : _continue),
           child: Text(
             _saving
                 ? 'Salvando…'
-                : _step < 4
+                : _step < 3
                 ? 'Continuar'
                 : _editing
                 ? 'Salvar alterações'
-                : 'Salvar preview',
+                : 'Criar e preparar convite',
           ),
         ),
       ],
@@ -512,4 +834,29 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
 
 final class _CancelIntent extends Intent {
   const _CancelIntent();
+}
+
+String _formatInputDate(DateTime? date) {
+  if (date == null) return '';
+  return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+}
+
+DateTime? _parseInputDate(String value) {
+  final parts = value.trim().split('/');
+  if (parts.length != 3) return null;
+  final day = int.tryParse(parts[0]);
+  final month = int.tryParse(parts[1]);
+  final year = int.tryParse(parts[2]);
+  if (day == null || month == null || year == null) return null;
+  final date = DateTime(year, month, day);
+  if (date.day != day || date.month != month || date.year != year) return null;
+  return date;
+}
+
+String? _validateBirthDate(String? value) {
+  if (value == null || value.trim().isEmpty) return null;
+  final date = _parseInputDate(value);
+  if (date == null) return 'Use o formato DD/MM/AAAA.';
+  if (date.isAfter(DateTime(2026, 8, 5))) return 'A data não pode ser futura.';
+  return null;
 }

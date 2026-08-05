@@ -7,6 +7,14 @@ generated_at: "2026-06-27"
 
 # Superadmin MVP
 
+## Aditivo de identidade interna — 2026-08-05
+
+Para a feature Usuários Internos, a ADR 0019 e a spec 023 substituem a regra de
+pessoa global com `platform_memberships`: o cadastro e a credencial são
+exclusivos do Superadmin. Isso não altera Pessoas, Admin ou Principal e não
+autoriza login compartilhado. A entrega atual é somente local/fake; a futura
+produção exige spec técnica e não está autorizada por este documento.
+
 ## Objetivo
 
 Definir a primeira versao operavel do Superadmin do Coelo. O foco e entrar numa instituicao, editar o que for autorizado, gerir planos, perfis e usuarios internos, emitir convites seguros, publicar avisos/popups simples, importar dados e salvar eventos no Supabase para consulta futura.
@@ -87,7 +95,9 @@ Pessoas nao entram como um template unico de "usuarios". Quando a importacao de 
 - A raiz de identidade e `people`: adulto ou crianca, com ou sem login ativo.
 - Login fica em `auth.users`, ligado a `people` por `person_auth_links`; crianca pode existir sem login.
 - Nao criar tabelas separadas de "usuarios" para Superadmin, instituicao, pais, professores ou alunos.
-- Pessoas internas Coelo usam `platform_memberships`.
+- Os vínculos legados em `platform_memberships` permanecem documentados como
+  foundation física, mas não são o modelo aprovado para novos Usuários Internos
+  do Superadmin; prevalecem ADR 0019 e spec 023.
 - Equipe da instituicao usa `institution_memberships`, com papel e escopo por instituicao, unidade ou grupo.
 - Criancas usam `child_contexts` por instituicao e `child_group_links` por grupo/turma.
 - Responsaveis usam `guardian_links` para relacao familiar global e `guardian_context_permissions` para acesso ao contexto institucional da crianca.

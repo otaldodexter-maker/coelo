@@ -11,7 +11,6 @@ import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.da
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_user.dart';
-import 'platform_user_file_actions.dart';
 
 final class PlatformUserDirectoryPage extends StatefulWidget {
   const PlatformUserDirectoryPage({
@@ -43,8 +42,9 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   Timer? _debounce;
   PlatformUserDirectoryView _view = PlatformUserDirectoryView.cards;
   PlatformUserTableView _tableView = PlatformUserTableView.grouped;
-  Set<PlatformUserRole> _roles = {};
+  Set<String> _profileIds = {};
   Set<PlatformMembershipStatus> _statuses = {};
+  Set<PlatformUserScope> _scopes = {};
   int _page = 1;
   int _pageSize = PlatformUserQuery.cardsPageSize;
   bool _loading = true;
@@ -79,8 +79,9 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
 
   PlatformUserQuery get _query => PlatformUserQuery(
     search: _searchController.text,
-    roles: _roles,
+    profileIds: _profileIds,
     statuses: _statuses,
+    scopes: _scopes,
     page: _page,
     view: _view,
     pageSize: _pageSize,
@@ -162,7 +163,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
     return SuperadminShell(
       logout: widget.logout,
       title: 'Usuários internos',
-      subtitle: 'Gerencie o vínculo da equipe própria Coelo.',
+      subtitle: 'Gerencie identidades e acessos exclusivos do Superadmin.',
       currentDestination: 'internal-users',
       onDestinationSelected: widget.onDestinationSelected,
       chatLauncherBottomInset: _footerHeight,
@@ -180,37 +181,42 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
               _result.totalCount > 0;
           _measureFooter(showFooter);
           final footerInset = showFooter ? _footerHeight + CoeloSpacing.space4 : 0.0;
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              ListView(
-                key: const Key('platform-user-directory-content-scroll'),
-                padding: EdgeInsets.fromLTRB(padding, padding, padding, padding + footerInset),
-                children: [
-                  if (widget.capability != PlatformUserCapability.unauthorized)
-                    _toolbar(constraints.maxWidth),
-                  if (widget.capability != PlatformUserCapability.unauthorized)
-                    const SizedBox(height: CoeloSpacing.space4),
-                  _results(),
-                ],
-              ),
-              if (showFooter)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SizeChangedLayoutNotifier(
-                    key: _footerKey,
-                    child: NotificationListener<SizeChangedLayoutNotification>(
-                      onNotification: (_) {
-                        _measureFooter(true);
-                        return true;
-                      },
-                      child: _paginationFooter(padding),
+          return ColoredBox(
+            color: constraints.maxWidth <= 1024
+                ? Theme.of(context).colorScheme.surface
+                : Theme.of(context).colorScheme.surfaceContainerLowest,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ListView(
+                  key: const Key('platform-user-directory-content-scroll'),
+                  padding: EdgeInsets.fromLTRB(padding, padding, padding, padding + footerInset),
+                  children: [
+                    if (widget.capability != PlatformUserCapability.unauthorized)
+                      _toolbar(constraints.maxWidth - (padding * 2)),
+                    if (widget.capability != PlatformUserCapability.unauthorized)
+                      const SizedBox(height: CoeloSpacing.space4),
+                    _results(),
+                  ],
+                ),
+                if (showFooter)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: SizeChangedLayoutNotifier(
+                      key: _footerKey,
+                      child: NotificationListener<SizeChangedLayoutNotification>(
+                        onNotification: (_) {
+                          _measureFooter(true);
+                          return true;
+                        },
+                        child: _paginationFooter(padding),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -233,22 +239,24 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             height: CoeloSize.touchMin,
             child: CoeloSearchField(
               controller: _searchController,
-              hintText: 'Buscar por nome ou e-mail',
-              semanticLabel: 'Buscar usuário interno por nome ou e-mail mascarado',
+              hintText: 'Buscar por nome, e-mail, CPF, celular ou cargo',
+              semanticLabel:
+                  'Buscar usuário interno por nome, e-mail, CPF ou celular protegido, ou cargo',
               onChanged: _search,
             ),
           ),
           SizedBox(
             width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<PlatformUserRole>(
+            child: CoeloAdminMultiSelectFilter<String>(
               key: const Key('platform-user-role-filter'),
-              label: 'Papel',
-              options: PlatformUserRole.values,
-              selectedValues: _roles,
-              optionLabel: (role) => role.label,
-              onChanged: (roles) {
+              label: 'Perfil',
+              options: widget.repository.profiles.map((item) => item.id).toList(),
+              selectedValues: _profileIds,
+              optionLabel: (id) =>
+                  widget.repository.profiles.firstWhere((item) => item.id == id).name,
+              onChanged: (profiles) {
                 setState(() {
-                  _roles = roles;
+                  _profileIds = profiles;
                   _page = 1;
                 });
                 unawaited(_load());
@@ -259,7 +267,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             width: filterWidth,
             child: CoeloAdminMultiSelectFilter<PlatformMembershipStatus>(
               key: const Key('platform-user-status-filter'),
-              label: 'Status',
+              label: 'Vínculo',
               options: PlatformMembershipStatus.values,
               selectedValues: _statuses,
               optionLabel: (status) => status.label,
@@ -272,13 +280,34 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
               },
             ),
           ),
-          if (_roles.isNotEmpty || _statuses.isNotEmpty || _searchController.text.isNotEmpty)
+          SizedBox(
+            width: filterWidth,
+            child: CoeloAdminMultiSelectFilter<PlatformUserScope>(
+              key: const Key('platform-user-scope-filter'),
+              label: 'Alcance',
+              options: PlatformUserScope.values,
+              selectedValues: _scopes,
+              optionLabel: (scope) => scope.label,
+              onChanged: (scopes) {
+                setState(() {
+                  _scopes = scopes;
+                  _page = 1;
+                });
+                unawaited(_load());
+              },
+            ),
+          ),
+          if (_profileIds.isNotEmpty ||
+              _statuses.isNotEmpty ||
+              _scopes.isNotEmpty ||
+              _searchController.text.isNotEmpty)
             TextButton.icon(
               onPressed: () {
                 _searchController.clear();
                 setState(() {
-                  _roles = {};
+                  _profileIds = {};
                   _statuses = {};
+                  _scopes = {};
                   _page = 1;
                 });
                 unawaited(_load());
@@ -307,11 +336,6 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             onTableViewSelected: _changeTableView,
           ),
         ),
-        if (widget.capability == PlatformUserCapability.owner)
-          PlatformUserFileActions(
-            compact: compact,
-            viewLabel: _view == PlatformUserDirectoryView.cards ? 'Cards' : _tableView.label,
-          ),
       ],
     );
   }
@@ -348,7 +372,10 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
     }
     if (_result.totalCount == 0) {
       final filtered =
-          _searchController.text.isNotEmpty || _roles.isNotEmpty || _statuses.isNotEmpty;
+          _searchController.text.isNotEmpty ||
+          _profileIds.isNotEmpty ||
+          _statuses.isNotEmpty ||
+          _scopes.isNotEmpty;
       return CoeloStatePanel(
         title: filtered ? 'Nenhum resultado encontrado' : 'Nenhum usuário interno cadastrado',
         message: filtered
@@ -378,14 +405,13 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
           children: [
             if (widget.capability == PlatformUserCapability.owner)
               SizedBox(
-                width: cardWidth,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 216),
-                  child: CoeloAdminCreateAction(
-                    label: 'Criar usuário interno',
-                    icon: Icons.person_add_alt_1_outlined,
-                    onPressed: widget.onCreate ?? () {},
-                  ),
+                width: double.infinity,
+                child: CoeloAdminCreateAction(
+                  label: 'Criar acesso interno ao Superadmin',
+                  icon: Icons.person_add_alt_1_outlined,
+                  variant: CoeloAdminCreateActionVariant.banner,
+                  description: 'Identidade exclusiva; demonstração local sem convite real.',
+                  onPressed: widget.onCreate ?? () {},
                 ),
               ),
             for (final item in _result.items)
@@ -436,23 +462,10 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   }
 
   List<CoeloAdminTableColumn<PlatformUserRecord>> _tableColumns() {
-    if (_tableView == PlatformUserTableView.scopes) {
-      return [
-        _column('scope', 'Escopo', 150, (context, item) => _textCell(item.scope.label)),
-        _column(
-          'institution',
-          'Instituição vinculada',
-          220,
-          (context, item) => _textCell(item.institutionName ?? 'Todas as instituições'),
-        ),
-        _column('role', 'Papel', 150, (context, item) => _textCell(item.role.label)),
-        _column('status', 'Status', 150, (context, item) => _statusChip(context, item.status)),
-      ];
-    }
     return [
-      _column('role', 'Papel', 150, (context, item) => _textCell(item.role.label)),
+      _column('role', 'Perfil', 180, (context, item) => _textCell(item.profile.name)),
       _column('scope', 'Escopo', 190, (context, item) => _textCell(item.scopeLabel)),
-      _column('status', 'Status', 150, (context, item) => _statusChip(context, item.status)),
+      _column('status', 'Vínculo', 150, (context, item) => _statusChip(context, item.status)),
       _column(
         'invitation',
         'Convite',
@@ -463,7 +476,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
         'reviewed',
         'Revisado em',
         150,
-        (context, item) => _textCell(_formatDate(item.lastReviewedAt)),
+        (context, item) => _textCell(_formatDate(item.invitation.updatedAt)),
       ),
     ];
   }
@@ -556,147 +569,91 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   }
 }
 
-final class _PlatformUserCard extends StatefulWidget {
+final class _PlatformUserCard extends StatelessWidget {
   const _PlatformUserCard({required this.item, required this.onView});
 
   final PlatformUserRecord item;
   final ValueChanged<String>? onView;
 
   @override
-  State<_PlatformUserCard> createState() => _PlatformUserCardState();
-}
-
-final class _PlatformUserCardState extends State<_PlatformUserCard> {
-  bool _highlighted = false;
-
-  @override
   Widget build(BuildContext context) {
-    final item = widget.item;
+    final item = this.item;
     final colors = Theme.of(context).colorScheme;
-    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
-    return ConstrainedBox(
+    return CoeloAdminInteractiveCard(
       key: Key('platform-user-card-${item.id}'),
-      constraints: const BoxConstraints(minHeight: 216),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: TweenAnimationBuilder<double>(
-            key: Key('platform-user-card-surface-${item.id}'),
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: duration,
-            curve: Curves.easeOutCubic,
-            builder: (context, progress, child) => Container(
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
-                  color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: 0.5),
-                    progress,
-                  )!,
-                  width: 1 + 0.5 * progress,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: 0.03),
-                      colors.primary.withValues(alpha: 0.15),
-                      progress,
-                    )!,
-                    blurRadius: 8 + 4 * progress,
-                    spreadRadius: 2 * progress,
-                    offset: Offset(0, 2 + 2 * progress),
+      surfaceKey: Key('platform-user-card-surface-${item.id}'),
+      minHeight: 216,
+      semanticLabel: 'Abrir usuário interno ${item.fullName}',
+      onPressed: () => onView?.call(item.id),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CoeloAvatar(semanticLabel: 'Avatar de ${item.fullName}', initials: item.initials),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.fullName,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        item.maskedEmail,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                ],
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                _MembershipStatusDot(status: item.status),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space4),
+            _UserCardDetailRow(
+              first: _UserCardDetail(
+                icon: Icons.admin_panel_settings_outlined,
+                label: 'Perfil',
+                value: item.profile.name,
               ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: () => widget.onView?.call(item.id),
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CoeloAvatar(
-                              semanticLabel: 'Avatar de ${item.fullName}',
-                              initials: item.initials,
-                            ),
-                            const SizedBox(width: CoeloSpacing.space3),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.fullName,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    item.maskedEmail,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            _MembershipStatusDot(status: item.status),
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        const Divider(height: 1),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        _UserCardDetailRow(
-                          first: _UserCardDetail(
-                            icon: Icons.admin_panel_settings_outlined,
-                            label: 'Papel',
-                            value: item.role.label,
-                          ),
-                          second: _UserCardDetail(
-                            icon: Icons.layers_outlined,
-                            label: 'Escopo',
-                            value: item.scopeLabel,
-                          ),
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _UserCardDetailRow(
-                          first: _UserCardDetail(
-                            icon: Icons.mark_email_unread_outlined,
-                            label: 'Convite',
-                            value: item.invitationStatus.label,
-                          ),
-                          second: _UserCardDetail(
-                            icon: Icons.fact_check_outlined,
-                            label: 'Última revisão',
-                            value: _formatDate(item.lastReviewedAt),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              second: _UserCardDetail(
+                icon: Icons.layers_outlined,
+                label: 'Escopo',
+                value: item.scopeLabel,
               ),
             ),
-          ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _UserCardDetailRow(
+              first: _UserCardDetail(
+                icon: Icons.mark_email_unread_outlined,
+                label: 'Convite',
+                value: item.invitationStatus.label,
+              ),
+              second: _UserCardDetail(
+                icon: Icons.fact_check_outlined,
+                label: 'Última revisão',
+                value: _formatDate(item.invitation.updatedAt),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -792,20 +749,11 @@ final class _MembershipStatusDot extends StatelessWidget {
       ),
       PlatformMembershipStatus.revoked => (colors.surfaceContainer, colors.onSurfaceVariant),
     };
-    return Tooltip(
-      message: status.label,
-      child: Semantics(
-        label: 'Status: ${status.label}',
-        child: Container(
-          width: CoeloSpacing.space6,
-          height: CoeloSpacing.space6,
-          decoration: BoxDecoration(
-            color: background,
-            shape: BoxShape.circle,
-            border: Border.all(color: foreground.withValues(alpha: 0.28)),
-          ),
-        ),
-      ),
+    return CoeloAdminExpandableStatusIndicator(
+      label: status.label,
+      semanticLabel: 'Vínculo interno: ${status.label}',
+      backgroundColor: background,
+      foregroundColor: foreground,
     );
   }
 }

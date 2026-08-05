@@ -35,7 +35,7 @@ void main() {
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byKey(const Key('platform-user-role-filter')), findsOneWidget);
     expect(find.byKey(const Key('platform-user-status-filter')), findsOneWidget);
-    expect(find.text('Arquivos'), findsOneWidget);
+    expect(find.text('Arquivos'), findsNothing);
     expect(find.textContaining('MFA'), findsNothing);
 
     final first = repository.records.first;
@@ -43,60 +43,7 @@ void main() {
     expect(openedId, first.id);
   });
 
-  testWidgets('offers preview import and export through the approved files flyout', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: PlatformUserDirectoryPage(
-          repository: FakePlatformUserRepository(),
-          capability: PlatformUserCapability.owner,
-          logout: () async => const LogoutResult.success(),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    final toggle = tester.widget<SuperadminDirectoryViewToggle<PlatformUserTableView>>(
-      find.byType(SuperadminDirectoryViewToggle<PlatformUserTableView>),
-    );
-    toggle.onTableViewSelected(PlatformUserTableView.scopes);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    expect(find.text('Importar'), findsOneWidget);
-    expect(find.text('Exportar CSV'), findsOneWidget);
-    expect(find.text('Exportar XLSX'), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('platform-user-files-import')));
-    await tester.pumpAndSettle();
-    expect(find.text('Importar usuários internos'), findsOneWidget);
-    expect(find.textContaining('nenhum arquivo real será enviado'), findsOneWidget);
-    expect(find.text('Selecionar arquivo'), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('platform-user-demo-file-picker')));
-    await tester.pump();
-    await tester.tap(find.byKey(const Key('platform-user-import-review')));
-    await tester.pumpAndSettle();
-    expect(find.text('12 linhas válidas'), findsOneWidget);
-    expect(find.text('2 linhas com erro'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('platform-user-import-confirm')));
-    await tester.pumpAndSettle();
-    expect(
-      find.text('Importação concluída somente no preview. Nenhum usuário real foi alterado.'),
-      findsOneWidget,
-    );
-
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('platform-user-files-export-csv')));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('visão: Detalhado por escopos'), findsOneWidget);
-  });
-
-  testWidgets('switches between grouped and detailed scope tables', (tester) async {
+  testWidgets('uses one canonical grouped table', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -117,19 +64,16 @@ void main() {
     final toggle = tester.widget<SuperadminDirectoryViewToggle<PlatformUserTableView>>(
       find.byType(SuperadminDirectoryViewToggle<PlatformUserTableView>),
     );
-    expect(toggle.tableViews.map((option) => option.label), ['Agrupado', 'Detalhado por escopos']);
+    expect(toggle.tableViews.map((option) => option.label), ['Agrupado']);
     expect(find.byKey(const Key('platform-user-directory-table')), findsOneWidget);
     expect(find.text('Pessoa'), findsWidgets);
-    expect(find.text('Papel'), findsWidgets);
+    expect(find.text('Perfil'), findsWidgets);
     expect(find.text('Escopo'), findsWidgets);
     expect(find.text('Convite'), findsWidgets);
     expect(find.text('Revisado em'), findsWidgets);
     expect(find.byKey(const Key('platform-user-table-page-size-8')), findsOneWidget);
 
-    toggle.onTableViewSelected(PlatformUserTableView.scopes);
-    await tester.pumpAndSettle();
-    expect(find.text('Instituição vinculada'), findsOneWidget);
-    expect(find.text('Convite'), findsNothing);
+    expect(find.text('Vínculo'), findsWidgets);
   });
 
   testWidgets('uses the measured shared pagination footer', (tester) async {
@@ -276,6 +220,9 @@ final class _ScenarioRepository implements PlatformUserRepository {
   List<PlatformUserRecord> get records => const [];
 
   @override
+  List<PlatformAccessProfile> get profiles => PlatformAccessProfiles.values;
+
+  @override
   PlatformUserRecord? findById(String id) => null;
 
   @override
@@ -296,5 +243,9 @@ final class _ScenarioRepository implements PlatformUserRepository {
   Future<PlatformUserCreateResult> create(PlatformUserDraft draft) => throw UnimplementedError();
 
   @override
-  Future<void> update(PlatformUserRecord record) => throw UnimplementedError();
+  Future<PlatformUserRecord> update(String id, PlatformUserDraft draft) =>
+      throw UnimplementedError();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

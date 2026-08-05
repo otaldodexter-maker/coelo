@@ -183,7 +183,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | --- | --- | --- |
 | Ativar instituição | Criar instituição → definir plano/status → vincular owner → emitir convite → confirmar acesso. | Owner acessa somente a própria instituição e vê checklist inicial. |
 | Suspender instituição | Selecionar tenant → informar motivo → confirmar ação → registrar log. | Acesso é bloqueado conforme regra sem apagar dados. |
-| Criar usuário interno | Cadastrar pessoa/contato → definir cargo → atribuir escopo → enviar convite. | Usuário recebe somente permissões do cargo e escopo. |
+| Criar usuário interno | Cadastrar identidade interna exclusiva → definir perfil e escopo → revisar → simular convite. | O acesso existe somente no Superadmin e recebe permissões derivadas do perfil. |
 | Publicar aviso | Definir tipo → audiência → vigência → conteúdo → revisar → publicar. | Aviso aparece apenas para audiência autorizada e expira conforme vigência. |
 | Atendimento de suporte | Abrir instituição/contexto → registrar motivo → consultar/agir conforme cargo → encerrar. | Acesso e ações aparecem na auditoria com ator, tempo e objeto. |
 | Alterar plano manual | Selecionar instituição → alterar plano/status/datas → registrar justificativa. | Mudança é persistida sem iniciar cobrança automática. |
@@ -225,7 +225,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | --- | --- | --- |
 | Tenants | institutions, units, institution_settings | Superadmin cria e mantém o tenant; dados internos continuam isolados. |
 | Planos | plans, institution_subscriptions, usage_limits | Operação manual no MVP; nomes físicos finais no Modelo de Dados Master. |
-| Equipe Coelo | people, auth.users, platform_memberships | Pessoa global com vínculo interno contextual. |
+| Equipe Coelo | identidade interna, credencial Superadmin, vínculo, perfil e escopo | Agregado exclusivo do Superadmin; não reutiliza Pessoas, Admin ou Principal. O desenho físico produtivo depende da ADR 0019 e de spec técnica futura. |
 | Avisos | platform_notices, notice_audiences, notice_receipts | Segmentação e vigência. |
 | Suporte | support_sessions, audit.audit_logs | Motivo, ator, tenant, escopo e ações. |
 | Analytics | analytics.analytics_events, analytics.usage_counters | Dados brutos para dashboards futuros. |

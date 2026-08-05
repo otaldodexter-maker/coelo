@@ -5,11 +5,12 @@ import 'package:coelo_superadmin/features/platform_users/presentation/platform_u
 import 'package:coelo_superadmin/features/platform_users/presentation/platform_user_form_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('creates through five explicit preview steps', (tester) async {
+  testWidgets('creates an exclusive Superadmin access through four steps', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakePlatformUserRepository();
@@ -28,38 +29,50 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Identidade'), findsWidgets);
+    expect(find.textContaining('acesso interno exclusivo ao Superadmin'), findsWidgets);
+    expect(find.byKey(const Key('platform-user-birth-date')), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
-    expect(find.byKey(const Key('platform-user-form-footer-surface')), findsOneWidget);
     await tester.enterText(find.byKey(const Key('platform-user-first-name')), 'Lia');
     await tester.enterText(find.byKey(const Key('platform-user-last-name')), 'Coelo');
+    await tester.enterText(find.byKey(const Key('platform-user-cpf')), '52998224725');
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Contato e informações profissionais'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('platform-user-email')), 'lia@coelo.me');
+    await tester.enterText(find.byKey(const Key('platform-user-job-title')), 'Analista');
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
-    expect(find.text('Membership de plataforma'), findsWidgets);
-    expect(find.text('Convidado'), findsOneWidget);
+
+    expect(find.text('Acesso ao Superadmin'), findsWidgets);
+    final scope = tester.widget<CoeloAdminMultiSelectField<String>>(
+      find.byType(CoeloAdminMultiSelectField<String>),
+    );
+    scope.onChanged(const {'institution-1'});
+    await tester.pump();
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
-    expect(find.text('Papel'), findsWidgets);
-    await tester.tap(find.text('Continuar'));
+
+    expect(find.text('Revisão'), findsOneWidget);
+    expect(find.textContaining('nenhum e-mail real será enviado'), findsOneWidget);
+    expect(find.text('***.***.***-25'), findsOneWidget);
+    expect(find.text('l***@coelo.me'), findsOneWidget);
+    await tester.tap(find.text('Criar e preparar convite'));
     await tester.pumpAndSettle();
-    expect(find.text('Escopo'), findsWidgets);
-    await tester.tap(find.text('Continuar'));
-    await tester.pumpAndSettle();
-    expect(find.text('Nenhum convite real será enviado.'), findsOneWidget);
-    expect(find.textContaining('CPF'), findsNothing);
-    expect(find.textContaining('Supabase'), findsNothing);
-    await tester.tap(find.text('Salvar preview'));
-    await tester.pumpAndSettle();
+
     expect(saved, isNotNull);
+    expect(saved!.record.status, PlatformMembershipStatus.invited);
+    expect(saved!.record.invitationStatus, PlatformInvitationStatus.pending);
+    expect(saved!.record.credentialStatus, SuperadminCredentialStatus.noAccess);
     expect(saved!.invitationSent, isFalse);
   });
 
-  testWidgets('views separated identity, membership, permissions and invitation sections', (
-    tester,
-  ) async {
+  testWidgets('detail separates identity, access, states and fake history', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakePlatformUserRepository();
     final user = repository.records.first;
+
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.dark,
@@ -74,18 +87,27 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Identidade'), findsOneWidget);
-    expect(find.text('Vínculo interno'), findsOneWidget);
-    expect(find.text('Papel e permissões'), findsOneWidget);
+    expect(find.text('Último Owner ativo protegido'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.text('Convite e status'),
+      find.text('Acesso ao Superadmin'),
       300,
       scrollable: find.byType(Scrollable).last,
     );
-    expect(find.text('Convite e status'), findsOneWidget);
+    expect(find.text('Acesso ao Superadmin'), findsOneWidget);
+    expect(find.text('Estados independentes'), findsOneWidget);
+    expect(find.textContaining('Vínculo interno ·'), findsOneWidget);
+    expect(find.textContaining('Convite ·'), findsOneWidget);
+    expect(find.textContaining('Credencial Superadmin ·'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Histórico demonstrativo'),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(find.text('Histórico demonstrativo'), findsOneWidget);
     expect(find.textContaining('MFA'), findsNothing);
   });
 
-  testWidgets('uses a measured compact form footer without covering content', (tester) async {
+  testWidgets('compact form has simple surface and no horizontal overflow', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -103,6 +125,7 @@ void main() {
 
     final scroll = tester.widget<ListView>(find.byKey(const Key('platform-user-form-scroll')));
     expect((scroll.padding! as EdgeInsets).bottom, greaterThan(CoeloSpacing.space4));
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
     expect(
       tester.getSize(find.byKey(const Key('platform-user-form-footer-surface'))).width,
       greaterThan(250),
@@ -110,9 +133,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps email and derived permissions read only while editing', (tester) async {
+  testWidgets('active credential keeps professional email read only during edit', (tester) async {
     final repository = FakePlatformUserRepository();
     final user = repository.records.first;
+
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -125,16 +149,16 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
 
     final email = tester.widget<TextFormField>(find.byKey(const Key('platform-user-email')));
     expect(email.enabled, isFalse);
-    expect(email.controller!.text, user.maskedEmail);
-    expect(find.text(user.email), findsNothing);
+    expect(email.controller!.text, user.email);
+
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
-    await tester.pumpAndSettle();
-    expect(find.text('Permissões derivadas do papel'), findsOneWidget);
-    expect(find.text('Overrides não são editáveis neste preview.'), findsOneWidget);
+    expect(find.text('Permissões derivadas'), findsOneWidget);
+    expect(find.textContaining('não podem ser ampliadas'), findsOneWidget);
   });
 }

@@ -7,6 +7,13 @@ generated_at: "2026-07-29"
 
 # Diretório de Pessoas do Superadmin
 
+## Limite com Usuários Internos — 2026-08-05
+
+Este diretório não é fonte de identidade, busca ou reaproveitamento para
+Usuários Internos. Conforme ADR 0019 e spec 023, a equipe interna possui
+identidade e credencial exclusivas do Superadmin; uma associação futura com
+Pessoas será explícita, verificada e não compartilhará acesso.
+
 ## Objetivo e problema
 
 Entregar listagem, criação draft e edição controlada de pessoas no
