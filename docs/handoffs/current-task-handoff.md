@@ -51,7 +51,7 @@
 - Nenhum bloqueio técnico no escopo da tela Suporte identificado nesta retomada.
 
 ## O que ainda não foi iniciado
-- Validação visual manual completa em ambiente local (localhost) por limitação do fluxo atual.
+- Validação visual manual completa em ambiente local (localhost) para revisão de espaçamento e microinterações.
 
 ## Verificações executadas e resultados
 - `git status --short --short` (semântica de segurança): no arquivo fora do escopo de suporte marcado como modificado.
@@ -73,7 +73,7 @@
 - Sem validação pixel-perfect local nesta etapa.
 
 ## Estado atual
-- Tela Suporte considerada finalizada no escopo de ajustes UI/UX pedidos; pronta para encerramento desta etapa.
+- Tela Suporte considerada finalizada no escopo de ajustes UI/UX pedidos; pronta para encerramento desta etapa, restando apenas revisão visual opcional em ambiente local.
 
 ## Resumo do git diff
 - `git diff --name-only HEAD -- apps/superadmin/lib/features/support/...` não retornou alterações pendentes.
