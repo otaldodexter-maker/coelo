@@ -146,6 +146,72 @@ void main() {
     expect(governance.value, ActivityGovernance.fixed);
   });
 
+  testWidgets('preserves a complete initial draft through the edit page contract', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    ActivityFormDraft? savedDraft;
+    const initialDraft = ActivityFormDraft(
+      name: 'Ingl\u00EAs avan\u00E7ado',
+      description: 'Conversa\u00E7\u00E3o para a Turma 1.',
+      category: ActivityCategory.languages,
+      activityLabel: 'Ingl\u00EAs',
+      governance: ActivityGovernance.optional,
+      institutionId: 'institution-1',
+      unitIds: {'institution-1-unit-1'},
+      locationId: 'institution-1-unit-1-location-1',
+      groupIds: {'institution-1-group-1'},
+      assignments: [
+        ActivityProfessionalAssignment(
+          groupId: 'institution-1-group-1',
+          professionalId: 'professional-1',
+          permissions: ActivityProfessionalPermissions(
+            happens: true,
+            now: false,
+            moments: true,
+            chat: false,
+          ),
+        ),
+      ],
+      imageName: 'atividade.png',
+    );
+
+    await tester.pumpWidget(
+      _app(
+        activityId: 'activity-1',
+        initialDraft: initialDraft,
+        onSaveDraft: (draft) async => savedDraft = draft,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Ingl\u00EAs avan\u00E7ado',
+    );
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<ActivityCategory?>>(
+            find.byKey(const Key('activity-form-category')),
+          )
+          .value,
+      ActivityCategory.languages,
+    );
+
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+
+    expect(savedDraft?.activityLabel, 'Ingl\u00EAs');
+    expect(savedDraft?.institutionId, 'institution-1');
+    expect(savedDraft?.unitIds, {'institution-1-unit-1'});
+    expect(savedDraft?.locationId, 'institution-1-unit-1-location-1');
+    expect(savedDraft?.groupIds, {'institution-1-group-1'});
+    expect(savedDraft?.assignments.single.professionalId, 'professional-1');
+    expect(savedDraft?.assignments.single.permissions.now, isFalse);
+    expect(savedDraft?.assignments.single.permissions.chat, isFalse);
+    expect(savedDraft?.imageName, 'atividade.png');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('stacks local selector and create action at full width on compact screens', (
     tester,
   ) async {
@@ -176,12 +242,14 @@ void main() {
 
 Widget _app({
   String? activityId,
+  ActivityFormDraft? initialDraft,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
 }) => MaterialApp(
   theme: CoeloTheme.light,
   home: ActivityFormPage(
     activityId: activityId,
+    initialDraft: initialDraft,
     repository: FakeActivityDirectoryRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},

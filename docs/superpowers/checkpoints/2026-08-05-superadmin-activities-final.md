@@ -34,7 +34,10 @@ Concluir o diretorio e o fluxo Criar/Editar Atividade, sem alterar outras telas,
 
 ## Verificacoes
 
-- Atividades: 19 testes focados verdes.
+- Atividades: 33 testes focados nao-golden verdes.
+- Contrato de edicao: teste de pagina confirma preservacao integral do initialDraft, incluindo categoria, local, vinculos, permissoes e imagem local.
+- Goldens de Atividades: 8 de 8 grupos verdes apos regeneracao isolada no commit da entrega.
+- Revisao dos diffs golden confirmou somente Happens na navegacao, wizard compacto, resumo sob o popup de local e toggles Coelo de permissoes.
 - Coelo UI: 22 testes focados verdes.
 - Analise focada de Atividades: sem issues.
 - Analise focada de Coelo UI: sem issues.
@@ -43,7 +46,7 @@ Concluir o diretorio e o fluxo Criar/Editar Atividade, sem alterar outras telas,
 
 ## Pendencias
 
-Nenhuma pendencia funcional conhecida em Atividades neste escopo. Integracao real dos callbacks permanece fora de escopo.
+Nenhuma pendencia funcional conhecida na UI de Atividades neste escopo. A fonte real do initialDraft e a integracao dos callbacks permanecem explicitamente fora de escopo; a UI nao fabrica dados ausentes.
 
 ## Retomada
 
