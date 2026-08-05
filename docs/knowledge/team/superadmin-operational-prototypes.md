@@ -34,7 +34,8 @@ tabular. A busca usa destinatário mascarado e contexto/papel; os filtros locais
 são status, público, canal e criação. A criação mantém sete etapas, validade de
 48 ou 72 horas e revisão mascarada. Não existe edição sem operação de atualização
 no repositório: convites emitidos usam detalhe somente leitura, sem token ou link
-completo. Reenvio é permitido para pendentes ou expirados, invalidando o link
+completo. Contextos escolares usam a denominação Turma, nunca Grupo. Reenvio é
+permitido para pendentes ou expirados, invalidando o link
 fake anterior; revogação é permitida somente para pendentes e exige confirmação
 negativa. Em mobile e tablet claros, as superfícies de Convites usam fundo-base
 simples em "colorScheme.surface".

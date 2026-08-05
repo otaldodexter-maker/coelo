@@ -24,7 +24,8 @@ Refatorar exclusivamente a experiência de Convites em `apps/superadmin`: diret�
 - Criado suporte visual local para status, formatação de datas e confirmação canônica de revogação.
 - Refatorado o diretório para tabela única com toolbar, busca mascarada, filtros canônicos, estados, faixa de criação, tabela redimensionável e flyout contextual.
 - Ajustado o teste existente do diretório para usar o tema Coelo requerido pela tabela compartilhada.
-- O fixture `Grupo Azul` → `Turma Azul` já era alteração preexistente do usuário e foi preservado sem modificação adicional.
+- A correção terminológica Grupo Azul → Turma Azul foi incorporada e coberta
+  por teste de regressão: contextos escolares de Convites usam Turma, não Grupo.
 
 ## Decisões de produto e UI/UX a preservar
 
@@ -177,7 +178,7 @@ apagar as referências, decisões e verificações históricas acima.
   fundo-base simples.
 - Evidência visual: nove goldens de Convites foram gerados, inspecionados e
   comparados novamente com sucesso.
-- Testes de Convites: 29 passaram.
+- Testes de Convites: 30 passaram, incluindo a regressão de terminologia Turma.
 - Componentes compartilhados: 33 testes de tabela/filtros/flyout e 6 testes de
   footer/navegação passaram.
 - Análise focada de produção e testes de Convites: sem issues.

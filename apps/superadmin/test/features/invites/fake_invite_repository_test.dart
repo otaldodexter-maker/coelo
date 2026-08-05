@@ -35,4 +35,13 @@ void main() {
     expect(r.revoke(resent.id).status, InviteStatus.revoked);
     expect(() => r.resend(resent.id), throwsStateError);
   });
+
+  test('uses Turma terminology for school contexts', () {
+    final scopes = FakeInviteRepository(
+      now: () => now,
+    ).list(const InviteQuery()).map((invite) => invite.scope).toList();
+
+    expect(scopes, contains('Turma Azul'));
+    expect(scopes.where((scope) => scope.contains('Grupo')), isEmpty);
+  });
 }

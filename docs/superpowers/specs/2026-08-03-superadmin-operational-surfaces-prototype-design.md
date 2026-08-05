@@ -131,6 +131,8 @@ vinculadas.
 - A tabela apresenta somente destinatário mascarado, público, contexto/papel,
   canal, status, criação, expiração e ações. Responsável e data específica de
   envio não são inferidos.
+- Contextos escolares são nomeados como Turma; Convites não usa Grupo como
+  denominação desse vínculo.
 - Estados: rascunho, pendente, aceito, expirado, revogado e falha simulada.
 - O fluxo de criação preserva sete etapas reais: público; contexto/escopo;
   papel/finalidade; destinatário; canal; expiração; revisão. A validade local

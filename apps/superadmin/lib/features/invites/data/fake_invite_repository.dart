@@ -169,7 +169,7 @@ List<PlatformInvite> _fixtures(DateTime Function() now) {
       InviteChannel.mobile,
       InviteStatus.failed,
       '+5511988880000',
-      'Grupo Azul',
+      'Turma Azul',
       'Pessoa vinculada',
     ),
   ];
