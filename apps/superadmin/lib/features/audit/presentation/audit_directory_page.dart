@@ -6,6 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/prototype/superadmin_prototype_store.dart';
+import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import 'audit_detail_panel.dart';
@@ -54,7 +55,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
     title: 'Auditoria',
-    subtitle: 'Consulte evidências fictícias e minimizadas da sessão.',
+    subtitle: 'Monitore eventos de auditoria do ambiente em tempo real.',
     currentDestination: 'audit',
     activityController: widget.store.activityController,
     onDestinationSelected: widget.onDestinationSelected,
@@ -64,6 +65,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
         final allEvents = [...widget.store.auditEvents, ...auditFixtureEvents]
           ..sort((left, right) => right.occurredAt.compareTo(left.occurredAt));
         final visible = _filter(allEvents);
+        final lastUpdate = visible.isNotEmpty ? visible.first.occurredAt : null;
         return Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space4),
           child: CoeloAdminWorkspaceLayout(
@@ -71,7 +73,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
               child: _toolbar(allEvents),
             ),
-            body: _body(visible, hasSourceEvents: allEvents.isNotEmpty),
+            body: _body(visible, hasSourceEvents: allEvents.isNotEmpty, lastUpdate: lastUpdate),
             detailVisible: _selected != null,
             detail: _selected == null
                 ? null
@@ -86,6 +88,8 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
   );
 
   Widget _toolbar(List<PrototypeAuditEvent> events) {
+    final hasEvents = events.isNotEmpty;
+    final latest = events.isNotEmpty ? events.first.occurredAt : null;
     List<String> strings(Iterable<String?> values) =>
         values.whereType<String>().toSet().toList()..sort();
     Widget filter<T>({
@@ -109,69 +113,98 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
         },
       ),
     );
-    return CoeloAdminListingToolbar(
-      search: SizedBox(
-        width: 280,
-        child: CoeloSearchField(
-          key: const Key('audit-search'),
-          controller: _searchController,
-          semanticLabel: 'Buscar eventos de auditoria',
-          hintText: 'ID, ator, ação ou objeto',
-          onChanged: (value) => setState(() {
-            _query = value;
-            _page = 1;
-          }),
-        ),
-      ),
-      filters: [
-        filter(
-          label: 'Período',
-          options: _AuditPeriod.values,
-          selected: _periods,
-          optionLabel: _periodLabel,
-          onChanged: (value) => _periods = value,
-        ),
-        filter(
-          label: 'Módulo',
-          options: strings(events.map((event) => event.module)),
-          selected: _modules,
-          optionLabel: (value) => value,
-          onChanged: (value) => _modules = value,
-        ),
-        filter(
-          label: 'Ação',
-          options: strings(events.map((event) => event.action)),
-          selected: _actions,
-          optionLabel: (value) => value,
-          onChanged: (value) => _actions = value,
-        ),
-        filter(
-          label: 'Ator',
-          options: strings(events.map((event) => event.actor)),
-          selected: _actors,
-          optionLabel: (value) => value,
-          onChanged: (value) => _actors = value,
-        ),
-        filter(
-          label: 'Contexto',
-          options: strings(events.map((event) => event.context)),
-          selected: _contexts,
-          optionLabel: (value) => value,
-          onChanged: (value) => _contexts = value,
-        ),
-        filter(
-          label: 'Risco',
-          options: PrototypeAuditRisk.values,
-          selected: _risks,
-          optionLabel: _riskLabel,
-          onChanged: (value) => _risks = value,
+    Widget exportAction() => CoeloAdminFileActions(
+      compact: false,
+      actions: [
+        CoeloAdminFileAction(
+          key: const Key('audit-export-placeholder'),
+          label: 'Exportar (em breve)',
+          icon: Icons.schedule_outlined,
+          onPressed: () => showSuperadminNotice(
+            context,
+            hasEvents
+                ? 'Exportação em breve: nesta tela ainda não gera arquivos.'
+                : 'Exportação em breve: ainda não existe evento filtrado para exportação.',
+            icon: Icons.info_outline_rounded,
+          ),
         ),
       ],
-      actions: const [],
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+        final searchWidth = compact ? constraints.maxWidth : 280.0;
+        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 176.0;
+        return CoeloAdminListingToolbar(
+          search: SizedBox(
+            width: searchWidth,
+            child: CoeloSearchField(
+              key: const Key('audit-search'),
+              controller: _searchController,
+              semanticLabel: 'Buscar eventos de auditoria',
+              hintText: 'ID, ator, ação ou objeto',
+              onChanged: (value) => setState(() {
+                _query = value;
+                _page = 1;
+              }),
+            ),
+          ),
+          filters: [
+            SizedBox(width: filterWidth, height: CoeloSize.touchMin, child: _realtimeBadge(latest)),
+            filter(
+              label: 'Período',
+              options: _AuditPeriod.values,
+              selected: _periods,
+              optionLabel: _periodLabel,
+              onChanged: (value) => _periods = value,
+            ),
+            filter(
+              label: 'Módulo',
+              options: strings(events.map((event) => event.module)),
+              selected: _modules,
+              optionLabel: (value) => value,
+              onChanged: (value) => _modules = value,
+            ),
+            filter(
+              label: 'Ação',
+              options: strings(events.map((event) => event.action)),
+              selected: _actions,
+              optionLabel: (value) => value,
+              onChanged: (value) => _actions = value,
+            ),
+            filter(
+              label: 'Ator',
+              options: strings(events.map((event) => event.actor)),
+              selected: _actors,
+              optionLabel: (value) => value,
+              onChanged: (value) => _actors = value,
+            ),
+            filter(
+              label: 'Contexto',
+              options: strings(events.map((event) => event.context)),
+              selected: _contexts,
+              optionLabel: (value) => value,
+              onChanged: (value) => _contexts = value,
+            ),
+            filter(
+              label: 'Risco',
+              options: PrototypeAuditRisk.values,
+              selected: _risks,
+              optionLabel: _riskLabel,
+              onChanged: (value) => _risks = value,
+            ),
+          ],
+          actions: [exportAction()],
+        );
+      },
     );
   }
 
-  Widget _body(List<PrototypeAuditEvent> events, {required bool hasSourceEvents}) {
+  Widget _body(
+    List<PrototypeAuditEvent> events, {
+    required bool hasSourceEvents,
+    required DateTime? lastUpdate,
+  }) {
     switch (widget.state) {
       case AuditDirectoryState.loading:
         return const Center(
@@ -182,7 +215,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
         return const CoeloStatePanel(
           key: Key('audit-state-empty'),
           title: 'Nenhum evento registrado',
-          message: 'As atividades da sessão aparecerão aqui.',
+          message: 'As atividades aparecerão aqui.',
           icon: Icons.shield_outlined,
         );
       case AuditDirectoryState.error:
@@ -212,8 +245,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
         }
         return LayoutBuilder(
           builder: (context, constraints) {
-            final wide = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
-            final pageSize = wide ? 8 : 11;
+            final pageSize = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth ? 8 : 11;
             final totalPages = math.max(1, (events.length / pageSize).ceil());
             final page = _page.clamp(1, totalPages);
             final start = (page - 1) * pageSize;
@@ -221,9 +253,16 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('${events.length} ${events.length == 1 ? 'evento' : 'eventos'}'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text('${events.length} ${events.length == 1 ? 'evento' : 'eventos'}'),
+                    ),
+                    _realtimeStatus(lastUpdate),
+                  ],
+                ),
                 const SizedBox(height: CoeloSpacing.space3),
-                Expanded(child: wide ? _table(pageEvents) : _cards(pageEvents)),
+                Expanded(child: _table(pageEvents)),
                 const SizedBox(height: CoeloSpacing.space3),
                 CoeloAdminPagination(
                   currentPage: page,
@@ -239,29 +278,47 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     }
   }
 
-  Widget _cards(List<PrototypeAuditEvent> events) => ListView.separated(
-    itemCount: events.length,
-    separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
-    itemBuilder: (context, index) {
-      final event = events[index];
-      return CoeloAdminInteractiveCard(
-        key: Key('audit-card-${event.id}'),
-        semanticLabel: 'Abrir evento ${event.id}, ${_riskLabel(event.risk)}',
-        onPressed: () => setState(() => _selected = event),
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${event.action} · ${event.module}',
-                style: Theme.of(context).textTheme.titleMedium,
+  Widget _table(List<PrototypeAuditEvent> events) => LayoutBuilder(
+    builder: (context, constraints) {
+      const minTableWidth = 156 + 176 + 180 + 176 + 196 + 196 + 132 + 176 + 32;
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: math.max(constraints.maxWidth, minTableWidth).toDouble(),
+          ),
+          child: CoeloAdminResizableTable<PrototypeAuditEvent>(
+            key: const Key('audit-table'),
+            items: events,
+            rowKey: (event) => 'audit-row-${event.id}',
+            headerHeight: 48,
+            rowHeight: 64,
+            onRowPressed: (event) => setState(() => _selected = event),
+            isSelected: (event) => _selected?.id == event.id,
+            pinnedColumn: _column(
+              'instant',
+              'Data/hora',
+              (event) => _formatCompact(event.occurredAt),
+              156,
+            ),
+            columns: [
+              _column('actor', 'Ator', (event) => event.actor, 176),
+              _column('module', 'Módulo', (event) => event.module, 180),
+              _column('action', 'Ação', (event) => event.action, 176),
+              _column(
+                'object',
+                'Recurso',
+                (event) => '${event.objectType}: ${event.objectId}',
+                196,
               ),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text('${event.objectType}: ${event.objectId}'),
-              Text(event.context ?? 'Contexto global'),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(_riskLabel(event.risk)),
+              _column(
+                'context',
+                'Contexto / Hierarquia',
+                (event) => event.context ?? 'Global',
+                196,
+              ),
+              _column('risk', 'Risco', (event) => _riskLabel(event.risk), 132),
+              _column('origin', 'Origem', (event) => event.origin, 176),
             ],
           ),
         ),
@@ -269,31 +326,57 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     },
   );
 
-  Widget _table(List<PrototypeAuditEvent> events) => SingleChildScrollView(
-    child: CoeloAdminResizableTable<PrototypeAuditEvent>(
-      key: const Key('audit-table'),
-      items: events,
-      rowKey: (event) => 'audit-row-${event.id}',
-      headerHeight: 48,
-      rowHeight: 64,
-      onRowPressed: (event) => setState(() => _selected = event),
-      isSelected: (event) => _selected?.id == event.id,
-      pinnedColumn: _column(
-        'instant',
-        'Data/hora',
-        (event) => _formatCompact(event.occurredAt),
-        156,
+  Widget _realtimeBadge(DateTime? lastUpdate) {
+    final theme = Theme.of(context);
+    final status = lastUpdate == null
+        ? 'Ao vivo: aguardando evento'
+        : 'Ao vivo • ${_timeAgo(DateTime.now().difference(lastUpdate.toLocal()))}';
+    return Semantics(
+      label: 'Status de atualização dos eventos da auditoria',
+      child: Container(
+        height: CoeloSize.touchMin,
+        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+          color: theme.colorScheme.surfaceContainerHighest,
+        ),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          status,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurface),
+        ),
       ),
-      columns: [
-        _column('actor', 'Ator', (event) => event.actor, 176),
-        _column('module', 'Módulo', (event) => event.module, 144),
-        _column('action', 'Ação', (event) => event.action, 176),
-        _column('object', 'Objeto', (event) => event.objectId, 196),
-        _column('context', 'Contexto', (event) => event.context ?? 'Global', 196),
-        _column('risk', 'Risco', (event) => _riskLabel(event.risk), 132),
-      ],
-    ),
-  );
+    );
+  }
+
+  Widget _realtimeStatus(DateTime? lastUpdate) {
+    final theme = Theme.of(context);
+    final status = lastUpdate == null
+        ? 'Última atualização: sem dados'
+        : 'Atualizado: ${_timeAgo(DateTime.now().difference(lastUpdate.toLocal()))}';
+    return Text(
+      status,
+      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  String _timeAgo(Duration elapsed) {
+    final safe = elapsed.isNegative ? Duration.zero : elapsed;
+    if (safe.inSeconds < 60) {
+      return 'agora';
+    }
+    if (safe.inMinutes < 60) {
+      return '${safe.inMinutes}m atrás';
+    }
+    if (safe.inMinutes < 60 * 24) {
+      return '${safe.inHours}h atrás';
+    }
+    return '${safe.inDays}d atrás';
+  }
 
   CoeloAdminTableColumn<PrototypeAuditEvent> _column(
     String id,

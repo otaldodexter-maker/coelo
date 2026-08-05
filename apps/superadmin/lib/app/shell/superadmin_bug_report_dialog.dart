@@ -8,21 +8,30 @@ Future<SupportReportDraft?> showSuperadminBugReportDialog(
   BuildContext context, {
   required String currentScreen,
   required Map<String, List<String>> sections,
+  String dialogTitle = 'Bug? O Coelo resolve!',
 }) {
   final theme = Theme.of(context);
   return showDialog<SupportReportDraft>(
     context: context,
     barrierColor: theme.extension<CoeloOverlayColors>()!.scrim,
-    builder: (context) =>
-        _SuperadminBugReportDialog(currentScreen: currentScreen, sections: sections),
+    builder: (context) => _SuperadminBugReportDialog(
+      currentScreen: currentScreen,
+      sections: sections,
+      dialogTitle: dialogTitle,
+    ),
   );
 }
 
 class _SuperadminBugReportDialog extends StatefulWidget {
-  const _SuperadminBugReportDialog({required this.currentScreen, required this.sections});
+  const _SuperadminBugReportDialog({
+    required this.currentScreen,
+    required this.sections,
+    required this.dialogTitle,
+  });
 
   final String currentScreen;
   final Map<String, List<String>> sections;
+  final String dialogTitle;
 
   @override
   State<_SuperadminBugReportDialog> createState() => _SuperadminBugReportDialogState();
@@ -97,7 +106,7 @@ class _SuperadminBugReportDialogState extends State<_SuperadminBugReportDialog> 
     final colors = theme.colorScheme;
     return CoeloAdminDialogShell(
       dialogKey: const Key('superadmin-bug-report-dialog'),
-      title: 'Bug? O Coelo resolve!',
+      title: widget.dialogTitle,
       closeTooltip: 'Fechar reporte de bug',
       closeButtonKey: const Key('superadmin-bug-report-close'),
       onClose: _closeDialog,

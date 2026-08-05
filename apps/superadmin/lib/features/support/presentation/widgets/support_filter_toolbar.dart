@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/support_ticket.dart';
 import '../view_models/support_prototype_controller.dart';
+import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 
 enum SupportDisplayMode { kanban, table }
 
@@ -144,28 +145,17 @@ final class SupportFilterToolbar extends StatelessWidget {
             SizedBox(
               key: const Key('support-view-toggle'),
               height: CoeloSize.touchMin,
-              child: SegmentedButton<SupportDisplayMode>(
-                style: const ButtonStyle(
-                  minimumSize: WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
-                  padding: WidgetStatePropertyAll(
-                    EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                  ),
-                ),
-                segments: const [
-                  ButtonSegment(
-                    value: SupportDisplayMode.kanban,
-                    tooltip: 'Exibir como kanban',
-                    icon: Icon(Icons.view_kanban_rounded),
-                  ),
-                  ButtonSegment(
-                    value: SupportDisplayMode.table,
-                    tooltip: 'Exibir como tabela',
-                    icon: Icon(Icons.table_rows_rounded),
-                  ),
+              child: SuperadminDirectoryViewToggle<SupportDisplayMode>(
+                cardsSelected: displayMode == SupportDisplayMode.kanban,
+                groupedView: SupportDisplayMode.table,
+                selectedTableView: displayMode,
+                tableViews: const [
+                  SuperadminDirectoryTableViewOption(value: SupportDisplayMode.table, label: 'Tabela'),
                 ],
-                selected: {displayMode},
-                showSelectedIcon: false,
-                onSelectionChanged: (selection) => onDisplayModeChanged(selection.single),
+                onCardsSelected: () => onDisplayModeChanged(SupportDisplayMode.kanban),
+                onTableViewSelected: onDisplayModeChanged,
+                cardsKey: const Key('support-view-toggle-cards'),
+                tableKey: const Key('support-view-toggle-table'),
               ),
             ),
             CoeloAdminFileActions(

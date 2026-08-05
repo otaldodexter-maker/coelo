@@ -53,7 +53,7 @@ class _SupportPageState extends State<SupportPage> {
   @override
   Widget build(BuildContext context) => SuperadminShell(
     title: 'Suporte e implantação',
-    subtitle: 'Acompanhe os chamados enviados pelo botão de bug.',
+    subtitle: 'Acompanhe os chamados e solicitações da operação.',
     logout: widget.logout,
     currentDestination: 'support',
     chatLauncherBottomInset: CoeloSpacing.space20,
@@ -68,10 +68,14 @@ class _SupportPageState extends State<SupportPage> {
     child: AnimatedBuilder(animation: widget.controller, builder: (_, _) => _content(context)),
   );
   Widget _content(BuildContext context) {
+    final theme = Theme.of(context);
+    final isMobileOrTabletSurface =
+        theme.brightness == Brightness.light &&
+        MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
     final tickets = _displayMode == SupportDisplayMode.table
         ? widget.controller.visibleTickets
         : widget.controller.filteredTickets;
-    return Padding(
+    final content = Padding(
       key: const Key('support-page-content'),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: CoeloAdminWorkspaceLayout(
@@ -92,6 +96,13 @@ class _SupportPageState extends State<SupportPage> {
         detailVisible: widget.controller.selectedTicket != null,
       ),
     );
+    if (!isMobileOrTabletSurface) {
+      return content;
+    }
+    return ColoredBox(
+      color: theme.colorScheme.surface,
+      child: content,
+    );
   }
 
   Widget _listing(List<SupportTicket> tickets) {
@@ -106,16 +117,22 @@ class _SupportPageState extends State<SupportPage> {
           ),
           const SizedBox(height: CoeloSpacing.space4),
           Expanded(
-            child: SingleChildScrollView(
-              child: SupportTicketTable(
-                tickets: tickets,
-                teamMembers: widget.controller.teamMembers,
-                selectedTicketId: widget.controller.selectedTicket?.id,
-                onTicketPressed: _open,
-                statusBuilder: _statusMenu,
-                sortColumn: widget.controller.sortColumn,
-                sortAscending: widget.controller.sortAscending,
-                onSort: widget.controller.setSort,
+            child: LayoutBuilder(
+              builder: (context, constraints) => Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: constraints.maxWidth,
+                  child: SupportTicketTable(
+                    tickets: tickets,
+                    teamMembers: widget.controller.teamMembers,
+                    selectedTicketId: widget.controller.selectedTicket?.id,
+                    onTicketPressed: _open,
+                    statusBuilder: _statusMenu,
+                    sortColumn: widget.controller.sortColumn,
+                    sortAscending: widget.controller.sortAscending,
+                    onSort: widget.controller.setSort,
+                  ),
+                ),
               ),
             ),
           ),
@@ -247,6 +264,7 @@ class _SupportPageState extends State<SupportPage> {
   Future<void> _createSupport() async {
     final draft = await showSuperadminBugReportDialog(
       context,
+      dialogTitle: 'Novo chamado',
       currentScreen: 'Suporte e implantação',
       sections: const {
         'Suporte e implantação': ['Chamados', 'Outro'],
@@ -333,16 +351,44 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-  Widget _statusMenu(SupportTicket ticket) => PopupMenuButton<SupportTicketStatus>(
-    key: Key('support-status-${ticket.id}'),
-    tooltip: 'Alterar status de ${ticket.id}',
-    initialValue: ticket.status,
-    onSelected: (status) => _requestStatus(ticket, status),
-    itemBuilder: (_) => [
+  Widget _statusMenu(SupportTicket ticket) => CoeloAdminFlyout<SupportTicketStatus>(
+    itemWidth: 220,
+    alignmentOffset: const Offset(0, CoeloSpacing.space1),
+    items: [
       for (final status in SupportTicketStatus.values)
-        PopupMenuItem(value: status, child: Text(_statusLabel(status))),
+        CoeloAdminFlyoutItem(
+          value: status,
+          label: _statusLabel(status),
+          selected: ticket.status == status,
+          icon: switch (status) {
+            SupportTicketStatus.newRequest => Icons.info_outlined,
+            SupportTicketStatus.inProgress => Icons.construction_outlined,
+            SupportTicketStatus.waitingRequester => Icons.hourglass_empty_rounded,
+            SupportTicketStatus.completed => Icons.check_circle_outline_rounded,
+          },
+        ),
     ],
-    child: _chip(ticket.status),
+    onSelected: (status) => _requestStatus(ticket, status),
+    builder: (_, controller) {
+      final open = () => controller.isOpen ? controller.close() : controller.open();
+      return Semantics(
+        key: Key('support-status-${ticket.id}'),
+        button: true,
+        child: Focus(
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: InkWell(
+              onTap: open,
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              child: Tooltip(
+                message: 'Alterar status de ${ticket.id}',
+                child: _chip(ticket.status),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
   );
 }
 

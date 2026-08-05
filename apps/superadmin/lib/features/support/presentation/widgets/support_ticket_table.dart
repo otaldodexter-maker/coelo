@@ -134,6 +134,7 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
       sortColumnId: _columnId(widget.sortColumn),
       sortAscending: widget.sortAscending,
       onSort: (id) => widget.onSort(_sortColumn(id)),
+      showHorizontalScrollbar: true,
     );
   }
 

@@ -53,7 +53,29 @@ final class _CoeloAdminWorkItemCardState<T extends Object>
     if (data == null) {
       return card;
     }
-    return LongPressDraggable<T>(
+
+    final platform = Theme.of(context).platform;
+    final isTouchPlatform =
+        platform == TargetPlatform.android ||
+        platform == TargetPlatform.iOS ||
+        platform == TargetPlatform.fuchsia;
+
+    if (isTouchPlatform) {
+      return LongPressDraggable<T>(
+        data: data,
+        hitTestBehavior: HitTestBehavior.opaque,
+        feedback:
+            widget.dragFeedback ??
+            Material(
+              color: Colors.transparent,
+              child: SizedBox(width: 320, child: _card(context, interactive: false, elevated: true)),
+            ),
+        childWhenDragging: Opacity(opacity: 0.4, child: card),
+        child: card,
+      );
+    }
+
+    return Draggable<T>(
       data: data,
       hitTestBehavior: HitTestBehavior.opaque,
       feedback:
