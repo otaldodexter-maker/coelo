@@ -306,10 +306,12 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
       children: [
         SizedBox(
           width: width,
-          height: 216,
-          child: CoeloAdminCreateAction(
-            label: 'Criar perfil de cuidado',
-            onPressed: widget.onCreate,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 216),
+            child: CoeloAdminCreateAction(
+              label: 'Criar perfil de cuidado',
+              onPressed: widget.onCreate,
+            ),
           ),
         ),
         for (final item in widget.controller.items)
