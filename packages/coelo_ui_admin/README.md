@@ -36,6 +36,7 @@ Contratos publicos iniciais:
 
 - `CoeloAdminListingToolbar`;
 - `CoeloAdminMultiSelectFilter<T>`;
+- `CoeloAdminMultiSelectField<T>`;
 - `CoeloAdminPagination`;
 - `CoeloAdminCreateAction`;
 - `CoeloAdminTableColumn<T>`;

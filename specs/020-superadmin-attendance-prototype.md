@@ -52,4 +52,4 @@ Testes de repositório, permissões, páginas, sino e rotas; análise estática;
 
 ## Riscos e perguntas abertas
 
-Fixtures não validam RLS nem concorrência. A numeração `020` também é usada por Saúde e Segurança e precisa de decisão documental futura, registrada em `docs/open-questions.md`.
+Fixtures não validam RLS nem concorrência. A numeração `020` também é usada por Saúde e Cuidado e precisa de decisão documental futura, registrada em `docs/open-questions.md`.

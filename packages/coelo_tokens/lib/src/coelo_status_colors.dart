@@ -19,6 +19,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
     required this.onInfo,
     required this.infoContainer,
     required this.onInfoContainer,
+    required this.historyContainer,
+    required this.onHistoryContainer,
   });
 
   static const light = CoeloStatusColors(
@@ -38,6 +40,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
     onInfo: Color(0xFFFFFFFF),
     infoContainer: Color(0xFFE6F4FA),
     onInfoContainer: Color(0xFF064B69),
+    historyContainer: Color(0xFFFCE7F3),
+    onHistoryContainer: Color(0xFF831843),
   );
 
   static const dark = CoeloStatusColors(
@@ -57,6 +61,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
     onInfo: Color(0xFF003546),
     infoContainer: Color(0xFF00506C),
     onInfoContainer: Color(0xFFBEE9FA),
+    historyContainer: Color(0xFF831843),
+    onHistoryContainer: Color(0xFFFCE7F3),
   );
 
   final Color success;
@@ -75,6 +81,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
   final Color onInfo;
   final Color infoContainer;
   final Color onInfoContainer;
+  final Color historyContainer;
+  final Color onHistoryContainer;
 
   @override
   CoeloStatusColors copyWith({
@@ -94,6 +102,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
     Color? onInfo,
     Color? infoContainer,
     Color? onInfoContainer,
+    Color? historyContainer,
+    Color? onHistoryContainer,
   }) {
     return CoeloStatusColors(
       success: success ?? this.success,
@@ -112,6 +122,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
       onInfo: onInfo ?? this.onInfo,
       infoContainer: infoContainer ?? this.infoContainer,
       onInfoContainer: onInfoContainer ?? this.onInfoContainer,
+      historyContainer: historyContainer ?? this.historyContainer,
+      onHistoryContainer: onHistoryContainer ?? this.onHistoryContainer,
     );
   }
 
@@ -138,6 +150,8 @@ final class CoeloStatusColors extends ThemeExtension<CoeloStatusColors> {
       onInfo: Color.lerp(onInfo, other.onInfo, t)!,
       infoContainer: Color.lerp(infoContainer, other.infoContainer, t)!,
       onInfoContainer: Color.lerp(onInfoContainer, other.onInfoContainer, t)!,
+      historyContainer: Color.lerp(historyContainer, other.historyContainer, t)!,
+      onHistoryContainer: Color.lerp(onHistoryContainer, other.onHistoryContainer, t)!,
     );
   }
 }

@@ -51,10 +51,13 @@ import '../../features/groups/data/fake_group_directory_repository.dart';
 import '../../features/groups/presentation/group_directory_page.dart';
 import '../../features/groups/presentation/group_form_page.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
-import '../../features/health_safety/data/demo_health_safety_repository.dart';
-import '../../features/health_safety/presentation/health_safety_controller.dart';
-import '../../features/health_safety/presentation/health_safety_detail_page.dart';
-import '../../features/health_safety/presentation/health_safety_directory_page.dart';
+import '../../features/health_care/data/demo_health_care_repository.dart';
+import '../../features/health_care/presentation/health_care_controller.dart';
+import '../../features/health_care/presentation/health_care_detail_page.dart';
+import '../../features/health_care/presentation/health_care_directory_page.dart';
+import '../../features/health_care/presentation/health_care_form_pages.dart';
+import '../../features/health_care/presentation/health_medication_plan_detail_page.dart';
+import '../../features/health_care/presentation/health_medication_plan_directory_page.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
@@ -151,7 +154,7 @@ GoRouter createSuperadminRouter({
   final dailyRoutineRepository = InMemoryDailyRoutineRepository.seeded(
     activities: attendanceActivities,
   );
-  final healthSafetyRepository = DemoHealthSafetyRepository();
+  final healthCareRepository = DemoHealthCareRepository();
   final accessProfilePreviewRepository = FakeAccessProfileRepository();
   final peoplePreviewRepository = FakePersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
@@ -710,24 +713,94 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.healthSafety,
-            name: SuperadminRoutes.healthSafetyName,
-            builder: (context, state) => HealthSafetyDirectoryPage(
-              controller: HealthSafetyController(healthSafetyRepository),
+            path: SuperadminRoutes.healthCareProfiles,
+            name: SuperadminRoutes.healthCareProfilesName,
+            builder: (context, state) => HealthCareProfileDirectoryPage(
+              controller: HealthCareController(healthCareRepository),
               logout: logout,
+              onCreate: () => context.goNamed(SuperadminRoutes.healthCareProfileCreateName),
               onChildSelected: (childId) => context.pushNamed(
-                SuperadminRoutes.healthSafetyDetailName,
+                SuperadminRoutes.healthCareProfileDetailName,
                 pathParameters: {'childId': childId},
               ),
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.healthSafetyDetail,
-            name: SuperadminRoutes.healthSafetyDetailName,
-            builder: (context, state) => HealthSafetyDetailPage(
-              controller: HealthSafetyController(healthSafetyRepository),
+            path: SuperadminRoutes.healthCareProfileCreate,
+            name: SuperadminRoutes.healthCareProfileCreateName,
+            builder: (context, state) => HealthCareProfileFormPage(
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+              onSaved: () async => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthCareProfileDetail,
+            name: SuperadminRoutes.healthCareProfileDetailName,
+            builder: (context, state) => HealthCareProfileDetailPage(
+              controller: HealthCareController(healthCareRepository),
               childId: state.pathParameters['childId']!,
               logout: logout,
+              onEditCareProfile: () => context.goNamed(
+                SuperadminRoutes.healthCareProfileEditName,
+                pathParameters: {'childId': state.pathParameters['childId']!},
+              ),
+              onMedicationPlans: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthCareProfileEdit,
+            name: SuperadminRoutes.healthCareProfileEditName,
+            builder: (context, state) => HealthCareProfileFormPage(
+              logout: logout,
+              childId: state.pathParameters['childId']!,
+              onCancel: () => context.pop(),
+              onSaved: () async => context.pop(),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthMedicationPlans,
+            name: SuperadminRoutes.healthMedicationPlansName,
+            builder: (context, state) => HealthMedicationPlanDirectoryPage(
+              controller: HealthCareController(healthCareRepository),
+              logout: logout,
+              onCreate: () => context.goNamed(SuperadminRoutes.healthMedicationPlanCreateName),
+              onPlanSelected: (medicationId) => context.pushNamed(
+                SuperadminRoutes.healthMedicationPlanDetailName,
+                pathParameters: {'medicationId': medicationId},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthMedicationPlanCreate,
+            name: SuperadminRoutes.healthMedicationPlanCreateName,
+            builder: (context, state) => HealthMedicationPlanFormPage(
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+              onSaved: () async => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthMedicationPlanDetail,
+            name: SuperadminRoutes.healthMedicationPlanDetailName,
+            builder: (context, state) => HealthMedicationPlanDetailPage(
+              controller: HealthCareController(healthCareRepository),
+              medicationId: state.pathParameters['medicationId']!,
+              logout: logout,
+              onEdit: () => context.goNamed(
+                SuperadminRoutes.healthMedicationPlanEditName,
+                pathParameters: {'medicationId': state.pathParameters['medicationId']!},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.healthMedicationPlanEdit,
+            name: SuperadminRoutes.healthMedicationPlanEditName,
+            builder: (context, state) => HealthMedicationPlanFormPage(
+              logout: logout,
+              medicationId: state.pathParameters['medicationId']!,
+              onCancel: () => context.pop(),
+              onSaved: () async => context.pop(),
             ),
           ),
           GoRoute(
@@ -1394,24 +1467,95 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.devHealthSafety,
-            name: SuperadminRoutes.devHealthSafetyName,
-            builder: (context, state) => HealthSafetyDirectoryPage(
-              controller: HealthSafetyController(healthSafetyRepository),
+            path: SuperadminRoutes.devHealthCareProfiles,
+            name: SuperadminRoutes.devHealthCareProfilesName,
+            builder: (context, state) => HealthCareProfileDirectoryPage(
+              controller: HealthCareController(healthCareRepository),
               logout: _previewLogout,
+              onCreate: () => context.goNamed(SuperadminRoutes.devHealthCareProfileCreateName),
               onChildSelected: (childId) => context.pushNamed(
-                SuperadminRoutes.devHealthSafetyDetailName,
+                SuperadminRoutes.devHealthCareProfileDetailName,
                 pathParameters: {'childId': childId},
               ),
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.devHealthSafetyDetail,
-            name: SuperadminRoutes.devHealthSafetyDetailName,
-            builder: (context, state) => HealthSafetyDetailPage(
-              controller: HealthSafetyController(healthSafetyRepository),
+            path: SuperadminRoutes.devHealthCareProfileCreate,
+            name: SuperadminRoutes.devHealthCareProfileCreateName,
+            builder: (context, state) => HealthCareProfileFormPage(
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
+              onSaved: () async => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthCareProfileDetail,
+            name: SuperadminRoutes.devHealthCareProfileDetailName,
+            builder: (context, state) => HealthCareProfileDetailPage(
+              controller: HealthCareController(healthCareRepository),
               childId: state.pathParameters['childId']!,
               logout: _previewLogout,
+              onEditCareProfile: () => context.goNamed(
+                SuperadminRoutes.devHealthCareProfileEditName,
+                pathParameters: {'childId': state.pathParameters['childId']!},
+              ),
+              onMedicationPlans: () =>
+                  context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthCareProfileEdit,
+            name: SuperadminRoutes.devHealthCareProfileEditName,
+            builder: (context, state) => HealthCareProfileFormPage(
+              logout: _previewLogout,
+              childId: state.pathParameters['childId']!,
+              onCancel: () => context.pop(),
+              onSaved: () async => context.pop(),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthMedicationPlans,
+            name: SuperadminRoutes.devHealthMedicationPlansName,
+            builder: (context, state) => HealthMedicationPlanDirectoryPage(
+              controller: HealthCareController(healthCareRepository),
+              logout: _previewLogout,
+              onCreate: () => context.goNamed(SuperadminRoutes.devHealthMedicationPlanCreateName),
+              onPlanSelected: (medicationId) => context.pushNamed(
+                SuperadminRoutes.devHealthMedicationPlanDetailName,
+                pathParameters: {'medicationId': medicationId},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthMedicationPlanCreate,
+            name: SuperadminRoutes.devHealthMedicationPlanCreateName,
+            builder: (context, state) => HealthMedicationPlanFormPage(
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
+              onSaved: () async => context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthMedicationPlanDetail,
+            name: SuperadminRoutes.devHealthMedicationPlanDetailName,
+            builder: (context, state) => HealthMedicationPlanDetailPage(
+              controller: HealthCareController(healthCareRepository),
+              medicationId: state.pathParameters['medicationId']!,
+              logout: _previewLogout,
+              onEdit: () => context.goNamed(
+                SuperadminRoutes.devHealthMedicationPlanEditName,
+                pathParameters: {'medicationId': state.pathParameters['medicationId']!},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devHealthMedicationPlanEdit,
+            name: SuperadminRoutes.devHealthMedicationPlanEditName,
+            builder: (context, state) => HealthMedicationPlanFormPage(
+              logout: _previewLogout,
+              medicationId: state.pathParameters['medicationId']!,
+              onCancel: () => context.pop(),
+              onSaved: () async => context.pop(),
             ),
           ),
           GoRoute(
@@ -2116,8 +2260,11 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/daily-routine')) {
     return 'daily-routine';
   }
-  if (location.startsWith('/health-safety')) {
-    return 'health-safety';
+  if (location.startsWith('/health-care/medication-plans')) {
+    return 'health-medication-plans';
+  }
+  if (location.startsWith('/health-care/profiles')) {
+    return 'health-care-profiles';
   }
   if (location.startsWith('/people')) {
     return 'people';
@@ -2152,8 +2299,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.attendanceName);
     case 'daily-routine':
       context.goNamed(SuperadminRoutes.dailyRoutineName);
-    case 'health-safety':
-      context.goNamed(SuperadminRoutes.healthSafetyName);
+    case 'health-care-profiles':
+      context.goNamed(SuperadminRoutes.healthCareProfilesName);
+    case 'health-medication-plans':
+      context.goNamed(SuperadminRoutes.healthMedicationPlansName);
     case 'people':
       context.goNamed(SuperadminRoutes.peopleName);
     case 'profiles':
@@ -2187,6 +2336,10 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devAttendanceName);
     case 'daily-routine':
       context.goNamed(SuperadminRoutes.devDailyRoutineName);
+    case 'health-care-profiles':
+      context.goNamed(SuperadminRoutes.devHealthCareProfilesName);
+    case 'health-medication-plans':
+      context.goNamed(SuperadminRoutes.devHealthMedicationPlansName);
     case 'people':
       context.goNamed(SuperadminRoutes.devPeopleName);
     case 'profiles':

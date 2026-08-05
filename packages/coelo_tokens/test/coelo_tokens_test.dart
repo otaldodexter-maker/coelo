@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,6 +61,28 @@ void main() {
       expect(status?.successContainer, const Color(0xFFE9F7EF));
       expect(status?.warning, const Color(0xFF8A4F00));
       expect(status?.infoContainer, const Color(0xFFE6F4FA));
+      expect(status?.historyContainer, const Color(0xFFFCE7F3));
+      expect(status?.onHistoryContainer, const Color(0xFF831843));
+    });
+
+    test('history semantic colors meet WCAG AA contrast', () {
+      for (final status in [CoeloStatusColors.light, CoeloStatusColors.dark]) {
+        expect(
+          _contrastRatio(status.historyContainer, status.onHistoryContainer),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    });
+
+    test('copies and interpolates history semantic colors', () {
+      final light = CoeloTheme.light.extension<CoeloStatusColors>()!;
+      final dark = CoeloTheme.dark.extension<CoeloStatusColors>()!;
+
+      expect(light.copyWith(historyContainer: Colors.pink).historyContainer, Colors.pink);
+      expect(
+        light.lerp(dark, 0.5).onHistoryContainer,
+        Color.lerp(light.onHistoryContainer, dark.onHistoryContainer, 0.5),
+      );
     });
 
     test('exposes approved action and overlay aliases in light and dark themes', () {
@@ -165,4 +189,10 @@ void main() {
       expect(CoeloBreakpoints.expanded.columns, 12);
     });
   });
+}
+
+double _contrastRatio(Color first, Color second) {
+  final lighter = math.max(first.computeLuminance(), second.computeLuminance());
+  final darker = math.min(first.computeLuminance(), second.computeLuminance());
+  return (lighter + 0.05) / (darker + 0.05);
 }

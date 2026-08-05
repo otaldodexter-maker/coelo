@@ -970,7 +970,8 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
   nunca grafite sobre faixa cinza retangular.
 - O toggle cards/tabela é um controle segmentado único, não dois botões soltos.
   Cada segmento mede 64 × 48 px e preserva nome acessível. O flyout de visões
-  reutiliza `CoeloAdminFlyout`; não compor `MenuAnchor` local na feature.
+  reutiliza `CoeloAdminFlyout`; não compor `MenuAnchor` local na feature. Com
+  somente `Agrupado`, o segmento seleciona a tabela diretamente e não abre flyout.
 - Clicar diretamente em Tabela ou ativá-la com Enter/Espaço abre a visão
   `Agrupado`. Quando o diretório possui detalhes hierárquicos, o flyout abre por
   hover no segmento inteiro, pressão longa em toda a área de 64 × 48 px ou
@@ -1131,8 +1132,10 @@ proposta com essa matriz antes do código.
   checkbox não recebe hover, splash ou fundo próprio.
 - Single-select não usa checkbox; seleção, hover e foco usam
   `colorScheme.primaryContainer` no fundo e `colorScheme.primary` no conteúdo.
-- `CoeloAdminMultiSelectFilter` é a referência de implementação para o
-  multi-select administrativo; a tela de Instituições é a referência canônica
+- `CoeloAdminMultiSelectFilter` é a referência de implementação para filtros
+  múltiplos. Em formulários, usar `CoeloAdminMultiSelectField<T>`, com
+  rascunho, busca opcional, Limpar/Aplicar, teclado, `Esc` e largura do
+  gatilho. A tela de Instituições é a referência canônica
   de comportamento e o popup de Bug é a referência do single-select.
 
 ### Acessibilidade e referências canônicas

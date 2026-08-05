@@ -1,48 +1,48 @@
 import 'package:flutter/foundation.dart';
 
-import '../data/demo_health_safety_repository.dart';
-import '../domain/health_safety.dart';
+import '../data/demo_health_care_repository.dart';
+import '../domain/health_care.dart';
 
-enum HealthSafetyLoadState { loading, ready, empty, noResults, error, unauthorized, minimized }
+enum HealthCareLoadState { loading, ready, empty, noResults, error, unauthorized, minimized }
 
-enum HealthSafetyDirectoryDisplay { cards, table }
+enum HealthCareDirectoryDisplay { cards, table }
 
-final class HealthSafetyController extends ChangeNotifier {
-  HealthSafetyController(this.repository, {HealthSafetyActor? actor})
+final class HealthCareController extends ChangeNotifier {
+  HealthCareController(this.repository, {HealthCareActor? actor})
     : _actor =
           actor ??
-          HealthSafetyActor(
+          HealthCareActor(
             id: 'owner-demo',
-            profile: DemoHealthSafetyProfile.owner,
+            profile: DemoHealthCareProfile.owner,
             authorizedChildIds: const {'child-demo-a', 'child-demo-b'},
           );
 
-  final DemoHealthSafetyRepository repository;
-  final HealthSafetyActor _actor;
-  HealthSafetyDirectoryQuery _query = const HealthSafetyDirectoryQuery(pageSize: 11);
-  HealthSafetyDirectoryPage? _page;
-  HealthSafetyChild? _detail;
-  HealthSafetyLoadState _state = HealthSafetyLoadState.loading;
-  HealthSafetyDirectoryDisplay _display = HealthSafetyDirectoryDisplay.cards;
+  final DemoHealthCareRepository repository;
+  final HealthCareActor _actor;
+  HealthCareDirectoryQuery _query = const HealthCareDirectoryQuery(pageSize: 11);
+  HealthCareDirectoryPage? _page;
+  HealthCareChild? _detail;
+  HealthCareLoadState _state = HealthCareLoadState.loading;
+  HealthCareDirectoryDisplay _display = HealthCareDirectoryDisplay.cards;
   Object? _error;
 
-  DemoHealthSafetyProfile get profile => _actor.profile;
-  HealthSafetyDirectoryQuery get query => _query;
-  HealthSafetyDirectoryPage? get page => _page;
-  List<HealthSafetyChildSummary> get items => _page?.items ?? const [];
-  HealthSafetyChild? get detail => _detail;
-  HealthSafetyLoadState get state => _state;
-  HealthSafetyDirectoryDisplay get display => _display;
+  DemoHealthCareProfile get profile => _actor.profile;
+  HealthCareDirectoryQuery get query => _query;
+  HealthCareDirectoryPage? get page => _page;
+  List<HealthCareChildSummary> get items => _page?.items ?? const [];
+  HealthCareChild? get detail => _detail;
+  HealthCareLoadState get state => _state;
+  HealthCareDirectoryDisplay get display => _display;
   Object? get error => _error;
-  bool get canReadSensitive => _actor.can(HealthSafetyCapability.sensitiveRead);
-  bool get canEdit => _actor.can(HealthSafetyCapability.recordCreateEdit);
+  bool get canReadSensitive => _actor.can(HealthCareCapability.sensitiveRead);
+  bool get canEdit => _actor.can(HealthCareCapability.recordCreateEdit);
   bool get isReadOnly => !canEdit;
   int get totalPages {
     final total = _page?.totalCount ?? 0;
     return total == 0 ? 1 : (total / _query.pageSize).ceil();
   }
 
-  HealthSafetyActor get actor => _actor;
+  HealthCareActor get actor => _actor;
   Set<String> get availableUnitIds => _query.institutionIds.isEmpty
       ? const {}
       : _unitInstitution.entries
@@ -57,19 +57,19 @@ final class HealthSafetyController extends ChangeNotifier {
             .toSet();
 
   Future<void> load() async {
-    _state = HealthSafetyLoadState.loading;
+    _state = HealthCareLoadState.loading;
     _error = null;
     notifyListeners();
     try {
       _page = await repository.fetchDirectory(_query, actor: actor);
-      _state = profile == DemoHealthSafetyProfile.minimized
-          ? HealthSafetyLoadState.minimized
+      _state = profile == DemoHealthCareProfile.minimized
+          ? HealthCareLoadState.minimized
           : (_page!.items.isEmpty
-                ? (_hasFilters ? HealthSafetyLoadState.noResults : HealthSafetyLoadState.empty)
-                : HealthSafetyLoadState.ready);
+                ? (_hasFilters ? HealthCareLoadState.noResults : HealthCareLoadState.empty)
+                : HealthCareLoadState.ready);
     } on Object catch (error) {
       _error = error;
-      _state = HealthSafetyLoadState.error;
+      _state = HealthCareLoadState.error;
     }
     notifyListeners();
   }
@@ -77,32 +77,32 @@ final class HealthSafetyController extends ChangeNotifier {
   Future<void> loadDetail(String childId) async {
     _detail = null;
     if (!canReadSensitive) {
-      _state = HealthSafetyLoadState.minimized;
+      _state = HealthCareLoadState.minimized;
       notifyListeners();
       return;
     }
-    _state = HealthSafetyLoadState.loading;
+    _state = HealthCareLoadState.loading;
     notifyListeners();
     try {
       _detail = await repository.findChild(childId, actor: actor);
-      _state = _detail == null ? HealthSafetyLoadState.empty : HealthSafetyLoadState.ready;
+      _state = _detail == null ? HealthCareLoadState.empty : HealthCareLoadState.ready;
     } on StateError catch (error) {
       _error = error;
-      _state = HealthSafetyLoadState.unauthorized;
+      _state = HealthCareLoadState.unauthorized;
     } on Object catch (error) {
       _error = error;
-      _state = HealthSafetyLoadState.error;
+      _state = HealthCareLoadState.error;
     }
     notifyListeners();
   }
 
-  Future<void> setProfile(DemoHealthSafetyProfile value) async {
+  Future<void> setProfile(DemoHealthCareProfile value) async {
     if (value != profile) throw StateError('The authenticated actor profile cannot be changed.');
   }
 
-  void setDisplay(HealthSafetyDirectoryDisplay value) {
+  void setDisplay(HealthCareDirectoryDisplay value) {
     _display = value;
-    final size = value == HealthSafetyDirectoryDisplay.cards ? 11 : 8;
+    final size = value == HealthCareDirectoryDisplay.cards ? 11 : 8;
     _query = _copy(page: 0, pageSize: size);
     notifyListeners();
     load();
@@ -151,14 +151,14 @@ final class HealthSafetyController extends ChangeNotifier {
     return _replace(_copy(groupOrActivityIds: allowed, page: 0));
   }
 
-  Future<void> setStatuses(Set<HealthSafetyOperationalStatus> value) =>
+  Future<void> setStatuses(Set<HealthCareOperationalStatus> value) =>
       _replace(_copy(operationalStatuses: value, page: 0));
   Future<void> setDoseSituations(Set<HealthMedicationDoseSituation> value) =>
       _replace(_copy(doseSituations: value, page: 0));
   Future<void> setPage(int value) => _replace(_copy(page: value));
   Future<void> setPageSize(int value) => _replace(_copy(page: 0, pageSize: value));
 
-  Future<void> _replace(HealthSafetyDirectoryQuery value) async {
+  Future<void> _replace(HealthCareDirectoryQuery value) async {
     _query = value;
     await load();
   }
@@ -173,18 +173,18 @@ final class HealthSafetyController extends ChangeNotifier {
       _query.operationalStatuses.isNotEmpty ||
       _query.doseSituations.isNotEmpty;
 
-  HealthSafetyDirectoryQuery _copy({
+  HealthCareDirectoryQuery _copy({
     String? search,
     Set<String>? personIds,
     Set<String>? childIds,
     Set<String>? institutionIds,
     Set<String>? unitIds,
     Set<String>? groupOrActivityIds,
-    Set<HealthSafetyOperationalStatus>? operationalStatuses,
+    Set<HealthCareOperationalStatus>? operationalStatuses,
     Set<HealthMedicationDoseSituation>? doseSituations,
     int? page,
     int? pageSize,
-  }) => HealthSafetyDirectoryQuery(
+  }) => HealthCareDirectoryQuery(
     search: search ?? _query.search,
     personIds: personIds ?? _query.personIds,
     childIds: childIds ?? _query.childIds,
@@ -295,7 +295,7 @@ final class HealthAllergyCreateCommand {
 
   final String childId;
   final String label;
-  final HealthSafetyAllergyType type;
+  final HealthCareAllergyType type;
 }
 
 final class HealthMedicationCorrectionCommand {
@@ -342,6 +342,6 @@ final class HealthCareProfileUpdateCommand {
     }
   }
   final String childId;
-  final List<HealthSafetyCareProfileItem> items;
+  final List<HealthCareProfileItem> items;
   final String justification;
 }

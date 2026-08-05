@@ -391,6 +391,12 @@ final class _SemanticColorsFoundation extends StatelessWidget {
         color: status.infoContainer,
         on: status.onInfoContainer,
       ),
+      (
+        name: 'Hist\u00f3rico',
+        token: 'history.container',
+        color: status.historyContainer,
+        on: status.onHistoryContainer,
+      ),
     ];
     return Wrap(
       spacing: CoeloSpacing.space3,

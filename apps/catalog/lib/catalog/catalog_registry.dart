@@ -16,6 +16,7 @@ const catalogRegistryManifestJson = r'''
   "core.state-panel": [],
   "admin.listing-toolbar": [],
   "admin.multi-select-filter": [],
+  "admin.multi-select-field": [],
   "admin.single-select-field": [],
   "admin.pagination": [],
   "admin.create-action": ["tile", "banner"],
@@ -57,6 +58,7 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'core.state-panel': (_) => const _StatePanelExample(),
     'admin.listing-toolbar': (_) => const _ListingToolbarExample(),
     'admin.multi-select-filter': (_) => const _MultiSelectFilterExample(),
+    'admin.multi-select-field': (_) => const _MultiSelectFieldExample(),
     'admin.single-select-field': (_) => const _SingleSelectFieldExample(),
     'admin.pagination': (_) => const _PaginationExample(),
     'admin.create-action': (_) => const _CreateActionExample(),
@@ -230,6 +232,34 @@ final class _MultiSelectFilterExampleState extends State<_MultiSelectFilterExamp
       searchHintText: 'Buscar status',
     );
   }
+}
+
+final class _MultiSelectFieldExample extends StatefulWidget {
+  const _MultiSelectFieldExample();
+
+  @override
+  State<_MultiSelectFieldExample> createState() => _MultiSelectFieldExampleState();
+}
+
+final class _MultiSelectFieldExampleState extends State<_MultiSelectFieldExample> {
+  Set<String> _selected = const {'Sinais de desconforto'};
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 360,
+    child: CoeloAdminMultiSelectField<String>(
+      label: 'Perfil de cuidado',
+      options: const [
+        'Sinais de desconforto',
+        'Apoio na comunica\u00e7\u00e3o',
+        'Adapta\u00e7\u00e3o de mobilidade',
+      ],
+      selectedValues: _selected,
+      optionLabel: (option) => option,
+      onChanged: (values) => setState(() => _selected = values),
+      searchHintText: 'Buscar op\u00e7\u00e3o',
+    ),
+  );
 }
 
 final class _SingleSelectFieldExample extends StatefulWidget {

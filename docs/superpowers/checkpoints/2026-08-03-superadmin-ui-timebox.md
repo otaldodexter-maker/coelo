@@ -106,7 +106,7 @@ updated_at: "2026-08-03"
 ### Pendente
 
 - A análise global conclui com exit code 0 e oito avisos informativos
-  preexistentes/concorrentes em `health_safety`, fora deste lote; a análise focada
+  preexistentes/concorrentes em `health_care`, fora deste lote; a análise focada
   dos arquivos desta revisão permanece limpa.
 
 ### Testes
@@ -119,7 +119,7 @@ updated_at: "2026-08-03"
 - Suporte, Auth e Catálogo: 64/64 GREEN nos lotes focados; correções de integração
   de Suporte/Catálogo repetidas com 16/16 GREEN.
 - `dart analyze` global: exit code 0, somente oito infos concorrentes de
-  `health_safety`; análise focada do lote e do pacote de tabela: sem issues.
+  `health_care`; análise focada do lote e do pacote de tabela: sem issues.
 - Gates Coelo UI de índice e superfícies: PASS; gate de memória Coelo: PASS com
   `no-op`, pois nenhuma nova regra de produto ou permissão foi criada.
 - O gate de sincronização do Catálogo atualizou o fingerprint da tabela, mas a

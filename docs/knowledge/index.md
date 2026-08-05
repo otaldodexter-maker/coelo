@@ -21,8 +21,12 @@ review_owner: Coelo Owner
 | team | Superadmin / Pessoas | [Diretório de Pessoas do Superadmin](team/superadmin-people-directory.md) | validated | `specs/019-superadmin-people-directory.md` |
 | team | Superadmin / Unidades | [Diretório de unidades do Superadmin](team/superadmin-unit-directory.md) | validated | `decisions/0016-unit-type-and-plan-inheritance.md` |
 | team | Superadmin / Atividades | [Diretório de atividades do Superadmin](team/superadmin-activity-directory.md) | validated | `docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md` |
+| team | Superadmin / Atividades | [Wizard de atividade do Superadmin](team/superadmin-activity-form-wizard.md) | validated | `docs/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md` |
+| team | Produto / Nomenclatura | [Happens é o nome do feed privado](team/happens-product-naming.md) | validated | `decisions/0018-happens-product-name.md` |
 | team | Superadmin / Perfis e permissões | [Perfis e Permissões do Superadmin](team/superadmin-access-profiles.md) | validated | `specs/018-profiles-permissions-superadmin.md`; `decisions/0017-access-profile-governance.md` |
 | team | Suporte / Benchmark externo | [Benchmark de suporte e stories do ClassDojo](team/classdojo-support-benchmark.md) | validated | `docs/product/competitive-map.md` |
 
-As pastas `admin/` e `users/` serão criadas somente quando houver conteúdo
-válido e aprovado para essas audiências.
+| team | Superadmin / Saúde e Cuidado | [Saúde e Cuidado centrados na criança](team/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
+| admin | Saúde e Cuidado | [Operação de Saúde e Cuidado](admin/health-care.md) | validated | `specs/020-superadmin-health-care.md` |
+
+A pasta `users/` será criada somente quando houver conteúdo válido e aprovado para essa audiência.

@@ -1,5 +1,5 @@
 /// Local-only health and safety demonstration domain. It has no backend contract.
-enum HealthSafetyCapability {
+enum HealthCareCapability {
   sensitiveRead,
   clinicalReview,
   notifications,
@@ -12,25 +12,25 @@ enum HealthSafetyCapability {
   recordInactivate,
 }
 
-enum DemoHealthSafetyProfile { owner, sensitiveReader, minimized }
+enum DemoHealthCareProfile { owner, sensitiveReader, minimized }
 
-extension DemoHealthSafetyProfileCapabilities on DemoHealthSafetyProfile {
-  Set<HealthSafetyCapability> get capabilities => switch (this) {
-    DemoHealthSafetyProfile.owner => const {
-      HealthSafetyCapability.sensitiveRead,
-      HealthSafetyCapability.auditRead,
-      HealthSafetyCapability.exceptionalCorrection,
-      HealthSafetyCapability.recordCreateEdit,
-      HealthSafetyCapability.recordInactivate,
+extension DemoHealthCareProfileCapabilities on DemoHealthCareProfile {
+  Set<HealthCareCapability> get capabilities => switch (this) {
+    DemoHealthCareProfile.owner => const {
+      HealthCareCapability.sensitiveRead,
+      HealthCareCapability.auditRead,
+      HealthCareCapability.exceptionalCorrection,
+      HealthCareCapability.recordCreateEdit,
+      HealthCareCapability.recordInactivate,
     },
-    DemoHealthSafetyProfile.sensitiveReader => const {HealthSafetyCapability.sensitiveRead},
-    DemoHealthSafetyProfile.minimized => const {},
+    DemoHealthCareProfile.sensitiveReader => const {HealthCareCapability.sensitiveRead},
+    DemoHealthCareProfile.minimized => const {},
   };
 
-  bool can(HealthSafetyCapability capability) => capabilities.contains(capability);
+  bool can(HealthCareCapability capability) => capabilities.contains(capability);
 }
 
-enum HealthSafetyOperationalStatus { active, pending, inactive }
+enum HealthCareOperationalStatus { active, implementation, inactive }
 
 enum HealthMedicationReviewStatus {
   requested,
@@ -57,9 +57,13 @@ enum HealthMedicationDoseResult { administered, notAdministered, refused }
 
 enum HealthMedicationClaimStatus { claimed, conflict, released }
 
-enum HealthSafetyAllergyType { medication, food, restriction, other }
+enum HealthCareAllergyType { medication, food, restriction, other }
 
-enum HealthSafetyAcknowledgementSubject { medication, allergyOrRestriction, careProfile }
+enum HealthCareAllergyStatus { active, monitoring, history }
+
+enum HealthCareEpisodeSeverity { mild, moderate, severe }
+
+enum HealthCareAcknowledgementSubject { medication, allergyOrRestriction, careProfile }
 
 enum HealthMedicationPolicyPhase {
   scheduled,
@@ -70,7 +74,7 @@ enum HealthMedicationPolicyPhase {
   escalated,
 }
 
-enum HealthSafetyFixtureScenario {
+enum HealthCareFixtureScenario {
   multiInstitutionChild,
   prescriptionAndDispensing,
   multipleRecipients,
@@ -87,8 +91,8 @@ enum HealthSafetyFixtureScenario {
   remindersAndEscalation,
 }
 
-final class HealthSafetyTimeOfDay {
-  HealthSafetyTimeOfDay(this.hour, this.minute) {
+final class HealthCareTimeOfDay {
+  HealthCareTimeOfDay(this.hour, this.minute) {
     if (hour < 0 || hour > 23) throw ArgumentError.value(hour, 'hour');
     if (minute < 0 || minute > 59) throw ArgumentError.value(minute, 'minute');
   }
@@ -96,8 +100,8 @@ final class HealthSafetyTimeOfDay {
   final int minute;
 }
 
-final class HealthSafetyContextLink {
-  const HealthSafetyContextLink({
+final class HealthCareContextLink {
+  const HealthCareContextLink({
     required this.institutionId,
     this.unitId,
     this.groupOrActivityId,
@@ -111,37 +115,37 @@ final class HealthSafetyContextLink {
   final bool active;
 }
 
-final class HealthSafetyActor {
-  HealthSafetyActor({
+final class HealthCareActor {
+  HealthCareActor({
     required this.id,
     required this.profile,
     this.institutionId,
     Set<String> authorizedChildIds = const {},
     Set<String> responsibleInstitutionIds = const {},
-    Set<HealthSafetyCapability> contextualCapabilities = const {},
+    Set<HealthCareCapability> contextualCapabilities = const {},
   }) : authorizedChildIds = Set.unmodifiable(authorizedChildIds),
        responsibleInstitutionIds = Set.unmodifiable(responsibleInstitutionIds),
        contextualCapabilities = Set.unmodifiable(contextualCapabilities);
 
   final String id;
-  final DemoHealthSafetyProfile profile;
+  final DemoHealthCareProfile profile;
   final String? institutionId;
   final Set<String> authorizedChildIds;
   final Set<String> responsibleInstitutionIds;
-  final Set<HealthSafetyCapability> contextualCapabilities;
+  final Set<HealthCareCapability> contextualCapabilities;
 
-  bool can(HealthSafetyCapability capability) {
+  bool can(HealthCareCapability capability) {
     const ownerOnly = {
-      HealthSafetyCapability.exceptionalCorrection,
-      HealthSafetyCapability.recordCreateEdit,
-      HealthSafetyCapability.recordInactivate,
+      HealthCareCapability.exceptionalCorrection,
+      HealthCareCapability.recordCreateEdit,
+      HealthCareCapability.recordInactivate,
     };
-    if (ownerOnly.contains(capability)) return profile == DemoHealthSafetyProfile.owner;
+    if (ownerOnly.contains(capability)) return profile == DemoHealthCareProfile.owner;
     return profile.can(capability) || contextualCapabilities.contains(capability);
   }
 
-  bool canReadDetail(HealthSafetyChild child) {
-    if (!can(HealthSafetyCapability.sensitiveRead) || !authorizedChildIds.contains(child.id)) {
+  bool canReadDetail(HealthCareChild child) {
+    if (!can(HealthCareCapability.sensitiveRead) || !authorizedChildIds.contains(child.id)) {
       return false;
     }
     return child.links.any(
@@ -156,20 +160,20 @@ final class HealthSafetyActor {
       institutionId == institution && responsibleInstitutionIds.contains(institution);
 }
 
-final class HealthSafetyChild {
-  HealthSafetyChild({
+final class HealthCareChild {
+  HealthCareChild({
     required this.id,
     required this.personId,
     required this.displayName,
     required this.operationalStatus,
-    List<HealthSafetyContextLink> links = const [],
+    List<HealthCareContextLink> links = const [],
     List<HealthMedication> medications = const [],
     List<HealthMedicationDose> doses = const [],
-    List<HealthSafetyAllergy> allergies = const [],
-    List<HealthSafetyCareProfileItem> careProfile = const [],
-    List<HealthSafetyAcknowledgement> acknowledgements = const [],
-    List<HealthSafetyNotification> notifications = const [],
-    List<HealthSafetyAuditEvent> auditEvents = const [],
+    List<HealthCareAllergy> allergies = const [],
+    List<HealthCareProfileItem> careProfile = const [],
+    List<HealthCareAcknowledgement> acknowledgements = const [],
+    List<HealthCareNotification> notifications = const [],
+    List<HealthCareAuditEvent> auditEvents = const [],
   }) : links = List.unmodifiable(links),
        medications = List.unmodifiable(medications),
        doses = List.unmodifiable(doses),
@@ -182,25 +186,25 @@ final class HealthSafetyChild {
   final String id;
   final String personId;
   final String displayName;
-  final HealthSafetyOperationalStatus operationalStatus;
-  final List<HealthSafetyContextLink> links;
+  final HealthCareOperationalStatus operationalStatus;
+  final List<HealthCareContextLink> links;
   final List<HealthMedication> medications;
   final List<HealthMedicationDose> doses;
-  final List<HealthSafetyAllergy> allergies;
-  final List<HealthSafetyCareProfileItem> careProfile;
-  final List<HealthSafetyAcknowledgement> acknowledgements;
-  final List<HealthSafetyNotification> notifications;
-  final List<HealthSafetyAuditEvent> auditEvents;
+  final List<HealthCareAllergy> allergies;
+  final List<HealthCareProfileItem> careProfile;
+  final List<HealthCareAcknowledgement> acknowledgements;
+  final List<HealthCareNotification> notifications;
+  final List<HealthCareAuditEvent> auditEvents;
 
-  HealthSafetyChild copyWith({
+  HealthCareChild copyWith({
     List<HealthMedication>? medications,
     List<HealthMedicationDose>? doses,
-    List<HealthSafetyAllergy>? allergies,
-    List<HealthSafetyCareProfileItem>? careProfile,
-    List<HealthSafetyAcknowledgement>? acknowledgements,
-    List<HealthSafetyNotification>? notifications,
-    List<HealthSafetyAuditEvent>? auditEvents,
-  }) => HealthSafetyChild(
+    List<HealthCareAllergy>? allergies,
+    List<HealthCareProfileItem>? careProfile,
+    List<HealthCareAcknowledgement>? acknowledgements,
+    List<HealthCareNotification>? notifications,
+    List<HealthCareAuditEvent>? auditEvents,
+  }) => HealthCareChild(
     id: id,
     personId: personId,
     displayName: displayName,
@@ -216,8 +220,8 @@ final class HealthSafetyChild {
   );
 }
 
-final class HealthSafetyChildSummary {
-  const HealthSafetyChildSummary({
+final class HealthCareChildSummary {
+  const HealthCareChildSummary({
     required this.id,
     required this.personId,
     required this.displayName,
@@ -227,12 +231,12 @@ final class HealthSafetyChildSummary {
     required this.pendingAcknowledgementCount,
   });
 
-  factory HealthSafetyChildSummary.fromChild(
-    HealthSafetyChild child, {
-    required DemoHealthSafetyProfile profile,
+  factory HealthCareChildSummary.fromChild(
+    HealthCareChild child, {
+    required DemoHealthCareProfile profile,
   }) {
-    final minimized = profile == DemoHealthSafetyProfile.minimized;
-    return HealthSafetyChildSummary(
+    final minimized = profile == DemoHealthCareProfile.minimized;
+    return HealthCareChildSummary(
       id: child.id,
       personId: minimized ? null : child.personId,
       displayName: minimized ? 'Criança protegida' : child.displayName,
@@ -248,14 +252,14 @@ final class HealthSafetyChildSummary {
   final String id;
   final String? personId;
   final String displayName;
-  final HealthSafetyOperationalStatus operationalStatus;
+  final HealthCareOperationalStatus operationalStatus;
   final int medicationCount;
   final int activeAllergyCount;
   final int pendingAcknowledgementCount;
 }
 
-final class HealthSafetyDirectoryQuery {
-  const HealthSafetyDirectoryQuery({
+final class HealthCareDirectoryQuery {
+  const HealthCareDirectoryQuery({
     this.search = '',
     this.personIds = const {},
     this.childIds = const {},
@@ -274,13 +278,13 @@ final class HealthSafetyDirectoryQuery {
   final Set<String> institutionIds;
   final Set<String> unitIds;
   final Set<String> groupOrActivityIds;
-  final Set<HealthSafetyOperationalStatus> operationalStatuses;
+  final Set<HealthCareOperationalStatus> operationalStatuses;
   final Set<HealthMedicationDoseSituation> doseSituations;
   final int page;
   final int pageSize;
   int get offset => page * pageSize;
 
-  bool matches(HealthSafetyChild child) {
+  bool matches(HealthCareChild child) {
     final normalized = search.trim().toLowerCase();
     final matchesIdentity =
         (normalized.isEmpty || child.displayName.toLowerCase().contains(normalized)) &&
@@ -306,14 +310,14 @@ final class HealthSafetyDirectoryQuery {
   }
 }
 
-final class HealthSafetyDirectoryPage {
-  HealthSafetyDirectoryPage({
-    required List<HealthSafetyChildSummary> items,
+final class HealthCareDirectoryPage {
+  HealthCareDirectoryPage({
+    required List<HealthCareChildSummary> items,
     required this.totalCount,
     required this.page,
     required this.pageSize,
   }) : items = List.unmodifiable(items);
-  final List<HealthSafetyChildSummary> items;
+  final List<HealthCareChildSummary> items;
   final int totalCount;
   final int page;
   final int pageSize;
@@ -331,7 +335,7 @@ final class HealthMedicationSchedule {
     }
   }
   final String id;
-  final HealthSafetyTimeOfDay time;
+  final HealthCareTimeOfDay time;
   final bool atHome;
   final String? institutionId;
 }
@@ -641,141 +645,148 @@ final class HealthMedicationChangeResult {
   final List<HealthMedicationInstitutionReview> invalidatedReviews;
 }
 
-final class HealthSafetyAllergy {
-  HealthSafetyAllergy({
+final class HealthCareAllergy {
+  HealthCareAllergy({
     required this.id,
     required this.childId,
     required this.label,
     required this.type,
     required this.active,
+    this.status = HealthCareAllergyStatus.active,
+    this.lastEpisodeAt,
+    this.episodeSeverity,
+    this.observedReaction = '',
+    this.guidance = '',
+    this.notes = '',
     this.inactivatedAt,
   }) {
     if (label.trim().isEmpty) throw ArgumentError('Allergy label is required.');
   }
+
   final String id;
   final String childId;
   final String label;
-  final HealthSafetyAllergyType type;
+  final HealthCareAllergyType type;
   final bool active;
+  final HealthCareAllergyStatus status;
+  final DateTime? lastEpisodeAt;
+  final HealthCareEpisodeSeverity? episodeSeverity;
+  final String observedReaction;
+  final String guidance;
+  final String notes;
   final DateTime? inactivatedAt;
-  HealthSafetyAllergy deactivate(DateTime when) => !active
+
+  HealthCareAllergy deactivate(DateTime when) => !active
       ? this
-      : HealthSafetyAllergy(
+      : HealthCareAllergy(
           id: id,
           childId: childId,
           label: label,
           type: type,
           active: false,
+          status: HealthCareAllergyStatus.history,
+          lastEpisodeAt: lastEpisodeAt,
+          episodeSeverity: episodeSeverity,
+          observedReaction: observedReaction,
+          guidance: guidance,
+          notes: notes,
           inactivatedAt: when,
         );
 }
 
-final class HealthSafetyCareProfileCatalogGroup {
-  const HealthSafetyCareProfileCatalogGroup({
-    required this.id,
-    required this.label,
-    required this.items,
-  });
+final class HealthCareProfileCatalogGroup {
+  const HealthCareProfileCatalogGroup({required this.id, required this.label, required this.items});
   final String id;
   final String label;
-  final List<HealthSafetyCareProfileCatalogItem> items;
+  final List<HealthCareProfileCatalogItem> items;
 }
 
-final class HealthSafetyCareProfileCatalogItem {
-  const HealthSafetyCareProfileCatalogItem({required this.id, required this.label});
+final class HealthCareProfileCatalogItem {
+  const HealthCareProfileCatalogItem({required this.id, required this.label});
   final String id;
   final String label;
   @override
   bool operator ==(Object other) =>
-      other is HealthSafetyCareProfileCatalogItem && other.id == id && other.label == label;
+      other is HealthCareProfileCatalogItem && other.id == id && other.label == label;
   @override
   int get hashCode => Object.hash(id, label);
 }
 
-const healthSafetyCareProfileCatalog = <HealthSafetyCareProfileCatalogGroup>[
-  HealthSafetyCareProfileCatalogGroup(
+const healthCareProfileCatalog = <HealthCareProfileCatalogGroup>[
+  HealthCareProfileCatalogGroup(
     id: 'neurodevelopment',
     label: 'Neurodesenvolvimento',
     items: [
-      HealthSafetyCareProfileCatalogItem(id: 'autism', label: 'Autismo'),
-      HealthSafetyCareProfileCatalogItem(id: 'adhd', label: 'TDAH'),
-      HealthSafetyCareProfileCatalogItem(id: 'dyslexia', label: 'Dislexia'),
-      HealthSafetyCareProfileCatalogItem(id: 'dyspraxia', label: 'Dispraxia'),
-      HealthSafetyCareProfileCatalogItem(id: 'giftedness', label: 'Altas habilidades/superdotação'),
+      HealthCareProfileCatalogItem(id: 'autism', label: 'Autismo'),
+      HealthCareProfileCatalogItem(id: 'adhd', label: 'TDAH'),
+      HealthCareProfileCatalogItem(id: 'dyslexia', label: 'Dislexia'),
+      HealthCareProfileCatalogItem(id: 'dyspraxia', label: 'Dispraxia'),
+      HealthCareProfileCatalogItem(id: 'giftedness', label: 'Altas habilidades/superdotação'),
     ],
   ),
-  HealthSafetyCareProfileCatalogGroup(
+  HealthCareProfileCatalogGroup(
     id: 'motor-mobility',
     label: 'Desenvolvimento motor e mobilidade',
     items: [
-      HealthSafetyCareProfileCatalogItem(id: 'motor-disability', label: 'Deficiência motora'),
-      HealthSafetyCareProfileCatalogItem(id: 'reduced-mobility', label: 'Mobilidade reduzida'),
-      HealthSafetyCareProfileCatalogItem(
-        id: 'motor-delay',
-        label: 'Atraso no desenvolvimento motor',
-      ),
-      HealthSafetyCareProfileCatalogItem(id: 'cerebral-palsy', label: 'Paralisia cerebral'),
-      HealthSafetyCareProfileCatalogItem(
+      HealthCareProfileCatalogItem(id: 'motor-disability', label: 'Deficiência motora'),
+      HealthCareProfileCatalogItem(id: 'reduced-mobility', label: 'Mobilidade reduzida'),
+      HealthCareProfileCatalogItem(id: 'motor-delay', label: 'Atraso no desenvolvimento motor'),
+      HealthCareProfileCatalogItem(id: 'cerebral-palsy', label: 'Paralisia cerebral'),
+      HealthCareProfileCatalogItem(
         id: 'mobility-resource',
         label: 'Uso de cadeira de rodas, órtese, prótese ou recurso de mobilidade',
       ),
     ],
   ),
-  HealthSafetyCareProfileCatalogGroup(
+  HealthCareProfileCatalogGroup(
     id: 'vision',
     label: 'Visão',
     items: [
-      HealthSafetyCareProfileCatalogItem(id: 'myopia', label: 'Miopia'),
-      HealthSafetyCareProfileCatalogItem(id: 'hyperopia', label: 'Hipermetropia'),
-      HealthSafetyCareProfileCatalogItem(id: 'astigmatism', label: 'Astigmatismo'),
-      HealthSafetyCareProfileCatalogItem(id: 'strabismus', label: 'Estrabismo'),
-      HealthSafetyCareProfileCatalogItem(id: 'low-vision', label: 'Baixa visão'),
-      HealthSafetyCareProfileCatalogItem(id: 'blindness', label: 'Cegueira'),
+      HealthCareProfileCatalogItem(id: 'myopia', label: 'Miopia'),
+      HealthCareProfileCatalogItem(id: 'hyperopia', label: 'Hipermetropia'),
+      HealthCareProfileCatalogItem(id: 'astigmatism', label: 'Astigmatismo'),
+      HealthCareProfileCatalogItem(id: 'strabismus', label: 'Estrabismo'),
+      HealthCareProfileCatalogItem(id: 'low-vision', label: 'Baixa visão'),
+      HealthCareProfileCatalogItem(id: 'blindness', label: 'Cegueira'),
     ],
   ),
-  HealthSafetyCareProfileCatalogGroup(
+  HealthCareProfileCatalogGroup(
     id: 'hearing-communication',
     label: 'Audição e comunicação',
     items: [
-      HealthSafetyCareProfileCatalogItem(id: 'hearing-disability', label: 'Deficiência auditiva'),
-      HealthSafetyCareProfileCatalogItem(id: 'deafness', label: 'Surdez'),
-      HealthSafetyCareProfileCatalogItem(
-        id: 'speech-support',
-        label: 'Apoio na fala ou comunicação',
-      ),
-      HealthSafetyCareProfileCatalogItem(
+      HealthCareProfileCatalogItem(id: 'hearing-disability', label: 'Deficiência auditiva'),
+      HealthCareProfileCatalogItem(id: 'deafness', label: 'Surdez'),
+      HealthCareProfileCatalogItem(id: 'speech-support', label: 'Apoio na fala ou comunicação'),
+      HealthCareProfileCatalogItem(
         id: 'alternative-communication',
         label: 'Uso de Libras ou comunicação alternativa',
       ),
     ],
   ),
-  HealthSafetyCareProfileCatalogGroup(
+  HealthCareProfileCatalogGroup(
     id: 'genetic-conditions',
     label: 'Condições genéticas',
-    items: [HealthSafetyCareProfileCatalogItem(id: 'down-syndrome', label: 'Síndrome de Down')],
+    items: [HealthCareProfileCatalogItem(id: 'down-syndrome', label: 'Síndrome de Down')],
   ),
-  HealthSafetyCareProfileCatalogGroup(
+  HealthCareProfileCatalogGroup(
     id: 'health-conditions',
     label: 'Condições de saúde',
     items: [
-      HealthSafetyCareProfileCatalogItem(id: 'diabetes', label: 'Diabetes'),
-      HealthSafetyCareProfileCatalogItem(
-        id: 'epilepsy',
-        label: 'Epilepsia ou histórico de convulsões',
-      ),
-      HealthSafetyCareProfileCatalogItem(id: 'asthma', label: 'Asma'),
+      HealthCareProfileCatalogItem(id: 'diabetes', label: 'Diabetes'),
+      HealthCareProfileCatalogItem(id: 'epilepsy', label: 'Epilepsia ou histórico de convulsões'),
+      HealthCareProfileCatalogItem(id: 'asthma', label: 'Asma'),
     ],
   ),
-  HealthSafetyCareProfileCatalogGroup(
+  HealthCareProfileCatalogGroup(
     id: 'other',
     label: 'Outro',
-    items: [HealthSafetyCareProfileCatalogItem(id: 'other', label: 'Outro')],
+    items: [HealthCareProfileCatalogItem(id: 'other', label: 'Outro')],
   ),
 ];
 
-final class HealthSafetyCareProfileItem {
-  HealthSafetyCareProfileItem({required this.catalogItemId, this.otherText}) {
-    final known = healthSafetyCareProfileCatalog
+final class HealthCareProfileItem {
+  HealthCareProfileItem({required this.catalogItemId, this.otherText}) {
+    final known = healthCareProfileCatalog
         .expand((group) => group.items)
         .any((item) => item.id == catalogItemId);
     if (!known) throw ArgumentError.value(catalogItemId, 'catalogItemId');
@@ -787,8 +798,8 @@ final class HealthSafetyCareProfileItem {
   final String? otherText;
 }
 
-final class HealthSafetyAcknowledgement {
-  const HealthSafetyAcknowledgement({
+final class HealthCareAcknowledgement {
+  const HealthCareAcknowledgement({
     required this.id,
     required this.childId,
     required this.subject,
@@ -797,10 +808,10 @@ final class HealthSafetyAcknowledgement {
   });
   final String id;
   final String childId;
-  final HealthSafetyAcknowledgementSubject subject;
+  final HealthCareAcknowledgementSubject subject;
   final DateTime createdAt;
   final DateTime? receivedAt;
-  HealthSafetyAcknowledgement acknowledge(DateTime when) => HealthSafetyAcknowledgement(
+  HealthCareAcknowledgement acknowledge(DateTime when) => HealthCareAcknowledgement(
     id: id,
     childId: childId,
     subject: subject,
@@ -809,8 +820,8 @@ final class HealthSafetyAcknowledgement {
   );
 }
 
-final class HealthSafetyNotification {
-  const HealthSafetyNotification({
+final class HealthCareNotification {
+  const HealthCareNotification({
     required this.id,
     required this.childId,
     required this.subject,
@@ -822,13 +833,13 @@ final class HealthSafetyNotification {
   });
   final String id;
   final String childId;
-  final HealthSafetyAcknowledgementSubject subject;
+  final HealthCareAcknowledgementSubject subject;
   final String itemId;
   final String recipientId;
   final String receiptId;
   final DateTime createdAt;
   final DateTime? acknowledgedAt;
-  HealthSafetyNotification acknowledge(DateTime when) => HealthSafetyNotification(
+  HealthCareNotification acknowledge(DateTime when) => HealthCareNotification(
     id: id,
     childId: childId,
     subject: subject,
@@ -840,8 +851,8 @@ final class HealthSafetyNotification {
   );
 }
 
-final class HealthSafetyAuditEvent {
-  HealthSafetyAuditEvent({
+final class HealthCareAuditEvent {
+  HealthCareAuditEvent({
     required this.id,
     required this.actorId,
     required this.justification,

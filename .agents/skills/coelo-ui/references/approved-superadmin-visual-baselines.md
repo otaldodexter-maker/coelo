@@ -39,6 +39,7 @@ estado ao código real, componente, teste e golden exato.
 | Aprovação 2026-08-04 | Rodapé de fluxo: `Cancelar` no extremo esquerdo; `Anterior` + `Continuar` outlined e `Salvar alterações` filled no extremo direito; estados menores preservam a ordem | `SuperadminFormActionFooter`; `pattern.form-controls`; testes do componente e do catálogo |
 | Aprovação 2026-08-04 | Mídia e marca: ajuste circular de foto, ajuste retangular de capa e seletor avançado de cores | `AvatarCropDialog`; `CoverCropDialog`; `showSuperadminAdvancedColorPicker`; `pattern.media-adjustment`; `pattern.advanced-color-picker` |
 | Aprovação 2026-08-04 | Navegação paginada de qualquer fluxo sequencial: concluída, atual tonal e pendente; paginação de registros permanece um contrato distinto | `SuperadminFormStepNavigation`; `pattern.form-step-navigation`; `pattern.directory-pagination` |
+| Aprovação 2026-08-04 | Saúde e Cuidado: Perfis de cuidado e Planos de medicação como áreas irmãs; múltipla escolha de formulário e status Histórico | `CoeloAdminMultiSelectField`; `CoeloStatusColors.historyContainer`; `specs/020-superadmin-health-care.md` |
 
 ## Regras que os anexos tornam explícitas
 

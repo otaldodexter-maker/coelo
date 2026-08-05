@@ -29,7 +29,8 @@ void main() {
     await tester.pumpAndSettle();
 
     const destinations = <(String, String)>[
-      ('health-safety', '/dev/health-safety'),
+      ('health-care-profiles', '/dev/health-care/profiles'),
+      ('health-medication-plans', '/dev/health-care/medication-plans'),
       ('plans', '/dev/plans'),
       ('import', '/dev/imports'),
       ('invites', '/dev/invites'),
@@ -41,7 +42,9 @@ void main() {
     for (final (id, expectedPath) in destinations) {
       router.go(SuperadminRoutes.devInstitutions);
       await tester.pumpAndSettle();
-      if (id == 'health-safety' || id == 'plans' || id == 'import') {
+      if (id == 'health-care-profiles' || id == 'health-medication-plans') {
+        await tester.tap(find.byKey(const Key('superadmin-navigation-section-health-care')));
+      } else if (id == 'plans' || id == 'import') {
         await tester.tap(find.byKey(const Key('superadmin-navigation-section-operations')));
       } else if (id == 'invites' || id == 'notices') {
         await tester.tap(find.byKey(const Key('superadmin-navigation-section-communication')));

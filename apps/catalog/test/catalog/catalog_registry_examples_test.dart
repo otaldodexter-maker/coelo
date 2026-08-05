@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:coelo_catalog/catalog/catalog_entry.dart';
 import 'package:coelo_catalog/catalog/catalog_registry.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,19 @@ void main() {
 
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
     expect(find.text('Itens por página'), findsOneWidget);
+  });
+
+  testWidgets('multi-select field example uses the public component', (tester) async {
+    final example = buildCatalogRegistry()['admin.multi-select-field']!;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: _ExampleHost(example: example)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
   });
 
   test('registers the administrative dialog shell as an implemented component', () {

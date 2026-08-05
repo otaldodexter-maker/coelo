@@ -1,9 +1,9 @@
-import 'package:coelo_superadmin/features/health_safety/domain/health_safety.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   HealthMedicationSchedule homeSchedule() =>
-      HealthMedicationSchedule(id: 'home', time: HealthSafetyTimeOfDay(8, 0), atHome: true);
+      HealthMedicationSchedule(id: 'home', time: HealthCareTimeOfDay(8, 0), atHome: true);
 
   HealthMedicationVersion version({
     HealthMedicationReviewStatus status = HealthMedicationReviewStatus.approved,
@@ -25,25 +25,46 @@ void main() {
     dispensedBy: 'guardian-demo-a',
   );
 
+  test('allergy status is independent from recorded episode severity', () {
+    final allergy = HealthCareAllergy(
+      id: 'allergy-a',
+      childId: 'child-a',
+      label: 'Amendoim',
+      type: HealthCareAllergyType.food,
+      active: true,
+      status: HealthCareAllergyStatus.monitoring,
+      lastEpisodeAt: DateTime.utc(2026, 7, 2),
+      episodeSeverity: HealthCareEpisodeSeverity.moderate,
+      observedReaction: 'Urticaria',
+      guidance: 'Seguir o plano de cuidado.',
+      notes: 'Episodio informado pela familia.',
+    );
+
+    expect(allergy.status, HealthCareAllergyStatus.monitoring);
+    expect(allergy.episodeSeverity, HealthCareEpisodeSeverity.moderate);
+
+    final historical = allergy.deactivate(DateTime.utc(2026, 8, 1));
+    expect(historical.status, HealthCareAllergyStatus.history);
+    expect(historical.episodeSeverity, HealthCareEpisodeSeverity.moderate);
+    expect(historical.observedReaction, 'Urticaria');
+  });
+
   group('directory query scope', () {
     test('person and child filters are global and match a child without context links', () {
-      final child = HealthSafetyChild(
+      final child = HealthCareChild(
         id: 'child-no-context',
         personId: 'person-no-context',
         displayName: 'Criança sem contexto',
-        operationalStatus: HealthSafetyOperationalStatus.pending,
+        operationalStatus: HealthCareOperationalStatus.implementation,
       );
 
       expect(
-        const HealthSafetyDirectoryQuery(personIds: {'person-no-context'}).matches(child),
+        const HealthCareDirectoryQuery(personIds: {'person-no-context'}).matches(child),
         isTrue,
       );
+      expect(const HealthCareDirectoryQuery(childIds: {'child-no-context'}).matches(child), isTrue);
       expect(
-        const HealthSafetyDirectoryQuery(childIds: {'child-no-context'}).matches(child),
-        isTrue,
-      );
-      expect(
-        const HealthSafetyDirectoryQuery(
+        const HealthCareDirectoryQuery(
           childIds: {'child-no-context'},
           institutionIds: {'institution-a'},
         ).matches(child),
@@ -52,35 +73,35 @@ void main() {
     });
 
     test('institution, unit and group intersect on one active authorized context', () {
-      final query = const HealthSafetyDirectoryQuery(
+      final query = const HealthCareDirectoryQuery(
         institutionIds: {'institution-a'},
         unitIds: {'unit-a'},
         groupOrActivityIds: {'group-a'},
       );
-      HealthSafetyChild child(List<HealthSafetyContextLink> links) => HealthSafetyChild(
+      HealthCareChild child(List<HealthCareContextLink> links) => HealthCareChild(
         id: 'child-a',
         personId: 'person-a',
         displayName: 'Criança A',
-        operationalStatus: HealthSafetyOperationalStatus.active,
+        operationalStatus: HealthCareOperationalStatus.active,
         links: links,
       );
 
       expect(
         query.matches(
           child(const [
-            HealthSafetyContextLink(
+            HealthCareContextLink(
               institutionId: 'institution-a',
               unitId: 'unit-a',
               groupOrActivityId: 'group-a',
               active: false,
             ),
-            HealthSafetyContextLink(
+            HealthCareContextLink(
               institutionId: 'institution-a',
               unitId: 'unit-a',
               groupOrActivityId: 'group-a',
               authorized: false,
             ),
-            HealthSafetyContextLink(
+            HealthCareContextLink(
               institutionId: 'institution-a',
               unitId: 'unit-a',
               groupOrActivityId: 'group-a',
@@ -92,12 +113,12 @@ void main() {
       expect(
         query.matches(
           child(const [
-            HealthSafetyContextLink(
+            HealthCareContextLink(
               institutionId: 'institution-a',
               unitId: 'unit-a',
               groupOrActivityId: 'group-b',
             ),
-            HealthSafetyContextLink(
+            HealthCareContextLink(
               institutionId: 'institution-b',
               unitId: 'unit-b',
               groupOrActivityId: 'group-a',
@@ -111,9 +132,9 @@ void main() {
 
   group('runtime value safety', () {
     test('time rejects invalid values with ArgumentError at runtime', () {
-      expect(() => HealthSafetyTimeOfDay(-1, 0), throwsArgumentError);
-      expect(() => HealthSafetyTimeOfDay(24, 0), throwsArgumentError);
-      expect(() => HealthSafetyTimeOfDay(12, 60), throwsArgumentError);
+      expect(() => HealthCareTimeOfDay(-1, 0), throwsArgumentError);
+      expect(() => HealthCareTimeOfDay(24, 0), throwsArgumentError);
+      expect(() => HealthCareTimeOfDay(12, 60), throwsArgumentError);
     });
 
     test('medication version defensively freezes schedules', () {
@@ -141,49 +162,46 @@ void main() {
   group('permissions and contextual visibility', () {
     test('owner can correct, create/edit and inactivate but cannot review, claim or result', () {
       expect(
-        DemoHealthSafetyProfile.owner.capabilities,
-        containsAll(<HealthSafetyCapability>[
-          HealthSafetyCapability.sensitiveRead,
-          HealthSafetyCapability.auditRead,
-          HealthSafetyCapability.exceptionalCorrection,
-          HealthSafetyCapability.recordCreateEdit,
-          HealthSafetyCapability.recordInactivate,
+        DemoHealthCareProfile.owner.capabilities,
+        containsAll(<HealthCareCapability>[
+          HealthCareCapability.sensitiveRead,
+          HealthCareCapability.auditRead,
+          HealthCareCapability.exceptionalCorrection,
+          HealthCareCapability.recordCreateEdit,
+          HealthCareCapability.recordInactivate,
         ]),
       );
-      expect(DemoHealthSafetyProfile.owner.can(HealthSafetyCapability.clinicalReview), isFalse);
-      expect(DemoHealthSafetyProfile.owner.can(HealthSafetyCapability.medicationClaim), isFalse);
+      expect(DemoHealthCareProfile.owner.can(HealthCareCapability.clinicalReview), isFalse);
+      expect(DemoHealthCareProfile.owner.can(HealthCareCapability.medicationClaim), isFalse);
+      expect(DemoHealthCareProfile.owner.can(HealthCareCapability.administrationResult), isFalse);
       expect(
-        DemoHealthSafetyProfile.owner.can(HealthSafetyCapability.administrationResult),
-        isFalse,
-      );
-      expect(
-        DemoHealthSafetyProfile.sensitiveReader.capabilities,
-        equals({HealthSafetyCapability.sensitiveRead}),
+        DemoHealthCareProfile.sensitiveReader.capabilities,
+        equals({HealthCareCapability.sensitiveRead}),
       );
     });
 
     test('actor requires active authorized child context even for global sensitive reading', () {
-      final actor = HealthSafetyActor(
+      final actor = HealthCareActor(
         id: 'reader-a',
-        profile: DemoHealthSafetyProfile.sensitiveReader,
+        profile: DemoHealthCareProfile.sensitiveReader,
         authorizedChildIds: {'child-a'},
       );
-      final child = HealthSafetyChild(
+      final child = HealthCareChild(
         id: 'child-a',
         personId: 'person-a',
         displayName: 'Criança A',
-        operationalStatus: HealthSafetyOperationalStatus.active,
-        links: const [HealthSafetyContextLink(institutionId: 'institution-a', active: false)],
+        operationalStatus: HealthCareOperationalStatus.active,
+        links: const [HealthCareContextLink(institutionId: 'institution-a', active: false)],
       );
       expect(actor.canReadDetail(child), isFalse);
       expect(
         actor.canReadDetail(
-          HealthSafetyChild(
+          HealthCareChild(
             id: 'child-a',
             personId: 'person-a',
             displayName: 'Criança A',
-            operationalStatus: HealthSafetyOperationalStatus.active,
-            links: const [HealthSafetyContextLink(institutionId: 'institution-a')],
+            operationalStatus: HealthCareOperationalStatus.active,
+            links: const [HealthCareContextLink(institutionId: 'institution-a')],
           ),
         ),
         isTrue,
@@ -191,35 +209,35 @@ void main() {
     });
 
     test('institutional actor must match an active authorized institution context', () {
-      final actor = HealthSafetyActor(
+      final actor = HealthCareActor(
         id: 'reader-a',
-        profile: DemoHealthSafetyProfile.sensitiveReader,
+        profile: DemoHealthCareProfile.sensitiveReader,
         institutionId: 'institution-b',
         authorizedChildIds: {'child-a'},
       );
-      final child = HealthSafetyChild(
+      final child = HealthCareChild(
         id: 'child-a',
         personId: 'person-a',
         displayName: 'Criança A',
-        operationalStatus: HealthSafetyOperationalStatus.active,
-        links: const [HealthSafetyContextLink(institutionId: 'institution-a')],
+        operationalStatus: HealthCareOperationalStatus.active,
+        links: const [HealthCareContextLink(institutionId: 'institution-a')],
       );
       expect(actor.canReadDetail(child), isFalse);
     });
 
     test('contextual capabilities can never grant Owner-only mutations', () {
-      final actor = HealthSafetyActor(
+      final actor = HealthCareActor(
         id: 'institution-operator',
-        profile: DemoHealthSafetyProfile.minimized,
+        profile: DemoHealthCareProfile.minimized,
         contextualCapabilities: const {
-          HealthSafetyCapability.exceptionalCorrection,
-          HealthSafetyCapability.recordCreateEdit,
-          HealthSafetyCapability.recordInactivate,
+          HealthCareCapability.exceptionalCorrection,
+          HealthCareCapability.recordCreateEdit,
+          HealthCareCapability.recordInactivate,
         },
       );
-      expect(actor.can(HealthSafetyCapability.exceptionalCorrection), isFalse);
-      expect(actor.can(HealthSafetyCapability.recordCreateEdit), isFalse);
-      expect(actor.can(HealthSafetyCapability.recordInactivate), isFalse);
+      expect(actor.can(HealthCareCapability.exceptionalCorrection), isFalse);
+      expect(actor.can(HealthCareCapability.recordCreateEdit), isFalse);
+      expect(actor.can(HealthCareCapability.recordInactivate), isFalse);
     });
   });
 
@@ -246,13 +264,13 @@ void main() {
 
     test('schedule belongs to exactly home or one institution', () {
       expect(
-        () => HealthMedicationSchedule(id: 'invalid', time: HealthSafetyTimeOfDay(8, 0)),
+        () => HealthMedicationSchedule(id: 'invalid', time: HealthCareTimeOfDay(8, 0)),
         throwsArgumentError,
       );
       expect(
         () => HealthMedicationSchedule(
           id: 'invalid',
-          time: HealthSafetyTimeOfDay(8, 0),
+          time: HealthCareTimeOfDay(8, 0),
           atHome: true,
           institutionId: 'institution-a',
         ),
@@ -418,7 +436,7 @@ void main() {
   });
 
   test('care catalog has exactly the seven approved groups and examples', () {
-    expect(healthSafetyCareProfileCatalog.map((group) => group.label).toList(), [
+    expect(healthCareProfileCatalog.map((group) => group.label).toList(), [
       'Neurodesenvolvimento',
       'Desenvolvimento motor e mobilidade',
       'Visão',
@@ -427,7 +445,7 @@ void main() {
       'Condições de saúde',
       'Outro',
     ]);
-    final labels = healthSafetyCareProfileCatalog
+    final labels = healthCareProfileCatalog
         .expand((group) => group.items)
         .map((item) => item.label);
     expect(
@@ -460,28 +478,28 @@ void main() {
         'Outro',
       ]),
     );
-    expect(() => HealthSafetyCareProfileItem(catalogItemId: 'other'), throwsArgumentError);
+    expect(() => HealthCareProfileItem(catalogItemId: 'other'), throwsArgumentError);
     expect(
-      HealthSafetyCareProfileItem(catalogItemId: 'other', otherText: 'Apoio individual').otherText,
+      HealthCareProfileItem(catalogItemId: 'other', otherText: 'Apoio individual').otherText,
       'Apoio individual',
     );
   });
 
   test('aggregate and policy collections are immutable defensive copies', () {
-    final links = <HealthSafetyContextLink>[
-      const HealthSafetyContextLink(institutionId: 'institution-a'),
+    final links = <HealthCareContextLink>[
+      const HealthCareContextLink(institutionId: 'institution-a'),
     ];
-    final child = HealthSafetyChild(
+    final child = HealthCareChild(
       id: 'child-a',
       personId: 'person-a',
       displayName: 'Criança A',
-      operationalStatus: HealthSafetyOperationalStatus.active,
+      operationalStatus: HealthCareOperationalStatus.active,
       links: links,
     );
     links.clear();
     expect(child.links, hasLength(1));
     expect(
-      () => child.links.add(const HealthSafetyContextLink(institutionId: 'institution-b')),
+      () => child.links.add(const HealthCareContextLink(institutionId: 'institution-b')),
       throwsUnsupportedError,
     );
 

@@ -48,7 +48,8 @@ uma indicação explícita do usuário por outro padrão aprovado permite diverg
   a hierarquia `primaryContainer`/`primary`. Cada segmento mede 64 × 48 px e
   tem nome acessível. Não usar dois botões soltos nem cor cinza local.
 - Clicar diretamente em Tabela ou ativá-la com Enter/Espaço seleciona
-  `Agrupado`. Quando houver visões detalhadas, o flyout abre por hover no
+  `Agrupado`. Com somente essa visão, o segmento não abre flyout. Quando houver
+  visões detalhadas, o flyout abre por hover no
   segmento inteiro, pressão longa em toda a área de 64 × 48 px ou `Alt+↓` com
   foco. Nunca limitar hover ou pressão longa ao ícone. `Esc` fecha e devolve o
   foco ao gatilho. O flyout usa `surface`, tint transparente, borda,

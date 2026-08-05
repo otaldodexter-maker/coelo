@@ -740,13 +740,21 @@ const _navigationSections = <_NavigationSectionData>[
       active: true,
     ),
   ]),
-  _NavigationSectionData('operations', 'Operação', Icons.tune_outlined, [
+  _NavigationSectionData('health-care', 'Saúde e Cuidado', Icons.health_and_safety_outlined, [
     _NavigationDestinationData(
-      'health-safety',
-      'Saúde e Segurança',
-      Icons.health_and_safety_outlined,
+      'health-care-profiles',
+      'Perfis de cuidado',
+      Icons.child_care_outlined,
       active: true,
     ),
+    _NavigationDestinationData(
+      'health-medication-plans',
+      'Planos de medicação',
+      Icons.medication_outlined,
+      active: true,
+    ),
+  ]),
+  _NavigationSectionData('operations', 'Operação', Icons.tune_outlined, [
     _NavigationDestinationData('plans', 'Planos', Icons.loyalty_outlined),
     _NavigationDestinationData('import', 'Importações', Icons.upload_file_outlined),
   ]),
@@ -1225,7 +1233,8 @@ String? _prototypeDestinationPath(BuildContext context, String destination) {
   final development = _isDevelopmentRoute(context);
   final prefix = development ? '/dev' : '';
   return switch (destination) {
-    'health-safety' => '$prefix/health-safety',
+    'health-care-profiles' => '$prefix/health-care/profiles',
+    'health-medication-plans' => '$prefix/health-care/medication-plans',
     'catalog' => development ? '/dev/catalog' : '/governance/catalog',
     'plans' => '/dev/plans',
     'import' => '/dev/imports',

@@ -163,12 +163,19 @@ silenciosamente.
    recriar `TabBar` ou `InkWell` local enquanto o compartilhado atender.
    O toggle Cards/Tabela usa segmentos imutáveis de 64 × 48 px e seu menu de
    visões deve reutilizar `CoeloAdminFlyout`. Clicar ou ativar Tabela com
-   Enter/Espaço seleciona diretamente `Agrupado`; as variações abrem por hover
+   Enter/Espaço seleciona diretamente `Agrupado`; com somente essa visão, não
+   abre flyout. Havendo mais de uma visão, as variações abrem por hover
    no segmento inteiro, pressão longa em toda a área de 64 × 48 ou `Alt+↓` com
    foco. Nunca limitar o gesto ao ícone. O item atual do flyout expõe
    `Semantics(selected: true)` e `Esc` fecha devolvendo o foco ao gatilho.
    `CoeloAdminResizableTable` centraliza a largura natural quando houver sobra
    e pinta scrollbar/track acima da coluna fixa.
+   Formulários com múltipla escolha reutilizam
+   `CoeloAdminMultiSelectField<T>`: menu na largura do gatilho, rascunho,
+   busca opcional, Limpar/Aplicar, alvos de 48 px, teclado, `Esc` e retorno de
+   foco. Não improvisar checkbox/radio Material cru.
+   Status Histórico usa `CoeloStatusColors.historyContainer` e
+   `onHistoryContainer` em light/dark, sempre acompanhado por texto e ícone.
    Não criar campo textual ou single-select local quando
    `CoeloFormTextField` ou `CoeloAdminSingleSelectField` atenderem. Campo
    multilinha restringe explicitamente o slot do ícone e mantém ícone, texto e

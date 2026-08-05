@@ -47,6 +47,27 @@ void main() {
     expect(find.text('Detalhado por Unidades'), findsNothing);
   });
 
+  testWidgets('does not expose a flyout when grouped is the only table view', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        onSelected: (_) {},
+        tableViews: const [
+          SuperadminDirectoryTableViewOption(value: _View.grouped, label: 'Agrupado'),
+        ],
+      ),
+    );
+
+    expect(find.byType(SegmentedButton<bool>), findsOneWidget);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    final toggleRect = tester.getRect(find.byType(SegmentedButton<bool>));
+    await mouse.addPointer(location: Offset(toggleRect.right - 2, toggleRect.center.dy));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Agrupado'), findsNothing);
+  });
+
   testWidgets('opens table variations on hover and applies the chosen view', (tester) async {
     _View? selected;
     await tester.pumpWidget(_app(onSelected: (value) => selected = value));
@@ -81,7 +102,14 @@ void main() {
   });
 }
 
-Widget _app({required ValueChanged<_View> onSelected}) {
+Widget _app({
+  required ValueChanged<_View> onSelected,
+  List<SuperadminDirectoryTableViewOption<_View>> tableViews = const [
+    SuperadminDirectoryTableViewOption(value: _View.grouped, label: 'Agrupado'),
+    SuperadminDirectoryTableViewOption(value: _View.units, label: 'Detalhado por Unidades'),
+    SuperadminDirectoryTableViewOption(value: _View.groups, label: 'Detalhado por Grupos'),
+  ],
+}) {
   return MaterialApp(
     theme: CoeloTheme.light,
     home: Scaffold(
@@ -94,11 +122,7 @@ Widget _app({required ValueChanged<_View> onSelected}) {
           tableKey: const Key('table-segment'),
           onCardsSelected: () {},
           onTableViewSelected: onSelected,
-          tableViews: const [
-            SuperadminDirectoryTableViewOption(value: _View.grouped, label: 'Agrupado'),
-            SuperadminDirectoryTableViewOption(value: _View.units, label: 'Detalhado por Unidades'),
-            SuperadminDirectoryTableViewOption(value: _View.groups, label: 'Detalhado por Grupos'),
-          ],
+          tableViews: tableViews,
         ),
       ),
     ),

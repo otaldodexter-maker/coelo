@@ -1,44 +1,44 @@
-import 'package:coelo_superadmin/features/health_safety/data/demo_health_safety_repository.dart';
-import 'package:coelo_superadmin/features/health_safety/domain/health_safety.dart';
+import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  HealthSafetyActor owner() => HealthSafetyActor(
+  HealthCareActor owner() => HealthCareActor(
     id: 'owner-demo',
-    profile: DemoHealthSafetyProfile.owner,
+    profile: DemoHealthCareProfile.owner,
     authorizedChildIds: {'child-demo-a'},
   );
 
-  HealthSafetyActor institutional({
+  HealthCareActor institutional({
     String id = 'professional-demo-professor',
     String institutionId = 'institution-demo-a',
-    Set<HealthSafetyCapability> capabilities = const {
-      HealthSafetyCapability.sensitiveRead,
-      HealthSafetyCapability.clinicalReview,
-      HealthSafetyCapability.medicationClaim,
-      HealthSafetyCapability.administrationResult,
-      HealthSafetyCapability.notifications,
+    Set<HealthCareCapability> capabilities = const {
+      HealthCareCapability.sensitiveRead,
+      HealthCareCapability.clinicalReview,
+      HealthCareCapability.medicationClaim,
+      HealthCareCapability.administrationResult,
+      HealthCareCapability.notifications,
     },
-  }) => HealthSafetyActor(
+  }) => HealthCareActor(
     id: id,
-    profile: DemoHealthSafetyProfile.minimized,
+    profile: DemoHealthCareProfile.minimized,
     institutionId: institutionId,
     authorizedChildIds: {'child-demo-a'},
     contextualCapabilities: capabilities,
     responsibleInstitutionIds: {institutionId},
   );
 
-  HealthSafetyActor minimizedActor() => HealthSafetyActor(
+  HealthCareActor minimizedActor() => HealthCareActor(
     id: 'minimized-demo',
-    profile: DemoHealthSafetyProfile.minimized,
+    profile: DemoHealthCareProfile.minimized,
     authorizedChildIds: {'child-demo-a'},
   );
 
   group('read authorization and summaries', () {
     test('directory requires actor and derives redaction from that actor', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final page = await repository.fetchDirectory(
-        const HealthSafetyDirectoryQuery(childIds: {'child-demo-a', 'child-demo-unauthorized'}),
+        const HealthCareDirectoryQuery(childIds: {'child-demo-a', 'child-demo-unauthorized'}),
         actor: minimizedActor(),
       );
 
@@ -49,18 +49,18 @@ void main() {
     test(
       'directory returns summaries only and minimized profile receives no sensitive aggregate',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         final page = await repository.fetchDirectory(
-          const HealthSafetyDirectoryQuery(),
+          const HealthCareDirectoryQuery(),
           actor: minimizedActor(),
         );
         expect(page.items, isNotEmpty);
-        expect(page.items.first, isA<HealthSafetyChildSummary>());
+        expect(page.items.first, isA<HealthCareChildSummary>());
         expect(page.items.first.medicationCount, greaterThanOrEqualTo(0));
         expect(page.items.map((item) => item.displayName), isNot(contains('Criança Demo A')));
         expect(page.items.map((item) => item.personId), everyElement(isNull));
         final ownerPage = await repository.fetchDirectory(
-          const HealthSafetyDirectoryQuery(),
+          const HealthCareDirectoryQuery(),
           actor: owner(),
         );
         expect(ownerPage.items.map((item) => item.displayName), contains('Criança Demo A'));
@@ -71,13 +71,13 @@ void main() {
     test(
       'detail denies minimized, unauthorized, inactive and mismatched institutional contexts',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         await expectLater(
           repository.findChild(
             'child-demo-a',
-            actor: HealthSafetyActor(
+            actor: HealthCareActor(
               id: 'minimized-demo',
-              profile: DemoHealthSafetyProfile.minimized,
+              profile: DemoHealthCareProfile.minimized,
               authorizedChildIds: {'child-demo-a'},
             ),
           ),
@@ -86,9 +86,9 @@ void main() {
         await expectLater(
           repository.findChild(
             'child-demo-a',
-            actor: HealthSafetyActor(
+            actor: HealthCareActor(
               id: 'reader-demo',
-              profile: DemoHealthSafetyProfile.sensitiveReader,
+              profile: DemoHealthCareProfile.sensitiveReader,
             ),
           ),
           throwsStateError,
@@ -111,23 +111,23 @@ void main() {
     test(
       'global identity filters precede institution and contextual hierarchy intersects',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         final global = await repository.fetchDirectory(
-          const HealthSafetyDirectoryQuery(
+          const HealthCareDirectoryQuery(
             personIds: {'person-demo-unauthorized'},
             childIds: {'child-demo-unauthorized'},
           ),
           actor: owner(),
         );
         final contextual = await repository.fetchDirectory(
-          const HealthSafetyDirectoryQuery(
+          const HealthCareDirectoryQuery(
             childIds: {'child-demo-unauthorized'},
             institutionIds: {'institution-demo-a'},
           ),
           actor: owner(),
         );
         final crossedHierarchy = await repository.fetchDirectory(
-          const HealthSafetyDirectoryQuery(
+          const HealthCareDirectoryQuery(
             institutionIds: {'institution-demo-a'},
             unitIds: {'unit-demo-b'},
             groupOrActivityIds: {'group-demo-b'},
@@ -142,13 +142,13 @@ void main() {
     );
 
     test('pagination preserves total count and never duplicates items between pages', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final first = await repository.fetchDirectory(
-        const HealthSafetyDirectoryQuery(page: 0, pageSize: 1),
+        const HealthCareDirectoryQuery(page: 0, pageSize: 1),
         actor: owner(),
       );
       final second = await repository.fetchDirectory(
-        const HealthSafetyDirectoryQuery(page: 1, pageSize: 1),
+        const HealthCareDirectoryQuery(page: 1, pageSize: 1),
         actor: owner(),
       );
 
@@ -172,7 +172,7 @@ void main() {
 
   group('capability-protected writes', () {
     test('owner creates medication and allergy with audit and authorization', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final medication = await repository.createMedication(
         childId: 'child-demo-a',
         name: 'Medicamento Novo',
@@ -184,14 +184,14 @@ void main() {
         documentName: 'receita-demo.pdf',
         documentType: 'application/pdf',
         schedules: [
-          HealthMedicationSchedule(id: 'new-home', time: HealthSafetyTimeOfDay(8, 0), atHome: true),
+          HealthMedicationSchedule(id: 'new-home', time: HealthCareTimeOfDay(8, 0), atHome: true),
         ],
         actor: owner(),
       );
       final allergy = await repository.createAllergy(
         childId: 'child-demo-a',
         label: 'Látex',
-        type: HealthSafetyAllergyType.other,
+        type: HealthCareAllergyType.other,
         actor: owner(),
       );
       final child = await repository.findChild('child-demo-a', actor: owner());
@@ -211,7 +211,7 @@ void main() {
         repository.createAllergy(
           childId: 'child-demo-a',
           label: 'Sem permissão',
-          type: HealthSafetyAllergyType.other,
+          type: HealthCareAllergyType.other,
           actor: minimizedActor(),
         ),
         throwsStateError,
@@ -219,13 +219,13 @@ void main() {
     });
 
     test('medication schedules must belong to active authorized child contexts', () async {
-      final actorB = HealthSafetyActor(
+      final actorB = HealthCareActor(
         id: 'owner-b',
-        profile: DemoHealthSafetyProfile.owner,
+        profile: DemoHealthCareProfile.owner,
         authorizedChildIds: {'child-demo-b'},
       );
       await expectLater(
-        DemoHealthSafetyRepository().createMedication(
+        DemoHealthCareRepository().createMedication(
           childId: 'child-demo-b',
           name: 'Inválido',
           dose: '1',
@@ -236,7 +236,7 @@ void main() {
           schedules: [
             HealthMedicationSchedule(
               id: 'wrong-context',
-              time: HealthSafetyTimeOfDay(8, 0),
+              time: HealthCareTimeOfDay(8, 0),
               institutionId: 'institution-demo-a',
             ),
           ],
@@ -247,7 +247,7 @@ void main() {
     });
 
     test('relevant correction pauses only future doses of the affected version', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       await repository.changeMedicationRelevant(
         childId: 'child-demo-a',
         medicationId: 'medication-demo-a',
@@ -268,11 +268,11 @@ void main() {
     });
 
     test('care profile update preserves unrelated existing items', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final before = await repository.findChild('child-demo-a', actor: owner());
       await repository.updateCareProfile(
         childId: 'child-demo-a',
-        items: [HealthSafetyCareProfileItem(catalogItemId: 'asthma')],
+        items: [HealthCareProfileItem(catalogItemId: 'asthma')],
         justification: 'Adicionar apoio sem apagar os demais',
         actor: owner(),
       );
@@ -288,16 +288,16 @@ void main() {
     test(
       'sensitive reader is read-only and owner cannot perform institutional operations',
       () async {
-        final repository = DemoHealthSafetyRepository();
-        final reader = HealthSafetyActor(
+        final repository = DemoHealthCareRepository();
+        final reader = HealthCareActor(
           id: 'reader-demo',
-          profile: DemoHealthSafetyProfile.sensitiveReader,
+          profile: DemoHealthCareProfile.sensitiveReader,
           authorizedChildIds: {'child-demo-a'},
         );
         await expectLater(
           repository.updateCareProfile(
             childId: 'child-demo-a',
-            items: [HealthSafetyCareProfileItem(catalogItemId: 'autism')],
+            items: [HealthCareProfileItem(catalogItemId: 'autism')],
             justification: 'Teste de permissão',
             actor: reader,
           ),
@@ -321,7 +321,7 @@ void main() {
     test(
       'owner correction persists invalidated reviews for every scheduled institution and audit actor',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         final changed = await repository.changeMedicationRelevant(
           childId: 'child-demo-a',
           medicationId: 'medication-demo-a',
@@ -378,7 +378,7 @@ void main() {
     );
 
     test('institutional review validates capability, context and refusal reason', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       await repository.changeMedicationRelevant(
         childId: 'child-demo-a',
         medicationId: 'medication-demo-a',
@@ -408,7 +408,7 @@ void main() {
     });
 
     test('approving all institution reviews promotes the current version to active', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       await repository.changeMedicationRelevant(
         childId: 'child-demo-a',
         medicationId: 'medication-demo-a',
@@ -437,7 +437,7 @@ void main() {
     test(
       'claim only accepts future approved active institutional pending dose and responsible context',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         final actor = institutional();
         expect(
           (await repository.claimDose(doseId: 'dose-demo-future', actor: actor)).status,
@@ -468,7 +468,7 @@ void main() {
     );
 
     test('claim conflict, release and expiration preserve validated ownership', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final professor = institutional();
       final nurse = institutional(id: 'professional-demo-nurse');
       final conflict = await repository.claimDose(doseId: 'dose-demo-claimed', actor: nurse);
@@ -495,7 +495,7 @@ void main() {
     test(
       'result requires capability, responsible context, active claim ownership and reason',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         final professor = institutional();
         final nurse = institutional(id: 'professional-demo-nurse');
         await expectLater(
@@ -531,7 +531,7 @@ void main() {
     test(
       'allergy inactivation emits notification and receipt; acknowledgement updates both',
       () async {
-        final repository = DemoHealthSafetyRepository();
+        final repository = DemoHealthCareRepository();
         final receipt = await repository.deactivateAllergy(
           childId: 'child-demo-a',
           allergyId: 'allergy-demo-active',
@@ -541,20 +541,20 @@ void main() {
         var child = await repository.findChild('child-demo-a', actor: owner());
         final notification = child!.notifications.last;
         expect(notification.receiptId, receipt.id);
-        expect(notification.subject, HealthSafetyAcknowledgementSubject.allergyOrRestriction);
+        expect(notification.subject, HealthCareAcknowledgementSubject.allergyOrRestriction);
         expect(child.auditEvents.last.actorId, 'owner-demo');
 
         await expectLater(
           repository.markAcknowledged(notification.id, actor: institutional()),
           throwsStateError,
         );
-        final recipient = HealthSafetyActor(
+        final recipient = HealthCareActor(
           id: notification.recipientId,
-          profile: DemoHealthSafetyProfile.minimized,
+          profile: DemoHealthCareProfile.minimized,
           authorizedChildIds: const {'child-demo-a'},
           contextualCapabilities: const {
-            HealthSafetyCapability.sensitiveRead,
-            HealthSafetyCapability.notifications,
+            HealthCareCapability.sensitiveRead,
+            HealthCareCapability.notifications,
           },
         );
         await repository.markAcknowledged(notification.id, actor: recipient);
@@ -568,7 +568,7 @@ void main() {
     );
 
     test('inactivating an already inactive allergy is a persistent no-op', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final first = await repository.deactivateAllergy(
         childId: 'child-demo-a',
         allergyId: 'allergy-demo-active',
@@ -590,9 +590,9 @@ void main() {
     });
 
     test('fixtures prove every mandated scenario through concrete properties', () async {
-      final repository = DemoHealthSafetyRepository();
+      final repository = DemoHealthCareRepository();
       final page = await repository.fetchDirectory(
-        const HealthSafetyDirectoryQuery(),
+        const HealthCareDirectoryQuery(),
         actor: owner(),
       );
       final child = await repository.findChild('child-demo-a', actor: owner());
@@ -617,10 +617,10 @@ void main() {
       expect(
         child.allergies,
         contains(
-          isA<HealthSafetyAllergy>().having(
+          isA<HealthCareAllergy>().having(
             (item) => item.type,
             'type',
-            HealthSafetyAllergyType.medication,
+            HealthCareAllergyType.medication,
           ),
         ),
       );
@@ -628,7 +628,7 @@ void main() {
       expect(
         child.auditEvents,
         contains(
-          isA<HealthSafetyAuditEvent>().having((item) => item.actorId, 'actorId', 'owner-demo'),
+          isA<HealthCareAuditEvent>().having((item) => item.actorId, 'actorId', 'owner-demo'),
         ),
       );
       final version = child.medications.single.currentVersion;
@@ -643,7 +643,7 @@ void main() {
         (dose) => dose.situation == HealthMedicationDoseSituation.refused,
       );
       final activeMedicationAllergy = child.allergies.singleWhere(
-        (allergy) => allergy.type == HealthSafetyAllergyType.medication && allergy.active,
+        (allergy) => allergy.type == HealthCareAllergyType.medication && allergy.active,
       );
       final inactiveAllergy = child.allergies.singleWhere((allergy) => !allergy.active);
       final pendingReceipt = child.acknowledgements.singleWhere(
@@ -653,7 +653,7 @@ void main() {
         (receipt) => receipt.receivedAt != null,
       );
       final minimized = await repository.fetchDirectory(
-        const HealthSafetyDirectoryQuery(childIds: {'child-demo-a'}),
+        const HealthCareDirectoryQuery(childIds: {'child-demo-a'}),
         actor: minimizedActor(),
       );
 

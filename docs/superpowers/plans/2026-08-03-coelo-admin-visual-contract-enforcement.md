@@ -17,7 +17,7 @@ generated_at: "2026-08-03"
 ## Revisão de escopo aprovada em 2026-08-03
 
 O usuário determinou que esta implantação seja exclusivamente preventiva. As
-telas existentes — inclusive Assiduidade, Rotina diária, Saúde e segurança e
+telas existentes — inclusive Assiduidade, Rotina diária, Saúde e Cuidado e
 demais superfícies novas — não serão corrigidas nem migradas nesta execução.
 Os Tasks 5 e 6 abaixo ficam adiados para o review visual futuro. O validador
 deve registrar os usos atuais em baseline contada e justificada, mas reprovar
@@ -50,7 +50,7 @@ qualquer nova ocorrência acima dessa baseline.
 - `.agents/skills/coelo-ui/tests/query-index.tests.ps1`: consulta natural combinada.
 - `apps/superadmin/lib/features/institutions/presentation/widgets/institution_directory_cards.dart`: adoção do card canônico.
 - `apps/superadmin/lib/features/daily_routine/daily_routine_pages.dart`: correção do card atual.
-- `apps/superadmin/lib/features/health_safety/presentation/health_safety_directory_page.dart`: correção do card atual.
+- `apps/superadmin/lib/features/health_care/presentation/health_care_directory_page.dart`: correção do card atual.
 - `apps/superadmin/lib/features/attendance/attendance_pages.dart`: migração do menu de presença.
 - `apps/superadmin/lib/features/support/presentation/screens/support_page.dart`: migração do menu de status.
 - `apps/superadmin/lib/features/institutions/presentation/widgets/institution_form_sections.dart`: migração do popup local.
@@ -175,7 +175,7 @@ Scan `apps/superadmin/lib/features/**/*.dart`. Count exact constructor tokens af
 
 - [ ] **Step 4: Inventory legacy intentionally**
 
-Run the validator, inspect every finding and add only current justified legacy occurrences with exact maximum counts. Do not allowlist Assiduidade, Rotina diária, Saúde e segurança or the three raw popup menus scheduled for migration.
+Run the validator, inspect every finding and add only current justified legacy occurrences with exact maximum counts. Do not allowlist Assiduidade, Rotina diária, Saúde e Cuidado or the three raw popup menus scheduled for migration.
 
 - [ ] **Step 5: Run GREEN and prove regression detection**
 
@@ -224,7 +224,7 @@ Commit: `fix(ui-index): rank broad visual queries`
 
 **Files:**
 - Modify: `apps/superadmin/test/features/daily_routine/daily_routine_pages_test.dart`
-- Modify: `apps/superadmin/test/features/health_safety/presentation/health_safety_directory_page_test.dart`
+- Modify: `apps/superadmin/test/features/health_care/presentation/health_care_directory_page_test.dart`
 - Modify: `apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_test.dart`
 - Modify: corresponding production files.
 
@@ -239,7 +239,7 @@ Assert each directory renders `CoeloAdminInteractiveCard`, does not render a raw
 
 Expected: current screens still expose raw `InkWell` or the canonical type is absent.
 
-- [ ] **Step 3: Migrate Rotina diária and Saúde e segurança**
+- [ ] **Step 3: Migrate Rotina diária and Saúde e Cuidado**
 
 Replace only the clickable card shell. Preserve width, content, callbacks, keys, permissions and domain behavior.
 

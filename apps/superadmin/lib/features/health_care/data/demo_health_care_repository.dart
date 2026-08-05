@@ -1,17 +1,17 @@
-import '../domain/health_safety.dart';
+import '../domain/health_care.dart';
 
-final class DemoHealthSafetyRepository {
-  DemoHealthSafetyRepository() : _children = _demoChildren();
+final class DemoHealthCareRepository {
+  DemoHealthCareRepository() : _children = _demoChildren();
 
   static final DateTime fixedClock = DateTime.utc(2026, 8, 3, 12);
-  final List<HealthSafetyChild> _children;
+  final List<HealthCareChild> _children;
   DateTime get clock => fixedClock;
-  Set<HealthSafetyFixtureScenario> get fixtureScenarios =>
-      Set.unmodifiable(HealthSafetyFixtureScenario.values);
+  Set<HealthCareFixtureScenario> get fixtureScenarios =>
+      Set.unmodifiable(HealthCareFixtureScenario.values);
 
-  Future<HealthSafetyDirectoryPage> fetchDirectory(
-    HealthSafetyDirectoryQuery query, {
-    required HealthSafetyActor actor,
+  Future<HealthCareDirectoryPage> fetchDirectory(
+    HealthCareDirectoryQuery query, {
+    required HealthCareActor actor,
   }) async {
     final matches =
         _children
@@ -21,10 +21,10 @@ final class DemoHealthSafetyRepository {
           ..sort((a, b) => a.displayName.compareTo(b.displayName));
     final start = query.offset.clamp(0, matches.length);
     final end = (start + query.pageSize).clamp(start, matches.length);
-    return HealthSafetyDirectoryPage(
+    return HealthCareDirectoryPage(
       items: matches
           .sublist(start, end)
-          .map((child) => HealthSafetyChildSummary.fromChild(child, profile: actor.profile))
+          .map((child) => HealthCareChildSummary.fromChild(child, profile: actor.profile))
           .toList(),
       totalCount: matches.length,
       page: query.page,
@@ -32,7 +32,7 @@ final class DemoHealthSafetyRepository {
     );
   }
 
-  bool _isVisibleInDirectory(HealthSafetyChild child, HealthSafetyActor actor) {
+  bool _isVisibleInDirectory(HealthCareChild child, HealthCareActor actor) {
     if (!actor.authorizedChildIds.contains(child.id)) return false;
     return child.links.any(
       (link) =>
@@ -42,7 +42,7 @@ final class DemoHealthSafetyRepository {
     );
   }
 
-  Future<HealthSafetyChild?> findChild(String childId, {required HealthSafetyActor actor}) async {
+  Future<HealthCareChild?> findChild(String childId, {required HealthCareActor actor}) async {
     final child = _children[_childIndex(childId)];
     if (!actor.canReadDetail(child)) throw StateError('Sensitive detail access denied.');
     return child;
@@ -59,9 +59,9 @@ final class DemoHealthSafetyRepository {
     required List<HealthMedicationSchedule> schedules,
     String? documentName,
     String? documentType,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.recordCreateEdit);
+    _require(actor, HealthCareCapability.recordCreateEdit);
     final index = _childIndex(childId);
     final child = _children[index];
     if (!actor.canReadDetail(child)) throw StateError('Authorized context required.');
@@ -108,24 +108,24 @@ final class DemoHealthSafetyRepository {
     return medication;
   }
 
-  Future<HealthSafetyAllergy> createAllergy({
+  Future<HealthCareAllergy> createAllergy({
     required String childId,
     required String label,
-    required HealthSafetyAllergyType type,
-    required HealthSafetyActor actor,
+    required HealthCareAllergyType type,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.recordCreateEdit);
+    _require(actor, HealthCareCapability.recordCreateEdit);
     final index = _childIndex(childId);
     final child = _children[index];
     if (!actor.canReadDetail(child)) throw StateError('Authorized context required.');
-    final allergy = HealthSafetyAllergy(
+    final allergy = HealthCareAllergy(
       id: 'allergy-${child.id}-${child.allergies.length + 1}',
       childId: childId,
       label: label,
       type: type,
       active: true,
     );
-    final receipt = _receipt(child, HealthSafetyAcknowledgementSubject.allergyOrRestriction);
+    final receipt = _receipt(child, HealthCareAcknowledgementSubject.allergyOrRestriction);
     _children[index] = child.copyWith(
       allergies: [...child.allergies, allergy],
       acknowledgements: [...child.acknowledgements, receipt],
@@ -135,7 +135,7 @@ final class DemoHealthSafetyRepository {
           child,
           receipt,
           allergy.id,
-          HealthSafetyAcknowledgementSubject.allergyOrRestriction,
+          HealthCareAcknowledgementSubject.allergyOrRestriction,
         ),
       ],
       auditEvents: [
@@ -151,9 +151,9 @@ final class DemoHealthSafetyRepository {
     required String medicationId,
     required String name,
     required String justification,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.exceptionalCorrection);
+    _require(actor, HealthCareCapability.exceptionalCorrection);
     if (justification.trim().isEmpty) {
       throw ArgumentError('Exceptional corrections require a justification.');
     }
@@ -245,9 +245,9 @@ final class DemoHealthSafetyRepository {
     required String medicationId,
     required HealthMedicationReviewStatus status,
     String? reason,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.clinicalReview);
+    _require(actor, HealthCareCapability.clinicalReview);
     final childIndex = _childIndex(childId);
     final child = _children[childIndex];
     if (!actor.canReadDetail(child) || actor.institutionId == null) {
@@ -280,9 +280,9 @@ final class DemoHealthSafetyRepository {
 
   Future<HealthMedicationClaimResult> claimDose({
     required String doseId,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.medicationClaim);
+    _require(actor, HealthCareCapability.medicationClaim);
     final located = _locateDose(doseId);
     final dose = located.dose;
     _requireDoseContext(located, actor);
@@ -312,9 +312,9 @@ final class DemoHealthSafetyRepository {
 
   Future<HealthMedicationClaimResult> releaseDoseClaim({
     required String doseId,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.medicationClaim);
+    _require(actor, HealthCareCapability.medicationClaim);
     final located = _locateDose(doseId);
     _requireDoseContext(located, actor);
     if (located.dose.situation != HealthMedicationDoseSituation.claimed ||
@@ -328,9 +328,9 @@ final class DemoHealthSafetyRepository {
 
   Future<HealthMedicationClaimResult> expireDoseClaim({
     required String doseId,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.medicationClaim);
+    _require(actor, HealthCareCapability.medicationClaim);
     final located = _locateDose(doseId);
     _requireDoseContext(located, actor);
     if (located.dose.situation != HealthMedicationDoseSituation.claimed ||
@@ -347,9 +347,9 @@ final class DemoHealthSafetyRepository {
     required String doseId,
     required HealthMedicationDoseResult result,
     String? reason,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.administrationResult);
+    _require(actor, HealthCareCapability.administrationResult);
     final located = _locateDose(doseId);
     _requireDoseContext(located, actor);
     if (located.dose.situation != HealthMedicationDoseSituation.claimed ||
@@ -379,13 +379,13 @@ final class DemoHealthSafetyRepository {
     return recorded;
   }
 
-  Future<HealthSafetyAcknowledgement> deactivateAllergy({
+  Future<HealthCareAcknowledgement> deactivateAllergy({
     required String childId,
     required String allergyId,
     required String justification,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.recordInactivate);
+    _require(actor, HealthCareCapability.recordInactivate);
     if (justification.trim().isEmpty) {
       throw ArgumentError('Allergy inactivation requires an Owner justification.');
     }
@@ -397,22 +397,22 @@ final class DemoHealthSafetyRepository {
     final allergies = [...child.allergies];
     if (!allergies[allergyIndex].active) {
       return child.acknowledgements.lastWhere(
-        (item) => item.subject == HealthSafetyAcknowledgementSubject.allergyOrRestriction,
-        orElse: () => HealthSafetyAcknowledgement(
+        (item) => item.subject == HealthCareAcknowledgementSubject.allergyOrRestriction,
+        orElse: () => HealthCareAcknowledgement(
           id: 'ack-${child.id}-inactive-no-op',
           childId: child.id,
-          subject: HealthSafetyAcknowledgementSubject.allergyOrRestriction,
+          subject: HealthCareAcknowledgementSubject.allergyOrRestriction,
           createdAt: allergies[allergyIndex].inactivatedAt ?? clock,
         ),
       );
     }
     allergies[allergyIndex] = allergies[allergyIndex].deactivate(clock);
-    final receipt = _receipt(child, HealthSafetyAcknowledgementSubject.allergyOrRestriction);
+    final receipt = _receipt(child, HealthCareAcknowledgementSubject.allergyOrRestriction);
     final notification = _notification(
       child,
       receipt,
       allergyId,
-      HealthSafetyAcknowledgementSubject.allergyOrRestriction,
+      HealthCareAcknowledgementSubject.allergyOrRestriction,
     );
     _children[index] = child.copyWith(
       allergies: allergies,
@@ -426,27 +426,27 @@ final class DemoHealthSafetyRepository {
     return receipt;
   }
 
-  Future<HealthSafetyAcknowledgement> updateCareProfile({
+  Future<HealthCareAcknowledgement> updateCareProfile({
     required String childId,
-    required List<HealthSafetyCareProfileItem> items,
+    required List<HealthCareProfileItem> items,
     required String justification,
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.recordCreateEdit);
+    _require(actor, HealthCareCapability.recordCreateEdit);
     if (justification.trim().isEmpty) {
       throw ArgumentError('Care profile update requires an Owner justification.');
     }
     final index = _childIndex(childId);
     final child = _children[index];
     if (!actor.canReadDetail(child)) throw StateError('Authorized context required.');
-    final receipt = _receipt(child, HealthSafetyAcknowledgementSubject.careProfile);
+    final receipt = _receipt(child, HealthCareAcknowledgementSubject.careProfile);
     final notification = _notification(
       child,
       receipt,
       items.isEmpty ? 'care-profile' : items.first.catalogItemId,
-      HealthSafetyAcknowledgementSubject.careProfile,
+      HealthCareAcknowledgementSubject.careProfile,
     );
-    final mergedItems = <String, HealthSafetyCareProfileItem>{
+    final mergedItems = <String, HealthCareProfileItem>{
       for (final item in child.careProfile) item.catalogItemId: item,
       for (final item in items) item.catalogItemId: item,
     }.values.toList();
@@ -468,11 +468,11 @@ final class DemoHealthSafetyRepository {
     return receipt;
   }
 
-  Future<HealthSafetyNotification> markAcknowledged(
+  Future<HealthCareNotification> markAcknowledged(
     String notificationId, {
-    required HealthSafetyActor actor,
+    required HealthCareActor actor,
   }) async {
-    _require(actor, HealthSafetyCapability.notifications);
+    _require(actor, HealthCareCapability.notifications);
     for (var childIndex = 0; childIndex < _children.length; childIndex++) {
       final child = _children[childIndex];
       final notificationIndex = child.notifications.indexWhere((item) => item.id == notificationId);
@@ -497,12 +497,12 @@ final class DemoHealthSafetyRepository {
     throw ArgumentError.value(notificationId, 'notificationId');
   }
 
-  void _require(HealthSafetyActor actor, HealthSafetyCapability capability) {
+  void _require(HealthCareActor actor, HealthCareCapability capability) {
     if (!actor.can(capability)) throw StateError('Missing capability: ${capability.name}.');
   }
 
   void _validateScheduleContexts(
-    HealthSafetyChild child,
+    HealthCareChild child,
     Iterable<HealthMedicationSchedule> schedules,
   ) {
     final allowedInstitutions = child.links
@@ -532,7 +532,7 @@ final class DemoHealthSafetyRepository {
     throw ArgumentError.value(doseId, 'doseId');
   }
 
-  void _requireDoseContext(_DoseLocation located, HealthSafetyActor actor) {
+  void _requireDoseContext(_DoseLocation located, HealthCareActor actor) {
     final dose = located.dose;
     if (dose.institutionId == null || !actor.isResponsibleFor(dose.institutionId!)) {
       throw StateError('Responsible institutional context required.');
@@ -576,22 +576,22 @@ final class DemoHealthSafetyRepository {
     _children[location.childIndex] = child.copyWith(doses: doses);
   }
 
-  HealthSafetyAcknowledgement _receipt(
-    HealthSafetyChild child,
-    HealthSafetyAcknowledgementSubject subject,
-  ) => HealthSafetyAcknowledgement(
+  HealthCareAcknowledgement _receipt(
+    HealthCareChild child,
+    HealthCareAcknowledgementSubject subject,
+  ) => HealthCareAcknowledgement(
     id: 'ack-${child.id}-${child.acknowledgements.length + 1}',
     childId: child.id,
     subject: subject,
     createdAt: clock,
   );
 
-  HealthSafetyNotification _notification(
-    HealthSafetyChild child,
-    HealthSafetyAcknowledgement receipt,
+  HealthCareNotification _notification(
+    HealthCareChild child,
+    HealthCareAcknowledgement receipt,
     String itemId,
-    HealthSafetyAcknowledgementSubject subject,
-  ) => HealthSafetyNotification(
+    HealthCareAcknowledgementSubject subject,
+  ) => HealthCareNotification(
     id: 'notification-${child.id}-${child.notifications.length + 1}',
     childId: child.id,
     subject: subject,
@@ -601,13 +601,13 @@ final class DemoHealthSafetyRepository {
     createdAt: clock,
   );
 
-  HealthSafetyAuditEvent _audit(
-    HealthSafetyChild child,
-    HealthSafetyActor actor,
+  HealthCareAuditEvent _audit(
+    HealthCareChild child,
+    HealthCareActor actor,
     String justification,
     Map<String, Object?> before,
     Map<String, Object?> after,
-  ) => HealthSafetyAuditEvent(
+  ) => HealthCareAuditEvent(
     id: 'audit-${child.auditEvents.length + 1}',
     actorId: actor.id,
     justification: justification,
@@ -631,7 +631,7 @@ extension<T> on Iterable<T> {
   }
 }
 
-List<HealthSafetyChild> _demoChildren() {
+List<HealthCareChild> _demoChildren() {
   final policy = HealthMedicationAdministrationPolicy(
     earlyReminder: const Duration(minutes: 30),
     tolerance: const Duration(minutes: 10),
@@ -641,15 +641,15 @@ List<HealthSafetyChild> _demoChildren() {
     escalationRecipientIds: {'coordinator-demo-a'},
   );
   final schedules = [
-    HealthMedicationSchedule(id: 'schedule-home', time: HealthSafetyTimeOfDay(7, 30), atHome: true),
+    HealthMedicationSchedule(id: 'schedule-home', time: HealthCareTimeOfDay(7, 30), atHome: true),
     HealthMedicationSchedule(
       id: 'schedule-institution-a',
-      time: HealthSafetyTimeOfDay(16, 0),
+      time: HealthCareTimeOfDay(16, 0),
       institutionId: 'institution-demo-a',
     ),
     HealthMedicationSchedule(
       id: 'schedule-institution-b',
-      time: HealthSafetyTimeOfDay(17, 0),
+      time: HealthCareTimeOfDay(17, 0),
       institutionId: 'institution-demo-b',
     ),
   ];
@@ -680,7 +680,7 @@ List<HealthSafetyChild> _demoChildren() {
         reason: 'Recusa demonstrativa anterior',
       ),
     ],
-    approvedAt: DemoHealthSafetyRepository.fixedClock,
+    approvedAt: DemoHealthCareRepository.fixedClock,
     prescriptionReference: 'prescription-demo.pdf',
     dispensedBy: 'guardian-demo-a',
     policy: policy,
@@ -699,18 +699,18 @@ List<HealthSafetyChild> _demoChildren() {
     schedules: schedules,
   );
   return [
-    HealthSafetyChild(
+    HealthCareChild(
       id: 'child-demo-a',
       personId: 'person-demo-a',
       displayName: 'Criança Demo A',
-      operationalStatus: HealthSafetyOperationalStatus.active,
+      operationalStatus: HealthCareOperationalStatus.active,
       links: const [
-        HealthSafetyContextLink(
+        HealthCareContextLink(
           institutionId: 'institution-demo-a',
           unitId: 'unit-demo-a',
           groupOrActivityId: 'group-demo-a',
         ),
-        HealthSafetyContextLink(
+        HealthCareContextLink(
           institutionId: 'institution-demo-b',
           unitId: 'unit-demo-b',
           groupOrActivityId: 'group-demo-b',
@@ -812,85 +812,93 @@ List<HealthSafetyChild> _demoChildren() {
         ),
       ],
       allergies: [
-        HealthSafetyAllergy(
+        HealthCareAllergy(
           id: 'allergy-demo-active',
           childId: 'child-demo-a',
           label: 'Alergia Medicamentosa Demo',
-          type: HealthSafetyAllergyType.medication,
+          type: HealthCareAllergyType.medication,
           active: true,
+          status: HealthCareAllergyStatus.monitoring,
+          lastEpisodeAt: DemoHealthCareRepository.fixedClock.subtract(const Duration(days: 30)),
+          episodeSeverity: HealthCareEpisodeSeverity.severe,
+          observedReaction: 'Edema e dificuldade respiratória no episódio registrado.',
+          guidance: 'Seguir o plano familiar e acionar o protocolo de emergência.',
         ),
-        HealthSafetyAllergy(
+        HealthCareAllergy(
           id: 'allergy-demo-inactive',
           childId: 'child-demo-a',
           label: 'Restrição Demo',
-          type: HealthSafetyAllergyType.restriction,
+          type: HealthCareAllergyType.restriction,
           active: false,
-          inactivatedAt: DemoHealthSafetyRepository.fixedClock,
+          status: HealthCareAllergyStatus.history,
+          lastEpisodeAt: DemoHealthCareRepository.fixedClock.subtract(const Duration(days: 180)),
+          episodeSeverity: HealthCareEpisodeSeverity.mild,
+          observedReaction: 'Vermelhidão localizada no episódio registrado.',
+          guidance: 'Manter como referência histórica.',
+          inactivatedAt: DemoHealthCareRepository.fixedClock,
         ),
       ],
-      careProfile: [HealthSafetyCareProfileItem(catalogItemId: 'autism')],
+      careProfile: [HealthCareProfileItem(catalogItemId: 'autism')],
       acknowledgements: [
-        HealthSafetyAcknowledgement(
+        HealthCareAcknowledgement(
           id: 'ack-pending',
           childId: 'child-demo-a',
-          subject: HealthSafetyAcknowledgementSubject.careProfile,
-          createdAt: DemoHealthSafetyRepository.fixedClock,
+          subject: HealthCareAcknowledgementSubject.careProfile,
+          createdAt: DemoHealthCareRepository.fixedClock,
         ),
-        HealthSafetyAcknowledgement(
+        HealthCareAcknowledgement(
           id: 'ack-completed',
           childId: 'child-demo-a',
-          subject: HealthSafetyAcknowledgementSubject.medication,
+          subject: HealthCareAcknowledgementSubject.medication,
           createdAt: DateTime.utc(2026, 8, 3, 9),
           receivedAt: DateTime.utc(2026, 8, 3, 9, 5),
         ),
       ],
       notifications: [
-        HealthSafetyNotification(
+        HealthCareNotification(
           id: 'notification-professor',
           childId: 'child-demo-a',
-          subject: HealthSafetyAcknowledgementSubject.medication,
+          subject: HealthCareAcknowledgementSubject.medication,
           itemId: 'dose-demo-future',
           recipientId: 'professional-demo-professor',
           receiptId: 'ack-pending',
-          createdAt: DemoHealthSafetyRepository.fixedClock,
+          createdAt: DemoHealthCareRepository.fixedClock,
         ),
-        HealthSafetyNotification(
+        HealthCareNotification(
           id: 'notification-nurse',
           childId: 'child-demo-a',
-          subject: HealthSafetyAcknowledgementSubject.medication,
+          subject: HealthCareAcknowledgementSubject.medication,
           itemId: 'dose-demo-future',
           recipientId: 'professional-demo-nurse',
           receiptId: 'ack-completed',
-          createdAt: DemoHealthSafetyRepository.fixedClock,
-          acknowledgedAt: DemoHealthSafetyRepository.fixedClock,
+          createdAt: DemoHealthCareRepository.fixedClock,
+          acknowledgedAt: DemoHealthCareRepository.fixedClock,
         ),
       ],
       auditEvents: [
-        HealthSafetyAuditEvent(
+        HealthCareAuditEvent(
           id: 'audit-owner-fixture',
           actorId: 'owner-demo',
           justification: 'Correção demonstrativa anterior',
           before: const {'status': 'before'},
           after: const {'status': 'after'},
-          createdAt: DemoHealthSafetyRepository.fixedClock,
+          createdAt: DemoHealthCareRepository.fixedClock,
         ),
       ],
     ),
-    HealthSafetyChild(
+    HealthCareChild(
       id: 'child-demo-b',
       personId: 'person-demo-b',
       displayName: 'Criança Demo B',
-      operationalStatus: HealthSafetyOperationalStatus.pending,
-      links: const [HealthSafetyContextLink(institutionId: 'institution-demo-b')],
+      operationalStatus: HealthCareOperationalStatus.implementation,
+      links: const [HealthCareContextLink(institutionId: 'institution-demo-b')],
     ),
-    HealthSafetyChild(
+    HealthCareChild(
       id: 'child-demo-unauthorized',
       personId: 'person-demo-unauthorized',
       displayName: 'Criança Demo C',
-      operationalStatus: HealthSafetyOperationalStatus.active,
-      links: const [
-        HealthSafetyContextLink(institutionId: 'institution-demo-a', authorized: false),
-      ],
+      operationalStatus: HealthCareOperationalStatus.active,
+      links: const [HealthCareContextLink(institutionId: 'institution-demo-a', authorized: false)],
     ),
   ];
 }
