@@ -91,12 +91,9 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
               key: const Key('health-care-profiles-directory-scroll'),
               padding: EdgeInsets.fromLTRB(padding, padding, padding, CoeloSpacing.space24 * 2),
               children: [
-                _demoBanner(context),
-                const SizedBox(height: CoeloSpacing.space4),
                 _toolbar(constraints),
-                const SizedBox(height: CoeloSpacing.space3),
+                const SizedBox(height: CoeloSpacing.space4),
                 _statusTabs(),
-                const SizedBox(height: CoeloSpacing.space1),
                 const SizedBox(height: CoeloSpacing.space4),
                 LayoutBuilder(
                   builder: (context, contentConstraints) => _content(context, contentConstraints),
@@ -132,24 +129,6 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
       },
     ),
   ).withHealthCareResponsiveSurface();
-
-  Widget _demoBanner(BuildContext context) => Card(
-    color: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Wrap(
-        spacing: CoeloSpacing.space3,
-        runSpacing: CoeloSpacing.space2,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          const Icon(Icons.science_outlined),
-          const Text('Demonstração local • nenhum dado real ou operação produtiva.'),
-          Chip(label: Text('Perfil: ${_profileLabel(widget.controller.profile)}')),
-        ],
-      ),
-    ),
-  );
 
   Widget _toolbar(BoxConstraints constraints) => CoeloAdminListingToolbar(
     search: ConstrainedBox(
@@ -492,12 +471,6 @@ final class _StatusText extends StatelessWidget {
     ],
   );
 }
-
-String _profileLabel(DemoHealthCareProfile value) => switch (value) {
-  DemoHealthCareProfile.owner => 'Owner',
-  DemoHealthCareProfile.sensitiveReader => 'Leitor sensível',
-  DemoHealthCareProfile.minimized => 'Operador minimizado',
-};
 
 String _statusLabel(HealthCareOperationalStatus value) => switch (value) {
   HealthCareOperationalStatus.active => 'Ativo',

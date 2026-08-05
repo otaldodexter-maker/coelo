@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/features/health_care/presentation/health_care_d
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_file_actions.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -116,8 +117,16 @@ void main() {
     );
 
     expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
+    expect(find.textContaining('Demonstra\u00e7\u00e3o local'), findsNothing);
     expect(find.text('Todos'), findsOneWidget);
     expect(find.text('Em Implanta\u00e7\u00e3o'), findsOneWidget);
+
+    final toolbar = find.byType(CoeloAdminListingToolbar);
+    final tabs = find.text('Todos');
+    expect(tester.getTopLeft(toolbar).dy, lessThan(tester.getTopLeft(tabs).dy));
+
+    final viewToggle = find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle);
+    expect(tester.getSize(viewToggle), const Size(128, CoeloSize.touchMin));
 
     await tester.tap(find.byKey(const Key('health-care-profiles-view-table')));
     await tester.pumpAndSettle();
@@ -173,7 +182,10 @@ void main() {
     final medicationFiles = tester.widget<HealthCareFileActions>(
       find.byType(HealthCareFileActions),
     );
-    expect(identical(medicationShell.activityController, medicationFiles.activityController), isTrue);
+    expect(
+      identical(medicationShell.activityController, medicationFiles.activityController),
+      isTrue,
+    );
     await tester.tap(find.text('Arquivos'));
     await tester.pumpAndSettle();
 
