@@ -5,7 +5,6 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -30,7 +29,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Criar grupo'), findsWidgets);
+    expect(find.text('Criar turma'), findsWidgets);
     expect(find.text('Ativo'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('group-handle-field')), findsOneWidget);
@@ -39,8 +38,7 @@ void main() {
     expect(find.byKey(const Key('group-activity-links')), findsOneWidget);
     expect(find.text('Hierarquia'), findsOneWidget);
     expect(find.text('Identidade'), findsOneWidget);
-    expect(find.text('Vínculos e aparência'), findsOneWidget);
-    expect(find.textContaining('protótipos locais efêmeros'), findsOneWidget);
+    expect(find.textContaining('Atividades da turma'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
     await tester.enterText(find.byKey(const Key('group-type-field')), 'class');
     await tester.enterText(find.byKey(const Key('group-handle-field')), '@girassol');
@@ -97,19 +95,55 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Sair sem salvar?'), findsOneWidget);
 
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.tap(find.text('Continuar editando'));
     await tester.pumpAndSettle();
     expect(find.text('Sair sem salvar?'), findsNothing);
-    expect(find.text('Nome alterado'), findsOneWidget);
+    expect(find.text('Nome alterado'), findsWidgets);
 
     await tester.tap(find.byKey(const Key('group-form-cancel')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Continuar editando'));
     await tester.pumpAndSettle();
     expect(cancelled, isFalse);
-    expect(find.text('Nome alterado'), findsOneWidget);
+    expect(find.text('Nome alterado'), findsWidgets);
   });
 
+  testWidgets('shows compact localized invite rows without overflow', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          institutions: institutions,
+          repository: FakeGroupDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(const Key('group-invite-add')));
+    await tester.tap(find.byKey(const Key('group-invite-add')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-invite-identifier-field')), '@responsavel');
+    await tester.tap(find.byKey(const Key('group-invite-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('group-invite-compact-0')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('group-invite-compact-0')),
+        matching: find.text('Responsável'),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('shows not found instead of creating from an invalid edit route', (tester) async {
     final institutions = FakeInstitutionDirectoryRepository();
 
@@ -129,7 +163,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('group-form-not-found')), findsOneWidget);
-    expect(find.text('Grupo não encontrado'), findsOneWidget);
+    expect(find.text('Turma não encontrada'), findsOneWidget);
     expect(find.byKey(const Key('group-form-save')), findsNothing);
   });
 }

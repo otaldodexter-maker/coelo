@@ -10,6 +10,7 @@ import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
@@ -95,8 +96,8 @@ final class _GroupDirectoryPageState extends State<GroupDirectoryPage> {
     return SuperadminShell(
       logout: widget.logout,
       activityController: _activityController,
-      title: 'Grupos',
-      subtitle: 'Gerencie os grupos da plataforma.',
+      title: 'Turmas',
+      subtitle: 'Gerencie as turmas da plataforma.',
       currentDestination: 'groups',
       showChatLauncher: false,
       chatLauncherBottomInset: _footerHeight,
@@ -164,6 +165,26 @@ final class _GroupDirectoryContent extends StatefulWidget {
   State<_GroupDirectoryContent> createState() => _GroupDirectoryContentState();
 }
 
+final class _GroupStatusSelector extends StatelessWidget {
+  const _GroupStatusSelector({required this.selected, required this.onSelected});
+
+  final GroupDirectoryStatusCategory selected;
+  final ValueChanged<GroupDirectoryStatusCategory> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SuperadminUnderlineTabs<GroupDirectoryStatusCategory>(
+      key: const Key('group-status-tabs'),
+      tabs: [
+        for (final category in GroupDirectoryStatusCategory.values)
+          SuperadminUnderlineTab(value: category, label: category.label),
+      ],
+      selected: selected,
+      onSelected: onSelected,
+    );
+  }
+}
+
 final class _GroupDirectoryContentState extends State<_GroupDirectoryContent> {
   final GlobalKey _footerKey = GlobalKey();
   double _footerHeight = 0;
@@ -201,6 +222,9 @@ final class _GroupDirectoryContentState extends State<_GroupDirectoryContent> {
           builder: (context, _) {
             final showFooter = widget.viewModel.state == GroupDirectoryLoadState.success;
             _measureFooter(showFooter);
+            final statusCategory = groupDirectoryStatusCategoryFrom(
+              widget.viewModel.query.statuses,
+            );
             return Stack(
               fit: StackFit.expand,
               children: [
@@ -221,6 +245,11 @@ final class _GroupDirectoryContentState extends State<_GroupDirectoryContent> {
                       tableView: widget.tableView,
                       onDisplayChanged: widget.onDisplayChanged,
                       onTableViewChanged: widget.onTableViewChanged,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    _GroupStatusSelector(
+                      selected: statusCategory,
+                      onSelected: widget.viewModel.setStatusCategory,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                     _GroupResults(
@@ -322,7 +351,7 @@ final class _GroupToolbar extends StatelessWidget {
             child: CoeloSearchField(
               controller: searchController,
               hintText: 'Buscar por nome',
-              semanticLabel: 'Buscar grupo por nome',
+              semanticLabel: 'Buscar turma por nome',
               onChanged: viewModel.setSearch,
             ),
           ),
@@ -359,15 +388,6 @@ final class _GroupToolbar extends StatelessWidget {
                 .toSet(),
             optionLabel: (option) => option.label,
             onChanged: (value) => viewModel.setTypes(value.map((item) => item.id).toSet()),
-            width: filterWidth,
-          ),
-          filter<GroupStatus>(
-            key: const Key('group-status-filter'),
-            label: 'Status',
-            options: GroupStatus.values,
-            selected: viewModel.query.statuses,
-            optionLabel: (status) => status.label,
-            onChanged: viewModel.setStatuses,
             width: filterWidth,
           ),
           if (viewModel.query.hasActiveFilters)
@@ -421,14 +441,14 @@ final class _GroupToolbar extends StatelessWidget {
                     actions: [
                       CoeloAdminFileAction(
                         key: const Key('group-import-action'),
-                        label: 'Importar grupos',
+                        label: 'Importar turmas',
                         icon: Icons.upload_file_outlined,
                         onPressed: () {
                           activityController.startDemoImport(
-                            subject: 'Grupos',
-                            fileName: 'grupos-demonstracao.xlsx',
-                            progressSummary: 'Importando grupos',
-                            completedSummary: 'Importação de grupos demonstrada',
+                            subject: 'Turmas',
+                            fileName: 'turmas-demonstracao.xlsx',
+                            progressSummary: 'Importando turmas',
+                            completedSummary: 'Importação de turmas demonstrada',
                           );
                           showSuperadminNotice(
                             context,
@@ -439,7 +459,7 @@ final class _GroupToolbar extends StatelessWidget {
                       ),
                       CoeloAdminFileAction(
                         key: const Key('group-export-action'),
-                        label: 'Exportar grupos',
+                        label: 'Exportar turmas',
                         icon: Icons.download_outlined,
                         onPressed: () {
                           final viewLabel = display == GroupDirectoryDisplay.cards
@@ -450,12 +470,12 @@ final class _GroupToolbar extends StatelessWidget {
                                 };
                           activityController.completeDemoExport(
                             SuperadminExportFormat.xlsx,
-                            subject: 'Grupos',
-                            fileBaseName: 'grupos',
+                            subject: 'Turmas',
+                            fileBaseName: 'turmas',
                           );
                           showSuperadminNotice(
                             context,
-                            'Exportação local de grupos preparada (visão: $viewLabel). '
+                            'Exportação local de turmas preparada (visão: $viewLabel). '
                             'Nenhum arquivo real foi gerado.',
                             icon: Icons.check_circle_outline_rounded,
                           );
@@ -492,7 +512,7 @@ final class _GroupResults extends StatelessWidget {
   Widget build(BuildContext context) {
     if (viewModel.state == GroupDirectoryLoadState.failure) {
       return CoeloStatePanel(
-        title: 'Não foi possível carregar os grupos',
+        title: 'Não foi possível carregar as turmas',
         message: 'Tente novamente.',
         icon: Icons.cloud_off_outlined,
         actionLabel: 'Tentar novamente',
@@ -502,7 +522,7 @@ final class _GroupResults extends StatelessWidget {
     if (viewModel.state == GroupDirectoryLoadState.unauthorized) {
       return const CoeloStatePanel(
         title: 'Acesso não autorizado',
-        message: 'Você não tem permissão para ver os grupos.',
+        message: 'Você não tem permissão para ver as turmas.',
         icon: Icons.lock_outline_rounded,
       );
     }
@@ -510,10 +530,10 @@ final class _GroupResults extends StatelessWidget {
         viewModel.state == GroupDirectoryLoadState.noResults) {
       final empty = viewModel.state == GroupDirectoryLoadState.empty;
       return CoeloStatePanel(
-        title: empty ? 'Nenhum grupo cadastrado' : 'Nenhum grupo encontrado',
-        message: empty ? 'Crie o primeiro grupo da plataforma.' : 'Ajuste ou limpe os filtros.',
+        title: empty ? 'Nenhuma turma cadastrada' : 'Nenhuma turma encontrada',
+        message: empty ? 'Crie a primeira turma da plataforma.' : 'Ajuste ou limpe os filtros.',
         icon: Icons.groups_outlined,
-        actionLabel: empty ? 'Criar grupo' : 'Limpar filtros',
+        actionLabel: empty ? 'Criar turma' : 'Limpar filtros',
         onAction: empty ? onCreate : viewModel.clearFilters,
       );
     }
@@ -525,26 +545,48 @@ final class _GroupResults extends StatelessWidget {
         if (viewModel.state == GroupDirectoryLoadState.success)
           display == GroupDirectoryDisplay.cards
               ? _GroupCards(items: viewModel.page.items, onCreate: onCreate, onEdit: onEdit)
-              : Column(
-                  children: [
-                    SuperadminDirectoryCreateBanner(
-                      label: 'Criar grupo',
-                      description: 'Adicionar novo grupo ao sistema.',
-                      onPressed: onCreate,
-                      bannerKey: const Key('group-create-banner'),
-                      surfaceKey: const Key('group-create-banner-surface'),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    tableView == GroupDirectoryTableView.grouped
-                        ? _GroupTable(
-                            items: viewModel.page.items,
-                            viewModel: viewModel,
-                            onEdit: onEdit,
-                          )
-                        : _GroupActivityTable(items: viewModel.page.items, onEdit: onEdit),
-                  ],
+              : _GroupDirectoryTableLayout(
+                  child: Column(
+                    children: [
+                      SuperadminDirectoryCreateBanner(
+                        label: 'Criar turma',
+                        description: 'Adicionar nova turma ao sistema.',
+                        onPressed: onCreate,
+                        bannerKey: const Key('group-create-banner'),
+                        surfaceKey: const Key('group-create-banner-surface'),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      tableView == GroupDirectoryTableView.grouped
+                          ? _GroupTable(
+                              items: viewModel.page.items,
+                              viewModel: viewModel,
+                              onEdit: onEdit,
+                            )
+                          : _GroupActivityTable(items: viewModel.page.items, onEdit: onEdit),
+                    ],
+                  ),
                 ),
       ],
+    );
+  }
+}
+
+final class _GroupDirectoryTableLayout extends StatelessWidget {
+  const _GroupDirectoryTableLayout({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth.isFinite
+            ? math.min(constraints.maxWidth, 1440.0)
+            : 1440.0;
+        return Center(
+          child: SizedBox(width: width, child: child),
+        );
+      },
     );
   }
 }
@@ -559,7 +601,7 @@ final class _GroupCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = <Widget>[
-      CoeloAdminCreateAction(label: 'Criar grupo', icon: Icons.groups_rounded, onPressed: onCreate),
+      CoeloAdminCreateAction(label: 'Criar turma', icon: Icons.groups_rounded, onPressed: onCreate),
       for (final item in items) _GroupCard(item: item, onPressed: () => onEdit(item.id)),
     ];
     return LayoutBuilder(
@@ -923,7 +965,7 @@ final class _GroupTable extends StatelessWidget {
           },
           pinnedColumn: CoeloAdminTableColumn(
             id: 'group',
-            label: 'Grupo',
+            label: 'Turma',
             initialWidth: 260,
             minWidth: 180,
             maxWidth: 600,
@@ -1027,7 +1069,7 @@ final class _GroupActivityTable extends StatelessWidget {
           onRowPressed: (row) => onEdit(row.group.id),
           pinnedColumn: column('activity', 'Atividade', (row) => row.activity, width: 240),
           columns: [
-            column('group', 'Grupo', (row) => row.group.name, width: 240),
+            column('group', 'Turma', (row) => row.group.name, width: 240),
             column('unit', 'Unidade', (row) => row.group.unitName, width: 220),
             column('institution', 'Instituição', (row) => row.group.institutionName, width: 240),
             column('team', 'Equipe institucional', (row) => row.prototype.team, width: 220),

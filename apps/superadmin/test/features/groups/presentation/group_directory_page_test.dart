@@ -29,12 +29,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Grupos'), findsWidgets);
-    expect(find.text('Gerencie os grupos da plataforma.'), findsOneWidget);
+    expect(find.text('Turmas'), findsWidgets);
+    expect(find.text('Gerencie as turmas da plataforma.'), findsOneWidget);
     expect(find.textContaining('Instituição:'), findsWidgets);
     expect(find.textContaining('Unidade:'), findsWidgets);
     expect(find.text('Tipos'), findsWidgets);
-    expect(find.text('Status'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(
       find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
@@ -56,7 +55,7 @@ void main() {
     await tester.tap(find.byKey(const Key('group-view-table')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-directory-table')), findsOneWidget);
-    expect(find.text('Grupo'), findsWidgets);
+    expect(find.text('Turma'), findsWidgets);
 
     await tester.longPress(find.byKey(const Key('group-view-table')));
     await tester.pumpAndSettle();
@@ -116,7 +115,8 @@ void main() {
     expect(find.byKey(const Key('group-institution-filter')), findsOneWidget);
     expect(find.byKey(const Key('group-unit-filter')), findsOneWidget);
     expect(find.byKey(const Key('group-type-filter')), findsOneWidget);
-    expect(find.byKey(const Key('group-status-filter')), findsOneWidget);
+    expect(find.byKey(const Key('group-status-tabs')), findsOneWidget);
+    expect(find.text('Ativos'), findsOneWidget);
   });
 
   testWidgets('offers explicit local import and export demonstrations', (tester) async {
@@ -136,8 +136,8 @@ void main() {
 
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    expect(find.text('Importar grupos'), findsOneWidget);
-    expect(find.text('Exportar grupos'), findsOneWidget);
+    expect(find.text('Importar turmas'), findsOneWidget);
+    expect(find.text('Exportar turmas'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('group-export-action')));
     await tester.pumpAndSettle();
@@ -181,7 +181,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(const Key('superadmin-bug-screen')),
-        matching: find.text('Grupos'),
+        matching: find.text('Turmas'),
       ),
       findsOneWidget,
     );
@@ -204,11 +204,11 @@ void main() {
   });
 
   for (final scenario in [
-    (name: 'empty', repository: _ScenarioRepository.empty(), expected: 'Nenhum grupo cadastrado'),
+    (name: 'empty', repository: _ScenarioRepository.empty(), expected: 'Nenhuma turma cadastrada'),
     (
       name: 'failure',
       repository: _ScenarioRepository.failure(),
-      expected: 'Não foi possível carregar os grupos',
+      expected: 'Não foi possível carregar as turmas',
     ),
     (
       name: 'unauthorized',

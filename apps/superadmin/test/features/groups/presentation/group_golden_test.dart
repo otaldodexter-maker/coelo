@@ -168,9 +168,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(_directoryApp(Brightness.light));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('group-status-filter')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MenuItemButton, 'Rascunho'));
+    await tester.tap(find.text('Em Implantação'));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('group-directory-golden-frame')),

@@ -91,6 +91,8 @@ final class GroupDirectoryItem {
 
 enum GroupDirectorySortColumn { name, institutionName, unitName, groupType, status }
 
+enum GroupDirectoryStatusCategory { all, active, onboarding, inactive }
+
 final class GroupDirectoryQuery {
   static const defaultPageSize = 11;
   static const allowedPageSizes = <int>[8, 11, 20, 50, 100];
@@ -129,6 +131,48 @@ final class GroupDirectoryQuery {
       unitIds.isNotEmpty ||
       typeIds.isNotEmpty ||
       statuses.isNotEmpty;
+}
+
+extension GroupDirectoryStatusCategoryExtension on GroupDirectoryStatusCategory {
+  Set<GroupStatus> get statuses => switch (this) {
+    GroupDirectoryStatusCategory.all => const {},
+    GroupDirectoryStatusCategory.active => const {GroupStatus.active},
+    GroupDirectoryStatusCategory.onboarding => const {GroupStatus.draft},
+    GroupDirectoryStatusCategory.inactive => const {
+      GroupStatus.inactive,
+      GroupStatus.suspended,
+      GroupStatus.archived,
+    },
+  };
+}
+
+extension GroupDirectoryStatusCategoryLabel on GroupDirectoryStatusCategory {
+  String get label => switch (this) {
+    GroupDirectoryStatusCategory.all => 'Todos',
+    GroupDirectoryStatusCategory.active => 'Ativos',
+    GroupDirectoryStatusCategory.onboarding => 'Em Implantação',
+    GroupDirectoryStatusCategory.inactive => 'Inativos',
+  };
+}
+
+GroupDirectoryStatusCategory groupDirectoryStatusCategoryFrom(
+  Set<GroupStatus> statuses,
+) {
+  if (statuses.isEmpty) return GroupDirectoryStatusCategory.all;
+  if (statuses.length == 1) {
+    if (statuses.contains(GroupStatus.active)) {
+      return GroupDirectoryStatusCategory.active;
+    }
+    if (statuses.contains(GroupStatus.draft)) {
+      return GroupDirectoryStatusCategory.onboarding;
+    }
+    if (statuses.contains(GroupStatus.inactive) ||
+        statuses.contains(GroupStatus.suspended) ||
+        statuses.contains(GroupStatus.archived)) {
+      return GroupDirectoryStatusCategory.inactive;
+    }
+  }
+  return GroupDirectoryStatusCategory.all;
 }
 
 final class GroupDirectoryPage {

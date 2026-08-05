@@ -5,15 +5,16 @@ generated_at: "2026-07-29"
 updated_at: "2026-08-03"
 ---
 
-# Grupos (Turmas) no Superadmin
+# Turmas no Superadmin
 
 ## Objetivo
 
-Entregar a listagem, criacao e edicao local de grupos no Superadmin com a
+Entregar a listagem, criacao e edicao local de turmas no Superadmin com a
 mesma linguagem visual e os mesmos contratos de interacao aprovados para
-Instituicoes. Grupo continua sendo a entidade canonica; `Turma` é seu termo
-equivalente de apresentação no contexto escolar e nunca representa uma
-entidade-pai ou outro nível da hierarquia.
+Instituicoes. `Turma` e o termo unico de apresentacao dessa entidade nas
+superficies do produto. Os identificadores tecnicos `group*`, tabelas, rotas,
+classes e migrations permanecem inalterados; a mudanca de linguagem nao cria
+uma entidade-pai nem outro nivel da hierarquia.
 
 ## Escopo
 
@@ -32,7 +33,7 @@ tokens, variantes e APIs publicas.
 
 ## Dominio e autorizacao
 
-Todo grupo pertence obrigatoriamente a uma unidade e a uma instituicao. Na
+Toda turma pertence obrigatoriamente a uma unidade e a uma instituicao. Na
 criacao, a unidade so pode ser escolhida dentro da instituicao selecionada. Na
 edicao, instituicao e unidade permanecem somente leitura ate existir regra
 aprovada para movimentacao hierarquica.
@@ -55,14 +56,14 @@ Unidades dependem das instituicoes selecionadas e selecoes invalidas sao
 descartadas.
 
 Cards preservam a geometria de Instituicoes e mostram somente nome, status,
-instituicao, unidade e tipo. A tabela fixa Grupo e oferece Instituicao,
+instituicao, unidade e tipo. A tabela fixa Turma e oferece Instituicao,
 Unidade, Tipo e Status, com hover, foco, selecao, ordenacao, resize e scroll
 horizontal.
 
 Cards iniciam com 11 itens e opcoes 11/20/50/100; tabela inicia com 8 e opcoes
 8/20/50/100. O footer sticky mede a propria altura e desloca o launcher.
 
-Arquivos oferece `Importar grupos` e `Exportar grupos` como demonstracao
+Arquivos oferece `Importar turmas` e `Exportar turmas` como demonstracao
 explicita no centro de atividades, sem alegar suporte produtivo.
 
 ## Formulario
@@ -81,5 +82,5 @@ Validar 375, 768, 1024 e 1440 px, light e dark, texto a 200%, mouse, touch,
 teclado, foco, Escape, semantica, reduced motion, scroll horizontal e ausencia
 de sobreposicao entre conteudo, paginacao e launcher.
 
-Testes seguem RED/GREEN. Goldens novos de Grupos sao inspecionados
+Testes seguem RED/GREEN. Goldens novos de Turmas sao inspecionados
 visualmente; goldens de Instituicoes nao sao alterados.

@@ -1,5 +1,5 @@
 ---
-title: Diretório de grupos do Superadmin
+title: Diretório de turmas do Superadmin
 knowledge_id: superadmin-group-directory
 source: docs/superpowers/specs/2026-07-29-superadmin-group-directory-design.md
 status: validated
@@ -10,10 +10,10 @@ visibility: internal
 review_owner: Coelo Product
 ---
 
-# Diretório de grupos do Superadmin
+# Diretório de turmas do Superadmin
 
-No Superadmin, grupo é a entidade canônica e `Turma` é seu termo equivalente
-de apresentação no contexto escolar, nunca uma entidade-pai. Cada grupo
+No Superadmin, `Turma` é o termo visível único para a entidade educacional
+persistida tecnicamente como `group*`, nunca uma entidade-pai. Cada turma
 pertence a uma instituição e a uma unidade; na criação, a unidade só
 pode ser selecionada dentro da instituição escolhida. Durante a edição,
 instituição e unidade ficam somente leitura até que exista regra aprovada para
@@ -31,7 +31,7 @@ são preservados e os filtros mostram os tipos existentes. Os status são
 `draft`, `active`, `inactive`, `suspended` e `archived`; novos grupos iniciam
 em `active`.
 
-Importar grupos e Exportar grupos são demonstrações explícitas no centro de
+Importar turmas e Exportar turmas são demonstrações explícitas no centro de
 atividades, sem arquivo, parser ou persistência. A entrega usa repositório fake
 local independente: o Supabase atual só permite leitura de grupos por
 `platform.read`, e a interface não infere autorização por metadata do cliente

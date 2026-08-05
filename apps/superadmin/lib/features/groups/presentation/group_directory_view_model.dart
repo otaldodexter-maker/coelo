@@ -72,6 +72,8 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   Future<void> setPageSize(int value) => GroupDirectoryQuery.allowedPageSizes.contains(value)
       ? _replace(_copy(pageSize: value))
       : Future.value();
+  Future<void> setStatusCategory(GroupDirectoryStatusCategory category) =>
+      setStatuses(category.statuses);
 
   GroupDirectoryQuery _copy({
     String? search,

@@ -22,6 +22,8 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
     this.sortColumnId,
     this.sortAscending = true,
     this.onSort,
+    this.horizontalScrollController,
+    this.showHorizontalScrollbar = true,
     super.key,
   });
 
@@ -37,13 +39,16 @@ final class CoeloAdminResizableTable<T> extends StatefulWidget {
   final String? sortColumnId;
   final bool sortAscending;
   final ValueChanged<String>? onSort;
+  final ScrollController? horizontalScrollController;
+  final bool showHorizontalScrollbar;
 
   @override
   State<CoeloAdminResizableTable<T>> createState() => _CoeloAdminResizableTableState<T>();
 }
 
 final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableTable<T>> {
-  final ScrollController _scrollController = ScrollController();
+  late ScrollController _scrollController;
+  bool _ownsScrollController = true;
   final Map<Object, FocusNode> _rowFocusNodes = {};
   Object? _hoveredRowKey;
   Object? _focusedRowKey;
@@ -56,6 +61,8 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
   @override
   void initState() {
     super.initState();
+    _scrollController = widget.horizontalScrollController ?? ScrollController();
+    _ownsScrollController = widget.horizontalScrollController == null;
     widget.controller?.attach(_focusRow);
     _reconcileRowFocusNodes();
   }
@@ -66,6 +73,13 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
     if (!identical(oldWidget.controller, widget.controller)) {
       oldWidget.controller?.detach(_focusRow);
       widget.controller?.attach(_focusRow);
+    }
+    if (!identical(oldWidget.horizontalScrollController, widget.horizontalScrollController)) {
+      if (_ownsScrollController) {
+        _scrollController.dispose();
+      }
+      _scrollController = widget.horizontalScrollController ?? ScrollController();
+      _ownsScrollController = widget.horizontalScrollController == null;
     }
     _reconcileRowFocusNodes();
     _widths = {
@@ -82,7 +96,9 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
     for (final focusNode in _rowFocusNodes.values) {
       focusNode.dispose();
     }
-    _scrollController.dispose();
+    if (_ownsScrollController) {
+      _scrollController.dispose();
+    }
     super.dispose();
   }
 
@@ -106,43 +122,47 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                   PointerDeviceKind.trackpad,
                 },
               ),
-              child: Scrollbar(
-                controller: _scrollController,
-                thumbVisibility: true,
-                trackVisibility: true,
-                child: Stack(
-                  children: [
-                    SingleChildScrollView(
-                      key: const Key('coelo-admin-table-scroll'),
+              child: widget.showHorizontalScrollbar
+                  ? Scrollbar(
                       controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: tableWidth,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _headerRow(context),
-                            ...widget.items.map((item) => _dataRow(context, item)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      width: _widths[widget.pinnedColumn.id],
-                      height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
-                      child: _pinnedColumn(context),
-                    ),
-                  ],
-                ),
-              ),
+                      thumbVisibility: true,
+                      trackVisibility: true,
+                      child: _tableBody(context, tableWidth),
+                    )
+                  : _tableBody(context, tableWidth),
             ),
           ),
         ),
       ),
     );
   }
+
+  Widget _tableBody(BuildContext context, double tableWidth) => Stack(
+    children: [
+      SingleChildScrollView(
+        key: const Key('coelo-admin-table-scroll'),
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        child: SizedBox(
+          width: tableWidth,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _headerRow(context),
+              ...widget.items.map((item) => _dataRow(context, item)),
+            ],
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        top: 0,
+        width: _widths[widget.pinnedColumn.id],
+        height: widget.headerHeight + widget.items.length * (widget.rowHeight + 1),
+        child: _pinnedColumn(context),
+      ),
+    ],
+  );
 
   Widget _headerRow(BuildContext context) {
     return ColoredBox(
