@@ -38,6 +38,29 @@ void main() {
     expect(find.text('Reenviar convite'), findsOneWidget);
     expect(find.text('Revogar convite'), findsOneWidget);
 
+    final divider = find.descendant(
+      of: find.byKey(const Key('invite-detail-actions')),
+      matching: find.byType(Divider),
+    );
+    expect(divider, findsOneWidget);
+    expect(
+      tester.getTopLeft(divider).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(find.byKey(const Key('invite-detail-resend'))).dy),
+    );
+    expect(
+      tester.getTopLeft(find.byKey(const Key('invite-detail-revoke'))).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(divider).dy),
+    );
+    final revoke = tester.widget<TextButton>(find.byKey(const Key('invite-detail-revoke')));
+    expect(
+      revoke.style?.foregroundColor?.resolve(<WidgetState>{}),
+      CoeloTheme.light.colorScheme.error,
+    );
+    expect(
+      revoke.style?.backgroundColor?.resolve(<WidgetState>{WidgetState.hovered}),
+      CoeloTheme.light.colorScheme.errorContainer,
+    );
+
     await tester.tap(find.text('Copiar link'));
     await tester.pumpAndSettle();
     expect(find.text('Link do convite copiado.'), findsOneWidget);
@@ -101,6 +124,27 @@ void main() {
     expect(find.text('Não foi possível concluir a ação.'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
+
+  testWidgets('groups each timeline event semantically and hides its decorative icon', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await _pumpDetail(tester, inviteId: 'invite-1', size: const Size(375, 900));
+
+    await tester.drag(find.byKey(const Key('invite-detail-scroll')), const Offset(0, -600));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.bySemanticsLabel('Convite criado, ${formatInviteDate(DateTime(2026, 8, 4, 8))}'),
+      findsOneWidget,
+    );
+    final eventSemantics = tester.widget<Semantics>(
+      find.byKey(const Key('invite-timeline-event-0')),
+    );
+    expect(eventSemantics.excludeSemantics, isTrue);
+    semantics.dispose();
+  });
+
   testWidgets('hides invalid actions for an accepted invitation', (tester) async {
     await _pumpDetail(tester, inviteId: 'invite-2');
 

@@ -94,26 +94,34 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   Widget _actions(PlatformInvite invite) {
     final colors = Theme.of(context).colorScheme;
     final busy = _busyAction != null;
-    return Wrap(
+    final hasStandardActions = invite.link != null || invite.canResend;
+    return Column(
       key: const Key('invite-detail-actions'),
-      spacing: CoeloSpacing.space2,
-      runSpacing: CoeloSpacing.space2,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (invite.link != null)
-          OutlinedButton.icon(
-            key: const Key('invite-detail-copy'),
-            onPressed: busy ? null : () => _copyLink(invite),
-            icon: _actionIcon(_InviteDetailAction.copyLink, Icons.content_copy_rounded),
-            label: const Text('Copiar link'),
+        if (hasStandardActions)
+          Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              if (invite.link != null)
+                OutlinedButton.icon(
+                  key: const Key('invite-detail-copy'),
+                  onPressed: busy ? null : () => _copyLink(invite),
+                  icon: _actionIcon(_InviteDetailAction.copyLink, Icons.content_copy_rounded),
+                  label: const Text('Copiar link'),
+                ),
+              if (invite.canResend)
+                OutlinedButton.icon(
+                  key: const Key('invite-detail-resend'),
+                  onPressed: busy ? null : () => _resend(invite),
+                  icon: _actionIcon(_InviteDetailAction.resend, Icons.forward_to_inbox_outlined),
+                  label: const Text('Reenviar convite'),
+                ),
+            ],
           ),
-        if (invite.canResend)
-          OutlinedButton.icon(
-            key: const Key('invite-detail-resend'),
-            onPressed: busy ? null : () => _resend(invite),
-            icon: _actionIcon(_InviteDetailAction.resend, Icons.forward_to_inbox_outlined),
-            label: const Text('Reenviar convite'),
-          ),
-        if (invite.canRevoke)
+        if (invite.canRevoke) ...[
+          if (hasStandardActions) const Divider(height: CoeloSpacing.space5),
           TextButton.icon(
             key: const Key('invite-detail-revoke'),
             style:
@@ -133,6 +141,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
             icon: _actionIcon(_InviteDetailAction.revoke, Icons.block_rounded),
             label: const Text('Revogar convite'),
           ),
+        ],
       ],
     );
   }
@@ -195,34 +204,45 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final entry in invite.timeline)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  width: CoeloSize.touchMin,
-                  height: CoeloSize.touchMin,
-                  child: Icon(Icons.history_rounded),
-                ),
-                const SizedBox(width: CoeloSpacing.space2),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(entry.label, style: Theme.of(context).textTheme.titleSmall),
-                      const SizedBox(height: CoeloSpacing.spaceHalf),
-                      Text(
-                        formatInviteDate(entry.occurredAt),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+        for (final indexedEntry in invite.timeline.asMap().entries)
+          Semantics(
+            key: Key('invite-timeline-event-${indexedEntry.key}'),
+            container: true,
+            label:
+                '${indexedEntry.value.label}, '
+                '${formatInviteDate(indexedEntry.value.occurredAt)}',
+            excludeSemantics: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    width: CoeloSize.touchMin,
+                    height: CoeloSize.touchMin,
+                    child: Icon(Icons.history_rounded),
                   ),
-                ),
-              ],
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          indexedEntry.value.label,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: CoeloSpacing.spaceHalf),
+                        Text(
+                          formatInviteDate(indexedEntry.value.occurredAt),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
       ],

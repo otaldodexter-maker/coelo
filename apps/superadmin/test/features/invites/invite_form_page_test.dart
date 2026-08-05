@@ -48,6 +48,53 @@ void main() {
       expect(find.byKey(const Key('invite-form-desktop-panel')), findsNothing);
     }
   });
+  testWidgets('keeps every reached step enabled after returning to an earlier step', (
+    tester,
+  ) async {
+    await _pumpForm(tester);
+
+    await _continue(tester);
+    await _continue(tester);
+    await _continue(tester);
+    await tester.enterText(find.byKey(const Key('invite-recipient-field')), 'owner@aurora.test');
+    await _continue(tester);
+    await _continue(tester);
+
+    var navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(3);
+    await tester.pump();
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    expect(navigation.steps[5].enabled, isTrue);
+
+    navigation.onStepSelected(5);
+    await tester.pump();
+    expect(find.byKey(const Key('invite-expiry-field')), findsOneWidget);
+  });
+
+  testWidgets('marks the recipient step as error when its value is invalid', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await _pumpForm(tester, size: const Size(375, 900));
+
+    await _continue(tester);
+    await _continue(tester);
+    await _continue(tester);
+    await tester.enterText(find.byKey(const Key('invite-recipient-field')), 'email-invalido');
+    await _continue(tester);
+
+    final navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    expect(navigation.steps[3].status, SuperadminFormStepStatus.error);
+    final summary = tester.getSemantics(find.byKey(const Key('superadmin-form-step-summary')));
+    expect(summary.label, contains('com erro'));
+    semantics.dispose();
+  });
+
   testWidgets('validates email, reviews masked recipient and sends', (tester) async {
     PlatformInvite? sent;
     await _pumpForm(tester, onSent: (invite) => sent = invite);
@@ -80,11 +127,94 @@ void main() {
     expect(sent!.recipient, 'owner@aurora.test');
     expect(sent!.status, InviteStatus.pending);
   });
+
+  testWidgets('redirects review to the first invalid reached text step', (tester) async {
+    PlatformInvite? sent;
+    await _pumpForm(tester, onSent: (invite) => sent = invite);
+    await _reachReview(tester);
+
+    var navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(2);
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('invite-role-field')), '');
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(1);
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('invite-scope-field')), '');
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(6);
+    await tester.pump();
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    expect(navigation.currentIndex, 1);
+    expect(navigation.steps[1].status, SuperadminFormStepStatus.error);
+    expect(navigation.steps[2].status, SuperadminFormStepStatus.error);
+    expect(find.byKey(const Key('invite-form-send')), findsNothing);
+    expect(sent, isNull);
+  });
+
+  testWidgets('redirects review to recipient when a channel change invalidates it', (tester) async {
+    PlatformInvite? sent;
+    await _pumpForm(tester, onSent: (invite) => sent = invite);
+    await _reachReview(tester);
+
+    var navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(3);
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('invite-recipient-field')), '1234@a.co');
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(4);
+    await tester.pump();
+    final channel = tester.widget<CoeloAdminSingleSelectField<InviteChannel>>(
+      find.byType(CoeloAdminSingleSelectField<InviteChannel>),
+    );
+    channel.onChanged(InviteChannel.mobile);
+    await tester.pump();
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    navigation.onStepSelected(5);
+    await tester.pump();
+
+    navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    expect(navigation.currentIndex, 3);
+    expect(navigation.steps[3].status, SuperadminFormStepStatus.error);
+    expect(find.byKey(const Key('invite-recipient-field')), findsOneWidget);
+    expect(sent, isNull);
+  });
 }
 
 Future<void> _continue(WidgetTester tester) async {
   await tester.tap(find.byKey(const Key('invite-form-continue')));
   await tester.pumpAndSettle();
+}
+
+Future<void> _reachReview(WidgetTester tester) async {
+  await _continue(tester);
+  await _continue(tester);
+  await _continue(tester);
+  await tester.enterText(find.byKey(const Key('invite-recipient-field')), 'owner@aurora.test');
+  await _continue(tester);
+  await _continue(tester);
+  await _continue(tester);
 }
 
 Future<void> _pumpForm(

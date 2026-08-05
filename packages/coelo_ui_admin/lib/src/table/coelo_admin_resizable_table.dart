@@ -147,10 +147,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
           width: tableWidth,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              _headerRow(context),
-              ...widget.items.map((item) => _dataRow(context, item)),
-            ],
+            children: [_headerRow(context), ...widget.items.map((item) => _dataRow(context, item))],
           ),
         ),
       ),
@@ -263,6 +260,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
       key: const Key('coelo-admin-table-pinned-column'),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Semantics(
             container: true,
@@ -278,6 +276,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                 color: colors.surface,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: widget.items
                       .map((item) => _pinnedRow(context, item))
                       .toList(growable: false),

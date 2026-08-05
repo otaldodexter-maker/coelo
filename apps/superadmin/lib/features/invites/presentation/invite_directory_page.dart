@@ -151,9 +151,17 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final searchWidth = compact ? constraints.maxWidth : 280.0;
-      final filterWidth = compact ? constraints.maxWidth : CoeloSpacing.space20 * 2;
+      final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space6
+          : CoeloSpacing.space4;
+      final availableWidth = constraints.maxWidth - (contentPadding * 2);
+      final compact = availableWidth < CoeloBreakpoints.medium.minWidth;
+      final searchWidth = compact ? availableWidth : 280.0;
+      final filterWidth = compact
+          ? (availableWidth - CoeloSpacing.space3) / 2
+          : CoeloSpacing.space20 * 2;
       final items = widget.repository.list(_query);
       final rowHeight = MediaQuery.textScalerOf(context).scale(64).clamp(64, 96).toDouble();
       return ColoredBox(
@@ -162,17 +170,10 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
         child: SingleChildScrollView(
           key: const Key('invite-directory-vertical-scroll'),
           child: Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            padding: EdgeInsets.all(contentPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Convites', style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: CoeloSpacing.space2),
-                Text(
-                  'Acompanhe convites fictícios e mascarados do preview local.',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: CoeloSpacing.space4),
                 CoeloAdminListingToolbar(
                   search: SizedBox(
                     width: searchWidth,
@@ -237,8 +238,6 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
                         onChanged: (value) => setState(() => _period = value),
                       ),
                     ),
-                  ],
-                  actions: [
                     if (_hasFilters)
                       TextButton.icon(
                         key: const Key('invite-clear-filters'),
@@ -247,21 +246,19 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
                         label: const Text('Limpar filtros'),
                       ),
                   ],
+                  actions: const [],
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
-                SizedBox(
-                  height: 300 + (rowHeight * (items.isEmpty ? 1 : items.length)),
-                  child: _InviteDirectoryBody(
-                    state: widget.state,
-                    items: items,
-                    hasFilters: _hasFilters,
-                    busyInviteId: _busyInviteId,
-                    rowHeight: rowHeight,
-                    onCreate: widget.onCreate,
-                    onOpen: widget.onOpen,
-                    onClearFilters: _clearFilters,
-                    onAction: _handleAction,
-                  ),
+                _InviteDirectoryBody(
+                  state: widget.state,
+                  items: items,
+                  hasFilters: _hasFilters,
+                  busyInviteId: _busyInviteId,
+                  rowHeight: rowHeight,
+                  onCreate: widget.onCreate,
+                  onOpen: widget.onOpen,
+                  onClearFilters: _clearFilters,
+                  onAction: _handleAction,
                 ),
               ],
             ),
@@ -301,6 +298,7 @@ final class _InviteDirectoryBody extends StatelessWidget {
       return _statePanel(state, onCreate: onCreate, onClearFilters: onClearFilters);
     }
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CoeloAdminCreateAction(
@@ -312,135 +310,116 @@ final class _InviteDirectoryBody extends StatelessWidget {
           onPressed: onCreate,
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        Expanded(
-          child: items.isEmpty
-              ? CoeloStatePanel(
-                  title: hasFilters ? 'Nenhum resultado' : 'Nenhum convite',
-                  message: hasFilters
-                      ? 'Ajuste a busca ou os filtros para localizar convites.'
-                      : 'Crie o primeiro convite para iniciar o acompanhamento.',
-                  icon: hasFilters ? Icons.search_off_rounded : Icons.mail_outline_rounded,
-                  actionLabel: hasFilters ? 'Limpar filtros' : null,
-                  onAction: hasFilters ? onClearFilters : null,
-                )
-              : SingleChildScrollView(
-                  key: const Key('invite-directory-vertical-scroll'),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: CoeloAdminResizableTable<PlatformInvite>(
-                      key: const Key('invite-table'),
-                      items: items,
-                      rowKey: (invite) => 'invite-row-${invite.id}',
-                      headerHeight: 56,
-                      rowHeight: rowHeight,
-                      showHorizontalScrollbar: true,
-                      onRowPressed: onOpen == null ? null : (invite) => onOpen!(invite.id),
-                      pinnedColumn: CoeloAdminTableColumn<PlatformInvite>(
-                        id: 'recipient',
-                        label: 'Destinatário',
-                        initialWidth: 220,
-                        minWidth: 180,
-                        maxWidth: 280,
-                        sortable: true,
-                        cellBuilder: (context, invite) => Text(
-                          invite.recipientMasked,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+        if (items.isEmpty)
+          CoeloStatePanel(
+            title: hasFilters ? 'Nenhum resultado' : 'Nenhum convite',
+            message: hasFilters
+                ? 'Ajuste a busca ou os filtros para localizar convites.'
+                : 'Crie o primeiro convite para iniciar o acompanhamento.',
+            icon: hasFilters ? Icons.search_off_rounded : Icons.mail_outline_rounded,
+            actionLabel: hasFilters ? 'Limpar filtros' : null,
+            onAction: hasFilters ? onClearFilters : null,
+          )
+        else
+          Align(
+            alignment: Alignment.topCenter,
+            child: CoeloAdminResizableTable<PlatformInvite>(
+              key: const Key('invite-table'),
+              items: items,
+              rowKey: (invite) => 'invite-row-${invite.id}',
+              headerHeight: 56,
+              rowHeight: rowHeight,
+              showHorizontalScrollbar: true,
+              onRowPressed: onOpen == null ? null : (invite) => onOpen!(invite.id),
+              pinnedColumn: CoeloAdminTableColumn<PlatformInvite>(
+                id: 'recipient',
+                label: 'Destinatário',
+                initialWidth: 220,
+                minWidth: 180,
+                maxWidth: 280,
+                cellBuilder: (context, invite) =>
+                    Text(invite.recipientMasked, maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+              columns: [
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'audience',
+                  label: 'Público',
+                  initialWidth: 160,
+                  minWidth: 130,
+                  maxWidth: 220,
+                  cellBuilder: (context, invite) =>
+                      Text(invite.audience.label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'context',
+                  label: 'Contexto',
+                  initialWidth: 220,
+                  minWidth: 180,
+                  maxWidth: 280,
+                  cellBuilder: (context, invite) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(invite.scope, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        invite.role,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      columns: [
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'audience',
-                          label: 'Público',
-                          initialWidth: 160,
-                          minWidth: 130,
-                          maxWidth: 220,
-                          sortable: true,
-                          cellBuilder: (context, invite) => Text(
-                            invite.audience.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'context',
-                          label: 'Contexto',
-                          initialWidth: 220,
-                          minWidth: 180,
-                          maxWidth: 280,
-                          sortable: true,
-                          cellBuilder: (context, invite) => Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(invite.scope, maxLines: 1, overflow: TextOverflow.ellipsis),
-                              Text(
-                                invite.role,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'channel',
-                          label: 'Canal',
-                          initialWidth: 120,
-                          minWidth: 100,
-                          maxWidth: 150,
-                          sortable: true,
-                          cellBuilder: (context, invite) => Text(invite.channel.label),
-                        ),
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'status',
-                          label: 'Status',
-                          initialWidth: 150,
-                          minWidth: 130,
-                          maxWidth: 190,
-                          sortable: true,
-                          cellBuilder: (context, invite) => InviteStatusChip(status: invite.status),
-                        ),
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'createdAt',
-                          label: 'Criado em',
-                          initialWidth: 150,
-                          minWidth: 130,
-                          maxWidth: 190,
-                          sortable: true,
-                          cellBuilder: (context, invite) =>
-                              Text(formatInviteDate(invite.createdAt)),
-                        ),
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'expiresAt',
-                          label: 'Expira em',
-                          initialWidth: 150,
-                          minWidth: 130,
-                          maxWidth: 190,
-                          sortable: true,
-                          cellBuilder: (context, invite) =>
-                              Text(formatInviteDate(invite.expiresAt)),
-                        ),
-                        CoeloAdminTableColumn<PlatformInvite>(
-                          id: 'actions',
-                          label: 'Ações',
-                          initialWidth: 80,
-                          minWidth: 72,
-                          maxWidth: 96,
-                          cellBuilder: (context, invite) => _InviteRowActions(
-                            invite: invite,
-                            busy: busyInviteId == invite.id,
-                            showDetails: onOpen != null,
-                            onSelected: (action) => onAction(invite, action),
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
-        ),
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'channel',
+                  label: 'Canal',
+                  initialWidth: 120,
+                  minWidth: 100,
+                  maxWidth: 150,
+                  cellBuilder: (context, invite) => Text(invite.channel.label),
+                ),
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'status',
+                  label: 'Status',
+                  initialWidth: 150,
+                  minWidth: 130,
+                  maxWidth: 190,
+                  cellBuilder: (context, invite) => InviteStatusChip(status: invite.status),
+                ),
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'createdAt',
+                  label: 'Criado em',
+                  initialWidth: 150,
+                  minWidth: 130,
+                  maxWidth: 190,
+                  cellBuilder: (context, invite) => Text(formatInviteDate(invite.createdAt)),
+                ),
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'expiresAt',
+                  label: 'Expira em',
+                  initialWidth: 150,
+                  minWidth: 130,
+                  maxWidth: 190,
+                  cellBuilder: (context, invite) => Text(formatInviteDate(invite.expiresAt)),
+                ),
+                CoeloAdminTableColumn<PlatformInvite>(
+                  id: 'actions',
+                  label: 'Ações',
+                  initialWidth: 80,
+                  minWidth: 72,
+                  maxWidth: 96,
+                  cellBuilder: (context, invite) => _InviteRowActions(
+                    invite: invite,
+                    busy: busyInviteId == invite.id,
+                    showDetails: onOpen != null,
+                    onSelected: (action) => onAction(invite, action),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -550,7 +529,7 @@ CoeloStatePanel _statePanel(
 };
 
 String _periodLabel(_InvitePeriodFilter period) => switch (period) {
-  _InvitePeriodFilter.all => 'Qualquer período',
+  _InvitePeriodFilter.all => 'Todas',
   _InvitePeriodFilter.last7Days => 'Últimos 7 dias',
   _InvitePeriodFilter.last30Days => 'Últimos 30 dias',
   _InvitePeriodFilter.last90Days => 'Últimos 90 dias',

@@ -40,6 +40,8 @@ final class _InviteFormPageState extends State<InviteFormPage> {
   InviteAudience _audience = InviteAudience.institutionAdmin;
   InviteChannel _channel = InviteChannel.email;
   _InviteExpiry _expiry = _InviteExpiry.hours48;
+  final Set<int> _errorSteps = {};
+  int _furthestStep = 0;
   int _step = 0;
   bool _sending = false;
 
@@ -111,18 +113,18 @@ final class _InviteFormPageState extends State<InviteFormPage> {
       for (var index = 0; index < _stepLabels.length; index++)
         SuperadminFormStep(
           label: _stepLabels[index],
-          status: index == _step
+          status: _errorSteps.contains(index)
+              ? SuperadminFormStepStatus.error
+              : index == _step
               ? SuperadminFormStepStatus.current
-              : index < _step
+              : index < _furthestStep
               ? SuperadminFormStepStatus.complete
               : SuperadminFormStepStatus.incomplete,
-          enabled: !_sending && index <= _step,
+          enabled: !_sending && index <= _furthestStep,
         ),
     ],
     currentIndex: _step,
-    onStepSelected: (index) {
-      if (index <= _step) setState(() => _step = index);
-    },
+    onStepSelected: _selectStep,
   );
 
   Widget _formSurface({required bool simpleBase}) {
@@ -339,27 +341,58 @@ final class _InviteFormPageState extends State<InviteFormPage> {
     );
   }
 
+  void _selectStep(int index) {
+    if (index > _furthestStep) return;
+    if (index > _step && _redirectIfInvalidBefore(index)) return;
+    setState(() => _step = index);
+  }
+
+  Set<int> _invalidDataSteps() {
+    final invalidSteps = <int>{};
+    if (_scope.text.trim().isEmpty) invalidSteps.add(1);
+    if (_role.text.trim().isEmpty) invalidSteps.add(2);
+    if (_recipientError != null) invalidSteps.add(3);
+    return invalidSteps;
+  }
+
+  bool _redirectIfInvalidBefore(int targetStep) {
+    final invalidSteps = _invalidDataSteps().where((step) => step < targetStep).toSet();
+    if (invalidSteps.isEmpty) {
+      _errorSteps.removeAll(const {1, 2, 3});
+      return false;
+    }
+    setState(() {
+      _errorSteps.removeAll(const {1, 2, 3});
+      _errorSteps.addAll(invalidSteps);
+      _step = invalidSteps.first;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _formKey.currentState?.validate();
+    });
+    return true;
+  }
+
   void _continue() {
-    if (!(_formKey.currentState?.validate() ?? true)) return;
-    if (_step == 4 && _recipientError != null) {
-      setState(() => _step = 3);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _formKey.currentState?.validate();
-      });
-      _showFeedback('Revise o destinatário para o canal selecionado.', error: true);
+    if (!(_formKey.currentState?.validate() ?? true)) {
+      setState(() => _errorSteps.add(_step));
       return;
     }
-    if (_step < _stepLabels.length - 1) setState(() => _step++);
+    _errorSteps.remove(_step);
+    if (_redirectIfInvalidBefore(_step + 1)) {
+      _showFeedback('Revise as etapas com erro antes de continuar.', error: true);
+      return;
+    }
+    if (_step < _stepLabels.length - 1) {
+      setState(() {
+        _step++;
+        _furthestStep = _step > _furthestStep ? _step : _furthestStep;
+      });
+    }
   }
 
   Future<void> _send() async {
-    final recipientError = _recipientError;
-    if (recipientError != null) {
-      setState(() => _step = 3);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _formKey.currentState?.validate();
-      });
-      _showFeedback(recipientError, error: true);
+    if (_redirectIfInvalidBefore(_stepLabels.length)) {
+      _showFeedback('Revise as etapas com erro antes de enviar.', error: true);
       return;
     }
     setState(() => _sending = true);

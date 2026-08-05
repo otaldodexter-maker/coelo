@@ -121,6 +121,10 @@ void main() {
       65,
     );
     expect(
+      tester.getSize(find.byKey(const Key('coelo-admin-table-pinned-row-background-row-1'))).width,
+      tester.getSize(find.byKey(const Key('coelo-admin-table-header-name-pinned'))).width,
+    );
+    expect(
       tester.getTopLeft(find.byKey(const Key('coelo-admin-table-pinned-row-background-row-1'))).dy,
       tester.getTopLeft(find.byKey(const Key('coelo-admin-table-row-background-row-1'))).dy,
     );
