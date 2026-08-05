@@ -902,10 +902,11 @@ fechamento e filtros; não cria componente público nem altera fluxos de domíni
 - Itens discretos de navegação, menus, submenus e listas de ações usam
   `colorScheme.primaryContainer` no hover e foco visível, conteúdo destacado em
   `colorScheme.primary`, `CoeloRadius.md` e margem vertical
-  `CoeloSpacing.spaceHalf` entre itens consecutivos.
+  `CoeloSpacing.space1` entre itens consecutivos.
 - Flyouts administrativos preservam a anatomia ampla aprovada: cada item ocupa
-  a largura útil padrão de 220 px. Superfícies interativas consecutivas mantêm
-  exatamente `CoeloSpacing.spaceHalf` de separação, inclusive quando seleção e
+  a largura útil padrão de 220 px em painel de 236 px, incluindo o padding
+  horizontal sem recorte. Superfícies interativas consecutivas mantêm
+  exatamente `CoeloSpacing.space1` de separação, inclusive quando seleção e
   hover deixam dois itens adjacentes em `primaryContainer`; grupos com divisor
   usam somente o respiro próprio do divisor.
 - O overlay ou splash adicional é transparente: não adicionar camada cinza sobre

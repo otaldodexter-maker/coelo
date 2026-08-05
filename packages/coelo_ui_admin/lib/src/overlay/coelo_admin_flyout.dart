@@ -46,6 +46,7 @@ final class CoeloAdminFlyout<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final radius = BorderRadius.circular(CoeloRadius.lg);
+    final panelWidth = itemWidth + (CoeloSpacing.space2 * 2);
 
     return MenuAnchor(
       alignmentOffset: alignmentOffset,
@@ -54,8 +55,8 @@ final class CoeloAdminFlyout<T> extends StatelessWidget {
         surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
         elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
         padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-        minimumSize: WidgetStatePropertyAll(Size(itemWidth, 0)),
-        maximumSize: WidgetStatePropertyAll(Size(itemWidth, double.infinity)),
+        minimumSize: WidgetStatePropertyAll(Size(panelWidth, 0)),
+        maximumSize: WidgetStatePropertyAll(Size(panelWidth, double.infinity)),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: radius,
@@ -65,8 +66,7 @@ final class CoeloAdminFlyout<T> extends StatelessWidget {
       ),
       menuChildren: [
         for (var index = 0; index < items.length; index++) ...[
-          if (index > 0 && !items[index].startsGroup)
-            const SizedBox(height: CoeloSpacing.spaceHalf),
+          if (index > 0 && !items[index].startsGroup) const SizedBox(height: CoeloSpacing.space1),
           if (items[index].startsGroup)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),

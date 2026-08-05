@@ -95,7 +95,13 @@ void main() {
     expect(itemFinders, hasLength(3));
     expect(firstRect.width, 220);
     expect(secondRect.width, 220);
-    expect(secondRect.top - firstRect.bottom, CoeloSpacing.spaceHalf);
+    final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
+    final expectedPanelWidth = 220 + (CoeloSpacing.space2 * 2);
+
+    expect(anchor.style?.minimumSize?.resolve({})?.width, expectedPanelWidth);
+    expect(anchor.style?.maximumSize?.resolve({})?.width, expectedPanelWidth);
+    expect(anchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
+    expect(secondRect.top - firstRect.bottom, CoeloSpacing.space1);
     expect(items[0].style!.backgroundColor!.resolve({}), colors.primaryContainer);
     expect(
       items[1].style!.backgroundColor!.resolve({WidgetState.hovered}),

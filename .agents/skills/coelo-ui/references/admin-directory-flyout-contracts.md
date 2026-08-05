@@ -73,7 +73,7 @@ cinza local, HEX local ou uma regra única aplicada a tudo bloqueiam a entrega.
 | --- | --- | --- | --- |
 | Ação primária | permanece `primary`/`onPrimary`, sem overlay cinza | forma do botão | ações principais |
 | Ação tonal | `primaryContainer`/`onPrimaryContainer`, sem overlay extra | forma do controle | sugestões e envio antecipado |
-| Item discreto | fundo `primaryContainer`, conteúdo `primary` | `radius.md` e `spaceHalf` entre itens | menu lateral, Tour, Perfil e Arquivos |
+| Item discreto | fundo `primaryContainer`, conteúdo `primary` | `radius.md` e `space1` entre itens | menu lateral, Tour, Perfil e Arquivos |
 | Linha contínua | fundo `primaryContainer` | sem raio e sem gap | opções de filtro e linhas de tabela |
 | Card interativo | mantém `surface`; borda passa a `primary` translúcido e a sombra ganha ênfase primária sutil | preserva `radius.lg`; não preencher todo o card | qualquer card, por padrão |
 | Ação negativa | fundo `errorContainer`, conteúdo `error` | varia por ícone, item ou botão; grupo de menu separado por divisor | X do Bug e `Sair` no Perfil |
@@ -112,9 +112,10 @@ transparentes.
   `tone: CoeloAdminFlyoutTone.negative`.
 - Flyout usa `colorScheme.surface`, `surfaceTintColor: Colors.transparent`,
   `CoeloRadius.lg`, borda `outlineVariant`, elevação e padding `space2`.
-- A anatomia padrão usa itens com largura útil de 220 px. O contêiner não pode
+- A anatomia padrão usa itens com largura útil de 220 px em painel de 236 px,
+  que inclui o padding horizontal sem recortar o conteúdo. O contêiner não pode
   encolher para a largura intrínseca do texto. Entre itens interativos
-  consecutivos existe exatamente `CoeloSpacing.spaceHalf`; assim seleção,
+  consecutivos existe exatamente `CoeloSpacing.space1`; assim seleção,
   hover e foco arredondados nunca se unem visualmente. Quando `startsGroup` for
   usado, prevalece o divisor com seu próprio respiro, sem gap duplicado.
 - Tour da tela/menu/completo usa o flyout de Tour como referência.

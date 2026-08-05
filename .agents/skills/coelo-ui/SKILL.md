@@ -133,7 +133,8 @@ silenciosamente.
    feature. Exceção legada exige entrada contada e justificada na allowlist;
    conveniência local não é justificativa.
    `CoeloAdminFlyout` preserva a anatomia ampla aprovada: item com largura útil
-   padrão de 220 px e `CoeloSpacing.spaceHalf` entre itens interativos
+   padrão de 220 px em painel de 236 px, sem recorte, e
+   `CoeloSpacing.space1` entre itens interativos
    consecutivos. O menu não encolhe para o texto, e estados arredondados de
    seleção, hover ou foco nunca podem ficar colados. Grupo iniciado por divisor
    usa somente o respiro próprio do divisor, sem duplicar o gap.

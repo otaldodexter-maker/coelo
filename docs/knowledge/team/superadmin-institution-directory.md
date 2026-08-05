@@ -48,7 +48,8 @@ suspensas e arquivadas; as demais tabs correspondem, respectivamente, a
 
 Cada segmento do toggle Cards/Tabela mede 64 × 48 px. O menu de visões
 reutiliza `CoeloAdminFlyout`: cada item mantém a largura útil padrão de 220 px
-e itens interativos consecutivos têm `CoeloSpacing.spaceHalf` de separação,
+em painel de 236 px, sem recorte pelo padding,
+e itens interativos consecutivos têm `CoeloSpacing.space1` de separação,
 impedindo que seleção e hover laranja se unam. Na tabela, a largura natural nasce centralizada quando for
 menor que a viewport; quando ocupar ou exceder a área, preenche e rola
 normalmente. Scrollbar e track horizontais permanecem visíveis desde a primeira
