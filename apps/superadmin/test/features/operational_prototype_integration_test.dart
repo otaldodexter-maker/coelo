@@ -16,7 +16,7 @@ void main() {
     final store = SuperadminPrototypeStore(activityController: activities, now: () => now);
 
     final plans = FakePlanCatalogRepository(store: store);
-    plans.update(plans.plans.first.copyWith());
+    plans.update(plans.plans.first.copyWith(), reason: 'Revisão operacional local.');
 
     final importController = ImportWizardController(
       repository: FakeImportRepository(now: () => now),

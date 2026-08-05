@@ -22,42 +22,69 @@ void main() {
       'coelo-care',
       'coelo-integral',
     ]);
-    expect(repository.plans.last.mediaGb, 500);
+    expect(repository.plans.last.limits.mediaGb, 500);
   });
 
   test('filters plans by search, status and feature', () {
     final result = repository.query(
       search: 'cuidado',
       status: PlanStatus.active,
-      feature: PlanFeature.flow,
+      feature: PlanFeature.happens,
     );
 
     expect(result.single.code, 'coelo-care');
   });
 
+  test('paginates independently for cards and table queries', () {
+    final page = repository.queryPage(const PlanQuery(page: 1, pageSize: 2));
+
+    expect(page.items, hasLength(2));
+    expect(page.totalItems, 4);
+    expect(page.totalPages, 2);
+  });
+
   test('creates a plan with exactly one activity and audit event', () {
-    repository.create(_draft('novo'));
+    repository.create(_draft('novo'), reason: 'Novo catálogo aprovado.');
 
     expect(repository.findById('novo')?.name, 'Coelo Novo');
     expect(activity.activities, hasLength(1));
     expect(store.auditEvents, hasLength(1));
   });
 
-  test('archives a used plan and blocks permanent deletion', () {
+  test('archives and restores a used plan with an audit reason', () {
     final used = repository.plans.first.copyWith(usedByInstitutionCount: 1);
-    repository.update(used);
+    repository.update(used, reason: 'Atualização inicial.');
     final beforeEvents = store.auditEvents.length;
 
-    expect(repository.delete(used.id), isFalse);
+    repository.archive(used.id, reason: 'Plano substituído.');
     expect(repository.findById(used.id)?.status, PlanStatus.archived);
     expect(store.auditEvents, hasLength(beforeEvents + 1));
+
+    repository.restore(used.id, reason: 'Plano disponível novamente.');
+    expect(repository.findById(used.id)?.status, PlanStatus.active);
   });
 
-  test('deletes a never used plan after confirmation', () {
-    final plan = repository.plans.first;
+  test('rejects audited mutations without a reason', () {
+    expect(() => repository.archive(repository.plans.first.id, reason: '  '), throwsArgumentError);
+  });
 
-    expect(repository.delete(plan.id, confirmed: true), isTrue);
-    expect(repository.findById(plan.id), isNull);
+  test('rejects a stale edit and preserves the current plan', () {
+    final staleDraft = repository.plans.first;
+    repository.update(staleDraft.copyWith(name: 'Nome atual'), reason: 'Primeira edição.');
+
+    expect(
+      () => repository.update(staleDraft.copyWith(name: 'Nome antigo'), reason: 'Edição obsoleta.'),
+      throwsA(isA<PlanConflictException>()),
+    );
+    expect(repository.findById(staleDraft.id)?.name, 'Nome atual');
+  });
+
+  test('exposes linked institutions as read-only subscription summaries', () {
+    final links = repository.linkedInstitutions('coelo-essential');
+
+    expect(links, isNotEmpty);
+    expect(links.first.subscriptionStatus, isNotEmpty);
+    expect(links.first.unitsWithOverride, greaterThanOrEqualTo(0));
   });
 }
 
@@ -68,11 +95,5 @@ PlanDraft _draft(String id) => PlanDraft(
   description: 'Plano local para demonstracao.',
   status: PlanStatus.active,
   features: {PlanFeature.agenda},
-  unitLimit: 1,
-  userLimit: 10,
-  guardiansPerChild: 1,
-  storageGb: 1,
-  mediaGb: 1,
-  manualOperation: false,
-  internalNotes: '',
+  limits: const PlanLimits(units: 1, memberships: 10, storageGb: 1, mediaGb: 1),
 );
