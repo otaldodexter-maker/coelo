@@ -99,10 +99,7 @@ class _SupportPageState extends State<SupportPage> {
     if (!isMobileOrTabletSurface) {
       return content;
     }
-    return ColoredBox(
-      color: theme.colorScheme.surface,
-      child: content,
-    );
+    return ColoredBox(color: theme.colorScheme.surface, child: content);
   }
 
   Widget _listing(List<SupportTicket> tickets) {
@@ -377,9 +374,14 @@ class _SupportPageState extends State<SupportPage> {
         child: Focus(
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: InkWell(
-              onTap: open,
-              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            child: TextButton(
+              onPressed: open,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(48, 48),
+                overlayColor: Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+              ),
               child: Tooltip(
                 message: 'Alterar status de ${ticket.id}',
                 child: _chip(ticket.status),
