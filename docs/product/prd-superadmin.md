@@ -153,13 +153,15 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 ## 7.3 Avisos e perfis Coelo
 
-- Avisos para todos ou segmentados por tenant, unidade, papel e contexto.
+- Avisos com um alvo hierárquico global, instituição, unidade ou turma e papel opcional, com regras resolvidas server-side.
 
 - Data de início e término de exibição.
 
 - Classificação entre aviso sistêmico obrigatório e conteúdo opcional.
 
 - Conteúdo opcional poderá ser silenciado; avisos críticos não dependem de opt-in de marketing.
+
+- O MVP usa composição controlada, destinos web/mobile/tablet, recorrência simples e prévia responsiva; campanhas automatizadas e regras arbitrárias ficam fora.
 
 ## 7.4 Suporte
 
@@ -184,7 +186,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Ativar instituição | Criar instituição → definir plano/status → vincular owner → emitir convite → confirmar acesso. | Owner acessa somente a própria instituição e vê checklist inicial. |
 | Suspender instituição | Selecionar tenant → informar motivo → confirmar ação → registrar log. | Acesso é bloqueado conforme regra sem apagar dados. |
 | Criar usuário interno | Cadastrar identidade interna exclusiva → definir perfil e escopo → revisar → simular convite. | O acesso existe somente no Superadmin e recebe permissões derivadas do perfil. |
-| Publicar aviso | Definir tipo → audiência → vigência → conteúdo → revisar → publicar. | Aviso aparece apenas para audiência autorizada e expira conforme vigência. |
+| Publicar aviso | Definir identidade → conteúdo/aparência → público/dispositivos → exibição/recorrência → revisar/publicar. | Aviso aparece apenas para audiência autorizada, nos destinos escolhidos, e respeita vigência e recorrência. |
 | Atendimento de suporte | Abrir instituição/contexto → registrar motivo → consultar/agir conforme cargo → encerrar. | Acesso e ações aparecem na auditoria com ator, tempo e objeto. |
 | Alterar plano manual | Selecionar instituição → alterar plano/status/datas → registrar justificativa. | Mudança é persistida sem iniciar cobrança automática. |
 
@@ -197,7 +199,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | SA-RF-003 | Planos | Registrar plano, datas, status e limites de forma manual. |
 | SA-RF-004 | Preparação futura | Manter estrutura compatível com assinatura, cobrança e limites automáticos futuros. |
 | SA-RF-005 | Usuários internos | Cadastrar e gerenciar cargos internos e seus escopos. |
-| SA-RF-006 | Avisos | Criar avisos globais ou segmentados com período de exibição. |
+| SA-RF-006 | Avisos | Criar avisos controlados com um alvo hierárquico e papel opcional, destino único, vigência, recorrência simples e prévia. |
 | SA-RF-007 | Conteúdo oficial | Gerenciar perfis oficiais Coelo e preferências de silenciamento. |
 | SA-RF-008 | Suporte | Permitir acesso privado conforme cargo e registrar a sessão de suporte. |
 | SA-RF-009 | Auditoria | Registrar mudanças de status, plano, permissões, acessos e conteúdo. |
@@ -226,7 +228,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Tenants | institutions, units, institution_settings | Superadmin cria e mantém o tenant; dados internos continuam isolados. |
 | Planos | plans, institution_subscriptions, usage_limits | Operação manual no MVP; nomes físicos finais no Modelo de Dados Master. |
 | Equipe Coelo | identidade interna, credencial Superadmin, vínculo, perfil e escopo | Agregado exclusivo do Superadmin; não reutiliza Pessoas, Admin ou Principal. O desenho físico produtivo depende da ADR 0019 e de spec técnica futura. |
-| Avisos | platform_notices, notice_audiences, notice_receipts | Segmentação e vigência. |
+| Avisos | platform_notices, notice_audiences, notice_media, notice_receipts | Composição controlada, audiência, destinos, vigência, recorrência e recibos. |
 | Suporte | support_sessions, audit.audit_logs | Motivo, ator, tenant, escopo e ações. |
 | Analytics | analytics.analytics_events, analytics.usage_counters | Dados brutos para dashboards futuros. |
 
@@ -294,7 +296,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Acesso interno excessivo | Crítico | Cargos, escopos, logs, revisão periódica e minimização de dados. |
 | Superadmin virar Admin da escola | Alto | Separar responsabilidades e limitar edição cotidiana. |
 | Planos manuais gerarem erro | Médio | Histórico, validação e justificativa de mudanças. |
-| Avisos parecerem publicidade | Médio | Separar conteúdo crítico de conteúdo opcional e permitir silenciar. |
+| Avisos parecerem publicidade ou campanha invasiva | Médio | Separar conteúdo crítico de opcional, permitir silenciar e limitar o MVP a composição/recorrência controladas. |
 | Dashboard atrasar o MVP | Médio | Exibir apenas contadores básicos e registrar eventos completos. |
 
 # 17. Decisões oficiais
@@ -349,11 +351,24 @@ Este aditivo registra decisoes de produto aprovadas apos a versao original do PR
 | Primeiro fluxo | Ativacao de instituicao: criar instituicao, definir plano/status, vincular owner institucional, emitir convite e registrar auditoria. |
 | Escopo v1 | Instituicoes, planos/status, usuarios internos, avisos/popups, suporte auditado, logs e base para dashboard futuro. |
 | Dados futuros | O banco deve nascer preparado para crescimento, evitando alteracoes estruturais previsiveis logo depois do MVP. |
-| Avisos/popups | Usar segmentacao avancada por regras, com suporte a filtros hierarquicos por instituicao, unidade, grupo/turma, papel, contexto e filtros futuros. |
-| Popup com midia | Popups podem prever imagem/anexo com formato, tamanho, vigencia, audiencia e auditoria definidos na Technical Spec. |
+| Avisos/popups | O MVP usa um alvo hierarquico global, instituicao, unidade ou grupo/turma e papel opcional; regras arbitrarias e campanhas automatizadas ficam para depois. |
+| Popup com midia | O MVP permite texto sobre fundo ou uma unica imagem horizontal/vertical; pixels, proporcao, limite, crop, processamento e persistencia dependem da Technical Spec de midia/R2. |
 | Importacao | CSV/XLSX com colunas em portugues e mapeamento para colunas internas em ingles, com suporte a qualquer tabela permitida pelo sistema. |
-| Analytics/dashboard futuro | Registrar eventos, contadores e snapshots desde o MVP; a UI de dashboard completo permanece fora desta primeira entrega. |
+| Analytics/dashboard futuro | Avisos registra somente alcance, entrega, visualizacao e aceite no MVP; eventos e snapshots avancados ficam preparados para fase futura. |
 | Figma | Usar apenas wireframe de baixa fidelidade, cobrindo desktop, tablet e mobile. |
+
+### Recorte faseado de Avisos no MVP — 2026-08-05
+
+Avisos entra no MVP como diretorio e fluxo controlado em cinco etapas:
+identidade; conteudo e aparencia; publico e dispositivos; exibicao e
+recorrencia; revisao e publicacao. O fluxo suporta web, mobile, tablet ou todos,
+vigencia com recorrencia simples, comportamento dispensavel ou obrigatorio,
+previa responsiva e estados rascunho, agendado, ativo, pausado, expirado e
+inativo.
+
+Permanecem fora do MVP editor drag-and-drop/HTML, carrosseis, jornadas,
+gatilhos comportamentais, regras AND/OR arbitrarias, A/B testing,
+personalizacao, localizacao e analytics avancado de campanhas.
 
 ## Governanca interna
 
@@ -385,7 +400,7 @@ A Technical Spec deve prever, sem obrigar toda UI no MVP:
 - Instituicao com `document_ref` para CNPJ/documento principal, `trade_name` para nome fantasia e `legal_name` para razao social.
 - Planos e limites manuais preparados para assinatura, cobranca futura, storage, modulos, responsaveis adicionais e excecoes comerciais.
 - Branding com cor primaria, secundaria, texto e superficie; unidade pode herdar ou sobrescrever com permissao do admin macro gestor.
-- Avisos/popups com regras de audiencia versionadas, vigencia, prioridade, tipo, midia opcional, recibos e eventos de entrega/leitura.
+- Avisos/popups com audiencia versionada, destino unico, vigencia, recorrencia simples, prioridade, tipo, uma midia opcional, recibos e eventos de entrega/leitura. Regras adicionais e snapshots permanecem inativos ate nova spec.
 - Importacao com padrao de colunas em portugues, mapeamento para colunas internas em ingles e previsao para outros idiomas.
 - Suporte com sessoes auditadas, motivo, escopo, inicio/fim, acoes sensiveis e objetos consultados.
 - Analytics com eventos brutos, contadores por periodo e snapshots agregados para futuro dashboard.

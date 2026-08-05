@@ -154,26 +154,42 @@ vinculadas.
 
 ### Responsabilidade
 
-Criar popups oficiais para destinatários identificados. A audiência pode ser
-global ou segmentada por instituição, unidade, grupo, papel ou pessoa. Avisos
+Criar popups oficiais para destinatários identificados. A audiência usa
+exatamente um alvo global, instituição, unidade ou turma e papel opcional. Avisos
 familiares de presença pertencem a outro domínio.
 
 ### Experiência
 
-- Filtros por status, prioridade, obrigatoriedade, vigência e audiência.
-- Estados: rascunho, agendado, ativo, encerrado e cancelado.
-- Editor de página com título, mensagem, prioridade, vigência, mídia/anexo fake,
-  audiência, comportamento, rótulo de ação e link opcional.
+- Diretório exclusivo, sem editor aberto ao lado da listagem, com busca,
+  filtros, cards, paginação e ações contextuais.
+- Filtros por status, prioridade, obrigatoriedade, vigência, audiência e
+  dispositivo.
+- Estados: rascunho, agendado, ativo, pausado, expirado e inativo.
+- Criar/Editar em rota própria com cinco etapas: identidade; conteúdo e
+  aparência; público e dispositivos; exibição e recorrência; revisão e
+  publicação.
+- Dois formatos mutuamente exclusivos: texto sobre fundo ou uma única imagem
+  horizontal/vertical. Cores usam o seletor Coelo; o protótipo não faz upload
+  ou processamento real.
+- Audiência com exatamente um alvo global, instituição, unidade ou turma e
+  papel opcional; destino único web, mobile, tablet ou todos.
+- Vigência com início/fim e recorrência fechada única, diária, semanal, mensal
+  por dia do mês ou por intervalo inteiro de dias.
 - Comportamentos limitados a: apenas fechar; confirmação obrigatória; checkbox
   de aceite mais confirmação.
-- Prévia do popup em larguras diferentes.
+- Prévia alternável entre web, mobile e tablet antes da publicação.
 - Aviso opcional pode ser dispensado e não reaparece ao destinatário fake.
 - Aviso obrigatório bloqueia a navegação até a decisão, permite sair do app e
   reaparece no próximo acesso enquanto não for aceito.
 - Resultados mostram alcance, entrega, visualização e aceite fictícios.
-- Ações: editar rascunho/agendado, duplicar, publicar, cancelar e consultar
-  resultados.
+- Ações: editar quando permitido, duplicar, publicar/agendar, pausar, reativar,
+  inativar e consultar resultados.
+- Somente pausado pode ser reativado; expirado e inativo são terminais. Duplicar
+  um estado terminal cria novo rascunho.
 - Não existem visitantes anônimos no público deste fluxo.
+- Não existem editor drag-and-drop/HTML, carrossel, jornadas, gatilhos
+  comportamentais, regras AND/OR arbitrárias, A/B testing, personalização,
+  localização ou analytics avançado de campanha.
 
 ## Auditoria
 

@@ -17,7 +17,7 @@ produção exige spec técnica e não está autorizada por este documento.
 
 ## Objetivo
 
-Definir a primeira versao operavel do Superadmin do Coelo. O foco e entrar numa instituicao, editar o que for autorizado, gerir planos, perfis e usuarios internos, emitir convites seguros, publicar avisos/popups simples, importar dados e salvar eventos no Supabase para consulta futura.
+Definir a primeira versao operavel do Superadmin do Coelo. O foco e entrar numa instituicao, editar o que for autorizado, gerir planos, perfis e usuarios internos, emitir convites seguros, publicar avisos/popups com composicao controlada, importar dados e salvar eventos no Supabase para consulta futura.
 
 Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que faz sentido para o MVP.
 
@@ -40,7 +40,7 @@ Este documento consolida o rascunho amplo do Superadmin v1 e deixa somente o que
 | Planos | Lista, cria, edita e vincula planos, com suporte a modulos liberados e historico de alteracoes. |
 | Usuarios internos | Lista, envia convites seguros, revoga e troca o perfil das pessoas internas do Superadmin. |
 | Perfis | Cria, edita, desativa ou exclui perfis padrao e customizados, com permissoes granulares por bloco e acao. |
-| Avisos/popups | Cria e publica avisos simples da plataforma, com audiencia limitada e periodo de exibicao. |
+| Avisos/popups | Cria, previsualiza, agenda e publica avisos com composicao controlada, audiencia hierarquica, destinos, vigencia e recorrencia simples. |
 | Importacao CSV/XLSX | Importa primeiro instituicoes, unidades e grupos/turmas por modelo padrao, com previa antes de confirmar. |
 | Eventos salvos | Persiste eventos importantes no banco para consulta futura, sem tela de eventos no MVP. |
 
@@ -68,7 +68,8 @@ Pessoas nao entram como um template unico de "usuarios". Quando a importacao de 
 
 - Tela de auditoria.
 - Mecanica de suporte como produto proprio.
-- Avisos/popups avancados, campanhas e segmentacao complexa.
+- Editor livre de avisos/popups, campanhas automatizadas, gatilhos comportamentais e segmentacao arbitraria AND/OR.
+- Carrosseis, jornadas, A/B testing, personalizacao, localizacao e analytics avancado de campanhas.
 - Dashboard executivo.
 - Cobranca automatica.
 - Integracao obrigatoria com Stripe ou Asaas.
@@ -85,7 +86,12 @@ Pessoas nao entram como um template unico de "usuarios". Quando a importacao de 
 - Perfis padrao podem nascer prontos, mas podem ser customizados, desativados e excluidos com seguranca.
 - A exclusao de um perfil deve ser bloqueada ou exigir realocacao quando houver pessoas vinculadas.
 - Convites usam link ou token unico, expiram, podem ser reenviados e revogados.
-- Avisos/popups do MVP podem ser simples: globais ou por instituicao, com periodo de exibicao e sem campanha avancada.
+- Avisos/popups usam cinco etapas: identidade; conteudo e aparencia; publico e dispositivos; exibicao e recorrencia; revisao e publicacao.
+- A composicao oferece dois formatos mutuamente exclusivos: texto sobre fundo ou uma unica imagem horizontal/vertical. Cores usam o seletor Coelo; pixels, proporcao, processamento e persistencia dependem da futura spec de R2.
+- A audiencia seleciona exatamente um alvo hierarquico — global, instituicao, unidade ou grupo/turma — com papel opcional; a producao resolve as regras server-side e rejeita combinacoes nao previstas.
+- O destino e uma unica escolha entre web, mobile, tablet ou todos. Vigencia aceita inicio/fim e recorrencia fechada: unica, diaria, semanal, mensal por dia do mes ou por intervalo inteiro de dias.
+- Comportamentos ficam limitados a dispensavel, confirmacao obrigatoria ou checkbox de ciencia seguido de confirmacao. Estados sao rascunho, agendado, ativo, pausado, expirado e inativo.
+- O MVP nao inclui editor drag-and-drop/HTML, carrossel, jornadas, gatilhos comportamentais, regras AND/OR arbitrarias, A/B testing, personalizacao, localizacao ou analytics avancado de campanha.
 - Planos podem guardar campos opcionais para precificacao e provider futuro, mas o MVP nao executa pagamento.
 - Eventos de mudanca e uso ficam salvos no banco para futura auditoria ou dashboard.
 - `service_role` e segredos nunca entram no cliente.
@@ -120,7 +126,7 @@ Pessoas nao entram como um template unico de "usuarios". Quando a importacao de 
 - O usuario ajusta somente o que seu perfil autoriza dentro da instituicao.
 - O usuario cria, edita e vincula planos, perfis e usuarios internos.
 - O usuario emite, reenvia e revoga convites seguros.
-- O usuario cria e publica avisos/popups simples para a audiencia certa.
+- O usuario cria, previsualiza, salva, agenda, publica, pausa, reativa e inativa avisos/popups controlados para a audiencia certa.
 - O usuario importa instituicoes, unidades e grupos/turmas por CSV/XLSX com previa antes de confirmar.
 - A importacao bloqueia grupo sem unidade valida e unidade sem instituicao valida.
 - Templates de pessoas, quando habilitados, separam adultos, criancas e vinculos em vez de tratar tudo como "usuarios".
@@ -138,7 +144,7 @@ Pessoas nao entram como um template unico de "usuarios". Quando a importacao de 
 - Cadastro e revogacao de usuarios internos.
 - Emissao, reenvio e revogacao de convites seguros.
 - Criacao, edicao e exclusao de perfis.
-- Criacao e publicacao de avisos/popups simples.
+- Diretorio, fluxo de cinco etapas, previa responsiva, recorrencia simples e transicoes de estado de avisos/popups controlados.
 - Importacao com previa, validacao e rejeicao de arquivo invalido.
 - Importacao respeitando a ordem instituicao -> unidade -> grupo.
 - Deduplicacao de adultos por CPF/contato com resposta mascarada entre tenants.

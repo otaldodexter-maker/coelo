@@ -25,7 +25,7 @@ O primeiro fluxo implementavel e ativacao de instituicao. O banco, porem, deve n
 | Owner Coelo | Conta inicial unica do fundador; pode criar novos Owners por convite + MFA. |
 | Owner e privilegio | Poder total por decisao de produto; excecao explicita ao menor privilegio, sempre auditada. |
 | MFA | Obrigatoria para Owner no login e em acoes sensiveis. |
-| Avisos/popups | Segmentacao avancada por regras desde o schema. |
+| Avisos/popups | Schema preparado, mas UI do MVP limitada a audiencia identificada, destinos, vigencia e recorrencia simples. |
 | Importacao | CSV/XLSX com colunas em portugues mapeadas para colunas internas em ingles, com suporte a qualquer tabela permitida pelo sistema. |
 
 ## Modelo De Dados Conceitual
@@ -52,13 +52,13 @@ Nomes fisicos podem ser refinados antes da migration, mas a capacidade abaixo de
 
 `unit_branding` deve prever: override de marca por unidade, com heranca da instituicao por padrao e liberacao por politica do admin macro gestor.
 
-`platform_notices` deve prever: tipo (`notice`, `critical_notice`, `popup`, `content_card`), prioridade, titulo opcional, corpo em texto opcional, CTA opcional, vigencia, status de publicacao, criador, aprovador quando aplicavel e politica de silenciamento. Popups visuais podem depender principalmente de midia.
+`platform_notices` deve prever: tipo (`notice`, `critical_notice`, `popup`), prioridade, formato mutuamente exclusivo de texto sobre fundo ou imagem, exatamente um destino, vigencia, recorrencia simples, status de publicacao, criador, aprovador quando aplicavel e politica de silenciamento. Estados do MVP: rascunho, agendado, ativo, pausado, expirado e inativo.
 
-`notice_rules` deve prever segmentacao avancada por `target_type`, `target_id`, papel, status, plano, unidade, grupo/turma, contexto, modulo habilitado e filtros versionados. Regras devem ser avaliadas server-side.
+`notice_rules` deve registrar exatamente um alvo hierarquico — global, instituicao, unidade ou grupo/turma — e papel opcional, sempre avaliado server-side. Status, plano, contexto, modulo, pessoa e filtros compostos ficam inativos e sao rejeitados server-side ate nova spec.
 
-`notice_media` deve prever imagem/anexo de popup com tipo, dimensoes esperadas, tamanho maximo, variante/thumbnail, vinculo com R2 futuro e estado de processamento. Tamanhos finais entram na spec de midia/design.
+`notice_media` deve prever no maximo uma imagem horizontal ou vertical por popup, com tipo, dimensoes esperadas, tamanho maximo, variante/thumbnail, vinculo com R2 futuro e estado de processamento. Proporcao, pixels e limites finais entram na spec de midia/design.
 
-`analytics.analytics_events`, `analytics.usage_counters` e `analytics.usage_snapshots` devem armazenar dados suficientes para dashboard futuro sem copiar conteudo sensivel. Eventos guardam fatos; contadores guardam agregados por periodo; snapshots guardam leituras consolidadas para telas futuras.
+`analytics.analytics_events`, `analytics.usage_counters` e `analytics.usage_snapshots` podem preparar o dashboard futuro sem copiar conteudo sensivel. Para Avisos no MVP, somente alcance, entrega, visualizacao e aceite ficam ativos; snapshots avancados aguardam nova spec.
 
 ## Autorizacao E RLS
 
@@ -86,10 +86,10 @@ O fluxo 1, ativacao de instituicao, e o primeiro a virar wireframe e implementac
 Fluxos posteriores no mesmo Superadmin MVP:
 
 - Criar e delegar usuarios internos por convite.
-- Publicar aviso/popup com regras de audiencia e midia opcional.
+- Criar, revisar, agendar e publicar aviso/popup controlado com audiencia, destinos, vigencia, recorrencia simples e uma midia opcional.
 - Abrir e encerrar sessao de suporte com motivo.
 - Consultar auditoria e evidencias.
-- Registrar eventos, contadores e snapshots para dashboard futuro.
+- Para Avisos, registrar somente alcance, entrega, visualizacao e aceite; eventos e snapshots avancados aguardam fase futura.
 
 ## Wireframe Figma
 
@@ -127,7 +127,7 @@ O Figma deve ser wireframe de baixa fidelidade, sem prototipo visual final. Ele 
 - MFA: Owner sem MFA recente nao executa acao sensivel.
 - Convites: novo Owner exige convite aceito + MFA configurada.
 - Instituicoes: Operations cria tenant, status/plano e owner institucional; usuario externo nao acessa.
-- Avisos/popups: regras por instituicao, unidade, turma/grupo, papel e filtro composto.
+- Avisos/popups: um alvo global, instituicao, unidade ou turma/grupo com papel opcional; tentativas cross-tenant, pessoa e filtros compostos falham.
 - Suporte: acesso privado sem sessao ativa falha; com sessao ativa registra audit log.
 - Analytics: evento bruto gera contador e snapshot sem conteudo sensivel.
 - UI futura: golden/responsivo para desktop, tablet e mobile quando Flutter existir.
