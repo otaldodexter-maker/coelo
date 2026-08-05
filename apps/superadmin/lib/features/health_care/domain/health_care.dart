@@ -1,4 +1,4 @@
-/// Local-only health and safety demonstration domain. It has no backend contract.
+/// Local-only Health and Care demonstration domain. It has no backend contract.
 enum HealthCareCapability {
   sensitiveRead,
   clinicalReview,

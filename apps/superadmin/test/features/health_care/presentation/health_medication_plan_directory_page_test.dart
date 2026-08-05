@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -29,15 +30,91 @@ void main() {
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
     expect(find.byType(CoeloAdminExpandableStatusIndicator), findsWidgets);
+    expect(find.text('Status do plano'), findsOneWidget);
+    expect(find.text('Situação da dose'), findsOneWidget);
+    expect(find.byType(CoeloAdminPagination), findsOneWidget);
     expect(find.text('Vigência'), findsWidgets);
     expect(find.text('Horários'), findsWidgets);
     expect(find.text('Contexto responsável'), findsWidgets);
     expect(find.textContaining('Professor Demo'), findsWidgets);
 
+    final statusFilter = tester.widget<CoeloAdminMultiSelectFilter<HealthMedicationReviewStatus>>(
+      find.byType(CoeloAdminMultiSelectFilter<HealthMedicationReviewStatus>),
+    );
+    statusFilter.onChanged({HealthMedicationReviewStatus.ended});
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum plano'), findsOneWidget);
+    statusFilter.onChanged({});
+    await tester.pumpAndSettle();
+
+    final doseFilter = tester.widget<CoeloAdminMultiSelectFilter<HealthMedicationDoseSituation>>(
+      find.byType(CoeloAdminMultiSelectFilter<HealthMedicationDoseSituation>),
+    );
+    doseFilter.onChanged({HealthMedicationDoseSituation.notAdministered});
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum plano'), findsOneWidget);
+    doseFilter.onChanged({});
+    await tester.pumpAndSettle();
+
     await tester.tap(find.byKey(const Key('health-medication-plans-view-table')));
     await tester.pumpAndSettle();
     expect(find.byType(CoeloAdminResizableTable<HealthMedicationPlanListItem>), findsOneWidget);
     expect(find.text('Contexto responsável'), findsOneWidget);
+  });
+
+  testWidgets('shows the minimized permission state without leaking plan data', (tester) async {
+    final controller = HealthCareController(
+      DemoHealthCareRepository(),
+      actor: HealthCareActor(
+        id: 'minimized-demo',
+        profile: DemoHealthCareProfile.minimized,
+        authorizedChildIds: const {'child-demo-a', 'child-demo-b'},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthMedicationPlanDirectoryPage(
+          controller: controller,
+          logout: unavailableSuperadminLogout,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Resumo minimizado'), findsOneWidget);
+    expect(find.text('Medicamento Demo'), findsNothing);
+  });
+
+  testWidgets('loads only medication plans authorized for the active context', (tester) async {
+    final controller = HealthCareController(
+      DemoHealthCareRepository(),
+      actor: HealthCareActor(
+        id: 'reader-demo',
+        profile: DemoHealthCareProfile.sensitiveReader,
+        institutionId: 'institution-demo-a',
+        authorizedChildIds: const {'child-demo-a'},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthMedicationPlanDirectoryPage(
+          controller: controller,
+          logout: unavailableSuperadminLogout,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Medicamento Demo'), findsOneWidget);
+    expect(find.text('Não foi possível carregar'), findsNothing);
   });
 
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
