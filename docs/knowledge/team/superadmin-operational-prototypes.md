@@ -4,6 +4,7 @@ knowledge_id: superadmin-operational-prototypes
 source: docs/superpowers/specs/2026-08-03-superadmin-operational-surfaces-prototype-design.md
 status: validated
 generated_at: 2026-08-03
+updated_at: 2026-08-05
 audience: team
 surfaces: [superadmin, plans, imports, invites, notices, audit]
 visibility: internal
@@ -28,8 +29,15 @@ ser arquivado, mas exclusão definitiva é reservada a plano nunca utilizado.
 
 Importações demonstra Instituições, Unidades, Grupos, Pessoas e Usuários
 internos em um wizard com mapeamento, estratégia, revisão, conflitos e resultado.
-Convites atende todos os públicos identificados, expira por padrão em dois dias
-e permite reenviar pendentes ou expirados, invalidando o link fake anterior.
+Convites atende todos os públicos identificados em um diretório exclusivamente
+tabular. A busca usa destinatário mascarado e contexto/papel; os filtros locais
+são status, público, canal e criação. A criação mantém sete etapas, validade de
+48 ou 72 horas e revisão mascarada. Não existe edição sem operação de atualização
+no repositório: convites emitidos usam detalhe somente leitura, sem token ou link
+completo. Reenvio é permitido para pendentes ou expirados, invalidando o link
+fake anterior; revogação é permitida somente para pendentes e exige confirmação
+negativa. Em mobile e tablet claros, as superfícies de Convites usam fundo-base
+simples em "colorScheme.surface".
 
 Avisos cria popups globais ou segmentados por hierarquia e pessoa. Pode apenas
 informar, exigir confirmação ou exigir checkbox de aceite. Aviso obrigatório

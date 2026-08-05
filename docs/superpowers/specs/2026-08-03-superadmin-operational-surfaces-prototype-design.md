@@ -2,6 +2,7 @@
 source: "AGENTS.md; docs/product/prd-superadmin.md; docs/data/data-model.md; docs/design/design-system.md; specs/003-superadmin-core.md; decisions approved by the Owner Coelo on 2026-08-03"
 status: "approved-design"
 generated_at: "2026-08-03"
+updated_at: "2026-08-05"
 ---
 
 # Superadmin · Planos, Importações, Convites, Avisos e Auditoria
@@ -122,16 +123,31 @@ vinculadas.
 
 ### Experiência
 
-- Filtros por público, hierarquia, papel, canal, status e período.
+- O diretório usa exclusivamente a tabela administrativa redimensionável, sem
+  cards nem toggle de visualização. A faixa "Novo convite" antecede a tabela.
+- A busca consulta apenas o destinatário mascarado e os textos existentes de
+  contexto e papel. Os filtros disponíveis são status, público, canal e período
+  de criação; não existe filtro de expiração no contrato local atual.
+- A tabela apresenta somente destinatário mascarado, público, contexto/papel,
+  canal, status, criação, expiração e ações. Responsável e data específica de
+  envio não são inferidos.
 - Estados: rascunho, pendente, aceito, expirado, revogado e falha simulada.
-- Fluxo: público; hierarquia/escopo; papel/finalidade; destinatário; canal;
-  expiração; revisão.
-- Validade padrão de dois dias, editável antes do envio.
-- Destino por e-mail ou celular e link copiável, todos fictícios.
-- Ações: visualizar, copiar link, reenviar pendente/expirado e revogar.
+- O fluxo de criação preserva sete etapas reais: público; contexto/escopo;
+  papel/finalidade; destinatário; canal; expiração; revisão. A validade local
+  pode ser selecionada entre 48 e 72 horas antes do envio.
+- O destinatário é validado conforme o canal e aparece mascarado na revisão.
+  E-mail, celular e link copiável permanecem fictícios.
+- Não existe modo Editar enquanto o repositório local não oferecer atualização
+  de convite ou rascunho. Convites emitidos usam detalhe somente leitura.
+- O detalhe mostra destinatário mascarado, público, canal, contexto, papel,
+  status, criação, expiração e linha do tempo, sem token ou link completo.
+- Copiar link aparece somente quando o link local existe. Reenvio é permitido
+  para convites pendentes ou expirados. Revogação é permitida somente para
+  convite pendente e exige confirmação negativa.
 - Reenvio gera um link fake novo e invalida o anterior.
-- Detalhe apresenta a linha do tempo completa do convite.
-
+- Em mobile e tablet claros, diretório, criação e detalhes usam
+  "colorScheme.surface" como fundo-base simples; cores de container ficam
+  restritas a campos, estados e destaques funcionais.
 ## Avisos
 
 ### Responsabilidade

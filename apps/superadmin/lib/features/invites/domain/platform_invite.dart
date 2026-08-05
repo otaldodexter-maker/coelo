@@ -82,7 +82,7 @@ final class PlatformInvite {
   final List<InviteTimelineEntry> timeline;
   String get recipientMasked => maskInviteRecipient(recipient, channel);
   bool get canResend => status == InviteStatus.pending || status == InviteStatus.expired;
-  bool get canRevoke => canResend;
+  bool get canRevoke => status == InviteStatus.pending;
   PlatformInvite copyWith({
     InviteStatus? status,
     DateTime? expiresAt,
