@@ -77,7 +77,7 @@ não atribui planos a instituições neste recorte.
 
 1. `Coelo Essencial`: comunicação, agenda e convites; limites menores.
 2. `Coelo Conecta`: acrescenta chat e avisos segmentados.
-3. `Coelo Cuidado`: acrescenta Rotina, Flow e Now; limites ampliados.
+3. `Coelo Cuidado`: acrescenta Rotina, Happens e Now; limites ampliados.
 4. `Coelo Integral`: todos os módulos, incluindo Moments; maiores limites.
 
 ### Experiência
@@ -86,7 +86,7 @@ não atribui planos a instituições neste recorte.
 - Cards/tabela com nome, recursos, limites, status e uso fictício.
 - Criar e editar em página responsiva.
 - Identidade: nome, código, descrição e status.
-- Recursos independentes, incluindo Flow, Now, Moments, Chat, Agenda e Rotina.
+- Recursos independentes, incluindo Happens, Now, Moments, Chat, Agenda e Rotina.
 - Limites para instituições/unidades, usuários, responsáveis por criança,
   armazenamento e mídia.
 - Operação manual e observações internas.
