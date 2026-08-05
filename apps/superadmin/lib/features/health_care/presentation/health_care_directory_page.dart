@@ -5,6 +5,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
 import '../../auth/domain/logout_action.dart';
@@ -13,6 +14,7 @@ import '../../../shared/presentation/widgets/superadmin_listing_pagination_foote
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/health_care.dart';
 import 'health_care_controller.dart';
+import 'health_care_file_actions.dart';
 
 enum _HealthCareTableView { grouped }
 
@@ -38,10 +40,12 @@ final class HealthCareProfileDirectoryPage extends StatefulWidget {
 
 final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfileDirectoryPage> {
   final _search = TextEditingController();
+  late final SuperadminActivityController _activityController;
 
   @override
   void initState() {
     super.initState();
+    _activityController = SuperadminActivityController();
     widget.controller.addListener(_refresh);
     widget.controller.load();
   }
@@ -64,6 +68,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
   void dispose() {
     widget.controller.removeListener(_refresh);
     _search.dispose();
+    _activityController.dispose();
     super.dispose();
   }
 
@@ -202,6 +207,11 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
         tableKey: const Key('health-care-profiles-view-table'),
         onCardsSelected: () => widget.controller.setDisplay(HealthCareDirectoryDisplay.cards),
         onTableViewSelected: (_) => widget.controller.setDisplay(HealthCareDirectoryDisplay.table),
+      ),
+      HealthCareFileActions(
+        activityController: _activityController,
+        subject: 'Perfis de cuidado',
+        fileBaseName: 'perfis-de-cuidado',
       ),
     ],
   );

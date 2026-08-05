@@ -5,8 +5,10 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
+import 'health_care_file_actions.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
@@ -53,6 +55,7 @@ final class HealthMedicationPlanDirectoryPage extends StatefulWidget {
 final class _HealthMedicationPlanDirectoryPageState
     extends State<HealthMedicationPlanDirectoryPage> {
   final _search = TextEditingController();
+  late final SuperadminActivityController _activityController;
   var _display = _MedicationDirectoryDisplay.cards;
   var _loading = true;
   Object? _loadError;
@@ -66,12 +69,14 @@ final class _HealthMedicationPlanDirectoryPageState
   @override
   void initState() {
     super.initState();
+    _activityController = SuperadminActivityController();
     _load();
   }
 
   @override
   void dispose() {
     _search.dispose();
+    _activityController.dispose();
     super.dispose();
   }
 
@@ -307,6 +312,11 @@ final class _HealthMedicationPlanDirectoryPageState
         tableKey: const Key('health-medication-plans-view-table'),
         onCardsSelected: () => _setDisplay(_MedicationDirectoryDisplay.cards),
         onTableViewSelected: (_) => _setDisplay(_MedicationDirectoryDisplay.table),
+      ),
+      HealthCareFileActions(
+        activityController: _activityController,
+        subject: 'Planos de medicação',
+        fileBaseName: 'planos-de-medicacao',
       ),
     ],
   );

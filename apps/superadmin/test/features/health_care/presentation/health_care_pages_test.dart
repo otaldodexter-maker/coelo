@@ -1,10 +1,12 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_detail_page.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_care_file_actions.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -122,6 +124,77 @@ void main() {
     expect(find.byKey(const Key('health-care-profiles-table')), findsOneWidget);
     expect(find.byType(CoeloAdminResizableTable<HealthCareChildSummary>), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('profile directory exposes import and export file actions', (tester) async {
+    await _setViewport(tester, const Size(1440, 900));
+    final controller = HealthCareController(DemoHealthCareRepository());
+    addTearDown(controller.dispose);
+
+    await _pump(
+      tester,
+      HealthCareProfileDirectoryPage(
+        controller: controller,
+        logout: unavailableSuperadminLogout,
+        onCreate: () {},
+      ),
+    );
+
+    expect(find.text('Arquivos'), findsOneWidget);
+    await tester.tap(find.text('Arquivos'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+  });
+
+  testWidgets('medication plan directory exposes import and export file actions', (tester) async {
+    await _setViewport(tester, const Size(1440, 900));
+    final controller = HealthCareController(DemoHealthCareRepository());
+    addTearDown(controller.dispose);
+
+    await _pump(
+      tester,
+      HealthMedicationPlanDirectoryPage(
+        controller: controller,
+        logout: unavailableSuperadminLogout,
+        onCreate: () {},
+        onPlanSelected: (_) {},
+      ),
+    );
+
+    expect(find.text('Arquivos'), findsOneWidget);
+    await tester.tap(find.text('Arquivos'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+  });
+
+  testWidgets('file export completes through the activity controller', (tester) async {
+    final activityController = SuperadminActivityController();
+    addTearDown(activityController.dispose);
+    await _pump(
+      tester,
+      Scaffold(
+        body: HealthCareFileActions(
+          activityController: activityController,
+          subject: 'Perfis de cuidado',
+          fileBaseName: 'perfis-de-cuidado',
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Arquivos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('health-care-files-export-csv')));
+    await tester.pumpAndSettle();
+
+    expect(activityController.activities, hasLength(1));
+    expect(activityController.activities.single.kind, SuperadminActivityKind.export);
+    expect(activityController.activities.single.fileName, 'perfis-de-cuidado.csv');
   });
 
   testWidgets('profile detail separates care from medication plans', (tester) async {
