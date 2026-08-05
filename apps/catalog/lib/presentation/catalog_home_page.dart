@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -434,23 +435,22 @@ final class _CatalogEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(entry.name, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(entry.id, style: Theme.of(context).textTheme.labelMedium),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(entry.purpose),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text('${entry.ownerPackage} · ${entry.status.label}'),
-            ],
-          ),
+    return CoeloAdminInteractiveCard(
+      onPressed: onTap,
+      semanticLabel: entry.name,
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(entry.name, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: CoeloSpacing.space1),
+            Text(entry.id, style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(entry.purpose),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text('${entry.ownerPackage} · ${entry.status.label}'),
+          ],
         ),
       ),
     );
