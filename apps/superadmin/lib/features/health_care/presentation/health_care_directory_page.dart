@@ -75,6 +75,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
+    activityController: _activityController,
     currentDestination: 'health-care-profiles',
     title: 'Perfis de cuidado',
     subtitle: 'Alergias, restrições e características permanentes de cada criança.',

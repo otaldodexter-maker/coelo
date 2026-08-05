@@ -185,6 +185,7 @@ final class _HealthMedicationPlanDirectoryPageState
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
+    activityController: _activityController,
     currentDestination: 'health-medication-plans',
     title: 'Planos de medica\u00e7\u00e3o',
     subtitle: 'Vig\u00eancia, hor\u00e1rios, respons\u00e1veis e registros de doses.',

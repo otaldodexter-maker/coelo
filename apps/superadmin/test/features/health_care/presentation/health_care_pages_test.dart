@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
@@ -141,6 +142,9 @@ void main() {
     );
 
     expect(find.text('Arquivos'), findsOneWidget);
+    final profileShell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
+    final profileFiles = tester.widget<HealthCareFileActions>(find.byType(HealthCareFileActions));
+    expect(identical(profileShell.activityController, profileFiles.activityController), isTrue);
     await tester.tap(find.text('Arquivos'));
     await tester.pumpAndSettle();
 
@@ -165,6 +169,11 @@ void main() {
     );
 
     expect(find.text('Arquivos'), findsOneWidget);
+    final medicationShell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
+    final medicationFiles = tester.widget<HealthCareFileActions>(
+      find.byType(HealthCareFileActions),
+    );
+    expect(identical(medicationShell.activityController, medicationFiles.activityController), isTrue);
     await tester.tap(find.text('Arquivos'));
     await tester.pumpAndSettle();
 
