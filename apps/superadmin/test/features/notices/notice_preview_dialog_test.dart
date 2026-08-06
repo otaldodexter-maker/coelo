@@ -4,6 +4,87 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('renders text background preview without image', (tester) async {
+    await _openPreview(tester, _notice());
+
+    expect(find.byKey(const Key('notice-popup-text-background')), findsOneWidget);
+    expect(find.byKey(const Key('notice-popup-image-horizontal')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders image orientations without overflow', (tester) async {
+    await _openPreview(
+      tester,
+      _notice(
+        behavior: NoticeBehavior.dismissible,
+        contentFormat: NoticeContentFormat.image,
+        imageOrientation: NoticeImageOrientation.horizontal,
+      ),
+    );
+    expect(find.byKey(const Key('notice-popup-image-horizontal')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.tap(find.byTooltip('Fechar aviso'));
+    await tester.pumpAndSettle();
+    await _openPreview(
+      tester,
+      _notice(
+        contentFormat: NoticeContentFormat.image,
+        imageOrientation: NoticeImageOrientation.vertical,
+      ),
+    );
+    expect(find.byKey(const Key('notice-popup-image-vertical')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('dismissible notice closes without accepting', (tester) async {
+    var accepted = false;
+    await _openPreview(
+      tester,
+      _notice(behavior: NoticeBehavior.dismissible),
+      onAccepted: () => accepted = true,
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Fechar'));
+    await tester.pumpAndSettle();
+
+    expect(accepted, isFalse);
+    expect(find.byKey(const Key('notice-preview-dialog')), findsNothing);
+  });
+
+  testWidgets('confirmation notice accepts when confirmed', (tester) async {
+    var accepted = false;
+    await _openPreview(
+      tester,
+      _notice(behavior: NoticeBehavior.confirmation),
+      onAccepted: () => accepted = true,
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirmar'));
+    await tester.pumpAndSettle();
+
+    expect(accepted, isTrue);
+  });
+
+  testWidgets('checkbox confirmation exposes device semantics and enables confirmation', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await _openPreview(
+      tester,
+      _notice(behavior: NoticeBehavior.checkboxConfirmation, targetDevice: NoticeTargetDevice.web),
+    );
+
+    expect(find.bySemanticsLabel('Pr\u00e9via do aviso em Web'), findsOneWidget);
+    final confirmButton = find.widgetWithText(FilledButton, 'Confirmar');
+    expect(tester.widget<FilledButton>(confirmButton).onPressed, isNull);
+
+    await tester.tap(find.byKey(const Key('notice-acknowledgement')));
+    await tester.pump();
+
+    expect(tester.widget<FilledButton>(confirmButton).onPressed, isNotNull);
+    semantics.dispose();
+  });
   testWidgets('checkbox notice requires acknowledgement before confirming', (tester) async {
     var accepted = false;
     final notice = PlatformNotice(
@@ -17,6 +98,7 @@ void main() {
       audience: NoticeAudience.coeloTeam,
       audienceLabel: 'Equipe Coelo',
       behavior: NoticeBehavior.checkboxConfirmation,
+      targetDevice: NoticeTargetDevice.all,
       mandatory: true,
       reach: 1,
     );
@@ -35,15 +117,57 @@ void main() {
     );
     await tester.tap(find.text('Abrir'));
     await tester.pumpAndSettle();
-    expect(find.text('Aviso obrigatório'), findsOneWidget);
     expect(
       tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Confirmar')).onPressed,
       isNull,
     );
-    await tester.tap(find.byType(CheckboxListTile));
+    await tester.tap(find.byKey(const Key('notice-acknowledgement')));
     await tester.pump();
     await tester.tap(find.text('Confirmar'));
     await tester.pumpAndSettle();
     expect(accepted, isTrue);
   });
 }
+
+Future<void> _openPreview(
+  WidgetTester tester,
+  PlatformNotice notice, {
+  VoidCallback? onAccepted,
+}) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      home: Scaffold(
+        body: Builder(
+          builder: (context) => FilledButton(
+            onPressed: () => showNoticePreview(context, notice, onAccepted: onAccepted),
+            child: const Text('Open'),
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.tap(find.text('Open'));
+  await tester.pumpAndSettle();
+}
+
+PlatformNotice _notice({
+  NoticeBehavior behavior = NoticeBehavior.confirmation,
+  NoticeContentFormat contentFormat = NoticeContentFormat.textBackground,
+  NoticeImageOrientation imageOrientation = NoticeImageOrientation.vertical,
+  NoticeTargetDevice targetDevice = NoticeTargetDevice.all,
+}) => PlatformNotice(
+  id: 'notice',
+  title: 'Notice preview',
+  message: 'Read before continuing.',
+  priority: NoticePriority.important,
+  status: NoticeStatus.active,
+  startsAt: DateTime.utc(2026, 8, 3),
+  endsAt: null,
+  audience: NoticeAudience.coeloTeam,
+  audienceLabel: 'Coelo team',
+  behavior: behavior,
+  targetDevice: targetDevice,
+  reach: 1,
+  contentFormat: contentFormat,
+  imageOrientation: imageOrientation,
+);
