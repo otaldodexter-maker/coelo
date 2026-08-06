@@ -136,6 +136,95 @@ void main() {
     expect(notice.textColorValue, 0xFFFFFFFF);
     expect(notice.mandatory, isTrue);
   });
+  test('duplicate expired notice resets expiration limits and publish delivers reach', () {
+    var now = DateTime.utc(2026, 8, 3, 12);
+    final repository = _repositoryWithClock(() => now);
+    final active = repository.publish(
+      repository
+          .create(
+            _draft(
+              endsAt: now.add(const Duration(hours: 1)),
+              recurrence: NoticeRecurrence.daily,
+              recurrenceUntil: now.add(const Duration(hours: 1)),
+            ),
+          )
+          .id,
+    );
+    expect(active.deliveredCount, active.reach);
+    now = now.add(const Duration(hours: 2));
+
+    final duplicate = repository.duplicate(active.id);
+
+    expect(repository.find(active.id)!.status, NoticeStatus.ended);
+    expect(duplicate.endsAt, isNull);
+    expect(duplicate.recurrenceUntil, isNull);
+  });
+
+  test('actions materialize expiration before accept pause resume and cancel', () {
+    var now = DateTime.utc(2026, 8, 3, 12);
+    final acceptRepository = _repositoryWithClock(() => now);
+    final activeForAccept = _publishWithEnd(acceptRepository, now.add(const Duration(hours: 1)));
+    now = now.add(const Duration(hours: 2));
+    expect(() => acceptRepository.accept(activeForAccept.id), throwsStateError);
+    expect(acceptRepository.find(activeForAccept.id)!.status, NoticeStatus.ended);
+
+    now = DateTime.utc(2026, 8, 3, 12);
+    final pauseRepository = _repositoryWithClock(() => now);
+    final activeForPause = _publishWithEnd(pauseRepository, now.add(const Duration(hours: 1)));
+    now = now.add(const Duration(hours: 2));
+    expect(() => pauseRepository.pause(activeForPause.id), throwsStateError);
+    expect(pauseRepository.find(activeForPause.id)!.status, NoticeStatus.ended);
+
+    now = DateTime.utc(2026, 8, 3, 12);
+    final resumeRepository = _repositoryWithClock(() => now);
+    final activeForResume = _publishWithEnd(resumeRepository, now.add(const Duration(hours: 1)));
+    resumeRepository.pause(activeForResume.id);
+    now = now.add(const Duration(hours: 2));
+    expect(() => resumeRepository.resume(activeForResume.id), throwsStateError);
+    expect(resumeRepository.find(activeForResume.id)!.status, NoticeStatus.ended);
+
+    now = DateTime.utc(2026, 8, 3, 12);
+    final cancelRepository = _repositoryWithClock(() => now);
+    final activeForCancel = _publishWithEnd(cancelRepository, now.add(const Duration(hours: 1)));
+    now = now.add(const Duration(hours: 2));
+    expect(() => cancelRepository.cancel(activeForCancel.id), throwsStateError);
+    expect(cancelRepository.find(activeForCancel.id)!.status, NoticeStatus.ended);
+  });
+
+  test('mandatory is derived from behavior by constructor and copyWith', () {
+    final dismissible = _platformNotice(behavior: NoticeBehavior.dismissible, mandatory: true);
+    final confirmation = dismissible.copyWith(
+      behavior: NoticeBehavior.confirmation,
+      mandatory: false,
+    );
+
+    expect(dismissible.mandatory, isFalse);
+    expect(confirmation.mandatory, isTrue);
+  });
+
+  test('recurrence rejects invalid and irrelevant configuration fields', () {
+    final repository = _repository();
+    expect(
+      () => repository.create(_draft(recurrence: NoticeRecurrence.interval, intervalDays: 0)),
+      throwsArgumentError,
+    );
+    expect(
+      () => repository.create(_draft(recurrence: NoticeRecurrence.weekly)),
+      throwsArgumentError,
+    );
+    expect(
+      () => repository.create(_draft(recurrence: NoticeRecurrence.weekly, weeklyDays: [8])),
+      throwsArgumentError,
+    );
+    expect(
+      () => repository.create(_draft(recurrence: NoticeRecurrence.monthly, dayOfMonth: 0)),
+      throwsArgumentError,
+    );
+    expect(
+      () => repository.create(_draft(recurrence: NoticeRecurrence.daily, intervalDays: 2)),
+      throwsArgumentError,
+    );
+  });
 }
 
 FakeNoticeRepository _repository() {
@@ -144,3 +233,51 @@ FakeNoticeRepository _repository() {
   final store = SuperadminPrototypeStore(activityController: activities, now: () => now);
   return FakeNoticeRepository(store: store, now: () => now);
 }
+
+FakeNoticeRepository _repositoryWithClock(DateTime Function() now) {
+  final activities = SuperadminActivityController(now: now);
+  final store = SuperadminPrototypeStore(activityController: activities, now: now);
+  return FakeNoticeRepository(store: store, now: now);
+}
+
+PlatformNotice _publishWithEnd(FakeNoticeRepository repository, DateTime endsAt) =>
+    repository.publish(repository.create(_draft(endsAt: endsAt)).id);
+
+NoticeDraft _draft({
+  NoticeRecurrence recurrence = NoticeRecurrence.oneTime,
+  int? intervalDays,
+  List<int> weeklyDays = const [],
+  int? dayOfMonth,
+  DateTime? endsAt,
+  DateTime? recurrenceUntil,
+}) => NoticeDraft(
+  title: 'Janela local',
+  message: 'Mensagem fict?cia.',
+  priority: NoticePriority.important,
+  audience: NoticeAudience.everyone,
+  audienceLabel: 'Todos',
+  behavior: NoticeBehavior.confirmation,
+  recurrence: recurrence,
+  intervalDays: intervalDays,
+  weeklyDays: weeklyDays,
+  dayOfMonth: dayOfMonth,
+  endsAt: endsAt,
+  recurrenceUntil: recurrenceUntil,
+);
+
+PlatformNotice _platformNotice({required NoticeBehavior behavior, required bool mandatory}) =>
+    PlatformNotice(
+      id: 'notice-direct',
+      title: 'Janela local',
+      message: 'Mensagem fict?cia.',
+      priority: NoticePriority.important,
+      status: NoticeStatus.draft,
+      startsAt: DateTime.utc(2026, 8, 3, 12),
+      endsAt: null,
+      audience: NoticeAudience.everyone,
+      audienceLabel: 'Todos',
+      behavior: behavior,
+      mandatory: mandatory,
+      targetDevice: NoticeTargetDevice.all,
+      reach: 1,
+    );

@@ -138,7 +138,7 @@ final class PlatformNotice {
     required this.audience,
     required this.audienceLabel,
     required this.behavior,
-    required this.mandatory,
+    bool mandatory = false,
     required this.targetDevice,
     required this.reach,
     this.contentFormat = NoticeContentFormat.textBackground,
@@ -159,7 +159,7 @@ final class PlatformNotice {
     this.deliveredCount = 0,
     this.viewedCount = 0,
     this.acceptedCount = 0,
-  });
+  }) : mandatory = behavior != NoticeBehavior.dismissible;
 
   final String id;
   final String title;
@@ -215,6 +215,7 @@ final class PlatformNotice {
     NoticeStatus? status,
     DateTime? startsAt,
     DateTime? endsAt,
+    bool clearEndsAt = false,
     NoticeAudience? audience,
     String? audienceLabel,
     NoticeBehavior? behavior,
@@ -230,6 +231,7 @@ final class PlatformNotice {
     List<int>? weeklyDays,
     int? dayOfMonth,
     DateTime? recurrenceUntil,
+    bool clearRecurrenceUntil = false,
     NoticeImageOrientation? imageOrientation,
     bool? showImagePlaceholder,
     NoticeVisualTone? backgroundTone,
@@ -246,7 +248,7 @@ final class PlatformNotice {
     priority: priority ?? this.priority,
     status: status ?? this.status,
     startsAt: startsAt ?? this.startsAt,
-    endsAt: endsAt ?? this.endsAt,
+    endsAt: clearEndsAt ? null : endsAt ?? this.endsAt,
     audience: audience ?? this.audience,
     audienceLabel: audienceLabel ?? this.audienceLabel,
     behavior: behavior ?? this.behavior,
@@ -261,7 +263,7 @@ final class PlatformNotice {
     intervalDays: intervalDays ?? this.intervalDays,
     weeklyDays: weeklyDays ?? this.weeklyDays,
     dayOfMonth: dayOfMonth ?? this.dayOfMonth,
-    recurrenceUntil: recurrenceUntil ?? this.recurrenceUntil,
+    recurrenceUntil: clearRecurrenceUntil ? null : recurrenceUntil ?? this.recurrenceUntil,
     imageOrientation: imageOrientation ?? this.imageOrientation,
     showImagePlaceholder: showImagePlaceholder ?? this.showImagePlaceholder,
     backgroundTone: backgroundTone ?? this.backgroundTone,
