@@ -82,6 +82,7 @@ final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveC
           : Semantics(
               label: widget.semanticLabel,
               button: widget.onPressed != null,
+              onTap: widget.onPressed,
               container: true,
               child: ExcludeSemantics(child: surface),
             ),

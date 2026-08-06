@@ -71,7 +71,12 @@ void main() {
     var presses = 0;
     await _pumpCard(tester, semanticLabel: 'Abrir instituição', onPressed: () => presses++);
 
-    expect(find.bySemanticsLabel('Abrir instituição'), findsOneWidget);
+    final semanticCard = find.bySemanticsLabel('Abrir instituição');
+    expect(semanticCard, findsOneWidget);
+    expect(
+      tester.getSemantics(semanticCard).getSemanticsData().hasAction(SemanticsAction.tap),
+      isTrue,
+    );
     await tester.tap(find.byType(CoeloAdminInteractiveCard));
     expect(presses, 1);
   });
