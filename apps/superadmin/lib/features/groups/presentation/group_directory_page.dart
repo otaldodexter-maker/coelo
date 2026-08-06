@@ -740,7 +740,18 @@ final class _GroupCardState extends State<_GroupCard> {
                               ),
                             ),
                             const SizedBox(width: CoeloSpacing.space2),
-                            _GroupStatusChip(status: item.status),
+                            Builder(
+                              builder: (context) {
+                                final pair = _groupStatusColors(context, item.status);
+                                return CoeloAdminExpandableStatusIndicator(
+                                  label: item.status.label,
+                                  backgroundColor: pair.$1,
+                                  foregroundColor: pair.$2,
+                                  semanticLabel: 'Status: ${item.status.label}',
+                                  surfaceKey: Key('group-status-${item.id}'),
+                                );
+                              },
+                            ),
                           ],
                         ),
                         const SizedBox(height: CoeloSpacing.space4),
@@ -1099,21 +1110,25 @@ final class _GroupStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
-    final pair = switch (status) {
-      GroupStatus.active => (colors.successContainer, colors.onSuccessContainer),
-      GroupStatus.suspended => (colors.errorContainer, colors.onErrorContainer),
-      GroupStatus.draft => (colors.warningContainer, colors.onWarningContainer),
-      GroupStatus.inactive || GroupStatus.archived => (
-        theme.colorScheme.surfaceContainer,
-        theme.colorScheme.onSurfaceVariant,
-      ),
-    };
+    final pair = _groupStatusColors(context, status);
     return CoeloStatusChip(label: status.label, backgroundColor: pair.$1, foregroundColor: pair.$2);
   }
+}
+
+(Color, Color) _groupStatusColors(BuildContext context, GroupStatus status) {
+  final theme = Theme.of(context);
+  final colors =
+      theme.extension<CoeloStatusColors>() ??
+      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+  return switch (status) {
+    GroupStatus.active => (colors.successContainer, colors.onSuccessContainer),
+    GroupStatus.suspended => (colors.errorContainer, colors.onErrorContainer),
+    GroupStatus.draft => (colors.warningContainer, colors.onWarningContainer),
+    GroupStatus.inactive || GroupStatus.archived => (
+      theme.colorScheme.surfaceContainer,
+      theme.colorScheme.onSurfaceVariant,
+    ),
+  };
 }
 
 final class _GroupPaginationFooter extends StatelessWidget {

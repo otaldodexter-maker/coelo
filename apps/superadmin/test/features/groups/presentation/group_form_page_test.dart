@@ -3,11 +3,96 @@ import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repos
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('uses six responsive steps and the canonical continuation footer', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          institutions: institutions,
+          repository: FakeGroupDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
+    expect(find.byKey(const Key('group-form-continue')), findsOneWidget);
+    expect(find.byKey(const Key('group-form-save')), findsNothing);
+    for (final label in [
+      'Hierarquia',
+      'Identidade',
+      'Vínculos e aparência',
+      'Pessoas da turma',
+      'Profissionais e admins',
+      'Convites',
+    ]) {
+      expect(find.text(label), findsWidgets);
+    }
+
+    await tester.binding.setSurfaceSize(const Size(768, 900));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
+    expect(tester.takeException(), isNull);
+
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+  });
+
+  testWidgets('validates the identity step and preserves its draft when navigating back', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          institutions: institutions,
+          repository: FakeGroupDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-form-previous')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    expect(find.text('Informe o nome da turma.'), findsOneWidget);
+    expect(find.byKey(const Key('group-links-section')), findsNothing);
+
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma preservada');
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-links-section')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('group-form-previous')));
+    await tester.pumpAndSettle();
+    expect(find.text('Turma preservada'), findsOneWidget);
+  });
+
   testWidgets('creates a group with the confirmed fields and active default', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -30,18 +115,25 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Criar turma'), findsWidgets);
-    expect(find.text('Ativo'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('group-institution-field')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    expect(find.text('Ativo'), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
+    await tester.enterText(find.byKey(const Key('group-type-field')), 'class');
+
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('group-handle-field')), findsOneWidget);
     expect(find.byKey(const Key('group-primary-color-field')), findsOneWidget);
     expect(find.byKey(const Key('group-secondary-color-field')), findsOneWidget);
     expect(find.byKey(const Key('group-activity-links')), findsOneWidget);
-    expect(find.text('Hierarquia'), findsOneWidget);
-    expect(find.text('Identidade'), findsOneWidget);
-    expect(find.textContaining('Atividades da turma'), findsOneWidget);
-    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
-    await tester.enterText(find.byKey(const Key('group-type-field')), 'class');
     await tester.enterText(find.byKey(const Key('group-handle-field')), '@girassol');
+
+    await tester.tap(find.byKey(const Key('step-convites')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-form-save')));
     await tester.pumpAndSettle();
 
@@ -90,6 +182,8 @@ void main() {
     expect(institutionField.ignoring, isTrue);
     expect(unitField.ignoring, isTrue);
 
+    await tester.tap(find.byKey(const Key('step-identidade')));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Nome alterado');
     await tester.tap(find.byKey(const Key('group-form-cancel')));
     await tester.pumpAndSettle();
@@ -126,6 +220,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma compacta');
+    for (var step = 0; step < 4; step++) {
+      await tester.tap(find.byKey(const Key('group-form-continue')));
+      await tester.pumpAndSettle();
+    }
 
     await tester.ensureVisible(find.byKey(const Key('group-invite-add')));
     await tester.tap(find.byKey(const Key('group-invite-add')));

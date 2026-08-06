@@ -1,8 +1,8 @@
 ---
-source: "Solicitacao do fundador em 2026-07-29; specs/012-superadmin-mvp.md; docs/product/prd-master.md; packages/coelo_database/migrations/20260623191021_superadmin_foundation_v1.sql; Instituicoes como referencia visual aprovada"
+source: "Solicitacoes do fundador em 2026-07-29 e 2026-08-05; specs/012-superadmin-mvp.md; docs/product/prd-master.md; packages/coelo_database/migrations/20260623191021_superadmin_foundation_v1.sql; Instituicoes e Unidades como referencias visuais aprovadas"
 status: "approved"
-generated_at: "2026-07-29"
-updated_at: "2026-08-03"
+generated_at: "2026-08-05"
+updated_at: "2026-08-05"
 ---
 
 # Turmas no Superadmin
@@ -68,13 +68,22 @@ explicita no centro de atividades, sem alegar suporte produtivo.
 
 ## Formulario
 
-O formulario usa uma unica secao responsiva: Instituicao e Unidade em
-single-select, Nome e Tipo em campos textuais e Status em single-select. O
-grid tem uma coluna no compacto e ate duas a partir do breakpoint medio.
+O formulario segue a familia aprovada de Criar/Editar Instituicao e Unidade,
+com seis etapas responsivas: Hierarquia, Identidade, Vinculos e aparencia,
+Pessoas da turma, Profissionais e admins e Convites. A navegacao usa o
+componente compartilhado de etapas em disposicao lateral quando houver espaco e
+resumo compacto nas larguras menores; o rodape compartilhado oferece Cancelar,
+Anterior, Continuar e Salvar sem cobrir o ultimo campo.
+
+Somente os campos fisicos confirmados sao persistidos: Instituicao e Unidade em
+single-select, Nome e Tipo em campos textuais e Status em single-select. Secoes
+demonstrativas existentes preservam estado apenas local e nao criam dominio,
+heranca ou autorizacao nova. Nome e Tipo bloqueiam o avanco quando invalidos; o
+rascunho e preservado ao navegar entre etapas.
 
 Cancelar com alteracoes abre dialogo neutro compartilhado. Escape fecha o
-dialogo, mantem a edicao e restaura foco. O rodape usa `surface`, nao cobre o
-ultimo campo e mantem a acao primaria em largura util no compacto.
+dialogo, mantem a edicao e restaura foco. O conteudo usa uma coluna no
+compacto e ate duas a partir do breakpoint medio.
 
 ## Acessibilidade e verificacao
 

@@ -9,9 +9,23 @@ import '../../institutions/data/fake_institution_directory_repository.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../domain/group_directory.dart';
 
 enum GroupFormSaveResult { created, updated }
+
+enum _GroupFormStep { hierarchy, identity, links, people, professionals, invites }
+
+extension on _GroupFormStep {
+  String get label => switch (this) {
+    _GroupFormStep.hierarchy => 'Hierarquia',
+    _GroupFormStep.identity => 'Identidade',
+    _GroupFormStep.links => 'Vínculos e aparência',
+    _GroupFormStep.people => 'Pessoas da turma',
+    _GroupFormStep.professionals => 'Profissionais e admins',
+    _GroupFormStep.invites => 'Convites',
+  };
+}
 
 enum _GroupRoleType { aluno, responsavel, profissional, coordinator }
 
@@ -133,6 +147,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   bool _dirty = false;
   bool _saving = false;
   String? _saveError;
+  _GroupFormStep _currentStep = _GroupFormStep.hierarchy;
+  final Set<_GroupFormStep> _completedSteps = {};
+  final Set<_GroupFormStep> _errorSteps = {};
   final Set<String> _selectedActivities = {'Matemática', 'Leitura'};
   final Set<String> _mandatoryActivities = {'Matemática'};
   final List<_GroupActivityBinding> _activityByStudentLinks = const [];
@@ -281,9 +298,73 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     if (await _confirmExit()) widget.onDestinationSelected?.call(destination);
   }
 
+  bool get _identityValid =>
+      _nameController.text.trim().isNotEmpty && _typeController.text.trim().isNotEmpty;
+
+  SuperadminFormStepStatus _stepStatus(_GroupFormStep step) {
+    if (_errorSteps.contains(step)) return SuperadminFormStepStatus.error;
+    if (step == _currentStep) return SuperadminFormStepStatus.current;
+    if (_completedSteps.contains(step)) return SuperadminFormStepStatus.complete;
+    return SuperadminFormStepStatus.incomplete;
+  }
+
+  Widget _navigation() => SuperadminFormStepNavigation(
+    steps: [
+      for (final step in _GroupFormStep.values)
+        SuperadminFormStep(label: step.label, status: _stepStatus(step)),
+    ],
+    currentIndex: _currentStep.index,
+    onStepSelected: (index) => _selectStep(_GroupFormStep.values[index]),
+  );
+
+  bool _validateCurrentStep() {
+    final valid =
+        _currentStep != _GroupFormStep.identity ||
+        (_formKey.currentState?.validate() ?? _identityValid);
+    setState(() {
+      if (valid) {
+        _errorSteps.remove(_currentStep);
+      } else {
+        _errorSteps.add(_currentStep);
+      }
+    });
+    return valid;
+  }
+
+  void _selectStep(_GroupFormStep step) {
+    if (step == _currentStep) return;
+    if (step.index > _currentStep.index && !_validateCurrentStep()) return;
+    setState(() {
+      _completedSteps.add(_currentStep);
+      _currentStep = step;
+    });
+  }
+
+  void _continue() {
+    if (!_validateCurrentStep()) return;
+    final next = _currentStep.index + 1;
+    if (next >= _GroupFormStep.values.length) return;
+    setState(() {
+      _completedSteps.add(_currentStep);
+      _currentStep = _GroupFormStep.values[next];
+    });
+  }
+
+  void _previous() {
+    if (_currentStep.index == 0) return;
+    setState(() => _currentStep = _GroupFormStep.values[_currentStep.index - 1]);
+  }
+
   Future<void> _save() async {
     setState(() => _saveError = null);
-    if (!_formKey.currentState!.validate()) return;
+    if (!_identityValid) {
+      setState(() {
+        _errorSteps.add(_GroupFormStep.identity);
+        _currentStep = _GroupFormStep.identity;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _formKey.currentState?.validate());
+      return;
+    }
     setState(() => _saving = true);
     try {
       final now = DateTime.now();
@@ -358,30 +439,44 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                 key: _formKey,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    final desktop = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
                     final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
                         ? CoeloSpacing.space10
                         : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
                         ? CoeloSpacing.space6
                         : CoeloSpacing.space4;
+                    final navigation = _navigation();
                     return Padding(
                       key: const Key('group-form-golden-root'),
                       padding: EdgeInsets.fromLTRB(padding, padding, padding, CoeloSpacing.space4),
-                      child: Column(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (desktop) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
                           Expanded(
-                            child: SingleChildScrollView(
-                              key: const Key('group-form-scroll'),
-                              padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                              child: Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 980),
-                                  child: _formSurface(),
+                            child: Column(
+                              children: [
+                                if (!desktop) ...[
+                                  navigation,
+                                  const SizedBox(height: CoeloSpacing.space4),
+                                ],
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    key: const Key('group-form-scroll'),
+                                    padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                                    child: Center(
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(maxWidth: 880),
+                                        child: _formSurface(),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: CoeloSpacing.space4),
+                                _footer(),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: CoeloSpacing.space4),
-                          _footer(),
                         ],
                       ),
                     );
@@ -393,120 +488,97 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   Widget _formSurface() {
-    final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        border: Border.all(color: colors.outlineVariant),
+    final content = switch (_currentStep) {
+      _GroupFormStep.hierarchy => _formSection(
+        key: const Key('group-hierarchy-section'),
+        title: 'Hierarquia',
+        description: 'Instituição → Unidade → Turma.',
+        child: _fieldGrid(_hierarchyFields()),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space6),
+      _GroupFormStep.identity => _formSection(
+        key: const Key('group-identity-section'),
+        title: 'Identidade',
+        description: 'Nome, tipo e status da turma.',
+        child: _fieldGrid(_identityFields()),
+      ),
+      _GroupFormStep.links => _formSection(
+        key: const Key('group-links-section'),
+        title: 'Vínculos e aparência',
+        description:
+            'Atividades, rótulos de comunicação e identidade visual local: preview demonstrativo sem persistência adicional.',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Dados da turma', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: CoeloSpacing.space1),
-            Text(
-              'Vínculo, identidade e gestão de pessoas/profissionais da turma em padrão Coelo.',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-            ),
-            if (_saveError != null) ...[
-              const SizedBox(height: CoeloSpacing.space4),
-              Semantics(
-                liveRegion: true,
-                child: MaterialBanner(
-                  content: Text(_saveError!),
-                  actions: [
-                    TextButton(
-                      onPressed: () => setState(() => _saveError = null),
-                      child: const Text('Fechar'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: CoeloSpacing.space6),
-            _formSection(
-              key: const Key('group-hierarchy-section'),
-              title: 'Hierarquia',
-              description: 'Instituição → Unidade → Turma.',
-              child: _fieldGrid(_hierarchyFields()),
-            ),
+            _fieldGrid(_prototypeFields()),
             const SizedBox(height: CoeloSpacing.space5),
-            _formSection(
-              key: const Key('group-identity-section'),
-              title: 'Identidade',
-              description: 'Nome, tipo e status da turma.',
-              child: _fieldGrid(_identityFields()),
-            ),
-            const SizedBox(height: CoeloSpacing.space5),
-            _formSection(
-              key: const Key('group-links-section'),
-              title: 'Vínculos e aparência',
-              description:
-                  'Atividades, rótulos de comunicação e identidade visual local: preview demonstrativo sem persistência adicional.',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _fieldGrid(_prototypeFields()),
-                  const SizedBox(height: CoeloSpacing.space5),
-                  _activitySection(),
-                ],
-              ),
-            ),
-            const SizedBox(height: CoeloSpacing.space5),
-            _formSection(
-              key: const Key('group-people-section'),
-              title: 'Pessoas da turma',
-              description:
-                  'Cadastro local de pessoas, perfis e vínculos com tabela de inclusão, edição e exclusão.',
-              child: _peopleSection(
-                entries: _people,
-                sectionTitle: 'Pessoas associadas',
-                onAdd: () => _editPerson(),
-                onEdit: (index) => _editPerson(index: index),
-                onRemove: (index) {
-                  setState(() {
-                    _people.removeAt(index);
-                    _markDirty();
-                  });
-                },
-              ),
-            ),
-            const SizedBox(height: CoeloSpacing.space5),
-            _formSection(
-              key: const Key('group-professionals-section'),
-              title: 'Profissionais e admins',
-              description:
-                  'Acesso operacional da turma por função (padrão demonstrativo local). Defina permissões explícitas.',
-              child: _peopleSection(
-                entries: _professionals,
-                sectionTitle: 'Gestão de acesso',
-                onAdd: () => _editProfessional(),
-                onEdit: (index) => _editProfessional(index: index),
-                onRemove: (index) {
-                  setState(() {
-                    _professionals.removeAt(index);
-                    _markDirty();
-                  });
-                },
-                allowProfile: true,
-              ),
-            ),
-            const SizedBox(height: CoeloSpacing.space5),
-            _formSection(
-              key: const Key('group-invites-section'),
-              title: 'Convites',
-              description:
-                  'Convites demonstrativos para quem ainda não está vinculado, com busca por @, CPF, e-mail e celular.',
-              child: _invitesSection(),
-            ),
+            _activitySection(),
           ],
         ),
       ),
+      _GroupFormStep.people => _formSection(
+        key: const Key('group-people-section'),
+        title: 'Pessoas da turma',
+        description:
+            'Cadastro local de pessoas, perfis e vínculos com tabela de inclusão, edição e exclusão.',
+        child: _peopleSection(
+          entries: _people,
+          sectionTitle: 'Pessoas associadas',
+          onAdd: () => _editPerson(),
+          onEdit: (index) => _editPerson(index: index),
+          onRemove: (index) {
+            setState(() {
+              _people.removeAt(index);
+              _markDirty();
+            });
+          },
+        ),
+      ),
+      _GroupFormStep.professionals => _formSection(
+        key: const Key('group-professionals-section'),
+        title: 'Profissionais e admins',
+        description:
+            'Acesso operacional da turma por função (padrão demonstrativo local). Defina permissões explícitas.',
+        child: _peopleSection(
+          entries: _professionals,
+          sectionTitle: 'Gestão de acesso',
+          onAdd: () => _editProfessional(),
+          onEdit: (index) => _editProfessional(index: index),
+          onRemove: (index) {
+            setState(() {
+              _professionals.removeAt(index);
+              _markDirty();
+            });
+          },
+          allowProfile: true,
+        ),
+      ),
+      _GroupFormStep.invites => _formSection(
+        key: const Key('group-invites-section'),
+        title: 'Convites',
+        description:
+            'Convites demonstrativos para quem ainda não está vinculado, com busca por @, CPF, e-mail e celular.',
+        child: _invitesSection(),
+      ),
+    };
+    if (_saveError == null) return content;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          liveRegion: true,
+          child: MaterialBanner(
+            content: Text(_saveError!),
+            actions: [
+              TextButton(
+                onPressed: () => setState(() => _saveError = null),
+                child: const Text('Fechar'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        content,
+      ],
     );
   }
 
@@ -1356,17 +1428,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   Widget _footer() {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 980),
-      child: SuperadminFormActionFooter(
-        surfaceKey: const Key('group-form-footer-surface'),
-        tertiaryAction: TextButton(
-          key: const Key('group-form-cancel'),
-          onPressed: _saving ? null : _cancel,
-          child: const Text('Cancelar'),
-        ),
-        continuationActions: [
-          FilledButton.icon(
+    final last = _currentStep == _GroupFormStep.invites;
+    final primary = last
+        ? FilledButton.icon(
             key: const Key('group-form-save'),
             onPressed: _saving ? null : _save,
             icon: _saving
@@ -1376,7 +1440,35 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                   )
                 : const Icon(Icons.save_outlined),
             label: Text(_saving ? 'Salvando…' : 'Salvar turma'),
-          ),
+          )
+        : _editing
+        ? OutlinedButton(
+            key: const Key('group-form-continue'),
+            onPressed: _saving ? null : _continue,
+            child: const Text('Continuar'),
+          )
+        : FilledButton(
+            key: const Key('group-form-continue'),
+            onPressed: _saving ? null : _continue,
+            child: const Text('Continuar'),
+          );
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 880),
+      child: SuperadminFormActionFooter(
+        surfaceKey: const Key('group-form-footer-surface'),
+        tertiaryAction: TextButton(
+          key: const Key('group-form-cancel'),
+          onPressed: _saving ? null : _cancel,
+          child: const Text('Cancelar'),
+        ),
+        continuationActions: [
+          if (_currentStep.index > 0)
+            OutlinedButton(
+              key: const Key('group-form-previous'),
+              onPressed: _saving ? null : _previous,
+              child: const Text('Anterior'),
+            ),
+          primary,
         ],
       ),
     );

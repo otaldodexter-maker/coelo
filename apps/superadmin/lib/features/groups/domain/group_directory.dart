@@ -155,9 +155,7 @@ extension GroupDirectoryStatusCategoryLabel on GroupDirectoryStatusCategory {
   };
 }
 
-GroupDirectoryStatusCategory groupDirectoryStatusCategoryFrom(
-  Set<GroupStatus> statuses,
-) {
+GroupDirectoryStatusCategory groupDirectoryStatusCategoryFrom(Set<GroupStatus> statuses) {
   if (statuses.isEmpty) return GroupDirectoryStatusCategory.all;
   if (statuses.length == 1) {
     if (statuses.contains(GroupStatus.active)) {

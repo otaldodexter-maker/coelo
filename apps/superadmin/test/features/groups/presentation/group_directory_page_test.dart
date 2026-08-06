@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart' as domain;
@@ -67,6 +69,46 @@ void main() {
     expect(find.text('Atividade'), findsWidgets);
     expect(find.text('Equipe institucional'), findsWidgets);
     expect(find.byKey(const Key('coelo-admin-table-header-status')), findsOneWidget);
+  });
+
+  testWidgets('uses the canonical expandable status indicator on group cards', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final first = repository.records.first;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupDirectoryPage(
+          repository: repository,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final indicator = find.byKey(Key('group-status-${first.id}'));
+    final card = find.byKey(Key('group-card-${first.id}'));
+    final name = find.descendant(of: card, matching: find.text(first.name));
+    final cardSizeBefore = tester.getSize(card);
+    final cardTopLeftBefore = tester.getTopLeft(card);
+    final nameTopLeftBefore = tester.getTopLeft(name);
+    expect(indicator, findsOneWidget);
+    expect(tester.getSize(indicator), const Size.square(24));
+    expect(find.text(first.status.label), findsNothing);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer();
+    await mouse.moveTo(tester.getCenter(indicator));
+    await tester.pumpAndSettle();
+
+    expect(find.text(first.status.label), findsOneWidget);
+    expect(tester.getSize(indicator).width, greaterThan(24));
+    expect(tester.getSize(card), cardSizeBefore);
+    expect(tester.getTopLeft(card), cardTopLeftBefore);
+    expect((tester.getTopLeft(name) - nameTopLeftBefore).distance, lessThanOrEqualTo(1));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps sticky pagination usable at 200 percent text on compact width', (

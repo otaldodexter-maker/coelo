@@ -31,6 +31,13 @@ são preservados e os filtros mostram os tipos existentes. Os status são
 `draft`, `active`, `inactive`, `suspended` e `archived`; novos grupos iniciam
 em `active`.
 
+O formulário usa seis etapas responsivas: Hierarquia, Identidade, Vínculos e
+aparência, Pessoas da turma, Profissionais e admins e Convites. Em telas
+médias/amplas, a navegação é lateral; no compacto, usa resumo acessível. Somente
+instituição, unidade, nome, tipo textual e status são persistidos; pessoas,
+profissionais e convites permanecem demonstrações locais, sem criar domínio ou
+autorização.
+
 Importar turmas e Exportar turmas são demonstrações explícitas no centro de
 atividades, sem arquivo, parser ou persistência. A entrega usa repositório fake
 local independente: o Supabase atual só permite leitura de grupos por
