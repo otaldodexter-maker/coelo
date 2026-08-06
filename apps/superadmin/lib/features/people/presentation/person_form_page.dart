@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../safety/domain/child_safety.dart';
 import '../../safety/presentation/safety_pages.dart';
@@ -84,6 +85,27 @@ final class PersonFormPage extends StatefulWidget {
   State<PersonFormPage> createState() => _PersonFormPageState();
 }
 
+final class _PersonFormSurface extends StatelessWidget {
+  const _PersonFormSurface({required this.child, required this.padding});
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(padding: padding, child: child),
+    );
+  }
+}
+
 final class _DemoRelationshipSearch extends StatefulWidget {
   const _DemoRelationshipSearch();
 
@@ -136,67 +158,64 @@ final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> 
   }
 
   @override
-  Widget build(BuildContext context) => Card(
-    color: Theme.of(context).colorScheme.surface,
-    child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text('Busca demonstrativa de vínculos', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: CoeloSpacing.space4),
-          Text('Buscar adulto existente', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: CoeloSpacing.space1),
-          const Text('Consulte por nome ou dados mascarados de e-mail e celular.'),
-          const SizedBox(height: CoeloSpacing.space2),
-          SizedBox(
-            height: CoeloSize.touchMin,
-            child: CoeloSearchField(
-              key: const Key('person-adult-link-search'),
-              controller: _adultController,
-              hintText: 'Nome, arroba, CPF ou contato mascarado',
-              semanticLabel: 'Buscar adulto por nome, arroba, CPF, e-mail ou celular mascarados',
-              onChanged: (value) => setState(() => _adultQuery = value),
+  Widget build(BuildContext context) => _PersonFormSurface(
+    padding: const EdgeInsets.all(CoeloSpacing.space4),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Busca demonstrativa de vínculos', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space4),
+        Text('Buscar adulto existente', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        const Text('Consulte por nome ou dados mascarados de e-mail e celular.'),
+        const SizedBox(height: CoeloSpacing.space2),
+        SizedBox(
+          height: CoeloSize.touchMin,
+          child: CoeloSearchField(
+            key: const Key('person-adult-link-search'),
+            controller: _adultController,
+            hintText: 'Nome, arroba, CPF ou contato mascarado',
+            semanticLabel: 'Buscar adulto por nome, arroba, CPF, e-mail ou celular mascarados',
+            onChanged: (value) => setState(() => _adultQuery = value),
+          ),
+        ),
+        _results(
+          _matches(_adultLinkCandidates, _adultQuery),
+          selectedId: _selectedAdultId,
+          keyPrefix: 'person-adult-link-result',
+          onSelected: (candidate) => setState(() => _selectedAdultId = candidate.id),
+        ),
+        if (_selectedAdultId case final id?)
+          Padding(
+            padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+            child: Text(
+              'Vínculo selecionado: ${_adultLinkCandidates.firstWhere((item) => item.id == id).name}',
             ),
           ),
-          _results(
-            _matches(_adultLinkCandidates, _adultQuery),
-            selectedId: _selectedAdultId,
-            keyPrefix: 'person-adult-link-result',
-            onSelected: (candidate) => setState(() => _selectedAdultId = candidate.id),
+        const SizedBox(height: CoeloSpacing.space4),
+        Text('Buscar criança existente', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        const Text(
+          'Consulte por nome, identificador ou contexto; e-mail e celular não são exigidos.',
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+        SizedBox(
+          height: CoeloSize.touchMin,
+          child: CoeloSearchField(
+            key: const Key('person-child-link-search'),
+            controller: _childController,
+            hintText: 'Nome, identificador ou contexto',
+            semanticLabel: 'Buscar criança por nome, identificador ou contexto',
+            onChanged: (value) => setState(() => _childQuery = value),
           ),
-          if (_selectedAdultId case final id?)
-            Padding(
-              padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-              child: Text(
-                'Vínculo selecionado: ${_adultLinkCandidates.firstWhere((item) => item.id == id).name}',
-              ),
-            ),
-          const SizedBox(height: CoeloSpacing.space4),
-          Text('Buscar criança existente', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: CoeloSpacing.space1),
-          const Text(
-            'Consulte por nome, identificador ou contexto; e-mail e celular não são exigidos.',
-          ),
-          const SizedBox(height: CoeloSpacing.space2),
-          SizedBox(
-            height: CoeloSize.touchMin,
-            child: CoeloSearchField(
-              key: const Key('person-child-link-search'),
-              controller: _childController,
-              hintText: 'Nome, identificador ou contexto',
-              semanticLabel: 'Buscar criança por nome, identificador ou contexto',
-              onChanged: (value) => setState(() => _childQuery = value),
-            ),
-          ),
-          _results(
-            _matches(_childLinkCandidates, _childQuery),
-            selectedId: _selectedChildId,
-            keyPrefix: 'person-child-link-result',
-            onSelected: (candidate) => setState(() => _selectedChildId = candidate.id),
-          ),
-        ],
-      ),
+        ),
+        _results(
+          _matches(_childLinkCandidates, _childQuery),
+          selectedId: _selectedChildId,
+          keyPrefix: 'person-child-link-result',
+          onSelected: (candidate) => setState(() => _selectedChildId = candidate.id),
+        ),
+      ],
     ),
   );
 }
@@ -211,7 +230,6 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   PersonFilterOption _selectedGroup = _emptyOption;
   PersonFilterOption _selectedRole = _emptyOption;
   String? _identityError;
-  String? _modeError;
   bool _loadingOptions = true;
   Object? _optionsError;
   double _footerHeight = 0;
@@ -290,15 +308,6 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   }
 
   void _continue() {
-    if (_viewModel.step == PersonFormStep.mode) {
-      if (!_viewModel.isModeSelectionReady) {
-        setState(() => _modeError = 'Selecione um tipo de cadastro.');
-        return;
-      }
-      setState(() => _modeError = null);
-      _viewModel.next();
-      return;
-    }
     _syncIdentity();
     if (_viewModel.step == PersonFormStep.identity &&
         [
@@ -362,7 +371,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
       animation: _viewModel,
       builder: (context, child) => LayoutBuilder(
         builder: (context, constraints) {
-          final desktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+          final desktop = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
           final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
               ? CoeloSpacing.space10
               : CoeloSpacing.space4;
@@ -413,172 +422,43 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     ),
   );
 
-  Widget _navigation() => LayoutBuilder(
-    key: const Key('person-form-navigation'),
-    builder: (context, constraints) {
-      final steps = _viewModel.steps;
-      if (constraints.maxWidth >= CoeloBreakpoints.large.minWidth) {
-        return SizedBox(
-          width: 248,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [for (final step in steps) _stepButton(step)],
-          ),
-        );
-      }
-      if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final step in steps)
-                Padding(
-                  padding: const EdgeInsets.only(right: CoeloSpacing.space2),
-                  child: _stepButton(step, compact: true),
-                ),
-            ],
-          ),
-        );
-      }
-      return Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Etapa ${steps.indexOf(_viewModel.step) + 1} de ${steps.length}',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-                Text(_viewModel.step.label, style: Theme.of(context).textTheme.titleMedium),
-              ],
+  Widget _navigation() {
+    final steps = _viewModel.steps;
+    final currentIndex = steps.indexOf(_viewModel.step);
+    return KeyedSubtree(
+      key: const Key('person-form-navigation'),
+      child: SuperadminFormStepNavigation(
+        steps: [
+          for (var index = 0; index < steps.length; index++)
+            SuperadminFormStep(
+              label: _stepLabel(steps[index]),
+              status: index == currentIndex
+                  ? SuperadminFormStepStatus.current
+                  : index < currentIndex
+                  ? SuperadminFormStepStatus.complete
+                  : SuperadminFormStepStatus.incomplete,
+              enabled: !_viewModel.isReadOnly,
             ),
-          ),
-          MenuAnchor(
-            menuChildren: [
-              for (final step in steps)
-                MenuItemButton(
-                  onPressed: _viewModel.isReadOnly ? null : () => _selectStep(step),
-                  child: Text(step.label),
-                ),
-            ],
-            builder: (context, menu, child) => IconButton(
-              tooltip: 'Selecionar etapa',
-              onPressed: () => menu.isOpen ? menu.close() : menu.open(),
-              icon: const Icon(Icons.format_list_bulleted_rounded),
-            ),
-          ),
         ],
-      );
-    },
-  );
-
-  Widget _stepButton(PersonFormStep step, {bool compact = false}) {
-    final current = step == _viewModel.step;
-    final colors = Theme.of(context).colorScheme;
-    return Semantics(
-      button: true,
-      selected: current,
-      label: '${step.label}, ${current ? 'selecionada' : 'incompleta'}',
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: compact ? 0 : CoeloSpacing.spaceHalf),
-        child: TextButton.icon(
-          onPressed: _viewModel.isReadOnly ? null : () => _selectStep(step),
-          style:
-              TextButton.styleFrom(
-                minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-              ).copyWith(
-                foregroundColor: WidgetStateProperty.resolveWith(
-                  (states) =>
-                      current ||
-                          states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused)
-                      ? colors.primary
-                      : colors.onSurfaceVariant,
-                ),
-                backgroundColor: WidgetStateProperty.resolveWith(
-                  (states) =>
-                      current ||
-                          states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused)
-                      ? colors.primaryContainer
-                      : Colors.transparent,
-                ),
-                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              ),
-          icon: Icon(
-            current ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
-          ),
-          label: Text(step.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-        ),
+        currentIndex: currentIndex,
+        onStepSelected: (index) => _selectStep(steps[index]),
       ),
     );
   }
 
+  String _stepLabel(PersonFormStep step) => switch (step) {
+    PersonFormStep.identity => 'Identidade',
+    PersonFormStep.contexts => 'Vínculos contextuais',
+    PersonFormStep.review => 'Revisão',
+  };
   Widget _section() => AnimatedSwitcher(
     duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short,
     child: switch (_viewModel.step) {
-      PersonFormStep.mode => _creationMode(),
       PersonFormStep.identity => _identity(),
       PersonFormStep.contexts => _contexts(),
       PersonFormStep.review => _review(),
     },
   );
-
-  Widget _creationMode() {
-    return Column(
-      key: const ValueKey(PersonFormStep.mode),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _heading(
-          'Tipo de cadastro',
-          'Selecione um ponto de entrada para orientar o fluxo e validações iniciais.',
-        ),
-        if (_modeError case final error?)
-          Padding(
-            padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
-            child: Text(error),
-          ),
-        Wrap(
-          spacing: CoeloSpacing.space2,
-          runSpacing: CoeloSpacing.space2,
-          children: [for (final option in PersonCreationMode.values) _creationModeChip(option)],
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloStatePanel(
-          title: 'Observação',
-          message:
-              'Nesta versão UI/UX esta etapa permanece local e guia o início do cadastro. As opções podem evoluir em etapas seguintes.',
-          icon: Icons.info_outline_rounded,
-        ),
-      ],
-    );
-  }
-
-  Widget _creationModeChip(PersonCreationMode mode) {
-    final selected = _viewModel.creationMode == mode;
-    return ChoiceChip(
-      label: Text(mode.label),
-      selected: selected,
-      onSelected: (value) {
-        if (value) {
-          setState(() {
-            _viewModel.setCreationMode(mode);
-            _modeError = null;
-          });
-        }
-      },
-      selectedColor: Theme.of(context).colorScheme.primaryContainer,
-      labelPadding: const EdgeInsets.symmetric(
-        horizontal: CoeloSpacing.space2,
-        vertical: CoeloSpacing.space2,
-      ),
-      tooltip: mode.tooltip,
-    );
-  }
 
   Widget _heading(String title, String description) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -734,51 +614,58 @@ final class _PersonFormPageState extends State<PersonFormPage> {
               ? 'Gerencie contextos institucionais da criança separadamente de papéis adultos.'
               : 'Associe instituições, unidades, turmas e papéis sem alterar outros vínculos.',
         ),
+        Text('Relações com outras pessoas', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space1),
+        const Text(
+          'Busque uma pessoa existente para representar uma relação pessoal separada do acesso institucional.',
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
         const _DemoRelationshipSearch(),
         const SizedBox(height: CoeloSpacing.space5),
+        Text('Contexto institucional', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space1),
+        const Text(
+          'Selecione Instituição, Unidade e Turma em ordem. O Perfil de acesso define o acesso contextual do funcionário.',
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
         if (_viewModel.type == PersonType.adult)
           for (final membership in _viewModel.memberships)
-            Card(
-              color: Theme.of(context).colorScheme.surface,
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(membership.institutionName, style: Theme.of(context).textTheme.titleSmall),
-                    const SizedBox(height: CoeloSpacing.space2),
-                    Text(
-                      [membership.unitName, membership.groupName].whereType<String>().join(' • '),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space3),
-                    CoeloAdminSingleSelectField<PersonFilterOption>(
-                      label: 'Papel contextual',
-                      value: _roleOption(membership.role, membership.institutionId),
-                      options: [
-                        _emptyOption,
-                        ..._options.roles.where(
-                          (option) => option.institutionId == membership.institutionId,
-                        ),
-                      ],
-                      optionLabel: (value) => value.label,
-                      onChanged: (value) {
-                        if (value.id.isNotEmpty) {
-                          _viewModel.updateMembership(membership.copyWith(role: value.id));
-                        }
-                      },
-                      prefixIcon: Icons.badge_outlined,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space2),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton.icon(
-                        onPressed: () => _viewModel.removeMembership(membership),
-                        icon: const Icon(Icons.link_off_rounded),
-                        label: const Text('Revogar vínculo'),
+            _PersonFormSurface(
+              padding: const EdgeInsets.all(CoeloSpacing.space3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(membership.institutionName, style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  Text([membership.unitName, membership.groupName].whereType<String>().join(' • ')),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  CoeloAdminSingleSelectField<PersonFilterOption>(
+                    label: 'Perfil de acesso',
+                    value: _roleOption(membership.role, membership.institutionId),
+                    options: [
+                      _emptyOption,
+                      ..._options.roles.where(
+                        (option) => option.institutionId == membership.institutionId,
                       ),
+                    ],
+                    optionLabel: (value) => value.label,
+                    onChanged: (value) {
+                      if (value.id.isNotEmpty) {
+                        _viewModel.updateMembership(membership.copyWith(role: value.id));
+                      }
+                    },
+                    prefixIcon: Icons.badge_outlined,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => _viewModel.removeMembership(membership),
+                      icon: const Icon(Icons.link_off_rounded),
+                      label: const Text('Revogar vínculo'),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
         if (_viewModel.type == PersonType.child)
@@ -826,7 +713,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
             if (_viewModel.type == PersonType.adult)
               CoeloAdminSingleSelectField<PersonFilterOption>(
                 key: const Key('person-membership-role'),
-                label: 'Papel contextual',
+                label: 'Perfil de acesso',
                 value: _selectedRole,
                 options: [_emptyOption, ..._roleOptions],
                 optionLabel: (value) => value.label,
@@ -887,69 +774,66 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     final selectedGroup = groupOptions
         .where((option) => option.id == childContext.groupId)
         .firstOrNull;
-    return Card(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space3),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              childContext.institutionName ?? childContext.institutionId,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            CoeloAdminSingleSelectField<PersonFilterOption>(
-              label: 'Unidade',
-              value: selectedUnit ?? _emptyOption,
-              options: [_emptyOption, ...unitOptions],
-              optionLabel: (value) => value.label,
-              onChanged: (value) => _viewModel.updateChildContext(
-                PersonChildContext(
-                  id: childContext.id,
-                  institutionId: childContext.institutionId,
-                  institutionName: childContext.institutionName,
-                  unitId: value.id.isEmpty ? null : value.id,
-                  unitName: value.id.isEmpty ? null : value.label,
-                  childUnitLinkId: childContext.childUnitLinkId,
-                  childGroupLinkId: childContext.childGroupLinkId,
-                ),
-              ),
-              prefixIcon: Icons.apartment_outlined,
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            CoeloAdminSingleSelectField<PersonFilterOption>(
-              label: 'Turma',
-              value: selectedGroup ?? _emptyOption,
-              options: [_emptyOption, ...groupOptions],
-              optionLabel: (value) => value.label,
-              enabled: childContext.unitId != null,
-              onChanged: (value) => _viewModel.updateChildContext(
-                PersonChildContext(
-                  id: childContext.id,
-                  institutionId: childContext.institutionId,
-                  institutionName: childContext.institutionName,
-                  unitId: childContext.unitId,
-                  unitName: childContext.unitName,
-                  groupId: value.id.isEmpty ? null : value.id,
-                  groupName: value.id.isEmpty ? null : value.label,
-                  childUnitLinkId: childContext.childUnitLinkId,
-                  childGroupLinkId: childContext.childGroupLinkId,
-                ),
-              ),
-              prefixIcon: Icons.groups_outlined,
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () => _viewModel.removeChildContext(childContext),
-                icon: const Icon(Icons.link_off_rounded),
-                label: const Text('Revogar contexto'),
+    return _PersonFormSurface(
+      padding: const EdgeInsets.all(CoeloSpacing.space3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            childContext.institutionName ?? childContext.institutionId,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          CoeloAdminSingleSelectField<PersonFilterOption>(
+            label: 'Unidade',
+            value: selectedUnit ?? _emptyOption,
+            options: [_emptyOption, ...unitOptions],
+            optionLabel: (value) => value.label,
+            onChanged: (value) => _viewModel.updateChildContext(
+              PersonChildContext(
+                id: childContext.id,
+                institutionId: childContext.institutionId,
+                institutionName: childContext.institutionName,
+                unitId: value.id.isEmpty ? null : value.id,
+                unitName: value.id.isEmpty ? null : value.label,
+                childUnitLinkId: childContext.childUnitLinkId,
+                childGroupLinkId: childContext.childGroupLinkId,
               ),
             ),
-          ],
-        ),
+            prefixIcon: Icons.apartment_outlined,
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          CoeloAdminSingleSelectField<PersonFilterOption>(
+            label: 'Turma',
+            value: selectedGroup ?? _emptyOption,
+            options: [_emptyOption, ...groupOptions],
+            optionLabel: (value) => value.label,
+            enabled: childContext.unitId != null,
+            onChanged: (value) => _viewModel.updateChildContext(
+              PersonChildContext(
+                id: childContext.id,
+                institutionId: childContext.institutionId,
+                institutionName: childContext.institutionName,
+                unitId: childContext.unitId,
+                unitName: childContext.unitName,
+                groupId: value.id.isEmpty ? null : value.id,
+                groupName: value.id.isEmpty ? null : value.label,
+                childUnitLinkId: childContext.childUnitLinkId,
+                childGroupLinkId: childContext.childGroupLinkId,
+              ),
+            ),
+            prefixIcon: Icons.groups_outlined,
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () => _viewModel.removeChildContext(childContext),
+              icon: const Icon(Icons.link_off_rounded),
+              label: const Text('Revogar contexto'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1000,7 +884,6 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       _heading('Revisão', 'Confira os dados antes de salvar como rascunho.'),
-      if (_viewModel.isCreateFlow && _viewModel.modeHint.isNotEmpty) _reviewLine('Tipo de cadastro', _viewModel.modeHint),
       _reviewLine('Nome de exibição', _controllers['displayName']!.text),
       _reviewLine('Tipo', _viewModel.type.label),
       _reviewLine('Status', widget.original?.status.label ?? PersonStatus.draft.label),

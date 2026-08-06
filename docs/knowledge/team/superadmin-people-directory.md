@@ -28,6 +28,11 @@ convite ou login. A API do formulário aceita `first_name`, `last_name`,
 `display_name`, `legal_name` opcional e vínculos contextuais. Tipo, status,
 CPF, nascimento, contatos, Auth, foto, membership de plataforma e vínculos de
 responsável permanecem fora da edição.
+Atividade pode aparecer na leitura e nos filtros de vínculos, mas o draft e a
+atualização não aceitam `activity_id`. O formulário não oferece seletor de
+atividade enquanto o contrato server-side e as validações de escopo de OQ-036
+não forem aprovados.
+
 
 Vínculos são patches explícitos: operações citadas são aplicadas e as demais
 permanecem intactas. Instituição, unidade e grupo precisam formar o mesmo

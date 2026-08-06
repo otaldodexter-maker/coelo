@@ -76,7 +76,7 @@ void main() {
     final toggle = tester.widget<SuperadminDirectoryViewToggle<PersonDirectoryTableView>>(finder);
     expect(
       toggle.tableViews.map((option) => option.label),
-      containsAll(const ['Instituições', 'Unidades', 'Grupos', 'Atividades']),
+      containsAll(const ['Instituições', 'Unidades', 'Turmas', 'Atividades']),
     );
     toggle.onTableViewSelected(PersonDirectoryTableView.activities);
     await tester.pumpAndSettle();
@@ -201,7 +201,7 @@ void main() {
       'Status',
       'Instituição',
       'Unidade',
-      'Grupo',
+      'Turma',
       'Papel contextual',
       'Auth',
     ]) {

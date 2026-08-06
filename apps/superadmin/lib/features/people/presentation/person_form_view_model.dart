@@ -39,17 +39,22 @@ final class PersonFormViewModel extends ChangeNotifier {
 
   bool get isEditing => original != null;
   bool get isReadOnly => original?.type == PersonType.service;
+  List<PersonFormStep> get steps => PersonFormStep.values;
 
   void next() {
-    if (step.index < PersonFormStep.values.length - 1) {
-      step = PersonFormStep.values[step.index + 1];
+    final values = steps;
+    final currentIndex = values.indexOf(step);
+    if (currentIndex >= 0 && currentIndex < values.length - 1) {
+      step = values[currentIndex + 1];
       notifyListeners();
     }
   }
 
   void previous() {
-    if (step.index > 0) {
-      step = PersonFormStep.values[step.index - 1];
+    final values = steps;
+    final currentIndex = values.indexOf(step);
+    if (currentIndex > 0) {
+      step = values[currentIndex - 1];
       notifyListeners();
     }
   }

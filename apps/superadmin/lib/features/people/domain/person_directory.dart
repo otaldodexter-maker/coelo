@@ -55,7 +55,7 @@ enum PersonDirectoryTableView {
   grouped('Visão agrupada'),
   institutions('Instituições'),
   units('Unidades'),
-  groups('Grupos'),
+  groups('Turmas'),
   activities('Atividades');
 
   const PersonDirectoryTableView(this.label);

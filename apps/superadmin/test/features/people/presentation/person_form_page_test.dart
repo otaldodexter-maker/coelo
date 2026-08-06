@@ -3,6 +3,8 @@ import 'package:coelo_superadmin/features/people/data/fake_person_directory_repo
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_form_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,6 +111,74 @@ void main() {
     expect(find.byKey(const Key('person-first-name-field')), findsOneWidget);
   });
 
+  testWidgets('uses shared step navigation laterally from medium width', (tester) async {
+    final original = FakePersonDirectoryRepository.samplePeople.firstWhere(
+      (item) => item.isEditable,
+    );
+    await tester.binding.setSurfaceSize(const Size(768, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(original: original));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-form-steps-scroll')), findsOneWidget);
+    final navigationX = tester.getTopLeft(find.byType(SuperadminFormStepNavigation)).dx;
+    final contentX = tester.getTopLeft(find.text('Informe somente os dados globais aprovados.')).dx;
+    expect(navigationX, lessThan(contentX));
+
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uses the shared compact step summary at 375', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('person-form-navigation')),
+        matching: find.byType(MenuAnchor),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('separates relationships from progressive institutional access context', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
+    for (final entry in const {
+      'person-first-name-field': 'Ana',
+      'person-last-name-field': 'Lima',
+      'person-display-name-field': 'Ana Lima',
+      'person-legal-name-field': 'Ana Lima',
+    }.entries) {
+      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
+    }
+    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Relações com outras pessoas'), findsOneWidget);
+    expect(find.text('Contexto institucional'), findsOneWidget);
+    expect(find.text('Perfil de acesso'), findsOneWidget);
+    expect(find.textContaining('acesso contextual do funcionário'), findsOneWidget);
+
+    final unit = tester.widget<CoeloAdminSingleSelectField<PersonFilterOption>>(
+      find.byKey(const Key('person-membership-unit')),
+    );
+    final group = tester.widget<CoeloAdminSingleSelectField<PersonFilterOption>>(
+      find.byKey(const Key('person-membership-group')),
+    );
+    expect(unit.enabled, isFalse);
+    expect(group.enabled, isFalse);
+  });
   testWidgets('context step requires explicit adult membership selections', (tester) async {
     await tester.pumpWidget(_app());
     await tester.pump(const Duration(seconds: 1));
@@ -208,7 +278,7 @@ void main() {
     await tester.tap(find.text('Vínculos contextuais').first);
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.text('Papel contextual'), findsNothing);
+    expect(find.text('Perfil de acesso'), findsNothing);
     expect(find.text('Revogar vínculo'), findsNothing);
   });
 

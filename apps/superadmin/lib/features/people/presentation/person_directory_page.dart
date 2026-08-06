@@ -334,7 +334,7 @@ final class _PersonToolbar extends StatelessWidget {
         if (viewModel.query.unitIds.isNotEmpty)
           filter<PersonFilterOption>(
             key: const Key('people-group-filter'),
-            label: 'Grupo',
+            label: 'Turma',
             options: visibleGroups,
             selected: visibleGroups
                 .where((item) => viewModel.query.groupIds.contains(item.id))
@@ -614,7 +614,7 @@ final class _PersonCardState extends State<_PersonCard> {
         value: '${item.institutionCount}',
       ),
       _PersonDetail(icon: Icons.apartment_outlined, label: 'Unidades', value: '${item.unitCount}'),
-      _PersonDetail(icon: Icons.groups_outlined, label: 'Grupos', value: '${item.groupCount}'),
+      _PersonDetail(icon: Icons.groups_outlined, label: 'Turmas', value: '${item.groupCount}'),
       _PersonDetail(
         icon: Icons.local_activity_outlined,
         label: 'Atividades',
@@ -1057,7 +1057,7 @@ final class _PersonTable extends StatelessWidget {
                     tableView == PersonDirectoryTableView.activities)
                   CoeloAdminTableColumn(
                     id: PersonDirectorySortColumn.group.databaseValue,
-                    label: 'Grupo',
+                    label: 'Turma',
                     initialWidth: 180,
                     minWidth: 140,
                     maxWidth: 280,

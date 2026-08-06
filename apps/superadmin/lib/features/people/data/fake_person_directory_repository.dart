@@ -54,7 +54,7 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
           unitId: 'unit-${index % 3}',
           unitName: 'Unidade ${index % 3 + 1}',
           groupId: 'group-${index % 4}',
-          groupName: 'Grupo ${index % 4 + 1}',
+          groupName: 'Turma ${index % 4 + 1}',
           activityId: 'activity-${index % 2}',
           activityName: index.isEven ? 'Música' : 'Esportes',
           role: primaryRole,
@@ -186,8 +186,8 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
         PersonFilterOption('unit-1', 'Unidade 2', institutionId: 'institution-1'),
       ],
       groups: [
-        PersonFilterOption('group-0', 'Grupo 1', institutionId: 'institution-0', unitId: 'unit-0'),
-        PersonFilterOption('group-1', 'Grupo 2', institutionId: 'institution-1', unitId: 'unit-1'),
+        PersonFilterOption('group-0', 'Turma 1', institutionId: 'institution-0', unitId: 'unit-0'),
+        PersonFilterOption('group-1', 'Turma 2', institutionId: 'institution-1', unitId: 'unit-1'),
       ],
       roles: [
         PersonFilterOption('guardian', 'Responsável', institutionId: 'institution-0'),
