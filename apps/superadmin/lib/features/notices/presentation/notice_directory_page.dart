@@ -57,9 +57,9 @@ enum _NoticePeriodFilter { all, now, upcoming, ended }
 
 extension _NoticePeriodFilterLabel on _NoticePeriodFilter {
   String get label => switch (this) {
-    _NoticePeriodFilter.all => 'Per?odo',
+    _NoticePeriodFilter.all => 'Per\u00edodo',
     _NoticePeriodFilter.now => 'Ativos agora',
-    _NoticePeriodFilter.upcoming => 'Pr?ximos',
+    _NoticePeriodFilter.upcoming => 'Pr\u00f3ximos',
     _NoticePeriodFilter.ended => 'Expirados',
   };
 }
@@ -127,7 +127,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                     Text('Avisos', style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: CoeloSpacing.space1),
                     Text(
-                      'Gerencie os avisos exibidos nas experi?ncias Coelo.',
+                      'Gerencie os avisos exibidos nas experi\u00eancias Coelo.',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
@@ -184,7 +184,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         child: CoeloSearchField(
           controller: _search,
           hintText: 'Buscar aviso',
-          semanticLabel: 'Buscar aviso por t?tulo ou destinat?rio',
+          semanticLabel: 'Buscar aviso por t\u00edtulo ou destinat\u00e1rio',
           onChanged: (_) => _resetPage(() {}),
         ),
       ),
@@ -215,7 +215,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           width: compact ? double.infinity : 210,
           child: CoeloAdminSingleSelectField<_NoticePeriodFilter>(
             value: _periodFilter,
-            label: 'Per?odo',
+            label: 'Per\u00edodo',
             options: _NoticePeriodFilter.values,
             optionLabel: (value) => value.label,
             onChanged: (value) => _resetPage(() => _periodFilter = value),
@@ -236,21 +236,21 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }) => switch (widget.viewState) {
     NoticeDirectoryViewState.loading => const CoeloStatePanel(
       title: 'Carregando avisos',
-      message: 'Aguarde enquanto os avisos s?o carregados.',
+      message: 'Aguarde enquanto os avisos s\u00e3o carregados.',
       loading: true,
     ),
     NoticeDirectoryViewState.error => const CoeloStatePanel(
-      title: 'N?o foi poss?vel carregar',
-      message: 'N?o foi poss?vel carregar os avisos.',
+      title: 'N\u00e3o foi poss\u00edvel carregar',
+      message: 'N\u00e3o foi poss\u00edvel carregar os avisos.',
     ),
     NoticeDirectoryViewState.forbidden => const CoeloStatePanel(
-      title: 'Sem permiss?o',
-      message: 'Voc? n?o tem permiss?o para ver avisos.',
+      title: 'Sem permiss\u00e3o',
+      message: 'Voc\u00ea n\u00e3o tem permiss\u00e3o para ver avisos.',
       icon: Icons.lock_outline_rounded,
     ),
     NoticeDirectoryViewState.content when all.isEmpty => const CoeloStatePanel(
       title: 'Nenhum aviso',
-      message: 'Ainda n?o existem avisos cadastrados.',
+      message: 'Ainda n\u00e3o existem avisos cadastrados.',
       icon: Icons.campaign_outlined,
     ),
     NoticeDirectoryViewState.content when filtered.isEmpty => const CoeloStatePanel(
@@ -331,7 +331,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             ),
             const SizedBox(height: CoeloSpacing.space2),
             Text(
-              '${notice.audienceLabel} ? ${notice.audience.label}',
+              '${notice.audienceLabel} \u00b7 ${notice.audience.label}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -339,19 +339,19 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             const Divider(height: 1),
             const SizedBox(height: CoeloSpacing.space3),
             Text(
-              '${notice.targetDevice.label} ? ${_formatDate(notice.startsAt)}${notice.endsAt == null ? ' ? sem data limite' : ' ? at? ${_formatDate(notice.endsAt!)}'}',
+              '${notice.targetDevice.label} \u00b7 ${_formatDate(notice.startsAt)}${notice.endsAt == null ? ' \u00b7 sem data limite' : ' \u00b7 at\u00e9 ${_formatDate(notice.endsAt!)}'}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: CoeloSpacing.space1),
             Text(
-              'Recorr?ncia: ${notice.recurrenceLabel}',
+              'Recorr\u00eancia: ${notice.recurrenceLabel}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: CoeloSpacing.space1),
             Text(
-              'Entregues: ${notice.deliveredCount} ? Aceites: ${notice.acceptedCount}',
+              'Entregues: ${notice.deliveredCount} \u00b7 Aceites: ${notice.acceptedCount}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -405,7 +405,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       ],
       onSelected: (action) => _runAction(action, notice),
       builder: (context, controller) => IconButton(
-        tooltip: 'A??es do aviso',
+        tooltip: 'A\u00e7\u00f5es do aviso',
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
         icon: const Icon(Icons.more_horiz_rounded),
       ),
