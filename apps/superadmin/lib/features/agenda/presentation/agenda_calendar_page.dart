@@ -186,7 +186,7 @@ class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
   String get _contextSummary => _perspective.startsWith('Responsável')
       ? 'Todos os filhos · Lia (Colégio Horizonte) e Caio (Instituto Caminhos)'
       : _perspective.startsWith('Criança')
-      ? 'Privacidade simulada · aniversários autorizados do grupo'
+      ? 'Privacidade simulada · aniversários autorizados da turma'
       : 'Contexto hierárquico ativo · $_institution';
 
   List<AgendaOccurrence> _visibleOccurrences(AgendaCalendarView view) {
@@ -795,7 +795,7 @@ String _originLabel(AgendaItemOrigin value) => switch (value) {
 String _prominenceLabel(AgendaVisualProminence value) => switch (value) {
   AgendaVisualProminence.institutional => 'institucional',
   AgendaVisualProminence.unit => 'unidade',
-  AgendaVisualProminence.group => 'grupo',
+  AgendaVisualProminence.group => 'turma',
   AgendaVisualProminence.activity => 'atividade',
   AgendaVisualProminence.personal => 'pessoal',
 };
