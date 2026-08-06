@@ -8,6 +8,8 @@ final class CoeloAdminFlyoutItem<T> {
     required this.value,
     required this.label,
     this.icon,
+    this.iconColor,
+    this.semanticLabel,
     this.selected = false,
     this.enabled = true,
     this.startsGroup = false,
@@ -17,6 +19,8 @@ final class CoeloAdminFlyoutItem<T> {
   final T value;
   final String label;
   final IconData? icon;
+  final Color? iconColor;
+  final String? semanticLabel;
   final bool selected;
   final bool enabled;
   final bool startsGroup;
@@ -97,11 +101,16 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
     final hoverBackground = negative ? colors.errorContainer : colors.primaryContainer;
     final hoverForeground = negative ? colors.error : colors.primary;
 
+    final customIconColor = item.enabled ? item.iconColor : item.iconColor?.withValues(alpha: 0.38);
+
     return Semantics(
+      label: item.semanticLabel,
       selected: item.selected,
       child: MenuItemButton(
         onPressed: item.enabled ? () => onSelected(item.value) : null,
-        leadingIcon: item.icon == null ? null : Icon(item.icon, size: CoeloSize.iconSm),
+        leadingIcon: item.icon == null
+            ? null
+            : Icon(item.icon, size: CoeloSize.iconSm, color: customIconColor),
         style: ButtonStyle(
           minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
           padding: const WidgetStatePropertyAll(
@@ -129,7 +138,9 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
             return Colors.transparent;
           }),
         ),
-        child: Text(item.label),
+        child: item.semanticLabel == null
+            ? Text(item.label)
+            : ExcludeSemantics(child: Text(item.label)),
       ),
     );
   }

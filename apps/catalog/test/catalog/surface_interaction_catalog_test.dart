@@ -228,7 +228,22 @@ void main() {
     expect(find.text('Configurações'), findsOneWidget);
     expect(find.byType(Divider), findsOneWidget);
     expect(find.text('Sair'), findsOneWidget);
-    expect(find.byKey(const Key('flyout-destructive-action')), findsOneWidget);
+
+    final colors = CoeloTheme.light.colorScheme;
+    final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
+    final items = tester.widgetList<MenuItemButton>(find.byType(MenuItemButton)).toList();
+    final firstRect = tester.getRect(find.byWidget(items[0]));
+    final secondRect = tester.getRect(find.byWidget(items[1]));
+
+    expect(anchor.style?.minimumSize?.resolve({})?.width, 236);
+    expect(anchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
+    expect(firstRect.width, 220);
+    expect(secondRect.top - firstRect.bottom, CoeloSpacing.space1);
+    expect(
+      items[1].style?.backgroundColor?.resolve({WidgetState.hovered}),
+      colors.primaryContainer,
+    );
+    expect(items.last.style?.foregroundColor?.resolve({}), colors.error);
   });
 
   testWidgets('keeps every enabled negative action in the error hierarchy', (tester) async {

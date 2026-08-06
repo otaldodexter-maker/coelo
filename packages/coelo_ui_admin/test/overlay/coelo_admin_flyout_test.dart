@@ -109,6 +109,37 @@ void main() {
     );
   });
 
+  testWidgets('supports custom icon color with an accessible item label', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminFlyout<String>(
+            items: const [
+              CoeloAdminFlyoutItem(
+                value: 'urgent',
+                label: 'Urgente',
+                semanticLabel: 'Bandeira vermelha: Urgente',
+                icon: Icons.flag_rounded,
+                iconColor: Colors.red,
+              ),
+            ],
+            onSelected: (_) {},
+            builder: (context, controller) =>
+                TextButton(onPressed: controller.open, child: const Text('Abrir')),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Abrir'));
+    await tester.pumpAndSettle();
+
+    final icon = tester.widget<Icon>(find.byIcon(Icons.flag_rounded));
+    expect(icon.color, Colors.red);
+    expect(find.bySemanticsLabel('Bandeira vermelha: Urgente'), findsOneWidget);
+    expect(find.text('Urgente'), findsOneWidget);
+  });
   testWidgets('returns the selected value and closes the flyout', (tester) async {
     String? selected;
     await tester.pumpWidget(

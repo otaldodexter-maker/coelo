@@ -20,7 +20,7 @@ Map<String, CatalogFoundation> buildAdminDirectoryFoundationRegistry() {
     ),
     'pattern.flyout-actions': CatalogFoundation(
       id: 'pattern.flyout-actions',
-      referencedComponentIds: const ['admin.file-actions'],
+      referencedComponentIds: const ['admin.flyout', 'admin.file-actions'],
       builder: (_) => const _FlyoutActionsFoundation(),
     ),
     'pattern.negative-actions': CatalogFoundation(
@@ -357,50 +357,56 @@ final class _DirectoryCardPreviewState extends State<_DirectoryCardPreview> {
   }
 }
 
-final class _FlyoutActionsFoundation extends StatelessWidget {
+final class _FlyoutActionsFoundation extends StatefulWidget {
   const _FlyoutActionsFoundation();
 
   @override
+  State<_FlyoutActionsFoundation> createState() => _FlyoutActionsFoundationState();
+}
+
+final class _FlyoutActionsFoundationState extends State<_FlyoutActionsFoundation> {
+  var _openScheduled = false;
+
+  @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Align(
       alignment: Alignment.centerLeft,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          border: Border.all(color: colors.outlineVariant),
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          boxShadow: [
-            BoxShadow(
-              color: colors.shadow.withValues(alpha: 0.16),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: SizedBox(
-          width: 240,
-          child: Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space2),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _flyoutButton(context, icon: Icons.person_outline_rounded, label: 'Perfil'),
-                const SizedBox(height: CoeloSpacing.spaceHalf),
-                _flyoutButton(context, icon: Icons.settings_outlined, label: 'Configurações'),
-                const SizedBox(height: CoeloSpacing.space1),
-                const Divider(),
-                const SizedBox(height: CoeloSpacing.space1),
-                _negativeButton(
-                  context,
-                  key: const Key('flyout-destructive-action'),
-                  icon: Icons.logout_rounded,
-                  label: 'Sair',
-                ),
-              ],
-            ),
+      child: CoeloAdminFlyout<String>(
+        items: const [
+          CoeloAdminFlyoutItem(
+            value: 'profile',
+            label: 'Perfil',
+            icon: Icons.person_outline_rounded,
+            selected: true,
           ),
-        ),
+          CoeloAdminFlyoutItem(
+            value: 'settings',
+            label: 'Configurações',
+            icon: Icons.settings_outlined,
+          ),
+          CoeloAdminFlyoutItem(
+            value: 'exit',
+            label: 'Sair',
+            icon: Icons.logout_rounded,
+            startsGroup: true,
+            tone: CoeloAdminFlyoutTone.negative,
+          ),
+        ],
+        onSelected: (_) {},
+        builder: (context, controller) {
+          if (!_openScheduled) {
+            _openScheduled = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && !controller.isOpen) controller.open();
+            });
+          }
+          return OutlinedButton.icon(
+            key: const Key('flyout-catalog-trigger'),
+            onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+            icon: const Icon(Icons.more_horiz_rounded),
+            label: const Text('Ações'),
+          );
+        },
       ),
     );
   }
@@ -526,36 +532,6 @@ final class _EqualDialogActions extends StatelessWidget {
       },
     );
   }
-}
-
-Widget _flyoutButton(BuildContext context, {required IconData icon, required String label}) {
-  final colors = Theme.of(context).colorScheme;
-  return SizedBox(
-    width: double.infinity,
-    child: TextButton.icon(
-      style: ButtonStyle(
-        minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
-        alignment: Alignment.centerLeft,
-        foregroundColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-              ? colors.primary
-              : colors.onSurface,
-        ),
-        backgroundColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-              ? colors.primaryContainer
-              : Colors.transparent,
-        ),
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-        ),
-      ),
-      onPressed: () {},
-      icon: Icon(icon),
-      label: Text(label),
-    ),
-  );
 }
 
 Widget _negativeButton(
