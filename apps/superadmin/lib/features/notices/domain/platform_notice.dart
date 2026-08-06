@@ -27,7 +27,7 @@ extension NoticeAudienceLabel on NoticeAudience {
   String get label => switch (this) {
     NoticeAudience.everyone => 'Todos',
     NoticeAudience.coeloTeam => 'Equipe Coelo',
-    NoticeAudience.institution => 'Instituicao',
+    NoticeAudience.institution => 'Instituição',
     NoticeAudience.unit => 'Unidade',
     NoticeAudience.group => 'Turma',
     NoticeAudience.role => 'Papel',
@@ -40,7 +40,7 @@ enum NoticeBehavior { dismissible, confirmation, checkboxConfirmation }
 extension NoticeBehaviorLabel on NoticeBehavior {
   String get label => switch (this) {
     NoticeBehavior.dismissible => 'Apenas fechar',
-    NoticeBehavior.confirmation => 'Confirmacao obrigatoria',
+    NoticeBehavior.confirmation => 'Confirmação obrigatória',
     NoticeBehavior.checkboxConfirmation => 'Checkbox de aceite + confirmar',
   };
 }
@@ -69,8 +69,8 @@ enum NoticeRecurrence { oneTime, daily, weekly, monthly, interval }
 
 extension NoticeRecurrenceLabel on NoticeRecurrence {
   String get label => switch (this) {
-    NoticeRecurrence.oneTime => 'Unica',
-    NoticeRecurrence.daily => 'Diaria',
+    NoticeRecurrence.oneTime => 'Única',
+    NoticeRecurrence.daily => 'Diária',
     NoticeRecurrence.weekly => 'Semanal',
     NoticeRecurrence.monthly => 'Mensal',
     NoticeRecurrence.interval => 'Intervalo de dias',
@@ -109,10 +109,10 @@ String recurrenceSummaryLabel({
 }) {
   final untilText = until == null
       ? ''
-      : ' ate ${until.day.toString().padLeft(2, '0')}/${until.month.toString().padLeft(2, '0')}/${until.year}';
+      : ' até ${until.day.toString().padLeft(2, '0')}/${until.month.toString().padLeft(2, '0')}/${until.year}';
   return switch (recurrence) {
-    NoticeRecurrence.oneTime => 'unica',
-    NoticeRecurrence.daily => 'diaria$untilText',
+    NoticeRecurrence.oneTime => 'única',
+    NoticeRecurrence.daily => 'diária$untilText',
     NoticeRecurrence.weekly => 'semanal (${_weekdayNames(weeklyDays)})$untilText',
     NoticeRecurrence.monthly => 'mensal (dia ${dayOfMonth ?? 1})$untilText',
     NoticeRecurrence.interval => '${intervalDays ?? 1} em ${intervalDays ?? 1} dia(s)$untilText',
@@ -138,7 +138,7 @@ final class PlatformNotice {
     required this.audience,
     required this.audienceLabel,
     required this.behavior,
-    required this.mandatory,
+    bool mandatory = false,
     required this.targetDevice,
     required this.reach,
     this.contentFormat = NoticeContentFormat.textBackground,
@@ -159,7 +159,7 @@ final class PlatformNotice {
     this.deliveredCount = 0,
     this.viewedCount = 0,
     this.acceptedCount = 0,
-  });
+  }) : mandatory = behavior != NoticeBehavior.dismissible;
 
   final String id;
   final String title;
@@ -215,6 +215,7 @@ final class PlatformNotice {
     NoticeStatus? status,
     DateTime? startsAt,
     DateTime? endsAt,
+    bool clearEndsAt = false,
     NoticeAudience? audience,
     String? audienceLabel,
     NoticeBehavior? behavior,
@@ -230,6 +231,7 @@ final class PlatformNotice {
     List<int>? weeklyDays,
     int? dayOfMonth,
     DateTime? recurrenceUntil,
+    bool clearRecurrenceUntil = false,
     NoticeImageOrientation? imageOrientation,
     bool? showImagePlaceholder,
     NoticeVisualTone? backgroundTone,
@@ -246,7 +248,7 @@ final class PlatformNotice {
     priority: priority ?? this.priority,
     status: status ?? this.status,
     startsAt: startsAt ?? this.startsAt,
-    endsAt: endsAt ?? this.endsAt,
+    endsAt: clearEndsAt ? null : endsAt ?? this.endsAt,
     audience: audience ?? this.audience,
     audienceLabel: audienceLabel ?? this.audienceLabel,
     behavior: behavior ?? this.behavior,
@@ -261,7 +263,7 @@ final class PlatformNotice {
     intervalDays: intervalDays ?? this.intervalDays,
     weeklyDays: weeklyDays ?? this.weeklyDays,
     dayOfMonth: dayOfMonth ?? this.dayOfMonth,
-    recurrenceUntil: recurrenceUntil ?? this.recurrenceUntil,
+    recurrenceUntil: clearRecurrenceUntil ? null : recurrenceUntil ?? this.recurrenceUntil,
     imageOrientation: imageOrientation ?? this.imageOrientation,
     showImagePlaceholder: showImagePlaceholder ?? this.showImagePlaceholder,
     backgroundTone: backgroundTone ?? this.backgroundTone,

@@ -6,30 +6,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('uses canonical accessible controls and renders UTF-8 labels', (tester) async {
-    tester.view.physicalSize = const Size(1024, 2400);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets('validates and advances through the five notice wizard steps on mobile', (tester) async {
+    await _pumpForm(tester, const Size(375, 812));
 
-    final activity = SuperadminActivityController();
-    final store = SuperadminPrototypeStore(activityController: activity);
-    final repository = FakeNoticeRepository(store: store);
+    expect(find.byKey(const Key('notice-step-identity')), findsOneWidget);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: NoticeFormPage(repository: repository, embedded: true)),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    expect(find.text('Informe o título do aviso para continuar.'), findsOneWidget);
+    expect(find.byKey(const Key('notice-step-identity')), findsOneWidget);
 
-    expect(find.text('Conteúdo'), findsOneWidget);
-    expect(find.textContaining('conteúdo'), findsWidgets);
+    await tester.enterText(_fieldIn(const Key('notice-title')), 'Manutenção programada');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    expect(find.byKey(const Key('notice-step-content')), findsOneWidget);
 
-    final startDate = find.byKey(const ValueKey('notice-date-Data de início'));
-    expect(startDate, findsWidgets);
-    expect(tester.widget(startDate.first), isA<OutlinedButton>());
+    await tester.enterText(_fieldIn(const Key('notice-message')), 'O serviço ficará indisponível.');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    expect(find.byKey(const Key('notice-step-audience')), findsOneWidget);
 
-    expect(find.text('Aviso obrigatório'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    expect(find.byKey(const Key('notice-step-schedule')), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    expect(find.byKey(const Key('notice-step-review')), findsOneWidget);
+    expect(find.text('Manutenção programada'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
+
+  testWidgets('has no layout exception at mobile and desktop widths', (tester) async {
+    for (final size in [const Size(375, 812), const Size(1440, 900)]) {
+      await _pumpForm(tester, size);
+
+      expect(find.byKey(const Key('notice-step-identity')), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'layout at ${size.width}px');
+    }
+  });
+}
+
+Finder _fieldIn(Key key) => find.descendant(of: find.byKey(key), matching: find.byType(EditableText));
+
+Future<void> _pumpForm(WidgetTester tester, Size size) async {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = size;
+  addTearDown(tester.view.reset);
+  final now = DateTime.utc(2026, 8, 6, 12);
+  final activities = SuperadminActivityController(now: () => now);
+  final store = SuperadminPrototypeStore(activityController: activities, now: () => now);
+  final repository = FakeNoticeRepository(store: store, now: () => now);
+
+  await tester.pumpWidget(
+    MaterialApp(home: Scaffold(body: NoticeFormPage(repository: repository))),
+  );
+  await tester.pump();
 }

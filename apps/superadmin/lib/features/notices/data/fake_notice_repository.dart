@@ -77,6 +77,8 @@ final class FakeNoticeRepository {
       status: NoticeStatus.draft,
       title: '${original.title} (cópia)',
       startsAt: now,
+      clearEndsAt: true,
+      clearRecurrenceUntil: true,
       deliveredCount: 0,
       viewedCount: 0,
       acceptedCount: 0,
@@ -94,7 +96,7 @@ final class FakeNoticeRepository {
     final now = _now();
     final start = old.startsAt;
     final status = start.isAfter(now) ? NoticeStatus.scheduled : NoticeStatus.active;
-    final published = old.copyWith(status: status);
+    final published = old.copyWith(status: status, deliveredCount: old.reach);
     _replace(published);
     _record(published, 'publicou');
     return published;
@@ -160,43 +162,72 @@ final class FakeNoticeRepository {
     required NoticeStatus status,
     DateTime? startsAt,
     int reach = 42,
-  }) => PlatformNotice(
-    id: id,
-    title: draft.title.trim(),
-    message: draft.message.trim(),
-    priority: draft.priority,
-    status: status,
-    startsAt: startsAt ?? _now(),
-    endsAt: draft.endsAt,
-    audience: draft.audience,
-    audienceLabel: draft.audienceLabel.trim(),
-    behavior: draft.behavior,
-    mandatory: draft.behavior != NoticeBehavior.dismissible,
-    reach: reach,
-    targetDevice: draft.targetDevice,
-    contentFormat: draft.contentFormat,
-    audienceRoleLabel: draft.audienceRoleLabel?.trim(),
-    backgroundColorValue: draft.backgroundColorValue,
-    textColorValue: draft.textColorValue,
-    recurrence: draft.recurrence,
-    intervalDays: draft.intervalDays,
-    weeklyDays: List.of(draft.weeklyDays),
-    dayOfMonth: draft.dayOfMonth,
-    recurrenceUntil: draft.recurrenceUntil,
-    imageOrientation: draft.imageOrientation,
-    showImagePlaceholder: draft.showImagePlaceholder,
-    backgroundTone: draft.backgroundTone,
-    textTone: draft.textTone,
-    buttonLabel: draft.buttonLabel.trim().isEmpty ? 'Confirmar' : draft.buttonLabel.trim(),
-    linkLabel: draft.linkLabel?.trim(),
-  );
+  }) {
+    _validateRecurrence(draft);
+    return PlatformNotice(
+      id: id,
+      title: draft.title.trim(),
+      message: draft.message.trim(),
+      priority: draft.priority,
+      status: status,
+      startsAt: startsAt ?? _now(),
+      endsAt: draft.endsAt,
+      audience: draft.audience,
+      audienceLabel: draft.audienceLabel.trim(),
+      behavior: draft.behavior,
+      mandatory: draft.behavior != NoticeBehavior.dismissible,
+      reach: reach,
+      targetDevice: draft.targetDevice,
+      contentFormat: draft.contentFormat,
+      audienceRoleLabel: draft.audienceRoleLabel?.trim(),
+      backgroundColorValue: draft.backgroundColorValue,
+      textColorValue: draft.textColorValue,
+      recurrence: draft.recurrence,
+      intervalDays: draft.intervalDays,
+      weeklyDays: List.of(draft.weeklyDays),
+      dayOfMonth: draft.dayOfMonth,
+      recurrenceUntil: draft.recurrenceUntil,
+      imageOrientation: draft.imageOrientation,
+      showImagePlaceholder: draft.showImagePlaceholder,
+      backgroundTone: draft.backgroundTone,
+      textTone: draft.textTone,
+      buttonLabel: draft.buttonLabel.trim().isEmpty ? 'Confirmar' : draft.buttonLabel.trim(),
+      linkLabel: draft.linkLabel?.trim(),
+    );
+  }
+
+  void _validateRecurrence(NoticeDraft draft) {
+    final valid = switch (draft.recurrence) {
+      NoticeRecurrence.oneTime || NoticeRecurrence.daily =>
+        draft.intervalDays == null && draft.weeklyDays.isEmpty && draft.dayOfMonth == null,
+      NoticeRecurrence.weekly =>
+        draft.intervalDays == null &&
+            draft.weeklyDays.isNotEmpty &&
+            draft.weeklyDays.every((day) => day >= 1 && day <= 7) &&
+            draft.dayOfMonth == null,
+      NoticeRecurrence.monthly =>
+        draft.intervalDays == null &&
+            draft.weeklyDays.isEmpty &&
+            draft.dayOfMonth != null &&
+            draft.dayOfMonth! >= 1 &&
+            draft.dayOfMonth! <= 31,
+      NoticeRecurrence.interval =>
+        draft.intervalDays != null &&
+            draft.intervalDays! > 0 &&
+            draft.weeklyDays.isEmpty &&
+            draft.dayOfMonth == null,
+    };
+    if (!valid) throw ArgumentError('Configuração de recorrência inválida.');
+  }
 
   void _closeExpiredNotices() {
     final now = _now();
     for (var index = 0; index < _items.length; index++) {
       final notice = _items[index];
       final endedByDate = notice.endsAt != null && !notice.endsAt!.isAfter(now);
-      if ((notice.status == NoticeStatus.active || notice.status == NoticeStatus.scheduled) &&
+      if ((notice.status == NoticeStatus.active ||
+              notice.status == NoticeStatus.scheduled ||
+              notice.status == NoticeStatus.paused) &&
           endedByDate &&
           notice.status != NoticeStatus.ended) {
         final updated = notice.copyWith(status: NoticeStatus.ended);
@@ -206,7 +237,11 @@ final class FakeNoticeRepository {
     }
   }
 
-  PlatformNotice _required(String id) => find(id) ?? (throw StateError('Aviso não encontrado.'));
+  PlatformNotice _required(String id) {
+    _closeExpiredNotices();
+    return find(id) ?? (throw StateError('Aviso não encontrado.'));
+  }
+
   void _replace(PlatformNotice notice) =>
       _items[_items.indexWhere((item) => item.id == notice.id)] = notice;
 
