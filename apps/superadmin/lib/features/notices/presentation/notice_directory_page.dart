@@ -325,7 +325,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             Text('Recorrência: ${notice.recurrenceLabel}'),
             const SizedBox(height: CoeloSpacing.space1),
             Text('Obrigatório: ${notice.mandatory ? 'Sim' : 'Não'}'),
-            const Spacer(),
+            const SizedBox(height: CoeloSpacing.space4),
             Text('Entregues: ${notice.deliveredCount} · Aceites: ${notice.acceptedCount}'),
           ],
         ),
