@@ -8,6 +8,8 @@ enum DailyRoutineFieldType { shortText, longText, singleChoice, multipleChoice, 
 
 enum DailyRoutineStatus { draft, active }
 
+enum DailyRoutineEntryType { model, routine }
+
 enum DailyRoutineFeeling {
   animated('animated', '😊', 'Animado', true),
   calm('calm', '😌', 'Calmo', true),
@@ -72,6 +74,7 @@ class DailyRoutineField {
     required this.type,
     this.required = false,
     this.initialValue,
+    this.options = const [],
   });
 
   final String id;
@@ -79,6 +82,7 @@ class DailyRoutineField {
   final DailyRoutineFieldType type;
   final bool required;
   final Object? initialValue;
+  final List<String> options;
 }
 
 class DailyRoutineSection {
@@ -87,6 +91,42 @@ class DailyRoutineSection {
   final String id;
   final String name;
   final List<DailyRoutineField> fields;
+}
+
+class DailyRoutineFieldOverride {
+  const DailyRoutineFieldOverride({required this.fieldId, this.required, this.initialValue});
+
+  final String fieldId;
+  final bool? required;
+  final Object? initialValue;
+}
+
+class DailyRoutineScope {
+  const DailyRoutineScope({
+    required this.groupId,
+    this.activityIds = const {},
+    this.fieldOverrides = const {},
+    this.localSections = const [],
+  });
+
+  final String groupId;
+  final Set<String> activityIds;
+  final Map<String, DailyRoutineFieldOverride> fieldOverrides;
+  final List<DailyRoutineSection> localSections;
+
+  bool appliesTo(String? activityId) =>
+      activityIds.isEmpty || activityId != null && activityIds.contains(activityId);
+
+  DailyRoutineScope copyWith({
+    Set<String>? activityIds,
+    Map<String, DailyRoutineFieldOverride>? fieldOverrides,
+    List<DailyRoutineSection>? localSections,
+  }) => DailyRoutineScope(
+    groupId: groupId,
+    activityIds: activityIds ?? this.activityIds,
+    fieldOverrides: fieldOverrides ?? this.fieldOverrides,
+    localSections: localSections ?? this.localSections,
+  );
 }
 
 class DailyRoutineModel {
@@ -98,10 +138,14 @@ class DailyRoutineModel {
     required this.version,
     required this.status,
     required this.sections,
+    this.scopes = const [],
+    this.originUnitId,
     this.groupIds = const {},
     this.activityId,
     this.baseModelId,
     this.updateAvailable = false,
+    this.type = DailyRoutineEntryType.model,
+    this.isCoeloProvided = false,
   });
 
   final String id;
@@ -111,28 +155,42 @@ class DailyRoutineModel {
   final int version;
   final DailyRoutineStatus status;
   final List<DailyRoutineSection> sections;
+  final List<DailyRoutineScope> scopes;
+  final String? originUnitId;
   final Set<String> groupIds;
   final String? activityId;
   final String? baseModelId;
   final bool updateAvailable;
+  final DailyRoutineEntryType type;
+  final bool isCoeloProvided;
 
   DailyRoutineModel copyWith({
+    String? id,
+    String? name,
+    String? description,
     int? version,
     List<DailyRoutineSection>? sections,
     bool? updateAvailable,
     DailyRoutineStatus? status,
+    DailyRoutineEntryType? type,
+    bool? isCoeloProvided,
+    String? baseModelId,
   }) => DailyRoutineModel(
-    id: id,
-    name: name,
-    description: description,
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description ?? this.description,
     origin: origin,
     version: version ?? this.version,
     status: status ?? this.status,
     sections: sections ?? this.sections,
+    scopes: scopes,
+    originUnitId: originUnitId,
     groupIds: groupIds,
     activityId: activityId,
-    baseModelId: baseModelId,
+    baseModelId: baseModelId ?? this.baseModelId,
     updateAvailable: updateAvailable ?? this.updateAvailable,
+    type: type ?? this.type,
+    isCoeloProvided: isCoeloProvided ?? this.isCoeloProvided,
   );
 }
 
@@ -164,6 +222,9 @@ abstract interface class DailyRoutineRepository {
 }
 
 class InMemoryDailyRoutineRepository implements DailyRoutineRepository {
+  InMemoryDailyRoutineRepository.empty({SuperadminActivityController? activities})
+    : _activities = activities;
+
   InMemoryDailyRoutineRepository.seeded({SuperadminActivityController? activities})
     : _activities = activities {
     const mood = DailyRoutineField(
@@ -180,7 +241,7 @@ class InMemoryDailyRoutineRepository implements DailyRoutineRepository {
     _models.addAll([
       const DailyRoutineModel(
         id: 'institution-model',
-        name: 'Rotina Berçário',
+        name: 'Modelo Berçário',
         description: 'Registro diário de cuidado e comunicação.',
         origin: DailyRoutineOrigin.institution,
         version: 1,
@@ -188,18 +249,61 @@ class InMemoryDailyRoutineRepository implements DailyRoutineRepository {
         sections: [baseSection],
         groupIds: {'group-a'},
         activityId: 'activity-meal',
+        isCoeloProvided: true,
+      ),
+      const DailyRoutineModel(
+        id: 'coelo-fundamental',
+        name: 'Modelo Fundamental',
+        description: 'Base inicial para a rotina do ensino fundamental.',
+        origin: DailyRoutineOrigin.institution,
+        version: 1,
+        status: DailyRoutineStatus.active,
+        sections: [baseSection],
+        isCoeloProvided: true,
+      ),
+      const DailyRoutineModel(
+        id: 'coelo-medio',
+        name: 'Modelo Médio',
+        description: 'Base inicial para a rotina do ensino médio.',
+        origin: DailyRoutineOrigin.institution,
+        version: 1,
+        status: DailyRoutineStatus.active,
+        sections: [baseSection],
+        isCoeloProvided: true,
+      ),
+      const DailyRoutineModel(
+        id: 'coelo-pre',
+        name: 'Modelo Pré',
+        description: 'Base inicial para a rotina da pré-escola.',
+        origin: DailyRoutineOrigin.institution,
+        version: 1,
+        status: DailyRoutineStatus.active,
+        sections: [baseSection],
+        isCoeloProvided: true,
+      ),
+      const DailyRoutineModel(
+        id: 'coelo-maternal',
+        name: 'Modelo Maternal',
+        description: 'Base inicial para a rotina maternal.',
+        origin: DailyRoutineOrigin.institution,
+        version: 1,
+        status: DailyRoutineStatus.active,
+        sections: [baseSection],
+        isCoeloProvided: true,
       ),
       const DailyRoutineModel(
         id: 'unit-model',
         name: 'Rotina Unidade Centro',
-        description: 'Versão própria com complemento local.',
+        description: 'Rotina efetivamente utilizada pela unidade.',
         origin: DailyRoutineOrigin.unit,
+        originUnitId: 'unit-center',
         version: 1,
         status: DailyRoutineStatus.active,
         sections: [baseSection],
         groupIds: {'group-a'},
         activityId: 'activity-meal',
         baseModelId: 'institution-model',
+        type: DailyRoutineEntryType.routine,
       ),
     ]);
     _snapshots.add(
@@ -237,6 +341,10 @@ class InMemoryDailyRoutineRepository implements DailyRoutineRepository {
   @override
   bool appliesTo(String modelId, {required String groupId, String? activityId}) {
     final model = _models.firstWhere((item) => item.id == modelId);
+    if (model.scopes.isNotEmpty) {
+      final scopes = model.scopes.where((scope) => scope.groupId == groupId);
+      return scopes.any((scope) => scope.appliesTo(activityId));
+    }
     if (!model.groupIds.contains(groupId)) return false;
     return model.activityId == null || model.activityId == activityId;
   }
@@ -322,11 +430,85 @@ class InMemoryDailyRoutineRepository implements DailyRoutineRepository {
   }
 
   void save(DailyRoutineModel model) {
+    _validateChoiceInitialValues(model);
     final index = _models.indexWhere((item) => item.id == model.id);
     if (index < 0) {
       _models.add(model);
     } else {
+      if (_models[index].isCoeloProvided) {
+        throw StateError('Modelos fornecidos pelo Coelo não podem ser editados.');
+      }
       _models[index] = model;
+    }
+  }
+
+  void remove(String modelId) {
+    final model = _models.firstWhere((item) => item.id == modelId);
+    if (model.isCoeloProvided) {
+      throw StateError('Modelos fornecidos pelo Coelo não podem ser excluídos.');
+    }
+    _models.remove(model);
+  }
+
+  DailyRoutineModel duplicate(String modelId) {
+    final source = _models.firstWhere((item) => item.id == modelId);
+    final baseName = source.name.replaceFirst(RegExp(r' \(\d+\)$'), '');
+    var suffix = 2;
+    while (_models.any((item) => item.name == '$baseName ($suffix)')) {
+      suffix++;
+    }
+    final copy = source.copyWith(
+      id: _nextId(),
+      name: '$baseName ($suffix)',
+      isCoeloProvided: false,
+    );
+    _models.add(copy);
+    return copy;
+  }
+
+  DailyRoutineModel createRoutineFromModel(String modelId) {
+    final source = _models.firstWhere((item) => item.id == modelId);
+    if (source.type != DailyRoutineEntryType.model) {
+      throw ArgumentError.value(modelId, 'modelId', 'A origem deve ser um modelo.');
+    }
+    final routine = source.copyWith(
+      id: _nextId(),
+      type: DailyRoutineEntryType.routine,
+      isCoeloProvided: false,
+      baseModelId: source.id,
+    );
+    _models.add(routine);
+    return routine;
+  }
+
+  String _nextId() {
+    var suffix = _models.length + 1;
+    var candidate = 'daily-routine-$suffix';
+    while (_models.any((item) => item.id == candidate)) {
+      suffix++;
+      candidate = 'daily-routine-$suffix';
+    }
+    return candidate;
+  }
+
+  void _validateChoiceInitialValues(DailyRoutineModel model) {
+    for (final field in model.sections.expand((section) => section.fields)) {
+      if (field.initialValue == null) continue;
+      final valid = switch (field.type) {
+        DailyRoutineFieldType.singleChoice =>
+          field.initialValue is String && field.options.contains(field.initialValue),
+        DailyRoutineFieldType.multipleChoice =>
+          field.initialValue is Iterable &&
+              (field.initialValue! as Iterable).every(field.options.contains),
+        _ => true,
+      };
+      if (!valid) {
+        throw ArgumentError.value(
+          field.initialValue,
+          'initialValue',
+          'O valor inicial deve ser uma das opções cadastradas.',
+        );
+      }
     }
   }
 }
