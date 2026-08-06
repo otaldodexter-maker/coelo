@@ -603,10 +603,10 @@ final _activityStatesPreviewController = SuperadminActivityController.seeded([
     id: 'preview-error',
     kind: SuperadminActivityKind.import,
     status: SuperadminActivityStatus.failed,
-    subject: 'Grupos',
+    subject: 'Turmas',
     summary: 'O arquivo não usa o modelo esperado',
     createdAt: DateTime(2026, 7, 21, 14, 35),
-    fileName: 'grupos.xlsx',
+    fileName: 'turmas.xlsx',
     progress: 100,
   ),
   SuperadminActivity.announcement(

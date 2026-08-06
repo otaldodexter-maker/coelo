@@ -48,39 +48,28 @@ void main() {
     expect(selectedDestination, 'groups');
   });
 
-  testWidgets(
-    'protects production and exposes the development group directory',
-    (tester) async {
-      final session = SuperadminSession();
-      final router = createSuperadminRouter(
-        session: session,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(router.dispose);
-      addTearDown(session.dispose);
+  testWidgets('protects production and exposes the development group directory', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
 
-      router.go(SuperadminRoutes.groups);
-      await tester.pumpWidget(
-        MaterialApp.router(theme: CoeloTheme.light, routerConfig: router),
-      );
-      await tester.pumpAndSettle();
-      expect(
-        router.routeInformationProvider.value.uri.path,
-        SuperadminRoutes.login,
-      );
+    router.go(SuperadminRoutes.groups);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
 
-      router.go(SuperadminRoutes.devGroups);
-      await tester.pumpAndSettle();
-      expect(
-        router.routeInformationProvider.value.uri.path,
-        SuperadminRoutes.devGroups,
-      );
-      expect(find.text('Gerencie os grupos da plataforma.'), findsOneWidget);
-      expect(find.text('Criar grupo'), findsWidgets);
-    },
-  );
+    router.go(SuperadminRoutes.devGroups);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devGroups);
+    expect(find.text('Gerencie as turmas da plataforma.'), findsOneWidget);
+    expect(find.text('Criar turma'), findsWidgets);
+  });
 }

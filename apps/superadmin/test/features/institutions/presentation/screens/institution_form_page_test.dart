@@ -1260,6 +1260,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
@@ -1279,6 +1280,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();

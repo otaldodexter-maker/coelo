@@ -80,6 +80,84 @@ void main() {
     expect(find.byKey(const Key('support-page-content')), findsOneWidget);
   });
 
+  testWidgets('keeps one shell while navigating non-linearly between development routes', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devInstitutions);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+
+    final shell = find.byKey(const Key('superadmin-persistent-shell'));
+    expect(shell, findsOneWidget);
+    final initialState = tester.state(shell);
+
+    Future<void> selectDestination({
+      required String section,
+      required String destination,
+      required String expectedPath,
+    }) async {
+      var destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
+      if (destinationFinder.evaluate().isEmpty) {
+        final sectionFinder = find.byKey(Key('superadmin-navigation-section-$section'));
+        await Scrollable.ensureVisible(tester.element(sectionFinder), alignment: 0.5);
+        await tester.pumpAndSettle();
+        await tester.tap(sectionFinder.hitTestable());
+        await tester.pumpAndSettle();
+        destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
+      }
+      await Scrollable.ensureVisible(tester.element(destinationFinder), alignment: 0.5);
+      await tester.pumpAndSettle();
+      await tester.tap(destinationFinder.hitTestable());
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, expectedPath);
+      expect(tester.state(shell), same(initialState));
+    }
+
+    await selectDestination(
+      section: 'access',
+      destination: 'people',
+      expectedPath: SuperadminRoutes.devPeople,
+    );
+    await selectDestination(
+      section: 'monitoring',
+      destination: 'daily-routine',
+      expectedPath: SuperadminRoutes.devDailyRoutine,
+    );
+    await selectDestination(
+      section: 'structure',
+      destination: 'activities',
+      expectedPath: SuperadminRoutes.devActivities,
+    );
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 88);
+
+    final contentTransition = find.byKey(const Key('superadmin-content-transition'));
+    expect(contentTransition, findsOneWidget);
+    expect(tester.widget(contentTransition), isA<KeyedSubtree>());
+  });
+
+  testWidgets('keeps the development preview trigger available in conversations', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devConversations);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsOneWidget);
+  });
+
   testWidgets('routes Support and Catalog consistently from the persistent navigation', (
     tester,
   ) async {
@@ -93,17 +171,26 @@ void main() {
     await tester.pumpWidget(_app(router));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('superadmin-navigation-section-governance')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-navigation-support')));
-    await tester.pumpAndSettle();
+    Future<void> selectDestination({required String section, required String destination}) async {
+      var destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
+      if (destinationFinder.evaluate().isEmpty) {
+        final sectionFinder = find.byKey(Key('superadmin-navigation-section-$section'));
+        await Scrollable.ensureVisible(tester.element(sectionFinder), alignment: 0.5);
+        await tester.pumpAndSettle();
+        await tester.tap(sectionFinder.hitTestable());
+        await tester.pumpAndSettle();
+        destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
+      }
+      await Scrollable.ensureVisible(tester.element(destinationFinder), alignment: 0.5);
+      await tester.pumpAndSettle();
+      await tester.tap(destinationFinder.hitTestable());
+      await tester.pumpAndSettle();
+    }
+
+    await selectDestination(section: 'governance', destination: 'support');
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.support);
 
-    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
-    await tester.pumpAndSettle();
-    final catalog = find.byKey(const Key('superadmin-navigation-catalog'));
-    await tester.tap(catalog);
-    await tester.pumpAndSettle();
+    await selectDestination(section: 'structure', destination: 'catalog');
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.governanceCatalog);
   });
 }

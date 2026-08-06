@@ -741,27 +741,7 @@ GoRouter createSuperadminRouter({
               permissions: const AttendancePermissions.owner(),
               logout: logout,
               onBack: () => context.goNamed(SuperadminRoutes.attendanceName),
-              onPreview: () => context.goNamed(
-                SuperadminRoutes.attendanceTeacherPreviewName,
-                pathParameters: {'callId': state.pathParameters['callId']!},
-              ),
               activityController: attendanceActivities,
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.attendanceTeacherPreview,
-            name: SuperadminRoutes.attendanceTeacherPreviewName,
-            builder: (context, state) => AttendanceTeacherPreviewPage(
-              repository: attendanceRepository,
-              callId: state.pathParameters['callId']!,
-              permissions: const AttendancePermissions.teacher(
-                assignedGroupIds: {'group-sun'},
-                assignedActivityContextIds: {'activity-music-group-sun'},
-              ),
-              onBack: () => context.goNamed(
-                SuperadminRoutes.attendanceCallName,
-                pathParameters: {'callId': state.pathParameters['callId']!},
-              ),
             ),
           ),
           GoRoute(
@@ -772,7 +752,8 @@ GoRouter createSuperadminRouter({
               permissions: DailyRoutinePermissions.owner,
               logout: logout,
               activityController: attendanceActivities,
-              onCreate: () => context.goNamed(SuperadminRoutes.dailyRoutineCreateName),
+              onCreateEntry: (type) =>
+                  context.goNamed(SuperadminRoutes.dailyRoutineCreateName, extra: type),
               onEdit: (id) => context.goNamed(
                 SuperadminRoutes.dailyRoutineEditName,
                 pathParameters: {'modelId': id},
@@ -787,6 +768,9 @@ GoRouter createSuperadminRouter({
               permissions: DailyRoutinePermissions.owner,
               logout: logout,
               activityController: attendanceActivities,
+              entryType: state.extra is DailyRoutineEntryType
+                  ? state.extra! as DailyRoutineEntryType
+                  : DailyRoutineEntryType.model,
             ),
           ),
           GoRoute(
@@ -1593,27 +1577,7 @@ GoRouter createSuperadminRouter({
               permissions: const AttendancePermissions.owner(),
               logout: _previewLogout,
               onBack: () => context.goNamed(SuperadminRoutes.devAttendanceName),
-              onPreview: () => context.goNamed(
-                SuperadminRoutes.devAttendanceTeacherPreviewName,
-                pathParameters: {'callId': state.pathParameters['callId']!},
-              ),
               activityController: attendanceActivities,
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devAttendanceTeacherPreview,
-            name: SuperadminRoutes.devAttendanceTeacherPreviewName,
-            builder: (context, state) => AttendanceTeacherPreviewPage(
-              repository: attendanceRepository,
-              callId: state.pathParameters['callId']!,
-              permissions: const AttendancePermissions.teacher(
-                assignedGroupIds: {'group-sun'},
-                assignedActivityContextIds: {'activity-music-group-sun'},
-              ),
-              onBack: () => context.goNamed(
-                SuperadminRoutes.devAttendanceCallName,
-                pathParameters: {'callId': state.pathParameters['callId']!},
-              ),
             ),
           ),
           GoRoute(
@@ -1624,7 +1588,8 @@ GoRouter createSuperadminRouter({
               permissions: DailyRoutinePermissions.owner,
               logout: _previewLogout,
               activityController: attendanceActivities,
-              onCreate: () => context.goNamed(SuperadminRoutes.devDailyRoutineCreateName),
+              onCreateEntry: (type) =>
+                  context.goNamed(SuperadminRoutes.devDailyRoutineCreateName, extra: type),
               onEdit: (id) => context.goNamed(
                 SuperadminRoutes.devDailyRoutineEditName,
                 pathParameters: {'modelId': id},
@@ -1639,6 +1604,9 @@ GoRouter createSuperadminRouter({
               permissions: DailyRoutinePermissions.owner,
               logout: _previewLogout,
               activityController: attendanceActivities,
+              entryType: state.extra is DailyRoutineEntryType
+                  ? state.extra! as DailyRoutineEntryType
+                  : DailyRoutineEntryType.model,
             ),
           ),
           GoRoute(

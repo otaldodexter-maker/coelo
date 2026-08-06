@@ -16,7 +16,7 @@ void main() {
     expect(SuperadminRoutes.devDailyRoutine, '/dev/daily-routine');
   });
 
-  testWidgets('opens daily routine and development mirrors', (tester) async {
+  testWidgets('opens daily routine and preserves contextual create type', (tester) async {
     final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
       session: session,
@@ -31,10 +31,17 @@ void main() {
     router.go('/daily-routine');
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(find.text('Criar modelo de rotina diária'), findsOneWidget);
+    expect(find.text('Modelos'), findsOneWidget);
+    expect(find.text('Criar modelo'), findsWidgets);
+
+    await tester.tap(find.text('Rotinas'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Nova rotina').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Nova rotina'), findsWidgets);
 
     router.go('/dev/daily-routine/new');
     await tester.pumpAndSettle();
-    expect(find.text('Editor de rotina diária'), findsWidgets);
+    expect(find.text('Criar modelo'), findsWidgets);
   });
 }

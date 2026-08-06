@@ -137,19 +137,24 @@ void main() {
     expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-navigation-home')), findsOneWidget);
 
-    for (final label in ['Estrutura', 'Acessos', 'Operação', 'Comunicação', 'Governança']) {
+    for (final label in ['Estrutura', 'Acessos', 'Saúde e Cuidado', 'Operação', 'Comunicação']) {
       expect(find.text(label), findsOneWidget);
     }
-    for (final label in ['Unidades', 'Grupos']) {
+    for (final label in ['Unidades', 'Turmas']) {
       expect(find.text(label), findsOneWidget);
     }
 
     for (final entry in {
       'access': ['Pessoas', 'Usuários internos', 'Perfis e permissões'],
+      'health-care': ['Perfis de cuidado', 'Planos de medicação'],
       'operations': ['Planos', 'Importações'],
       'communication': ['Convites', 'Avisos'],
       'governance': ['Suporte e implantação', 'Auditoria'],
     }.entries) {
+      if (entry.key == 'governance') {
+        await tester.drag(find.byType(ListView).first, const Offset(0, -480));
+        await tester.pumpAndSettle();
+      }
       await tester.tap(find.byKey(Key('superadmin-navigation-section-${entry.key}')));
       await tester.pumpAndSettle();
       for (final label in entry.value) {
@@ -330,13 +335,13 @@ void main() {
     );
     expect(find.text('Estrutura'), findsOneWidget);
     expect(find.text('Unidades'), findsNothing);
-    expect(find.text('Grupos'), findsNothing);
+    expect(find.text('Turmas'), findsNothing);
 
     await tester.pumpWidget(_shellApp(currentDestination: 'institutions'));
     await tester.pump();
 
     expect(find.text('Unidades'), findsOneWidget);
-    expect(find.text('Grupos'), findsOneWidget);
+    expect(find.text('Turmas'), findsOneWidget);
     expect(
       tester
           .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
@@ -381,7 +386,7 @@ void main() {
     expect(find.text('Atividades'), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('Atividades')).dy,
-      greaterThan(tester.getTopLeft(find.text('Grupos')).dy),
+      greaterThan(tester.getTopLeft(find.text('Turmas')).dy),
     );
 
     await tester.tap(find.byKey(const Key('superadmin-navigation-activities')));
@@ -529,7 +534,7 @@ void main() {
     expect(navigationAnchor.style?.elevation?.resolve({}), 4);
     expect(navigationAnchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
     expect(find.text('Unidades'), findsOneWidget);
-    expect(find.text('Grupos'), findsOneWidget);
+    expect(find.text('Turmas'), findsOneWidget);
     final units = tester.widget<MenuItemButton>(
       find.byKey(const Key('superadmin-navigation-units')),
     );
@@ -750,7 +755,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-report-bug')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
     expect(find.text('Perfis'), findsNothing);
-    for (final label in ['Estrutura', 'Acessos', 'Operação', 'Comunicação', 'Governança']) {
+    for (final label in ['Estrutura', 'Acessos', 'Saúde e Cuidado', 'Operação', 'Comunicação']) {
       expect(find.text(label), findsOneWidget);
     }
     expect(find.text('Configurações'), findsNothing);
@@ -965,7 +970,7 @@ void main() {
       final panelRect = panelRects.first;
       expect(
         panelRect.right,
-        closeTo(triggerRect.right, 1),
+        closeTo(triggerRect.right - CoeloSpacing.space2, 1),
         reason:
             'viewport $width, trigger $triggerRect, '
             'panel $panelRect',

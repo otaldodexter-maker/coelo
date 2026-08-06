@@ -76,17 +76,33 @@ void main() {
     expect(supportController.tickets, hasLength(1));
     expect(supportController.tickets.single.description, 'Table order is wrong');
 
-    await tester.tap(find.byKey(const Key('superadmin-navigation-section-governance')));
+    var support = find.byKey(const Key('superadmin-navigation-support'));
+    if (support.evaluate().isEmpty) {
+      final governance = find.byKey(const Key('superadmin-navigation-section-governance'));
+      await Scrollable.ensureVisible(tester.element(governance), alignment: 0.5);
+      await tester.pumpAndSettle();
+      await tester.tap(governance.hitTestable());
+      await tester.pumpAndSettle();
+      support = find.byKey(const Key('superadmin-navigation-support'));
+    }
+    await Scrollable.ensureVisible(tester.element(support), alignment: 0.5);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-navigation-support')));
+    await tester.tap(support.hitTestable());
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.support);
 
-    if (find.byKey(const Key('superadmin-navigation-institutions')).evaluate().isEmpty) {
-      await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    var institutions = find.byKey(const Key('superadmin-navigation-institutions'));
+    if (institutions.evaluate().isEmpty) {
+      final structure = find.byKey(const Key('superadmin-navigation-section-structure'));
+      await Scrollable.ensureVisible(tester.element(structure), alignment: 0.5);
       await tester.pumpAndSettle();
+      await tester.tap(structure.hitTestable());
+      await tester.pumpAndSettle();
+      institutions = find.byKey(const Key('superadmin-navigation-institutions'));
     }
-    await tester.tap(find.byKey(const Key('superadmin-navigation-institutions')));
+    await Scrollable.ensureVisible(tester.element(institutions), alignment: 0.5);
+    await tester.pumpAndSettle();
+    await tester.tap(institutions.hitTestable());
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);
   });

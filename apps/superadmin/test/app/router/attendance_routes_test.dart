@@ -14,7 +14,6 @@ void main() {
     expect(SuperadminRoutes.attendance, '/attendance');
     expect(SuperadminRoutes.attendanceCreate, '/attendance/new');
     expect(SuperadminRoutes.attendanceCall, '/attendance/calls/:callId');
-    expect(SuperadminRoutes.attendanceTeacherPreview, '/attendance/calls/:callId/teacher-preview');
     expect(SuperadminRoutes.devAttendance, '/dev/attendance');
   });
 
@@ -60,7 +59,7 @@ void main() {
 
     router.go('/attendance/calls/call-progress');
     await tester.pumpAndSettle();
-    expect(find.textContaining('Chamada ·'), findsWidgets);
+    expect(find.text('Lançar chamada'), findsWidgets);
 
     router.go('/dev/attendance');
     await tester.pumpAndSettle();

@@ -42,23 +42,25 @@ void main() {
     for (final (id, expectedPath) in destinations) {
       router.go(SuperadminRoutes.devInstitutions);
       await tester.pumpAndSettle();
-      if (id == 'health-care-profiles' || id == 'health-medication-plans') {
-        await tester.tap(find.byKey(const Key('superadmin-navigation-section-health-care')));
-      } else if (id == 'plans' || id == 'import') {
-        await tester.tap(find.byKey(const Key('superadmin-navigation-section-operations')));
-      } else if (id == 'invites' || id == 'notices') {
-        await tester.tap(find.byKey(const Key('superadmin-navigation-section-communication')));
-      } else if (id == 'audit' || id == 'catalog') {
-        await tester.tap(find.byKey(const Key('superadmin-navigation-section-governance')));
-      }
-      await tester.pumpAndSettle();
-      if (id == 'notices' || id == 'audit' || id == 'catalog') {
-        await tester.drag(find.byKey(const Key('superadmin-sidebar')), const Offset(0, -260));
+      final section = switch (id) {
+        'health-care-profiles' || 'health-medication-plans' => 'health-care',
+        'plans' || 'import' => 'operations',
+        'invites' || 'notices' => 'communication',
+        'audit' || 'catalog' => 'governance',
+        _ => throw StateError('Missing navigation section for $id'),
+      };
+      var item = find.byKey(Key('superadmin-navigation-$id'));
+      if (item.evaluate().isEmpty) {
+        final sectionItem = find.byKey(Key('superadmin-navigation-section-$section'));
+        await Scrollable.ensureVisible(tester.element(sectionItem), alignment: 0.5);
         await tester.pumpAndSettle();
+        await tester.tap(sectionItem.hitTestable());
+        await tester.pumpAndSettle();
+        item = find.byKey(Key('superadmin-navigation-$id'));
       }
-      final item = find.byKey(Key('superadmin-navigation-$id'));
-      await tester.ensureVisible(item);
-      await tester.tap(item);
+      await Scrollable.ensureVisible(tester.element(item), alignment: 0.5);
+      await tester.pumpAndSettle();
+      await tester.tap(item.hitTestable());
       await tester.pumpAndSettle();
       expect(router.routeInformationProvider.value.uri.path, expectedPath);
     }

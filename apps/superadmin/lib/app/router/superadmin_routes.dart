@@ -33,8 +33,6 @@ abstract final class SuperadminRoutes {
   static const attendanceCreateName = 'attendance-create';
   static const attendanceCall = '/attendance/calls/:callId';
   static const attendanceCallName = 'attendance-call';
-  static const attendanceTeacherPreview = '/attendance/calls/:callId/teacher-preview';
-  static const attendanceTeacherPreviewName = 'attendance-teacher-preview';
   static const dailyRoutine = '/daily-routine';
   static const dailyRoutineName = 'daily-routine';
   static const dailyRoutineCreate = '/daily-routine/new';
@@ -131,8 +129,6 @@ abstract final class SuperadminRoutes {
   static const devAttendanceCreateName = 'dev-attendance-create';
   static const devAttendanceCall = '/dev/attendance/calls/:callId';
   static const devAttendanceCallName = 'dev-attendance-call';
-  static const devAttendanceTeacherPreview = '/dev/attendance/calls/:callId/teacher-preview';
-  static const devAttendanceTeacherPreviewName = 'dev-attendance-teacher-preview';
   static const devDailyRoutine = '/dev/daily-routine';
   static const devDailyRoutineName = 'dev-daily-routine';
   static const devDailyRoutineCreate = '/dev/daily-routine/new';

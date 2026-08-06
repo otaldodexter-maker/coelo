@@ -34,7 +34,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
     expect(find.text('Turma Girassol'), findsWidgets);
-    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
+    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Voltar'));
     await tester.pumpAndSettle();

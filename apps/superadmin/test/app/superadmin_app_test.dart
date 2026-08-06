@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/app/superadmin_app.dart';
 import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
+import 'package:coelo_superadmin/features/account/data/user_preferences_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +9,9 @@ import 'package:go_router/go_router.dart';
 
 void main() {
   testWidgets('starts on guarded login with Coelo themes and router', (tester) async {
-    await tester.pumpWidget(const SuperadminApp());
+    await tester.pumpWidget(
+      SuperadminApp(userPreferencesRepository: InMemoryUserPreferencesRepository()),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Acesse sua conta'), findsOneWidget);
@@ -40,41 +43,47 @@ void main() {
     tester.binding.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.binding.platformDispatcher.clearAccessibilityFeaturesTestValue);
-    await tester.pumpWidget(const SuperadminApp());
+    await tester.pumpWidget(
+      SuperadminApp(userPreferencesRepository: InMemoryUserPreferencesRepository()),
+    );
 
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.themeAnimationStyle, same(AnimationStyle.noAnimation));
   });
 
   testWidgets('reverses an in-flight theme transition from the requested mode', (tester) async {
-    await tester.pumpWidget(const SuperadminApp());
+    await tester.pumpWidget(
+      SuperadminApp(userPreferencesRepository: InMemoryUserPreferencesRepository()),
+    );
     await tester.pumpAndSettle();
 
-    final toggle = find.byKey(const ValueKey('superadmin-login-theme-toggle'));
-    await tester.tap(toggle);
+    void requestTheme(ThemeMode mode) => tester
+        .widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope))
+        .onChanged(mode);
+    requestTheme(ThemeMode.dark);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(toggle);
+    requestTheme(ThemeMode.light);
     await tester.pumpAndSettle();
 
     expect(
       tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
       ThemeMode.light,
     );
-    expect(Theme.of(tester.element(toggle)).brightness, Brightness.light);
+    expect(Theme.of(tester.element(find.text('Acesse sua conta'))).brightness, Brightness.light);
 
-    await tester.tap(toggle);
+    requestTheme(ThemeMode.dark);
     await tester.pumpAndSettle();
-    await tester.tap(toggle);
+    requestTheme(ThemeMode.light);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(toggle);
+    requestTheme(ThemeMode.dark);
     await tester.pumpAndSettle();
 
     expect(
       tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
       ThemeMode.dark,
     );
-    expect(Theme.of(tester.element(toggle)).brightness, Brightness.dark);
+    expect(Theme.of(tester.element(find.text('Acesse sua conta'))).brightness, Brightness.dark);
   });
 }
