@@ -144,7 +144,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   PlatformNotice get _previewNotice => PlatformNotice(
     id: 'notice-preview',
-    title: _title.text.isEmpty ? 'PrÃ©via do aviso' : _title.text,
+    title: _title.text.isEmpty ? 'Prévia do aviso' : _title.text,
     message: _message.text.isEmpty ? 'Mensagem do aviso.' : _message.text,
     priority: _priority,
     status: NoticeStatus.active,
@@ -171,7 +171,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   PlatformNotice _saveDraft() {
     if (!_form.currentState!.validate()) {
-      throw StateError('Preencha os campos obrigatÃ³rios.');
+      throw StateError('Preencha os campos obrigatórios.');
     }
     final draft = _draft;
     if (_saved == null) {
@@ -285,7 +285,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
               const SizedBox(height: CoeloSpacing.space1),
               Text(
                 _editing
-                    ? 'Edite conteÃºdo, pÃºblico e calendÃ¡rio sem sair da tela de lista.'
+                    ? 'Edite conteúdo, público e calendário sem sair da tela de lista.'
                     : 'Monte o popup em preview local antes de publicar.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -294,22 +294,22 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
               const SizedBox(height: CoeloSpacing.space4),
               _sectionCard(
                 context,
-                title: 'ConteÃºdo',
-                description: 'Mensagem, rÃ³tulo e comportamento principal do popup.',
+                title: 'Conteúdo',
+                description: 'Mensagem, rótulo e comportamento principal do popup.',
                 children: [
                   CoeloFormTextField(
                     controller: _title,
-                    labelText: 'TÃ­tulo',
+                    labelText: 'Título',
                     hintText: 'Ex.: Comunicado de rotina',
                     prefixIcon: Icons.campaign_outlined,
                     validator: (value) =>
-                        value == null || value.trim().isEmpty ? 'Informe um tÃ­tulo.' : null,
+                        value == null || value.trim().isEmpty ? 'Informe um título.' : null,
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   CoeloFormTextField(
                     controller: _message,
                     labelText: 'Mensagem',
-                    hintText: 'Descreva o conteÃºdo que serÃ¡ exibido.',
+                    hintText: 'Descreva o conteúdo que será exibido.',
                     prefixIcon: Icons.subject_rounded,
                     maxLines: 4,
                     validator: (value) =>
@@ -317,22 +317,22 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   CoeloAdminSingleSelectField<NoticeImageOrientation>(
-                    label: 'OrientaÃ§Ã£o da imagem',
+                    label: 'Orientação da imagem',
                     value: _imageOrientation,
                     options: NoticeImageOrientation.values,
                     optionLabel: (value) => value.label,
                     onChanged: (value) => setState(() => _imageOrientation = value),
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
-                  SwitchListTile(
+                  CoeloAdminToggleField(
+                    label: 'Incluir placeholder de imagem',
+                    description: 'Ative para simular o enquadramento da mídia no popup.',
                     value: _showImagePlaceholder,
                     onChanged: (value) => setState(() => _showImagePlaceholder = value),
-                    title: const Text('Incluir placeholder de imagem'),
-                    subtitle: const Text('Ative para simular o enquadramento da mÃ­dia no popup.'),
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
                   _MiniPopupPreview(
-                    title: _title.text.isEmpty ? 'TÃ­tulo do aviso' : _title.text,
+                    title: _title.text.isEmpty ? 'Título do aviso' : _title.text,
                     message: _message.text.isEmpty ? 'Texto do aviso' : _message.text,
                     buttonLabel: _buttonLabel.text.isEmpty ? 'Confirmar' : _buttonLabel.text,
                     orientation: _imageOrientation,
@@ -344,7 +344,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                     Padding(
                       padding: const EdgeInsets.only(top: CoeloSpacing.space2),
                       child: Text(
-                        'AtenÃ§Ã£o: contraste abaixo de AA (${contrast.toStringAsFixed(2)}). Ajuste cor de texto e fundo.',
+                        'Atenção: contraste abaixo de AA (${contrast.toStringAsFixed(2)}). Ajuste cor de texto e fundo.',
                         style: TextStyle(color: Theme.of(context).colorScheme.error),
                       ),
                     ),
@@ -388,14 +388,14 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                       ),
                       CoeloFormTextField(
                         controller: _audienceLabel,
-                        labelText: 'PÃºblico-alvo',
+                        labelText: 'Público-alvo',
                         prefixIcon: Icons.groups_outlined,
                       ),
                     ],
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
                   CoeloAdminSingleSelectField<NoticeAudience>(
-                    label: 'Tipo de pÃºblico',
+                    label: 'Tipo de público',
                     value: _audience,
                     options: NoticeAudience.values,
                     optionLabel: (value) => value.label,
@@ -406,20 +406,20 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
               const SizedBox(height: CoeloSpacing.space4),
               _sectionCard(
                 context,
-                title: 'Agendamento e recorrÃªncia',
-                description: 'Crie agendamento e regras de repetiÃ§Ã£o.',
+                title: 'Agendamento e recorrência',
+                description: 'Crie agendamento e regras de repetição.',
                 children: [
                   _formGrid(
                     context: context,
                     children: [
                       _dateField(
-                        label: 'Data de inÃ­cio',
+                        label: 'Data de início',
                         value: _startsAt,
                         onPick: (value) => setState(() => _startsAt = value),
                         isStart: true,
                       ),
                       _dateField(
-                        label: 'Data de tÃ©rmino',
+                        label: 'Data de término',
                         value: _endsAt,
                         onPick: (value) => setState(() => _endsAt = value),
                         canClear: true,
@@ -429,7 +429,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   CoeloAdminSingleSelectField<NoticeRecurrence>(
-                    label: 'RecorrÃªncia',
+                    label: 'Recorrência',
                     value: _recurrence,
                     options: NoticeRecurrence.values,
                     optionLabel: (value) => value.label,
@@ -478,7 +478,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                   if (_recurrence == NoticeRecurrence.monthly) ...[
                     CoeloFormTextField(
                       controller: _dayOfMonth,
-                      labelText: 'Dia do mÃªs',
+                      labelText: 'Dia do mês',
                       hintText: '1 a 31',
                       prefixIcon: Icons.calendar_today_rounded,
                       keyboardType: TextInputType.number,
@@ -496,7 +496,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                       _recurrence == NoticeRecurrence.interval) ...[
                     const SizedBox(height: CoeloSpacing.space2),
                     _dateField(
-                      label: 'Fim da recorrÃªncia',
+                      label: 'Fim da recorrência',
                       value: _recurrenceUntil,
                       onPick: (value) => setState(() => _recurrenceUntil = value),
                       canClear: true,
@@ -509,7 +509,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
               _sectionCard(
                 context,
                 title: 'Comportamento e aceite',
-                description: 'Ajuste obrigatoriedade, risco e texto de aÃ§Ã£o.',
+                description: 'Ajuste obrigatoriedade, risco e texto de ação.',
                 children: [
                   CoeloAdminSingleSelectField<NoticePriority>(
                     label: 'Prioridade',
@@ -520,20 +520,19 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
                   CoeloAdminSingleSelectField<NoticeBehavior>(
-                    label: 'Tipo de interaÃ§Ã£o',
+                    label: 'Tipo de interação',
                     value: _behavior,
                     options: NoticeBehavior.values,
                     optionLabel: (value) => value.label,
                     onChanged: (value) => setState(() => _behavior = value),
                   ),
                   const SizedBox(height: CoeloSpacing.space2),
-                  SwitchListTile(
+                  CoeloAdminToggleField(
+                    label: 'Aviso obrigatório',
+                    description:
+                        'Quando ativo, o usuário não pode ignorar o popup sem realizar a ação.',
                     value: _mandatory,
                     onChanged: (value) => setState(() => _mandatory = value),
-                    title: const Text('Aviso obrigatÃ³rio'),
-                    subtitle: const Text(
-                      'Quando ativo, o usuÃ¡rio nÃ£o pode ignorar o popup sem realizar a aÃ§Ã£o.',
-                    ),
                   ),
                   const SizedBox(height: CoeloSpacing.space2),
                   _formGrid(
@@ -541,12 +540,12 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                     children: [
                       CoeloFormTextField(
                         controller: _buttonLabel,
-                        labelText: 'RÃ³tulo do botÃ£o principal',
+                        labelText: 'Rótulo do botão principal',
                         prefixIcon: Icons.smart_button_outlined,
                       ),
                       CoeloFormTextField(
                         controller: _linkLabel,
-                        labelText: 'RÃ³tulo do link externo (opcional)',
+                        labelText: 'Rótulo do link externo (opcional)',
                         prefixIcon: Icons.link_rounded,
                         hintText: 'Abrir mais detalhes',
                       ),
@@ -558,8 +557,8 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
                       Expanded(
                         child: Text(
                           _behavior == NoticeBehavior.dismissible
-                              ? 'Risco: baixo (nÃ£o requer aceite)'
-                              : 'Risco: mÃ©dio (pode interferir no fluxo do usuÃ¡rio)',
+                              ? 'Risco: baixo (não requer aceite)'
+                              : 'Risco: médio (pode interferir no fluxo do usuário)',
                         ),
                       ),
                     ],
@@ -612,7 +611,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     final saveDraftButton = OutlinedButton(
       style: actionStyle,
       onPressed: _onSaveDraft,
-      child: Text(_saved == null ? 'Salvar rascunho' : 'Salvar ediÃ§Ã£o'),
+      child: Text(_saved == null ? 'Salvar rascunho' : 'Salvar edição'),
     );
     final publishButton = FilledButton(
       style: actionStyle,
@@ -686,22 +685,43 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   }) => LayoutBuilder(
     builder: (context, constraints) {
       return SizedBox(
-        height: CoeloSize.touchMin,
+        height: CoeloSpacing.space16,
         width: constraints.maxWidth,
         child: Row(
           children: [
             Expanded(
-              child: InkWell(
-                onTap: () =>
+              child: OutlinedButton(
+                key: ValueKey('notice-date-$label'),
+                onPressed: () =>
                     _pickDate(isStart: isStart, current: value, onDate: onPick, canClear: canClear),
-                borderRadius: BorderRadius.circular(CoeloRadius.md),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: label,
-                    prefixIcon: const Icon(Icons.date_range_rounded),
-                    suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
+                style: OutlinedButton.styleFrom(
+                  alignment: AlignmentDirectional.centerStart,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoeloSpacing.space3,
+                    vertical: CoeloSpacing.space2,
                   ),
-                  child: Text(value == null ? 'Selecionar data' : _formatDate(value)),
+                  minimumSize: const Size.fromHeight(CoeloSize.touchMin),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.date_range_rounded),
+                    const SizedBox(width: CoeloSpacing.space3),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(label, style: Theme.of(context).textTheme.labelSmall),
+                          const SizedBox(height: CoeloSpacing.space1),
+                          Text(
+                            value == null ? 'Selecionar data' : _formatDate(value),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down_rounded),
+                  ],
                 ),
               ),
             ),
@@ -724,7 +744,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     3 => 'Qua',
     4 => 'Qui',
     5 => 'Sex',
-    6 => 'SÃ¡b',
+    6 => 'Sáb',
     _ => 'Dom',
   };
 

@@ -3,7 +3,7 @@ title: Catálogo da base de conhecimento Coelo
 knowledge_id: knowledge-index
 source: docs/knowledge/README.md
 status: validated
-generated_at: 2026-07-27
+generated_at: 2026-08-04
 audience: team
 surfaces:
   - documentation
@@ -24,6 +24,7 @@ review_owner: Coelo Owner
 | team | Superadmin / Atividades | [Wizard de atividade do Superadmin](team/superadmin-activity-form-wizard.md) | validated | `docs/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md` |
 | team | Produto / Nomenclatura | [Happens é o nome do feed privado](team/happens-product-naming.md) | validated | `decisions/0018-happens-product-name.md` |
 | team | Superadmin / Perfis e permissões | [Perfis e Permissões do Superadmin](team/superadmin-access-profiles.md) | validated | `specs/018-profiles-permissions-superadmin.md`; `decisions/0017-access-profile-governance.md` |
+| team | Superadmin / Avisos | [Avisos do Superadmin MVP](team/superadmin-notices-mvp.md) | validated | `docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md` |
 | team | Suporte / Benchmark externo | [Benchmark de suporte e stories do ClassDojo](team/classdojo-support-benchmark.md) | validated | `docs/product/competitive-map.md` |
 
 | team | Superadmin / Saúde e Cuidado | [Saúde e Cuidado centrados na criança](team/health-care.md) | validated | `specs/020-superadmin-health-care.md` |

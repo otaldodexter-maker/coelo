@@ -43,28 +43,11 @@ final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
           ],
           if (requiresCheckbox) ...[
             const SizedBox(height: 12),
-            InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: () => setState(() => _checked = !_checked),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      _checked ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
-                      color: _checked ? textColor : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Li e estou ciente deste aviso.',
-                        style: TextStyle(color: textColor),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            CoeloAdminToggleField(
+              key: const Key('notice-acknowledgement'),
+              label: 'Li e estou ciente deste aviso.',
+              value: _checked,
+              onChanged: (value) => setState(() => _checked = value),
             ),
           ],
           const SizedBox(height: 12),

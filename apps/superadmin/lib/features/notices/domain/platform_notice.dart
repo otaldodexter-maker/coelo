@@ -1,12 +1,13 @@
-enum NoticeStatus { draft, scheduled, active, ended, cancelled }
+enum NoticeStatus { draft, scheduled, active, paused, ended, cancelled }
 
 extension NoticeStatusLabel on NoticeStatus {
   String get label => switch (this) {
     NoticeStatus.draft => 'Rascunho',
     NoticeStatus.scheduled => 'Agendado',
     NoticeStatus.active => 'Ativo',
-    NoticeStatus.ended => 'Encerrado',
-    NoticeStatus.cancelled => 'Cancelado',
+    NoticeStatus.paused => 'Pausado',
+    NoticeStatus.ended => 'Expirado',
+    NoticeStatus.cancelled => 'Inativo',
   };
 }
 
@@ -26,9 +27,9 @@ extension NoticeAudienceLabel on NoticeAudience {
   String get label => switch (this) {
     NoticeAudience.everyone => 'Todos',
     NoticeAudience.coeloTeam => 'Equipe Coelo',
-    NoticeAudience.institution => 'Instituição',
+    NoticeAudience.institution => 'Instituicao',
     NoticeAudience.unit => 'Unidade',
-    NoticeAudience.group => 'Grupo',
+    NoticeAudience.group => 'Turma',
     NoticeAudience.role => 'Papel',
     NoticeAudience.person => 'Pessoa',
   };
@@ -39,9 +40,90 @@ enum NoticeBehavior { dismissible, confirmation, checkboxConfirmation }
 extension NoticeBehaviorLabel on NoticeBehavior {
   String get label => switch (this) {
     NoticeBehavior.dismissible => 'Apenas fechar',
-    NoticeBehavior.confirmation => 'Confirmação obrigatória',
+    NoticeBehavior.confirmation => 'Confirmacao obrigatoria',
     NoticeBehavior.checkboxConfirmation => 'Checkbox de aceite + confirmar',
   };
+}
+
+enum NoticeContentFormat { textBackground, image }
+
+extension NoticeContentFormatLabel on NoticeContentFormat {
+  String get label => switch (this) {
+    NoticeContentFormat.textBackground => 'Texto sobre fundo',
+    NoticeContentFormat.image => 'Imagem',
+  };
+}
+
+enum NoticeTargetDevice { all, web, mobile, tablet }
+
+extension NoticeTargetDeviceLabel on NoticeTargetDevice {
+  String get label => switch (this) {
+    NoticeTargetDevice.all => 'Todos',
+    NoticeTargetDevice.web => 'Web',
+    NoticeTargetDevice.mobile => 'Mobile',
+    NoticeTargetDevice.tablet => 'Tablet',
+  };
+}
+
+enum NoticeRecurrence { oneTime, daily, weekly, monthly, interval }
+
+extension NoticeRecurrenceLabel on NoticeRecurrence {
+  String get label => switch (this) {
+    NoticeRecurrence.oneTime => 'Unica',
+    NoticeRecurrence.daily => 'Diaria',
+    NoticeRecurrence.weekly => 'Semanal',
+    NoticeRecurrence.monthly => 'Mensal',
+    NoticeRecurrence.interval => 'Intervalo de dias',
+  };
+}
+
+enum NoticeImageOrientation { vertical, horizontal }
+
+extension NoticeImageOrientationLabel on NoticeImageOrientation {
+  String get label => switch (this) {
+    NoticeImageOrientation.vertical => 'Vertical',
+    NoticeImageOrientation.horizontal => 'Horizontal',
+  };
+}
+
+enum NoticeVisualTone { brand, dark, light, neutral, success, warning, danger }
+
+extension NoticeVisualToneLabel on NoticeVisualTone {
+  String get label => switch (this) {
+    NoticeVisualTone.brand => 'Marca',
+    NoticeVisualTone.dark => 'Escuro',
+    NoticeVisualTone.light => 'Claro',
+    NoticeVisualTone.neutral => 'Neutro',
+    NoticeVisualTone.success => 'Sucesso',
+    NoticeVisualTone.warning => 'Alerta',
+    NoticeVisualTone.danger => 'Erro',
+  };
+}
+
+String recurrenceSummaryLabel({
+  required NoticeRecurrence recurrence,
+  int? intervalDays,
+  List<int> weeklyDays = const [],
+  int? dayOfMonth,
+  DateTime? until,
+}) {
+  final untilText = until == null
+      ? ''
+      : ' ate ${until.day.toString().padLeft(2, '0')}/${until.month.toString().padLeft(2, '0')}/${until.year}';
+  return switch (recurrence) {
+    NoticeRecurrence.oneTime => 'unica',
+    NoticeRecurrence.daily => 'diaria$untilText',
+    NoticeRecurrence.weekly => 'semanal (${_weekdayNames(weeklyDays)})$untilText',
+    NoticeRecurrence.monthly => 'mensal (dia ${dayOfMonth ?? 1})$untilText',
+    NoticeRecurrence.interval => '${intervalDays ?? 1} em ${intervalDays ?? 1} dia(s)$untilText',
+  };
+}
+
+String _weekdayNames(List<int> days) {
+  const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
+  if (days.isEmpty) return 'nenhum';
+  final sorted = List<int>.from(days)..sort();
+  return sorted.where((day) => day >= 1 && day <= 7).map((day) => labels[day - 1]).join(', ');
 }
 
 final class PlatformNotice {
@@ -57,7 +139,21 @@ final class PlatformNotice {
     required this.audienceLabel,
     required this.behavior,
     required this.mandatory,
+    required this.targetDevice,
     required this.reach,
+    this.contentFormat = NoticeContentFormat.textBackground,
+    this.audienceRoleLabel,
+    this.backgroundColorValue,
+    this.textColorValue,
+    this.recurrence = NoticeRecurrence.oneTime,
+    this.intervalDays,
+    this.weeklyDays = const [],
+    this.dayOfMonth,
+    this.recurrenceUntil,
+    this.imageOrientation = NoticeImageOrientation.vertical,
+    this.showImagePlaceholder = false,
+    this.backgroundTone = NoticeVisualTone.dark,
+    this.textTone = NoticeVisualTone.light,
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
     this.deliveredCount = 0,
@@ -76,17 +172,43 @@ final class PlatformNotice {
   final String audienceLabel;
   final NoticeBehavior behavior;
   final bool mandatory;
+  final NoticeTargetDevice targetDevice;
   final int reach;
+  final NoticeContentFormat contentFormat;
+  final String? audienceRoleLabel;
+  final int? backgroundColorValue;
+  final int? textColorValue;
+  final NoticeRecurrence recurrence;
+  final int? intervalDays;
+  final List<int> weeklyDays;
+  final int? dayOfMonth;
+  final DateTime? recurrenceUntil;
+  final NoticeImageOrientation imageOrientation;
+  final bool showImagePlaceholder;
+  final NoticeVisualTone backgroundTone;
+  final NoticeVisualTone textTone;
   final String buttonLabel;
   final String? linkLabel;
   final int deliveredCount;
   final int viewedCount;
   final int acceptedCount;
 
-  bool get canEdit => status == NoticeStatus.draft || status == NoticeStatus.scheduled;
+  bool get canEdit =>
+      status == NoticeStatus.draft ||
+      status == NoticeStatus.scheduled ||
+      status == NoticeStatus.paused;
   bool get requiresAcceptance => behavior != NoticeBehavior.dismissible;
+  bool get isRecurring => recurrence != NoticeRecurrence.oneTime;
+  String get recurrenceLabel => recurrenceSummaryLabel(
+    recurrence: recurrence,
+    intervalDays: intervalDays,
+    weeklyDays: weeklyDays,
+    dayOfMonth: dayOfMonth,
+    until: recurrenceUntil,
+  );
 
   PlatformNotice copyWith({
+    String? id,
     String? title,
     String? message,
     NoticePriority? priority,
@@ -97,14 +219,28 @@ final class PlatformNotice {
     String? audienceLabel,
     NoticeBehavior? behavior,
     bool? mandatory,
+    NoticeTargetDevice? targetDevice,
     int? reach,
+    NoticeContentFormat? contentFormat,
+    String? audienceRoleLabel,
+    int? backgroundColorValue,
+    int? textColorValue,
+    NoticeRecurrence? recurrence,
+    int? intervalDays,
+    List<int>? weeklyDays,
+    int? dayOfMonth,
+    DateTime? recurrenceUntil,
+    NoticeImageOrientation? imageOrientation,
+    bool? showImagePlaceholder,
+    NoticeVisualTone? backgroundTone,
+    NoticeVisualTone? textTone,
     String? buttonLabel,
     String? linkLabel,
     int? deliveredCount,
     int? viewedCount,
     int? acceptedCount,
   }) => PlatformNotice(
-    id: id,
+    id: id ?? this.id,
     title: title ?? this.title,
     message: message ?? this.message,
     priority: priority ?? this.priority,
@@ -115,7 +251,21 @@ final class PlatformNotice {
     audienceLabel: audienceLabel ?? this.audienceLabel,
     behavior: behavior ?? this.behavior,
     mandatory: mandatory ?? this.mandatory,
+    targetDevice: targetDevice ?? this.targetDevice,
     reach: reach ?? this.reach,
+    contentFormat: contentFormat ?? this.contentFormat,
+    audienceRoleLabel: audienceRoleLabel ?? this.audienceRoleLabel,
+    backgroundColorValue: backgroundColorValue ?? this.backgroundColorValue,
+    textColorValue: textColorValue ?? this.textColorValue,
+    recurrence: recurrence ?? this.recurrence,
+    intervalDays: intervalDays ?? this.intervalDays,
+    weeklyDays: weeklyDays ?? this.weeklyDays,
+    dayOfMonth: dayOfMonth ?? this.dayOfMonth,
+    recurrenceUntil: recurrenceUntil ?? this.recurrenceUntil,
+    imageOrientation: imageOrientation ?? this.imageOrientation,
+    showImagePlaceholder: showImagePlaceholder ?? this.showImagePlaceholder,
+    backgroundTone: backgroundTone ?? this.backgroundTone,
+    textTone: textTone ?? this.textTone,
     buttonLabel: buttonLabel ?? this.buttonLabel,
     linkLabel: linkLabel ?? this.linkLabel,
     deliveredCount: deliveredCount ?? this.deliveredCount,
@@ -132,9 +282,25 @@ final class NoticeDraft {
     required this.audience,
     required this.audienceLabel,
     required this.behavior,
-    required this.mandatory,
+    this.mandatory = false,
+    this.targetDevice = NoticeTargetDevice.all,
+    this.contentFormat = NoticeContentFormat.textBackground,
+    this.audienceRoleLabel,
+    this.backgroundColorValue,
+    this.textColorValue,
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
+    this.recurrence = NoticeRecurrence.oneTime,
+    this.intervalDays,
+    this.weeklyDays = const [],
+    this.dayOfMonth,
+    this.recurrenceUntil,
+    this.imageOrientation = NoticeImageOrientation.vertical,
+    this.showImagePlaceholder = false,
+    this.backgroundTone = NoticeVisualTone.dark,
+    this.textTone = NoticeVisualTone.light,
+    this.startsAt,
+    this.endsAt,
   });
 
   final String title;
@@ -144,6 +310,22 @@ final class NoticeDraft {
   final String audienceLabel;
   final NoticeBehavior behavior;
   final bool mandatory;
+  final NoticeTargetDevice targetDevice;
+  final NoticeContentFormat contentFormat;
+  final String? audienceRoleLabel;
+  final int? backgroundColorValue;
+  final int? textColorValue;
   final String buttonLabel;
   final String? linkLabel;
+  final NoticeRecurrence recurrence;
+  final int? intervalDays;
+  final List<int> weeklyDays;
+  final int? dayOfMonth;
+  final DateTime? recurrenceUntil;
+  final NoticeImageOrientation imageOrientation;
+  final bool showImagePlaceholder;
+  final NoticeVisualTone backgroundTone;
+  final NoticeVisualTone textTone;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
 }
