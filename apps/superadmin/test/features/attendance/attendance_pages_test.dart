@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -32,6 +33,30 @@ void main() {
     expect(find.text('Hoje · 03/08/2026'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.widgetWithText(FilledButton, 'Continuar'), findsOneWidget);
+  });
+
+  testWidgets('new call opens Chamada directly from the step navigation', (tester) async {
+    final repository = InMemoryAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+    String? createdCallId;
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onCreated: (id) => createdCallId = id,
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Chamada'));
+    await tester.pump();
+
+    expect(createdCallId, isNotNull);
+    expect(repository.callById(createdCallId!), isNotNull);
   });
 
   testWidgets('new call accepts a prefilled activity context', (tester) async {
@@ -85,7 +110,7 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'overflow at ${size.width}px');
     }
   });
-  testWidgets('Owner sees attendance write actions', (tester) async {
+  testWidgets('attendance directory replaces the dashboard with a create card', (tester) async {
     final repository = InMemoryAttendanceRepository.seeded();
     addTearDown(repository.dispose);
 
@@ -101,7 +126,11 @@ void main() {
       ),
     );
 
+    expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.text('Nova chamada'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Nova chamada'), findsNothing);
+    expect(find.text('Hoje'), findsNothing);
+    expect(find.text('Período analítico'), findsNothing);
     expect(find.textContaining('Dados locais'), findsOneWidget);
   });
 
@@ -137,7 +166,6 @@ void main() {
           permissions: const AttendancePermissions.owner(),
           logout: unavailableSuperadminLogout,
           onBack: () {},
-          onPreview: () {},
         ),
       ),
     );
@@ -147,9 +175,11 @@ void main() {
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('attendance-participant-list')), findsOneWidget);
     expect(find.byType(Checkbox), findsNothing);
+    expect(find.widgetWithText(OutlinedButton, 'Presente'), findsNWidgets(3));
     expect(find.widgetWithText(OutlinedButton, 'Falta'), findsNWidgets(3));
     expect(find.widgetWithText(OutlinedButton, 'Atraso'), findsNWidgets(3));
-    expect(find.widgetWithText(OutlinedButton, 'Saída'), findsNWidgets(3));
+    expect(find.widgetWithText(OutlinedButton, 'Saída antecipada'), findsNWidgets(3));
+    expect(find.text('Visualizar como professor'), findsNothing);
     expect(
       tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Concluir chamada')).onPressed,
       isNull,
@@ -177,6 +207,108 @@ void main() {
     );
   });
 
+  testWidgets('call page marks one participant as present', (tester) async {
+    final repository = InMemoryAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+
+    final presentAction = find.widgetWithText(OutlinedButton, 'Presente').first;
+    await tester.ensureVisible(presentAction);
+    await tester.pump();
+    await tester.tap(presentAction);
+    await tester.pump();
+
+    expect(
+      repository.callById('call-progress')!.participants.first.state,
+      AttendancePresenceState.present,
+    );
+  });
+
+  testWidgets('assigned teacher operates the canonical call flow', (tester) async {
+    final repository = InMemoryAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.teacher(assignedGroupIds: {'group-sun'}),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Presente').first)
+          .onPressed,
+      isNotNull,
+    );
+    expect(find.text('Visualizar como professor'), findsNothing);
+  });
+
+  testWidgets('participant list preserves Coelo radius and clipping', (tester) async {
+    final repository = InMemoryAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+
+    final surface = find.byKey(const Key('attendance-participant-list'));
+    final decoration = tester.widget<DecoratedBox>(surface).decoration as BoxDecoration;
+    final clip = tester.widget<ClipRRect>(
+      find.descendant(of: surface, matching: find.byType(ClipRRect)),
+    );
+    expect(decoration.borderRadius, BorderRadius.circular(CoeloRadius.lg));
+    expect(clip.borderRadius, BorderRadius.circular(CoeloRadius.lg));
+  });
+
+  testWidgets('call flow adapts at Coelo breakpoints without overflow', (tester) async {
+    final repository = InMemoryAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final size in const [Size(375, 900), Size(768, 900), Size(1024, 900), Size(1440, 900)]) {
+      await tester.binding.setSurfaceSize(size);
+      await tester.pumpWidget(
+        _app(
+          AttendanceCallPage(
+            repository: repository,
+            callId: 'call-progress',
+            permissions: const AttendancePermissions.owner(),
+            logout: unavailableSuperadminLogout,
+            onBack: () {},
+          ),
+          textScaler: size.width == 375 ? const TextScaler.linear(2) : TextScaler.noScaling,
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull, reason: 'overflow at ${size.width}px');
+    }
+  });
+
   testWidgets('call page expands the first pending routine supplied by the UI seam', (
     tester,
   ) async {
@@ -191,7 +323,6 @@ void main() {
           permissions: const AttendancePermissions.owner(),
           logout: unavailableSuperadminLogout,
           onBack: () {},
-          onPreview: () {},
           routinePendingParticipantIds: const {'participant-1'},
           participantRoutineBuilder: (context, participant) =>
               Text('Rotina de ${participant.name}'),
@@ -202,24 +333,6 @@ void main() {
     expect(find.text('Rotina diária'), findsOneWidget);
     expect(find.text('1 obrigatória pendente'), findsOneWidget);
     expect(find.text('Rotina de Lia Horizonte'), findsOneWidget);
-  });
-  testWidgets('teacher preview rejects a call outside assigned context', (tester) async {
-    final repository = InMemoryAttendanceRepository.seeded();
-    addTearDown(repository.dispose);
-
-    await tester.pumpWidget(
-      _app(
-        AttendanceTeacherPreviewPage(
-          repository: repository,
-          callId: 'call-other-group',
-          permissions: const AttendancePermissions.teacher(assignedGroupIds: {'group-sun'}),
-          onBack: () {},
-        ),
-      ),
-    );
-
-    expect(find.textContaining('fora do vínculo'), findsOneWidget);
-    expect(find.text('Marcar restantes como presentes'), findsNothing);
   });
 }
 

@@ -33,25 +33,15 @@ class AttendanceDashboardPage extends StatefulWidget {
 }
 
 class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
-  var _period = _AttendancePeriod.last30Days;
   String? _institutionId;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
     title: 'Assiduidade',
-    subtitle: 'Acompanhe percentuais, pendências e o histórico de chamadas.',
+    subtitle: 'Lance chamadas e acompanhe o histórico de cada contexto.',
     currentDestination: 'attendance',
     activityController: widget.activityController,
-    actions: [
-      if (widget.permissions.canManage)
-        FilledButton.icon(
-          key: const Key('attendance-new-call'),
-          onPressed: widget.onCreate,
-          icon: const Icon(Icons.add_rounded),
-          label: const Text('Nova chamada'),
-        ),
-    ],
     child: ListenableBuilder(
       listenable: widget.repository,
       builder: (context, _) {
@@ -64,50 +54,30 @@ class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _LocalDataNotice(readOnly: !widget.permissions.canManage),
-              const SizedBox(height: CoeloSpacing.space6),
-              Text('Hoje', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: CoeloSpacing.space3),
-              _TodayMetrics(repository: widget.repository),
-              const SizedBox(height: CoeloSpacing.space8),
-              Text('Período analítico', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: CoeloSpacing.space3),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                      ? 280.0
-                      : constraints.maxWidth;
-                  return Align(
+              if (widget.permissions.canManage) ...[
+                const SizedBox(height: CoeloSpacing.space6),
+                LayoutBuilder(
+                  builder: (context, constraints) => Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: SizedBox(
-                      width: width,
-                      child: CoeloAdminSingleSelectField<_AttendancePeriod>(
-                        label: 'Período',
-                        value: _period,
-                        options: _AttendancePeriod.values,
-                        optionLabel: (value) => value.label,
-                        onChanged: (value) async {
-                          if (value == _AttendancePeriod.custom) {
-                            await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(2025),
-                              lastDate: DateTime(2027),
-                              initialDateRange: DateTimeRange(
-                                start: DateTime(2026, 7, 5),
-                                end: AttendanceFixtures.today,
-                              ),
-                            );
-                          }
-                          if (mounted) setState(() => _period = value);
-                        },
-                        prefixIcon: Icons.date_range_outlined,
+                      width: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                          ? 340
+                          : constraints.maxWidth,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 216),
+                        child: CoeloAdminCreateAction(
+                          label: 'Nova chamada',
+                          icon: Icons.how_to_reg_outlined,
+                          onPressed: widget.onCreate,
+                        ),
                       ),
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              _AnalyticMetrics(metrics: widget.repository.metrics),
-              const SizedBox(height: CoeloSpacing.space6),
+                  ),
+                ),
+              ],
+              const SizedBox(height: CoeloSpacing.space8),
+              Text('Histórico de chamadas', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: CoeloSpacing.space3),
               Wrap(
                 spacing: CoeloSpacing.space2,
                 runSpacing: CoeloSpacing.space2,
@@ -211,15 +181,17 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
             : CoeloSpacing.space4;
         final navigation = SuperadminFormStepNavigation(
           currentIndex: 0,
-          steps: const [
+          steps: [
             SuperadminFormStep(label: 'Contexto', status: SuperadminFormStepStatus.current),
             SuperadminFormStep(
               label: 'Chamada',
               status: SuperadminFormStepStatus.incomplete,
-              enabled: false,
+              enabled: _canCreate,
             ),
           ],
-          onStepSelected: (_) {},
+          onStepSelected: (index) {
+            if (index == 1 && _canCreate) _create();
+          },
         );
         final content = Expanded(
           child: Column(
@@ -506,7 +478,6 @@ class AttendanceCallPage extends StatefulWidget {
     required this.permissions,
     required this.logout,
     required this.onBack,
-    required this.onPreview,
     this.focusedParticipantId,
     this.participantRoutineBuilder,
     this.routinePendingParticipantIds = const {},
@@ -519,7 +490,6 @@ class AttendanceCallPage extends StatefulWidget {
   final AttendancePermissions permissions;
   final LogoutAction logout;
   final VoidCallback onBack;
-  final VoidCallback onPreview;
   final String? focusedParticipantId;
   final Widget Function(BuildContext context, AttendanceParticipant participant)?
   participantRoutineBuilder;
@@ -545,7 +515,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   Widget build(BuildContext context) {
     final call = widget.repository.callById(widget.callId);
     if (call == null) return const Center(child: Text('Chamada não encontrada.'));
-    final writable = widget.permissions.canManage;
+    final writable = widget.permissions.canManage || widget.permissions.canOperate(call);
     final concluded =
         call.status == AttendanceCallStatus.completed ||
         call.status == AttendanceCallStatus.corrected;
@@ -558,13 +528,6 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       subtitle: '${call.institutionName} · ${call.unitName} · ${call.groupName}',
       currentDestination: 'attendance',
       activityController: widget.activityController,
-      actions: [
-        OutlinedButton.icon(
-          onPressed: widget.onPreview,
-          icon: const Icon(Icons.visibility_outlined),
-          label: const Text('Visualizar como professor'),
-        ),
-      ],
       child: ListenableBuilder(
         listenable: widget.repository,
         builder: (context, _) => LayoutBuilder(
@@ -578,14 +541,12 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
             final navigation = SuperadminFormStepNavigation(
               currentIndex: 1,
               steps: const [
-                SuperadminFormStep(
-                  label: 'Contexto',
-                  status: SuperadminFormStepStatus.complete,
-                  enabled: false,
-                ),
+                SuperadminFormStep(label: 'Contexto', status: SuperadminFormStepStatus.complete),
                 SuperadminFormStep(label: 'Chamada', status: SuperadminFormStepStatus.current),
               ],
-              onStepSelected: (_) {},
+              onStepSelected: (index) {
+                if (index == 0) widget.onBack();
+              },
             );
             final colors = Theme.of(context).colorScheme;
             final content = Expanded(
@@ -830,91 +791,6 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   }
 }
 
-class AttendanceTeacherPreviewPage extends StatelessWidget {
-  const AttendanceTeacherPreviewPage({
-    required this.repository,
-    required this.callId,
-    required this.permissions,
-    required this.onBack,
-    super.key,
-  });
-
-  final InMemoryAttendanceRepository repository;
-  final String callId;
-  final AttendancePermissions permissions;
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) {
-    final call = repository.callById(callId);
-    final allowed = call != null && permissions.canOperate(call);
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: 'Voltar',
-          onPressed: onBack,
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        title: const Text('Prévia da Chamada do professor'),
-      ),
-      body: SafeArea(
-        child: allowed
-            ? ListenableBuilder(
-                listenable: repository,
-                builder: (context, _) => SingleChildScrollView(
-                  padding: const EdgeInsets.all(CoeloSpacing.space4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'Prévia da Chamada do professor · dados locais · alterações não persistem',
-                      ),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      Text(call.contextName, style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: CoeloSpacing.space3),
-                      OutlinedButton(
-                        onPressed: () => repository.markRemainingPresent(call.id),
-                        child: const Text('Marcar restantes como presentes'),
-                      ),
-                      for (final participant in call.participants)
-                        ListTile(
-                          title: Text(participant.name),
-                          subtitle: Text(participant.state.label),
-                          trailing: PopupMenuButton<AttendancePresenceState>(
-                            tooltip: 'Alterar estado de ${participant.name}',
-                            onSelected: (state) =>
-                                repository.setParticipantState(call.id, participant.id, state),
-                            itemBuilder: (context) => AttendancePresenceState.values
-                                .where((state) => state != AttendancePresenceState.unmarked)
-                                .map(
-                                  (state) => PopupMenuItem(value: state, child: Text(state.label)),
-                                )
-                                .toList(),
-                          ),
-                        ),
-                      FilledButton(
-                        onPressed: call.hasUnmarked ? null : () => repository.completeCall(call.id),
-                        child: const Text('Concluir chamada'),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(CoeloSpacing.space6),
-                  child: Text(
-                    'Esta chamada está fora do vínculo atribuído ao professor simulado.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-}
-
 class _LocalDataNotice extends StatelessWidget {
   const _LocalDataNotice({this.readOnly = false});
 
@@ -938,115 +814,6 @@ class _LocalDataNotice extends StatelessWidget {
         ],
       ),
     ),
-  );
-}
-
-class _TodayMetrics extends StatelessWidget {
-  const _TodayMetrics({required this.repository});
-
-  final InMemoryAttendanceRepository repository;
-
-  @override
-  Widget build(BuildContext context) {
-    final calls = repository.calls.where((call) => call.date == AttendanceFixtures.today).toList();
-    return _MetricGrid(
-      metrics: [
-        ('Chamadas esperadas', '${calls.length + 1}', Icons.event_available_outlined),
-        (
-          'Concluídas',
-          '${calls.where((call) => call.status == AttendanceCallStatus.completed || call.status == AttendanceCallStatus.corrected).length}',
-          Icons.task_alt_rounded,
-        ),
-        (
-          'Pendentes',
-          '${calls.where((call) => call.status == AttendanceCallStatus.notStarted || call.status == AttendanceCallStatus.inProgress).length}',
-          Icons.pending_actions_outlined,
-        ),
-        (
-          'Avisos familiares',
-          '${repository.pendingNoticeCount}',
-          Icons.notifications_active_outlined,
-        ),
-      ],
-    );
-  }
-}
-
-class _AnalyticMetrics extends StatelessWidget {
-  const _AnalyticMetrics({required this.metrics});
-  final AttendanceMetrics metrics;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _MetricGrid(
-        metrics: [
-          ('Presença', '${metrics.presencePercent.toStringAsFixed(1)}%', Icons.how_to_reg_outlined),
-          ('Meta do contexto', '92%', Icons.flag_outlined),
-          ('Variação', '+1,8 p.p.', Icons.trending_up_rounded),
-          ('Justificadas', '${metrics.justifiedAbsences}', Icons.fact_check_outlined),
-          ('Não justificadas', '${metrics.unjustifiedAbsences}', Icons.report_outlined),
-          ('Atrasos', '${metrics.late}', Icons.schedule_outlined),
-          ('Saídas antecipadas', '${metrics.earlyDepartures}', Icons.exit_to_app_rounded),
-        ],
-      ),
-      const SizedBox(height: CoeloSpacing.space3),
-      Semantics(
-        label: 'Presença do período ${metrics.presencePercent.toStringAsFixed(1)} por cento',
-        child: LinearProgressIndicator(
-          value: metrics.presencePercent / 100,
-          minHeight: CoeloSpacing.space2,
-        ),
-      ),
-    ],
-  );
-}
-
-class _MetricGrid extends StatelessWidget {
-  const _MetricGrid({required this.metrics});
-  final List<(String, String, IconData)> metrics;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final columns = constraints.maxWidth >= 1200
-          ? 4
-          : constraints.maxWidth >= 600
-          ? 2
-          : 1;
-      final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space3) / columns;
-      return Wrap(
-        spacing: CoeloSpacing.space3,
-        runSpacing: CoeloSpacing.space3,
-        children: [
-          for (final metric in metrics)
-            SizedBox(
-              width: width,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(CoeloSpacing.space4),
-                  child: Row(
-                    children: [
-                      Icon(metric.$3),
-                      const SizedBox(width: CoeloSpacing.space3),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(metric.$1, style: Theme.of(context).textTheme.bodyMedium),
-                            Text(metric.$2, style: Theme.of(context).textTheme.headlineSmall),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-        ],
-      );
-    },
   );
 }
 
@@ -1344,12 +1111,9 @@ class _ParticipantCardState extends State<_ParticipantCard> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(child: identity),
-                          status,
-                        ],
-                      ),
+                      identity,
+                      const SizedBox(height: CoeloSpacing.space2),
+                      Align(alignment: AlignmentDirectional.centerStart, child: status),
                       const SizedBox(height: CoeloSpacing.space3),
                       actions,
                     ],
@@ -1426,6 +1190,13 @@ class _ParticipantCardState extends State<_ParticipantCard> {
     runSpacing: CoeloSpacing.space2,
     children: [
       _AttendanceStateButton(
+        label: 'Presente',
+        state: AttendancePresenceState.present,
+        selected: widget.participant.state == AttendancePresenceState.present,
+        enabled: widget.writable,
+        onSelected: widget.onStateChanged,
+      ),
+      _AttendanceStateButton(
         label: 'Falta',
         state: AttendancePresenceState.absent,
         selected: widget.participant.state == AttendancePresenceState.absent,
@@ -1440,7 +1211,7 @@ class _ParticipantCardState extends State<_ParticipantCard> {
         onSelected: widget.onStateChanged,
       ),
       _AttendanceStateButton(
-        label: 'Saída',
+        label: 'Saída antecipada',
         state: AttendancePresenceState.earlyDeparture,
         selected: widget.participant.state == AttendancePresenceState.earlyDeparture,
         enabled: widget.writable,
@@ -1501,18 +1272,6 @@ class _ParticipantCardState extends State<_ParticipantCard> {
       ),
     ),
   );
-}
-
-enum _AttendancePeriod { today, last7Days, last30Days, currentMonth, custom }
-
-extension on _AttendancePeriod {
-  String get label => switch (this) {
-    _AttendancePeriod.today => 'Hoje',
-    _AttendancePeriod.last7Days => '7 dias',
-    _AttendancePeriod.last30Days => '30 dias',
-    _AttendancePeriod.currentMonth => 'Mês atual',
-    _AttendancePeriod.custom => 'Período personalizado',
-  };
 }
 
 extension AttendancePresencePresentation on AttendancePresenceState {

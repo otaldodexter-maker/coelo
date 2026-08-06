@@ -47,7 +47,6 @@ void main() {
           permissions: const AttendancePermissions.owner(),
           logout: unavailableSuperadminLogout,
           onBack: () {},
-          onPreview: () {},
         ),
         brightness: Brightness.dark,
       ),
