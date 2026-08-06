@@ -125,6 +125,8 @@ const _platformPermissions = [
   AccessPermission(
     code: 'platform.read',
     module: 'Plataforma',
+    screenCode: 'platform',
+    actionCode: 'read',
     name: 'Visualizar plataforma',
     description: 'Consulta dados operacionais da plataforma.',
     selected: true,
@@ -132,6 +134,8 @@ const _platformPermissions = [
   AccessPermission(
     code: 'audit.read',
     module: 'Auditoria',
+    screenCode: 'audit',
+    actionCode: 'read',
     name: 'Visualizar auditoria',
     description: 'Consulta a trilha de ações sensíveis.',
     selected: true,
@@ -141,6 +145,8 @@ const _platformPermissions = [
   AccessPermission(
     code: 'platform.roles.manage',
     module: 'Perfis',
+    screenCode: 'access_profiles',
+    actionCode: 'manage',
     name: 'Gerenciar perfis Superadmin',
     description: 'Cria, edita e exclui perfis da plataforma.',
     selected: true,
@@ -150,6 +156,8 @@ const _platformPermissions = [
   AccessPermission(
     code: 'support.manage',
     module: 'Suporte',
+    screenCode: 'support',
+    actionCode: 'manage',
     name: 'Gerenciar suporte',
     description: 'Opera atendimentos internos.',
     grantable: false,
@@ -161,12 +169,16 @@ const _institutionPermissions = [
   AccessPermission(
     code: 'people.read',
     module: 'Pessoas',
+    screenCode: 'people',
+    actionCode: 'read',
     name: 'Visualizar pessoas',
     selected: true,
   ),
   AccessPermission(
     code: 'people.manage',
     module: 'Pessoas',
+    screenCode: 'people',
+    actionCode: 'manage',
     name: 'Gerenciar pessoas',
     selected: true,
     risk: 'high',
@@ -174,12 +186,16 @@ const _institutionPermissions = [
   AccessPermission(
     code: 'attendance.read',
     module: 'Frequência',
+    screenCode: 'attendance',
+    actionCode: 'read',
     name: 'Visualizar frequência',
     selected: true,
   ),
   AccessPermission(
     code: 'chat.moderate',
     module: 'Comunicação',
+    screenCode: 'chat',
+    actionCode: 'moderate',
     name: 'Moderar conversas',
     risk: 'high',
   ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' show PointerDeviceKind;
 
 import 'package:coelo_superadmin/features/access_profiles/data/fake_access_profile_repository.dart';
 import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.dart';
@@ -37,6 +38,26 @@ void main() {
         );
       }
     }
+  });
+
+  testWidgets('matches inactive domain tab hover at 1440 light', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(_directoryApp(Brightness.light));
+    await tester.pumpAndSettle();
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer();
+    await mouse.moveTo(tester.getCenter(find.text('Admin')));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('access-profile-golden-root')),
+      matchesGoldenFile('goldens/access_profile_domain_tab_hover_light_1440.png'),
+    );
   });
 
   testWidgets('matches create mobile and permission editor desktop', (tester) async {
@@ -80,14 +101,16 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('access-profile-form-golden-root')),
       matchesGoldenFile('goldens/access_profile_editor_dark_1440.png'),
     );
 
-    await tester.drag(find.byKey(const Key('access-profile-form-scroll')), const Offset(0, -1400));
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('review-access-profile')));
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('access-profile-form-golden-root')),

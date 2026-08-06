@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(28);
+select plan(33);
 
 select has_column(
   'public',
@@ -104,6 +104,47 @@ select function_returns(
   array['text', 'uuid'],
   'jsonb',
   'profile detail returns a stable JSON contract'
+);
+select like(
+  pg_get_functiondef(
+    'public.superadmin_access_profile_detail(text,uuid)'::regprocedure
+  ),
+  '%if p_domain = ''platform'' then%''screen_code'', permission_record.screen_code%elsif p_domain = ''institution'' then%''screen_code'', permission_record.screen_code%',
+  'profile detail exposes explicit screen metadata in both writable domains'
+);
+select like(
+  pg_get_functiondef(
+    'public.superadmin_access_profile_detail(text,uuid)'::regprocedure
+  ),
+  '%if p_domain = ''platform'' then%''action_code'', permission_record.action_code%elsif p_domain = ''institution'' then%''action_code'', permission_record.action_code%',
+  'profile detail exposes explicit action metadata in both writable domains'
+);
+select ok(
+  (
+    select procedure.prosecdef
+       and procedure.provolatile = 's'
+       and procedure.proconfig @> array['search_path=pg_catalog, public']
+      from pg_proc procedure
+     where procedure.oid =
+       'public.superadmin_access_profile_detail(text,uuid)'::regprocedure
+  ),
+  'profile detail remains stable, security definer and search-path constrained'
+);
+select ok(
+  not has_function_privilege(
+    'anon',
+    'public.superadmin_access_profile_detail(text,uuid)',
+    'EXECUTE'
+  ),
+  'anonymous cannot read access profile details'
+);
+select ok(
+  has_function_privilege(
+    'authenticated',
+    'public.superadmin_access_profile_detail(text,uuid)',
+    'EXECUTE'
+  ),
+  'authenticated can execute the guarded access profile detail RPC'
 );
 select function_returns(
   'public',

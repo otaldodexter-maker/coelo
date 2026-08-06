@@ -1,8 +1,8 @@
 ---
 title: "Perfis e Permissões no Superadmin"
-source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29"
+source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29, 2026-08-04 e 2026-08-05"
 status: "approved-for-implementation"
-generated_at: "2026-07-29"
+generated_at: "2026-08-05"
 ---
 
 # Perfis e Permissões no Superadmin
@@ -46,6 +46,9 @@ Instituições.
 - tela administrativa nova no Admin ou Principal;
 - edição de grants familiares individuais;
 - perfil transversal comum às três aplicações;
+- importação ou exportação de perfis;
+- convite ou remoção de pessoas vinculadas dentro do editor;
+- criação de perfis reutilizáveis no Principal;
 - novo componente público, token, variante ou Design System;
 - uso de fixtures em produção.
 
@@ -61,15 +64,35 @@ O conjunto selecionado é o primeiro nível da central:
 2. **Admin**: perfis institucionais;
 3. **Principal**: capacidades contextuais e impacto, sem ação de criar.
 
-Criar e editar usam página responsiva curta com identidade, status, escopo
-máximo e permissões. O editor de permissões é privado à feature, usa checkbox
-tematizado, agrupamento por domínio, busca e grupos empilhados no compacto.
-Permissões não concedíveis permanecem desabilitadas e explicam o motivo.
-`Switch` não representa seleção em rascunho.
+A listagem preserva tabs de domínio/origem para alternar entre Superadmin,
+Admin e Principal. Dentro de cada domínio, não há tabs nem filtro de status.
+Superadmin e Admin preservam busca e filtro de escopo; Principal mantém somente
+busca e catálogo read-only, sem status, criação ou ações administrativas. As visões **Agrupado** e **Detalhado por
+atribuições** permanecem disponíveis. A faixa de criação ocupa a largura útil,
+enquanto a tabela usa sua largura natural centralizada quando houver sobra.
+Não há ação de Arquivos enquanto importação e exportação não possuírem contrato
+funcional.
 
-A ação primária é **Revisar alterações**. A confirmação mostra permissões
+Criar e editar usam a baseline responsiva de Criar/Editar Instituições, com
+`SuperadminFormStepNavigation`, campos Coelo e
+`SuperadminFormActionFooter`. Criar possui três etapas: **Perfil e escopo**,
+**Permissões** e **Revisão**. Editar possui quatro etapas e inclui **Pessoas
+vinculadas** antes da revisão. O contexto Superadmin/Admin vem da aba de origem
+e não pode ser trocado dentro do formulário.
+
+O editor de permissões permanece privado à feature. Ele agrupa módulo, tela e
+ações reais recebidas do servidor. Em largura ampla, as ações formam colunas
+derivadas do catálogo; em largura insuficiente, cada tela vira bloco empilhado
+com suas ações abaixo, sem compressão nem scroll horizontal. Permissões não
+concedíveis ou herdadas permanecem desabilitadas e explicam o motivo. Risco
+crítico e exigência de MFA permanecem textuais e semânticos. `Switch` não
+representa seleção em rascunho.
+
+A revisão é a última etapa, não um dialog intermediário. Ela mostra permissões
 adicionadas e removidas, mudança de escopo, vínculos impactados e exigências de
-MFA. Conflitos preservam o rascunho.
+MFA, além de exigir motivo de auditoria. O rodapé oferece **Cancelar**,
+**Anterior**, **Continuar** e, somente na revisão, **Criar perfil** ou **Salvar
+alterações**. Conflitos preservam o rascunho.
 
 ## Entidades e contratos
 
@@ -98,6 +121,14 @@ RPCs públicas:
 - `superadmin_access_profile_save`;
 - `superadmin_access_profile_delete_and_reassign`;
 - `superadmin_principal_capabilities_summary`.
+
+`superadmin_access_profile_detail` devolve, para cada permissão, `screen_code`
+e `action_code` separados de `module_code`. A ampliação é somente de leitura e
+permite montar a matriz sem inferir hierarquia pelo código ou pela descrição.
+As permissões são ordenadas por `module_code`, `screen_code`, `action_code` e
+`code`; no ramo institucional, `scope_kind = group` é apresentado como **Turma**.
+O payload de salvamento, autoridade, precedência deny/allow, auditoria e
+versionamento permanecem inalterados.
 
 As mutações recebem `request_id`, `expected_version`, motivo e rascunho
 completo. O servidor deriva ator e tenant da sessão, nunca do cliente.
@@ -131,6 +162,14 @@ sem permissão, conteúdo e salvamento. O Principal não simula ações de escri
 - os três conjuntos nunca misturam entidades incompatíveis na mesma tabela;
 - cards, tabela, toolbar, espaçamento e paginação preservam o baseline de
   Instituições;
+- tabs de domínio/origem alternam Superadmin, Admin e Principal; dentro de cada
+  domínio não há tabs nem filtro de status;
+- a tabela nasce centralizada quando sua largura natural for menor que a área
+  disponível e a scrollbar horizontal permanece visível sobre a coluna fixa;
+- criar e editar usam a navegação e o rodapé compartilhados de Instituições;
+- a revisão é a última etapa e exige motivo de auditoria;
+- a matriz usa `screen_code` e `action_code` do servidor e empilha ações quando
+  não houver largura suficiente;
 - nenhuma permissão real é inventada pelo Flutter;
 - o servidor devolve permissões concedíveis e motivos de indisponibilidade;
 - deny explícito vence allow;

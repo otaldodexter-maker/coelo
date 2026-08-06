@@ -265,7 +265,7 @@ final class _AccessProfileToolbar extends StatelessWidget {
           actions: const [],
         );
       }
-      final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 176.0;
+      final filterWidth = compact ? constraints.maxWidth : 176.0;
       final validScopes = query.domain == AccessProfileDomain.platform
           ? const [AccessProfileScope.platform, AccessProfileScope.institution]
           : const [
@@ -288,16 +288,6 @@ final class _AccessProfileToolbar extends StatelessWidget {
         filters: [
           SizedBox(
             width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<AccessProfileStatus>(
-              label: 'Todos os status',
-              options: AccessProfileStatus.values,
-              selectedValues: query.statuses,
-              optionLabel: (value) => value.label,
-              onChanged: viewModel.setStatuses,
-            ),
-          ),
-          SizedBox(
-            width: filterWidth,
             child: CoeloAdminMultiSelectFilter<AccessProfileScope>(
               label: 'Todos os escopos',
               options: validScopes,
@@ -306,11 +296,11 @@ final class _AccessProfileToolbar extends StatelessWidget {
               onChanged: viewModel.setScopes,
             ),
           ),
-          if (query.hasFilters)
+          if (query.search.trim().isNotEmpty || query.scopes.isNotEmpty)
             TextButton.icon(
               onPressed: () {
                 searchController.clear();
-                viewModel.clearFilters();
+                viewModel.clearSearchAndScopes();
               },
               icon: const Icon(Icons.filter_alt_off_outlined),
               label: const Text('Limpar filtros'),
@@ -517,139 +507,84 @@ final class _AccessProfileCards extends StatelessWidget {
   );
 }
 
-final class _AccessProfileCard extends StatefulWidget {
+final class _AccessProfileCard extends StatelessWidget {
   const _AccessProfileCard({required this.item, required this.onPressed});
 
   final AccessProfile item;
   final VoidCallback onPressed;
 
   @override
-  State<_AccessProfileCard> createState() => _AccessProfileCardState();
-}
-
-final class _AccessProfileCardState extends State<_AccessProfileCard> {
-  bool _highlighted = false;
-
-  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final item = widget.item;
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 216),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: MediaQuery.disableAnimationsOf(context)
-                ? Duration.zero
-                : CoeloMotion.standard,
-            curve: Curves.easeOutCubic,
-            builder: (context, progress, child) => Container(
-              key: Key('access-profile-card-${item.id}'),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
-                  color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: .5),
-                    progress,
-                  )!,
-                  width: 1 + .5 * progress,
+    return CoeloAdminInteractiveCard(
+      surfaceKey: Key('access-profile-card-${item.id}'),
+      semanticLabel: 'Abrir perfil ${item.name}',
+      minHeight: 216,
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: colors.secondaryContainer,
+                  foregroundColor: colors.onSecondaryContainer,
+                  child: const Icon(Icons.badge_outlined),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: .03),
-                      colors.primary.withValues(alpha: .15),
-                      progress,
-                    )!,
-                    blurRadius: 8 + 4 * progress,
-                    spreadRadius: 2 * progress,
-                    offset: Offset(0, 2 + 2 * progress),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: colors.secondaryContainer,
-                              foregroundColor: colors.onSecondaryContainer,
-                              child: const Icon(Icons.badge_outlined),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space3),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    item.description,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            _ProfileStatusChip(status: item.status),
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        const Divider(height: 1),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        _ProfileMetricRow(
-                          icon: Icons.layers_outlined,
-                          label: 'Escopo máximo',
-                          value: item.maxScope.label,
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _ProfileMetricRow(
-                          icon: Icons.link_outlined,
-                          label: 'Vínculos',
-                          value: '${item.membershipCount}',
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _ProfileMetricRow(
-                          icon: Icons.verified_outlined,
-                          label: 'Tipo',
-                          value: item.isSystem ? 'Predefinido' : 'Personalizado',
-                        ),
-                      ],
-                    ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        item.description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ],
                   ),
                 ),
-              ),
+                _ProfileExpandableStatus(status: item.status, itemId: item.id),
+              ],
             ),
-          ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space4),
+            _ProfileMetricRow(
+              icon: Icons.layers_outlined,
+              label: 'Escopo máximo',
+              value: item.maxScope.label,
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _ProfileMetricRow(
+              icon: Icons.link_outlined,
+              label: 'Vínculos',
+              value: '${item.membershipCount}',
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _ProfileMetricRow(
+              icon: Icons.verified_outlined,
+              label: 'Tipo',
+              value: item.isSystem ? 'Predefinido' : 'Personalizado',
+            ),
+          ],
         ),
       ),
     );
@@ -795,7 +730,7 @@ final class _AccessProfileTable extends StatelessWidget {
                   AccessAssignmentContext.institution,
                 ),
                 _assignmentColumn('unit', 'Unidade', AccessAssignmentContext.unit),
-                _assignmentColumn('group', 'Grupo', AccessAssignmentContext.group),
+                _assignmentColumn('group', 'Turma', AccessAssignmentContext.group),
                 _assignmentColumn('activity', 'Atividade', AccessAssignmentContext.activity),
               ],
         headerHeight: 56,
@@ -846,7 +781,8 @@ final class _PrincipalCapabilities extends StatelessWidget {
       ),
       const SizedBox(height: CoeloSpacing.space4),
       for (final capability in capabilities) ...[
-        Card(
+        CoeloAdminInteractiveCard(
+          semanticLabel: '${capability.name}. ${capability.description}',
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
               horizontal: CoeloSpacing.space4,
@@ -865,6 +801,37 @@ final class _PrincipalCapabilities extends StatelessWidget {
       ],
     ],
   );
+}
+
+final class _ProfileExpandableStatus extends StatelessWidget {
+  const _ProfileExpandableStatus({required this.status, required this.itemId});
+
+  final AccessProfileStatus status;
+  final String itemId;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+    final pair = switch (status) {
+      AccessProfileStatus.active => (
+        statusColors.successContainer,
+        statusColors.onSuccessContainer,
+      ),
+      AccessProfileStatus.inactive => (colors.surfaceContainer, colors.onSurfaceVariant),
+      AccessProfileStatus.archived => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
+    };
+    return CoeloAdminExpandableStatusIndicator(
+      label: status.label,
+      semanticLabel: 'Status: ${status.label}',
+      surfaceKey: Key('access-profile-status-$itemId'),
+      backgroundColor: pair.$1,
+      foregroundColor: pair.$2,
+    );
+  }
 }
 
 final class _ProfileStatusChip extends StatelessWidget {

@@ -18,6 +18,19 @@ void main() {
     expect(result.items.map((item) => item.id), ['active-platform', 'inactive-institution']);
   });
 
+  test('the Todos status segment also includes archived profiles', () async {
+    final repository = FakeAccessProfileRepository(
+      profiles: const [_activePlatform, _inactiveInstitution, _archivedInstitution],
+    );
+
+    final result = await repository.fetchProfiles(const AccessProfileQuery());
+
+    expect(
+      result.items.map((item) => item.id),
+      unorderedEquals(['active-platform', 'archived-institution', 'inactive-institution']),
+    );
+  });
+
   test('keeps deterministic local assignments for every supported context', () async {
     final repository = FakeAccessProfileRepository();
 

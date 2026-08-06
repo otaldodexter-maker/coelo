@@ -48,6 +48,20 @@ void main() {
     expect(viewModel.visibleCapabilities, hasLength(1));
     expect(viewModel.state, AccessProfileLoadState.success);
   });
+
+  test('limpa a busca ao trocar o domínio', () async {
+    final repository = _DelayedRepository();
+    final viewModel = AccessProfileViewModel(repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.setDomain(AccessProfileDomain.principal);
+    await viewModel.setSearch('comunicados');
+    repository.first.complete(const AccessProfilePage.empty());
+
+    await viewModel.setDomain(AccessProfileDomain.institution);
+
+    expect(viewModel.query.search, isEmpty);
+  });
 }
 
 final class _DelayedRepository implements AccessProfileRepository {

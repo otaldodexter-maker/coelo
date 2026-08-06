@@ -87,7 +87,13 @@ final class AccessProfileViewModel extends ChangeNotifier {
   }
 
   Future<void> setDomain(AccessProfileDomain value) async {
-    query = query.copyWith(domain: value, clearStatuses: true, clearScopes: true, resetPage: true);
+    query = query.copyWith(
+      domain: value,
+      search: '',
+      clearStatuses: true,
+      clearScopes: true,
+      resetPage: true,
+    );
     await load();
   }
 
@@ -148,6 +154,11 @@ final class AccessProfileViewModel extends ChangeNotifier {
       layout: query.layout,
       pageSize: query.pageSize,
     );
+    await load();
+  }
+
+  Future<void> clearSearchAndScopes() async {
+    query = query.copyWith(search: '', clearScopes: true, resetPage: true);
     await load();
   }
 

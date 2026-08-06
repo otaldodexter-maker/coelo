@@ -6,10 +6,12 @@ import 'package:coelo_superadmin/features/access_profiles/presentation/access_pr
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_underline_tabs.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -26,6 +28,13 @@ void main() {
     expect(find.text('Perfil define teto; atribuição define contexto efetivo'), findsOneWidget);
     expect(find.text('Predefinido'), findsWidgets);
     expect(find.byType(SuperadminUnderlineTabs<AccessProfileDomain>), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-status-tabs')), findsNothing);
+    expect(find.text('Todos'), findsNothing);
+    expect(find.text('Ativos'), findsNothing);
+    expect(find.text('Inativos'), findsNothing);
+    expect(find.byType(CoeloAdminMultiSelectFilter<AccessProfileStatus>), findsNothing);
+    expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
+    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsWidgets);
     expect(
       tester.getTopLeft(find.byKey(const Key('access-profile-toolbar'))).dy,
       lessThan(tester.getTopLeft(find.byKey(const Key('access-profile-domain-selector'))).dy),
@@ -52,7 +61,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Instituição'), findsOneWidget);
     expect(find.text('Unidade'), findsOneWidget);
-    expect(find.text('Grupo'), findsOneWidget);
+    expect(find.text('Turma'), findsOneWidget);
     expect(find.text('Atividade'), findsOneWidget);
   });
 
@@ -67,6 +76,7 @@ void main() {
 
     expect(find.text('Catálogo somente leitura'), findsOneWidget);
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
+    expect(find.byKey(const Key('access-profile-status-tabs')), findsNothing);
     expect(find.textContaining('contextos'), findsWidgets);
   });
 
@@ -171,7 +181,9 @@ void main() {
     expect(find.text('Acesso não autorizado'), findsOneWidget);
   });
 
-  testWidgets('editor disables ungrantable permission and opens review dialog', (tester) async {
+  testWidgets('editor uses the approved stepped flow and a responsive permission matrix', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -190,39 +202,257 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
     expect(find.byKey(const Key('access-profile-form-footer-surface')), findsOneWidget);
-    final scroll = find
-        .descendant(
-          of: find.byKey(const Key('access-profile-form-scroll')),
-          matching: find.byType(Scrollable),
-        )
-        .first;
-    await tester.scrollUntilVisible(find.text('Catálogo predefinido'), 300, scrollable: scroll);
-    expect(find.text('Catálogo predefinido'), findsOneWidget);
-    expect(find.textContaining('controle total da plataforma'), findsOneWidget);
-    expect(find.text('Perfil define teto; atribuição define contexto efetivo.'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Atividade · Robótica'), 300, scrollable: scroll);
-    expect(find.text('Instituição · Colégio Horizonte'), findsOneWidget);
-    expect(find.text('Unidade · Unidade Centro'), findsOneWidget);
-    expect(find.text('Grupo (Turma) · Girassol'), findsOneWidget);
-    expect(find.text('Atividade · Robótica'), findsOneWidget);
+    expect(find.text('Perfil e escopo'), findsWidgets);
+    expect(find.text('Catálogo predefinido'), findsNothing);
+    expect(find.byType(CheckboxListTile), findsNothing);
+    expect(find.byType(ExpansionTile), findsNothing);
 
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('permission-support.manage')),
-      300,
-      scrollable: scroll,
-    );
-    final unavailable = tester.widget<CheckboxListTile>(
-      find.byKey(const Key('permission-support.manage')),
-    );
-    expect(unavailable.enabled, isFalse);
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('access-profile-permission-matrix')), findsOneWidget);
+    expect(find.text('Plataforma'), findsWidgets);
+    expect(find.text('Ver'), findsWidgets);
+    expect(find.byKey(const Key('permission-support.manage')), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('review-access-profile')));
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('access-profile-membership-table')), findsOneWidget);
+    expect(find.text('Pessoa'), findsWidgets);
+    expect(find.text('Escopo efetivo'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('access-profile-review-dialog')), findsOneWidget);
     expect(find.text('Permissões adicionadas'), findsOneWidget);
     expect(find.text('Permissões removidas'), findsOneWidget);
+    expect(find.byType(CoeloAdminDialogShell), findsNothing);
+    expect(find.byKey(const Key('access-profile-save')), findsOneWidget);
+  });
+
+  testWidgets('editor revalidates identity before returning to an unlocked review', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (var index = 0; index < 3; index++) {
+      await tester.tap(find.byKey(const Key('access-profile-continue')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(const Key('step-perfil-e-escopo')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).first, '');
+    await tester.tap(find.byKey(const Key('step-revis-o')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Informe o nome do perfil.'), findsOneWidget);
+    expect(find.text('Permissões adicionadas'), findsNothing);
+  });
+
+  testWidgets('editor blocks an invalid save after review was opened', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var saved = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) => saved = true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final nameController = tester
+        .widget<TextFormField>(find.byType(TextFormField).first)
+        .controller!;
+    for (var index = 0; index < 3; index++) {
+      await tester.tap(find.byKey(const Key('access-profile-continue')));
+      await tester.pumpAndSettle();
+    }
+    nameController.clear();
+    await tester.enterText(find.byType(TextFormField).first, 'Revisão de acesso');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('access-profile-save')));
+    await tester.pumpAndSettle();
+
+    expect(saved, isFalse);
+    expect(find.text('Informe o nome do perfil.'), findsOneWidget);
+    expect(find.text('Perfil e escopo'), findsWidgets);
+  });
+
+  testWidgets('permission search remains applied after returning to the matrix', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(EditableText), 'support');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('permission-support.manage')), findsOneWidget);
+    expect(find.byKey(const Key('permission-platform.read')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-previous')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('permission-support.manage')), findsOneWidget);
+    expect(find.byKey(const Key('permission-platform.read')), findsNothing);
+  });
+
+  testWidgets('create uses three steps and only exposes save on review', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.institution,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final navigation = tester.widget<SuperadminFormStepNavigation>(
+      find.byType(SuperadminFormStepNavigation),
+    );
+    expect(navigation.steps.map((step) => step.label), [
+      'Perfil e escopo',
+      'Permissões',
+      'Revisão',
+    ]);
+    expect(find.byKey(const Key('access-profile-save')), findsNothing);
+    expect(find.text('Pessoas vinculadas'), findsNothing);
+    expect(tester.widget(find.byKey(const Key('access-profile-continue'))), isA<FilledButton>());
+  });
+
+  testWidgets('permission cells toggle with Space and Enter', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+
+    final focusTarget = find.byKey(const Key('permission-focus-platform.read'));
+    final checkbox = find.descendant(
+      of: find.byKey(const Key('permission-platform.read')),
+      matching: find.byType(Checkbox),
+    );
+    final initialValue = tester.widget<Checkbox>(checkbox).value;
+    tester.widget<FocusableActionDetector>(focusTarget).focusNode!.requestFocus();
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pumpAndSettle();
+    expect(tester.widget<Checkbox>(checkbox).value, isNot(initialValue));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(tester.widget<Checkbox>(checkbox).value, initialValue);
+  });
+
+  testWidgets('form remains usable at the 768px tablet breakpoint', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.institution,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-form-footer-surface')), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-continue')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('permission matrix stacks at 375px with text at 200 percent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: _logout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('access-profile-permission-matrix')), findsOneWidget);
+    expect(find.text('Plataforma'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('detail shows effective links, audit and guarded deletion', (tester) async {

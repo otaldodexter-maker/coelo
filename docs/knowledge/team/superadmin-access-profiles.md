@@ -3,7 +3,7 @@ title: Perfis e Permissões do Superadmin
 knowledge_id: superadmin-access-profiles
 source: specs/018-profiles-permissions-superadmin.md
 status: validated
-generated_at: 2026-07-29
+generated_at: 2026-08-05
 audience: team
 surfaces: [superadmin, admin, principal, authorization, database]
 visibility: internal
@@ -14,8 +14,20 @@ review_owner: Coelo Product
 
 A central separa três domínios. Superadmin e Admin possuem perfis de acesso
 reutilizáveis; Principal mantém capacidades por responsável e contexto e, por
-isso, aparece somente como catálogo e impacto. A interface não cria um perfil
-familiar genérico.
+isso, aparece somente como catálogo e impacto read-only. A interface não cria
+um perfil familiar genérico nem oferece status, criação ou ações administrativas
+no conjunto Principal.
+
+Tabs de domínio/origem alternam Superadmin, Admin e Principal. Dentro de cada
+domínio, as listagens não exibem tabs nem filtro de status. Criar perfil usa três
+etapas: **Perfil e escopo**, **Permissões** e **Revisão**. Editar usa quatro e
+insere **Pessoas vinculadas** antes da revisão. Essa etapa de pessoas é somente
+leitura: convite e remoção de vínculos não pertencem ao editor.
+
+A matriz de permissões usa a hierarquia explícita `module_code` → `screen_code`
+→ `action_code` devolvida pelo servidor. Em largura insuficiente, cada tela
+empilha suas ações sem comprimir a matriz nem criar scroll horizontal. A revisão
+é sempre a etapa final, exige motivo de auditoria e não usa dialog intermediário.
 
 Perfis do Superadmin têm escopo máximo `platform` ou `institution`. Perfis do
 Admin têm escopo máximo `institution`, `unit` ou `group`. A atribuição efetiva

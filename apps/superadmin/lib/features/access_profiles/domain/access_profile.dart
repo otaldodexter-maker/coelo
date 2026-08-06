@@ -28,7 +28,7 @@ enum AccessProfileScope {
   platform('platform', 'Plataforma'),
   institution('institution', 'Instituição'),
   unit('unit', 'Unidade'),
-  group('group', 'Grupo');
+  group('group', 'Turma');
 
   const AccessProfileScope(this.databaseValue, this.label);
 
@@ -64,6 +64,8 @@ final class AccessPermission {
     required this.code,
     required this.module,
     required this.name,
+    this.screenCode = 'general',
+    this.actionCode = 'access',
     this.description,
     this.risk = 'normal',
     this.requiresMfa = false,
@@ -77,6 +79,8 @@ final class AccessPermission {
       AccessPermission(
         code: json['code'] as String,
         module: json['module'] as String? ?? 'geral',
+        screenCode: json['screen_code'] as String? ?? 'general',
+        actionCode: json['action_code'] as String? ?? 'access',
         name: json['name'] as String? ?? json['description'] as String? ?? json['code'] as String,
         description: json['description'] as String?,
         risk: json['risk'] as String? ?? 'normal',
@@ -89,6 +93,8 @@ final class AccessPermission {
 
   final String code;
   final String module;
+  final String screenCode;
+  final String actionCode;
   final String name;
   final String? description;
   final String risk;
@@ -103,6 +109,8 @@ final class AccessPermission {
   AccessPermission withSelection(bool value) => AccessPermission(
     code: code,
     module: module,
+    screenCode: screenCode,
+    actionCode: actionCode,
     name: name,
     description: description,
     risk: risk,

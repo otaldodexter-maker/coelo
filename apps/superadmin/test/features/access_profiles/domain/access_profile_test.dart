@@ -93,6 +93,19 @@ void main() {
     expect(permission.selected, isFalse);
   });
 
+  test('reads explicit screen and action metadata from the detail contract', () {
+    final permission = AccessPermission.fromJson({
+      'code': 'institutions.update',
+      'module': 'Instituições',
+      'screen_code': 'institutions',
+      'action_code': 'update',
+      'name': 'Editar instituições',
+    });
+
+    expect(permission.screenCode, 'institutions');
+    expect(permission.actionCode, 'update');
+  });
+
   test('inherited permissions cannot be changed by the draft', () {
     const permission = AccessPermission(
       code: 'people.read',
