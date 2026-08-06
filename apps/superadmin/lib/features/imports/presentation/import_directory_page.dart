@@ -375,19 +375,10 @@ final class _ImportCreationPresetTile extends StatelessWidget {
       button: true,
       selected: selected,
       label: '$label, ${selected ? 'selecionado' : 'não selecionado'}',
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-        hoverColor: Colors.transparent,
-        splashColor: selected ? colors.primary.withValues(alpha: .14) : Colors.transparent,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
+      child: CoeloAdminInteractiveCard(
+        onPressed: onTap,
+        child: Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space4),
-          decoration: BoxDecoration(
-            color: selected ? colors.surfaceContainerHighest : colors.surface,
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-            border: Border.all(color: selectedColor, width: selected ? 1.5 : 1),
-          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

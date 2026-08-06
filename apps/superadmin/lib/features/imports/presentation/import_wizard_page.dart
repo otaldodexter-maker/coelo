@@ -258,37 +258,33 @@ final class _ImportWizardOptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final selectedColor = selected ? colors.primary : colors.outline;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(CoeloRadius.md),
-      hoverColor: Colors.transparent,
-      focusColor: Colors.transparent,
-      splashColor: selected ? colors.primary.withValues(alpha: .14) : Colors.transparent,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 84),
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
-        decoration: BoxDecoration(
-          border: Border.all(color: selectedColor, width: selected ? 1.5 : 1),
-          borderRadius: BorderRadius.circular(CoeloRadius.md),
-          color: selected ? colors.surfaceContainerHighest : colors.surface,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-                ],
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '$label, ${selected ? 'selecionado' : 'não selecionado'}',
+      child: CoeloAdminInteractiveCard(
+        onPressed: onTap,
+        minHeight: 84,
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              selected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-              color: selectedColor,
-            ),
-          ],
+              Icon(
+                selected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                color: selectedColor,
+              ),
+            ],
+          ),
         ),
       ),
     );
