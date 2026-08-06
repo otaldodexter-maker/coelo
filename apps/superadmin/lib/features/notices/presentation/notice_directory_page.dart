@@ -1,13 +1,17 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../data/fake_notice_repository.dart';
 import '../domain/platform_notice.dart';
-import 'notice_form_page.dart';
 
 enum _NoticeStatusFilter { all, draft, scheduled, active, paused, ended, canceled }
+
+enum NoticeDirectoryViewState { content, loading, error, forbidden }
 
 extension _NoticeStatusFilterLabel on _NoticeStatusFilter {
   String get label => switch (this) {
@@ -53,9 +57,9 @@ enum _NoticePeriodFilter { all, now, upcoming, ended }
 
 extension _NoticePeriodFilterLabel on _NoticePeriodFilter {
   String get label => switch (this) {
-    _NoticePeriodFilter.all => 'Período',
+    _NoticePeriodFilter.all => 'Per?odo',
     _NoticePeriodFilter.now => 'Ativos agora',
-    _NoticePeriodFilter.upcoming => 'Próximos',
+    _NoticePeriodFilter.upcoming => 'Pr?ximos',
     _NoticePeriodFilter.ended => 'Expirados',
   };
 }
@@ -63,10 +67,19 @@ extension _NoticePeriodFilterLabel on _NoticePeriodFilter {
 enum _NoticeCardAction { edit, duplicate, publish, pause, resume, cancel }
 
 final class NoticeDirectoryPage extends StatefulWidget {
-  const NoticeDirectoryPage({required this.repository, this.onCreate, this.onEdit, super.key});
+  const NoticeDirectoryPage({
+    required this.repository,
+    this.onCreate,
+    this.onEdit,
+    this.viewState = NoticeDirectoryViewState.content,
+    super.key,
+  });
+
   final FakeNoticeRepository repository;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+  final NoticeDirectoryViewState viewState;
+
   @override
   State<NoticeDirectoryPage> createState() => _NoticeDirectoryPageState();
 }
@@ -76,8 +89,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   _NoticeStatusFilter _statusFilter = _NoticeStatusFilter.all;
   _NoticeTargetFilter _targetFilter = _NoticeTargetFilter.all;
   _NoticePeriodFilter _periodFilter = _NoticePeriodFilter.all;
-  String? _selectedNoticeId;
-  bool _creating = false;
+  int _page = 1;
+  int _pageSize = 8;
 
   @override
   void dispose() {
@@ -88,93 +101,102 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.large.minWidth;
+      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
       final contentPadding = compact ? CoeloSpacing.space4 : CoeloSpacing.space6;
-      final notices = _filteredNotices();
       final all = widget.repository.list();
-      final theme = Theme.of(context);
-      final pageBackground = theme.brightness == Brightness.light
-          ? Colors.white
-          : theme.colorScheme.surface;
+      final filtered = _filteredNotices();
+      final notices = _visiblePage(filtered);
+      final totalPages = math.max(1, (filtered.length / _pageSize).ceil());
+      final showsPagination =
+          widget.viewState == NoticeDirectoryViewState.content && filtered.isNotEmpty;
       return Container(
-        color: pageBackground,
-        child: Padding(
-          padding: EdgeInsets.all(contentPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Avisos', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(
-                'Compose e ajuste avisos com lista e editor no mesmo contexto.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              _toolbar(context, all),
-              const SizedBox(height: CoeloSpacing.space4),
-              if (compact)
-                Expanded(child: _list(context, notices: notices, useDesktopLayout: false))
-              else
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 44,
-                        child: _list(context, notices: notices, useDesktopLayout: true),
-                      ),
-                      const SizedBox(width: CoeloSpacing.space4),
-                      Expanded(flex: 56, child: _editor(context)),
-                    ],
-                  ),
+        color: Theme.of(context).colorScheme.surface,
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  contentPadding,
+                  contentPadding,
+                  contentPadding,
+                  showsPagination ? 0 : contentPadding,
                 ),
-            ],
-          ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Avisos', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(
+                      'Gerencie os avisos exibidos nas experi?ncias Coelo.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    _toolbar(all),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    Expanded(
+                      child: _content(
+                        context,
+                        compact: compact,
+                        all: all,
+                        filtered: filtered,
+                        notices: notices,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (showsPagination)
+              SuperadminListingPaginationFooter(
+                horizontalPadding: contentPadding,
+                semanticKey: const Key('notice-directory-pagination'),
+                child: CoeloAdminPagination(
+                  currentPage: _page,
+                  totalPages: totalPages,
+                  pageSize: _pageSize,
+                  pageSizeOptions: const [8, 16, 24],
+                  onPrevious: _page > 1 ? () => setState(() => _page--) : null,
+                  onNext: _page < totalPages ? () => setState(() => _page++) : null,
+                  onPageSelected: (page) => setState(() => _page = page),
+                  onPageSizeChanged: (size) => setState(() {
+                    _pageSize = size;
+                    _page = 1;
+                  }),
+                ),
+              ),
+          ],
         ),
       );
     },
   );
 
-  Widget _toolbar(BuildContext context, List<PlatformNotice> all) {
-    final statusMap = <_NoticeStatusFilter, int>{
-      _NoticeStatusFilter.all: all.length,
-      _NoticeStatusFilter.draft: all.where((item) => item.status == NoticeStatus.draft).length,
-      _NoticeStatusFilter.scheduled: all
-          .where((item) => item.status == NoticeStatus.scheduled)
-          .length,
-      _NoticeStatusFilter.active: all.where((item) => item.status == NoticeStatus.active).length,
-      _NoticeStatusFilter.paused: all.where((item) => item.status == NoticeStatus.paused).length,
-      _NoticeStatusFilter.ended: all.where((item) => item.status == NoticeStatus.ended).length,
-      _NoticeStatusFilter.canceled: all
-          .where((item) => item.status == NoticeStatus.cancelled)
-          .length,
+  Widget _toolbar(List<PlatformNotice> all) {
+    final counts = <_NoticeStatusFilter, int>{
+      for (final filter in _NoticeStatusFilter.values)
+        filter: filter.status == null
+            ? all.length
+            : all.where((notice) => notice.status == filter.status).length,
     };
-
-    final searchWidth = MediaQuery.of(context).size.width < CoeloBreakpoints.medium.minWidth
-        ? null
-        : 320.0;
-    final filters = Wrap(
-      runSpacing: CoeloSpacing.space2,
-      spacing: CoeloSpacing.space3,
-      children: [
-        SizedBox(
-          width: searchWidth ?? double.infinity,
-          height: CoeloSize.touchMin,
-          child: CoeloSearchField(
-            controller: _search,
-            hintText: 'Buscar aviso',
-            semanticLabel: 'Buscar aviso por título ou destinatário',
-            onChanged: (_) => setState(() {}),
-          ),
+    return CoeloAdminListingToolbar(
+      search: SizedBox(
+        width: CoeloSpacing.space20 * 4,
+        height: CoeloSize.touchMin,
+        child: CoeloSearchField(
+          controller: _search,
+          hintText: 'Buscar aviso',
+          semanticLabel: 'Buscar aviso por t?tulo ou destinat?rio',
+          onChanged: (_) => _resetPage(() {}),
         ),
+      ),
+      filters: [
         SizedBox(
           width: 220,
           child: CoeloAdminSingleSelectField<_NoticeStatusFilter>(
             value: _statusFilter,
             label: 'Estado',
             options: _NoticeStatusFilter.values,
-            optionLabel: (value) => '${value.label} (${statusMap[value]})',
-            onChanged: (value) => setState(() => _statusFilter = value),
+            optionLabel: (value) => '${value.label} (${counts[value]})',
+            onChanged: (value) => _resetPage(() => _statusFilter = value),
             prefixIcon: Icons.bar_chart_rounded,
           ),
         ),
@@ -185,7 +207,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             label: 'Plataforma',
             options: _NoticeTargetFilter.values,
             optionLabel: (value) => value.label,
-            onChanged: (value) => setState(() => _targetFilter = value),
+            onChanged: (value) => _resetPage(() => _targetFilter = value),
             prefixIcon: Icons.devices_rounded,
           ),
         ),
@@ -193,108 +215,101 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           width: 210,
           child: CoeloAdminSingleSelectField<_NoticePeriodFilter>(
             value: _periodFilter,
-            label: 'Período',
+            label: 'Per?odo',
             options: _NoticePeriodFilter.values,
             optionLabel: (value) => value.label,
-            onChanged: (value) => setState(() => _periodFilter = value),
+            onChanged: (value) => _resetPage(() => _periodFilter = value),
             prefixIcon: Icons.calendar_month_rounded,
           ),
         ),
       ],
-    );
-
-    final actions = SizedBox(
-      height: CoeloSize.touchMin,
-      child: FilledButton.icon(
-        onPressed: () => _openCreate(context),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Novo aviso'),
-      ),
-    );
-
-    return CoeloAdminListingToolbar(search: filters, filters: const [], actions: [actions]);
-  }
-
-  Widget _editor(BuildContext context) {
-    if (!_creating && _selectedNoticeId == null) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Editor de aviso', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: CoeloSpacing.space2),
-              const Text('Selecione um aviso ou crie um novo para começar.'),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return NoticeFormPage(
-      repository: widget.repository,
-      noticeId: _selectedNoticeId,
-      embedded: true,
-      onSaved: (notice) {
-        setState(() {
-          _creating = false;
-          _selectedNoticeId = notice.id;
-        });
-      },
-      onCancel: () {
-        setState(() {
-          _selectedNoticeId = null;
-          _creating = false;
-        });
-      },
+      actions: const [],
     );
   }
 
-  Widget _list(
+  Widget _content(
+    BuildContext context, {
+    required bool compact,
+    required List<PlatformNotice> all,
+    required List<PlatformNotice> filtered,
+    required List<PlatformNotice> notices,
+  }) => switch (widget.viewState) {
+    NoticeDirectoryViewState.loading => const CoeloStatePanel(
+      title: 'Carregando avisos',
+      message: 'Aguarde enquanto os avisos s?o carregados.',
+      loading: true,
+    ),
+    NoticeDirectoryViewState.error => const CoeloStatePanel(
+      title: 'N?o foi poss?vel carregar',
+      message: 'N?o foi poss?vel carregar os avisos.',
+    ),
+    NoticeDirectoryViewState.forbidden => const CoeloStatePanel(
+      title: 'Sem permiss?o',
+      message: 'Voc? n?o tem permiss?o para ver avisos.',
+      icon: Icons.lock_outline_rounded,
+    ),
+    NoticeDirectoryViewState.content when all.isEmpty => const CoeloStatePanel(
+      title: 'Nenhum aviso',
+      message: 'Ainda n?o existem avisos cadastrados.',
+      icon: Icons.campaign_outlined,
+    ),
+    NoticeDirectoryViewState.content when filtered.isEmpty => const CoeloStatePanel(
+      title: 'Nenhum resultado',
+      message: 'Nenhum aviso encontrado com estes filtros.',
+      icon: Icons.search_off_rounded,
+    ),
+    NoticeDirectoryViewState.content => _cards(context, notices: notices, compact: compact),
+  };
+
+  Widget _cards(
     BuildContext context, {
     required List<PlatformNotice> notices,
-    required bool useDesktopLayout,
+    required bool compact,
   }) {
-    final cards = [
-      CoeloAdminCreateAction(
-        label: 'Novo aviso',
-        description: 'Criar novo aviso.',
-        icon: Icons.post_add_rounded,
-        onPressed: () => _openCreate(context),
+    final cards = <Widget>[
+      ConstrainedBox(
+        key: const Key('create-notice-card'),
+        constraints: const BoxConstraints(minHeight: 216),
+        child: CoeloAdminCreateAction(
+          label: 'Novo aviso',
+          description: 'Criar novo aviso.',
+          icon: Icons.post_add_rounded,
+          onPressed: widget.onCreate,
+        ),
       ),
-      ...notices.map((notice) => _noticeCard(context, notice: notice)),
+      ...notices.map((notice) => _noticeCard(context, notice)),
     ];
-    return LayoutBuilder(
-      builder: (_, constraints) {
-        final columns = useDesktopLayout && constraints.maxWidth >= 380 ? 2 : 1;
-        if (columns == 1) {
-          return ListView.separated(
-            itemCount: cards.length,
-            separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
-            itemBuilder: (context, index) => cards[index],
-          );
-        }
-        return GridView.builder(
-          itemCount: cards.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: CoeloSpacing.space4,
-            crossAxisSpacing: CoeloSpacing.space4,
-            childAspectRatio: 1.45,
-          ),
-          itemBuilder: (context, index) => cards[index],
-        );
-      },
+    if (compact) {
+      return ListView.separated(
+        key: const Key('notice-card-list'),
+        itemCount: cards.length,
+        separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space6),
+        itemBuilder: (_, index) => cards[index],
+      );
+    }
+    return GridView.builder(
+      key: const Key('notice-card-grid'),
+      itemCount: cards.length,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 420,
+        mainAxisExtent: 260,
+        mainAxisSpacing: CoeloSpacing.space6,
+        crossAxisSpacing: CoeloSpacing.space6,
+      ),
+      itemBuilder: (_, index) => cards[index],
     );
   }
 
-  Widget _noticeCard(BuildContext context, {required PlatformNotice notice}) {
+  Widget _noticeCard(BuildContext context, PlatformNotice notice) {
+    final theme = Theme.of(context);
     return CoeloAdminInteractiveCard(
-      onPressed: () => _edit(context, notice),
-      minHeight: 190,
+      onPressed: () => widget.onEdit?.call(notice.id),
+      minHeight: 216,
       child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -303,82 +318,96 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                 Expanded(
                   child: Text(
                     notice.title,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: theme.textTheme.titleMedium,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: CoeloSpacing.space2),
-                _statusChip(context, notice.status),
+                _statusIndicator(context, notice.status),
                 const SizedBox(width: CoeloSpacing.space2),
-                _rowActionMenu(context, notice),
+                _rowActionMenu(notice),
               ],
             ),
-            const SizedBox(height: CoeloSpacing.space1),
-            Text('${notice.audienceLabel} · ${notice.audience.label}'),
             const SizedBox(height: CoeloSpacing.space2),
             Text(
-              '${notice.targetDevice.label} · ${_formatDate(notice.startsAt)}'
-              '${notice.endsAt == null ? ' · sem data limite' : ' · até ${_formatDate(notice.endsAt!)}'}',
+              '${notice.audienceLabel} ? ${notice.audience.label}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space3),
+            Text(
+              '${notice.targetDevice.label} ? ${_formatDate(notice.startsAt)}${notice.endsAt == null
+                      ? ' ? sem data limite'
+                      : ' ? at? ${_formatDate(notice.endsAt!)}'}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: CoeloSpacing.space1),
-            Text('Recorrência: ${notice.recurrenceLabel}'),
+            Text(
+              'Recorr?ncia: ${notice.recurrenceLabel}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             const SizedBox(height: CoeloSpacing.space1),
-            Text('Obrigatório: ${notice.mandatory ? 'Sim' : 'Não'}'),
-            const Spacer(),
-            Text('Entregues: ${notice.deliveredCount} · Aceites: ${notice.acceptedCount}'),
+            Text(
+              'Entregues: ${notice.deliveredCount} ? Aceites: ${notice.acceptedCount}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _rowActionMenu(BuildContext context, PlatformNotice notice) {
+  Widget _rowActionMenu(PlatformNotice notice) {
     final actions = _rowActions(notice);
     return CoeloAdminFlyout<_NoticeCardAction>(
-      itemWidth: 210,
       items: [
         if (actions.contains(_NoticeCardAction.edit))
-          CoeloAdminFlyoutItem(
+          const CoeloAdminFlyoutItem(
             value: _NoticeCardAction.edit,
             icon: Icons.edit_outlined,
             label: 'Editar',
           ),
         if (actions.contains(_NoticeCardAction.publish))
-          CoeloAdminFlyoutItem(
+          const CoeloAdminFlyoutItem(
             value: _NoticeCardAction.publish,
             icon: Icons.send_rounded,
             label: 'Publicar',
           ),
         if (actions.contains(_NoticeCardAction.pause))
-          CoeloAdminFlyoutItem(
+          const CoeloAdminFlyoutItem(
             value: _NoticeCardAction.pause,
             icon: Icons.pause_circle_outline_rounded,
             label: 'Pausar',
           ),
         if (actions.contains(_NoticeCardAction.resume))
-          CoeloAdminFlyoutItem(
+          const CoeloAdminFlyoutItem(
             value: _NoticeCardAction.resume,
             icon: Icons.play_circle_outline_rounded,
             label: 'Reativar',
           ),
+        const CoeloAdminFlyoutItem(
+          value: _NoticeCardAction.duplicate,
+          icon: Icons.copy_all_outlined,
+          label: 'Duplicar',
+        ),
         if (actions.contains(_NoticeCardAction.cancel))
-          CoeloAdminFlyoutItem(
+          const CoeloAdminFlyoutItem(
             value: _NoticeCardAction.cancel,
             icon: Icons.block,
             label: 'Inativar',
             startsGroup: true,
             tone: CoeloAdminFlyoutTone.negative,
           ),
-        CoeloAdminFlyoutItem(
-          value: _NoticeCardAction.duplicate,
-          icon: Icons.copy_all_outlined,
-          label: 'Duplicar',
-        ),
       ],
       onSelected: (action) => _runAction(action, notice),
       builder: (context, controller) => IconButton(
-        tooltip: 'Ações do aviso',
+        tooltip: 'A??es do aviso',
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
         icon: const Icon(Icons.more_horiz_rounded),
       ),
@@ -386,63 +415,59 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }
 
   Set<_NoticeCardAction> _rowActions(PlatformNotice notice) {
-    final available = <_NoticeCardAction>{_NoticeCardAction.duplicate};
+    final actions = <_NoticeCardAction>{_NoticeCardAction.duplicate};
     if (notice.canEdit) {
-      available.add(_NoticeCardAction.edit);
-      available.add(_NoticeCardAction.publish);
+      actions
+        ..add(_NoticeCardAction.edit)
+        ..add(_NoticeCardAction.publish);
     }
-    if (notice.status == NoticeStatus.active) {
-      available.add(_NoticeCardAction.pause);
+    if (notice.status == NoticeStatus.active) actions.add(_NoticeCardAction.pause);
+    if (notice.status == NoticeStatus.paused) actions.add(_NoticeCardAction.resume);
+    if (const {
+      NoticeStatus.draft,
+      NoticeStatus.scheduled,
+      NoticeStatus.active,
+      NoticeStatus.paused,
+    }.contains(notice.status)) {
+      actions.add(_NoticeCardAction.cancel);
     }
-    if (notice.status == NoticeStatus.paused) {
-      available.add(_NoticeCardAction.resume);
-    }
-    if (notice.status == NoticeStatus.active ||
-        notice.status == NoticeStatus.scheduled ||
-        notice.status == NoticeStatus.paused) {
-      available.add(_NoticeCardAction.cancel);
-    }
-    return available;
+    return actions;
   }
 
   void _runAction(_NoticeCardAction action, PlatformNotice notice) {
     try {
       switch (action) {
         case _NoticeCardAction.edit:
-          _edit(context, notice);
+          widget.onEdit?.call(notice.id);
           return;
         case _NoticeCardAction.duplicate:
-          final duplicated = widget.repository.duplicate(notice.id);
-          setState(() {
-            _creating = false;
-            _selectedNoticeId = duplicated.id;
-          });
-          _feedback('Aviso duplicado: ${duplicated.title}');
+          final updated = widget.repository.duplicate(notice.id);
+          _refresh('Aviso duplicado: ${updated.title}');
           return;
         case _NoticeCardAction.publish:
           final updated = widget.repository.publish(notice.id);
-          _feedback('Aviso publicado: ${updated.title}');
-          setState(() {});
+          _refresh('Aviso publicado: ${updated.title}');
           return;
         case _NoticeCardAction.pause:
-          final paused = widget.repository.pause(notice.id);
-          _feedback('Aviso pausado: ${paused.title}');
-          setState(() {});
+          final updated = widget.repository.pause(notice.id);
+          _refresh('Aviso pausado: ${updated.title}');
           return;
         case _NoticeCardAction.resume:
-          final resumed = widget.repository.resume(notice.id);
-          _feedback('Aviso reativado: ${resumed.title}');
-          setState(() {});
+          final updated = widget.repository.resume(notice.id);
+          _refresh('Aviso reativado: ${updated.title}');
           return;
         case _NoticeCardAction.cancel:
-          final canceled = widget.repository.cancel(notice.id);
-          _feedback('Aviso inativado: ${canceled.title}');
-          setState(() {});
+          final updated = widget.repository.cancel(notice.id);
+          _refresh('Aviso inativado: ${updated.title}');
           return;
       }
     } on StateError catch (error) {
-      _feedback(error.toString().replaceFirst('Exception: ', ''));
+      _refresh(error.toString().replaceFirst('Bad state: ', ''));
     }
+  }
+
+  void _refresh(String message) {
+    _feedback(message);
     setState(() {});
   }
 
@@ -451,85 +476,15 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _edit(BuildContext context, PlatformNotice notice) {
-    final compact = MediaQuery.of(context).size.width < CoeloBreakpoints.large.minWidth;
-    if (compact) {
-      _openEditorSheet(notice.id);
-    } else {
-      setState(() {
-        _selectedNoticeId = notice.id;
-        _creating = false;
-      });
-    }
-  }
-
-  void _openCreate(BuildContext context) {
-    final compact = MediaQuery.of(context).size.width < CoeloBreakpoints.large.minWidth;
-    if (compact) {
-      _openEditorSheet(null);
-    } else {
-      setState(() {
-        _selectedNoticeId = null;
-        _creating = true;
-      });
-    }
-  }
-
-  Future<void> _openEditorSheet(String? id) async {
-    final theme = Theme.of(context);
-    final result = await showModalBottomSheet<PlatformNotice>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      backgroundColor: theme.brightness == Brightness.light
-          ? Colors.white
-          : theme.colorScheme.surface,
-      builder: (context) => FractionallySizedBox(
-        widthFactor: 1,
-        child: NoticeFormPage(
-          repository: widget.repository,
-          noticeId: id,
-          embedded: true,
-          onCancel: () => Navigator.pop(context),
-          onSaved: (notice) => Navigator.pop(context, notice),
-        ),
-      ),
-    );
-    if (result != null) {
-      setState(() {
-        _creating = false;
-        _selectedNoticeId = result.id;
-      });
-    }
-  }
-
-  Widget _statusChip(BuildContext context, NoticeStatus status) {
+  Widget _statusIndicator(BuildContext context, NoticeStatus status) {
+    final colors = Theme.of(context).colorScheme;
     final (background, foreground) = switch (status) {
-      NoticeStatus.draft => (
-        Theme.of(context).colorScheme.surfaceContainerHighest,
-        Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
-      NoticeStatus.scheduled => (
-        Theme.of(context).colorScheme.secondaryContainer,
-        Theme.of(context).colorScheme.onSecondaryContainer,
-      ),
-      NoticeStatus.active => (
-        Theme.of(context).colorScheme.primaryContainer,
-        Theme.of(context).colorScheme.onPrimaryContainer,
-      ),
-      NoticeStatus.paused => (
-        Theme.of(context).colorScheme.tertiaryContainer,
-        Theme.of(context).colorScheme.onTertiaryContainer,
-      ),
-      NoticeStatus.ended => (
-        Theme.of(context).colorScheme.surfaceDim,
-        Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
-      NoticeStatus.cancelled => (
-        Theme.of(context).colorScheme.errorContainer,
-        Theme.of(context).colorScheme.onErrorContainer,
-      ),
+      NoticeStatus.draft => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
+      NoticeStatus.scheduled => (colors.secondaryContainer, colors.onSecondaryContainer),
+      NoticeStatus.active => (colors.primaryContainer, colors.onPrimaryContainer),
+      NoticeStatus.paused => (colors.tertiaryContainer, colors.onTertiaryContainer),
+      NoticeStatus.ended => (colors.surfaceDim, colors.onSurfaceVariant),
+      NoticeStatus.cancelled => (colors.errorContainer, colors.onErrorContainer),
     };
     return CoeloAdminExpandableStatusIndicator(
       label: status.label,
@@ -541,29 +496,37 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
 
   List<PlatformNotice> _filteredNotices() {
     final now = DateTime.now();
-    final status = _statusFilter.status;
     final target = _targetFilter.device;
-    final list = widget.repository.list(search: _search.text, status: status, target: target);
-    return list
+    return widget.repository
+        .list(search: _search.text, status: _statusFilter.status, target: target)
         .where((notice) {
           final inPeriod = switch (_periodFilter) {
             _NoticePeriodFilter.all => true,
             _NoticePeriodFilter.now =>
               notice.status == NoticeStatus.active &&
-                  (notice.endsAt == null || notice.endsAt!.isAfter(now) || notice.endsAt == now),
+                  (notice.endsAt == null || !notice.endsAt!.isBefore(now)),
             _NoticePeriodFilter.upcoming => notice.status == NoticeStatus.scheduled,
             _NoticePeriodFilter.ended => notice.status == NoticeStatus.ended,
           };
-          return inPeriod &&
-              (target == null ||
-                  notice.targetDevice == NoticeTargetDevice.all ||
-                  notice.targetDevice == target);
+          return inPeriod;
         })
         .toList(growable: false);
   }
 
+  List<PlatformNotice> _visiblePage(List<PlatformNotice> filtered) {
+    final totalPages = math.max(1, (filtered.length / _pageSize).ceil());
+    _page = _page.clamp(1, totalPages);
+    final start = (_page - 1) * _pageSize;
+    return filtered.skip(start).take(_pageSize).toList(growable: false);
+  }
+
+  void _resetPage(VoidCallback update) {
+    setState(() {
+      update();
+      _page = 1;
+    });
+  }
+
   String _formatDate(DateTime value) =>
-      '${value.day.toString().padLeft(2, '0')}/'
-      '${value.month.toString().padLeft(2, '0')}/'
-      '${value.year}';
+      '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 }
