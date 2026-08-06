@@ -53,15 +53,20 @@ final class _PopupSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     final backgroundColor = notice.backgroundColorValue == null
-        ? _backgroundFallback(colors, notice.backgroundTone)
+        ? _backgroundFallback(colors, statusColors, notice.backgroundTone)
         : Color(notice.backgroundColorValue!);
     final textColor = notice.textColorValue == null
-        ? _textFallback(colors, notice.textTone)
+        ? _textFallback(colors, statusColors, notice.textTone)
         : Color(notice.textColorValue!);
 
     return DecoratedBox(
+      key: const Key('notice-popup-surface'),
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(color: colors.outlineVariant),
@@ -74,14 +79,6 @@ final class _PopupSurface extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _PreviewContent(notice: notice, textColor: textColor),
-            if (notice.linkLabel case final linkLabel?) ...[
-              const SizedBox(height: CoeloSpacing.space3),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.open_in_new_rounded),
-                label: Text(linkLabel),
-              ),
-            ],
             if (onCheckboxChanged != null) ...[
               const SizedBox(height: CoeloSpacing.space3),
               _Acknowledgement(
@@ -200,33 +197,36 @@ final class _Acknowledgement extends StatelessWidget {
       checked: checked,
       button: true,
       label: 'Li e estou ciente deste aviso.',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          key: const Key('notice-acknowledgement'),
-          onTap: () => onChanged(!checked),
-          borderRadius: BorderRadius.circular(CoeloRadius.md),
-          focusColor: colors.primaryContainer,
-          hoverColor: colors.primaryContainer,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  checked ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
-                  color: checked ? colors.primary : color,
-                ),
-                const SizedBox(width: CoeloSpacing.space2),
-                Expanded(
-                  child: Text(
-                    'Li e estou ciente deste aviso.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
+      child: SizedBox(
+        height: CoeloSize.touchMin,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            key: const Key('notice-acknowledgement'),
+            onTap: () => onChanged(!checked),
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    checked ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+                    color: checked ? colors.primary : color,
                   ),
-                ),
-              ],
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Expanded(
+                    child: Text(
+                      'Li e estou ciente deste aviso.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -235,21 +235,26 @@ final class _Acknowledgement extends StatelessWidget {
   }
 }
 
-Color _backgroundFallback(ColorScheme colors, NoticeVisualTone tone) => switch (tone) {
+Color _backgroundFallback(
+  ColorScheme colors,
+  CoeloStatusColors statusColors,
+  NoticeVisualTone tone,
+) => switch (tone) {
   NoticeVisualTone.brand => colors.primary,
   NoticeVisualTone.dark => colors.inverseSurface,
   NoticeVisualTone.light => colors.surface,
   NoticeVisualTone.neutral => colors.surfaceContainer,
-  NoticeVisualTone.success => colors.tertiary,
-  NoticeVisualTone.warning => colors.secondary,
+  NoticeVisualTone.success => statusColors.successContainer,
+  NoticeVisualTone.warning => statusColors.warningContainer,
   NoticeVisualTone.danger => colors.error,
 };
 
-Color _textFallback(ColorScheme colors, NoticeVisualTone tone) => switch (tone) {
-  NoticeVisualTone.brand => colors.onPrimary,
-  NoticeVisualTone.dark => colors.onInverseSurface,
-  NoticeVisualTone.light || NoticeVisualTone.neutral => colors.onSurface,
-  NoticeVisualTone.success => colors.onTertiary,
-  NoticeVisualTone.warning => colors.onSecondary,
-  NoticeVisualTone.danger => colors.onError,
-};
+Color _textFallback(ColorScheme colors, CoeloStatusColors statusColors, NoticeVisualTone tone) =>
+    switch (tone) {
+      NoticeVisualTone.brand => colors.onPrimary,
+      NoticeVisualTone.dark => colors.onInverseSurface,
+      NoticeVisualTone.light || NoticeVisualTone.neutral => colors.onSurface,
+      NoticeVisualTone.success => statusColors.onSuccessContainer,
+      NoticeVisualTone.warning => statusColors.onWarningContainer,
+      NoticeVisualTone.danger => colors.onError,
+    };

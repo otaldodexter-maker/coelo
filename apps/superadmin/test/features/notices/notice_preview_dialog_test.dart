@@ -1,3 +1,4 @@
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_preview_dialog.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,43 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('does not render an inert notice link', (tester) async {
+    await _openPreview(tester, _notice(linkLabel: 'Read more'));
+
+    expect(find.text('Read more'), findsNothing);
+    expect(find.byType(TextButton), findsNothing);
+  });
+
+  testWidgets('uses status container fallbacks for success and warning previews', (tester) async {
+    await _openPreview(
+      tester,
+      _notice(behavior: NoticeBehavior.dismissible, backgroundTone: NoticeVisualTone.success),
+    );
+    expect(_surfaceColor(tester), CoeloStatusColors.light.successContainer);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Fechar'));
+    await tester.pumpAndSettle();
+    await _openPreview(tester, _notice(backgroundTone: NoticeVisualTone.warning));
+    expect(_surfaceColor(tester), CoeloStatusColors.light.warningContainer);
+  });
+
+  testWidgets('exposes web mobile and tablet preview semantics', (tester) async {
+    final semantics = tester.ensureSemantics();
+    for (final device in [
+      NoticeTargetDevice.web,
+      NoticeTargetDevice.mobile,
+      NoticeTargetDevice.tablet,
+    ]) {
+      await _openPreview(
+        tester,
+        _notice(behavior: NoticeBehavior.dismissible, targetDevice: device),
+      );
+      expect(find.bySemanticsLabel('Pr\u00e9via do aviso em ${device.label}'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Fechar'));
+      await tester.pumpAndSettle();
+    }
+    semantics.dispose();
+  });
   testWidgets('renders image orientations without overflow', (tester) async {
     await _openPreview(
       tester,
@@ -83,6 +121,11 @@ void main() {
     await tester.pump();
 
     expect(tester.widget<FilledButton>(confirmButton).onPressed, isNotNull);
+    expect(find.byTooltip('Sair da simula\u00e7\u00e3o'), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('notice-acknowledgement'))).height,
+      greaterThanOrEqualTo(CoeloSize.touchMin),
+    );
     semantics.dispose();
   });
   testWidgets('checkbox notice requires acknowledgement before confirming', (tester) async {
@@ -155,6 +198,9 @@ PlatformNotice _notice({
   NoticeContentFormat contentFormat = NoticeContentFormat.textBackground,
   NoticeImageOrientation imageOrientation = NoticeImageOrientation.vertical,
   NoticeTargetDevice targetDevice = NoticeTargetDevice.all,
+  NoticeVisualTone backgroundTone = NoticeVisualTone.dark,
+  NoticeVisualTone textTone = NoticeVisualTone.light,
+  String? linkLabel,
 }) => PlatformNotice(
   id: 'notice',
   title: 'Notice preview',
@@ -170,4 +216,12 @@ PlatformNotice _notice({
   reach: 1,
   contentFormat: contentFormat,
   imageOrientation: imageOrientation,
+  backgroundTone: backgroundTone,
+  textTone: textTone,
+  linkLabel: linkLabel,
 );
+
+Color _surfaceColor(WidgetTester tester) =>
+    (tester.widget<DecoratedBox>(find.byKey(const Key('notice-popup-surface'))).decoration
+            as BoxDecoration)
+        .color!;

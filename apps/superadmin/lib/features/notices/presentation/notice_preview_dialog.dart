@@ -25,7 +25,7 @@ final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
     return CoeloAdminDialogShell(
       dialogKey: const Key('notice-preview-dialog'),
       title: notice.title,
-      closeTooltip: notice.mandatory ? 'Sair da simula' : 'Fechar aviso',
+      closeTooltip: notice.mandatory ? 'Sair da simulação' : 'Fechar aviso',
       onClose: () => Navigator.of(context).pop(),
       body: NoticePopupPreview(
         notice: notice,
