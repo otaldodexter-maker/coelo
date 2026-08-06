@@ -100,7 +100,7 @@ A importação em massa entra no MVP por CSV e XLSX e deve abranger, conforme o 
 | Equipe | Sim | Direção, admins, coordenação, professores e apoio. |
 | Permissões | Sim | Geridas por owner/diretor e admins autorizados. |
 | Importação | Sim | CSV e XLSX para cadastros e vínculos aplicáveis. |
-| Conteúdo | Sim | Flow, comunicados, Now, Moments, agenda e templates de rotina. |
+| Conteúdo | Sim | Happens, comunicados, Now, Moments, agenda e templates de rotina. |
 | Chat/canais | Sim | Configuração de membros, acessos e políticas institucionais. |
 | Dados básicos | Sim | Eventos, logs e exportações simples futuras/preparadas. |
 
@@ -222,7 +222,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 
 | Área | Configurações do Admin |
 | --- | --- |
-| Flow/comunicados | Perfis, audiência, confirmação de leitura, reações simples e comentários desativados no MVP. |
+| Happens/comunicados | Perfis, audiência, confirmação de leitura, reações simples e comentários desativados no MVP. |
 | Now | Quem publica, audiência, consentimento de imagem e expiração. |
 | Moments | Vídeos de até 2 minutos, audiência e moderação institucional. |
 | Agenda | Eventos, audiência, RSVP e autorização simples. |
@@ -256,7 +256,7 @@ A importação deve acelerar o onboarding sem permitir gravações cegas. O Admi
 | AD-RF-007 | Responsáveis | Definir quais responsáveis podem visualizar cada contexto da criança. |
 | AD-RF-008 | Permissões | Permitir alteração somente por owner/diretor e admins autorizados. |
 | AD-RF-009 | Importação | Importar CSV/XLSX com mapeamento, prévia, validação e resultado. |
-| AD-RF-010 | Conteúdo | Gerenciar Flow, comunicados, Now, Moments e agenda. |
+| AD-RF-010 | Conteúdo | Gerenciar Happens, comunicados, Now, Moments e agenda. |
 | AD-RF-011 | Rotina | Gerenciar templates e permissões do diário. |
 | AD-RF-012 | Chat | Configurar canais, membros e escopos de histórico. |
 | AD-RF-013 | Auditoria | Registrar importações, vínculos, permissões e mudanças sensíveis. |

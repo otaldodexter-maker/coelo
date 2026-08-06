@@ -152,7 +152,7 @@ Fixtures obrigatórios:
   500 usuários, 2 responsáveis por criança, 25 GB de armazenamento e 5 GB de mídia.
 - Coelo Conecta (coelo-connect): anterior + Chat e Avisos; 5 unidades, 1.500
   usuários, 3 responsáveis, 100 GB e 20 GB de mídia.
-- Coelo Cuidado (coelo-care): anterior + Rotina, Flow e Now; 15 unidades, 5.000
+- Coelo Cuidado (coelo-care): anterior + Rotina, Happens e Now; 15 unidades, 5.000
   usuários, 4 responsáveis, 500 GB e 100 GB de mídia.
 - Coelo Integral (coelo-integral): todos + Moments; 50 unidades, 20.000 usuários,
   6 responsáveis, 2 TB e 500 GB de mídia.

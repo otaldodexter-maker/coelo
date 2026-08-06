@@ -275,13 +275,13 @@ A arquitetura deve suportar múltiplas instituições e múltiplos papéis por p
 | --- | --- | --- |
 | Instituição | Organização | Mais humano e aderente ao mercado; funciona para escola, curso, escolinha, terapia e entidade infantil. |
 | Unidade | Filial apenas | Representa sede, campus, unidade física ou operação local. |
-| Grupo | Turma como único termo | Grupo é genérico; Turma vira um tipo de grupo. |
-| Perfil | Canal isolado | Unidades e grupos podem ter perfil social privado automaticamente. |
+| Turma | Grupo na interface | Turma é o termo visível único; `group*` permanece como vocabulário técnico. |
+| Perfil | Canal isolado | Unidades e turmas podem ter perfil social privado automaticamente. |
 | Criança / Aluno / Atendido | Participante como termo de interface | Participante é técnico e genérico; usar label por segmento. No banco, pode ser person_context do tipo child/participant. |
 | Responsável | Pai/mãe apenas | Inclui pai, mãe, avós, tutores, cuidadores autorizados e responsáveis legais. |
 | Pessoa | Usuário para tudo | Pessoa existe mesmo sem login; usuário é pessoa com acesso/auth ativo. |
 
-| Regra de ouro multi-tenant<br>Pessoa é global. Papel é contextual. Visibilidade é derivada do vínculo ativo com instituição, unidade, grupo e criança/aluno/atendido. |
+| Regra de ouro multi-tenant<br>Pessoa é global. Papel é contextual. Visibilidade é derivada do vínculo ativo com instituição, unidade, turma e criança/aluno/atendido. |
 | --- |
 
 - Uma pessoa pode estar em várias instituições.
@@ -432,7 +432,7 @@ O site não entra como prioridade do MVP, mas deve ser previsto para aquisição
 | Blog/conteúdo | SEO, dicas para instituições e famílias, sempre com responsabilidade e sem publicidade infantil indevida. |
 | Prova social | Cases, depoimentos e métricas após piloto. |
 
-# 24. Feed social privado/Flow
+# 24. Feed social privado/Happens
 
 O feed deve ser inspirado em Instagram/TikTok no visual e no hábito, mas não na lógica aberta de descoberta. Não existe busca pública de crianças, ranking social ou viralização. Podendo marcar a criança com seu @ e consequentemente o responsável.
 
