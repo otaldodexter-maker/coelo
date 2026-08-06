@@ -132,4 +132,26 @@ void main() {
     expect(tester.getRect(icon).right, lessThanOrEqualTo(tester.getRect(editable).left));
     expect(tester.getRect(editable).right, lessThanOrEqualTo(tester.getRect(field).right));
   });
+
+  testWidgets('forwards the character limit to the editable field', (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloFormTextField(
+            controller: controller,
+            labelText: 'Resumo',
+            prefixIcon: Icons.notes_rounded,
+            maxLength: 2,
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextFormField), 'abc');
+    expect(controller.text, 'ab');
+  });
 }

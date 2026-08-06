@@ -48,4 +48,31 @@ void main() {
     expect(semantics.label, 'Chat');
     expect(semantics.flagsCollection.isEnabled, ui.Tristate.isFalse);
   });
+  testWidgets('uses approved tonal hover and supports description', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminToggleField(
+            label: 'Aviso obrigatório',
+            description: 'O aviso precisa de uma ação antes de fechar.',
+            value: false,
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+    expect(find.text('O aviso precisa de uma ação antes de fechar.'), findsOneWidget);
+    final mouse = await tester.createGesture(kind: ui.PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer();
+    await mouse.moveTo(tester.getCenter(find.byType(CoeloAdminToggleField)));
+    await tester.pumpAndSettle();
+    final container = tester.widget<AnimatedContainer>(find.byType(AnimatedContainer));
+    final decoration = container.decoration! as BoxDecoration;
+    expect(decoration.color, CoeloTheme.light.colorScheme.primaryContainer);
+    expect(decoration.borderRadius, BorderRadius.circular(CoeloRadius.md));
+    final switchTheme = tester.widget<SwitchTheme>(find.byType(SwitchTheme));
+    expect(switchTheme.data.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+  });
 }

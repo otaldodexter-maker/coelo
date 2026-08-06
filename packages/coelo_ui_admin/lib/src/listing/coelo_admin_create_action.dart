@@ -127,7 +127,11 @@ class _CoeloAdminCreateActionContentState extends State<_CoeloAdminCreateActionC
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               _CreateActionIcon(icon: widget.icon, progress: progress),
-                              const SizedBox(height: CoeloSpacing.space3),
+                              SizedBox(
+                                height: MediaQuery.textScalerOf(context).scale(1) >= 1.75
+                                    ? CoeloSpacing.space2
+                                    : CoeloSpacing.space3,
+                              ),
                               Text(widget.label),
                             ],
                           ),

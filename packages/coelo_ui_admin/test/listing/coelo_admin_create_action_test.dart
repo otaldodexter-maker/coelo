@@ -105,6 +105,17 @@ void main() {
     }
   });
 
+  testWidgets('tile keeps its approved size without overflow at 200%', (tester) async {
+    await _pumpAction(
+      tester,
+      label: 'Criar perfil de cuidado',
+      textScaler: const TextScaler.linear(2),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byType(CoeloAdminCreateAction)).height, 216);
+  });
+
   testWidgets('removes semantic activation when disabled', (tester) async {
     await _pumpAction(tester, onPressed: null);
 
@@ -129,12 +140,16 @@ Future<void> _pumpAction(
   bool disableAnimations = false,
   CoeloAdminCreateActionVariant variant = CoeloAdminCreateActionVariant.tile,
   String? description,
+  String label = 'Criar instituição',
+  TextScaler textScaler = TextScaler.noScaling,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: CoeloTheme.light,
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(disableAnimations: disableAnimations),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(disableAnimations: disableAnimations, textScaler: textScaler),
         child: child!,
       ),
       home: Scaffold(
@@ -142,7 +157,7 @@ Future<void> _pumpAction(
           width: 320,
           height: 216,
           child: CoeloAdminCreateAction(
-            label: 'Criar instituição',
+            label: label,
             onPressed: onPressed,
             icon: icon,
             variant: variant,
