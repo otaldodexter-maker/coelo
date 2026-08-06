@@ -4,6 +4,11 @@ enum UnitFormStep {
   branding('Identidade'),
   profile('Hierarquia'),
   location('Localização'),
+  administrators('Administradores'),
+  people('Pessoas'),
+  invitations('Convites'),
+  groups('Turmas'),
+  activities('Atividades'),
   plan('Plano'),
   review('Revisão');
 

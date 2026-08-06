@@ -13,6 +13,7 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../domain/unit_directory.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
+import 'widgets/unit_local_management_section.dart';
 
 enum UnitFormSaveResult { created, updated }
 
@@ -25,6 +26,10 @@ final class UnitFormPage extends StatefulWidget {
     this.unitId,
     this.locationService,
     this.onDestinationSelected,
+    this.onCreateGroup,
+    this.onEditGroup,
+    this.onCreateActivity,
+    this.onEditActivity,
     super.key,
   });
 
@@ -35,6 +40,10 @@ final class UnitFormPage extends StatefulWidget {
   final String? unitId;
   final InstitutionLocationService? locationService;
   final ValueChanged<String>? onDestinationSelected;
+  final void Function(String institutionId, String? unitId)? onCreateGroup;
+  final ValueChanged<String>? onEditGroup;
+  final void Function(String institutionId, String? unitId)? onCreateActivity;
+  final ValueChanged<String>? onEditActivity;
 
   @override
   State<UnitFormPage> createState() => _UnitFormPageState();
@@ -53,7 +62,11 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   late String _typeId;
   bool _inheritPlan = true;
   InstitutionPlan _plan = InstitutionPlan.essential;
-  bool _inheritBranding = true;
+  bool _inheritLogo = true;
+  bool _inheritCover = true;
+  bool _inheritSurfaceColors = true;
+  bool _inheritBrandColors = true;
+  bool _inheritTextColors = true;
   bool _hasLogo = false;
   bool _hasCover = false;
   bool _lookingUpPostalCode = false;
@@ -118,7 +131,12 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     _typeId = _original?.typeId.isNotEmpty == true ? _original!.typeId : _institution.typeId;
     _inheritPlan = _original?.planOverride == null;
     _plan = _original?.effectivePlan ?? _institution.plan;
-    _inheritBranding = _original?.inheritInstitutionBranding ?? true;
+    final inheritBranding = _original?.inheritInstitutionBranding ?? true;
+    _inheritLogo = inheritBranding;
+    _inheritCover = inheritBranding;
+    _inheritSurfaceColors = inheritBranding;
+    _inheritBrandColors = inheritBranding;
+    _inheritTextColors = inheritBranding;
     _hasLogo = _original?.hasSimulatedLogo ?? false;
     _hasCover = _original?.hasSimulatedCover ?? false;
     for (final field in _fields) {
@@ -234,7 +252,12 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         contactPhone: _text('contactPhone'),
         contactMobilePhone: _text('contactMobilePhone'),
         planOverride: _inheritPlan ? null : _plan,
-        inheritInstitutionBranding: _inheritBranding,
+        inheritInstitutionBranding:
+            _inheritLogo &&
+            _inheritCover &&
+            _inheritSurfaceColors &&
+            _inheritBrandColors &&
+            _inheritTextColors,
         brandDisplayName: _text('brandDisplayName').isEmpty
             ? _text('name')
             : _text('brandDisplayName'),
@@ -286,19 +309,26 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   @override
   Widget build(BuildContext context) {
     final title = widget.unitId == null ? 'Criar unidade' : 'Editar unidade';
+    final theme = Theme.of(context);
     return LayoutBuilder(
-      builder: (context, outerConstraints) => SuperadminShell(
-        logout: widget.logout,
-        title: title,
-        subtitle: widget.unitId == null
-            ? 'Adicione uma nova unidade ao Coelo.'
-            : 'Atualize os dados da unidade selecionada.',
-        currentDestination: 'units',
-        onDestinationSelected: _selectDestination,
-        chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-        child: AnimatedBuilder(
-          animation: _formController,
-          builder: (context, child) => _buildState(outerConstraints),
+      builder: (context, outerConstraints) => Theme(
+        data: theme.copyWith(scaffoldBackgroundColor: theme.colorScheme.surface),
+        child: SuperadminShell(
+          logout: widget.logout,
+          title: title,
+          subtitle: widget.unitId == null
+              ? 'Adicione uma nova unidade ao Coelo.'
+              : 'Atualize os dados da unidade selecionada.',
+          currentDestination: 'units',
+          onDestinationSelected: _selectDestination,
+          showChatLauncher:
+              widget.onDestinationSelected != null &&
+              outerConstraints.maxWidth >= CoeloBreakpoints.expanded.minWidth,
+          chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+          child: AnimatedBuilder(
+            animation: _formController,
+            builder: (context, child) => _buildState(outerConstraints),
+          ),
         ),
       ),
     );
@@ -347,7 +377,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         },
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final desktop = outerConstraints.maxWidth >= CoeloBreakpoints.large.minWidth;
+            final desktop = outerConstraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
             final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
                 ? CoeloSpacing.space10
                 : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
@@ -439,9 +469,64 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     UnitFormStep.branding => _branding(),
     UnitFormStep.profile => _profile(),
     UnitFormStep.location => _location(),
+    UnitFormStep.administrators => _localManagement(UnitLocalManagementKind.administrators),
+    UnitFormStep.people => _localManagement(UnitLocalManagementKind.people),
+    UnitFormStep.invitations => _localManagement(UnitLocalManagementKind.invitations),
+    UnitFormStep.groups => _localManagement(UnitLocalManagementKind.groups),
+    UnitFormStep.activities => _localManagement(UnitLocalManagementKind.activities),
     UnitFormStep.plan => _planSection(),
     UnitFormStep.review => _review(),
   };
+
+  Widget _localManagement(UnitLocalManagementKind kind) {
+    final inheritedAdministrators = kind == UnitLocalManagementKind.administrators
+        ? [
+            for (final administrator in _institution.administrators)
+              UnitLocalEntry(
+                name: administrator.person.displayName,
+                detail: 'Owner · herdado da instituição',
+                readOnly: true,
+              ),
+          ]
+        : const <UnitLocalEntry>[];
+    final initialEntries = switch (kind) {
+      UnitLocalManagementKind.groups => [
+        for (final group in _original?.unit.groups ?? const <InstitutionGroup>[])
+          UnitLocalEntry(id: group.id, name: group.name, detail: 'Turma desta unidade'),
+      ],
+      UnitLocalManagementKind.activities => [
+        for (var index = 0; index < (_original?.activitiesCount ?? 0); index++)
+          UnitLocalEntry(
+            id: 'activity-${index + 1}',
+            name: 'Atividade ${index + 1}',
+            detail: 'Atividade desta unidade',
+          ),
+      ],
+      _ => const <UnitLocalEntry>[],
+    };
+    return UnitLocalManagementSection(
+      kind: kind,
+      inheritedEntries: inheritedAdministrators,
+      initialEntries: initialEntries,
+      onOpenCreateFlow: switch (kind) {
+        UnitLocalManagementKind.groups =>
+          widget.onCreateGroup == null
+              ? null
+              : () => widget.onCreateGroup!(_institution.id, _original?.unit.id),
+        UnitLocalManagementKind.activities =>
+          widget.onCreateActivity == null
+              ? null
+              : () => widget.onCreateActivity!(_institution.id, _original?.unit.id),
+        _ => null,
+      },
+      onOpenEditFlow: switch (kind) {
+        UnitLocalManagementKind.groups => widget.onEditGroup,
+        UnitLocalManagementKind.activities => widget.onEditActivity,
+        _ => null,
+      },
+      onChanged: _formController.markDirty,
+    );
+  }
 
   Widget _heading(String title, String description) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -455,24 +540,29 @@ final class _UnitFormPageState extends State<UnitFormPage> {
 
   Widget _branding() {
     final colors = Theme.of(context).colorScheme;
-    final inherited = _inheritBranding;
     final accent = _unitHexColor(
-      inherited ? _institution.accentColor : _text('accentColor'),
+      _inheritBrandColors ? _institution.accentColor : _text('accentColor'),
       fallback: colors.primary,
     );
     final secondary = _unitHexColor(
-      inherited ? _institution.secondaryColor : _text('secondaryColor'),
+      _inheritBrandColors ? _institution.secondaryColor : _text('secondaryColor'),
       fallback: colors.secondary,
     );
-    final displayName = inherited
+    final displayName = _inheritBrandColors
         ? (_institution.brandDisplayName.isEmpty
               ? _institution.publicName
               : _institution.brandDisplayName)
         : (_text('brandDisplayName').isEmpty
               ? (_text('name').isEmpty ? 'Nova unidade' : _text('name'))
               : _text('brandDisplayName'));
-    final hasLogo = inherited ? _institution.hasSimulatedLogo : _hasLogo;
-    final hasCover = inherited ? _institution.hasSimulatedCover : _hasCover;
+    final hasLogo = _inheritLogo ? _institution.hasSimulatedLogo : _hasLogo;
+    final hasCover = _inheritCover ? _institution.hasSimulatedCover : _hasCover;
+    final allInherited =
+        _inheritLogo &&
+        _inheritCover &&
+        _inheritSurfaceColors &&
+        _inheritBrandColors &&
+        _inheritTextColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -484,77 +574,110 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           secondary: secondary,
           hasLogo: hasLogo,
           hasCover: hasCover,
-          inherited: inherited,
+          inherited: allInherited,
         ),
         const SizedBox(height: CoeloSpacing.space5),
-        Material(
-          color: colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoeloSpacing.space4,
-              vertical: CoeloSpacing.space2,
-            ),
-            child: SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Herdar identidade visual da instituição'),
-              subtitle: Text(
-                inherited
-                    ? 'Usando foto, capa e cores de ${_institution.publicName}.'
-                    : 'A unidade usa uma identidade visual própria.',
-              ),
-              value: inherited,
-              onChanged: (value) => setState(() {
-                _inheritBranding = value;
-                _formController.markDirty();
-              }),
-            ),
-          ),
+        _InheritanceControl(
+          controlKey: const Key('unit-inherit-logo'),
+          title: 'Foto de perfil',
+          institutionName: _institution.publicName,
+          inherited: _inheritLogo,
+          onChanged: (value) => setState(() {
+            _inheritLogo = value;
+            _formController.markDirty();
+          }),
         ),
-        const SizedBox(height: CoeloSpacing.space4),
+        const SizedBox(height: CoeloSpacing.space3),
         _UnitBrandMediaCard(
           key: const Key('unit-logo-card'),
           title: 'Foto de perfil',
-          description: inherited
+          description: _inheritLogo
               ? 'Herdada de ${_institution.publicName}.'
               : 'Imagem quadrada em PNG, JPG ou WebP, com até 2 MB.',
           accent: accent,
           isCover: false,
           selected: hasLogo,
-          inherited: inherited,
+          inherited: _inheritLogo,
           onToggle: () => setState(() {
             _hasLogo = !_hasLogo;
             _formController.markDirty();
           }),
         ),
         const SizedBox(height: CoeloSpacing.space4),
+        _InheritanceControl(
+          controlKey: const Key('unit-inherit-cover'),
+          title: 'Foto de capa',
+          institutionName: _institution.publicName,
+          inherited: _inheritCover,
+          onChanged: (value) => setState(() {
+            _inheritCover = value;
+            _formController.markDirty();
+          }),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
         _UnitBrandMediaCard(
           key: const Key('unit-cover-card'),
           title: 'Foto de capa',
-          description: inherited
+          description: _inheritCover
               ? 'Herdada de ${_institution.publicName}.'
               : 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
           accent: accent,
           isCover: true,
           selected: hasCover,
-          inherited: inherited,
+          inherited: _inheritCover,
           onToggle: () => setState(() {
             _hasCover = !_hasCover;
             _formController.markDirty();
           }),
         ),
-        if (!inherited) ...[
-          const SizedBox(height: CoeloSpacing.space5),
+        const SizedBox(height: CoeloSpacing.space5),
+        _InheritanceControl(
+          controlKey: const Key('unit-inherit-surface'),
+          title: 'Cores de superfície',
+          institutionName: _institution.publicName,
+          inherited: _inheritSurfaceColors,
+          onChanged: (value) => setState(() {
+            _inheritSurfaceColors = value;
+            _formController.markDirty();
+          }),
+        ),
+        if (!_inheritSurfaceColors) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          _responsiveFields([_colorField('surfaceColor', 'Cor principal da superfície')]),
+        ],
+        const SizedBox(height: CoeloSpacing.space4),
+        _InheritanceControl(
+          controlKey: const Key('unit-inherit-brand'),
+          title: 'Cores da marca',
+          institutionName: _institution.publicName,
+          inherited: _inheritBrandColors,
+          onChanged: (value) => setState(() {
+            _inheritBrandColors = value;
+            _formController.markDirty();
+          }),
+        ),
+        if (!_inheritBrandColors) ...[
+          const SizedBox(height: CoeloSpacing.space3),
           _responsiveFields([
             _field('brandDisplayName', 'Nome de exibição', Icons.badge_outlined),
-            _colorField('surfaceColor', 'Cor principal da superfície'),
             _colorField('accentColor', 'Cor principal da marca'),
             _colorField('secondaryColor', 'Cor secundária da marca'),
-            _colorField('textColor', 'Cor principal do texto'),
           ]),
+        ],
+        const SizedBox(height: CoeloSpacing.space4),
+        _InheritanceControl(
+          controlKey: const Key('unit-inherit-text'),
+          title: 'Cores de texto',
+          institutionName: _institution.publicName,
+          inherited: _inheritTextColors,
+          onChanged: (value) => setState(() {
+            _inheritTextColors = value;
+            _formController.markDirty();
+          }),
+        ),
+        if (!_inheritTextColors) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          _responsiveFields([_colorField('textColor', 'Cor principal do texto')]),
         ],
       ],
     );
@@ -771,7 +894,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   Widget _review() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _heading('Revisão', 'Confira os dados antes de concluir. Você pode editar qualquer grupo.'),
+      _heading('Revisão', 'Confira os dados antes de concluir. Você pode editar qualquer seção.'),
       _UnitReviewCard(
         editKey: const Key('unit-review-edit-profile'),
         title: 'Hierarquia',
@@ -800,13 +923,29 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       _UnitReviewCard(
         editKey: const Key('unit-review-edit-branding'),
         title: 'Identidade',
-        summary: _inheritBranding
+        summary:
+            _inheritLogo &&
+                _inheritCover &&
+                _inheritSurfaceColors &&
+                _inheritBrandColors &&
+                _inheritTextColors
             ? 'Herdada de ${_institution.publicName}'
-            : (_text('brandDisplayName').isEmpty
-                  ? 'Identidade própria'
-                  : _text('brandDisplayName')),
+            : 'Herança configurada por contexto',
         onEdit: () => _formController.selectStep(UnitFormStep.branding),
       ),
+      for (final item in const [
+        (UnitFormStep.administrators, 'Administradores'),
+        (UnitFormStep.people, 'Pessoas'),
+        (UnitFormStep.invitations, 'Convites'),
+        (UnitFormStep.groups, 'Turmas'),
+        (UnitFormStep.activities, 'Atividades'),
+      ])
+        _UnitReviewCard(
+          editKey: Key('unit-review-edit-${item.$1.name}'),
+          title: item.$2,
+          summary: 'Dados mantidos localmente nesta sessão.',
+          onEdit: () => _formController.selectStep(item.$1),
+        ),
     ],
   );
 
@@ -944,6 +1083,73 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         primary,
         if (_original != null && !last) saveCurrentButton,
       ],
+    );
+  }
+}
+
+final class _InheritanceControl extends StatelessWidget {
+  const _InheritanceControl({
+    required this.controlKey,
+    required this.title,
+    required this.institutionName,
+    required this.inherited,
+    required this.onChanged,
+  });
+
+  final Key controlKey;
+  final String title;
+  final String institutionName;
+  final bool inherited;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final copy = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: CoeloSpacing.spaceHalf),
+              Text(
+                inherited ? 'Herdado de $institutionName.' : 'Personalizado nesta unidade.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          );
+          final action = OutlinedButton.icon(
+            key: controlKey,
+            onPressed: () => onChanged(!inherited),
+            icon: Icon(inherited ? Icons.link_off_rounded : Icons.link_rounded),
+            label: Text(inherited ? 'Personalizar' : 'Herdar'),
+          );
+          if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                copy,
+                const SizedBox(height: CoeloSpacing.space3),
+                action,
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: copy),
+              const SizedBox(width: CoeloSpacing.space4),
+              action,
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -1256,9 +1462,9 @@ final class _UnitPlanCard extends StatelessWidget {
                 ),
               ),
               backgroundColor: WidgetStateProperty.resolveWith((states) {
-                final highlighted =
+                final isActive =
                     states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-                return selected || highlighted ? colors.primaryContainer : colors.surface;
+                return selected || isActive ? colors.primaryContainer : colors.surface;
               }),
               overlayColor: const WidgetStatePropertyAll(Colors.transparent),
             ),

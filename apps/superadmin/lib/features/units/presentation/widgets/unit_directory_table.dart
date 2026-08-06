@@ -229,7 +229,7 @@ enum _UnitColumn {
   unit('unit', 'Unidade', 220, 180, UnitDirectorySortColumn.name),
   institution('institution', 'Instituição', 220, 180, UnitDirectorySortColumn.institutionName),
   type('type', 'Tipo', 190, 140, UnitDirectorySortColumn.typeName),
-  groups('groups', 'Grupos', 100, 88, UnitDirectorySortColumn.groupsCount),
+  groups('groups', 'Turmas', 100, 88, UnitDirectorySortColumn.groupsCount),
   activities('activities', 'Atividades', 110, 96, UnitDirectorySortColumn.activitiesCount),
   administrators('administrators', 'Administradores', 160, 140, null),
   team('team', 'Equipe institucional', 180, 150, null),
@@ -260,7 +260,7 @@ enum _UnitColumn {
 enum _UnitDetailColumn {
   institution('institution', 'Instituição', 220, 180),
   unit('unit-name', 'Unidade', 220, 180),
-  group('group-name', 'Grupo', 220, 180),
+  group('group-name', 'Turma', 220, 180),
   activity('activity-name', 'Atividade', 220, 180),
   administrators('administrators', 'Administradores', 160, 140),
   team('team', 'Equipe institucional', 180, 150),
@@ -313,7 +313,7 @@ List<_UnitHierarchyRow> _unitHierarchyRows(
           _UnitHierarchyRow(
             id: id,
             unit: unit,
-            groupName: 'Grupo ${(group + 1).toString().padLeft(2, '0')}',
+            groupName: 'Turma ${(group + 1).toString().padLeft(2, '0')}',
             metrics: _unitHierarchyMetrics(id),
           ),
         );
@@ -328,7 +328,7 @@ List<_UnitHierarchyRow> _unitHierarchyRows(
         _UnitHierarchyRow(
           id: id,
           unit: unit,
-          groupName: 'Grupo ${(group + 1).toString().padLeft(2, '0')}',
+          groupName: 'Turma ${(group + 1).toString().padLeft(2, '0')}',
           activityName: 'Atividade ${(activity + 1).toString().padLeft(2, '0')}',
           metrics: _unitHierarchyMetrics(id),
         ),

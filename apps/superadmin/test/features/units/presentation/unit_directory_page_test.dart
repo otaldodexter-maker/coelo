@@ -10,11 +10,10 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('offers grouped, groups, and activities table views with local metrics', (
+  testWidgets('offers grouped, turmas, and activities table views with local metrics', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -47,11 +46,11 @@ void main() {
 
     await tester.longPress(find.byKey(const Key('unit-view-table')));
     await tester.pumpAndSettle();
-    for (final label in ['Agrupado', 'Por grupos', 'Por atividades']) {
+    for (final label in ['Agrupado', 'Por turmas', 'Por atividades']) {
       expect(find.widgetWithText(MenuItemButton, label), findsOneWidget);
     }
 
-    await tester.tap(find.widgetWithText(MenuItemButton, 'Por grupos'));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Por turmas'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('unit-directory-table-groups')), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-table-header-group-name')), findsOneWidget);
@@ -85,9 +84,7 @@ void main() {
     expect(find.byType(SuperadminListingPaginationFooter), findsOneWidget);
   });
 
-  testWidgets('renders active status as lightweight text and icon without green fill', (
-    tester,
-  ) async {
+  testWidgets('renders active status with the canonical semantic surface', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -98,18 +95,21 @@ void main() {
     expect(find.text('Ativa'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle_outline_rounded), findsOneWidget);
     final surface = tester.widget<Container>(find.byKey(const Key('unit-status-chip-active')));
-    expect((surface.decoration! as BoxDecoration).color, Colors.transparent);
+    final statusColors = CoeloStatusColors.light;
+    expect((surface.decoration! as BoxDecoration).color, statusColors.successContainer);
   });
 
-  testWidgets('unit card status starts circular and expands on hover', (tester) async {
+  testWidgets('canonical unit status starts circular and expands on hover', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: Center(
-            child: ExpandableUnitStatusIndicator(
-              itemId: 'unit-1',
-              status: domain.UnitStatus.active,
+            child: CoeloAdminExpandableStatusIndicator(
+              label: domain.UnitStatus.active.label,
+              backgroundColor: CoeloStatusColors.light.successContainer,
+              foregroundColor: CoeloStatusColors.light.onSuccessContainer,
+              surfaceKey: const Key('unit-status-unit-1'),
             ),
           ),
         ),
@@ -156,7 +156,7 @@ void main() {
     expect(find.text('Instituição'), findsWidgets);
     expect(find.text('Tipo'), findsWidgets);
     expect(find.text('Plano'), findsWidgets);
-    expect(find.text('Grupos'), findsWidgets);
+    expect(find.text('Turmas'), findsWidgets);
     expect(find.text('Atividades'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
 
@@ -261,6 +261,27 @@ void main() {
     );
   });
 
+  testWidgets('uses the plain surface background on compact widths', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitDirectoryPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final directoryContext = tester.element(find.byKey(const Key('unit-card-grid')));
+    final directoryTheme = Theme.of(directoryContext);
+    expect(directoryTheme.scaffoldBackgroundColor, directoryTheme.colorScheme.surface);
+  });
+
   testWidgets('opens the unit CSV and XLSX import review dialog', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -287,10 +308,11 @@ void main() {
     expect(find.byKey(const Key('unit-demo-file-picker')), findsOneWidget);
   });
 
-  testWidgets('keeps filter selections as draft and closes the panel with Escape', (tester) async {
+  testWidgets('uses exclusive status tabs and removes the status dropdown', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+    await repository.upsert(repository.records.first.copyWith(status: domain.UnitStatus.draft));
 
     await tester.pumpWidget(
       MaterialApp(
@@ -303,29 +325,36 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final trigger = find.byKey(const Key('unit-status-filter'));
-    await tester.tap(trigger);
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MenuItemButton, 'Ativa'));
-    await tester.pumpAndSettle();
-    expect(find.text('Aplicar'), findsOneWidget);
-    expect(find.text('Limpar filtros'), findsNothing);
+    expect(find.byKey(const Key('unit-status-filter')), findsNothing);
+    expect(find.byKey(const Key('unit-status-tabs')), findsOneWidget);
+    for (final label in ['Todos', 'Ativos', 'Em Implantação', 'Inativos']) {
+      expect(find.text(label), findsOneWidget);
+    }
 
-    await tester.tap(find.text('Aplicar'));
+    await tester.tap(find.text('Em Implantação'));
     await tester.pumpAndSettle();
-    expect(find.text('Limpar filtros'), findsOneWidget);
-    await tester.tap(find.text('Limpar filtros'));
-    await tester.pumpAndSettle();
-    expect(find.text('Limpar filtros'), findsNothing);
+    expect(find.bySemanticsLabel('Status: Rascunho'), findsWidgets);
+    expect(find.bySemanticsLabel('Status: Ativa'), findsNothing);
+  });
 
-    await tester.tap(trigger);
+  testWidgets('unit cards reuse the canonical interactive card and status components', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitDirectoryPage(
+          repository: FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository()),
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Rascunho'));
-    await tester.pump();
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.pumpAndSettle();
-    expect(find.text('Aplicar'), findsNothing);
-    expect(find.text('Limpar filtros'), findsNothing);
+
+    expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
+    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsWidgets);
   });
 
   testWidgets('keeps the table scrollable, sortable, and resizable', (tester) async {

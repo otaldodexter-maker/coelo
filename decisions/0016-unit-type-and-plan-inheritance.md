@@ -3,6 +3,7 @@ title: "Tipo Próprio E Herança De Plano Por Unidade"
 source: "aprovação do plano Tela de Unidades no Superadmin em 2026-07-28; schema Supabase consultado em 2026-07-28; specs/017-superadmin-unit-schema-foundation.md"
 status: "Accepted"
 generated_at: "2026-07-29"
+updated_at: "2026-08-05"
 ---
 
 # Tipo Próprio E Herança De Plano Por Unidade
@@ -32,8 +33,15 @@ já continha `unit_addresses`, `unit_contacts`, `unit_branding`, `groups` e
 - A instituição de uma unidade existente não pode ser trocada nesta operação.
 - Os status persistíveis são `draft`, `active`, `inactive`, `suspended` e
   `archived`.
-- Grupos e atividades aparecem como métricas na gestão da unidade, mas são
-  cadastrados em seus próprios domínios.
+- A interface usa o termo `Turma`, preservando identificadores técnicos
+  existentes como `group*`.
+- Criar/Editar Unidade organiza a gestão contextual em etapas independentes de
+  Administradores, Pessoas, Convites, Turmas e Atividades.
+- Administradores herdados da instituição são somente leitura; administradores
+  incluídos manualmente podem ser editados ou removidos e recebem acesso
+  contextual `Owner` do Admin na Unidade.
+- Turmas e Atividades reutilizam seus fluxos existentes com instituição e
+  unidade preenchidas, sem transferir seu domínio para o cadastro da unidade.
 - Branding institucional é herdado por padrão e pode receber override por
   unidade através do contrato de `unit_branding`.
 
@@ -48,8 +56,9 @@ contrato técnico de importação.
 A migração usa o tipo da instituição-mãe para unidades existentes e falha
 explicitamente se alguma delas não puder ser tipada sem inventar catálogo.
 
-A tela ainda usa repositório fake e expande o registro local de unidade dentro
-de `InstitutionRecord`. Diretório agregado, criação/edição persistentes,
-permissões de escrita, RPCs, auditoria, importação/exportação e testes
-cross-tenant de mutação exigem decisão posterior. Esta fundação não amplia
-grants nem policies.
+A tela ainda usa repositórios fake e estado local para Administradores, Pessoas,
+Convites, Turmas e Atividades. Busca e convite de pessoas, vínculos familiares e
+profissionais, além da prévia de importação/exportação CSV/XLSX, são somente
+demonstrativos e não leem nem geram arquivos físicos. Persistência, Auth,
+permissões de escrita, RPCs, auditoria e testes cross-tenant de mutação exigem
+decisão posterior. Esta fundação não amplia grants nem policies.

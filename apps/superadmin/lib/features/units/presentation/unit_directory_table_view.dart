@@ -1,6 +1,6 @@
 enum UnitDirectoryTableView {
   grouped('Agrupado'),
-  groups('Por grupos'),
+  groups('Por turmas'),
   activities('Por atividades');
 
   const UnitDirectoryTableView(this.label);

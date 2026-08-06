@@ -12,7 +12,7 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: Scaffold(
-          body: UnitFileActions(activityController: controller, viewLabel: 'Por grupos'),
+          body: UnitFileActions(activityController: controller, viewLabel: 'Por turmas'),
         ),
       ),
     );
@@ -22,7 +22,7 @@ void main() {
     await tester.tap(find.byKey(const Key('unit-files-export-csv')));
     await tester.pump();
 
-    expect(controller.activities.single.subject, 'Unidades · Por grupos');
-    expect(controller.activities.single.fileName, 'unidades-por-grupos.csv');
+    expect(controller.activities.single.subject, 'Unidades · Por turmas');
+    expect(controller.activities.single.fileName, 'unidades-por-turmas.csv');
   });
 }

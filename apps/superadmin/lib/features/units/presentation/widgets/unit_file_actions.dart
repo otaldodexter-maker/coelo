@@ -62,7 +62,7 @@ final class UnitFileActions extends StatelessWidget {
 String _viewSuffix(String label) => switch (label) {
   'Cards' => 'cards',
   'Agrupado' => 'agrupado',
-  'Por grupos' => 'por-grupos',
+  'Por turmas' => 'por-turmas',
   'Por atividades' => 'por-atividades',
   _ => 'visao',
 };

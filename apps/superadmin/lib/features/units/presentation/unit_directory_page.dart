@@ -7,6 +7,7 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/unit_directory.dart';
 import 'unit_directory_table_view.dart';
 import 'unit_directory_view_model.dart';
@@ -15,6 +16,8 @@ import 'widgets/unit_directory_pagination.dart';
 import 'widgets/unit_directory_states.dart';
 import 'widgets/unit_directory_table.dart';
 import 'widgets/unit_directory_toolbar.dart';
+
+enum _UnitStatusSegment { all, active, onboarding, inactive }
 
 final class UnitDirectoryPage extends StatefulWidget {
   const UnitDirectoryPage({
@@ -107,45 +110,49 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SuperadminShell(
-      logout: widget.logout,
-      title: 'Unidades',
-      subtitle: 'Gerencie as unidades da plataforma.',
-      currentDestination: 'units',
-      activityController: _activityController,
-      showChatLauncher: widget.onConversationsOpen != null,
-      chatLauncherBottomInset: _paginationFooterHeight,
-      onBugReportSubmitted: widget.onBugReportSubmitted,
-      onOpenConversations: widget.onConversationsOpen,
-      onDestinationSelected: widget.onDestinationSelected,
-      child: Builder(
-        builder: (context) {
-          final message = widget.successMessage;
-          if (message != null && !_noticeShown) {
-            _noticeShown = true;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                showSuperadminNotice(context, message, icon: Icons.check_circle_outline_rounded);
-              }
-            });
-          }
-          return _UnitDirectoryContent(
-            viewModel: _viewModel,
-            activityController: _activityController,
-            searchController: _searchController,
-            display: _display,
-            tableView: _tableView,
-            onDisplayChanged: _changeDisplay,
-            onTableViewChanged: _changeTableView,
-            onCreate: widget.onCreate ?? () {},
-            onEdit: widget.onEdit ?? (_) {},
-            onFooterHeightChanged: _handlePaginationFooterHeightChanged,
-            onClearFilters: () {
-              _searchController.clear();
-              _viewModel.clearFilters();
-            },
-          );
-        },
+    final theme = Theme.of(context);
+    return Theme(
+      data: theme.copyWith(scaffoldBackgroundColor: theme.colorScheme.surface),
+      child: SuperadminShell(
+        logout: widget.logout,
+        title: 'Unidades',
+        subtitle: 'Gerencie as unidades da plataforma.',
+        currentDestination: 'units',
+        activityController: _activityController,
+        showChatLauncher: widget.onConversationsOpen != null,
+        chatLauncherBottomInset: _paginationFooterHeight,
+        onBugReportSubmitted: widget.onBugReportSubmitted,
+        onOpenConversations: widget.onConversationsOpen,
+        onDestinationSelected: widget.onDestinationSelected,
+        child: Builder(
+          builder: (context) {
+            final message = widget.successMessage;
+            if (message != null && !_noticeShown) {
+              _noticeShown = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  showSuperadminNotice(context, message, icon: Icons.check_circle_outline_rounded);
+                }
+              });
+            }
+            return _UnitDirectoryContent(
+              viewModel: _viewModel,
+              activityController: _activityController,
+              searchController: _searchController,
+              display: _display,
+              tableView: _tableView,
+              onDisplayChanged: _changeDisplay,
+              onTableViewChanged: _changeTableView,
+              onCreate: widget.onCreate ?? () {},
+              onEdit: widget.onEdit ?? (_) {},
+              onFooterHeightChanged: _handlePaginationFooterHeightChanged,
+              onClearFilters: () {
+                _searchController.clear();
+                _viewModel.clearFilters();
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -251,6 +258,24 @@ final class _UnitDirectoryContentState extends State<_UnitDirectoryContent> {
                       onClearFilters: widget.onClearFilters,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
+                    SuperadminUnderlineTabs<_UnitStatusSegment>(
+                      key: const Key('unit-status-tabs'),
+                      tabs: const [
+                        SuperadminUnderlineTab(value: _UnitStatusSegment.all, label: 'Todos'),
+                        SuperadminUnderlineTab(value: _UnitStatusSegment.active, label: 'Ativos'),
+                        SuperadminUnderlineTab(
+                          value: _UnitStatusSegment.onboarding,
+                          label: 'Em Implantação',
+                        ),
+                        SuperadminUnderlineTab(
+                          value: _UnitStatusSegment.inactive,
+                          label: 'Inativos',
+                        ),
+                      ],
+                      selected: _segmentFor(widget.viewModel.query.statuses),
+                      onSelected: (segment) => widget.viewModel.setStatuses(_statusesFor(segment)),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
                     _UnitDirectoryResults(
                       viewModel: widget.viewModel,
                       display: widget.display,
@@ -288,6 +313,35 @@ final class _UnitDirectoryContentState extends State<_UnitDirectoryContent> {
     );
   }
 }
+
+_UnitStatusSegment _segmentFor(Set<UnitStatus> statuses) {
+  if (statuses.length == 1 && statuses.contains(UnitStatus.active)) {
+    return _UnitStatusSegment.active;
+  }
+  if (statuses.length == 1 && statuses.contains(UnitStatus.draft)) {
+    return _UnitStatusSegment.onboarding;
+  }
+  if (statuses.length == 3 &&
+      statuses.containsAll(const {
+        UnitStatus.inactive,
+        UnitStatus.suspended,
+        UnitStatus.archived,
+      })) {
+    return _UnitStatusSegment.inactive;
+  }
+  return _UnitStatusSegment.all;
+}
+
+Set<UnitStatus> _statusesFor(_UnitStatusSegment segment) => switch (segment) {
+  _UnitStatusSegment.all => const {},
+  _UnitStatusSegment.active => const {UnitStatus.active},
+  _UnitStatusSegment.onboarding => const {UnitStatus.draft},
+  _UnitStatusSegment.inactive => const {
+    UnitStatus.inactive,
+    UnitStatus.suspended,
+    UnitStatus.archived,
+  },
+};
 
 final class _UnitDirectoryResults extends StatelessWidget {
   const _UnitDirectoryResults({

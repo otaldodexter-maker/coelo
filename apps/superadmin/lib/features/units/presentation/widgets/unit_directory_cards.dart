@@ -8,9 +8,6 @@ import '../../../../shared/presentation/widgets/superadmin_directory_create_bann
 import '../../domain/unit_directory.dart';
 import 'unit_status_presentation.dart';
 
-Duration _interactionDuration(BuildContext context) =>
-    MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
-
 final class UnitDirectoryCards extends StatelessWidget {
   const UnitDirectoryCards({
     required this.items,
@@ -75,178 +72,123 @@ final class UnitCreateBanner extends StatelessWidget {
   }
 }
 
-final class _UnitCard extends StatefulWidget {
+final class _UnitCard extends StatelessWidget {
   const _UnitCard({required this.item, required this.onPressed});
 
   final UnitDirectoryItem item;
   final VoidCallback onPressed;
 
   @override
-  State<_UnitCard> createState() => _UnitCardState();
-}
-
-final class _UnitCardState extends State<_UnitCard> {
-  bool _highlighted = false;
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final item = widget.item;
-    return ConstrainedBox(
+    final (statusBackground, statusForeground) = unitStatusColors(context, item.status);
+    return CoeloAdminInteractiveCard(
       key: Key('unit-card-${item.id}'),
-      constraints: const BoxConstraints(minHeight: 216),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: _interactionDuration(context),
-            curve: Curves.easeOutCubic,
-            builder: (context, progress, child) => Container(
-              key: Key('unit-card-surface-${item.id}'),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
-                  color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: .5),
-                    progress,
-                  )!,
-                  width: 1 + .5 * progress,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: .03),
-                      colors.primary.withValues(alpha: .15),
-                      progress,
-                    )!,
-                    blurRadius: 8 + 4 * progress,
-                    spreadRadius: 2 * progress,
-                    offset: Offset(0, 2 + 2 * progress),
+      surfaceKey: Key('unit-card-surface-${item.id}'),
+      minHeight: 216,
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colors.secondaryContainer,
+                    shape: BoxShape.circle,
                   ),
-                ],
+                  alignment: Alignment.center,
+                  child: Text(
+                    item.initials,
+                    style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSecondaryContainer),
+                  ),
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        _location(item.district, item.city, item.state),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                CoeloAdminExpandableStatusIndicator(
+                  label: item.status.label,
+                  backgroundColor: statusBackground,
+                  foregroundColor: statusForeground,
+                  semanticLabel: 'Status: ${item.status.label}',
+                  surfaceKey: Key('unit-status-${item.id}'),
+                ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Row(
+              children: [
+                Text(
+                  'Instituição',
+                  style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                Expanded(
+                  child: Text(
+                    item.institutionName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space3),
+            _DetailRow(
+              first: _Detail(
+                icon: Icons.category_outlined,
+                label: 'Tipo',
+                value: _value(item.typeName),
               ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: colors.secondaryContainer,
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                item.initials,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.onSecondaryContainer,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space3),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    _location(item.district, item.city, item.state),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: colors.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            ExpandableUnitStatusIndicator(itemId: item.id, status: item.status),
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space2),
-                        Row(
-                          children: [
-                            Text(
-                              'Instituição',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            Expanded(
-                              child: Text(
-                                item.institutionName,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.labelMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        const Divider(height: 1),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _DetailRow(
-                          first: _Detail(
-                            icon: Icons.category_outlined,
-                            label: 'Tipo',
-                            value: _value(item.typeName),
-                          ),
-                          second: _Detail(
-                            icon: Icons.sell_outlined,
-                            label: 'Plano',
-                            value: item.effectivePlan.label,
-                          ),
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _DetailRow(
-                          first: _Detail(
-                            icon: Icons.groups_outlined,
-                            label: 'Grupos',
-                            value: '${item.groupsCount}',
-                          ),
-                          second: _Detail(
-                            icon: Icons.local_activity_outlined,
-                            label: 'Atividades',
-                            value: '${item.activitiesCount}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              second: _Detail(
+                icon: Icons.sell_outlined,
+                label: 'Plano',
+                value: item.effectivePlan.label,
               ),
             ),
-          ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _DetailRow(
+              first: _Detail(
+                icon: Icons.groups_outlined,
+                label: 'Turmas',
+                value: '${item.groupsCount}',
+              ),
+              second: _Detail(
+                icon: Icons.local_activity_outlined,
+                label: 'Atividades',
+                value: '${item.activitiesCount}',
+              ),
+            ),
+          ],
         ),
       ),
     );

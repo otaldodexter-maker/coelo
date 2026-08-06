@@ -108,14 +108,6 @@ final class UnitDirectoryToolbar extends StatelessWidget {
               optionLabel: (item) => item.label,
               onChanged: (items) => viewModel.setTypes(items.map((item) => item.id).toSet()),
             ),
-            filter<UnitStatus>(
-              key: const Key('unit-status-filter'),
-              label: 'Todos os status',
-              values: UnitStatus.values,
-              selected: viewModel.query.statuses,
-              optionLabel: (item) => item.label,
-              onChanged: viewModel.setStatuses,
-            ),
             filter<UnitFilterOption>(
               key: const Key('unit-plan-filter'),
               label: 'Todos os planos',
@@ -189,7 +181,7 @@ final class UnitDirectoryToolbar extends StatelessWidget {
                   ),
                   SuperadminDirectoryTableViewOption(
                     value: UnitDirectoryTableView.groups,
-                    label: 'Por grupos',
+                    label: 'Por turmas',
                   ),
                   SuperadminDirectoryTableViewOption(
                     value: UnitDirectoryTableView.activities,
