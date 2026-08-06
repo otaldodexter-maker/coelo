@@ -236,14 +236,33 @@ void main() {
     );
 
     expect(find.text('Alergias e restri\u00e7\u00f5es'), findsOneWidget);
+    expect(find.text('Em acompanhamento'), findsNothing);
+    expect(find.text('Epis\u00f3dio grave'), findsNothing);
+    expect(find.text('Hist\u00f3rico'), findsNothing);
+    expect(find.text('Epis\u00f3dio leve'), findsNothing);
+    expect(find.text('Planos de medica\u00e7\u00e3o'), findsWidgets);
+    expect(find.text('Ver planos da crian\u00e7a'), findsNothing);
+
+    await tester.tap(find.text('Alergias e restri\u00e7\u00f5es'));
+    await tester.pumpAndSettle();
     expect(find.text('Em acompanhamento'), findsOneWidget);
     expect(find.text('Epis\u00f3dio grave'), findsOneWidget);
     expect(find.text('Hist\u00f3rico'), findsOneWidget);
     expect(find.text('Epis\u00f3dio leve'), findsOneWidget);
+
+    await tester.tap(find.text('Orienta\u00e7\u00f5es de cuidado'));
+    await tester.pumpAndSettle();
+    expect(find.text('Autismo'), findsOneWidget);
+    expect(find.text('Em acompanhamento'), findsNothing);
+
     expect(find.text('Perfil de cuidado'), findsWidgets);
     expect(find.text('Planos de medica\u00e7\u00e3o'), findsWidgets);
     expect(find.text('Medicamentos'), findsNothing);
     expect(find.byKey(const Key('health-medication-create')), findsNothing);
+
+    await tester.tap(find.widgetWithText(TextButton, 'Planos de medica\u00e7\u00e3o'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ver planos da crian\u00e7a'), findsOneWidget);
 
     await tester.tap(find.text('Ver planos da crian\u00e7a'));
     await tester.pump();

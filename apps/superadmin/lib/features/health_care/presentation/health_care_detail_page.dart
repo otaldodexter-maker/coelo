@@ -3,6 +3,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'health_care_responsive_surface.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/health_care.dart';
@@ -29,6 +30,8 @@ final class HealthCareProfileDetailPage extends StatefulWidget {
 }
 
 final class _HealthCareProfileDetailPageState extends State<HealthCareProfileDetailPage> {
+  var _currentSection = 0;
+
   @override
   void initState() {
     super.initState();
@@ -120,97 +123,176 @@ final class _HealthCareProfileDetailPageState extends State<HealthCareProfileDet
         message: 'Não há detalhe disponível.',
       );
     }
-    final sections = <Widget>[
-      _header(context, child),
-      _medicationPlansLink(context, child),
-      _allergies(context, child),
-      _care(context, child),
+    final steps = <SuperadminFormStep>[
+      for (var index = 0; index < _sectionLabels.length; index++)
+        SuperadminFormStep(
+          label: _sectionLabels[index],
+          status: index == _currentSection
+              ? SuperadminFormStepStatus.current
+              : SuperadminFormStepStatus.incomplete,
+        ),
     ];
     return CustomScrollView(
       key: const Key('health-care-detail-scroll'),
       slivers: [
         SliverPadding(
           padding: EdgeInsets.all(padding),
-          sliver: SliverList.separated(
-            itemCount: sections.length,
-            itemBuilder: (_, index) => sections[index],
-            separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space4),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _pageActions(context),
+                const SizedBox(height: CoeloSpacing.space4),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final navigation = SuperadminFormStepNavigation(
+                      steps: steps,
+                      currentIndex: _currentSection,
+                      onStepSelected: _selectSection,
+                    );
+                    final content = _section(context, child);
+                    if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          navigation,
+                          const SizedBox(width: CoeloSpacing.space6),
+                          Expanded(child: content),
+                        ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        navigation,
+                        const SizedBox(height: CoeloSpacing.space4),
+                        content,
+                        const SizedBox(height: CoeloSpacing.space4),
+                        _compactSectionActions(),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _header(BuildContext context, HealthCareChild child) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Card(
-        color: Theme.of(context).colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space4),
-          child: Wrap(
-            spacing: CoeloSpacing.space4,
-            runSpacing: CoeloSpacing.space3,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              const Icon(Icons.science_outlined),
-              const Text('Demonstração local'),
-              Chip(label: Text('Perfil: ${_detailProfileLabel(widget.controller.profile)}')),
-              Text(
-                widget.controller.isReadOnly ? 'Somente leitura' : 'Correção excepcional auditada',
-              ),
-            ],
+  void _selectSection(int index) => setState(() => _currentSection = index);
+
+  Widget _section(BuildContext context, HealthCareChild child) => switch (_currentSection) {
+    0 => _summary(context, child),
+    1 => _allergies(context, child),
+    2 => _care(context, child),
+    _ => _medicationPlansLink(context, child),
+  };
+
+  Widget _pageActions(BuildContext context) => Align(
+    alignment: Alignment.centerRight,
+    child: Wrap(
+      alignment: WrapAlignment.end,
+      spacing: CoeloSpacing.space3,
+      runSpacing: CoeloSpacing.space2,
+      children: [
+        OutlinedButton.icon(
+          key: const Key('health-care-profile-back'),
+          onPressed: () => Navigator.maybePop(context),
+          icon: const Icon(Icons.arrow_back_rounded),
+          label: const Text('Voltar'),
+        ),
+        if (widget.controller.canEdit)
+          FilledButton.icon(
+            key: const Key('health-care-profile-edit'),
+            onPressed: widget.onEditCareProfile,
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Editar perfil'),
           ),
+      ],
+    ),
+  );
+
+  Widget _compactSectionActions() => Row(
+    children: [
+      Expanded(
+        child: OutlinedButton.icon(
+          key: const Key('health-care-detail-previous-section'),
+          onPressed: _currentSection == 0 ? null : () => _selectSection(_currentSection - 1),
+          icon: const Icon(Icons.arrow_back_rounded),
+          label: const Text('Anterior'),
         ),
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final avatar = CoeloAvatar(
-            semanticLabel: 'Avatar de ${child.displayName}',
-            initials: 'CD',
-            size: CoeloAvatarSize.large,
-          );
-          final labels = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(child.displayName, style: Theme.of(context).textTheme.headlineSmall),
-              const Text('Pessoa global • cadastro demonstrativo'),
-            ],
-          );
-          return constraints.maxWidth < CoeloBreakpoints.medium.minWidth
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    avatar,
-                    const SizedBox(height: CoeloSpacing.space3),
-                    labels,
-                  ],
-                )
-              : Row(
-                  children: [
-                    avatar,
-                    const SizedBox(width: CoeloSpacing.space4),
-                    Expanded(child: labels),
-                  ],
-                );
-        },
-      ),
-      const SizedBox(height: CoeloSpacing.space3),
-      Wrap(
-        spacing: CoeloSpacing.space2,
-        runSpacing: CoeloSpacing.space2,
-        children: [
-          for (final link in child.links.where((link) => link.active && link.authorized))
-            Chip(
-              label: Text(
-                '${_institutionLabel(link.institutionId)} → ${_unitLabel(link.unitId)} → ${_groupLabel(link.groupOrActivityId)}',
-              ),
-            ),
-        ],
+      const SizedBox(width: CoeloSpacing.space3),
+      Expanded(
+        child: OutlinedButton.icon(
+          key: const Key('health-care-detail-next-section'),
+          onPressed: _currentSection == _sectionLabels.length - 1
+              ? null
+              : () => _selectSection(_currentSection + 1),
+          icon: const Icon(Icons.arrow_forward_rounded),
+          label: const Text('Próxima'),
+        ),
       ),
     ],
+  );
+
+  Widget _summary(BuildContext context, HealthCareChild child) => _SurfaceCard(
+    title: 'Resumo',
+    subtitle: 'Identidade, contexto autorizado e ciências deste perfil.',
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CoeloAvatar(
+              semanticLabel: 'Avatar de ${child.displayName}',
+              initials: 'CD',
+              size: CoeloAvatarSize.large,
+            ),
+            const SizedBox(width: CoeloSpacing.space4),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(child.displayName, style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: CoeloSpacing.space1),
+                  const Text('Pessoa global • cadastro demonstrativo'),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  Text(
+                    'Demonstração local • Perfil: ${_detailProfileLabel(widget.controller.profile)} • '
+                    '${widget.controller.isReadOnly ? 'Somente leitura' : 'Correção excepcional auditada'}',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const Divider(height: CoeloSpacing.space6),
+        Text('Vínculos ativos', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space2),
+        for (final link in child.links.where((link) => link.active && link.authorized))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+            child: Text(
+              '${_institutionLabel(link.institutionId)} → ${_unitLabel(link.unitId)} → ${_groupLabel(link.groupOrActivityId)}',
+            ),
+          ),
+        const Divider(height: CoeloSpacing.space6),
+        Text('Ciência', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space2),
+        for (final acknowledgement in child.acknowledgements)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+            child: Text(
+              '${_acknowledgementLabel(acknowledgement.subject)} • '
+              '${acknowledgement.receivedAt == null ? 'Pendente' : 'Concluída'}',
+            ),
+          ),
+      ],
+    ),
   );
 
   Widget _medicationPlansLink(BuildContext context, HealthCareChild child) => _SurfaceCard(
@@ -230,72 +312,91 @@ final class _HealthCareProfileDetailPageState extends State<HealthCareProfileDet
   Widget _allergies(BuildContext context, HealthCareChild child) => _SurfaceCard(
     title: 'Alergias e restrições',
     subtitle: 'Itens ativos entram em vigor imediatamente e preservam histórico.',
-    action: widget.controller.canEdit
-        ? TextButton.icon(
-            key: const Key('health-care-profile-edit'),
-            onPressed: widget.onEditCareProfile,
-            icon: const Icon(Icons.edit_outlined),
-            label: const Text('Editar perfil'),
-          )
-        : null,
     child: Column(
       children: [
-        for (final allergy in child.allergies)
-          Card(
-            color: Theme.of(context).colorScheme.surface,
-            surfaceTintColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(CoeloRadius.lg),
-              side: BorderSide(
-                color: allergy.active && allergy.type == HealthCareAllergyType.medication
-                    ? Theme.of(context).colorScheme.error
-                    : Theme.of(context).colorScheme.outlineVariant,
-              ),
-            ),
-            child: ListTile(
-              leading: Icon(
-                Icons.warning_amber_rounded,
-                color: allergy.active && allergy.type == HealthCareAllergyType.medication
-                    ? Theme.of(context).colorScheme.error
-                    : null,
-              ),
-              title: Text(allergy.label),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-                child: Wrap(
-                  spacing: CoeloSpacing.space2,
-                  runSpacing: CoeloSpacing.space2,
-                  children: [
-                    Text(_allergyTypeLabel(allergy.type)),
-                    _allergyStatusChip(context, allergy.status),
-                    if (allergy.episodeSeverity case final severity?)
-                      _episodeSeverityChip(context, severity),
-                  ],
-                ),
-              ),
-            ),
-          ),
+        for (var index = 0; index < child.allergies.length; index++) ...[
+          if (index > 0) const Divider(height: CoeloSpacing.space6),
+          _AllergySummary(allergy: child.allergies[index]),
+        ],
       ],
     ),
   );
 
   Widget _care(BuildContext context, HealthCareChild child) => _SurfaceCard(
-    title: 'Perfil de cuidado',
+    title: 'Orientações de cuidado',
     subtitle: 'Linguagem de apoio; não representa diagnóstico.',
-    action: widget.controller.canEdit
-        ? TextButton(onPressed: widget.onEditCareProfile, child: const Text('Editar'))
-        : null,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final item in child.careProfile) Text('• ${_catalogLabel(item)}'),
-        const SizedBox(height: CoeloSpacing.space3),
-        for (final acknowledgement in child.acknowledgements)
-          Text(
-            'Ciência ${acknowledgement.receivedAt == null ? 'pendente' : 'concluída'} • ${_acknowledgementLabel(acknowledgement.subject)}',
+        for (final item in child.careProfile)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.check_circle_outline_rounded),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(child: Text(_catalogLabel(item))),
+              ],
+            ),
           ),
       ],
     ),
+  );
+}
+
+const _sectionLabels = [
+  'Resumo',
+  'Alergias e restrições',
+  'Orientações de cuidado',
+  'Planos de medicação',
+];
+
+final class _AllergySummary extends StatelessWidget {
+  const _AllergySummary({required this.allergy});
+
+  final HealthCareAllergy allergy;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(
+        Icons.warning_amber_rounded,
+        color: allergy.active && allergy.type == HealthCareAllergyType.medication
+            ? Theme.of(context).colorScheme.error
+            : Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      const SizedBox(width: CoeloSpacing.space3),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(allergy.label, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: CoeloSpacing.space2),
+            Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(_allergyTypeLabel(allergy.type)),
+                _allergyStatusChip(context, allergy.status),
+                if (allergy.episodeSeverity case final severity?)
+                  _episodeSeverityChip(context, severity),
+              ],
+            ),
+            if (allergy.observedReaction.isNotEmpty) ...[
+              const SizedBox(height: CoeloSpacing.space3),
+              Text(allergy.observedReaction),
+            ],
+            if (allergy.guidance.isNotEmpty) ...[
+              const SizedBox(height: CoeloSpacing.space2),
+              Text(allergy.guidance),
+            ],
+          ],
+        ),
+      ),
+    ],
   );
 }
 
