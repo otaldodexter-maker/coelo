@@ -1,94 +1,48 @@
 ---
-source: "Coelo UI/UX implementation handoff"
+source: "Refatoração e auditoria final de Convites do Superadmin"
 status: "completed"
-generated_at: "2026-08-05"
+generated_at: "2026-08-06"
+updated_at: "2026-08-06"
 ---
 
-# Handoff - Correcoes UI/UX da tela Pessoas (Superadmin)
+# Handoff — Convites do Superadmin
 
-## Encerramento seguro
-- data-hora: 2026-08-05 14:02
-- objetivo original: corrigir e ajustar a UI/UX da tela Pessoas no Superadmin, com foco no listagem/tabela e acoes de arquivo, sem alterar regra de negocio.
-- escopo efetivamente trabalhado: lista e tabela de Pessoas (Superadmin), incluindo acoes de arquivo e ajuste do layout da tabela.
+## Resultado
 
-## Decisoes de produto e UI/UX preservadas
-- Manter fidelidade ao padrao Coelo (marca #D63C00, grafite #3F4549, tipografia existente e componentes do coelo_ui_admin).
-- Nao alterar backend/supabase nesta etapa.
-- Reuso de componente padrao para acoes de arquivo (CoeloAdminFileActions).
+A experiência de Convites em `apps/superadmin` foi refatorada e revalidada no
+branch `dev`. O diretório usa somente a tabela administrativa canônica; criação
+e detalhes reutilizam os componentes compartilhados; o domínio permanece sem
+edição arbitrária de convite enviado.
 
-## Referencias consultadas
-- .agents/skills/coelo-ui/SKILL.md
-- .agents/skills/ponytail/SKILL.md
-- .agents/skills/flutter-build-responsive-layout/SKILL.md
-- .agents/skills/rtk/SKILL.md
-- apps/superadmin/lib/features/people/presentation/person_directory_page.dart
-- apps/superadmin/lib/features/people/presentation/person_file_actions.dart
+Commit principal: `e5c19261 feat(superadmin): refactor invite experience`.
 
-## Arquivos criados
-- Nenhum.
+## Contratos preservados
 
-## Arquivos alterados
-- apps/superadmin/lib/features/people/presentation/person_directory_page.dart
-- apps/superadmin/lib/features/people/presentation/person_file_actions.dart
-- docs/handoffs/current-task-handoff.md
+- busca e revisão exibem somente o destinatário mascarado;
+- filtros e ações aparecem apenas quando sustentados pelo domínio atual;
+- ações contextuais usam `CoeloAdminFlyout`, com revogação negativa;
+- detalhes permanecem em leitura para convites enviados;
+- formulário usa navegação e `SuperadminFormActionFooter` canônicos;
+- responsividade considera a largura disponível em 375, 768, 1024 e 1440 px;
+- banco, autenticação, permissões e persistência não foram alterados.
 
-## Componentes, rotas ou superficies afetadas
-- Tela: PersonDirectoryPage (Superadmin).
-- Componente de acoes: PersonFileActions.
+## Verificações finais
 
-## O que foi concluido
-- Ajuste da tabela em person_directory_page.dart:
-  - removido width: constraints.maxWidth no container de viewport;
-  - aplicado Align(alignment: Alignment.topCenter, ...);
-  - adicionado showHorizontalScrollbar: true em CoeloAdminResizableTable.
-- Ajuste para evitar caracteres quebrados no bloco da tabela e manter texto com acentuacao correta.
-- Ajuste de person_file_actions.dart para estado interno com tipos bool e alinhamento a padrao de componente.
+- Convites + footer: 43/43 testes passaram;
+- componentes compartilhados afetados: 39/39 testes passaram;
+- análise estática focada: sem problemas;
+- validador visual administrativo: passou;
+- gates `coelo-ui` e `coelo-knowledge`: passaram;
+- `git diff --check`: limpo;
+- branch `dev`: sem arquivos modificados, staged ou untracked no encerramento.
 
-## Parcialmente concluido
-- Nenhuma pendencia funcional restante no escopo minimo desta etapa.
+## Memória
 
-## Nao iniciado
-- Nao foram tocadas rotinas de backend/Supabase.
-- Nao foi executada validacao visual em localhost.
+Gate `coelo-knowledge`: `no-op`. A implementação concretiza contratos já
+canônicos e não introduz nova regra durável de produto ou permissão.
 
-## Verificacoes executadas e resultados
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe format "apps/superadmin/lib/shared/presentation/widgets/superadmin_directory_view_toggle.dart" "apps/superadmin/lib/features/people/presentation/person_file_actions.dart" "apps/superadmin/lib/features/people/presentation/person_directory_page.dart"`
-  - resultado: Formatado com sucesso (1 changed).
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe analyze apps/superadmin/lib/features/people/presentation/person_directory_page.dart`
-  - resultado: No issues found.
-- `C:\src\flutter\bin\flutter.bat test apps/superadmin/test/features/people/presentation/person_directory_page_test.dart`
-  - resultado: timeout no ambiente.
-- `C:\src\flutter\bin\flutter.bat test apps/superadmin/test/features/people/presentation/person_file_actions_test.dart`
-  - resultado: timeout no ambiente.
+## Retomada
 
-## Erros/avisos e bloqueios
-- Bloqueio operacional: testes Flutter nao concluem dentro do timeout de execucao da sessao.
-
-## Debitos tecnicos conscientes
-- Validacao automatizada da rotina Pessoas ainda precisa rodar em ambiente sem timeout.
-
-## Estado atual
-- Funcional para o escopo solicitado, validado por analise estatica.
-
-## Git status resumido no encerramento
-- git status --short mostra muitas alteracoes fora deste escopo em andamento no repositorio.
-- Neste ponto, foram atualizados apenas os arquivos listados em "Arquivos alterados".
-
-## Resumo do git diff
-- person_directory_page.dart: alterado layout da tabela (topCenter + scrollbar horizontal).
-- person_file_actions.dart: ajuste de estado local e padronizacao.
-
-## Proximo passo exato
-- Commitar estes arquivos e, se possivel, executar testes da tela de Pessoas em ambiente com maior tempo limite.
-
-## Primeiro arquivo para abrir na retomada
-- apps/superadmin/lib/features/people/presentation/person_directory_page.dart
-
-## Comandos necessarios para validacao
-- `C:\src\flutter\bin\cache\dart-sdk\bin\dart.exe analyze apps/superadmin/lib/features/people/presentation/person_directory_page.dart`
-- `C:\src\flutter\bin\flutter.bat test apps/superadmin/test/features/people/presentation/person_directory_page_test.dart`
-
-## Criterios para considerar esta etapa concluida
-- Tabela de Pessoas nao agrupada aparece centralizada e com scrollbar horizontal.
-- Acoes de arquivo seguem componente padrao.
-- Commit criado com os arquivos desta continuidade.
+Não há próxima etapa funcional obrigatória em Convites. Trabalho em outros
+worktrees deve ser tratado dentro da respectiva branch e não representa
+pendência deste checkout.
