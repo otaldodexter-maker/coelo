@@ -6,7 +6,7 @@ generated_at: "2026-07-22"
 
 # coelo_ui_principal
 
-Componentes Flutter especificos do app principal: Flow, Now, Moments, rotina,
+Componentes Flutter especificos do app principal: Happens, Now, Moments, rotina,
 agenda, chat e troca explicita de experiencias contextuais. A pessoa global
 pode combinar papeis familiares, profissionais e internos autorizados conforme
 o ADR 0012; o pacote nao presume uma experiencia somente de responsaveis.

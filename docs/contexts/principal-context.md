@@ -15,7 +15,7 @@ generated_at: "2026-07-22"
 
 Aplicacao diaria da pessoa global em seus diferentes papeis contextuais:
 responsavel, professora, coordenadora, equipe, aluno e outros vinculos
-autorizados. Inclui Flow, Now, Moments, rotina, chat, agenda, notificacoes,
+autorizados. Inclui Happens, Now, Moments, rotina, chat, agenda, notificacoes,
 perfis e experiencias sociais privadas.
 
 ## Fontes

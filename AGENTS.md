@@ -4,7 +4,7 @@ Este arquivo e o contexto principal do projeto Coelo. Ele nao cria um agente por
 
 ## Visao Do Produto
 
-Coelo e um superapp privado de rotina, comunicacao e cuidado entre instituicoes, familias, responsaveis e alunos. O produto centraliza comunicacao escolar/institucional, agenda, rotina, Flow, Now, Moments, chat, notificacoes e contexto familiar com privacidade, confianca e clareza.
+Coelo e um superapp privado de rotina, comunicacao e cuidado entre instituicoes, familias, responsaveis e alunos. O produto centraliza comunicacao escolar/institucional, agenda, rotina, Happens, Now, Moments, chat, notificacoes e contexto familiar com privacidade, confianca e clareza.
 
 Coelo nao e um ERP completo, nao e rede social aberta, nao e substituto generico de WhatsApp e nao deve transformar cuidado infantil em feed publico. O produto deve preservar o melhor interesse da crianca, a relacao entre instituicao e familia, e a auditabilidade das acoes sensiveis.
 

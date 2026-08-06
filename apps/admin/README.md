@@ -37,7 +37,7 @@ conteudo, rotina, agenda e canais.
 - `people`: pessoas, responsaveis, equipe e criancas.
 - `permissions`: papeis, escopos e permissao familiar.
 - `imports`: importacao CSV/XLSX com previa e validacoes.
-- `content`: Flow, comunicados, Now, Moments e agenda.
+- `content`: Happens, comunicados, Now, Moments e agenda.
 - `routine_templates`: modelos de diario de rotina.
 
 ## Por que assim

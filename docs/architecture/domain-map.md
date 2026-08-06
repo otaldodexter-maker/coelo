@@ -18,7 +18,7 @@ Versão: v1.0 | Data: 21/06/2026 | Status: Draft oficial para validação técni
 | Visão do mapa<br>Organizar o Coelo em domínios e contextos com responsabilidades, fontes oficiais, dependências e eventos claros, preservando manutenção independente sem fragmentar a experiência do usuário. |
 | --- |
 
-| Simples como Airbnb<br>Fronteiras compreensíveis e arquitetura pragmática. | Visual como Instagram<br>Flow, Now e Moments unidos na experiência, separados no domínio. | Confiável como escola<br>Privacidade, autorização e auditoria desde o desenho. |
+| Simples como Airbnb<br>Fronteiras compreensíveis e arquitetura pragmática. | Visual como Instagram<br>Happens, Now e Moments unidos na experiência, separados no domínio. | Confiável como escola<br>Privacidade, autorização e auditoria desde o desenho. |
 | --- | --- | --- |
 
 Documento derivado do Product Vision, PRD Master, PRDs especializados, Modelo de Dados Master e decisões validadas pelo fundador.
@@ -27,9 +27,9 @@ Documento derivado do Product Vision, PRD Master, PRDs especializados, Modelo de
 
 Este documento transforma a lista inicial de módulos do Coelo em um mapa de domínios orientado por Domain-Driven Design. Cada bounded context possui uma responsabilidade, uma fonte oficial de dados e contratos claros com os demais contextos.
 
-A principal decisão estrutural é separar Flow, Now e Moments como contextos independentes dentro do macrodomínio Experiência Social. Eles continuam compostos na mesma tela do aplicativo, mas podem evoluir, receber manutenção e ser liberados por plano de forma independente.
+A principal decisão estrutural é separar Happens, Now e Moments como contextos independentes dentro do macrodomínio Experiência Social. Eles continuam compostos na mesma tela do aplicativo, mas podem evoluir, receber manutenção e ser liberados por plano de forma independente.
 
-| Decisão central<br>Mesma tela não significa mesmo domínio. A interface pode compor Flow, Now e Moments, enquanto cada módulo preserva seu ciclo de vida, regras, tabelas e feature entitlement. |
+| Decisão central<br>Mesma tela não significa mesmo domínio. A interface pode compor Happens, Now e Moments, enquanto cada módulo preserva seu ciclo de vida, regras, tabelas e feature entitlement. |
 | --- |
 
 O mapa cobre o produto completo e marca o estágio de cada contexto: MVP, MVP limitado, próxima fase ou futuro. A recomendação inicial não é criar dezenas de microserviços, mas construir um monólito modular/monorepo com fronteiras verificáveis, migrations organizadas e comunicação por serviços de aplicação e eventos.
@@ -39,8 +39,8 @@ O mapa cobre o produto completo e marca o estágio de cada contexto: MVP, MVP li
 | Tema | Decisão oficial v1 |
 | --- | --- |
 | Escopo | Produto completo, destacando MVP e roadmap futuro. |
-| Flow, Now e Moments | Contextos separados dentro do macrodomínio Experiência Social; composição conjunta no App. |
-| Planos | Acesso por feature code/entitlement, permitindo combinações como Basic com Flow e Master com Flow + Now + Moments. |
+| Happens, Now e Moments | Contextos separados dentro do macrodomínio Experiência Social; composição conjunta no App. |
+| Planos | Acesso por feature code/entitlement, permitindo combinações como Basic com Happens e Master com Happens + Now + Moments. |
 | Rotina | Rotina diária separada de Saúde e Ocorrências Sensíveis. |
 | Agenda | Agenda separada de Autorizações; integração por referência e eventos. |
 | Futuro | Cobrança, matrícula, integrações, IA, BI e white-label aparecem como contextos futuros. |
@@ -64,7 +64,7 @@ O mapa cobre o produto completo e marca o estágio de cada contexto: MVP, MVP li
 | 1 | Objetivo, escopo e princípios |
 | 2 | Mapa geral dos domínios |
 | 3 | Classificação e roadmap |
-| 4 | Decisão estrutural: Flow, Now e Moments |
+| 4 | Decisão estrutural: Happens, Now e Moments |
 | 5 | Context map e regras de relacionamento |
 | 6 | Catálogo detalhado dos bounded contexts |
 | 7 | Fonte oficial e eventos |
@@ -129,7 +129,7 @@ Figura 1 — Landscape de domínios e bounded contexts do Coelo.
 | D03 | Contexto e Autorização | Core | MVP |
 | D04 | Família e Relações com a Criança | Core | MVP |
 | D05 | Perfis Sociais e Audiência | Core | MVP |
-| D06 | Flow | Core | MVP |
+| D06 | Happens | Core | MVP |
 | D07 | Now | Core | MVP |
 | D08 | Moments | Core | MVP |
 | D09 | Engajamento Social e Leitura | Supporting | MVP |
@@ -156,25 +156,25 @@ Figura 1 — Landscape de domínios e bounded contexts do Coelo.
 
 ## 3.1 Core Domains
 
-Contexto e Autorização, Família e Relações com a Criança, Perfis/Audiência, Flow, Now, Moments e Rotina Diária concentram a diferenciação do Coelo. São áreas nas quais linguagem, UX, segurança e regras devem receber maior atenção de produto e engenharia.
+Contexto e Autorização, Família e Relações com a Criança, Perfis/Audiência, Happens, Now, Moments e Rotina Diária concentram a diferenciação do Coelo. São áreas nas quais linguagem, UX, segurança e regras devem receber maior atenção de produto e engenharia.
 
 ## 3.2 Supporting e Generic
 
 Chat, Agenda, Autorizações, Mídia, Privacidade, Auditoria, Analytics, Administração, Operação e Entitlements viabilizam o core. Identidade/Auth e Notificações podem usar componentes maduros de mercado, mas precisam respeitar as regras contextuais do Coelo.
 
-# 4. Decisão estrutural: Flow, Now e Moments
+# 4. Decisão estrutural: Happens, Now e Moments
 
-Para atender manutenção independente e liberação por plano, Flow, Now e Moments serão bounded contexts separados. Eles pertencem ao mesmo macrodomínio Experiência Social e compartilham contratos de perfis, audiência, mídia e autorização, mas não compartilham propriedade de tabelas de negócio.
+Para atender manutenção independente e liberação por plano, Happens, Now e Moments serão bounded contexts separados. Eles pertencem ao mesmo macrodomínio Experiência Social e compartilham contratos de perfis, audiência, mídia e autorização, mas não compartilham propriedade de tabelas de negócio.
 
 Figura 2 — Composição conjunta na interface e independência no domínio.
 
 ## 4.1 Por que separar
 
-- Manutenção: alteração em expiração do Now não exige mexer no ciclo de vida do Flow.
+- Manutenção: alteração em expiração do Now não exige mexer no ciclo de vida do Happens.
 
 - Escalabilidade: processamento de vídeo de Moments pode evoluir sem contaminar posts e comunicados.
 
-- Planos: feature codes independentes permitem habilitar flow, now e moments por plano.
+- Planos: feature codes independentes permitem habilitar happens, now e moments por plano.
 
 - Métricas: cada contexto mede adoção, custo e desempenho separadamente.
 
@@ -193,7 +193,7 @@ Figura 2 — Composição conjunta na interface e independência no domínio.
 
 ## 4.3 Exemplo de plano — apenas estrutural
 
-| Exemplo, não decisão comercial final<br>Plano Basic: feature flow=true, now=false, moments=false. Plano Master: flow=true, now=true, moments=true. A interface consulta o snapshot de entitlements e mostra ou oculta entradas sem alterar os domínios. |
+| Exemplo, não decisão comercial final<br>Plano Basic: feature happens=true, now=false, moments=false. Plano Master: happens=true, now=true, moments=true. A interface consulta o snapshot de entitlements e mostra ou oculta entradas sem alterar os domínios. |
 | --- |
 
 # 5. Context map e regras de relacionamento
@@ -207,7 +207,7 @@ Figura 3 — Context Map resumido e padrões de integração.
 | Padrão | Aplicação |
 | --- | --- |
 | Customer/Supplier | Contexto/Autorização depende de Identidade, Tenancy e Família; contratos são negociados e versionados. |
-| Open Host Service / Published Language | Perfis/Audiência e Mídia expõem contratos estáveis a Flow, Now, Moments, Chat e Rotina. |
+| Open Host Service / Published Language | Perfis/Audiência e Mídia expõem contratos estáveis a Happens, Now, Moments, Chat e Rotina. |
 | Policy Service | Entitlements responde se a instituição pode usar uma feature; não executa a regra interna do módulo. |
 | Conformist controlado | Notificações e Analytics consomem eventos padronizados, sem exigir acesso ao modelo interno. |
 | Anti-Corruption Layer | ERPs, gateways, WhatsApp e parceiros futuros são traduzidos pela camada de Integrações. |
@@ -280,12 +280,12 @@ D05 · Perfis Sociais e Audiência Core · MVP
 | Responsabilidade | Definir perfis privados de Coelo, instituição, unidade e grupo, seguidores derivados de vínculos e resolução de audiência. |
 | --- | --- |
 | Fonte oficial | Perfil social, regras de follow, silenciamento, audiência resolvida e identidade social contextual. |
-| Não controla | Conteúdo específico de Flow, Now ou Moments; arquivos de mídia; planos comerciais. |
+| Não controla | Conteúdo específico de Happens, Now ou Moments; arquivos de mídia; planos comerciais. |
 | Entidades principais | social_profiles, follows, audience_rules, resolved_audiences, mute_preferences. |
-| Dependências | Contexto/Autorização, Tenancy e Família; fornece contratos a Flow, Now e Moments. |
+| Dependências | Contexto/Autorização, Tenancy e Família; fornece contratos a Happens, Now e Moments. |
 | Eventos publicados | social_profile_created, audience_resolved, follow_added, follow_removed, profile_muted. |
 
-D06 · Flow Core · MVP
+D06 · Happens Core · MVP
 
 | Responsabilidade | Gerenciar feed privado, posts, comunicados, agendamento, confirmação de leitura e publicação contextual. |
 | --- | --- |
@@ -310,7 +310,7 @@ D08 · Moments Core · MVP
 | Responsabilidade | Gerenciar vídeos privados de até dois minutos, publicação, processamento e consumo contextual. |
 | --- | --- |
 | Fonte oficial | Moment, metadados de duração, status editorial e audiência referenciada. |
-| Não controla | Arquivo bruto/transcodificação, posts do Flow, itens Now ou cobrança. |
+| Não controla | Arquivo bruto/transcodificação, posts do Happens, itens Now ou cobrança. |
 | Entidades principais | moments, moment_audiences, moment_publication_status, moment_play_events. |
 | Dependências | Perfis/Audiência, Mídia, Contexto/Autorização e Entitlements. |
 | Eventos publicados | moment_submitted, moment_published, moment_played, moment_archived, moment_rejected. |
@@ -322,7 +322,7 @@ D09 · Engajamento Social e Leitura Supporting · MVP
 | Fonte oficial | Reação, read receipt, confirmação explícita e contadores derivados. |
 | Não controla | Conteúdo, audiência, perfil social ou dados analíticos agregados de BI. |
 | Entidades principais | reactions, read_receipts, acknowledgements, engagement_counters. |
-| Dependências | Flow, Now e Moments por IDs e eventos; Contexto/Autorização para validar ação. |
+| Dependências | Happens, Now e Moments por IDs e eventos; Contexto/Autorização para validar ação. |
 | Eventos publicados | reaction_added, reaction_removed, content_read, read_confirmed. |
 
 ## 6.3 Cuidado e rotina
@@ -458,7 +458,7 @@ D22 · Planos e Entitlements Supporting · MVP manual
 | Responsabilidade | Definir catálogo de planos, recursos liberados, limites e snapshot de acesso por instituição. |
 | --- | --- |
 | Fonte oficial | Plano, feature code, entitlement, limite, período, status e atribuição ao tenant. |
-| Não controla | Cobrança, pagamento, nota fiscal ou regra interna de Flow/Now/Moments. |
+| Não controla | Cobrança, pagamento, nota fiscal ou regra interna de Happens/Now/Moments. |
 | Entidades principais | plans, features, plan_entitlements, institution_subscriptions, usage_limits, entitlement_snapshots. |
 | Dependências | Operação da Plataforma e Analytics; no futuro recebe estado de Billing. |
 | Eventos publicados | plan_changed, entitlement_granted, entitlement_revoked, usage_limit_reached, subscription_status_changed. |
@@ -557,7 +557,7 @@ D30 · Atividades Contextuais Core · MVP
 | Papel, escopo e permissão | Contexto e Autorização |
 | Vínculo responsável-criança | Família e Relações com a Criança |
 | Perfil social e audiência | Perfis Sociais e Audiência |
-| Post/comunicado | Flow |
+| Post/comunicado | Happens |
 | Conteúdo temporário | Now |
 | Vídeo de até 2 minutos | Moments |
 | Reação e confirmação de leitura | Engajamento Social e Leitura |
@@ -596,7 +596,7 @@ Planos e Entitlements é a camada que permite vender combinações de funcionali
 
 | Feature code | Capacidade |
 | --- | --- |
-| social.flow | Criar e consumir Flow. |
+| social.happens | Criar e consumir Happens. |
 | social.now | Criar e consumir Now. |
 | social.moments | Criar e consumir Moments. |
 | communication.chat | Chat e canais. |
@@ -641,7 +641,7 @@ Planos e Entitlements é a camada que permite vender combinações de funcionali
 
 ## 9.2 Estrutura de código sugerida
 
-| apps/app_mobile<br>apps/admin_web<br>apps/superadmin_web<br>packages/shared_kernel<br>packages/identity<br>packages/tenancy<br>packages/authorization<br>packages/family<br>packages/social_profiles<br>packages/flow<br>packages/now<br>packages/moments<br>packages/routine<br>packages/sensitive_occurrences<br>packages/chat<br>packages/agenda<br>packages/authorizations<br>packages/media<br>packages/notifications<br>packages/entitlements<br>packages/audit_analytics |
+| apps/app_mobile<br>apps/admin_web<br>apps/superadmin_web<br>packages/shared_kernel<br>packages/identity<br>packages/tenancy<br>packages/authorization<br>packages/family<br>packages/social_profiles<br>packages/happens<br>packages/now<br>packages/moments<br>packages/routine<br>packages/sensitive_occurrences<br>packages/chat<br>packages/agenda<br>packages/authorizations<br>packages/media<br>packages/notifications<br>packages/entitlements<br>packages/audit_analytics |
 | --- |
 
 ## 9.3 Gatilhos para extrair um serviço
@@ -664,7 +664,7 @@ Planos e Entitlements é a camada que permite vender combinações de funcionali
 | --- | --- |
 | Ownership | Toda entidade crítica possui exatamente um contexto proprietário. |
 | Limites | Cada contexto declara o que controla e o que não controla. |
-| Modularidade social | Flow, Now e Moments são independentes e compostos na interface. |
+| Modularidade social | Happens, Now e Moments são independentes e compostos na interface. |
 | Entitlements | Feature access é validado no backend e pode variar por plano. |
 | Separação sensível | Rotina comum não incorpora o modelo completo de saúde/ocorrência. |
 | Agenda/autorizações | Evento e decisão formal possuem ownership separado. |
@@ -674,9 +674,9 @@ Planos e Entitlements é a camada que permite vender combinações de funcionali
 
 ## 10.2 Próximas entregas recomendadas
 
-1. Criar Functional Specs individuais para D03 Contexto/Autorização, D05 Perfis/Audiência, D06 Flow, D07 Now, D08 Moments, D10 Rotina, D12 Chat, D13 Agenda, D14 Autorizações e D30 Atividades Contextuais.
+1. Criar Functional Specs individuais para D03 Contexto/Autorização, D05 Perfis/Audiência, D06 Happens, D07 Now, D08 Moments, D10 Rotina, D12 Chat, D13 Agenda, D14 Autorizações e D30 Atividades Contextuais.
 
-2. Revisar o PRD Modelo de Dados Master para refletir os novos owners e a separação de tabelas de Flow, Now e Moments.
+2. Revisar o PRD Modelo de Dados Master para refletir os novos owners e a separação de tabelas de Happens, Now e Moments.
 
 3. Criar diagrama ER conceitual por bounded context e contratos entre contextos.
 

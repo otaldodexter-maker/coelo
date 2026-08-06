@@ -210,7 +210,7 @@ Uma criança pode estar ligada a duas instituições, unidades e grupos. O respo
 | Coordenador | Unidades/grupos | Supervisão e operação, sem poder automático de alterar permissões. |
 | Professor | Grupos/Atividades | Rotina, conteúdo e chat com responsáveis vinculados, sempre no vínculo contextual da turma. |
 | Equipe | Função/contexto | Ações limitadas. |
-| Responsável | Criança/contextos autorizados | Rotina, Flow, agenda e chat. |
+| Responsável | Criança/contextos autorizados | Rotina, Happens, agenda e chat. |
 | Participante | Contexto específico | Opcional e restrito. |
 
 - A instituição é proprietária de toda atividade, inclusive quando a criação se origina em uma unidade.

@@ -29,14 +29,14 @@ pacote, spec ou contexto.
 - Componentizar telas por feature: `presentation/screens`,
   `presentation/widgets` e `presentation/view_models`.
 - Usar `const`, builders/slivers para listas grandes e layout por constraints.
-- Flow, Now e Moments devem carregar thumbnails/variantes adequadas, com
+- Happens, Now e Moments devem carregar thumbnails/variantes adequadas, com
   dimensoes explicitas, placeholder/erro e cache definido pela spec de midia.
 - Animacoes devem ser curtas, discretas e respeitar reduced motion.
 
 ## Contextos iniciais
 
 - `context`: instituicao/papel/crianca ou grupo ativo.
-- `flow`: feed privado e comunicados.
+- `happens`: feed privado e comunicados.
 - `now`: conteudo temporario de 24 horas.
 - `moments`: videos privados de ate 2 minutos.
 - `routine`: diario de rotina.

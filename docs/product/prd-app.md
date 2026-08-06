@@ -15,7 +15,7 @@ generated_at: "2026-07-24"
 
 Versão: v1.0 | Data: 21/06/2026 | Status: Draft para validação
 
-| Flow, Now, Moments, rotina, chat e agenda em uma rede social privada, visual e governada pela instituição. |
+| Happens, Now, Moments, rotina, chat e agenda em uma rede social privada, visual e governada pela instituição. |
 | --- |
 
 Simples como Airbnb Visual como Instagram Confiável como escola
@@ -32,7 +32,7 @@ Documento derivado do Product Vision Oficial v1 e do PRD Master Oficial v1 do Co
 | 4 | Públicos e contexto ativo |
 | 5 | Escopo do MVP |
 | 6 | Navegação |
-| 7 | Flow |
+| 7 | Happens |
 | 8 | Now |
 | 9 | Moments |
 | 10 | Diário de rotina |
@@ -73,11 +73,11 @@ Documento derivado do Product Vision Oficial v1 e do PRD Master Oficial v1 do Co
 
 # 2. Resumo executivo
 
-O App é a experiência cotidiana do Coelo. Ele combina hábitos visuais de rede social com privacidade institucional: Flow para posts e comunicados, Now para conteúdos temporários, Moments para vídeos de até dois minutos, diário de rotina, chat contextual, agenda e portal do responsável.
+O App é a experiência cotidiana do Coelo. Ele combina hábitos visuais de rede social com privacidade institucional: Happens para posts e comunicados, Now para conteúdos temporários, Moments para vídeos de até dois minutos, diário de rotina, chat contextual, agenda e portal do responsável.
 
 O usuário é uma pessoa única e pode ter múltiplos papéis. O contexto ativo precisa separar claramente a experiência familiar da profissional. Conteúdos nunca são públicos: a visibilidade deriva de instituição, unidade, grupo, criança e permissões.
 
-| Nomes oficiais v1<br>Flow = feed privado; Now = conteúdo temporário de 24 horas; Moments = vídeos privados de até 2 minutos. |
+| Nomes oficiais v1<br>Happens = feed privado; Now = conteúdo temporário de 24 horas; Moments = vídeos privados de até 2 minutos. |
 | --- |
 
 # 3. Objetivos e princípios
@@ -95,7 +95,7 @@ O usuário é uma pessoa única e pode ter múltiplos papéis. O contexto ativo 
 
 | Usuário | Home ideal | Ações principais |
 | --- | --- | --- |
-| Responsável | Flow seguido + card das crianças + agenda do dia. | Ver rotina, confirmar leitura, reagir, responder agenda, conversar e ver Now/Moments. |
+| Responsável | Happens seguido + card das crianças + agenda do dia. | Ver rotina, confirmar leitura, reagir, responder agenda, conversar e ver Now/Moments. |
 | Professor | Grupos do dia + atalhos de rotina + pendências. | Registrar rotina, publicar conteúdo autorizado, conversar com responsáveis vinculados. |
 | Coordenador | Pendências por grupo/unidade + comunicados recentes. | Revisar rotina, comunicar, atender e supervisionar. |
 | Direção | Resumo institucional e alertas. | Comunicar, acompanhar pendências e acessar o Admin quando necessário. |
@@ -112,7 +112,7 @@ O usuário é uma pessoa única e pode ter múltiplos papéis. O contexto ativo 
 | Módulo | MVP | Resumo |
 | --- | --- | --- |
 | Login/contexto | Sim | Conta adulta global por e-mail ou celular, `@identificador` opcional e troca de contexto. Criança não possui login no MVP. |
-| Flow | Sim | Posts, comunicados, mídia, confirmação de leitura e reações simples. |
+| Happens | Sim | Posts, comunicados, mídia, confirmação de leitura e reações simples. |
 | Now | Sim | Fotos/vídeos curtos com expiração padrão de 24h. |
 | Moments | Sim | Vídeos privados de até 2 minutos. |
 | Diário de rotina | Sim | Histórico da criança e registro rápido pela equipe. |
@@ -126,15 +126,15 @@ O usuário é uma pessoa única e pode ter múltiplos papéis. O contexto ativo 
 
 | Destino principal | Conteúdo |
 | --- | --- |
-| Flow | Posts, comunicados, mídia e perfis seguidos. |
+| Happens | Posts, comunicados, mídia e perfis seguidos. |
 | Rotina | Diário e histórico por criança. |
 | Conversas | Caixa única de conversas e canais autorizados, com filtros opcionais. |
 | Agenda | Eventos, respostas e autorizações. |
 | Perfil/Contexto | Conta, crianças, instituições, papel ativo, preferências e termos. |
 
-Now deve aparecer como faixa visual no topo do Flow. Moments pode ser acessado por uma entrada própria dentro do Flow ou navegação definida no protótipo, sem alterar o significado funcional deste PRD.
+Now deve aparecer como faixa visual no topo do Happens. Moments pode ser acessado por uma entrada própria dentro do Happens ou navegação definida no protótipo, sem alterar o significado funcional deste PRD.
 
-# 7. Flow
+# 7. Happens
 
 | Requisito | Definição |
 | --- | --- |
@@ -278,7 +278,7 @@ presença.
 | --- | --- |
 | Minhas crianças | Cards com instituição, unidade, grupo e vínculo. |
 | Rotina | Histórico, filtros, mídia e ocorrências. |
-| Flow | Perfis seguidos e comunicados. |
+| Happens | Perfis seguidos e comunicados. |
 | Agenda | Eventos, RSVP e autorizações. |
 | Chat | Conversas por contexto. |
 | Privacidade | Preferências, termos, consentimentos e solicitações. |
@@ -292,7 +292,7 @@ presença.
 | Pré-cadastro | Criar conta adulta global → verificar contato → localizar exatamente instituição/unidade por `@`, e-mail, link ou QR → solicitar vínculo. | Conta e solicitação pendente não concedem acesso institucional. |
 | Cadastrar criança | Responsável inicia perfil infantil privado → apresenta referência à instituição → aguarda validação. | Instituição cria seu contexto e vincula primeiro à unidade; turma pode ser definida depois. |
 | Trocar contexto | Abrir seletor → escolher instituição/papel → confirmar. | Feed, rotinas, chats e ações mudam sem mistura de dados. |
-| Ler comunicado | Abrir Flow → acessar post → confirmar leitura quando exigido. | Recibo é registrado. |
+| Ler comunicado | Abrir Happens → acessar post → confirmar leitura quando exigido. | Recibo é registrado. |
 | Registrar rotina | Selecionar grupo → aplicar template → ajustar crianças → revisar → publicar. | Responsáveis autorizados recebem apenas a rotina correspondente. |
 | Conversar | Abrir chat contextual → enviar → acompanhar status. | Somente membros autorizados acessam. |
 | Responder agenda | Abrir evento → escolher resposta/autorização → confirmar. | Resposta fica registrada por responsável e contexto. |
@@ -302,7 +302,7 @@ presença.
 | ID | Área | Requisito |
 | --- | --- | --- |
 | APP-RF-001 | Contexto | Alternar instituição e papel sem misturar permissões. |
-| APP-RF-002 | Flow | Exibir e publicar conteúdo privado conforme audiência. |
+| APP-RF-002 | Happens | Exibir e publicar conteúdo privado conforme audiência. |
 | APP-RF-003 | Comunicados | Confirmar leitura quando exigido. |
 | APP-RF-004 | Reações | Permitir reações simples; não permitir comentários no MVP. |
 | APP-RF-005 | Now | Publicar e visualizar conteúdo temporário. |
@@ -312,7 +312,7 @@ presença.
 | APP-RF-009 | Professor–responsável | Permitir conversa quando houver vínculo com a criança. |
 | APP-RF-010 | Agenda | Responder RSVP e autorização simples. |
 | APP-RF-011 | Notificações | Central in-app e push com conteúdo mínimo. |
-| APP-RF-012 | Portal | Consolidar crianças, rotina, Flow, agenda e chat. |
+| APP-RF-012 | Portal | Consolidar crianças, rotina, Happens, agenda e chat. |
 | APP-RF-013 | Mídia | Bloquear download por padrão e usar acesso privado. |
 
 # 17. Regras de negócio
@@ -321,7 +321,7 @@ presença.
 
 - Audiência é determinada por vínculos e permissões, não apenas por follow visual.
 
-- Flow permite reações simples e não permite comentários no MVP.
+- Happens permite reações simples e não permite comentários no MVP.
 
 - Professor pode falar diretamente com responsável quando houver vínculo com a criança.
 
@@ -353,7 +353,7 @@ presença.
 
 | Área | MVP |
 | --- | --- |
-| Flow | Cache read-only dos últimos itens. |
+| Happens | Cache read-only dos últimos itens. |
 | Rotina | Rascunho local e fila de envio. |
 | Chat | Cache das últimas conversas; envio online ou fila curta com status. |
 | Mídia | Compressão, retry e estado pendente. |
@@ -400,7 +400,7 @@ presença.
 
 - Usuário sem vínculo não acessa post, mídia, rotina, agenda ou chat por URL direta.
 
-- Flow aceita reação simples e não apresenta campo de comentário.
+- Happens aceita reação simples e não apresenta campo de comentário.
 
 - Now expira visualmente após 24 horas.
 
@@ -436,14 +436,14 @@ presença.
 
 | Decisão | Valor oficial v1 |
 | --- | --- |
-| Feed | Flow. |
+| Feed | Happens. |
 | Conteúdo temporário | Now, 24h. |
 | Vídeo longo | Moments, até 2 minutos. |
 | Interação | Reações simples; sem comentários. |
 | Professor–responsável | Conversa direta quando houver vínculo com a criança. |
 | Responsável–responsável | Fora do MVP. |
 | Download de mídia | Bloqueado por padrão. |
-| Navegação | Flow, Rotina, Conversas, Agenda e Perfil/Contexto. |
+| Navegação | Happens, Rotina, Conversas, Agenda e Perfil/Contexto. |
 | Offline | Offline-tolerant; full offline-first futuro. |
 
 # 25. Perguntas em aberto
@@ -463,7 +463,7 @@ presença.
 
 # 26. Próximas specs
 
-- Functional Specs separadas para Flow, Now, Moments, Rotina, Chat e Agenda.
+- Functional Specs separadas para Happens, Now, Moments, Rotina, Chat e Agenda.
 
 - Technical Spec de estado Flutter, cache, uploads e notificações.
 

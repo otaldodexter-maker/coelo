@@ -18,7 +18,7 @@ Versão: v1.0 | Data: 21/06/2026 | Status: Draft oficial para validação técni
 | Visão da arquitetura<br>Construir o Coelo como uma plataforma multi-tenant segura, modular e simples de operar, capaz de validar o piloto rapidamente sem criar um “microserviço de estimação” antes da hora. |
 | --- |
 
-| Simples como Airbnb<br>Um monorepo, fronteiras claras e poucos componentes operacionais. | Visual como Instagram<br>Flow, Now e Moments compostos na experiência, independentes no domínio. | Confiável como escola<br>RLS, mídia privada, auditoria e privacidade infantil desde a fundação. |
+| Simples como Airbnb<br>Um monorepo, fronteiras claras e poucos componentes operacionais. | Visual como Instagram<br>Happens, Now e Moments compostos na experiência, independentes no domínio. | Confiável como escola<br>RLS, mídia privada, auditoria e privacidade infantil desde a fundação. |
 | --- | --- | --- |
 
 Documento derivado do Product Vision, PRD Master, PRDs especializados, Modelo de Dados Master, Design System, Mapa de Domínios e decisões validadas pelo fundador.
@@ -49,7 +49,7 @@ A stack oficial v1 combina Flutter/Dart para App, Admin e Superadmin; Astro para
 
 - Evita mistura de dados entre instituições por meio de contexto ativo, RLS, vínculos e testes automatizados de isolamento.
 
-- Permite que Flow, Now, Moments e demais módulos evoluam e sejam liberados por plano sem duplicar a experiência do usuário.
+- Permite que Happens, Now, Moments e demais módulos evoluam e sejam liberados por plano sem duplicar a experiência do usuário.
 
 - Mantém o MVP operável por uma equipe pequena, sem broker, Kubernetes ou dezenas de serviços para cuidar.
 
@@ -159,7 +159,7 @@ Figura 2 — Diagrama C4 de containers e integrações principais.
 | Container | Tecnologia | Responsabilidade |
 | --- | --- | --- |
 | Site institucional | Astro + Cloudflare Pages | SEO, páginas institucionais, blog, captação e documentação pública. |
-| App Coelo | Flutter iOS/Android/Web | Experiência diária: Flow, Now, Moments, Rotina, Chat, Agenda e Perfil. |
+| App Coelo | Flutter iOS/Android/Web | Experiência diária: Happens, Now, Moments, Rotina, Chat, Agenda e Perfil. |
 | Admin | Flutter Web | Onboarding, estrutura, pessoas, vínculos, permissões, importação e operação. |
 | Superadmin | Flutter Web | Primeira fatia operacional: tenants, planos manuais, usuarios internos, avisos/popups segmentados, suporte, auditoria e base para dashboard futuro. |
 | Supabase Auth | Serviço gerenciado | Credenciais, sessões, recuperação, OTP/senha e identidade autenticada. |
@@ -185,7 +185,7 @@ Para o Superadmin Completo v1, a ordem oficial de trabalho e banco primeiro, wir
 | Camada | Responsabilidade | Exemplos |
 | --- | --- | --- |
 | Presentation/UI | Renderizar estado, capturar intenção e exibir feedback. | Views, widgets, rotas, view models, estados de carregamento/erro. |
-| Application | Orquestrar casos de uso e transações entre domínios. | Publicar Flow, registrar rotina em lote, aceitar convite, responder agenda. |
+| Application | Orquestrar casos de uso e transações entre domínios. | Publicar Happens, registrar rotina em lote, aceitar convite, responder agenda. |
 | Domain | Regras, políticas e linguagem do bounded context. | AudiencePolicy, ContextDecision, EntitlementCheck, RoutineRules. |
 | Data | Fornecer fontes de verdade por interfaces. | Repositories, Supabase services, cache local, mappers e DTOs. |
 | Infrastructure | SDKs e adaptadores externos. | Supabase, R2 media adapter, push adapter, analytics adapter. |
@@ -234,7 +234,7 @@ Figura 3 — Camadas internas e independência dos bounded contexts.
 | apps/coelo_site | Astro para coelo.me. |
 | packages/design_system | Tokens, temas, componentes e acessibilidade compartilhados. |
 | packages/core_* | Auth, contexto, rede, erros, observabilidade e utilitários estáveis. |
-| packages/domain_* | Contextos: perfis, Flow, Now, Moments, Rotina, Chat, Agenda, Mídia, Atividades etc. |
+| packages/domain_* | Contextos: perfis, Happens, Now, Moments, Rotina, Chat, Agenda, Mídia, Atividades etc. |
 | supabase/migrations | Migrations ordenadas e revisadas. |
 | supabase/functions | Edge Functions por comando/capacidade. |
 | supabase/tests | Testes SQL, RLS e isolamento. |
@@ -249,7 +249,7 @@ Figura 3 — Camadas internas e independência dos bounded contexts.
 
 - Contratos compartilhados contêm IDs, códigos, timestamps e eventos estáveis — não regras de negócio.
 
-- Flow, Now e Moments compartilham perfis, audiência, mídia, engajamento e entitlements por contrato.
+- Happens, Now e Moments compartilham perfis, audiência, mídia, engajamento e entitlements por contrato.
 
 - Mudanças em RLS, Auth, consentimento e suporte exigem revisão humana mesmo quando geradas por IA.
 
@@ -298,7 +298,7 @@ O MVP não precisa de um broker dedicado. Eventos de domínio relevantes serão 
 | Evento exemplo | Produtor | Consumidores |
 | --- | --- | --- |
 | institution_created | Tenancy/Administração | Convite, analytics, operação e onboarding. |
-| post_published | Flow | Notificações, analytics e projeções de feed. |
+| post_published | Happens | Notificações, analytics e projeções de feed. |
 | now_published | Now | Expiração, notificação opcional e analytics. |
 | moment_ready | Moments/Mídia | Feed, notificação e métricas. |
 | routine_recorded | Rotina | Portal do responsável, analytics e pendências. |
@@ -359,7 +359,7 @@ Supabase Realtime será usado de forma seletiva. Chat, recibos, estados de envio
 | Uso | Estratégia MVP |
 | --- | --- |
 | Chat | Assinatura de conversas autorizadas, paginação de histórico e recibos. |
-| Flow/Now/Moments | Atualização pontual por perfil/contexto; cache e paginação continuam principais. |
+| Happens/Now/Moments | Atualização pontual por perfil/contexto; cache e paginação continuam principais. |
 | Rotina | Atualizar portal após confirmação de registro; edição concorrente limitada. |
 | Admin/Superadmin | Eventos operacionais seletivos, sem grids inteiros em tempo real. |
 
@@ -379,7 +379,7 @@ A arquitetura não amarra o domínio a FCM, APNs, OneSignal ou outro fornecedor.
 
 | Módulo | Comportamento MVP |
 | --- | --- |
-| Flow/Agenda | Cache read-only de itens recentes e indicação de atualização. |
+| Happens/Agenda | Cache read-only de itens recentes e indicação de atualização. |
 | Rotina | Rascunho local por criança/contexto e fila curta de envio. |
 | Chat | Histórico recente em cache; envio offline pode ficar pendente com status visível. |
 | Mídia | Compressão, retry e retomada quando suportada; status pending/failed. |
@@ -490,7 +490,7 @@ Figura 5 — Fluxo de código, ambientes e promoção até produção.
 | --- | --- | --- |
 | Logs técnicos | Diagnóstico de execução. | Erro de função, latência, retry, status de integração. |
 | Audit logs | Evidência de ação sensível. | Permissão alterada, suporte aberto, mídia acessada, tenant suspenso. |
-| Analytics events | Uso e produto. | Abertura de Flow, rotina registrada, agenda respondida, adoção por módulo. |
+| Analytics events | Uso e produto. | Abertura de Happens, rotina registrada, agenda respondida, adoção por módulo. |
 
 ## 11.2 Correlação e privacidade
 
@@ -624,7 +624,7 @@ O cenário oficial é um piloto com 1 a 5 instituições e até 2.000 usuários 
 
 - O site orientado a SEO está oficialmente separado das aplicações Flutter autenticadas.
 
-- Flow, Now e Moments permanecem módulos independentes e compostos no App.
+- Happens, Now e Moments permanecem módulos independentes e compostos no App.
 
 - R2 é o storage único de mídia e o Postgres é a fonte oficial dos metadados e permissões.
 

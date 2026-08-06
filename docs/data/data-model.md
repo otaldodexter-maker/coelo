@@ -229,7 +229,7 @@ servidor.
 | --- | --- | --- |
 | social_profiles | Perfil de Coelo/instituição/unidade/grupo. | owner_context e visibility. |
 | follows | Seguimento automático/manual. | reason, mute settings. |
-| posts | Flow/comunicados. | author, profile, body, type, status, requires_read. |
+| posts | Happens/comunicados. | author, profile, body, type, status, requires_read. |
 | post_audiences | Segmentação. | institution/unit/group/role/child opcional. |
 | post_reactions | Reações simples. | MVP. |
 | post_comments | Comentários. | Preparar somente; desativado no MVP. |
@@ -412,7 +412,7 @@ A decisao tecnica inicial de schemas para o Coelo e:
 | DM-RF-004 | Multi-papel | Modelar memberships com escopo. |
 | DM-RF-005 | Planos | Permitir regras comerciais futuras sem limitar tecnicamente responsáveis nem cobrar automaticamente. |
 | DM-RF-006 | Responsáveis adicionais | Não impor limite técnico; eventual medição comercial depende de decisão futura. |
-| DM-RF-007 | Social | Modelar Flow, reações, Now e Moments. |
+| DM-RF-007 | Social | Modelar Happens, reações, Now e Moments. |
 | DM-RF-008 | Comentários | Preparar entidade sem habilitar no MVP. |
 | DM-RF-009 | Mídia | Classificar e ligar a objetos privados. |
 | DM-RF-010 | Chat | Modelar membros, mensagens e recibos. |
