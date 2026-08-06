@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/import_job.dart';
@@ -133,18 +134,30 @@ final class _EntityStep extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyLarge,
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      Wrap(
-        spacing: CoeloSpacing.space3,
-        runSpacing: CoeloSpacing.space3,
-        children: ImportEntity.values
-            .map(
-              (entity) => ChoiceChip(
-                label: Text(entity.label),
-                selected: controller.entity == entity,
-                onSelected: (_) => controller.selectEntity(entity),
-              ),
-            )
-            .toList(),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth > CoeloBreakpoints.medium.minWidth ? 2 : 1;
+          final optionWidth = columns == 1
+              ? constraints.maxWidth
+              : (constraints.maxWidth - CoeloSpacing.space3) / 2;
+          return Wrap(
+            spacing: CoeloSpacing.space3,
+            runSpacing: CoeloSpacing.space3,
+            children: ImportEntity.values
+                .map(
+                  (entity) => SizedBox(
+                    width: optionWidth,
+                    child: _ImportWizardOptionTile(
+                      label: entity.label,
+                      subtitle: entity.matchingKey,
+                      selected: controller.entity == entity,
+                      onTap: () => controller.selectEntity(entity),
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        },
       ),
       const SizedBox(height: CoeloSpacing.space4),
       Text('Destino: ${controller.context}'),
@@ -159,15 +172,15 @@ final class _FileStep extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text('Use um arquivo demonstrativo conhecido.', style: Theme.of(context).textTheme.bodyLarge),
+      Text('Selecione o tipo de arquivo.', style: Theme.of(context).textTheme.bodyLarge),
       const SizedBox(height: CoeloSpacing.space4),
-      SegmentedButton<ImportFileFixture>(
-        segments: const [
-          ButtonSegment(value: ImportFileFixture.csv, label: Text('CSV')),
-          ButtonSegment(value: ImportFileFixture.xlsx, label: Text('XLSX')),
-        ],
-        selected: {controller.file},
-        onSelectionChanged: (values) => controller.selectFile(values.first),
+      CoeloAdminSingleSelectField<ImportFileFixture>(
+        label: 'Formato',
+        value: controller.file,
+        options: ImportFileFixture.values,
+        optionLabel: (value) => value.name.toUpperCase(),
+        onChanged: controller.selectFile,
+        searchable: false,
       ),
       const SizedBox(height: CoeloSpacing.space4),
       OutlinedButton.icon(
@@ -204,17 +217,82 @@ final class _StrategyStep extends StatelessWidget {
   final ImportWizardController controller;
   @override
   Widget build(BuildContext context) => Column(
-    children: ImportStrategy.values
-        .map(
-          (strategy) => RadioListTile(
-            value: strategy,
-            groupValue: controller.strategy,
-            onChanged: (_) => controller.selectStrategy(strategy),
-            title: Text(strategy.label),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Escolha como tratar registros existentes.',
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      ...ImportStrategy.values.map(
+        (strategy) => Padding(
+          padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+          child: _ImportWizardOptionTile(
+            label: strategy.label,
+            subtitle: strategy == ImportStrategy.createOnly
+                ? 'Mantém novos registros e ignora possíveis duplicidades.'
+                : 'Atualiza registros existentes e mantém histórico.',
+            selected: controller.strategy == strategy,
+            onTap: () => controller.selectStrategy(strategy),
           ),
-        )
-        .toList(),
+        ),
+      ),
+    ],
   );
+}
+
+final class _ImportWizardOptionTile extends StatelessWidget {
+  const _ImportWizardOptionTile({
+    required this.label,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final selectedColor = selected ? colors.primary : colors.outline;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(CoeloRadius.md),
+      hoverColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      splashColor: selected ? colors.primary.withValues(alpha: .14) : Colors.transparent,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 84),
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        decoration: BoxDecoration(
+          border: Border.all(color: selectedColor, width: selected ? 1.5 : 1),
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+          color: selected ? colors.surfaceContainerHighest : colors.surface,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: CoeloSpacing.space1),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
+            ),
+            Icon(
+              selected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+              color: selectedColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 final class _PreviewStep extends StatelessWidget {
@@ -225,6 +303,7 @@ final class _PreviewStep extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text('Prévia de 8 linhas', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space2),
       ...draft.previewRows.map(
         (row) => ListTile(
           title: Text('Linha ${row.row} · ${row.values['nome']}'),

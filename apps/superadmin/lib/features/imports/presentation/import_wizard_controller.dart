@@ -11,16 +11,22 @@ final class ImportWizardController extends ChangeNotifier {
   ImportWizardController({
     required this.repository,
     required this.store,
+    ImportEntity? initialEntity,
+    String? initialContext,
+    ImportStrategy? initialStrategy,
     this.stepInterval = const Duration(milliseconds: 180),
-  });
+  }) : entity = initialEntity ?? ImportEntity.institutions,
+       strategy = initialStrategy ?? ImportStrategy.createOnly,
+       file = ImportFileFixture.csv,
+       context = initialContext ?? 'Coelo';
 
   final FakeImportRepository repository;
   final SuperadminPrototypeStore store;
   final Duration stepInterval;
-  ImportEntity entity = ImportEntity.institutions;
-  ImportStrategy strategy = ImportStrategy.createOnly;
-  ImportFileFixture file = ImportFileFixture.csv;
-  String context = 'Coelo';
+  ImportEntity entity;
+  ImportStrategy strategy;
+  ImportFileFixture file;
+  String context;
   int currentStep = 0;
   ImportJob? job;
   Timer? _timer;

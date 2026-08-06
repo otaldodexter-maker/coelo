@@ -1,4 +1,4 @@
-﻿import 'package:coelo_superadmin/features/imports/data/fake_import_repository.dart';
+import 'package:coelo_superadmin/features/imports/data/fake_import_repository.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_job.dart';
 import 'package:coelo_superadmin/features/imports/presentation/import_directory_page.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -16,15 +16,19 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: ImportDirectoryPage(
-            repository: FakeImportRepository(),
-            onNewImport: onNewImport,
-          ),
+          body: ImportDirectoryPage(repository: FakeImportRepository(), onNewImport: onNewImport),
         ),
       ),
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('delegates the page heading to the operational shell', (tester) async {
+    await buildImportsPage(tester, size: const Size(1280, 900), onNewImport: (_) {});
+
+    expect(find.text('Importações'), findsNothing);
+    expect(find.text('Histórico de importações para auditoria operacional.'), findsNothing);
+  });
 
   testWidgets('open creation dialog and keep selected scope', (tester) async {
     ImportCreationPreset? openedByPreset;
@@ -39,10 +43,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('import-new-dialog')), findsOneWidget);
-    expect(
-      find.text('Escolha o caminho de origem para iniciar a importação.'),
-      findsOneWidget,
-    );
+    expect(find.text('Escolha o caminho de origem para iniciar a importação.'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('import-preset-units')));
     await tester.pumpAndSettle();

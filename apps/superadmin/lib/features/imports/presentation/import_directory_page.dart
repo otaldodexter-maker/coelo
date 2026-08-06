@@ -172,13 +172,6 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Importações', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(
-                'Histórico de importações para auditoria operacional.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
               CoeloAdminListingToolbar(
                 search: SizedBox(
                   width: searchWidth,

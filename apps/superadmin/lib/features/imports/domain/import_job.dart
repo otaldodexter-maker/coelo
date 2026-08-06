@@ -6,13 +6,40 @@ enum ImportStrategy { createOnly, createAndUpdate }
 
 enum ImportFileFixture { csv, xlsx }
 
+enum ImportCreationPreset { institutions, units, newInstitution, newFamily, fileByStep }
+
 enum ImportJobStatus { draft, inProgress, completed }
+
+extension ImportCreationPresetLabels on ImportCreationPreset {
+  String get label => switch (this) {
+    ImportCreationPreset.institutions => 'Instituições',
+    ImportCreationPreset.units => 'Unidades',
+    ImportCreationPreset.newInstitution => 'Nova instituição',
+    ImportCreationPreset.newFamily => 'Nova família',
+    ImportCreationPreset.fileByStep => 'Upload por arquivo por etapa',
+  };
+
+  ImportEntity get defaultEntity => switch (this) {
+    ImportCreationPreset.institutions ||
+    ImportCreationPreset.newInstitution => ImportEntity.institutions,
+    ImportCreationPreset.units || ImportCreationPreset.fileByStep => ImportEntity.units,
+    ImportCreationPreset.newFamily => ImportEntity.groups,
+  };
+
+  String get defaultContext => switch (this) {
+    ImportCreationPreset.institutions => 'Instituições',
+    ImportCreationPreset.units => 'Unidades',
+    ImportCreationPreset.newInstitution => 'Nova instituição',
+    ImportCreationPreset.newFamily => 'Nova família',
+    ImportCreationPreset.fileByStep => 'Importação por etapa',
+  };
+}
 
 extension ImportEntityLabels on ImportEntity {
   String get label => switch (this) {
     ImportEntity.institutions => 'Instituições',
     ImportEntity.units => 'Unidades',
-    ImportEntity.groups => 'Grupos',
+    ImportEntity.groups => 'Turmas',
     ImportEntity.people => 'Pessoas',
     ImportEntity.internalUsers => 'Usuários internos',
   };
@@ -20,7 +47,7 @@ extension ImportEntityLabels on ImportEntity {
   String get matchingKey => switch (this) {
     ImportEntity.institutions => 'Código da instituição',
     ImportEntity.units => 'Código da unidade',
-    ImportEntity.groups => 'Código do grupo',
+    ImportEntity.groups => 'Código da turma',
     ImportEntity.people => 'Documento interno',
     ImportEntity.internalUsers => 'ID do usuário',
   };
