@@ -27,7 +27,7 @@ extension NoticeAudienceLabel on NoticeAudience {
   String get label => switch (this) {
     NoticeAudience.everyone => 'Todos',
     NoticeAudience.coeloTeam => 'Equipe Coelo',
-    NoticeAudience.institution => 'Instituicao',
+    NoticeAudience.institution => 'Instituição',
     NoticeAudience.unit => 'Unidade',
     NoticeAudience.group => 'Turma',
     NoticeAudience.role => 'Papel',
@@ -40,7 +40,7 @@ enum NoticeBehavior { dismissible, confirmation, checkboxConfirmation }
 extension NoticeBehaviorLabel on NoticeBehavior {
   String get label => switch (this) {
     NoticeBehavior.dismissible => 'Apenas fechar',
-    NoticeBehavior.confirmation => 'Confirmacao obrigatoria',
+    NoticeBehavior.confirmation => 'Confirmação obrigatória',
     NoticeBehavior.checkboxConfirmation => 'Checkbox de aceite + confirmar',
   };
 }
@@ -69,8 +69,8 @@ enum NoticeRecurrence { oneTime, daily, weekly, monthly, interval }
 
 extension NoticeRecurrenceLabel on NoticeRecurrence {
   String get label => switch (this) {
-    NoticeRecurrence.oneTime => 'Unica',
-    NoticeRecurrence.daily => 'Diaria',
+    NoticeRecurrence.oneTime => 'Única',
+    NoticeRecurrence.daily => 'Diária',
     NoticeRecurrence.weekly => 'Semanal',
     NoticeRecurrence.monthly => 'Mensal',
     NoticeRecurrence.interval => 'Intervalo de dias',
@@ -109,10 +109,10 @@ String recurrenceSummaryLabel({
 }) {
   final untilText = until == null
       ? ''
-      : ' ate ${until.day.toString().padLeft(2, '0')}/${until.month.toString().padLeft(2, '0')}/${until.year}';
+      : ' até ${until.day.toString().padLeft(2, '0')}/${until.month.toString().padLeft(2, '0')}/${until.year}';
   return switch (recurrence) {
     NoticeRecurrence.oneTime => 'unica',
-    NoticeRecurrence.daily => 'diaria$untilText',
+    NoticeRecurrence.daily => 'diária$untilText',
     NoticeRecurrence.weekly => 'semanal (${_weekdayNames(weeklyDays)})$untilText',
     NoticeRecurrence.monthly => 'mensal (dia ${dayOfMonth ?? 1})$untilText',
     NoticeRecurrence.interval => '${intervalDays ?? 1} em ${intervalDays ?? 1} dia(s)$untilText',
