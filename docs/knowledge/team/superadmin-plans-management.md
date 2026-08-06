@@ -27,7 +27,11 @@ troca de plano continua pertencendo ao fluxo da instituição.
 Plano e entitlement descrevem a oferta contratada. Perfil e permissão autorizam
 a pessoa, e o escopo contextual restringe onde ela pode agir. A interface de
 Planos não concede autorização a pessoas e não reproduz ações de permissão como
-Ver, Editar ou Excluir. O acesso efetivo depende da interseção desses domínios.
+Ver, Editar ou Excluir por analogia. Capacidades usa uma matriz privada orientada
+pelo catálogo comercial. Uma variação de ação só pode aparecer quando for um
+entitlement comercial canônico; até existir catálogo granular aprovado, a
+matriz mostra apenas **Incluído no plano**. O acesso efetivo depende da
+interseção desses domínios.
 
 Os limites exibidos são informativos e não causam bloqueio automático no
 Flutter. A quantidade de responsáveis por criança não é limite técnico ou

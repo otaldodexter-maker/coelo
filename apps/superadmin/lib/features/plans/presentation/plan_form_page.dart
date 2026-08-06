@@ -8,6 +8,7 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../data/fake_plan_catalog_repository.dart';
 import '../domain/plan_catalog.dart';
+import 'widgets/plan_capability_matrix.dart';
 
 final class PlanFormPage extends StatefulWidget {
   const PlanFormPage({
@@ -42,7 +43,10 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   late Set<PlanFeature> _features;
   late PlanStatus _status;
   int _step = 0;
+  int _furthestStep = 0;
   bool _saving = false;
+  bool _capabilityError = false;
+  bool _auditReasonError = false;
   String? _conflictMessage;
 
   bool get _editing => _original != null;
@@ -99,24 +103,61 @@ final class _PlanFormPageState extends State<PlanFormPage> {
           for (var index = 0; index < _stepLabels.length; index++)
             SuperadminFormStep(
               label: _stepLabels[index],
-              status: index == _step
+              status:
+                  index == 1 && _capabilityError ||
+                      index == _reviewStep && index == _step && _auditReasonError
+                  ? SuperadminFormStepStatus.error
+                  : index == _step
                   ? SuperadminFormStepStatus.current
                   : index < _step
                   ? SuperadminFormStepStatus.complete
                   : SuperadminFormStepStatus.incomplete,
+              enabled: index <= _furthestStep,
             ),
         ],
         currentIndex: _step,
         onStepSelected: (value) => setState(() => _step = value),
       );
       final content = Expanded(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 880),
-              child: _stepContent(),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: Column(
+              key: const Key('plan-form-content-column'),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+                    child: _stepContent(),
+                  ),
+                ),
+                const SizedBox(height: CoeloSpacing.space3),
+                SuperadminFormActionFooter(
+                  tertiaryAction: TextButton(
+                    onPressed: _saving ? null : widget.onCancel,
+                    child: const Text('Cancelar'),
+                  ),
+                  continuationActions: [
+                    if (_step > 0)
+                      OutlinedButton(
+                        onPressed: _saving ? null : () => setState(() => _step -= 1),
+                        child: const Text('Voltar'),
+                      ),
+                    FilledButton(
+                      onPressed: _saving ? null : (_step == _reviewStep ? _save : _continue),
+                      child: Text(
+                        _saving
+                            ? 'Salvando…'
+                            : _step == _reviewStep
+                            ? 'Salvar plano'
+                            : 'Continuar',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -126,18 +167,6 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              _editing ? 'Editar plano' : 'Novo plano',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            Text(
-              _editing
-                  ? 'Revise o catálogo comercial sem alterar subscriptions diretamente.'
-                  : 'Configure uma oferta local operada manualmente no MVP.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: CoeloSpacing.space5),
             Expanded(
               child: compact
                   ? Column(
@@ -156,30 +185,6 @@ final class _PlanFormPageState extends State<PlanFormPage> {
                         content,
                       ],
                     ),
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            SuperadminFormActionFooter(
-              tertiaryAction: TextButton(
-                onPressed: _saving ? null : widget.onCancel,
-                child: const Text('Cancelar'),
-              ),
-              continuationActions: [
-                if (_step > 0)
-                  OutlinedButton(
-                    onPressed: _saving ? null : () => setState(() => _step -= 1),
-                    child: const Text('Voltar'),
-                  ),
-                FilledButton(
-                  onPressed: _saving ? null : (_step == _reviewStep ? _save : _continue),
-                  child: Text(
-                    _saving
-                        ? 'Salvando…'
-                        : _step == _reviewStep
-                        ? 'Salvar plano'
-                        : 'Continuar',
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -260,44 +265,24 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     ),
   );
 
-  Widget _capabilities() {
-    final term = _capabilitySearch.text.trim().toLowerCase();
-    final visible = PlanFeature.values
-        .where((feature) => term.isEmpty || feature.label.toLowerCase().contains(term))
-        .toList();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _sectionHeader(
-          'Capacidades incluídas',
-          'Fixtures locais de oferta comercial. Não representam permissões de pessoas.',
-        ),
-        CoeloSearchField(
-          controller: _capabilitySearch,
-          semanticLabel: 'Buscar capacidades do plano',
-          hintText: 'Buscar capacidade',
-          onChanged: (_) => setState(() {}),
-        ),
-        const SizedBox(height: CoeloSpacing.space3),
-        Text('${_features.length} selecionadas', style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: CoeloSpacing.space4),
-        for (final surface in PlanSurface.values) ...[
-          _CapabilityGroup(
-            surface: surface,
-            features: visible.where((feature) => feature.surface == surface).toList(),
-            selected: _features,
-            onChanged: (feature, selected) => setState(() {
-              selected ? _features.add(feature) : _features.remove(feature);
-            }),
-            onToggleAll: (features, selected) => setState(() {
-              selected ? _features.addAll(features) : _features.removeAll(features);
-            }),
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-        ],
-      ],
-    );
-  }
+  Widget _capabilities() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _sectionHeader(
+        'Capacidades incluídas',
+        'Fixtures locais de oferta comercial. Não representam permissões de pessoas.',
+      ),
+      PlanCapabilityMatrix(
+        searchController: _capabilitySearch,
+        selected: _features,
+        errorText: _capabilityError ? 'Selecione ao menos uma capacidade.' : null,
+        onChanged: (features) => setState(() {
+          _features = features;
+          if (_features.isNotEmpty) _capabilityError = false;
+        }),
+      ),
+    ],
+  );
 
   Widget _limits() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -407,6 +392,12 @@ final class _PlanFormPageState extends State<PlanFormPage> {
         labelText: 'Motivo de auditoria',
         prefixIcon: Icons.fact_check_outlined,
         maxLines: 3,
+        errorText: _auditReasonError ? 'Informe o motivo de auditoria.' : null,
+        onChanged: (value) {
+          if (_auditReasonError && value.trim().isNotEmpty) {
+            setState(() => _auditReasonError = false);
+          }
+        },
         validator: _required,
       ),
       if (_conflictMessage case final message?) ...[
@@ -425,13 +416,14 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   void _continue() {
     if (_step == 0 && !(_identityKey.currentState?.validate() ?? false)) return;
     if (_step == 1 && _features.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Selecione ao menos uma capacidade.')));
+      setState(() => _capabilityError = true);
       return;
     }
     if (_step == 2 && !_limitsAreValid()) return;
-    setState(() => _step += 1);
+    setState(() {
+      _step += 1;
+      if (_step > _furthestStep) _furthestStep = _step;
+    });
   }
 
   bool _limitsAreValid() => [
@@ -443,15 +435,20 @@ final class _PlanFormPageState extends State<PlanFormPage> {
 
   Future<void> _save() async {
     if (_reason.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Informe o motivo de auditoria.')));
+      setState(() => _auditReasonError = true);
       return;
     }
     if (!_identityValuesAreValid()) {
       setState(() => _step = 0);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _identityKey.currentState?.validate();
+      });
+      return;
+    }
+    if (_features.isEmpty) {
+      setState(() {
+        _step = 1;
+        _capabilityError = true;
       });
       return;
     }
@@ -517,113 +514,6 @@ final class _PlanFormPageState extends State<PlanFormPage> {
 
   String? _positiveNumber(String? value) =>
       (int.tryParse(value ?? '') ?? 0) > 0 ? null : 'Informe um valor maior que zero';
-}
-
-final class _CapabilityGroup extends StatelessWidget {
-  const _CapabilityGroup({
-    required this.surface,
-    required this.features,
-    required this.selected,
-    required this.onChanged,
-    required this.onToggleAll,
-  });
-
-  final PlanSurface surface;
-  final List<PlanFeature> features;
-  final Set<PlanFeature> selected;
-  final void Function(PlanFeature feature, bool selected) onChanged;
-  final void Function(List<PlanFeature> features, bool selected) onToggleAll;
-
-  @override
-  Widget build(BuildContext context) {
-    if (features.isEmpty) return const SizedBox.shrink();
-    final selectedCount = features.where(selected.contains).length;
-    final allSelected = selectedCount == features.length;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final compact = constraints.maxWidth <= CoeloBreakpoints.compact.maxWidth;
-                final title = Text(
-                  surface == PlanSurface.admin ? 'Admin' : 'Principal',
-                  style: Theme.of(context).textTheme.titleMedium,
-                );
-                final action = TextButton(
-                  onPressed: () => onToggleAll(features, !allSelected),
-                  child: Text(allSelected ? 'Limpar grupo' : 'Selecionar grupo'),
-                );
-                if (compact) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [title, action],
-                  );
-                }
-                return Row(
-                  children: [
-                    Expanded(child: title),
-                    action,
-                  ],
-                );
-              },
-            ),
-            Text('$selectedCount de ${features.length} selecionadas'),
-            const SizedBox(height: CoeloSpacing.space3),
-            for (final feature in features)
-              Semantics(
-                checked: selected.contains(feature),
-                child: CoeloAdminInteractiveCard(
-                  semanticLabel: '${feature.label}, disponível no plano',
-                  minHeight: CoeloSize.touchMin,
-                  onPressed: () => onChanged(feature, !selected.contains(feature)),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final checkbox = Checkbox(
-                            value: selected.contains(feature),
-                            onChanged: (value) => onChanged(feature, value ?? false),
-                          );
-                          if (constraints.maxWidth <= CoeloBreakpoints.compact.maxWidth) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                checkbox,
-                                Text(feature.label),
-                                const SizedBox(height: CoeloSpacing.space1),
-                                const Text('Disponível no plano'),
-                              ],
-                            );
-                          }
-                          return Row(
-                            children: [
-                              checkbox,
-                              const SizedBox(width: CoeloSpacing.space2),
-                              Expanded(child: Text(feature.label)),
-                              const Text('Disponível no plano'),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 final class _InformationPanel extends StatelessWidget {

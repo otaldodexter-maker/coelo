@@ -291,40 +291,60 @@ final class _PlanDirectoryPageState extends State<PlanDirectoryPage> {
 
   Future<void> _confirmStatusChange(PlanCatalog plan, {required bool archive}) async {
     final reason = TextEditingController();
+    var showReasonError = false;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(archive ? 'Arquivar plano' : 'Restaurar plano'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              archive && plan.usedByInstitutionCount > 0
-                  ? '${plan.usedByInstitutionCount} instituições utilizam este plano. As subscriptions não serão alteradas automaticamente.'
-                  : 'Esta ação altera a disponibilidade do plano no catálogo.',
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) {
+          final colors = Theme.of(dialogContext).colorScheme;
+          return CoeloAdminDialogShell(
+            title: archive ? 'Arquivar plano' : 'Restaurar plano',
+            onClose: () => Navigator.pop(dialogContext, false),
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  archive && plan.usedByInstitutionCount > 0
+                      ? '${plan.usedByInstitutionCount} instituições utilizam este plano. As subscriptions não serão alteradas automaticamente.'
+                      : 'Esta ação altera a disponibilidade do plano no catálogo.',
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                CoeloFormTextField(
+                  controller: reason,
+                  labelText: 'Motivo de auditoria',
+                  prefixIcon: Icons.notes_rounded,
+                  maxLines: 3,
+                  errorText: showReasonError ? 'Motivo obrigatório' : null,
+                  onChanged: (value) {
+                    if (showReasonError && value.trim().isNotEmpty) {
+                      setDialogState(() => showReasonError = false);
+                    }
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: CoeloSpacing.space4),
-            CoeloFormTextField(
-              controller: reason,
-              labelText: 'Motivo de auditoria',
-              prefixIcon: Icons.notes_rounded,
-              maxLines: 3,
+            secondaryAction: OutlinedButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (reason.text.trim().isNotEmpty) Navigator.pop(dialogContext, true);
-            },
-            child: Text(archive ? 'Arquivar' : 'Restaurar'),
-          ),
-        ],
+            primaryAction: FilledButton(
+              style: archive
+                  ? FilledButton.styleFrom(
+                      backgroundColor: colors.errorContainer,
+                      foregroundColor: colors.error,
+                    )
+                  : null,
+              onPressed: () {
+                if (reason.text.trim().isEmpty) {
+                  setDialogState(() => showReasonError = true);
+                  return;
+                }
+                Navigator.pop(dialogContext, true);
+              },
+              child: Text(archive ? 'Arquivar' : 'Restaurar'),
+            ),
+          );
+        },
       ),
     );
     if (confirmed == true) {
@@ -359,6 +379,8 @@ final class _PlanCard extends StatelessWidget {
           Row(
             children: [
               Expanded(child: _PlanName(plan: plan)),
+              _PlanStatusIndicator(plan: plan),
+              const SizedBox(width: CoeloSpacing.space2),
               _PlanActions(plan: plan, onSelected: onAction),
             ],
           ),
@@ -389,35 +411,48 @@ final class _PlanName extends StatelessWidget {
   final PlanCatalog plan;
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(
-        plan.status == PlanStatus.active ? Icons.check_circle_outline : Icons.archive_outlined,
-        color: plan.status == PlanStatus.active
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.onSurfaceVariant,
+      Text(
+        plan.name,
+        style: Theme.of(context).textTheme.titleSmall,
+        overflow: TextOverflow.ellipsis,
       ),
-      const SizedBox(width: CoeloSpacing.space2),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              plan.name,
-              style: Theme.of(context).textTheme.titleSmall,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              '${plan.code} · ${_statusLabel(plan.status)}',
-              style: Theme.of(context).textTheme.bodySmall,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+      Text(
+        plan.code,
+        style: Theme.of(context).textTheme.bodySmall,
+        overflow: TextOverflow.ellipsis,
       ),
     ],
   );
+}
+
+final class _PlanStatusIndicator extends StatelessWidget {
+  const _PlanStatusIndicator({required this.plan});
+
+  final PlanCatalog plan;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+    final pair = plan.status == PlanStatus.active
+        ? (statusColors.successContainer, statusColors.onSuccessContainer)
+        : (colors.surfaceContainerHighest, colors.onSurfaceVariant);
+    final label = _statusLabel(plan.status);
+    return CoeloAdminExpandableStatusIndicator(
+      label: label,
+      semanticLabel: 'Status: $label',
+      surfaceKey: Key('plan-status-${plan.id}'),
+      backgroundColor: pair.$1,
+      foregroundColor: pair.$2,
+    );
+  }
 }
 
 final class _Metric extends StatelessWidget {

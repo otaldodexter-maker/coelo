@@ -37,8 +37,10 @@ produtivo.
 - Subscription vincula instituição e plano e possui status/datas próprios.
 - Unidades herdam o plano institucional, salvo override explícito.
 - Limites exibidos no protótipo são informativos.
-- A matriz usa fixtures locais de capacidades já existentes e deve ser
-  substituída por catálogo canônico antes da integração produtiva.
+- Capacidades usa composição/matriz privada orientada por catálogo; ações como
+  Ver, Editar ou outras só aparecem quando forem entitlements comerciais
+  canônicos. Enquanto não houver catálogo granular aprovado, exibir somente
+  `Incluído no plano`, sem inventar códigos.
 
 ## UX e estados
 
