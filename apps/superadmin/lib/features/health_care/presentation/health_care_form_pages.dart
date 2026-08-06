@@ -534,7 +534,7 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   );
 }
 
-final class _HealthCareFormFrame extends StatelessWidget {
+final class _HealthCareFormFrame extends StatefulWidget {
   const _HealthCareFormFrame({
     required this.logout,
     required this.currentDestination,
@@ -568,12 +568,19 @@ final class _HealthCareFormFrame extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_HealthCareFormFrame> createState() => _HealthCareFormFrameState();
+}
+
+final class _HealthCareFormFrameState extends State<_HealthCareFormFrame> {
+  double _footerHeight = 0;
+
+  @override
   Widget build(BuildContext context) => SuperadminShell(
-    logout: logout,
-    currentDestination: currentDestination,
-    title: title,
-    subtitle: subtitle,
-    showChatLauncher: false,
+    logout: widget.logout,
+    currentDestination: widget.currentDestination,
+    title: widget.title,
+    subtitle: widget.subtitle,
+    chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
@@ -595,9 +602,9 @@ final class _HealthCareFormFrame extends StatelessWidget {
                       child: LayoutBuilder(
                         builder: (context, contentConstraints) {
                           final navigation = SuperadminFormStepNavigation(
-                            steps: steps,
-                            currentIndex: currentStep,
-                            onStepSelected: onStepSelected,
+                            steps: widget.steps,
+                            currentIndex: widget.currentStep,
+                            onStepSelected: widget.onStepSelected,
                           );
                           if (contentConstraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
                             return Row(
@@ -605,7 +612,7 @@ final class _HealthCareFormFrame extends StatelessWidget {
                               children: [
                                 navigation,
                                 const SizedBox(width: CoeloSpacing.space6),
-                                Expanded(child: child),
+                                Expanded(child: widget.child),
                               ],
                             );
                           }
@@ -614,7 +621,7 @@ final class _HealthCareFormFrame extends StatelessWidget {
                             children: [
                               navigation,
                               const SizedBox(height: CoeloSpacing.space4),
-                              child,
+                              widget.child,
                             ],
                           );
                         },
@@ -624,21 +631,28 @@ final class _HealthCareFormFrame extends StatelessWidget {
                 ),
               ),
               SuperadminFormActionFooter(
-                tertiaryAction: TextButton(onPressed: onCancel, child: const Text('Cancelar')),
+                onHeightChanged: (height) {
+                  if ((_footerHeight - height).abs() < .5) return;
+                  setState(() => _footerHeight = height);
+                },
+                tertiaryAction: TextButton(
+                  onPressed: widget.onCancel,
+                  child: const Text('Cancelar'),
+                ),
                 continuationActions: [
-                  if (onPrevious != null)
-                    OutlinedButton(onPressed: onPrevious, child: const Text('Anterior')),
-                  if (currentStep < steps.length - 1)
-                    FilledButton(onPressed: onContinue, child: const Text('Continuar'))
+                  if (widget.onPrevious != null)
+                    OutlinedButton(onPressed: widget.onPrevious, child: const Text('Anterior')),
+                  if (widget.currentStep < widget.steps.length - 1)
+                    FilledButton(onPressed: widget.onContinue, child: const Text('Continuar'))
                   else
                     FilledButton(
-                      onPressed: onSave,
-                      child: saving
+                      onPressed: widget.onSave,
+                      child: widget.saving
                           ? const SizedBox.square(
                               dimension: CoeloSize.iconSm,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text(saveLabel),
+                          : Text(widget.saveLabel),
                     ),
                 ],
               ),
