@@ -13,14 +13,27 @@ final class FakeNoticeRepository {
   final List<PlatformNotice> _items;
   var _nextId = 3;
 
-  List<PlatformNotice> list({String search = ''}) {
+  List<PlatformNotice> list({
+    String search = '',
+    NoticeStatus? status,
+    NoticeTargetDevice? target,
+  }) {
+    _closeExpiredNotices();
     final query = search.trim().toLowerCase();
     return _items
-        .where(
-          (notice) =>
+        .where((notice) {
+          final matchesText =
               query.isEmpty ||
-              '${notice.title} ${notice.audienceLabel}'.toLowerCase().contains(query),
-        )
+              '${notice.title} ${notice.audienceLabel} ${notice.message}'.toLowerCase().contains(
+                query,
+              );
+          final matchesStatus = status == null || notice.status == status;
+          final matchesTarget =
+              target == null ||
+              notice.targetDevice == NoticeTargetDevice.all ||
+              notice.targetDevice == target;
+          return matchesText && matchesStatus && matchesTarget;
+        })
         .toList(growable: false);
   }
 
@@ -32,72 +45,98 @@ final class FakeNoticeRepository {
   }
 
   PlatformNotice create(NoticeDraft draft) {
-    final notice = _fromDraft('notice-${_nextId++}', draft, status: NoticeStatus.draft);
+    final now = _now();
+    final notice = _fromDraft(
+      'notice-${_nextId++}',
+      draft,
+      status: NoticeStatus.draft,
+      startsAt: draft.startsAt ?? now,
+    );
     _items.insert(0, notice);
+    _record(notice, 'criou');
     return notice;
   }
 
   PlatformNotice update(String id, NoticeDraft draft) {
     final old = _required(id);
-    if (!old.canEdit) throw StateError('Apenas rascunhos ou avisos agendados podem ser editados.');
-    final notice = _fromDraft(
-      id,
-      draft,
-      status: old.status,
-      startsAt: old.startsAt,
-      reach: old.reach,
-    );
+    if (!old.canEdit) {
+      throw StateError('Apenas rascunhos, agendados ou pausados podem ser editados.');
+    }
+    final startedAt = draft.startsAt ?? old.startsAt;
+    final notice = _fromDraft(id, draft, status: old.status, startsAt: startedAt, reach: old.reach);
     _replace(notice);
+    _record(notice, 'atualizou');
     return notice;
   }
 
   PlatformNotice duplicate(String id) {
+    final now = _now();
     final original = _required(id);
-    final copy = original.copyWith(
+    final duplicate = original.copyWith(
+      id: 'notice-${_nextId++}',
       status: NoticeStatus.draft,
       title: '${original.title} (cópia)',
-      acceptedCount: 0,
-      viewedCount: 0,
+      startsAt: now,
       deliveredCount: 0,
-    );
-    final duplicate = PlatformNotice(
-      id: 'notice-${_nextId++}',
-      title: copy.title,
-      message: copy.message,
-      priority: copy.priority,
-      status: copy.status,
-      startsAt: _now(),
-      endsAt: copy.endsAt,
-      audience: copy.audience,
-      audienceLabel: copy.audienceLabel,
-      behavior: copy.behavior,
-      mandatory: copy.mandatory,
-      reach: copy.reach,
-      buttonLabel: copy.buttonLabel,
-      linkLabel: copy.linkLabel,
+      viewedCount: 0,
+      acceptedCount: 0,
     );
     _items.insert(0, duplicate);
+    _record(duplicate, 'duplicou');
     return duplicate;
   }
 
   PlatformNotice publish(String id) {
     final old = _required(id);
-    if (!old.canEdit) throw StateError('Este aviso não pode ser publicado novamente.');
-    final status = old.startsAt.isAfter(_now()) ? NoticeStatus.scheduled : NoticeStatus.active;
-    final notice = old.copyWith(status: status, deliveredCount: old.reach);
-    _replace(notice);
-    _record(notice, 'publicou');
-    return notice;
+    if (!old.canEdit && old.status != NoticeStatus.paused) {
+      throw StateError('Este aviso não pode ser publicado novamente.');
+    }
+    final now = _now();
+    final start = old.startsAt;
+    final status = start.isAfter(now) ? NoticeStatus.scheduled : NoticeStatus.active;
+    final published = old.copyWith(status: status);
+    _replace(published);
+    _record(published, 'publicou');
+    return published;
+  }
+
+  PlatformNotice pause(String id) {
+    final old = _required(id);
+    if (old.status != NoticeStatus.active) {
+      throw StateError('Apenas avisos ativos podem ser pausados.');
+    }
+    final paused = old.copyWith(status: NoticeStatus.paused);
+    _replace(paused);
+    _record(paused, 'pausou');
+    return paused;
+  }
+
+  PlatformNotice resume(String id) {
+    final old = _required(id);
+    if (old.status != NoticeStatus.paused) {
+      throw StateError('Apenas avisos pausados podem ser reativados.');
+    }
+    final now = _now();
+    final status = old.startsAt.isAfter(now) ? NoticeStatus.scheduled : NoticeStatus.active;
+    final resumed = old.copyWith(status: status);
+    _replace(resumed);
+    _record(resumed, 'reativou');
+    return resumed;
   }
 
   PlatformNotice cancel(String id) {
     final old = _required(id);
-    if (old.status != NoticeStatus.active && old.status != NoticeStatus.scheduled) {
-      throw StateError('Apenas avisos ativos ou agendados podem ser cancelados.');
+    if (!const {
+      NoticeStatus.draft,
+      NoticeStatus.scheduled,
+      NoticeStatus.active,
+      NoticeStatus.paused,
+    }.contains(old.status)) {
+      throw StateError('Este aviso não pode ser inativado.');
     }
     final notice = old.copyWith(status: NoticeStatus.cancelled);
     _replace(notice);
-    _record(notice, 'cancelou');
+    _record(notice, 'inativou');
     return notice;
   }
 
@@ -128,15 +167,44 @@ final class FakeNoticeRepository {
     priority: draft.priority,
     status: status,
     startsAt: startsAt ?? _now(),
-    endsAt: null,
+    endsAt: draft.endsAt,
     audience: draft.audience,
     audienceLabel: draft.audienceLabel.trim(),
     behavior: draft.behavior,
-    mandatory: draft.mandatory,
+    mandatory: draft.behavior != NoticeBehavior.dismissible,
     reach: reach,
+    targetDevice: draft.targetDevice,
+    contentFormat: draft.contentFormat,
+    audienceRoleLabel: draft.audienceRoleLabel?.trim(),
+    backgroundColorValue: draft.backgroundColorValue,
+    textColorValue: draft.textColorValue,
+    recurrence: draft.recurrence,
+    intervalDays: draft.intervalDays,
+    weeklyDays: List.of(draft.weeklyDays),
+    dayOfMonth: draft.dayOfMonth,
+    recurrenceUntil: draft.recurrenceUntil,
+    imageOrientation: draft.imageOrientation,
+    showImagePlaceholder: draft.showImagePlaceholder,
+    backgroundTone: draft.backgroundTone,
+    textTone: draft.textTone,
     buttonLabel: draft.buttonLabel.trim().isEmpty ? 'Confirmar' : draft.buttonLabel.trim(),
     linkLabel: draft.linkLabel?.trim(),
   );
+
+  void _closeExpiredNotices() {
+    final now = _now();
+    for (var index = 0; index < _items.length; index++) {
+      final notice = _items[index];
+      final endedByDate = notice.endsAt != null && !notice.endsAt!.isAfter(now);
+      if ((notice.status == NoticeStatus.active || notice.status == NoticeStatus.scheduled) &&
+          endedByDate &&
+          notice.status != NoticeStatus.ended) {
+        final updated = notice.copyWith(status: NoticeStatus.ended);
+        _items[index] = updated;
+        _record(updated, 'encerrou');
+      }
+    }
+  }
 
   PlatformNotice _required(String id) => find(id) ?? (throw StateError('Aviso não encontrado.'));
   void _replace(PlatformNotice notice) =>
@@ -173,15 +241,23 @@ List<PlatformNotice> _fixtures(DateTime Function() now) {
       priority: NoticePriority.important,
       status: NoticeStatus.active,
       startsAt: instant,
-      endsAt: null,
+      endsAt: instant.add(const Duration(days: 4)),
       audience: NoticeAudience.coeloTeam,
       audienceLabel: 'Equipe Coelo',
+      targetDevice: NoticeTargetDevice.all,
       behavior: NoticeBehavior.confirmation,
       mandatory: true,
       reach: 24,
       deliveredCount: 24,
       viewedCount: 18,
       acceptedCount: 12,
+      recurrence: NoticeRecurrence.daily,
+      recurrenceUntil: instant.add(const Duration(days: 4)),
+      imageOrientation: NoticeImageOrientation.horizontal,
+      showImagePlaceholder: true,
+      backgroundTone: NoticeVisualTone.brand,
+      textTone: NoticeVisualTone.light,
+      linkLabel: 'Ver detalhes',
     ),
     PlatformNotice(
       id: 'notice-2',
@@ -193,9 +269,16 @@ List<PlatformNotice> _fixtures(DateTime Function() now) {
       endsAt: null,
       audience: NoticeAudience.institution,
       audienceLabel: 'Instituição Aurora',
+      targetDevice: NoticeTargetDevice.web,
       behavior: NoticeBehavior.dismissible,
       mandatory: false,
       reach: 42,
+      recurrence: NoticeRecurrence.oneTime,
+      imageOrientation: NoticeImageOrientation.vertical,
+      showImagePlaceholder: false,
+      backgroundTone: NoticeVisualTone.dark,
+      textTone: NoticeVisualTone.light,
+      linkLabel: null,
     ),
   ];
 }
