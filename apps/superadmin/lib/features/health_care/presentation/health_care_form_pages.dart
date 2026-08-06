@@ -6,10 +6,15 @@ import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/health_care.dart';
 
 typedef HealthCareFormSave = Future<void> Function();
+
+enum _HealthCareProfileFormStep { child, allergies, guidance, review }
+
+enum _HealthMedicationPlanFormStep { medicine, validity, schedule, document, review }
 
 final class HealthCareProfileFormPage extends StatefulWidget {
   const HealthCareProfileFormPage({
@@ -30,6 +35,7 @@ final class HealthCareProfileFormPage extends StatefulWidget {
 }
 
 final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormPage> {
+  var _currentStep = _HealthCareProfileFormStep.child;
   late String _childId = widget.childId ?? 'child-demo-a';
   var _allergyType = HealthCareAllergyType.food;
   var _allergyStatus = HealthCareAllergyStatus.active;
@@ -64,6 +70,36 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     }
   }
 
+  List<SuperadminFormStep> get _steps => [
+    for (final step in _HealthCareProfileFormStep.values)
+      SuperadminFormStep(
+        label: switch (step) {
+          _HealthCareProfileFormStep.child => 'Criança',
+          _HealthCareProfileFormStep.allergies => 'Alergias e restrições',
+          _HealthCareProfileFormStep.guidance => 'Orientações de cuidado',
+          _HealthCareProfileFormStep.review => 'Revisão',
+        },
+        status: step == _currentStep
+            ? SuperadminFormStepStatus.current
+            : step.index < _currentStep.index
+            ? SuperadminFormStepStatus.complete
+            : SuperadminFormStepStatus.incomplete,
+      ),
+  ];
+
+  void _selectStep(int index) =>
+      setState(() => _currentStep = _HealthCareProfileFormStep.values[index]);
+
+  void _previousStep() {
+    if (_currentStep.index == 0) return;
+    _selectStep(_currentStep.index - 1);
+  }
+
+  void _continue() {
+    if (_currentStep.index == _HealthCareProfileFormStep.values.length - 1) return;
+    _selectStep(_currentStep.index + 1);
+  }
+
   @override
   Widget build(BuildContext context) => _HealthCareFormFrame(
     logout: widget.logout,
@@ -74,131 +110,174 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     onSave: _saving ? null : _save,
     saveLabel: widget.childId == null ? 'Criar perfil' : 'Salvar alterações',
     saving: _saving,
+    currentStep: _currentStep.index,
+    steps: _steps,
+    onStepSelected: _selectStep,
+    onPrevious: _currentStep.index == 0 ? null : _previousStep,
+    onContinue: _continue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _FormSection(
-          title: 'Criança',
-          description: widget.childId == null
-              ? 'Selecione a criança que receberá o perfil.'
-              : 'A identidade permanece bloqueada durante a edição.',
-          child: widget.childId == null
-              ? CoeloAdminSingleSelectField<String>(
-                  label: 'Criança',
-                  value: _childId,
-                  options: const ['child-demo-a', 'child-demo-b'],
-                  optionLabel: _childLabel,
-                  onChanged: (value) => setState(() => _childId = value),
-                  prefixIcon: Icons.child_care_rounded,
-                )
-              : _LockedIdentity(label: 'Criança', value: _childLabel(_childId)),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _FormSection(
-          title: 'Alergias e restrições',
-          description:
-              'A gravidade descreve somente o episódio registrado e não prevê reações futuras.',
-          child: Column(
+        if (_currentStep == _HealthCareProfileFormStep.child)
+          _FormSection(
+            title: 'Criança',
+            description: widget.childId == null
+                ? 'Selecione a criança que receberá o perfil.'
+                : 'A identidade permanece bloqueada durante a edição.',
+            child: widget.childId == null
+                ? CoeloAdminSingleSelectField<String>(
+                    label: 'Criança',
+                    value: _childId,
+                    options: const ['child-demo-a', 'child-demo-b'],
+                    optionLabel: _childLabel,
+                    onChanged: (value) => setState(() => _childId = value),
+                    prefixIcon: Icons.child_care_rounded,
+                  )
+                : _LockedIdentity(label: 'Criança', value: _childLabel(_childId)),
+          ),
+        if (_currentStep == _HealthCareProfileFormStep.allergies)
+          _FormSection(
+            title: 'Alergias e restrições',
+            description:
+                'A gravidade descreve somente o episódio registrado e não prevê reações futuras.',
+            child: Column(
+              children: [
+                _ResponsiveFields(
+                  children: [
+                    CoeloAdminSingleSelectField<HealthCareAllergyType>(
+                      label: 'Tipo',
+                      value: _allergyType,
+                      options: HealthCareAllergyType.values,
+                      optionLabel: _allergyTypeLabel,
+                      onChanged: (value) => setState(() => _allergyType = value),
+                      prefixIcon: Icons.health_and_safety_outlined,
+                    ),
+                    CoeloAdminSingleSelectField<HealthCareAllergyStatus>(
+                      label: 'Status',
+                      value: _allergyStatus,
+                      options: HealthCareAllergyStatus.values,
+                      optionLabel: _allergyStatusLabel,
+                      onChanged: (value) => setState(() => _allergyStatus = value),
+                      prefixIcon: Icons.flag_outlined,
+                    ),
+                    CoeloFormTextField(
+                      controller: _lastEpisode,
+                      labelText: 'Último episódio registrado',
+                      prefixIcon: Icons.event_outlined,
+                    ),
+                    CoeloAdminSingleSelectField<HealthCareEpisodeSeverity>(
+                      label: 'Gravidade do episódio',
+                      value: _severity,
+                      options: HealthCareEpisodeSeverity.values,
+                      optionLabel: _severityLabel,
+                      onChanged: (value) => setState(() => _severity = value),
+                      prefixIcon: Icons.monitor_heart_outlined,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _ResponsiveFields(
+                  children: [
+                    CoeloFormTextField(
+                      controller: _reaction,
+                      labelText: 'Reação observada',
+                      prefixIcon: Icons.visibility_outlined,
+                      maxLines: 3,
+                    ),
+                    CoeloFormTextField(
+                      controller: _guidance,
+                      labelText: 'Orientação de cuidado',
+                      prefixIcon: Icons.assignment_outlined,
+                      maxLines: 3,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                CoeloFormTextField(
+                  controller: _notes,
+                  labelText: 'Observações',
+                  prefixIcon: Icons.notes_rounded,
+                  maxLines: 3,
+                ),
+              ],
+            ),
+          ),
+        if (_currentStep == _HealthCareProfileFormStep.guidance)
+          _FormSection(
+            title: 'Perfil de cuidado',
+            description:
+                'Use características e orientações objetivas, sem classificação por semáforo.',
+            child: Column(
+              children: [
+                CoeloAdminMultiSelectField<String>(
+                  label: 'Caracter\u00edsticas de cuidado',
+                  options: healthCareProfileCatalog
+                      .expand((group) => group.items)
+                      .map((item) => item.id)
+                      .toList(growable: false),
+                  selectedValues: _careItems,
+                  optionLabel: _careItemLabel,
+                  onChanged: (values) => setState(() => _careItems = values),
+                  searchable: true,
+                  searchHintText: 'Buscar característica',
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _ResponsiveFields(
+                  children: [
+                    CoeloFormTextField(
+                      controller: _signs,
+                      labelText: 'Sinais importantes',
+                      prefixIcon: Icons.sign_language_outlined,
+                      maxLines: 3,
+                    ),
+                    CoeloFormTextField(
+                      controller: _adaptations,
+                      labelText: 'Adaptações e orientações',
+                      prefixIcon: Icons.accessibility_new_rounded,
+                      maxLines: 3,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        if (_currentStep == _HealthCareProfileFormStep.review)
+          Column(
             children: [
-              _ResponsiveFields(
-                children: [
-                  CoeloAdminSingleSelectField<HealthCareAllergyType>(
-                    label: 'Tipo',
-                    value: _allergyType,
-                    options: HealthCareAllergyType.values,
-                    optionLabel: _allergyTypeLabel,
-                    onChanged: (value) => setState(() => _allergyType = value),
-                    prefixIcon: Icons.health_and_safety_outlined,
-                  ),
-                  CoeloAdminSingleSelectField<HealthCareAllergyStatus>(
-                    label: 'Status',
-                    value: _allergyStatus,
-                    options: HealthCareAllergyStatus.values,
-                    optionLabel: _allergyStatusLabel,
-                    onChanged: (value) => setState(() => _allergyStatus = value),
-                    prefixIcon: Icons.flag_outlined,
-                  ),
-                  CoeloFormTextField(
-                    controller: _lastEpisode,
-                    labelText: 'Último episódio registrado',
-                    prefixIcon: Icons.event_outlined,
-                  ),
-                  CoeloAdminSingleSelectField<HealthCareEpisodeSeverity>(
-                    label: 'Gravidade do episódio',
-                    value: _severity,
-                    options: HealthCareEpisodeSeverity.values,
-                    optionLabel: _severityLabel,
-                    onChanged: (value) => setState(() => _severity = value),
-                    prefixIcon: Icons.monitor_heart_outlined,
-                  ),
+              _ReviewSection(
+                title: 'Criança',
+                onEdit: () => _selectStep(_HealthCareProfileFormStep.child.index),
+                rows: [('Criança', _childLabel(_childId))],
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+              _ReviewSection(
+                title: 'Alergias e restrições',
+                onEdit: () => _selectStep(_HealthCareProfileFormStep.allergies.index),
+                rows: [
+                  ('Tipo', _allergyTypeLabel(_allergyType)),
+                  ('Status', _allergyStatusLabel(_allergyStatus)),
+                  ('Gravidade do episódio', _severityLabel(_severity)),
+                  ('Último episódio registrado', _lastEpisode.text),
+                  ('Reação observada', _reaction.text),
+                  ('Orientação de cuidado', _guidance.text),
+                  ('Observações', _notes.text),
                 ],
               ),
               const SizedBox(height: CoeloSpacing.space4),
-              _ResponsiveFields(
-                children: [
-                  CoeloFormTextField(
-                    controller: _reaction,
-                    labelText: 'Reação observada',
-                    prefixIcon: Icons.visibility_outlined,
-                    maxLines: 3,
+              _ReviewSection(
+                title: 'Orientações de cuidado',
+                onEdit: () => _selectStep(_HealthCareProfileFormStep.guidance.index),
+                rows: [
+                  (
+                    'Características de cuidado',
+                    _careItems.isEmpty ? '' : _careItems.map(_careItemLabel).join(', '),
                   ),
-                  CoeloFormTextField(
-                    controller: _guidance,
-                    labelText: 'Orientação de cuidado',
-                    prefixIcon: Icons.assignment_outlined,
-                    maxLines: 3,
-                  ),
+                  ('Sinais importantes', _signs.text),
+                  ('Adaptações e orientações', _adaptations.text),
                 ],
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloFormTextField(
-                controller: _notes,
-                labelText: 'Observações',
-                prefixIcon: Icons.notes_rounded,
-                maxLines: 3,
               ),
             ],
           ),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _FormSection(
-          title: 'Perfil de cuidado',
-          description:
-              'Use características e orientações objetivas, sem classificação por semáforo.',
-          child: Column(
-            children: [
-              CoeloAdminMultiSelectField<String>(
-                label: 'Caracter\u00edsticas de cuidado',
-                options: healthCareProfileCatalog
-                    .expand((group) => group.items)
-                    .map((item) => item.id)
-                    .toList(growable: false),
-                selectedValues: _careItems,
-                optionLabel: _careItemLabel,
-                onChanged: (values) => setState(() => _careItems = values),
-                searchable: true,
-                searchHintText: 'Buscar característica',
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              _ResponsiveFields(
-                children: [
-                  CoeloFormTextField(
-                    controller: _signs,
-                    labelText: 'Sinais importantes',
-                    prefixIcon: Icons.sign_language_outlined,
-                    maxLines: 3,
-                  ),
-                  CoeloFormTextField(
-                    controller: _adaptations,
-                    labelText: 'Adaptações e orientações',
-                    prefixIcon: Icons.accessibility_new_rounded,
-                    maxLines: 3,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ],
     ),
   );
@@ -223,6 +302,7 @@ final class HealthMedicationPlanFormPage extends StatefulWidget {
 }
 
 final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPlanFormPage> {
+  var _currentStep = _HealthMedicationPlanFormStep.medicine;
   var _childId = 'child-demo-a';
   var _route = 'oral';
   var _administrationContexts = <String>{'institution-demo-a'};
@@ -256,6 +336,37 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
     }
   }
 
+  List<SuperadminFormStep> get _steps => [
+    for (final step in _HealthMedicationPlanFormStep.values)
+      SuperadminFormStep(
+        label: switch (step) {
+          _HealthMedicationPlanFormStep.medicine => 'Criança e medicamento',
+          _HealthMedicationPlanFormStep.validity => 'Vigência',
+          _HealthMedicationPlanFormStep.schedule => 'Horários e responsáveis',
+          _HealthMedicationPlanFormStep.document => 'Documento',
+          _HealthMedicationPlanFormStep.review => 'Revisão',
+        },
+        status: step == _currentStep
+            ? SuperadminFormStepStatus.current
+            : step.index < _currentStep.index
+            ? SuperadminFormStepStatus.complete
+            : SuperadminFormStepStatus.incomplete,
+      ),
+  ];
+
+  void _selectStep(int index) =>
+      setState(() => _currentStep = _HealthMedicationPlanFormStep.values[index]);
+
+  void _previousStep() {
+    if (_currentStep.index == 0) return;
+    _selectStep(_currentStep.index - 1);
+  }
+
+  void _continue() {
+    if (_currentStep.index == _HealthMedicationPlanFormStep.values.length - 1) return;
+    _selectStep(_currentStep.index + 1);
+  }
+
   @override
   Widget build(BuildContext context) => _HealthCareFormFrame(
     logout: widget.logout,
@@ -266,112 +377,158 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
     onSave: _saving ? null : _save,
     saveLabel: widget.medicationId == null ? 'Criar plano' : 'Salvar alterações',
     saving: _saving,
+    currentStep: _currentStep.index,
+    steps: _steps,
+    onStepSelected: _selectStep,
+    onPrevious: _currentStep.index == 0 ? null : _previousStep,
+    onContinue: _continue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _FormSection(
-          title: 'Medicamento',
-          description: 'Identifique a criança, o medicamento, a dose e a via.',
-          child: _ResponsiveFields(
-            children: [
-              CoeloAdminSingleSelectField<String>(
-                label: 'Criança',
-                value: _childId,
-                options: const ['child-demo-a', 'child-demo-b'],
-                optionLabel: _childLabel,
-                onChanged: (value) => setState(() => _childId = value),
-                prefixIcon: Icons.child_care_rounded,
-              ),
-              CoeloFormTextField(
-                controller: _name,
-                labelText: 'Nome do medicamento',
-                prefixIcon: Icons.medication_outlined,
-              ),
-              CoeloFormTextField(
-                controller: _dose,
-                labelText: 'Dose',
-                prefixIcon: Icons.straighten_rounded,
-              ),
-              CoeloAdminSingleSelectField<String>(
-                label: 'Via',
-                value: _route,
-                options: const ['oral', 'nasal', 'tópica', 'inalatória'],
-                optionLabel: _routeLabel,
-                onChanged: (value) => setState(() => _route = value),
-                prefixIcon: Icons.route_outlined,
-              ),
-            ],
+        if (_currentStep == _HealthMedicationPlanFormStep.medicine)
+          _FormSection(
+            title: 'Medicamento',
+            description: 'Identifique a criança, o medicamento, a dose e a via.',
+            child: _ResponsiveFields(
+              children: [
+                CoeloAdminSingleSelectField<String>(
+                  label: 'Criança',
+                  value: _childId,
+                  options: const ['child-demo-a', 'child-demo-b'],
+                  optionLabel: _childLabel,
+                  onChanged: (value) => setState(() => _childId = value),
+                  prefixIcon: Icons.child_care_rounded,
+                ),
+                CoeloFormTextField(
+                  controller: _name,
+                  labelText: 'Nome do medicamento',
+                  prefixIcon: Icons.medication_outlined,
+                ),
+                CoeloFormTextField(
+                  controller: _dose,
+                  labelText: 'Dose',
+                  prefixIcon: Icons.straighten_rounded,
+                ),
+                CoeloAdminSingleSelectField<String>(
+                  label: 'Via',
+                  value: _route,
+                  options: const ['oral', 'nasal', 'tópica', 'inalatória'],
+                  optionLabel: _routeLabel,
+                  onChanged: (value) => setState(() => _route = value),
+                  prefixIcon: Icons.route_outlined,
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _FormSection(
-          title: 'Vigência',
-          description: 'Defina o início e o fim do plano.',
-          child: _ResponsiveFields(
-            children: [
-              CoeloFormTextField(
-                controller: _start,
-                labelText: 'Data inicial',
-                prefixIcon: Icons.event_available_outlined,
-              ),
-              CoeloFormTextField(
-                controller: _end,
-                labelText: 'Data final',
-                prefixIcon: Icons.event_busy_outlined,
-              ),
-            ],
+        if (_currentStep == _HealthMedicationPlanFormStep.validity)
+          _FormSection(
+            title: 'Vigência',
+            description: 'Defina o início e o fim do plano.',
+            child: _ResponsiveFields(
+              children: [
+                CoeloFormTextField(
+                  controller: _start,
+                  labelText: 'Data inicial',
+                  prefixIcon: Icons.event_available_outlined,
+                ),
+                CoeloFormTextField(
+                  controller: _end,
+                  labelText: 'Data final',
+                  prefixIcon: Icons.event_busy_outlined,
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _FormSection(
-          title: 'Horários e responsáveis',
-          description: 'Registre horários e quem pode administrar ou acompanhar.',
-          child: Column(
+        if (_currentStep == _HealthMedicationPlanFormStep.schedule)
+          _FormSection(
+            title: 'Horários e responsáveis',
+            description: 'Registre horários e quem pode administrar ou acompanhar.',
+            child: Column(
+              children: [
+                CoeloFormTextField(
+                  controller: _times,
+                  labelText: 'Horários',
+                  prefixIcon: Icons.schedule_outlined,
+                  maxLines: 2,
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                CoeloAdminMultiSelectField<String>(
+                  label: 'Contextos de administração',
+                  options: const [
+                    'institution-demo-a',
+                    'institution-demo-b',
+                    'unit-demo-a',
+                    'unit-demo-b',
+                    'group-demo-a',
+                    'group-demo-b',
+                  ],
+                  selectedValues: _administrationContexts,
+                  optionLabel: _administrationContextLabel,
+                  onChanged: (values) => setState(() => _administrationContexts = values),
+                  searchable: true,
+                  searchHintText: 'Buscar contexto',
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                CoeloAdminMultiSelectField<String>(
+                  label: 'Respons\u00e1veis',
+                  options: const ['guardian-demo-a', 'teacher-demo-a', 'nurse-demo-a'],
+                  selectedValues: _responsibles,
+                  optionLabel: _responsibleLabel,
+                  onChanged: (values) => setState(() => _responsibles = values),
+                ),
+              ],
+            ),
+          ),
+        if (_currentStep == _HealthMedicationPlanFormStep.document)
+          _FormSection(
+            title: 'Documento opcional',
+            description: 'Inclua a referência do documento quando necessário.',
+            child: CoeloFormTextField(
+              controller: _document,
+              labelText: 'Nome ou referência do documento',
+              prefixIcon: Icons.attach_file_rounded,
+            ),
+          ),
+        if (_currentStep == _HealthMedicationPlanFormStep.review)
+          Column(
             children: [
-              CoeloFormTextField(
-                controller: _times,
-                labelText: 'Horários',
-                prefixIcon: Icons.schedule_outlined,
-                maxLines: 2,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloAdminMultiSelectField<String>(
-                label: 'Contextos de administração',
-                options: const [
-                  'institution-demo-a',
-                  'institution-demo-b',
-                  'unit-demo-a',
-                  'unit-demo-b',
-                  'group-demo-a',
-                  'group-demo-b',
+              _ReviewSection(
+                title: 'Criança e medicamento',
+                onEdit: () => _selectStep(_HealthMedicationPlanFormStep.medicine.index),
+                rows: [
+                  ('Criança', _childLabel(_childId)),
+                  ('Nome do medicamento', _name.text),
+                  ('Dose', _dose.text),
+                  ('Via', _routeLabel(_route)),
                 ],
-                selectedValues: _administrationContexts,
-                optionLabel: _administrationContextLabel,
-                onChanged: (values) => setState(() => _administrationContexts = values),
-                searchable: true,
-                searchHintText: 'Buscar contexto',
               ),
               const SizedBox(height: CoeloSpacing.space4),
-              CoeloAdminMultiSelectField<String>(
-                label: 'Respons\u00e1veis',
-                options: const ['guardian-demo-a', 'teacher-demo-a', 'nurse-demo-a'],
-                selectedValues: _responsibles,
-                optionLabel: _responsibleLabel,
-                onChanged: (values) => setState(() => _responsibles = values),
+              _ReviewSection(
+                title: 'Vigência',
+                onEdit: () => _selectStep(_HealthMedicationPlanFormStep.validity.index),
+                rows: [('Data inicial', _start.text), ('Data final', _end.text)],
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+              _ReviewSection(
+                title: 'Horários e responsáveis',
+                onEdit: () => _selectStep(_HealthMedicationPlanFormStep.schedule.index),
+                rows: [
+                  ('Horários', _times.text),
+                  (
+                    'Contextos de administração',
+                    _administrationContexts.map(_administrationContextLabel).join(', '),
+                  ),
+                  ('Responsáveis', _responsibles.map(_responsibleLabel).join(', ')),
+                ],
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+              _ReviewSection(
+                title: 'Documento',
+                onEdit: () => _selectStep(_HealthMedicationPlanFormStep.document.index),
+                rows: [('Nome ou referência do documento', _document.text)],
               ),
             ],
           ),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _FormSection(
-          title: 'Documento opcional',
-          description: 'Inclua a referência do documento quando necessário.',
-          child: CoeloFormTextField(
-            controller: _document,
-            labelText: 'Nome ou referência do documento',
-            prefixIcon: Icons.attach_file_rounded,
-          ),
-        ),
       ],
     ),
   );
@@ -387,6 +544,11 @@ final class _HealthCareFormFrame extends StatelessWidget {
     required this.onSave,
     required this.saveLabel,
     required this.saving,
+    required this.currentStep,
+    required this.steps,
+    required this.onStepSelected,
+    required this.onPrevious,
+    required this.onContinue,
     required this.child,
   });
 
@@ -398,6 +560,11 @@ final class _HealthCareFormFrame extends StatelessWidget {
   final VoidCallback? onSave;
   final String saveLabel;
   final bool saving;
+  final int currentStep;
+  final List<SuperadminFormStep> steps;
+  final ValueChanged<int> onStepSelected;
+  final VoidCallback? onPrevious;
+  final VoidCallback onContinue;
   final Widget child;
 
   @override
@@ -424,8 +591,34 @@ final class _HealthCareFormFrame extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 880),
-                      child: child,
+                      constraints: const BoxConstraints(maxWidth: 1180),
+                      child: LayoutBuilder(
+                        builder: (context, contentConstraints) {
+                          final navigation = SuperadminFormStepNavigation(
+                            steps: steps,
+                            currentIndex: currentStep,
+                            onStepSelected: onStepSelected,
+                          );
+                          if (contentConstraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                navigation,
+                                const SizedBox(width: CoeloSpacing.space6),
+                                Expanded(child: child),
+                              ],
+                            );
+                          }
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              navigation,
+                              const SizedBox(height: CoeloSpacing.space4),
+                              child,
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -433,15 +626,20 @@ final class _HealthCareFormFrame extends StatelessWidget {
               SuperadminFormActionFooter(
                 tertiaryAction: TextButton(onPressed: onCancel, child: const Text('Cancelar')),
                 continuationActions: [
-                  FilledButton(
-                    onPressed: onSave,
-                    child: saving
-                        ? const SizedBox.square(
-                            dimension: CoeloSize.iconSm,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(saveLabel),
-                  ),
+                  if (onPrevious != null)
+                    OutlinedButton(onPressed: onPrevious, child: const Text('Anterior')),
+                  if (currentStep < steps.length - 1)
+                    FilledButton(onPressed: onContinue, child: const Text('Continuar'))
+                  else
+                    FilledButton(
+                      onPressed: onSave,
+                      child: saving
+                          ? const SizedBox.square(
+                              dimension: CoeloSize.iconSm,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(saveLabel),
+                    ),
                 ],
               ),
             ],
@@ -450,6 +648,38 @@ final class _HealthCareFormFrame extends StatelessWidget {
       },
     ),
   ).withHealthCareResponsiveSurface();
+}
+
+final class _ReviewSection extends StatelessWidget {
+  const _ReviewSection({required this.title, required this.rows, required this.onEdit});
+
+  final String title;
+  final List<(String, String)> rows;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) => _FormSection(
+    title: title,
+    description: 'Confira as informações antes de salvar.',
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final row in rows) ...[
+          Text(row.$1, style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: CoeloSpacing.spaceHalf),
+          Text(
+            row.$2.trim().isEmpty ? 'Não informado' : row.$2,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(onPressed: onEdit, child: const Text('Editar')),
+        ),
+      ],
+    ),
+  );
 }
 
 final class _FormSection extends StatelessWidget {

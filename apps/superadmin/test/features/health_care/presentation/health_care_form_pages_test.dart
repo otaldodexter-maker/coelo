@@ -24,7 +24,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Alergias e restrições'), findsOneWidget);
-    expect(find.text('Perfil de cuidado'), findsOneWidget);
+    expect(find.text('Orientações de cuidado'), findsOneWidget);
+    await tester.tap(find.text('Orientações de cuidado'));
+    await tester.pumpAndSettle();
     expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byType(RadioListTile), findsNothing);
@@ -47,6 +49,8 @@ void main() {
 
     expect(find.text('Criança Demo A'), findsWidgets);
     expect(find.byType(CoeloAdminSingleSelectField<String>), findsNothing);
+    await tester.tap(find.text('Alergias e restrições'));
+    await tester.pumpAndSettle();
     expect(
       find.byWidgetPredicate(
         (widget) => widget.runtimeType.toString().startsWith('CoeloAdminSingleSelectField<'),
@@ -68,10 +72,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Medicamento'), findsOneWidget);
+    expect(find.text('Criança e medicamento'), findsOneWidget);
     expect(find.text('Vigência'), findsOneWidget);
     expect(find.text('Horários e responsáveis'), findsOneWidget);
+    await tester.tap(find.text('Horários e responsáveis'));
+    await tester.pumpAndSettle();
     expect(find.text('Contextos de administração'), findsOneWidget);
+    await tester.tap(find.text('Documento'));
+    await tester.pumpAndSettle();
     expect(find.text('Documento opcional'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
   });
