@@ -526,16 +526,34 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   }) => Row(
     children: [
       Expanded(
-        child: InkWell(
-          onTap: () => _pickDate(value: value, onChanged: onChanged),
-          borderRadius: BorderRadius.circular(CoeloRadius.md),
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: label,
-              prefixIcon: const Icon(Icons.date_range_rounded),
-              suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
+        child: OutlinedButton(
+          key: ValueKey('notice-date-$label'),
+          onPressed: () => _pickDate(value: value, onChanged: onChanged),
+          style: OutlinedButton.styleFrom(
+            alignment: AlignmentDirectional.centerStart,
+            padding: const EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space3,
+              vertical: CoeloSpacing.space2,
             ),
-            child: Text(value == null ? 'Selecionar data' : _formatDate(value)),
+            minimumSize: const Size.fromHeight(CoeloSpacing.space16),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.date_range_rounded),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: Theme.of(context).textTheme.labelSmall),
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(value == null ? 'Selecionar data' : _formatDate(value)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.keyboard_arrow_down_rounded),
+            ],
           ),
         ),
       ),

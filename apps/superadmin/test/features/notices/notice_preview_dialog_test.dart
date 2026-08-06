@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_preview_dialog.dart';
 import 'package:flutter/material.dart';
@@ -128,17 +129,12 @@ void main() {
     );
     semantics.dispose();
   });
-  testWidgets('acknowledgement exposes a perceptible focus border', (tester) async {
+  testWidgets('acknowledgement uses the canonical administrative toggle', (tester) async {
     await _openPreview(tester, _notice(behavior: NoticeBehavior.checkboxConfirmation));
     final acknowledgement = find.byKey(const Key('notice-acknowledgement'));
 
-    tester.widget<InkWell>(acknowledgement).onFocusChange!(true);
-    await tester.pump();
-
-    expect(
-      _acknowledgementBorder(tester).top.color,
-      Theme.of(tester.element(acknowledgement)).colorScheme.primary,
-    );
+    expect(tester.widget(acknowledgement), isA<CoeloAdminToggleField>());
+    expect(tester.widget<CoeloAdminToggleField>(acknowledgement).value, isFalse);
   });
 
   testWidgets('acknowledgement expands without overflow at 200 percent text scale', (tester) async {
@@ -256,9 +252,3 @@ Color _surfaceColor(WidgetTester tester) =>
     (tester.widget<DecoratedBox>(find.byKey(const Key('notice-popup-surface'))).decoration
             as BoxDecoration)
         .color!;
-
-Border _acknowledgementBorder(WidgetTester tester) =>
-    (tester.widget<DecoratedBox>(find.byKey(const Key('notice-acknowledgement-surface'))).decoration
-                as BoxDecoration)
-            .border!
-        as Border;
