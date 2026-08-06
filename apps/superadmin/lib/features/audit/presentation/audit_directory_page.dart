@@ -6,8 +6,8 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/prototype/superadmin_prototype_store.dart';
-import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../auth/domain/logout_action.dart';
 import 'audit_detail_panel.dart';
 
@@ -21,6 +21,7 @@ final class AuditDirectoryPage extends StatefulWidget {
     required this.logout,
     this.state = AuditDirectoryState.content,
     this.onDestinationSelected,
+    this.now,
     super.key,
   });
 
@@ -28,6 +29,7 @@ final class AuditDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final AuditDirectoryState state;
   final ValueChanged<String>? onDestinationSelected;
+  final DateTime Function()? now;
 
   @override
   State<AuditDirectoryPage> createState() => _AuditDirectoryPageState();
@@ -44,6 +46,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
   PrototypeAuditEvent? _selected;
   var _query = '';
   var _page = 1;
+  var _pageSize = 8;
 
   @override
   void dispose() {
@@ -56,6 +59,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     logout: widget.logout,
     title: 'Auditoria',
     subtitle: 'Monitore eventos de auditoria do ambiente em tempo real.',
+    showChatLauncher: false,
     currentDestination: 'audit',
     activityController: widget.store.activityController,
     onDestinationSelected: widget.onDestinationSelected,
@@ -66,40 +70,49 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
           ..sort((left, right) => right.occurredAt.compareTo(left.occurredAt));
         final visible = _filter(allEvents);
         final lastUpdate = visible.isNotEmpty ? visible.first.occurredAt : null;
-        return Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space4),
-          child: CoeloAdminWorkspaceLayout(
-            toolbar: Padding(
-              padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-              child: _toolbar(allEvents),
-            ),
-            body: _body(visible, hasSourceEvents: allEvents.isNotEmpty, lastUpdate: lastUpdate),
-            detailVisible: _selected != null,
-            detail: _selected == null
-                ? null
-                : AuditDetailPanel(
-                    event: _selected!,
-                    onClose: () => setState(() => _selected = null),
-                  ),
-          ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                ? CoeloSpacing.space10
+                : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                ? CoeloSpacing.space6
+                : CoeloSpacing.space4;
+            return Padding(
+              padding: EdgeInsets.all(padding),
+              child: CoeloAdminWorkspaceLayout(
+                toolbar: Padding(
+                  padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+                  child: _toolbar(allEvents),
+                ),
+                body: _body(visible, hasSourceEvents: allEvents.isNotEmpty, lastUpdate: lastUpdate),
+                detailVisible: _selected != null,
+                detail: _selected == null
+                    ? null
+                    : AuditDetailPanel(
+                        event: _selected!,
+                        onClose: () => setState(() => _selected = null),
+                      ),
+              ),
+            );
+          },
         );
       },
     ),
   );
 
   Widget _toolbar(List<PrototypeAuditEvent> events) {
-    final hasEvents = events.isNotEmpty;
     final latest = events.isNotEmpty ? events.first.occurredAt : null;
     List<String> strings(Iterable<String?> values) =>
         values.whereType<String>().toSet().toList()..sort();
     Widget filter<T>({
+      required double width,
       required String label,
       required List<T> options,
       required Set<T> selected,
       required String Function(T) optionLabel,
       required ValueChanged<Set<T>> onChanged,
     }) => SizedBox(
-      width: 176,
+      width: width,
       child: CoeloAdminMultiSelectFilter<T>(
         label: label,
         options: options,
@@ -112,23 +125,6 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
           });
         },
       ),
-    );
-    Widget exportAction() => CoeloAdminFileActions(
-      compact: false,
-      actions: [
-        CoeloAdminFileAction(
-          key: const Key('audit-export-placeholder'),
-          label: 'Exportar (em breve)',
-          icon: Icons.schedule_outlined,
-          onPressed: () => showSuperadminNotice(
-            context,
-            hasEvents
-                ? 'Exportação em breve: nesta tela ainda não gera arquivos.'
-                : 'Exportação em breve: ainda não existe evento filtrado para exportação.',
-            icon: Icons.info_outline_rounded,
-          ),
-        ),
-      ],
     );
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -152,6 +148,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
           filters: [
             SizedBox(width: filterWidth, height: CoeloSize.touchMin, child: _realtimeBadge(latest)),
             filter(
+              width: filterWidth,
               label: 'Período',
               options: _AuditPeriod.values,
               selected: _periods,
@@ -159,6 +156,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onChanged: (value) => _periods = value,
             ),
             filter(
+              width: filterWidth,
               label: 'Módulo',
               options: strings(events.map((event) => event.module)),
               selected: _modules,
@@ -166,6 +164,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onChanged: (value) => _modules = value,
             ),
             filter(
+              width: filterWidth,
               label: 'Ação',
               options: strings(events.map((event) => event.action)),
               selected: _actions,
@@ -173,6 +172,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onChanged: (value) => _actions = value,
             ),
             filter(
+              width: filterWidth,
               label: 'Ator',
               options: strings(events.map((event) => event.actor)),
               selected: _actors,
@@ -180,6 +180,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onChanged: (value) => _actors = value,
             ),
             filter(
+              width: filterWidth,
               label: 'Contexto',
               options: strings(events.map((event) => event.context)),
               selected: _contexts,
@@ -187,6 +188,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onChanged: (value) => _contexts = value,
             ),
             filter(
+              width: filterWidth,
               label: 'Risco',
               options: PrototypeAuditRisk.values,
               selected: _risks,
@@ -194,7 +196,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               onChanged: (value) => _risks = value,
             ),
           ],
-          actions: [exportAction()],
+          actions: const [],
         );
       },
     );
@@ -207,9 +209,11 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
   }) {
     switch (widget.state) {
       case AuditDirectoryState.loading:
-        return const Center(
+        return const CoeloStatePanel(
           key: Key('audit-state-loading'),
-          child: CircularProgressIndicator(semanticsLabel: 'Carregando auditoria'),
+          title: 'Carregando auditoria',
+          message: 'Aguarde enquanto preparamos os eventos.',
+          loading: true,
         );
       case AuditDirectoryState.empty:
         return const CoeloStatePanel(
@@ -245,32 +249,53 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
         }
         return LayoutBuilder(
           builder: (context, constraints) {
-            final pageSize = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth ? 8 : 11;
+            final tableView = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+            final pageSizeOptions = tableView ? const [8, 20, 50, 100] : const [11, 20, 50, 100];
+            final pageSize = pageSizeOptions.contains(_pageSize)
+                ? _pageSize
+                : pageSizeOptions.first;
             final totalPages = math.max(1, (events.length / pageSize).ceil());
             final page = _page.clamp(1, totalPages);
             final start = (page - 1) * pageSize;
             final pageEvents = events.skip(start).take(pageSize).toList(growable: false);
+            final pagination = SuperadminListingPaginationFooter(
+              horizontalPadding: 0,
+              child: CoeloAdminPagination(
+                currentPage: page,
+                totalPages: totalPages,
+                pageSize: pageSize,
+                pageSizeOptions: pageSizeOptions,
+                onPageSizeChanged: (value) => setState(() {
+                  _pageSize = value;
+                  _page = 1;
+                }),
+                onPrevious: page > 1 ? () => setState(() => _page = page - 1) : null,
+                onNext: page < totalPages ? () => setState(() => _page = page + 1) : null,
+                onPageSelected: (value) => setState(() => _page = value),
+              ),
+            );
+            if (!tableView) {
+              return ListView(
+                key: const Key('audit-card-list'),
+                children: [
+                  _resultSummary(events.length, lastUpdate, compact: true),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  for (final event in pageEvents) ...[
+                    _auditCard(event),
+                    const SizedBox(height: CoeloSpacing.space3),
+                  ],
+                  pagination,
+                ],
+              );
+            }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text('${events.length} ${events.length == 1 ? 'evento' : 'eventos'}'),
-                    ),
-                    _realtimeStatus(lastUpdate),
-                  ],
-                ),
+                _resultSummary(events.length, lastUpdate, compact: false),
                 const SizedBox(height: CoeloSpacing.space3),
                 Expanded(child: _table(pageEvents)),
                 const SizedBox(height: CoeloSpacing.space3),
-                CoeloAdminPagination(
-                  currentPage: page,
-                  totalPages: totalPages,
-                  onPrevious: page > 1 ? () => setState(() => _page = page - 1) : null,
-                  onNext: page < totalPages ? () => setState(() => _page = page + 1) : null,
-                  onPageSelected: (value) => setState(() => _page = value),
-                ),
+                pagination,
               ],
             );
           },
@@ -278,59 +303,105 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     }
   }
 
+  Widget _resultSummary(int count, DateTime? lastUpdate, {required bool compact}) {
+    final countLabel = Text(count.toString() + (count == 1 ? ' evento' : ' eventos'));
+    if (compact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          countLabel,
+          const SizedBox(height: CoeloSpacing.space1),
+          _realtimeStatus(lastUpdate),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: countLabel),
+        Flexible(child: _realtimeStatus(lastUpdate)),
+      ],
+    );
+  }
+
+  Widget _auditCard(PrototypeAuditEvent event) => CoeloAdminInteractiveCard(
+    key: Key('audit-card-${event.id}'),
+    semanticLabel: 'Abrir evento de auditoria ${event.id}',
+    minHeight: 216,
+    onPressed: () => setState(() => _selected = event),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(event.action, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text('${event.objectType}: ${event.objectId}'),
+          const SizedBox(height: CoeloSpacing.space2),
+          _AuditRiskLabel(risk: event.risk),
+          const SizedBox(height: CoeloSpacing.space3),
+          _AuditCardField(label: 'Data/hora', value: _formatCompact(event.occurredAt)),
+          _AuditCardField(label: 'Ator', value: event.actor),
+          _AuditCardField(label: 'Módulo', value: event.module),
+          _AuditCardField(label: 'Contexto / Hierarquia', value: event.context ?? 'Global'),
+          _AuditCardField(label: 'Origem', value: event.origin),
+        ],
+      ),
+    ),
+  );
   Widget _table(List<PrototypeAuditEvent> events) => LayoutBuilder(
     builder: (context, constraints) {
       const minTableWidth = 156 + 176 + 180 + 176 + 196 + 196 + 132 + 176 + 32;
       return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: math.max(constraints.maxWidth, minTableWidth).toDouble(),
-          ),
-          child: CoeloAdminResizableTable<PrototypeAuditEvent>(
-            key: const Key('audit-table'),
-            items: events,
-            rowKey: (event) => 'audit-row-${event.id}',
-            headerHeight: 48,
-            rowHeight: 64,
-            onRowPressed: (event) => setState(() => _selected = event),
-            isSelected: (event) => _selected?.id == event.id,
-            pinnedColumn: _column(
-              'instant',
-              'Data/hora',
-              (event) => _formatCompact(event.occurredAt),
-              156,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: math.max(constraints.maxWidth, minTableWidth).toDouble(),
             ),
-            columns: [
-              _column('actor', 'Ator', (event) => event.actor, 176),
-              _column('module', 'Módulo', (event) => event.module, 180),
-              _column('action', 'Ação', (event) => event.action, 176),
-              _column(
-                'object',
-                'Recurso',
-                (event) => '${event.objectType}: ${event.objectId}',
-                196,
+            child: CoeloAdminResizableTable<PrototypeAuditEvent>(
+              key: const Key('audit-table'),
+              items: events,
+              rowKey: (event) => 'audit-row-${event.id}',
+              headerHeight: 56,
+              rowHeight: 64,
+              onRowPressed: (event) => setState(() => _selected = event),
+              isSelected: (event) => _selected?.id == event.id,
+              pinnedColumn: _column(
+                'instant',
+                'Data/hora',
+                (event) => _formatCompact(event.occurredAt),
+                156,
               ),
-              _column(
-                'context',
-                'Contexto / Hierarquia',
-                (event) => event.context ?? 'Global',
-                196,
-              ),
-              _column('risk', 'Risco', (event) => _riskLabel(event.risk), 132),
-              _column('origin', 'Origem', (event) => event.origin, 176),
-            ],
+              columns: [
+                _column('actor', 'Ator', (event) => event.actor, 176),
+                _column('module', 'Módulo', (event) => event.module, 180),
+                _column('action', 'Ação', (event) => event.action, 176),
+                _column(
+                  'object',
+                  'Recurso',
+                  (event) => '${event.objectType}: ${event.objectId}',
+                  196,
+                ),
+                _column(
+                  'context',
+                  'Contexto / Hierarquia',
+                  (event) => event.context ?? 'Global',
+                  196,
+                ),
+                _column('risk', 'Risco', (event) => _riskLabel(event.risk), 132),
+                _column('origin', 'Origem', (event) => event.origin, 176),
+              ],
+            ),
           ),
         ),
       );
     },
   );
-
   Widget _realtimeBadge(DateTime? lastUpdate) {
     final theme = Theme.of(context);
     final status = lastUpdate == null
         ? 'Ao vivo: aguardando evento'
-        : 'Ao vivo • ${_timeAgo(DateTime.now().difference(lastUpdate.toLocal()))}';
+        : 'Ao vivo • ${_timeAgo(_now().difference(lastUpdate.toLocal()))}';
     return Semantics(
       label: 'Status de atualização dos eventos da auditoria',
       child: Container(
@@ -355,7 +426,7 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
     final theme = Theme.of(context);
     final status = lastUpdate == null
         ? 'Última atualização: sem dados'
-        : 'Atualizado: ${_timeAgo(DateTime.now().difference(lastUpdate.toLocal()))}';
+        : 'Atualizado: ${_timeAgo(_now().difference(lastUpdate.toLocal()))}';
     return Text(
       status,
       style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface),
@@ -363,6 +434,8 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
       overflow: TextOverflow.ellipsis,
     );
   }
+
+  DateTime _now() => widget.now?.call() ?? DateTime.now();
 
   String _timeAgo(Duration elapsed) {
     final safe = elapsed.isNegative ? Duration.zero : elapsed;
@@ -417,6 +490,55 @@ final class _AuditDirectoryPageState extends State<AuditDirectoryPage> {
               matchesPeriod;
         })
         .toList(growable: false);
+  }
+}
+
+final class _AuditCardField extends StatelessWidget {
+  const _AuditCardField({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
+    child: Text.rich(
+      TextSpan(
+        style: Theme.of(context).textTheme.bodyMedium,
+        children: [
+          TextSpan(text: '$label: ', style: Theme.of(context).textTheme.labelMedium),
+          TextSpan(text: value),
+        ],
+      ),
+    ),
+  );
+}
+
+final class _AuditRiskLabel extends StatelessWidget {
+  const _AuditRiskLabel({required this.risk});
+
+  final PrototypeAuditRisk risk;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, icon) = switch (risk) {
+      PrototypeAuditRisk.low => ('Risco baixo', Icons.shield_outlined),
+      PrototypeAuditRisk.medium => ('Risco médio', Icons.warning_amber_rounded),
+      PrototypeAuditRisk.high => ('Risco alto', Icons.gpp_bad_outlined),
+    };
+    return Semantics(
+      label: label,
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: CoeloSize.iconSm),
+            const SizedBox(width: CoeloSpacing.space1),
+            Flexible(child: Text(label)),
+          ],
+        ),
+      ),
+    );
   }
 }
 
