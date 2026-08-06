@@ -128,6 +128,33 @@ void main() {
     );
     semantics.dispose();
   });
+  testWidgets('acknowledgement exposes a perceptible focus border', (tester) async {
+    await _openPreview(tester, _notice(behavior: NoticeBehavior.checkboxConfirmation));
+    final acknowledgement = find.byKey(const Key('notice-acknowledgement'));
+
+    tester.widget<InkWell>(acknowledgement).onFocusChange!(true);
+    await tester.pump();
+
+    expect(
+      _acknowledgementBorder(tester).top.color,
+      Theme.of(tester.element(acknowledgement)).colorScheme.primary,
+    );
+  });
+
+  testWidgets('acknowledgement expands without overflow at 200 percent text scale', (tester) async {
+    await _openPreview(
+      tester,
+      _notice(behavior: NoticeBehavior.checkboxConfirmation),
+      textScale: 2,
+    );
+
+    expect(
+      tester.getSize(find.byKey(const Key('notice-acknowledgement'))).height,
+      greaterThan(CoeloSize.touchMin),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('checkbox notice requires acknowledgement before confirming', (tester) async {
     var accepted = false;
     final notice = PlatformNotice(
@@ -176,14 +203,18 @@ Future<void> _openPreview(
   WidgetTester tester,
   PlatformNotice notice, {
   VoidCallback? onAccepted,
+  double textScale = 1,
 }) async {
   await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        body: Builder(
-          builder: (context) => FilledButton(
-            onPressed: () => showNoticePreview(context, notice, onAccepted: onAccepted),
-            child: const Text('Open'),
+    MediaQuery(
+      data: MediaQueryData.fromView(tester.view).copyWith(textScaler: TextScaler.linear(textScale)),
+      child: MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => FilledButton(
+              onPressed: () => showNoticePreview(context, notice, onAccepted: onAccepted),
+              child: const Text('Open'),
+            ),
           ),
         ),
       ),
@@ -225,3 +256,9 @@ Color _surfaceColor(WidgetTester tester) =>
     (tester.widget<DecoratedBox>(find.byKey(const Key('notice-popup-surface'))).decoration
             as BoxDecoration)
         .color!;
+
+Border _acknowledgementBorder(WidgetTester tester) =>
+    (tester.widget<DecoratedBox>(find.byKey(const Key('notice-acknowledgement-surface'))).decoration
+                as BoxDecoration)
+            .border!
+        as Border;

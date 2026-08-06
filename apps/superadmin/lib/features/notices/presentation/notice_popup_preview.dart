@@ -183,7 +183,7 @@ final class _NoticeCopy extends StatelessWidget {
   );
 }
 
-final class _Acknowledgement extends StatelessWidget {
+final class _Acknowledgement extends StatefulWidget {
   const _Acknowledgement({required this.checked, required this.onChanged, required this.color});
 
   final bool checked;
@@ -191,41 +191,73 @@ final class _Acknowledgement extends StatelessWidget {
   final Color color;
 
   @override
+  State<_Acknowledgement> createState() => _AcknowledgementState();
+}
+
+final class _AcknowledgementState extends State<_Acknowledgement> {
+  var _hasFocus = false;
+  var _isHovered = false;
+  final _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Semantics(
-      checked: checked,
+      checked: widget.checked,
       button: true,
       label: 'Li e estou ciente deste aviso.',
-      child: SizedBox(
-        height: CoeloSize.touchMin,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            key: const Key('notice-acknowledgement'),
-            onTap: () => onChanged(!checked),
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    checked ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
-                    color: checked ? colors.primary : color,
-                  ),
-                  const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(
-                    child: Text(
-                      'Li e estou ciente deste aviso.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
+      child: DecoratedBox(
+        key: const Key('notice-acknowledgement-surface'),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _hasFocus || _isHovered ? colors.primary : colors.outlineVariant,
+            width: _hasFocus || _isHovered ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              key: const Key('notice-acknowledgement'),
+              focusNode: _focusNode,
+              onTap: () => widget.onChanged(!widget.checked),
+              onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
+              onHover: (isHovered) => setState(() => _isHovered = isHovered),
+              borderRadius: BorderRadius.circular(CoeloRadius.md),
+              focusColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      widget.checked
+                          ? Icons.check_box_rounded
+                          : Icons.check_box_outline_blank_rounded,
+                      color: widget.checked ? colors.primary : widget.color,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: CoeloSpacing.space2),
+                    Expanded(
+                      child: Text(
+                        'Li e estou ciente deste aviso.',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: widget.color),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
