@@ -36,6 +36,21 @@ void main() {
     expect(previousRect.width, closeTo(cancelRect.width, 1));
   });
 
+  testWidgets('stacks actions when the available width is narrower than expanded', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(maxWidth: 654));
+
+    final saveRect = tester.getRect(find.byKey(const Key('save')));
+    final continueRect = tester.getRect(find.byKey(const Key('continue')));
+    final cancelRect = tester.getRect(find.byKey(const Key('cancel')));
+    expect(saveRect.top, lessThan(continueRect.top));
+    expect(continueRect.top, lessThan(cancelRect.top));
+    expect(saveRect.width, closeTo(continueRect.width, 1));
+    expect(continueRect.width, closeTo(cancelRect.width, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('stacks actions when text is amplified even with wide space', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 700));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -68,32 +83,35 @@ void main() {
   });
 }
 
-Widget _app({ValueChanged<double>? onHeightChanged}) {
+Widget _app({ValueChanged<double>? onHeightChanged, double? maxWidth}) {
   return MaterialApp(
     theme: CoeloTheme.light,
     home: Scaffold(
       body: Align(
         alignment: Alignment.bottomCenter,
-        child: SuperadminFormActionFooter(
-          surfaceKey: const Key('form-footer-surface'),
-          onHeightChanged: onHeightChanged,
-          tertiaryAction: TextButton(
-            key: const Key('cancel'),
-            onPressed: () {},
-            child: const Text('Cancelar'),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
+          child: SuperadminFormActionFooter(
+            surfaceKey: const Key('form-footer-surface'),
+            onHeightChanged: onHeightChanged,
+            tertiaryAction: TextButton(
+              key: const Key('cancel'),
+              onPressed: () {},
+              child: const Text('Cancelar'),
+            ),
+            continuationActions: [
+              OutlinedButton(
+                key: const Key('continue'),
+                onPressed: () {},
+                child: const Text('Continuar'),
+              ),
+              FilledButton(
+                key: const Key('save'),
+                onPressed: () {},
+                child: const Text('Salvar alterações'),
+              ),
+            ],
           ),
-          continuationActions: [
-            OutlinedButton(
-              key: const Key('continue'),
-              onPressed: () {},
-              child: const Text('Continuar'),
-            ),
-            FilledButton(
-              key: const Key('save'),
-              onPressed: () {},
-              child: const Text('Salvar alterações'),
-            ),
-          ],
         ),
       ),
     ),

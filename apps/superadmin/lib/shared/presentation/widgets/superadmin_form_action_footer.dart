@@ -50,7 +50,7 @@ final class _SuperadminFormActionFooterState extends State<SuperadminFormActionF
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final textScale = MediaQuery.textScalerOf(context).scale(1);
-                final inlineMinimumWidth = CoeloBreakpoints.medium.minWidth;
+                final inlineMinimumWidth = CoeloBreakpoints.medium.minWidth + CoeloSpacing.space16;
                 if (constraints.maxWidth < inlineMinimumWidth || textScale > 1.3) {
                   final compactActions = [
                     ...widget.continuationActions.reversed,
