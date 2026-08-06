@@ -36,6 +36,24 @@ void main() {
     expect(previousRect.width, closeTo(cancelRect.width, 1));
   });
 
+  testWidgets('stacks actions when text is amplified even with wide space', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 700));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: _app(),
+      ),
+    );
+
+    final saveRect = tester.getRect(find.byKey(const Key('save')));
+    final continueRect = tester.getRect(find.byKey(const Key('continue')));
+    final cancelRect = tester.getRect(find.byKey(const Key('cancel')));
+    expect(saveRect.top, lessThan(continueRect.top));
+    expect(continueRect.top, lessThan(cancelRect.top));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('uses semantic glass and reports height changes', (tester) async {
     double? height;
     await tester.pumpWidget(_app(onHeightChanged: (value) => height = value));

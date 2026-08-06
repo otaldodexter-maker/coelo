@@ -34,9 +34,14 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
       if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
         return SizedBox(
           width: 248,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [for (var index = 0; index < steps.length; index++) _button(context, index)],
+          child: SingleChildScrollView(
+            key: const Key('superadmin-form-steps-scroll'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < steps.length; index++) _button(context, index),
+              ],
+            ),
           ),
         );
       }
@@ -138,7 +143,7 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
               ),
           icon: Icon(icon),
-          label: Text(step.label, maxLines: 1, overflow: TextOverflow.ellipsis),
+          label: Text(step.label, maxLines: 2, overflow: TextOverflow.ellipsis),
         ),
       ),
     );
