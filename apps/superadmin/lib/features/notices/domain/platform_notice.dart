@@ -111,7 +111,7 @@ String recurrenceSummaryLabel({
       ? ''
       : ' até ${until.day.toString().padLeft(2, '0')}/${until.month.toString().padLeft(2, '0')}/${until.year}';
   return switch (recurrence) {
-    NoticeRecurrence.oneTime => 'unica',
+    NoticeRecurrence.oneTime => 'única',
     NoticeRecurrence.daily => 'diária$untilText',
     NoticeRecurrence.weekly => 'semanal (${_weekdayNames(weeklyDays)})$untilText',
     NoticeRecurrence.monthly => 'mensal (dia ${dayOfMonth ?? 1})$untilText',

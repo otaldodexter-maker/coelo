@@ -230,6 +230,7 @@ void main() {
     expect(NoticeBehavior.confirmation.label, 'Confirmação obrigatória');
     expect(NoticeRecurrence.oneTime.label, 'Única');
     expect(NoticeRecurrence.daily.label, 'Diária');
+    expect(recurrenceSummaryLabel(recurrence: NoticeRecurrence.oneTime), 'única');
     expect(
       recurrenceSummaryLabel(recurrence: NoticeRecurrence.daily, until: DateTime.utc(2026, 8, 4)),
       'diária até 04/08/2026',
