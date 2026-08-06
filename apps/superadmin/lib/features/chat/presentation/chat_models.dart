@@ -2,7 +2,7 @@ enum ChatAudience { all, institutional, people }
 
 enum ChatContextKind { institution, unit, group, activity, person, child, conversationGroup }
 
-enum ChatFlag { none, red, yellow, green }
+enum ChatFlag { none, red, yellow, green, blue, pink, restricted }
 
 enum ChatGroupMemberRole { admin, member }
 

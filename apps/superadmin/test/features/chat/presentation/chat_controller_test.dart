@@ -123,7 +123,7 @@ void main() {
     expect(controller.unpinnedConversations.map((item) => item.id), unpinnedBefore.skip(2));
   });
 
-  test('empty, red, yellow, and green flags are independent from pinning and order', () {
+  test('all personal flags are independent from pinning and order', () {
     final controller = SuperadminChatController(superadminChatConversations)
       ..togglePinned('girassol')
       ..togglePinned('cambui')
@@ -136,12 +136,16 @@ void main() {
       ..setFlag('girassol', ChatFlag.red)
       ..setFlag('cambui', ChatFlag.yellow)
       ..setFlag('natacao', ChatFlag.green)
-      ..setFlag('marina', ChatFlag.none);
+      ..setFlag('marina', ChatFlag.blue)
+      ..setFlag('paula', ChatFlag.pink)
+      ..setFlag('aurora', ChatFlag.restricted);
 
     expect(controller.flagFor('girassol'), ChatFlag.red);
     expect(controller.flagFor('cambui'), ChatFlag.yellow);
     expect(controller.flagFor('natacao'), ChatFlag.green);
-    expect(controller.flagFor('marina'), ChatFlag.none);
+    expect(controller.flagFor('marina'), ChatFlag.blue);
+    expect(controller.flagFor('paula'), ChatFlag.pink);
+    expect(controller.flagFor('aurora'), ChatFlag.restricted);
     expect(controller.pinnedConversations.map((item) => item.id), pinnedBefore);
     expect(controller.unpinnedConversations.map((item) => item.id), unpinnedBefore);
   });

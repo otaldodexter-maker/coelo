@@ -49,8 +49,15 @@ As decisões usam as constraints disponíveis e os breakpoints oficiais.
 - fixados podem ser reordenados por arraste e por teclado, sem alterar a ordem
   dos demais itens;
 - cada conversa ou grupo possui uma bandeira pessoal com estados vazio,
-  vermelho, amarelo e verde; o marcador é visível somente para quem o definiu,
-  não fixa o item e não altera a ordem automaticamente;
+  vermelho (Urgente), amarelo (Acompanhar), verde (Resolvido), azul
+  (Aguardando retorno), rosa (Sensível) e restrito temático; o marcador mostra
+  a cor real e o rótulo funcional, enquanto o nome da cor fica no rótulo
+  acessível junto do significado, nunca como substituto visual; é visível
+  somente para quem o definiu, não fixa o item e não altera a ordem
+  automaticamente;
+- `Fixadas`, `Não lidas` e `Bandeiras` são filtros rápidos combináveis, adaptam
+  por constraints sem rolagem horizontal espremida e não substituem os filtros
+  hierárquicos avançados;
 - grupos manuais mistos aparecem nas facetas representadas por seus membros;
 - linhas de conversa usam hover e foco laranja, com raio e respiro do padrão
   de submenu Coelo;
@@ -110,15 +117,25 @@ abaixo. A revisão não achata caminhos diferentes em uma lista sem contexto.
 As bolhas de mensagem encolhem conforme o conteúdo até um teto responsivo.
 Mensagens longas quebram linhas dentro desse teto, preservando alinhamento de
 remetente e destinatário sem transformar o fio em colunas de largura fixa.
+Em mobile e tablet no tema claro, workspace, inbox e thread usam
+`colorScheme.surface` como base. `surfaceContainer*` fica restrito a campos,
+bolhas, cards, estados e separações locais com função explícita.
+
 
 ## Launcher
 
 O launcher pertence ao shell autenticado, não aparece na rota Conversas e não
 depende de flags de páginas individuais. Em repouso é uma cápsula com badge,
-“Mensagens”, avatares e menu; hover e foco usam `primary/onPrimary`. Seu
+“Mensagens”, avatares e menu; hover e foco usam `primary/onPrimary` sem alterar
+geometria. Existe exatamente uma instância no shell. A posição é normalizada,
+persistida somente no armazenamento local durante a sessão autenticada e
+removida no logout. O arraste respeita safe area e reservas inferiores. Seu
 conteúdo é uma experiência compacta própria, aberta em painel ancorado a partir
-do breakpoint expanded e em modal ou sheet abaixo dele. O painel compacto tem
-cabeçalho laranja, expandir/fechar, busca, as três facetas e lista. O gatilho
+do breakpoint expanded e em modal ou sheet abaixo dele. O painel compacto tem cabeçalho laranja, expandir/fechar, busca, as três facetas
+e lista.
+
+Enquanto o drawer de navegação mobile estiver aberto, o launcher fica oculto
+para não bloquear destinos e reaparece ao fechar o drawer. O gatilho
 fica alinhado ao espaçamento inferior canônico da viewport. Ao lado das facetas
 existe uma ação compacta de `Nova conversa`, que reutiliza o fluxo de nova
 mensagem. Criação de grupo e filtros completos permanecem exclusivos da página
@@ -214,7 +231,7 @@ reutilizável e dependerá de nova aprovação explícita.
 - grupo manual nasce fora de `Fixados`;
 - seleção hierárquica suporta estado parcial, combinação de níveis e filtro por
   crianças;
-- fixados têm reordenação acessível e bandeira pessoal independente;
+- fixados têm reordenação acessível, filtros rápidos e bandeira pessoal independente;
 - menu contextual, revisão agrupada, exclusão compacta e rodapé de filtros
   seguem a composição aprovada;
 - bolhas curtas encolhem conforme o conteúdo e mensagens longas respeitam o

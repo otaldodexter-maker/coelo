@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 final class SuperadminChatCloseButton extends StatelessWidget {
@@ -54,62 +55,21 @@ final class SuperadminChatActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return MenuAnchor(
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-        elevation: const WidgetStatePropertyAll(4),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space1)),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-            side: BorderSide(color: colors.outlineVariant),
+    return CoeloAdminFlyout<SuperadminChatMenuAction>(
+      items: [
+        for (final action in actions)
+          CoeloAdminFlyoutItem(
+            value: action,
+            label: action.label,
+            icon: action.icon,
+            startsGroup: action.dividerBefore,
+            tone: action.destructive
+                ? CoeloAdminFlyoutTone.negative
+                : CoeloAdminFlyoutTone.standard,
           ),
-        ),
-      ),
-      menuChildren: [
-        for (final action in actions) ...[
-          if (action.dividerBefore)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
-              child: Divider(height: 1),
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
-            child: MenuItemButton(
-              key: action.key,
-              onPressed: action.onPressed,
-              leadingIcon: Icon(action.icon),
-              style: ButtonStyle(
-                minimumSize: const WidgetStatePropertyAll(Size(200, CoeloSize.touchMin)),
-                padding: const WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                ),
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-                ),
-                foregroundColor: WidgetStateProperty.resolveWith(
-                  (states) => action.destructive
-                      ? colors.error
-                      : states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-                      ? colors.primary
-                      : colors.onSurface,
-                ),
-                backgroundColor: WidgetStateProperty.resolveWith((states) {
-                  final highlighted =
-                      states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-                  if (!highlighted) return Colors.transparent;
-                  return action.destructive ? colors.errorContainer : colors.primaryContainer;
-                }),
-                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              ),
-              child: Text(action.label),
-            ),
-          ),
-        ],
       ],
-      builder: (context, controller, _) => IconButton(
+      onSelected: (action) => action.onPressed(),
+      builder: (context, controller) => IconButton(
         tooltip: tooltip,
         onPressed: controller.isOpen ? controller.close : controller.open,
         icon: const Icon(Icons.more_vert_rounded),

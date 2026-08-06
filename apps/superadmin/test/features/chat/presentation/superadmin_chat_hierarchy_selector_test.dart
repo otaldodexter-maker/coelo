@@ -31,14 +31,16 @@ void main() {
 
     await tester.tap(find.text('Crianças'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.widgetWithText(CheckboxListTile, 'Lia'));
-    await tester.tap(find.widgetWithText(CheckboxListTile, 'Lia'));
+    final lia = find.byKey(const Key('superadmin-chat-hierarchy-child-lia'));
+    await tester.ensureVisible(lia);
+    await tester.tap(lia);
     await tester.pumpAndSettle();
 
-    final guardian = tester.widget<CheckboxListTile>(
-      find.widgetWithText(CheckboxListTile, 'Paula Souza'),
+    final guardianCheckbox = find.descendant(
+      of: find.byKey(const Key('superadmin-chat-hierarchy-paula')),
+      matching: find.byType(Checkbox),
     );
-    expect(guardian.value, isNull);
+    expect(tester.widget<Checkbox>(guardianCheckbox).value, isNull);
     expect(find.byKey(const Key('superadmin-chat-hierarchy-selection-summary')), findsOneWidget);
     expect(find.textContaining('1 criança'), findsOneWidget);
 

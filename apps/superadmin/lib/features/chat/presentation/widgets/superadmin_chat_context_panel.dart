@@ -303,7 +303,7 @@ final class _SharedItem extends StatelessWidget {
 String _panelTitle(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo (Turma)',
+  ChatContextKind.group => 'Turma',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
   ChatContextKind.child => 'Criança',

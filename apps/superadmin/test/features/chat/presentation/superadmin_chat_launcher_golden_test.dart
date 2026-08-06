@@ -67,30 +67,22 @@ void main() {
     (name: 'light', theme: CoeloTheme.light),
     (name: 'dark', theme: CoeloTheme.dark),
   ]) {
-    testWidgets('renders compact inbox and thread in ${themeCase.name}', (
-      tester,
-    ) async {
+    testWidgets('renders compact inbox and thread in ${themeCase.name}', (tester) async {
       _configureViewport(tester);
       await tester.pumpWidget(_stage(themeCase.theme));
-      await tester.tap(
-        find.byKey(const Key('superadmin-chat-launcher-surface')),
-      );
+      await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
       await tester.pumpAndSettle();
 
       await expectLater(
         find.byType(Overlay).first,
-        matchesGoldenFile(
-          'goldens/superadmin_chat_launcher_inbox_${themeCase.name}.png',
-        ),
+        matchesGoldenFile('goldens/superadmin_chat_launcher_inbox_${themeCase.name}.png'),
       );
 
       await tester.tap(find.text('Turma Girassol'));
       await tester.pumpAndSettle();
       await expectLater(
         find.byType(Overlay).first,
-        matchesGoldenFile(
-          'goldens/superadmin_chat_launcher_thread_${themeCase.name}.png',
-        ),
+        matchesGoldenFile('goldens/superadmin_chat_launcher_thread_${themeCase.name}.png'),
       );
     });
   }

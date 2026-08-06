@@ -73,17 +73,15 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
               borderRadius: BorderRadius.circular(CoeloRadius.lg),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final windowWidth = MediaQuery.sizeOf(context).width;
                   final threePaneMinimum =
                       CoeloSize.touchMin * 7 + CoeloSize.touchMin * 10 + CoeloSize.touchMin * 6;
-                  if (windowWidth >= CoeloBreakpoints.large.minWidth &&
-                      constraints.maxWidth >= threePaneMinimum) {
+                  if (constraints.maxWidth >= threePaneMinimum) {
                     return _desktopThreePane();
                   }
-                  if (windowWidth >= CoeloBreakpoints.expanded.minWidth) {
+                  if (constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth) {
                     return _desktopPriorityThread();
                   }
-                  if (windowWidth >= CoeloBreakpoints.medium.minWidth) {
+                  if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth) {
                     return _tabletThread();
                   }
                   return _phoneStack();

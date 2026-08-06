@@ -1,4 +1,3 @@
-import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../chat_controller.dart';
@@ -36,13 +35,10 @@ final class _SuperadminChatAdvancedFiltersState extends State<SuperadminChatAdva
       title: people ? 'Filtros de pessoas' : 'Filtros institucionais',
       subtitle: 'Demonstração local · As escolhas só são aplicadas ao confirmar',
       onClose: () => Navigator.pop(context),
-      footer: Row(
-        children: [
-          TextButton(onPressed: () => setState(_draftIds.clear), child: const Text('Limpar')),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: FilledButton(onPressed: _apply, child: const Text('Aplicar')),
-          ),
+      footer: SuperadminChatDialogActions(
+        actions: [
+          OutlinedButton(onPressed: () => setState(_draftIds.clear), child: const Text('Limpar')),
+          FilledButton(onPressed: _apply, child: const Text('Aplicar')),
         ],
       ),
       child: SuperadminChatHierarchySelector(

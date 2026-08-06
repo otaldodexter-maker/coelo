@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../chat_models.dart';
 
@@ -31,6 +32,8 @@ final class _SuperadminChatHierarchySelectorState extends State<SuperadminChatHi
   final _expanded = <String>{};
   ChatContextKind? _kind;
   var _guardiansOnly = false;
+  String? _hoveredId;
+  String? _focusedId;
 
   @override
   void dispose() {
@@ -50,7 +53,7 @@ final class _SuperadminChatHierarchySelectorState extends State<SuperadminChatHi
           key: const Key('superadmin-chat-hierarchy-search'),
           controller: _search,
           hintText: 'Buscar na hierarquia',
-          semanticLabel: 'Buscar instituições, unidades, grupos, atividades e pessoas',
+          semanticLabel: 'Buscar instituições, unidades, turmas, atividades e pessoas',
           onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: CoeloSpacing.space2),
@@ -61,7 +64,7 @@ final class _SuperadminChatHierarchySelectorState extends State<SuperadminChatHi
             _category(null, 'Todos'),
             _category(ChatContextKind.institution, 'Instituições'),
             _category(ChatContextKind.unit, 'Unidades'),
-            _category(ChatContextKind.group, 'Grupos'),
+            _category(ChatContextKind.group, 'Turmas'),
             _category(ChatContextKind.activity, 'Atividades'),
             _category(ChatContextKind.person, 'Pessoas'),
             _guardianCategory(),
@@ -103,10 +106,24 @@ final class _SuperadminChatHierarchySelectorState extends State<SuperadminChatHi
     );
   }
 
+  WidgetStateProperty<Color?> get _categoryColor {
+    final colors = Theme.of(context).colorScheme;
+    return WidgetStateProperty.resolveWith((states) {
+      final highlighted =
+          states.contains(WidgetState.selected) ||
+          states.contains(WidgetState.hovered) ||
+          states.contains(WidgetState.focused);
+      return highlighted ? colors.primaryContainer : colors.surface;
+    });
+  }
+
   Widget _category(ChatContextKind? kind, String label) {
     return ChoiceChip(
       label: Text(label),
       selected: !_guardiansOnly && _kind == kind,
+      color: _categoryColor,
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      showCheckmark: false,
       onSelected: (_) => setState(() {
         _guardiansOnly = false;
         _kind = kind;
@@ -118,6 +135,9 @@ final class _SuperadminChatHierarchySelectorState extends State<SuperadminChatHi
     return ChoiceChip(
       label: const Text('Responsáveis'),
       selected: _guardiansOnly,
+      color: _categoryColor,
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      showCheckmark: false,
       onSelected: (_) => setState(() {
         _kind = ChatContextKind.person;
         _guardiansOnly = true;
@@ -168,29 +188,83 @@ final class _SuperadminChatHierarchySelectorState extends State<SuperadminChatHi
       padding: EdgeInsetsDirectional.only(start: depth * CoeloSpacing.space3),
       child: Column(
         children: [
-          Material(
-            color: Colors.transparent,
-            child: CheckboxListTile(
-              key: Key('superadmin-chat-hierarchy-${option.id}'),
-              value: partial ? null : selected,
-              tristate: true,
-              controlAffinity: ListTileControlAffinity.leading,
-              contentPadding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
-              title: Text(option.label),
-              subtitle: Text(
-                _kindLabel(option.kind),
-                style: TextStyle(color: colors.onSurfaceVariant),
+          Semantics(
+            button: true,
+            checked: selected,
+            label: partial ? '${option.label}, parcialmente selecionado' : option.label,
+            child: FocusableActionDetector(
+              mouseCursor: SystemMouseCursors.click,
+              shortcuts: const {
+                SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+                SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+              },
+              actions: {
+                ActivateIntent: CallbackAction<ActivateIntent>(
+                  onInvoke: (_) {
+                    _toggle(option, ids, selected);
+                    return null;
+                  },
+                ),
+              },
+              onShowHoverHighlight: (highlighted) =>
+                  setState(() => _hoveredId = highlighted ? option.id : null),
+              onShowFocusHighlight: (focused) =>
+                  setState(() => _focusedId = focused ? option.id : null),
+              child: Material(
+                color: selected || partial || _hoveredId == option.id || _focusedId == option.id
+                    ? colors.primaryContainer
+                    : Colors.transparent,
+                child: GestureDetector(
+                  key: Key('superadmin-chat-hierarchy-${option.id}'),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _toggle(option, ids, selected),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
+                      child: Row(
+                        children: [
+                          ExcludeSemantics(
+                            child: Checkbox(
+                              value: partial ? null : selected,
+                              tristate: true,
+                              onChanged: (_) => _toggle(option, ids, selected),
+                              hoverColor: Colors.transparent,
+                              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                            ),
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(option.label),
+                                Text(
+                                  _kindLabel(option.kind),
+                                  style: TextStyle(color: colors.onSurfaceVariant),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (hasChildren)
+                            IconButton(
+                              tooltip: expanded
+                                  ? 'Recolher ${option.label}'
+                                  : 'Expandir ${option.label}',
+                              onPressed: () => setState(() {
+                                expanded ? _expanded.remove(option.id) : _expanded.add(option.id);
+                              }),
+                              icon: Icon(
+                                expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              secondary: hasChildren
-                  ? IconButton(
-                      tooltip: expanded ? 'Recolher ${option.label}' : 'Expandir ${option.label}',
-                      onPressed: () => setState(() {
-                        expanded ? _expanded.remove(option.id) : _expanded.add(option.id);
-                      }),
-                      icon: Icon(expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded),
-                    )
-                  : null,
-              onChanged: (_) => _toggle(option, ids, selected),
             ),
           ),
           if (hasChildren && expanded)
@@ -226,7 +300,7 @@ final _summaryCategories = [
     (option) => option.kind == ChatContextKind.institution,
   ),
   _SummaryCategory('unidade', 'unidades', (option) => option.kind == ChatContextKind.unit),
-  _SummaryCategory('grupo', 'grupos', (option) => option.kind == ChatContextKind.group),
+  _SummaryCategory('turma', 'turmas', (option) => option.kind == ChatContextKind.group),
   _SummaryCategory('atividade', 'atividades', (option) => option.kind == ChatContextKind.activity),
   _SummaryCategory(
     'pessoa',
@@ -318,7 +392,7 @@ String _bulkLabel(ChatContextKind? kind, bool guardiansOnly) {
   return switch (kind) {
     ChatContextKind.institution => 'Selecionar todas as instituições',
     ChatContextKind.unit => 'Selecionar todas as unidades',
-    ChatContextKind.group => 'Selecionar todos os grupos',
+    ChatContextKind.group => 'Selecionar todas as turmas',
     ChatContextKind.activity => 'Selecionar todas as atividades',
     ChatContextKind.person => 'Selecionar todas as pessoas',
     ChatContextKind.child => 'Selecionar todas as crianças',
@@ -329,7 +403,7 @@ String _bulkLabel(ChatContextKind? kind, bool guardiansOnly) {
 String _kindLabel(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo (Turma)',
+  ChatContextKind.group => 'Turma',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
   ChatContextKind.child => 'Criança',

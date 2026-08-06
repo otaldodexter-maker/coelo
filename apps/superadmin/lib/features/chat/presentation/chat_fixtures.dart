@@ -57,7 +57,7 @@ const _messages = [
 const _professionalMetrics = [
   SuperadminChatMetric('Instituições', 1),
   SuperadminChatMetric('Unidades', 1),
-  SuperadminChatMetric('Grupos', 2),
+  SuperadminChatMetric('Turmas', 2),
   SuperadminChatMetric('Atividades', 3),
   SuperadminChatMetric('Funcionários', 8),
   SuperadminChatMetric('Responsáveis', 27),
@@ -67,7 +67,7 @@ const _professionalMetrics = [
 const _guardianMetrics = [
   SuperadminChatMetric('Instituições', 2),
   SuperadminChatMetric('Unidades', 2),
-  SuperadminChatMetric('Grupos', 3),
+  SuperadminChatMetric('Turmas', 3),
   SuperadminChatMetric('Atividades', 4),
 ];
 
@@ -107,7 +107,7 @@ const superadminChatConversations = [
     institution: 'Centro Horizonte',
     kind: ChatContextKind.unit,
     metrics: [
-      SuperadminChatMetric('Grupos', 8),
+      SuperadminChatMetric('Turmas', 8),
       SuperadminChatMetric('Atividades', 12),
       SuperadminChatMetric('Funcionários', 34),
       SuperadminChatMetric('Responsáveis', 184),
@@ -186,7 +186,7 @@ const superadminChatConversations = [
     kind: ChatContextKind.institution,
     metrics: [
       SuperadminChatMetric('Unidades', 3),
-      SuperadminChatMetric('Grupos', 14),
+      SuperadminChatMetric('Turmas', 14),
       SuperadminChatMetric('Atividades', 22),
       SuperadminChatMetric('Funcionários', 41),
       SuperadminChatMetric('Responsáveis', 426),

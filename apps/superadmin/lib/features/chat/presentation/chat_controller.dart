@@ -619,7 +619,7 @@ List<SuperadminChatContextOption> _flattenOptions(Iterable<SuperadminChatContext
 String _kindLabel(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo (Turma)',
+  ChatContextKind.group => 'Turma',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
   ChatContextKind.child => 'Criança',

@@ -1,3 +1,4 @@
+import 'dart:ui' show PointerDeviceKind;
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_context_panel.dart';
@@ -19,7 +20,8 @@ void main() {
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
         expect(find.byType(SuperadminChatContextPanel), findsOne);
       } else if (width == 1024) {
-        expect(find.byKey(const Key('superadmin-chat-rail')), findsOne);
+        expect(find.byKey(const Key('superadmin-chat-rail')), findsNothing);
+        expect(find.byTooltip('Voltar para conversas'), findsOne);
         expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
         await tester.tap(find.byTooltip('Ver informações do perfil'));
         await tester.pumpAndSettle();
@@ -55,6 +57,30 @@ void main() {
     expect(find.text('Envio em massa'), findsNothing);
   });
 
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    testWidgets('lays out quick inbox filters without horizontal scrolling at ${width.toInt()}px', (
+      tester,
+    ) async {
+      _viewport(tester, width);
+      await tester.pumpWidget(_app(textScale: 2));
+      await tester.pumpAndSettle();
+
+      if (width == 768 || width == 1024) {
+        await tester.tap(find.byTooltip('Voltar para conversas'));
+        await tester.pumpAndSettle();
+      }
+
+      final filters = find.byKey(const Key('superadmin-chat-quick-filters'));
+      expect(filters, findsOneWidget);
+      expect(find.descendant(of: filters, matching: find.byType(Wrap)), findsOneWidget);
+      expect(
+        find.descendant(of: filters, matching: find.byType(SingleChildScrollView)),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('keeps filter choices as a draft until applying', (tester) async {
     _viewport(tester, 1440);
     await tester.pumpWidget(_app());
@@ -68,10 +94,10 @@ void main() {
     final dialog = find.byKey(const Key('superadmin-chat-dialog-frame'));
     expect(find.descendant(of: dialog, matching: find.text('Instituições')), findsOne);
     expect(find.descendant(of: dialog, matching: find.text('Unidades')), findsOne);
-    expect(find.descendant(of: dialog, matching: find.text('Grupos')), findsOne);
+    expect(find.descendant(of: dialog, matching: find.text('Turmas')), findsOne);
     expect(find.descendant(of: dialog, matching: find.text('Atividades')), findsOne);
     expect(find.descendant(of: dialog, matching: find.text('Pessoas')), findsOne);
-    await tester.tap(find.text('Centro Horizonte'));
+    await tester.tap(find.descendant(of: dialog, matching: find.text('Centro Horizonte')).last);
     await tester.tap(find.text('Aplicar'));
     await tester.pumpAndSettle();
 
@@ -147,7 +173,7 @@ void main() {
     expect(find.text('Fixados'), findsOne);
   });
 
-  testWidgets('keeps academic conversations read-only in their action menu', (tester) async {
+  testWidgets('keeps academic conversation actions explicit in the local demo', (tester) async {
     _viewport(tester, 1440);
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
@@ -156,7 +182,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Fixar'), findsOneWidget);
-    expect(find.text('Excluir conversa'), findsNothing);
+    expect(find.text('Excluir conversa'), findsOne);
     expect(find.text('Excluir grupo'), findsNothing);
   });
 
@@ -167,7 +193,6 @@ void main() {
 
     await tester.tap(find.byTooltip('Ações da conversa'));
     await tester.pumpAndSettle();
-    expect(find.byType(MenuItemButton), findsNWidgets(2));
     expect(find.text('Fixar'), findsWidgets);
     expect(find.text('Excluir conversa'), findsOne);
 
@@ -176,9 +201,10 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-dialog-frame')), findsOne);
     expect(find.byTooltip('Fechar'), findsOne);
     expect(find.byKey(const Key('superadmin-chat-dialog-footer-divider')), findsNothing);
-    final frameWidth = tester.getSize(find.byKey(const Key('superadmin-chat-dialog-frame'))).width;
     final deleteWidth = tester.getSize(find.widgetWithText(FilledButton, 'Excluir conversa')).width;
-    expect(deleteWidth, greaterThan(frameWidth * 0.8));
+    final cancelWidth = tester.getSize(find.widgetWithText(TextButton, 'Cancelar')).width;
+    expect(deleteWidth, closeTo(cancelWidth, 0.01));
+    expect(deleteWidth, greaterThan(190));
   });
 
   testWidgets('cancelling deletion preserves a locally created group', (tester) async {
@@ -191,7 +217,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Ações da conversa'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Excluir conversa'));
+    await tester.tap(find.text('Excluir grupo'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancelar'));
     await tester.pumpAndSettle();
@@ -209,9 +235,9 @@ void main() {
 
     await tester.tap(find.byTooltip('Ações da conversa'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Excluir conversa'));
+    await tester.tap(find.text('Excluir grupo'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Excluir conversa'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Excluir grupo'));
     await tester.pumpAndSettle();
 
     expect(find.text('Grupo para excluir'), findsNothing);
@@ -229,14 +255,10 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-hierarchy-search')), findsOne);
     expect(find.text('Selecionar todos'), findsOne);
     expect(find.byKey(const Key('superadmin-chat-dialog-footer-divider')), findsNothing);
-    final frameRect = tester.getRect(find.byKey(const Key('superadmin-chat-dialog-frame')));
-    final dividerRect = tester.getRect(
-      find.byKey(const Key('superadmin-chat-dialog-header-divider')),
-    );
-    expect(dividerRect.width, lessThan(frameRect.width));
+    expect(find.byKey(const Key('superadmin-chat-dialog-header-divider')), findsNothing);
     await tester.enterText(find.byKey(const Key('superadmin-chat-group-name')), 'Equipe integrada');
-    await tester.tap(find.widgetWithText(CheckboxListTile, 'Centro Horizonte'));
-    await tester.tap(find.widgetWithText(CheckboxListTile, 'Instituto Aurora'));
+    await tester.tap(find.byKey(const Key('superadmin-chat-hierarchy-centro-horizonte')));
+    await tester.tap(find.byKey(const Key('superadmin-chat-hierarchy-instituto-aurora')));
     await tester.pump();
     await tester.tap(find.text('Revisar'));
     await tester.pumpAndSettle();
@@ -285,6 +307,72 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('offers equivalent flag selection by touch, keyboard and mouse', (tester) async {
+    _viewport(tester, 1440);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final flag = find.byKey(const Key('superadmin-chat-flag-girassol'));
+    await tester.tap(flag);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Urgente'), findsOneWidget);
+    expect(find.textContaining('Vermelho'), findsNothing);
+    expect(find.bySemanticsLabel('Bandeira vermelha: Urgente'), findsOneWidget);
+    final urgentItem = find.widgetWithText(MenuItemButton, 'Urgente');
+    final urgentIcon = tester.widget<Icon>(
+      find.descendant(of: urgentItem, matching: find.byType(Icon)),
+    );
+    expect(urgentIcon.color, CoeloTheme.light.colorScheme.error);
+
+    await tester.tap(find.text('Aguardando retorno'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is IconButton &&
+            widget.tooltip?.startsWith('Aguardando retorno em Turma Girassol') == true,
+      ),
+      findsOneWidget,
+    );
+
+    final flagButton = find.descendant(of: flag, matching: find.byType(IconButton));
+    Focus.of(tester.element(flagButton)).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Aguardando retorno'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    addTearDown(mouse.removePointer);
+    await mouse.addPointer(location: Offset.zero);
+    await mouse.moveTo(tester.getCenter(flag));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Aguardando retorno'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+    await mouse.moveTo(const Offset(8, 8));
+    await tester.pump();
+    await mouse.moveTo(tester.getCenter(flag));
+    await mouse.down(tester.getCenter(flag));
+    await mouse.up();
+    await tester.pump();
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is IconButton && widget.tooltip?.startsWith('Sens\u00edvel em') == true,
+      ),
+      findsOneWidget,
+    );
+  });
 }
 
 Widget _app({double textScale = 1}) {
@@ -309,7 +397,7 @@ Future<void> _createLocalGroup(WidgetTester tester, String name) async {
   await tester.tap(find.byKey(const Key('superadmin-chat-action-create-group')));
   await tester.pumpAndSettle();
   await tester.enterText(find.byKey(const Key('superadmin-chat-group-name')), name);
-  await tester.tap(find.widgetWithText(CheckboxListTile, 'Centro Horizonte'));
+  await tester.tap(find.byKey(const Key('superadmin-chat-hierarchy-centro-horizonte')));
   await tester.pump();
   await tester.tap(find.text('Revisar'));
   await tester.pumpAndSettle();

@@ -56,7 +56,7 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return ColoredBox(
-      color: colors.surfaceContainerLowest,
+      color: colors.surface,
       child: Column(
         children: [
           _ThreadHeader(
@@ -86,6 +86,26 @@ final class _SuperadminChatThreadBodyState extends State<SuperadminChatThreadBod
                 for (final message in widget.conversation.messages.reversed)
                   SuperadminChatMessageBubble(message: message),
                 const SizedBox(height: CoeloSpacing.space4),
+                if (widget.conversation.unreadCount > 0)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
+                    child: Row(
+                      children: [
+                        Expanded(child: Divider(color: colors.primary)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
+                          child: Text(
+                            '${widget.conversation.unreadCount} n\u00e3o lidas',
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: colors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: colors.primary)),
+                      ],
+                    ),
+                  ),
                 Center(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -233,7 +253,6 @@ final class _ThreadHeader extends StatelessWidget {
               label: conversation.title,
               initials: conversation.initials,
               size: CoeloSize.avatarMd,
-              online: conversation.kind == ChatContextKind.person,
             ),
             const SizedBox(width: CoeloSpacing.space3),
             Expanded(

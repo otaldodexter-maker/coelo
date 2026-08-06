@@ -1,10 +1,10 @@
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../chat_controller.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_hierarchy_selector.dart';
-import 'superadmin_chat_surface_primitives.dart';
 
 enum SuperadminChatMessageFlow { single, bulk }
 
@@ -46,6 +46,25 @@ final class _SuperadminChatMessageDialogState extends State<SuperadminChatMessag
           if (_step == 0)
             SegmentedButton<SuperadminChatMessageFlow>(
               showSelectedIcon: false,
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.resolveWith((states) {
+                  final highlighted =
+                      states.contains(WidgetState.selected) ||
+                      states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused);
+                  return highlighted
+                      ? Theme.of(context).colorScheme.primaryContainer
+                      : Theme.of(context).colorScheme.surface;
+                }),
+                foregroundColor: WidgetStateProperty.resolveWith((states) {
+                  return states.contains(WidgetState.selected) ||
+                          states.contains(WidgetState.hovered) ||
+                          states.contains(WidgetState.focused)
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant;
+                }),
+                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+              ),
               segments: const [
                 ButtonSegment(
                   value: SuperadminChatMessageFlow.single,
@@ -168,6 +187,17 @@ final class _SuperadminChatMessageDialogState extends State<SuperadminChatMessag
   Widget _attachmentButton(ChatAttachmentKind kind, IconData icon, String label) {
     return FilterChip(
       selected: _attachments.contains(kind),
+      color: WidgetStateProperty.resolveWith((states) {
+        final highlighted =
+            states.contains(WidgetState.selected) ||
+            states.contains(WidgetState.hovered) ||
+            states.contains(WidgetState.focused);
+        return highlighted
+            ? Theme.of(context).colorScheme.primaryContainer
+            : Theme.of(context).colorScheme.surface;
+      }),
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      showCheckmark: false,
       avatar: Icon(icon, size: 18),
       label: Text(label),
       onSelected: (_) => setState(() {
@@ -420,83 +450,24 @@ final class SuperadminChatDialogFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(CoeloSpacing.space3),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: CoeloSize.touchMin * 10,
-          maxHeight: CoeloSize.touchMin * 14,
-        ),
-        child: Material(
-          key: const Key('superadmin-chat-dialog-frame'),
-          color: colors.surface,
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
+    return CoeloAdminDialogShell(
+      dialogKey: const Key('superadmin-chat-dialog-frame'),
+      title: title,
+      maxWidth: CoeloSize.touchMin * 10,
+      onClose: onClose,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+        children: [
+          Text(
+            subtitle,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
           ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CoeloSpacing.space4,
-                  CoeloSpacing.space3,
-                  CoeloSpacing.space2,
-                  CoeloSpacing.space2,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(title, style: Theme.of(context).textTheme.titleLarge),
-                          Text(
-                            subtitle,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SuperadminChatCloseButton(tooltip: 'Fechar', onPressed: onClose),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-                child: Divider(
-                  key: const Key('superadmin-chat-dialog-header-divider'),
-                  height: 1,
-                  color: colors.outlineVariant,
-                ),
-              ),
-              if (compact)
-                Padding(padding: const EdgeInsets.all(CoeloSpacing.space4), child: child)
-              else
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(CoeloSpacing.space4),
-                    child: child,
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CoeloSpacing.space4,
-                  0,
-                  CoeloSpacing.space4,
-                  CoeloSpacing.space4,
-                ),
-                child: SizedBox(width: double.infinity, child: footer),
-              ),
-            ],
-          ),
-        ),
+          const SizedBox(height: CoeloSpacing.space3),
+          child,
+        ],
       ),
+      primaryAction: footer,
     );
   }
 }
@@ -567,7 +538,7 @@ List<_Recipient> _flatten(List<SuperadminChatContextOption> options, {String par
 String _kindLabel(ChatContextKind kind) => switch (kind) {
   ChatContextKind.institution => 'Instituição',
   ChatContextKind.unit => 'Unidade',
-  ChatContextKind.group => 'Grupo (Turma)',
+  ChatContextKind.group => 'Turma',
   ChatContextKind.activity => 'Atividade',
   ChatContextKind.person => 'Pessoa',
   ChatContextKind.child => 'Criança',

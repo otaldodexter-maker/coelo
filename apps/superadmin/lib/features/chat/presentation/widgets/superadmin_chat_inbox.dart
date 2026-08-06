@@ -1,13 +1,29 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../chat_controller.dart';
 import '../chat_fixtures.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_avatar.dart';
 import 'superadmin_chat_flow_dialog.dart';
 import 'superadmin_chat_surface_primitives.dart';
+
+enum _QuickInboxFilter {
+  pinned('Fixadas', Icons.push_pin_outlined),
+  unread('N\u00e3o lidas', Icons.mark_chat_unread_outlined),
+  flagged('Bandeiras', Icons.flag_outlined);
+
+  const _QuickInboxFilter(this.label, this.icon);
+
+  final String label;
+  final IconData icon;
+}
 
 final class SuperadminChatInbox extends StatefulWidget {
   const SuperadminChatInbox({
@@ -36,6 +52,7 @@ final class SuperadminChatInbox extends StatefulWidget {
 }
 
 final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
+  final Set<_QuickInboxFilter> _quickFilters = {};
   final _search = TextEditingController();
 
   @override
@@ -47,6 +64,17 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
+    final pinnedConversations = controller.pinnedConversations
+        .where((item) => _matchesQuickFilter(item, pinned: true))
+        .toList(growable: false);
+    final groupConversations = controller.groupConversations
+        .where((item) => _matchesQuickFilter(item, pinned: false))
+        .toList(growable: false);
+    final regularConversations = controller.regularConversations
+        .where((item) => _matchesQuickFilter(item, pinned: false))
+        .toList(growable: false);
+    final quickFilterResultCount =
+        pinnedConversations.length + groupConversations.length + regularConversations.length;
     final selectedId = controller.selectedConversation.id;
     return Material(
       key: const Key('superadmin-chat-inbox'),
@@ -97,17 +125,55 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
           const SizedBox(height: CoeloSpacing.space3),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-            child: SegmentedButton<ChatAudience>(
-              showSelectedIcon: false,
-              segments: const [
-                ButtonSegment(value: ChatAudience.all, label: Text('Todos')),
-                ButtonSegment(value: ChatAudience.institutional, label: Text('Institucional')),
-                ButtonSegment(value: ChatAudience.people, label: Text('Pessoas')),
+            child: SuperadminUnderlineTabs<ChatAudience>(
+              tabs: const [
+                SuperadminUnderlineTab(value: ChatAudience.all, label: 'Todos'),
+                SuperadminUnderlineTab(value: ChatAudience.institutional, label: 'Institucional'),
+                SuperadminUnderlineTab(value: ChatAudience.people, label: 'Pessoas'),
               ],
-              selected: {controller.audience},
-              onSelectionChanged: (value) => controller.setAudience(value.first),
+              selected: controller.audience,
+              onSelected: controller.setAudience,
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+            child: LayoutBuilder(
+              key: const Key('superadmin-chat-quick-filters'),
+              builder: (context, constraints) => SizedBox(
+                width: constraints.maxWidth,
+                child: Wrap(
+                  spacing: CoeloSpacing.space1,
+                  runSpacing: CoeloSpacing.space1,
+                  children: [
+                    for (final filter in _QuickInboxFilter.values)
+                      FilterChip(
+                        key: Key('superadmin-chat-quick-filter-${filter.name}'),
+                        label: Text(filter.label),
+                        avatar: Icon(filter.icon, size: 18),
+                        selected: _quickFilters.contains(filter),
+                        onSelected: (selected) {
+                          setState(() {
+                            selected ? _quickFilters.add(filter) : _quickFilters.remove(filter);
+                          });
+                        },
+                        color: WidgetStateProperty.resolveWith((states) {
+                          final highlighted =
+                              states.contains(WidgetState.selected) ||
+                              states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.focused);
+                          return highlighted
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : Theme.of(context).colorScheme.surface;
+                        }),
+                        showCheckmark: false,
+                        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
           const SizedBox(height: CoeloSpacing.space3),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
@@ -180,9 +246,9 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
             child: ListView(
               padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
               children: [
-                if (controller.pinnedConversations.isNotEmpty) ...[
+                if (pinnedConversations.isNotEmpty) ...[
                   const _SectionHeader(title: 'Fixados'),
-                  for (final conversation in controller.pinnedConversations)
+                  for (final conversation in pinnedConversations)
                     _ConversationItem(
                       conversation: conversation,
                       selected: selectedId == conversation.id,
@@ -197,9 +263,9 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                       onDelete: () => _confirmDelete(conversation),
                     ),
                 ],
-                if (controller.groupConversations.isNotEmpty) ...[
+                if (groupConversations.isNotEmpty) ...[
                   const _SectionHeader(title: 'Grupos'),
-                  for (final conversation in controller.groupConversations)
+                  for (final conversation in groupConversations)
                     _ConversationItem(
                       conversation: conversation,
                       selected: selectedId == conversation.id,
@@ -215,7 +281,7 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                     ),
                 ],
                 _SectionHeader(title: _audienceLabel(controller.audience)),
-                for (final conversation in controller.regularConversations)
+                for (final conversation in regularConversations)
                   _ConversationItem(
                     conversation: conversation,
                     selected: selectedId == conversation.id,
@@ -229,7 +295,7 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
                     onFlag: (flag) => controller.setFlag(conversation.id, flag),
                     onDelete: () => _confirmDelete(conversation),
                   ),
-                if (controller.visibleConversations.isEmpty)
+                if (quickFilterResultCount == 0)
                   const Padding(
                     padding: EdgeInsets.all(CoeloSpacing.space5),
                     child: Text(
@@ -243,6 +309,18 @@ final class _SuperadminChatInboxState extends State<SuperadminChatInbox> {
         ],
       ),
     );
+  }
+
+  bool _matchesQuickFilter(SuperadminChatConversation conversation, {required bool pinned}) {
+    if (_quickFilters.contains(_QuickInboxFilter.pinned) && !pinned) return false;
+    if (_quickFilters.contains(_QuickInboxFilter.unread) && conversation.unreadCount == 0) {
+      return false;
+    }
+    if (_quickFilters.contains(_QuickInboxFilter.flagged) &&
+        widget.controller.flagFor(conversation.id) == ChatFlag.none) {
+      return false;
+    }
+    return true;
   }
 
   bool _canInvite(SuperadminChatConversation conversation) => widget.controller.conversations.any(
@@ -446,99 +524,216 @@ final class _ConversationItemState extends State<_ConversationItem> {
           color: widget.selected || _hovered ? colors.primaryContainer : Colors.transparent,
           borderRadius: BorderRadius.circular(CoeloRadius.md),
           clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            key: Key('superadmin-chat-conversation-${conversation.id}'),
-            onTap: widget.onOpen,
-            hoverColor: Colors.transparent,
-            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space2),
-                child: Row(
-                  children: [
-                    SuperadminChatAvatar(
-                      label: conversation.title,
-                      initials: conversation.initials,
-                      online: conversation.kind == ChatContextKind.person,
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  conversation.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.titleSmall,
+          child: Semantics(
+            selected: widget.selected,
+            button: true,
+            child: InkWell(
+              key: Key('superadmin-chat-conversation-${conversation.id}'),
+              onTap: widget.onOpen,
+              hoverColor: Colors.transparent,
+              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                child: Padding(
+                  padding: const EdgeInsets.all(CoeloSpacing.space2),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 3,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: widget.selected ? colors.primary : Colors.transparent,
+                          borderRadius: BorderRadius.circular(CoeloRadius.full),
+                        ),
+                      ),
+                      const SizedBox(width: CoeloSpacing.space2),
+                      SuperadminChatAvatar(
+                        label: conversation.title,
+                        initials: conversation.initials,
+                      ),
+                      const SizedBox(width: CoeloSpacing.space2),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    conversation.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontWeight: widget.selected
+                                          ? FontWeight.w800
+                                          : FontWeight.w700,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                conversation.timestamp,
-                                style: Theme.of(context).textTheme.labelSmall,
-                              ),
-                            ],
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: CoeloSize.touchMin),
+                                  child: Text(
+                                    conversation.timestamp,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.labelSmall,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              conversation.context,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                            ),
+                            const SizedBox(height: CoeloSpacing.spaceHalf),
+                            const SizedBox(height: CoeloSpacing.space1),
+                            Text(
+                              conversation.preview,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (conversation.unreadCount > 0)
+                        Badge(label: Text('${conversation.unreadCount}')),
+                      _ChatFlagControl(
+                        key: Key('superadmin-chat-flag-${conversation.id}'),
+                        flag: widget.flag,
+                        conversationTitle: conversation.title,
+                        onChanged: widget.onFlag,
+                      ),
+                      SuperadminChatActionMenu(
+                        tooltip: 'Ações de ${conversation.title}',
+                        actions: [
+                          SuperadminChatMenuAction(
+                            label: 'Criar grupo com…',
+                            icon: Icons.group_add_outlined,
+                            onPressed: widget.onCreateGroup,
                           ),
-                          const SizedBox(height: CoeloSpacing.space1),
-                          Text(
-                            conversation.preview,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                          if (widget.canInviteToGroup)
+                            SuperadminChatMenuAction(
+                              label: 'Convidar para grupo',
+                              icon: Icons.person_add_alt_1_outlined,
+                              onPressed: widget.onInviteToGroup,
+                            ),
+                          SuperadminChatMenuAction(
+                            label: widget.pinned ? 'Desfixar' : 'Fixar',
+                            icon: widget.pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
+                            onPressed: widget.onPin,
+                          ),
+                          SuperadminChatMenuAction(
+                            label: conversation.kind == ChatContextKind.conversationGroup
+                                ? 'Excluir grupo'
+                                : 'Excluir conversa',
+                            icon: Icons.delete_outline_rounded,
+                            destructive: true,
+                            dividerBefore: true,
+                            onPressed: widget.onDelete,
                           ),
                         ],
                       ),
-                    ),
-                    if (conversation.unreadCount > 0)
-                      Badge(label: Text('${conversation.unreadCount}')),
-                    IconButton(
-                      key: Key('superadmin-chat-flag-${conversation.id}'),
-                      tooltip: 'Sinalizar ${conversation.title}',
-                      onPressed: () => widget.onFlag(_nextFlag(widget.flag)),
-                      color: _flagColor(colors, widget.flag),
-                      icon: Icon(
-                        widget.flag == ChatFlag.none ? Icons.flag_outlined : Icons.flag_rounded,
-                      ),
-                    ),
-                    SuperadminChatActionMenu(
-                      tooltip: 'Ações de ${conversation.title}',
-                      actions: [
-                        SuperadminChatMenuAction(
-                          label: 'Criar grupo com…',
-                          icon: Icons.group_add_outlined,
-                          onPressed: widget.onCreateGroup,
-                        ),
-                        if (widget.canInviteToGroup)
-                          SuperadminChatMenuAction(
-                            label: 'Convidar para grupo',
-                            icon: Icons.person_add_alt_1_outlined,
-                            onPressed: widget.onInviteToGroup,
-                          ),
-                        SuperadminChatMenuAction(
-                          label: widget.pinned ? 'Desfixar' : 'Fixar',
-                          icon: widget.pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
-                          onPressed: widget.onPin,
-                        ),
-                        SuperadminChatMenuAction(
-                          label: conversation.kind == ChatContextKind.conversationGroup
-                              ? 'Excluir grupo'
-                              : 'Excluir conversa',
-                          icon: Icons.delete_outline_rounded,
-                          destructive: true,
-                          dividerBefore: true,
-                          onPressed: widget.onDelete,
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _ChatFlagControl extends StatefulWidget {
+  const _ChatFlagControl({
+    required this.flag,
+    required this.conversationTitle,
+    required this.onChanged,
+    super.key,
+  });
+
+  final ChatFlag flag;
+  final String conversationTitle;
+  final ValueChanged<ChatFlag> onChanged;
+
+  @override
+  State<_ChatFlagControl> createState() => _ChatFlagControlState();
+}
+
+final class _ChatFlagControlState extends State<_ChatFlagControl> {
+  PointerDeviceKind? _pointerKind;
+
+  void _openLegend(MenuController controller) {
+    if (!controller.isOpen) controller.open();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return CoeloAdminFlyout<ChatFlag>(
+      itemWidth: 240,
+      items: [
+        for (final flag in ChatFlag.values.where((value) => value != ChatFlag.none))
+          CoeloAdminFlyoutItem(
+            value: flag,
+            label: _flagLabel(flag),
+            icon: Icons.flag_rounded,
+            iconColor: _flagColor(colors, flag),
+            semanticLabel: _flagSemanticLabel(flag),
+            selected: widget.flag == flag,
+          ),
+        CoeloAdminFlyoutItem(
+          value: ChatFlag.none,
+          label: 'Remover bandeira',
+          icon: Icons.flag_outlined,
+          iconColor: colors.onSurfaceVariant,
+          semanticLabel: 'Remover bandeira',
+          startsGroup: true,
+        ),
+      ],
+      onSelected: (flag) {
+        widget.onChanged(flag);
+        _pointerKind = null;
+      },
+      builder: (context, controller) => MouseRegion(
+        onEnter: (_) => _openLegend(controller),
+        child: Listener(
+          onPointerDown: (event) => _pointerKind = event.kind,
+          child: Focus(
+            onKeyEvent: (_, event) {
+              if (event is KeyDownEvent &&
+                  (event.logicalKey == LogicalKeyboardKey.enter ||
+                      event.logicalKey == LogicalKeyboardKey.space)) {
+                _openLegend(controller);
+                return KeyEventResult.handled;
+              }
+              if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+                controller.close();
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: IconButton(
+              tooltip:
+                  '${_flagLabel(widget.flag)} em ${widget.conversationTitle}. Clique para alternar; '
+                  'passe o mouse ou use Enter para ver a legenda.',
+              onPressed: () {
+                if (_pointerKind == PointerDeviceKind.touch) {
+                  _openLegend(controller);
+                  return;
+                }
+                widget.onChanged(_nextFlag(widget.flag));
+              },
+              color: _flagColor(colors, widget.flag),
+              icon: Icon(widget.flag == ChatFlag.none ? Icons.flag_outlined : Icons.flag_rounded),
             ),
           ),
         ),
@@ -557,7 +752,10 @@ ChatFlag _nextFlag(ChatFlag flag) => switch (flag) {
   ChatFlag.none => ChatFlag.red,
   ChatFlag.red => ChatFlag.yellow,
   ChatFlag.yellow => ChatFlag.green,
-  ChatFlag.green => ChatFlag.none,
+  ChatFlag.green => ChatFlag.blue,
+  ChatFlag.blue => ChatFlag.pink,
+  ChatFlag.pink => ChatFlag.restricted,
+  ChatFlag.restricted => ChatFlag.none,
 };
 
 Color _flagColor(ColorScheme colors, ChatFlag flag) => switch (flag) {
@@ -565,4 +763,27 @@ Color _flagColor(ColorScheme colors, ChatFlag flag) => switch (flag) {
   ChatFlag.red => colors.error,
   ChatFlag.yellow => colors.tertiary,
   ChatFlag.green => colors.secondary,
+  ChatFlag.blue => colors.primary,
+  ChatFlag.pink => Color.alphaBlend(colors.error.withValues(alpha: 0.42), colors.tertiary),
+  ChatFlag.restricted => colors.inverseSurface,
+};
+
+String _flagLabel(ChatFlag flag) => switch (flag) {
+  ChatFlag.none => 'Sem bandeira',
+  ChatFlag.red => 'Urgente',
+  ChatFlag.yellow => 'Acompanhar',
+  ChatFlag.green => 'Resolvido',
+  ChatFlag.blue => 'Aguardando retorno',
+  ChatFlag.pink => 'Sens\u00edvel',
+  ChatFlag.restricted => 'Restrito',
+};
+
+String _flagSemanticLabel(ChatFlag flag) => switch (flag) {
+  ChatFlag.none => 'Sem bandeira',
+  ChatFlag.red => 'Bandeira vermelha: Urgente',
+  ChatFlag.yellow => 'Bandeira amarela: Acompanhar',
+  ChatFlag.green => 'Bandeira verde: Resolvido',
+  ChatFlag.blue => 'Bandeira azul: Aguardando retorno',
+  ChatFlag.pink => 'Bandeira rosa: Sensível',
+  ChatFlag.restricted => 'Bandeira restrita: Restrito',
 };

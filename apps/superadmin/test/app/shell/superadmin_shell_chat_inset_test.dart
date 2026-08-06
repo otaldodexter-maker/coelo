@@ -45,6 +45,7 @@ void main() {
 
     final launchers = find.byKey(const Key('superadmin-chat-launcher-surface'));
     final launcherCount = launchers.evaluate().length;
+    expect(launcherCount, 1, reason: 'O shell autenticado deve possuir um único launcher.');
     final launcherRects = [
       for (var index = 0; index < launcherCount; index++) tester.getRect(launchers.at(index)),
     ];

@@ -36,6 +36,99 @@ void main() {
       });
     }
   }
+
+  testWidgets('renders the desktop context collapsed', (tester) async {
+    _setGoldenView(tester, 1440);
+    await _pumpChat(tester);
+    await tester.tap(find.byTooltip('Fechar contexto'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(SuperadminChatPage),
+      matchesGoldenFile('goldens/superadmin_chat_context_collapsed_light_1440.png'),
+    );
+  });
+
+  testWidgets('renders the flag palette with accessible labels', (tester) async {
+    _setGoldenView(tester, 1440);
+    await _pumpChat(tester);
+    await tester.tap(find.byKey(const Key('superadmin-chat-flag-girassol')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(Overlay).first,
+      matchesGoldenFile('goldens/superadmin_chat_flag_palette_open_light_1440.png'),
+    );
+  });
+
+  testWidgets('renders the canonical create group popup', (tester) async {
+    _setGoldenView(tester, 1440);
+    await _pumpChat(tester);
+    await tester.tap(find.byKey(const Key('superadmin-chat-action-create-group')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(Overlay).first,
+      matchesGoldenFile('goldens/superadmin_chat_create_group_light_1440.png'),
+    );
+  });
+
+  testWidgets('renders the canonical bulk message popup', (tester) async {
+    _setGoldenView(tester, 1440);
+    await _pumpChat(tester);
+    await tester.tap(find.byKey(const Key('superadmin-chat-action-new-message')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Envio em massa'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(Overlay).first,
+      matchesGoldenFile('goldens/superadmin_chat_bulk_message_light_1440.png'),
+    );
+  });
+
+  testWidgets('renders the canonical filters popup', (tester) async {
+    _setGoldenView(tester, 1440);
+    await _pumpChat(tester);
+    await tester.tap(find.byKey(const Key('superadmin-chat-action-filter')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(Overlay).first,
+      matchesGoldenFile('goldens/superadmin_chat_filters_light_1440.png'),
+    );
+  });
+
+  testWidgets('renders compact chat with reduced motion', (tester) async {
+    _setGoldenView(tester, 375);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!,
+        ),
+        home: const SuperadminChatPage(logout: _logout, onBack: _back),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(SuperadminChatPage),
+      matchesGoldenFile('goldens/superadmin_chat_reduced_motion_light_375.png'),
+    );
+  });
+}
+
+void _setGoldenView(WidgetTester tester, double width) {
+  tester.view.physicalSize = Size(width, 900);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
+Future<void> _pumpChat(WidgetTester tester) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: CoeloTheme.light,
+      home: const SuperadminChatPage(logout: _logout, onBack: _back),
+    ),
+  );
+  await tester.pumpAndSettle();
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
