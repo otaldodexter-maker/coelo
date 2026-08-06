@@ -405,13 +405,15 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
           children: [
             if (widget.capability == PlatformUserCapability.owner)
               SizedBox(
-                width: double.infinity,
-                child: CoeloAdminCreateAction(
-                  label: 'Criar acesso interno ao Superadmin',
-                  icon: Icons.person_add_alt_1_outlined,
-                  variant: CoeloAdminCreateActionVariant.banner,
-                  description: 'Identidade exclusiva; demonstração local sem convite real.',
-                  onPressed: widget.onCreate ?? () {},
+                width: cardWidth,
+                child: ConstrainedBox(
+                  key: const Key('create-platform-user-card'),
+                  constraints: const BoxConstraints(minHeight: 216),
+                  child: CoeloAdminCreateAction(
+                    label: 'Criar acesso interno',
+                    icon: Icons.person_add_alt_1_outlined,
+                    onPressed: widget.onCreate ?? () {},
+                  ),
                 ),
               ),
             for (final item in _result.items)

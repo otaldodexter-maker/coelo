@@ -33,6 +33,15 @@ void main() {
 
     expect(find.text('Usuários internos'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
+    final createAction = tester.widget<CoeloAdminCreateAction>(find.byType(CoeloAdminCreateAction));
+    expect(createAction.variant, CoeloAdminCreateActionVariant.tile);
+    expect(
+      tester.getSize(find.byKey(const Key('create-platform-user-card'))).height,
+      closeTo(
+        tester.getSize(find.byKey(Key('platform-user-card-${repository.records.first.id}'))).height,
+        0.5,
+      ),
+    );
     expect(find.byKey(const Key('platform-user-role-filter')), findsOneWidget);
     expect(find.byKey(const Key('platform-user-status-filter')), findsOneWidget);
     expect(find.text('Arquivos'), findsNothing);
