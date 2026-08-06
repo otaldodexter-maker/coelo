@@ -131,7 +131,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
-                    _toolbar(all),
+                    _toolbar(all, compact: compact),
                     const SizedBox(height: CoeloSpacing.space4),
                     Expanded(
                       child: _content(
@@ -170,7 +170,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     },
   );
 
-  Widget _toolbar(List<PlatformNotice> all) {
+  Widget _toolbar(List<PlatformNotice> all, {required bool compact}) {
     final counts = <_NoticeStatusFilter, int>{
       for (final filter in _NoticeStatusFilter.values)
         filter: filter.status == null
@@ -179,7 +179,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     };
     return CoeloAdminListingToolbar(
       search: SizedBox(
-        width: CoeloSpacing.space20 * 4,
+        width: compact ? double.infinity : CoeloSpacing.space20 * 4,
         height: CoeloSize.touchMin,
         child: CoeloSearchField(
           controller: _search,
@@ -190,7 +190,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       ),
       filters: [
         SizedBox(
-          width: 220,
+          width: compact ? double.infinity : 220,
           child: CoeloAdminSingleSelectField<_NoticeStatusFilter>(
             value: _statusFilter,
             label: 'Estado',
@@ -201,7 +201,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           ),
         ),
         SizedBox(
-          width: 190,
+          width: compact ? double.infinity : 190,
           child: CoeloAdminSingleSelectField<_NoticeTargetFilter>(
             value: _targetFilter,
             label: 'Plataforma',
@@ -212,7 +212,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           ),
         ),
         SizedBox(
-          width: 210,
+          width: compact ? double.infinity : 210,
           child: CoeloAdminSingleSelectField<_NoticePeriodFilter>(
             value: _periodFilter,
             label: 'Per?odo',
@@ -303,7 +303,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   Widget _noticeCard(BuildContext context, PlatformNotice notice) {
     final theme = Theme.of(context);
     return CoeloAdminInteractiveCard(
-      onPressed: () => widget.onEdit?.call(notice.id),
+      onPressed: widget.onEdit == null ? null : () => widget.onEdit!(notice.id),
       minHeight: 216,
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -339,9 +339,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             const Divider(height: 1),
             const SizedBox(height: CoeloSpacing.space3),
             Text(
-              '${notice.targetDevice.label} ? ${_formatDate(notice.startsAt)}${notice.endsAt == null
-                      ? ' ? sem data limite'
-                      : ' ? at? ${_formatDate(notice.endsAt!)}'}',
+              '${notice.targetDevice.label} ? ${_formatDate(notice.startsAt)}${notice.endsAt == null ? ' ? sem data limite' : ' ? at? ${_formatDate(notice.endsAt!)}'}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
