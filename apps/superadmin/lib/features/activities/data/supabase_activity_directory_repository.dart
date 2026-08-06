@@ -76,10 +76,7 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
   @override
   Future<ActivityFormOptions> fetchFormOptions() async {
     try {
-      final institutions = await _client
-          .from('institutions')
-          .select('id,name')
-          .order('name');
+      final institutions = await _client.from('institutions').select('id,name').order('name');
       final units = await _client
           .from('units')
           .select('id,institution_id,name,status')

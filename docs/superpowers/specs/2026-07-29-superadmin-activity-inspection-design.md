@@ -1,8 +1,8 @@
 ---
-source: "Solicitação aprovada em 2026-07-29; docs/product/prd-superadmin.md; specs/014-atividade-contextual.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md"
+source: "Solicitações aprovadas em 2026-07-29 e 2026-08-05; docs/product/prd-superadmin.md; specs/014-atividade-contextual.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md"
 status: "approved"
-generated_at: "2026-07-29"
-updated_at: "2026-08-03"
+generated_at: "2026-08-05"
+updated_at: "2026-08-05"
 ---
 
 # Diretório e visualização de Atividades do Superadmin
@@ -50,10 +50,12 @@ calendário ou recorrência da atividade.
 ## Composição visual
 
 Instituições é a baseline integral de shell, toolbar, alternância, cards,
-tabela, estados e paginação sticky. Cards preservam geometria, densidade,
-hover e foco; a tabela reutiliza `CoeloAdminResizableTable`; filtros reutilizam
-`CoeloAdminMultiSelectFilter`; a paginação reutiliza
-`CoeloAdminPagination`.
+tabela, estados e paginação sticky. Cards usam `CoeloAdminInteractiveCard`,
+preservam geometria, densidade, hover e foco e exibem status somente pelo
+`CoeloAdminExpandableStatusIndicator` compacto; a tabela mantém status em chip.
+Status é filtro multi-select real e não usa tabs lineares. A tabela reutiliza
+`CoeloAdminResizableTable`; filtros reutilizam `CoeloAdminMultiSelectFilter`;
+a paginação reutiliza `CoeloAdminPagination`.
 
 Cards usam 11 itens por página e oferecem `11, 20, 50, 100`; tabela usa 8 e
 oferece `8, 20, 50, 100`. O rodapé sticky mede sua altura e desloca o launcher

@@ -239,7 +239,7 @@ final class _ActivityFormBody extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final desktop = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-          final inset = desktop
+          final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
               ? CoeloSpacing.space10
               : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
               ? CoeloSpacing.space6

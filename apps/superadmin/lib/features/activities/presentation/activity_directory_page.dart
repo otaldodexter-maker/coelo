@@ -11,7 +11,6 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
@@ -20,8 +19,6 @@ import 'activity_directory_view_model.dart';
 enum ActivityDirectoryDisplay { cards, table }
 
 enum ActivityDirectoryTableView { grouped, units, groups }
-
-enum _ActivityStatusTab { all, active, onboarding, inactive }
 
 final class ActivityDirectoryPage extends StatefulWidget {
   const ActivityDirectoryPage({
@@ -149,7 +146,6 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
   final GlobalKey _footerKey = GlobalKey();
   double _footerHeight = 0;
   bool _measurementScheduled = false;
-  _ActivityStatusTab _selectedStatus = _ActivityStatusTab.all;
 
   void _measureFooter(bool visible) {
     if (_measurementScheduled) return;
@@ -203,21 +199,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                     onDisplayChanged: widget.onDisplayChanged,
                     onTableViewChanged: widget.onTableViewChanged,
                   ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  SuperadminUnderlineTabs<_ActivityStatusTab>(
-                    key: const Key('activity-status-tabs'),
-                    selected: _selectedStatus,
-                    tabs: const [
-                      SuperadminUnderlineTab(value: _ActivityStatusTab.all, label: 'Todos'),
-                      SuperadminUnderlineTab(value: _ActivityStatusTab.active, label: 'Ativos'),
-                      SuperadminUnderlineTab(
-                        value: _ActivityStatusTab.onboarding,
-                        label: 'Em Implantação',
-                      ),
-                      SuperadminUnderlineTab(value: _ActivityStatusTab.inactive, label: 'Inativos'),
-                    ],
-                    onSelected: (status) => setState(() => _selectedStatus = status),
-                  ),
+
                   const SizedBox(height: CoeloSpacing.space4),
                   _ActivityResults(
                     viewModel: widget.viewModel,
@@ -347,6 +329,14 @@ final class _ActivityToolbar extends StatelessWidget {
               .toSet(),
           optionLabel: (option) => option.label,
           onChanged: (value) => viewModel.setGroups(value.map((option) => option.id).toSet()),
+        ),
+        filter<ActivityStatus>(
+          key: const Key('activity-status-filter'),
+          label: 'Status',
+          values: ActivityStatus.values,
+          selected: viewModel.query.statuses,
+          optionLabel: (status) => status.label,
+          onChanged: viewModel.setStatuses,
         ),
         filter<ActivityOrigin>(
           key: const Key('activity-origin-filter'),
@@ -564,123 +554,63 @@ final class _ActivityCards extends StatelessWidget {
   );
 }
 
-final class _ActivityCard extends StatefulWidget {
+final class _ActivityCard extends StatelessWidget {
   const _ActivityCard({required this.item, required this.onPressed});
 
   final ActivityDirectoryItem item;
   final VoidCallback onPressed;
 
   @override
-  State<_ActivityCard> createState() => _ActivityCardState();
-}
-
-final class _ActivityCardState extends State<_ActivityCard> {
-  bool _highlighted = false;
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final item = widget.item;
+    final colors = Theme.of(context).colorScheme;
     final prototype = _ActivityCardPrototype.from(item);
-    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
-    return Semantics(
-      button: true,
-      label: 'Visualizar atividade ${item.name}',
-      child: ConstrainedBox(
-        key: Key('activity-card-${item.id}'),
-        constraints: const BoxConstraints(minHeight: 216),
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _highlighted = true),
-          onExit: (_) => setState(() => _highlighted = false),
-          child: FocusableActionDetector(
-            onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-              duration: duration,
-              curve: Curves.easeOutCubic,
-              builder: (context, progress, child) => Container(
-                key: Key('activity-card-surface-${item.id}'),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  border: Border.all(
-                    color: Color.lerp(
-                      colors.outlineVariant,
-                      colors.primary.withValues(alpha: .5),
-                      progress,
-                    )!,
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.lerp(
-                        colors.shadow.withValues(alpha: .03),
-                        colors.primary.withValues(alpha: .15),
-                        progress,
-                      )!,
-                      blurRadius: 8 + 4 * progress,
-                      spreadRadius: 2 * progress,
-                      offset: Offset(0, 2 + 2 * progress),
-                    ),
-                  ],
+    return ConstrainedBox(
+      key: Key('activity-card-${item.id}'),
+      constraints: const BoxConstraints(minHeight: 216),
+      child: CoeloAdminInteractiveCard(
+        surfaceKey: Key('activity-card-surface-${item.id}'),
+        semanticLabel: 'Visualizar atividade ${item.name}',
+        onPressed: onPressed,
+        minHeight: 216,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CoeloSpacing.space6,
+            vertical: CoeloSpacing.space4,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ActivityCardHeader(item: item, colors: colors, location: prototype.location),
+              const SizedBox(height: CoeloSpacing.space4),
+              const Divider(height: 1),
+              const SizedBox(height: CoeloSpacing.space4),
+              _DetailRow(
+                first: _ActivityDetail(
+                  icon: Icons.apartment_outlined,
+                  label: 'Unidades',
+                  value: '${item.activeUnitCount}',
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  child: InkWell(
-                    onTap: widget.onPressed,
-                    borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: CoeloSpacing.space6,
-                        vertical: CoeloSpacing.space4,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _ActivityCardHeader(
-                            item: item,
-                            colors: colors,
-                            location: prototype.location,
-                          ),
-                          const SizedBox(height: CoeloSpacing.space4),
-                          const Divider(height: 1),
-                          const SizedBox(height: CoeloSpacing.space4),
-                          _DetailRow(
-                            first: _ActivityDetail(
-                              icon: Icons.apartment_outlined,
-                              label: 'Unidades',
-                              value: '${item.activeUnitCount}',
-                            ),
-                            second: _ActivityDetail(
-                              icon: Icons.groups_outlined,
-                              label: 'Turmas',
-                              value: '${item.activeGroupCount}',
-                            ),
-                          ),
-                          const SizedBox(height: CoeloSpacing.space3),
-                          _DetailRow(
-                            first: _ActivityDetail(
-                              icon: Icons.badge_outlined,
-                              label: 'Equipe institucional',
-                              value: '${prototype.teamCount}',
-                            ),
-                            second: _ActivityDetail(
-                              icon: Icons.child_care_outlined,
-                              label: 'Crianças',
-                              value: '${prototype.childrenCount}',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                second: _ActivityDetail(
+                  icon: Icons.groups_outlined,
+                  label: 'Turmas',
+                  value: '${item.activeGroupCount}',
                 ),
               ),
-            ),
+              const SizedBox(height: CoeloSpacing.space3),
+              _DetailRow(
+                first: _ActivityDetail(
+                  icon: Icons.badge_outlined,
+                  label: 'Equipe institucional',
+                  value: '${prototype.teamCount}',
+                ),
+                second: _ActivityDetail(
+                  icon: Icons.child_care_outlined,
+                  label: 'Crianças',
+                  value: '${prototype.childrenCount}',
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -732,7 +662,7 @@ final class _ActivityCardHeader extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space2),
           Align(
             alignment: Alignment.centerRight,
-            child: _ActivityStatusChip(status: item.status),
+            child: _ActivityExpandableStatusIndicator(itemId: item.id, status: item.status),
           ),
         ],
       );
@@ -741,7 +671,7 @@ final class _ActivityCardHeader extends StatelessWidget {
       children: [
         Expanded(child: identity),
         const SizedBox(width: CoeloSpacing.space2),
-        _ActivityStatusChip(status: item.status),
+        _ActivityExpandableStatusIndicator(itemId: item.id, status: item.status),
       ],
     );
   }
@@ -1015,6 +945,25 @@ final class _ActivityHierarchyTable extends StatelessWidget {
   }
 }
 
+final class _ActivityExpandableStatusIndicator extends StatelessWidget {
+  const _ActivityExpandableStatusIndicator({required this.itemId, required this.status});
+
+  final String itemId;
+  final ActivityStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = _activityStatusColors(context, status);
+    return CoeloAdminExpandableStatusIndicator(
+      surfaceKey: Key('activity-card-status-$itemId'),
+      label: status.label,
+      semanticLabel: 'Status da atividade: ${status.label}',
+      backgroundColor: colors.$1,
+      foregroundColor: colors.$2,
+    );
+  }
+}
+
 final class _ActivityStatusChip extends StatelessWidget {
   const _ActivityStatusChip({required this.status, super.key});
 
@@ -1022,21 +971,29 @@ final class _ActivityStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
-    final pair = switch (status) {
-      ActivityStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
-      ActivityStatus.suspended => (statusColors.errorContainer, statusColors.onErrorContainer),
-      ActivityStatus.draft => (statusColors.warningContainer, statusColors.onWarningContainer),
-      ActivityStatus.inactive || ActivityStatus.archived => (
-        theme.colorScheme.surfaceContainer,
-        theme.colorScheme.onSurfaceVariant,
-      ),
-    };
-    return CoeloStatusChip(label: status.label, backgroundColor: pair.$1, foregroundColor: pair.$2);
+    final colors = _activityStatusColors(context, status);
+    return CoeloStatusChip(
+      label: status.label,
+      backgroundColor: colors.$1,
+      foregroundColor: colors.$2,
+    );
   }
+}
+
+(Color, Color) _activityStatusColors(BuildContext context, ActivityStatus status) {
+  final theme = Theme.of(context);
+  final statusColors =
+      theme.extension<CoeloStatusColors>() ??
+      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+  return switch (status) {
+    ActivityStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
+    ActivityStatus.suspended => (statusColors.errorContainer, statusColors.onErrorContainer),
+    ActivityStatus.draft => (statusColors.warningContainer, statusColors.onWarningContainer),
+    ActivityStatus.inactive || ActivityStatus.archived => (
+      theme.colorScheme.surfaceContainer,
+      theme.colorScheme.onSurfaceVariant,
+    ),
+  };
 }
 
 final class _ActivityPaginationFooter extends StatelessWidget {

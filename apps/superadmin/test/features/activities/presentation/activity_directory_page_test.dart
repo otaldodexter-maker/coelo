@@ -35,6 +35,24 @@ void main() {
 
     expect(find.text('Atividades'), findsWidgets);
     expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
+    final activityCard = find.byKey(const Key('activity-card-activity-10'));
+    expect(
+      find.descendant(of: activityCard, matching: find.byType(CoeloAdminInteractiveCard)),
+      findsOneWidget,
+    );
+    final statusIndicator = tester.widget<CoeloAdminExpandableStatusIndicator>(
+      find.descendant(of: activityCard, matching: find.byType(CoeloAdminExpandableStatusIndicator)),
+    );
+    expect(statusIndicator.label, ActivityStatus.archived.label);
+    expect(statusIndicator.semanticLabel, 'Status da atividade: Arquivada');
+    final activeIndicator = tester.widget<CoeloAdminExpandableStatusIndicator>(
+      find.descendant(
+        of: find.byKey(const Key('activity-card-activity-2')),
+        matching: find.byType(CoeloAdminExpandableStatusIndicator),
+      ),
+    );
+    expect(activeIndicator.label, ActivityStatus.active.label);
+    expect(activeIndicator.semanticLabel, 'Status da atividade: Ativa');
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     expect(find.text('Criar atividade'), findsOneWidget);
@@ -182,11 +200,15 @@ void main() {
     expect(find.byKey(const Key('activity-institution-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-unit-filter')), findsOneWidget);
     expect(find.byKey(const Key('activity-group-filter')), findsOneWidget);
-    expect(find.byKey(const Key('activity-status-filter')), findsNothing);
-    expect(find.byKey(const Key('activity-status-tabs')), findsOneWidget);
-    for (final label in ['Todos', 'Ativos', 'Em Implantação', 'Inativos']) {
-      expect(find.text(label), findsOneWidget);
-    }
+    expect(find.byKey(const Key('activity-status-filter')), findsOneWidget);
+    expect(find.byKey(const Key('activity-status-tabs')), findsNothing);
+    final statusFilter = tester.widget<CoeloAdminMultiSelectFilter<ActivityStatus>>(
+      find.descendant(
+        of: find.byKey(const Key('activity-status-filter')),
+        matching: find.byType(CoeloAdminMultiSelectFilter<ActivityStatus>),
+      ),
+    );
+    expect(statusFilter.options, ActivityStatus.values);
     expect(find.byKey(const Key('activity-origin-filter')), findsOneWidget);
     expect(find.text('Tipo'), findsNothing);
     expect(find.text('Recorrência'), findsNothing);
@@ -196,7 +218,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('status tabs are visual and keep the same activity results', (tester) async {
+  testWidgets('status filter applies the real activity status query', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -212,14 +234,19 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final initialCards = find.byType(CoeloAdminInteractiveCard).evaluate().length;
     expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
 
-    await tester.tap(find.text('Inativos'));
+    final statusFilter = tester.widget<CoeloAdminMultiSelectFilter<ActivityStatus>>(
+      find.descendant(
+        of: find.byKey(const Key('activity-status-filter')),
+        matching: find.byType(CoeloAdminMultiSelectFilter<ActivityStatus>),
+      ),
+    );
+    statusFilter.onChanged({ActivityStatus.active});
     await tester.pumpAndSettle();
 
-    expect(find.byType(CoeloAdminInteractiveCard), findsNWidgets(initialCards));
-    expect(find.byKey(const Key('activity-card-activity-10')), findsOneWidget);
+    expect(find.byKey(const Key('activity-card-activity-2')), findsOneWidget);
+    expect(find.byKey(const Key('activity-card-activity-10')), findsNothing);
   });
 
   testWidgets('uses the approved hover treatment without changing card geometry', (tester) async {
@@ -245,11 +272,10 @@ void main() {
     await mouse.moveTo(tester.getCenter(card));
     await tester.pumpAndSettle();
 
-    final surface = tester.widget<Container>(
-      find.byKey(const Key('activity-card-surface-activity-10')),
+    expect(
+      find.descendant(of: card, matching: find.byType(CoeloAdminInteractiveCard)),
+      findsOneWidget,
     );
-    final decoration = surface.decoration! as BoxDecoration;
-    expect((decoration.border! as Border).top.width, greaterThan(1));
     expect(tester.getSize(card), before);
   });
 

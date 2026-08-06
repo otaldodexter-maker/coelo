@@ -312,7 +312,7 @@ uma caracteristica global da pessoa.
 - Mudancas notificam o responsavel afetado e a instituicao.
 
 Quando a crianca sai da instituicao, o responsavel perde imediatamente acesso
-a Flow, rotina, agenda, midia, atividades, turmas e novos comandos. Tambem
+a Happens, rotina, agenda, midia, atividades, turmas e novos comandos. Tambem
 perde o acesso operacional a conversas: inbox, busca, cache, Realtime e novas
 assinaturas. Conversas das quais participou podem ser retornadas somente por
 uma consulta de historico separada e somente leitura, se a politica de retencao
@@ -797,5 +797,5 @@ historico remoto.
 - desenho visual final do seletor de contexto;
 - telas finais de Admin e Principal;
 - implementacao visual da caixa de conversas, avatares, presenca e borda de Now;
-- implementacao dos dominios Flow, rotina, agenda e midia;
+- implementacao dos dominios Happens, rotina, agenda e midia;
 - migration ou alteracao imediata do Supabase sem plano revisado.

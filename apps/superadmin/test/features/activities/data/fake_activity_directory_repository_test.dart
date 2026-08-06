@@ -62,9 +62,7 @@ void main() {
     expect(options.institutions, isNotEmpty);
     expect(options.units, isNotEmpty);
     expect(
-      options.unitsFor('institution-1').every(
-        (unit) => unit.institutionId == 'institution-1',
-      ),
+      options.unitsFor('institution-1').every((unit) => unit.institutionId == 'institution-1'),
       isTrue,
     );
   });

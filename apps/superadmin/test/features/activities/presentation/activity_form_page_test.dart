@@ -51,6 +51,30 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('uses the medium form inset at 768 pixels', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final outerPadding = tester
+        .widgetList<Padding>(
+          find.ancestor(
+            of: find.byKey(const Key('activity-form-scroll')),
+            matching: find.byType(Padding),
+          ),
+        )
+        .firstWhere((widget) {
+          final padding = widget.padding;
+          return padding is EdgeInsets &&
+              padding.bottom == CoeloSpacing.space4 &&
+              padding.left == padding.top &&
+              padding.left == padding.right;
+        });
+    expect((outerPadding.padding as EdgeInsets).left, CoeloSpacing.space6);
+  });
+
   testWidgets('saves a minimum draft then completes links and professional permissions', (
     tester,
   ) async {
@@ -61,6 +85,7 @@ void main() {
 
     await tester.pumpWidget(
       _app(
+        repository: _ProfessionalOptionsRepository(),
         onSaveDraft: (draft) async => savedDraft = draft,
         onSubmit: (draft) async => submittedDraft = draft,
       ),
@@ -92,6 +117,8 @@ void main() {
 
     await tester.tap(find.byKey(const Key('activity-invite-institution-1-group-1')));
     await tester.pumpAndSettle();
+    expect(find.text('Marina Costa'), findsOneWidget);
+    expect(find.text('Rafael Lima'), findsNothing);
     await tester.tap(find.byKey(const Key('activity-professional-professional-1')));
     await tester.pump();
     await tester.tap(find.text('Concluir convite'));
@@ -105,6 +132,8 @@ void main() {
     await tester.tap(find.byKey(const Key('activity-form-submit')));
     await tester.pumpAndSettle();
     expect(submittedDraft?.groupIds, {'institution-1-group-1'});
+    expect(submittedDraft?.assignments.single.groupId, 'institution-1-group-1');
+    expect(submittedDraft?.assignments.single.professionalId, 'professional-1');
     expect(submittedDraft?.assignments.single.permissions.happens, isTrue);
     expect(tester.takeException(), isNull);
   });
@@ -243,6 +272,7 @@ void main() {
 Widget _app({
   String? activityId,
   ActivityFormDraft? initialDraft,
+  ActivityDirectoryRepository? repository,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
 }) => MaterialApp(
@@ -250,7 +280,7 @@ Widget _app({
   home: ActivityFormPage(
     activityId: activityId,
     initialDraft: initialDraft,
-    repository: FakeActivityDirectoryRepository(),
+    repository: repository ?? FakeActivityDirectoryRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},
     onSaveDraft: onSaveDraft ?? (_) async {},
@@ -260,3 +290,35 @@ Widget _app({
     imagePicker: () async => null,
   ),
 );
+
+final class _ProfessionalOptionsRepository implements ActivityDirectoryRepository {
+  final FakeActivityDirectoryRepository _delegate = FakeActivityDirectoryRepository();
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) => _delegate.fetchById(activityId);
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() => _delegate.fetchFilterOptions();
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions() async {
+    final options = await _delegate.fetchFormOptions();
+    return ActivityFormOptions(
+      institutions: options.institutions,
+      units: options.units,
+      locations: options.locations,
+      groups: options.groups,
+      professionals: const [
+        ActivityFormProfessionalOption(
+          id: 'professional-1',
+          name: 'Marina Costa',
+          role: 'Professora',
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
+      _delegate.fetchPage(query);
+}
