@@ -189,7 +189,7 @@ final class _HealthMedicationPlanDirectoryPageState
     currentDestination: 'health-medication-plans',
     title: 'Planos de medica\u00e7\u00e3o',
     subtitle: 'Vig\u00eancia, hor\u00e1rios, respons\u00e1veis e registros de doses.',
-    chatLauncherBottomInset: CoeloSpacing.space20,
+    showChatLauncher: false,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final padding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth

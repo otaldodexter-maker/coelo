@@ -87,7 +87,8 @@ final class _HealthMedicationPlanDetailPageState extends State<HealthMedicationP
             message: 'O registro solicitado não existe nesta demonstração.',
           );
         }
-        return Center(
+        return Align(
+          alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1120),
             child: _content(context, child, medication, padding),

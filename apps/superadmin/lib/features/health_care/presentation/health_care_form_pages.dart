@@ -573,7 +573,7 @@ final class _HealthCareFormFrame extends StatelessWidget {
     currentDestination: currentDestination,
     title: title,
     subtitle: subtitle,
-    chatLauncherBottomInset: CoeloSpacing.space20,
+    showChatLauncher: false,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth

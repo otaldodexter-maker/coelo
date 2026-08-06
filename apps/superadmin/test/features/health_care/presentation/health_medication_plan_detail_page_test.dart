@@ -54,6 +54,32 @@ void main() {
     expect(edited, isTrue);
   });
 
+  for (final size in [const Size(375, 1000), const Size(1440, 1000)]) {
+    testWidgets('keeps the plan header near the content top at ${size.width}', (tester) async {
+      await _setViewport(tester, size);
+      final controller = HealthCareController(DemoHealthCareRepository());
+      addTearDown(controller.dispose);
+      final child = await controller.repository.findChild('child-demo-a', actor: controller.actor);
+
+      await _pump(
+        tester,
+        HealthMedicationPlanDetailPage(
+          controller: controller,
+          medicationId: child!.medications.first.id,
+          logout: unavailableSuperadminLogout,
+        ),
+      );
+
+      final headerCard = find
+          .ancestor(of: find.text(child.displayName).first, matching: find.byType(Card))
+          .first;
+      expect(
+        tester.getTopLeft(headerCard).dy,
+        lessThan(180),
+        reason: 'The detail content must start below the page header, not be vertically centered.',
+      );
+    });
+  }
   testWidgets('uses semantic error status for a refused medication plan', (tester) async {
     await _setViewport(tester, const Size(1440, 1000));
     final repository = DemoHealthCareRepository();

@@ -117,6 +117,7 @@ void main() {
     );
 
     expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     expect(find.textContaining('Demonstra\u00e7\u00e3o local'), findsNothing);
     expect(find.text('Todos'), findsOneWidget);
     expect(find.text('Em Implanta\u00e7\u00e3o'), findsOneWidget);

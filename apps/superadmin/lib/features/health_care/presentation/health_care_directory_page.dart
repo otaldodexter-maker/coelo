@@ -79,7 +79,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
     currentDestination: 'health-care-profiles',
     title: 'Perfis de cuidado',
     subtitle: 'Alergias, restrições e características permanentes de cada criança.',
-    chatLauncherBottomInset: CoeloSpacing.space20,
+    showChatLauncher: false,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final padding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
