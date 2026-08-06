@@ -78,7 +78,45 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
               : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
+          final statePanel = switch (widget.store.state) {
+            ChildSafetyLoadState.loading => Semantics(
+              label: 'Carregando segurança da criança',
+              liveRegion: true,
+              child: CoeloStatePanel(
+                title: 'Carregando segurança da criança',
+                message: 'Buscando crianças e autorizações no contexto permitido.',
+                loading: true,
+              ),
+            ),
+            ChildSafetyLoadState.error => const CoeloStatePanel(
+              title: 'Não foi possível carregar',
+              message: 'Tente novamente mais tarde.',
+              icon: Icons.error_outline_rounded,
+            ),
+            ChildSafetyLoadState.unauthorized => const CoeloStatePanel(
+              title: 'Sem permissão',
+              message: 'O contexto atual não autoriza esta consulta.',
+              icon: Icons.lock_outline_rounded,
+            ),
+            ChildSafetyLoadState.ready =>
+              widget.store.records.isEmpty
+                  ? const CoeloStatePanel(
+                      title: 'Nenhuma criança cadastrada',
+                      message: 'Não há crianças disponíveis no contexto atual.',
+                      icon: Icons.child_care_outlined,
+                    )
+                  : null,
+          };
+          if (statePanel != null) {
+            return ColoredBox(
+              color: Theme.of(context).colorScheme.surface,
+              child: Center(
+                child: Padding(padding: EdgeInsets.all(padding), child: statePanel),
+              ),
+            );
+          }
           return ColoredBox(
+            key: const Key('safety-directory-surface'),
             color: Theme.of(context).colorScheme.surface,
             child: ListView(
               padding: EdgeInsets.all(padding),
@@ -91,8 +129,8 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                     height: CoeloSize.touchMin,
                     child: CoeloSearchField(
                       controller: search,
-                      hintText: 'Nome, CPF, RA ou contexto',
-                      semanticLabel: 'Buscar criança por nome, CPF, RA, instituição ou unidade',
+                      hintText: 'Nome, RA ou contexto',
+                      semanticLabel: 'Buscar criança por nome, RA, instituição ou unidade',
                       onChanged: (value) => setState(() {
                         query = value;
                         page = 1;
@@ -397,7 +435,9 @@ final class _InstitutionGroups extends StatelessWidget {
                               ? (constraints.maxWidth - CoeloSpacing.space4) / 2
                               : constraints.maxWidth,
                           child: CoeloAdminInteractiveCard(
-                            semanticLabel: 'Abrir segurança de ' + record.childName,
+                            semanticLabel:
+                                'Abrir segurança de ${record.childName}. '
+                                'Status das autorizações: ${_childAuthorizationStatus(record).label}',
                             onPressed: () => onOpen(record.childId),
                             child: Padding(
                               padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -419,17 +459,21 @@ final class _InstitutionGroups extends StatelessWidget {
                                         ),
                                         Text(record.internalId),
                                         Text(
+                                          'Instituição: ${record.institutionName}',
+                                          key: Key('safety-child-institution-${record.childId}'),
+                                        ),
+                                        Text(
+                                          'Unidade: ${record.unitName}',
+                                          key: Key('safety-child-unit-${record.childId}'),
+                                        ),
+                                        Text(
                                           record.authorizations.length.toString() +
                                               ' pessoas cadastradas',
                                         ),
                                       ],
                                     ),
                                   ),
-                                  _Status(
-                                    status: record.pendingCount > 0
-                                        ? PickupAuthorizationStatus.pending
-                                        : PickupAuthorizationStatus.approved,
-                                  ),
+                                  _ChildAuthorizationStatusIndicator(record: record),
                                 ],
                               ),
                             ),
@@ -444,6 +488,30 @@ final class _InstitutionGroups extends StatelessWidget {
           if (group < entries.length - 1) const SizedBox(height: CoeloSpacing.space6),
         ],
       ],
+    );
+  }
+}
+
+PickupAuthorizationStatus _childAuthorizationStatus(ChildSafetyRecord record) =>
+    record.pendingCount > 0
+    ? PickupAuthorizationStatus.pending
+    : PickupAuthorizationStatus.approved;
+
+final class _ChildAuthorizationStatusIndicator extends StatelessWidget {
+  const _ChildAuthorizationStatusIndicator({required this.record});
+
+  final ChildSafetyRecord record;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = _childAuthorizationStatus(record);
+    final colors = _statusPair(context, status);
+    return CoeloAdminExpandableStatusIndicator(
+      label: status.label,
+      backgroundColor: colors.$1,
+      foregroundColor: colors.$2,
+      semanticLabel: 'Status das autorizações de ${record.childName}: ${status.label}',
+      surfaceKey: Key('safety-child-status-${record.childId}'),
     );
   }
 }
@@ -574,7 +642,7 @@ final class _ChildDetail extends StatelessWidget {
                 actionLabel: 'Cadastrar pessoa',
                 onAction: () => _openForm(context, record, store),
               )
-            else if (constraints.maxWidth >= CoeloBreakpoints.large.minWidth)
+            else if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth)
               _AuthorizedPersonsTable(record: record, store: store)
             else
               for (var index = 0; index < record.authorizations.length; index++) ...[

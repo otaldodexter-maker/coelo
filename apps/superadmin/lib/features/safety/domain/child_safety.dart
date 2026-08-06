@@ -92,14 +92,26 @@ final class ChildSafetyRecord {
   );
 }
 
+enum ChildSafetyLoadState { loading, ready, error, unauthorized }
+
 final class ChildSafetyStore extends ChangeNotifier {
-  ChildSafetyStore._(this._records);
+  ChildSafetyStore._(this._records, {this.state = ChildSafetyLoadState.ready});
 
   factory ChildSafetyStore.demo() => ChildSafetyStore._([..._demoRecords]);
 
   factory ChildSafetyStore.seeded(List<ChildSafetyRecord> records) =>
       ChildSafetyStore._([...records]);
 
+  factory ChildSafetyStore.loading() =>
+      ChildSafetyStore._(const [], state: ChildSafetyLoadState.loading);
+
+  factory ChildSafetyStore.failure() =>
+      ChildSafetyStore._(const [], state: ChildSafetyLoadState.error);
+
+  factory ChildSafetyStore.unauthorized() =>
+      ChildSafetyStore._(const [], state: ChildSafetyLoadState.unauthorized);
+
+  final ChildSafetyLoadState state;
   final List<ChildSafetyRecord> _records;
   List<ChildSafetyRecord> get records => List.unmodifiable(_records);
 

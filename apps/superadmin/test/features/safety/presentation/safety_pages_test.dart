@@ -27,6 +27,53 @@ void main() {
     expect(find.text('Validação'), findsOneWidget);
   });
 
+  testWidgets('child cards expose institutional hierarchy without unsupported PII search', (
+    tester,
+  ) async {
+    await _surface(tester, const Size(1440, 1000));
+    await tester.pumpWidget(_landingApp(ChildSafetyStore.demo()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('safety-child-institution-person-1')), findsOneWidget);
+    expect(find.byKey(const Key('safety-child-unit-person-1')), findsOneWidget);
+    expect(find.textContaining('CPF'), findsNothing);
+  });
+
+  testWidgets('child cards use compact expandable status with semantics', (tester) async {
+    await _surface(tester, const Size(1440, 1000));
+    await tester.pumpWidget(_landingApp(ChildSafetyStore.demo()));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsNWidgets(3));
+    final status = find.byKey(const Key('safety-child-status-person-1'));
+    expect(status, findsOneWidget);
+    expect(tester.getSize(status), const Size.square(24));
+    expect(
+      find.bySemanticsLabel(
+        'Abrir segurança de Criança Coelo 2. Status das autorizações: Pendente',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('landing communicates loading, error and unauthorized states', (tester) async {
+    await _surface(tester, const Size(700, 1000));
+
+    await tester.pumpWidget(_landingApp(ChildSafetyStore.loading()));
+    await tester.pump();
+    expect(find.bySemanticsLabel('Carregando segurança da criança'), findsOneWidget);
+
+    for (final entry in <(ChildSafetyStore, String)>[
+      (ChildSafetyStore.failure(), 'Não foi possível carregar'),
+      (ChildSafetyStore.unauthorized(), 'Sem permissão'),
+      (ChildSafetyStore.seeded(const []), 'Nenhuma criança cadastrada'),
+    ]) {
+      await tester.pumpWidget(_landingApp(entry.$1));
+      await tester.pump();
+      expect(find.text(entry.$2), findsOneWidget);
+    }
+  });
+
   testWidgets('search and status filters preserve no-results feedback', (tester) async {
     await _surface(tester, const Size(1440, 1000));
     await tester.pumpWidget(_landingApp(ChildSafetyStore.demo()));
@@ -40,7 +87,7 @@ void main() {
   });
 
   testWidgets('guardian registration starts pending and can be approved', (tester) async {
-    await _surface(tester, const Size(700, 1200));
+    await _surface(tester, const Size(575, 1200));
     final store = ChildSafetyStore.demo();
     await tester.pumpWidget(_detailApp(store, 'person-4'));
     await tester.pumpAndSettle();
@@ -76,7 +123,7 @@ void main() {
   });
 
   testWidgets('removal requires confirmation before deleting authorization', (tester) async {
-    await _surface(tester, const Size(700, 1000));
+    await _surface(tester, const Size(575, 1000));
     final store = ChildSafetyStore.demo();
     await tester.pumpWidget(_detailApp(store, 'person-4'));
     await tester.pumpAndSettle();
@@ -95,12 +142,24 @@ void main() {
     expect(find.text('Nenhuma pessoa cadastrada'), findsOneWidget);
   });
 
-  testWidgets('desktop detail exposes the complete authorized persons table', (tester) async {
-    await _surface(tester, const Size(1800, 1000));
-    await tester.pumpWidget(_detailApp(ChildSafetyStore.demo(), 'person-1'));
-    await tester.pumpAndSettle();
+  testWidgets('detail uses table from medium constraints and cards only when compact', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    expect(find.byKey(const Key('authorized-persons-table')), findsOneWidget);
+    for (final width in const [768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 1000));
+      await tester.pumpWidget(_detailApp(ChildSafetyStore.demo(), 'person-1'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('authorized-persons-table')),
+        findsOneWidget,
+        reason: 'A tabela deve ser usada em $width px.',
+      );
+      expect(tester.takeException(), isNull);
+    }
+
     for (final label in const [
       'Nome',
       'Relação / hierarquia',
@@ -111,6 +170,37 @@ void main() {
       'Ações',
     ]) {
       expect(find.text(label), findsWidgets);
+    }
+
+    await tester.binding.setSurfaceSize(const Size(375, 1000));
+    await tester.pumpWidget(_detailApp(ChildSafetyStore.demo(), 'person-1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('authorized-persons-table')), findsNothing);
+    expect(find.text('Editar'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('responsive surface stays semantic without overflow in light and dark', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final cases = <(double, ThemeMode)>[
+      (375, ThemeMode.light),
+      (768, ThemeMode.light),
+      (1024, ThemeMode.dark),
+      (1440, ThemeMode.dark),
+    ];
+
+    for (final entry in cases) {
+      await tester.binding.setSurfaceSize(Size(entry.$1, 1000));
+      await tester.pumpWidget(_landingApp(ChildSafetyStore.demo(), themeMode: entry.$2));
+      await tester.pumpAndSettle();
+
+      final surface = tester.widget<ColoredBox>(find.byKey(const Key('safety-directory-surface')));
+      final theme = entry.$2 == ThemeMode.dark ? CoeloTheme.dark : CoeloTheme.light;
+      expect(surface.color, theme.colorScheme.surface);
+      expect(tester.takeException(), isNull, reason: 'Overflow em ${entry.$1} px.');
     }
   });
 
@@ -158,7 +248,7 @@ void main() {
   });
 }
 
-Widget _landingApp(ChildSafetyStore store) {
+Widget _landingApp(ChildSafetyStore store, {ThemeMode themeMode = ThemeMode.light}) {
   final router = GoRouter(
     routes: [
       GoRoute(
@@ -171,6 +261,7 @@ Widget _landingApp(ChildSafetyStore store) {
   return MaterialApp.router(
     theme: CoeloTheme.light,
     darkTheme: CoeloTheme.dark,
+    themeMode: themeMode,
     routerConfig: router,
   );
 }
