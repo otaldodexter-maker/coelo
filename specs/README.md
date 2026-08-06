@@ -11,6 +11,7 @@ Specs SDD iniciais da fundacao Coelo. Elas organizam escopo, fontes, dados, perm
 | `011-superadmin-database-rls.md` | approved-for-initial-migration | Foundation de banco/RLS ja entregue e mantida como referencia tecnica. |
 | `013-ui-packages-componentization.md` | implemented-foundation-with-operational-gates | Pacotes UI, catalogo Flutter, consulta por IA e promocao de componentes aprovados. |
 | `014-atividade-contextual.md` | approved-for-planning | Conceito de Atividade contextual, reutilizavel por turma dentro da mesma instituicao. |
+| `018-profiles-permissions-superadmin.md` | approved-for-implementation | Central de Perfis e Permissoes do Superadmin, com perfis reutilizaveis para Superadmin/Admin e catalogo read-only do Principal. |
 
 ## Estado pratico
 
