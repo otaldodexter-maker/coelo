@@ -33,6 +33,7 @@ dist/
 .packages
 build/
 coverage/
+**/failures/
 
 # Python caches used by local tools
 __pycache__/
