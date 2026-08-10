@@ -9,6 +9,7 @@ import '../../institutions/data/fake_institution_directory_repository.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../domain/group_directory.dart';
 
@@ -156,6 +157,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final List<_GroupPersonBinding> _people = [];
   final List<_GroupPersonBinding> _professionals = [];
   final List<_GroupInviteBinding> _invites = [];
+  double _footerHeight = 0;
 
   bool get _editing => widget.groupId != null;
 
@@ -411,79 +413,44 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   @override
   Widget build(BuildContext context) {
     final title = _editing ? 'Editar turma' : 'Criar turma';
-    return SuperadminShell(
-      logout: widget.logout,
-      title: title,
-      subtitle: _editing
-          ? 'Atualize os dados da turma selecionada.'
-          : 'Adicione uma nova turma ao Coelo.',
-      currentDestination: 'groups',
-      showChatLauncher: false,
-      onDestinationSelected: _selectDestination,
-      onBugReportSubmitted: widget.onBugReportSubmitted,
-      child: _editing && _original == null
-          ? CoeloStatePanel(
-              key: const Key('group-form-not-found'),
-              title: 'Turma não encontrada',
-              message: 'O registro solicitado não existe nesta sessão local.',
-              icon: Icons.search_off_rounded,
-              actionLabel: 'Voltar às turmas',
-              onAction: widget.onCancel,
-            )
-          : PopScope(
-              canPop: !_dirty,
-              onPopInvokedWithResult: (didPop, _) {
-                if (!didPop) _cancel();
-              },
-              child: Form(
-                key: _formKey,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final desktop = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-                    final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-                        ? CoeloSpacing.space10
-                        : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                        ? CoeloSpacing.space6
-                        : CoeloSpacing.space4;
-                    final navigation = _navigation();
-                    return Padding(
-                      key: const Key('group-form-golden-root'),
-                      padding: EdgeInsets.fromLTRB(padding, padding, padding, CoeloSpacing.space4),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (desktop) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-                          Expanded(
-                            child: Column(
-                              children: [
-                                if (!desktop) ...[
-                                  navigation,
-                                  const SizedBox(height: CoeloSpacing.space4),
-                                ],
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    key: const Key('group-form-scroll'),
-                                    padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                                    child: Center(
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(maxWidth: 880),
-                                        child: _formSurface(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: CoeloSpacing.space4),
-                                _footer(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+    return LayoutBuilder(
+      builder: (context, outerConstraints) => SuperadminShell(
+        logout: widget.logout,
+        title: title,
+        subtitle: _editing
+            ? 'Atualize os dados da turma selecionada.'
+            : 'Adicione uma nova turma ao Coelo.',
+        currentDestination: 'groups',
+        onDestinationSelected: _selectDestination,
+        onBugReportSubmitted: widget.onBugReportSubmitted,
+        chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+        child: _editing && _original == null
+            ? CoeloStatePanel(
+                key: const Key('group-form-not-found'),
+                title: 'Turma não encontrada',
+                message: 'O registro solicitado não foi encontrado.',
+                icon: Icons.search_off_rounded,
+                actionLabel: 'Voltar às turmas',
+                onAction: widget.onCancel,
+              )
+            : PopScope(
+                canPop: !_dirty,
+                onPopInvokedWithResult: (didPop, _) {
+                  if (!didPop) _cancel();
+                },
+                child: Form(
+                  key: _formKey,
+                  child: SuperadminFormFrame(
+                    key: const Key('group-form-golden-root'),
+                    viewportWidth: outerConstraints.maxWidth,
+                    navigation: _navigation(),
+                    scrollKey: const Key('group-form-scroll'),
+                    body: _formSurface(),
+                    footer: _footer(),
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 
@@ -504,8 +471,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _GroupFormStep.links => _formSection(
         key: const Key('group-links-section'),
         title: 'Vínculos e aparência',
-        description:
-            'Atividades, rótulos de comunicação e identidade visual local: preview demonstrativo sem persistência adicional.',
+        description: 'Atividades, rótulos de comunicação e identidade visual da turma.',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -518,8 +484,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _GroupFormStep.people => _formSection(
         key: const Key('group-people-section'),
         title: 'Pessoas da turma',
-        description:
-            'Cadastro local de pessoas, perfis e vínculos com tabela de inclusão, edição e exclusão.',
+        description: 'Pessoas, perfis e vínculos da turma.',
         child: _peopleSection(
           entries: _people,
           sectionTitle: 'Pessoas associadas',
@@ -536,8 +501,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _GroupFormStep.professionals => _formSection(
         key: const Key('group-professionals-section'),
         title: 'Profissionais e admins',
-        description:
-            'Acesso operacional da turma por função (padrão demonstrativo local). Defina permissões explícitas.',
+        description: 'Acesso operacional da turma por função. Defina permissões explícitas.',
         child: _peopleSection(
           entries: _professionals,
           sectionTitle: 'Gestão de acesso',
@@ -556,7 +520,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         key: const Key('group-invites-section'),
         title: 'Convites',
         description:
-            'Convites demonstrativos para quem ainda não está vinculado, com busca por @, CPF, e-mail e celular.',
+            'Convites para quem ainda não está vinculado, com busca por @, CPF, e-mail e celular.',
         child: _invitesSection(),
       ),
     };
@@ -1196,17 +1160,17 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             ),
             OutlinedButton.icon(
               key: const Key('group-invite-export'),
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Exportação de convites preparada localmente.')),
-              ),
+              onPressed: () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Exportação de convites preparada.'))),
               icon: const Icon(Icons.download_outlined),
               label: const Text('Exportar convites (CSV/XLSX)'),
             ),
             TextButton.icon(
               key: const Key('group-invite-import'),
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Pré-visualização de importação demonstrativa.')),
-              ),
+              onPressed: () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Arquivo pronto para revisão.'))),
               icon: const Icon(Icons.upload_file_outlined),
               label: const Text('Importar convites (CSV/XLSX)'),
             ),
@@ -1297,7 +1261,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           name: result.name,
           identifier: result.identifier,
           role: result.role,
-          note: 'Cadastro vinculado ao escopo local',
+          note: 'Cadastro vinculado ao escopo da turma',
         ),
       );
       _markDirty();
@@ -1318,13 +1282,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     final messenger = ScaffoldMessenger.of(context);
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            'Convite para ${invite.identifier} reenviado no fluxo local demonstrativo.',
-          ),
-        ),
-      );
+      ..showSnackBar(SnackBar(content: Text('Convite para ${invite.identifier} reenviado.')));
   }
 
   Future<void> _cancelInvite(int index) async {
@@ -1332,9 +1290,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _invites.removeAt(index);
       _markDirty();
     });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Convite removido localmente.')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Convite removido.')));
   }
 
   Future<_GroupPersonBinding?> _showPersonDialog({
@@ -1377,29 +1333,16 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     required String title,
     required String description,
     required Widget child,
-  }) => Container(
+  }) => Column(
     key: key,
-    padding: const EdgeInsets.all(CoeloSpacing.space4),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(CoeloRadius.md),
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: CoeloSpacing.space1),
-        Text(
-          description,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        child,
-      ],
-    ),
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.headlineSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text(description, style: Theme.of(context).textTheme.bodyMedium),
+      const SizedBox(height: CoeloSpacing.space5),
+      child,
+    ],
   );
 
   Widget _fieldGrid(List<Widget> fields) => LayoutBuilder(
@@ -1456,6 +1399,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       constraints: const BoxConstraints(maxWidth: 880),
       child: SuperadminFormActionFooter(
         surfaceKey: const Key('group-form-footer-surface'),
+        onHeightChanged: (height) {
+          if ((_footerHeight - height).abs() < 0.5) return;
+          setState(() => _footerHeight = height);
+        },
         tertiaryAction: TextButton(
           key: const Key('group-form-cancel'),
           onPressed: _saving ? null : _cancel,

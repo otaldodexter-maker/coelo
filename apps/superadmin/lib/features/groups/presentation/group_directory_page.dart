@@ -99,7 +99,6 @@ final class _GroupDirectoryPageState extends State<GroupDirectoryPage> {
       title: 'Turmas',
       subtitle: 'Gerencie as turmas da plataforma.',
       currentDestination: 'groups',
-      showChatLauncher: false,
       chatLauncherBottomInset: _footerHeight,
       onDestinationSelected: widget.onDestinationSelected,
       onBugReportSubmitted: widget.onBugReportSubmitted,
@@ -337,7 +336,10 @@ final class _GroupToolbar extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final compactFileAction = compact || constraints.maxWidth < 1000;
-        final filterWidth = compact
+        final largeText = MediaQuery.textScalerOf(context).scale(1) >= 2;
+        final filterWidth = largeText
+            ? double.infinity
+            : compact
             ? (constraints.maxWidth - CoeloSpacing.space3) / 2
             : constraints.maxWidth >= 1000
             ? 136.0
@@ -403,6 +405,7 @@ final class _GroupToolbar extends StatelessWidget {
         return CoeloAdminListingToolbar(
           key: const Key('group-filter-toolbar'),
           search: Wrap(
+            key: const Key('group-filter-controls'),
             spacing: CoeloSpacing.space3,
             runSpacing: CoeloSpacing.space2,
             crossAxisAlignment: WrapCrossAlignment.center,
@@ -446,13 +449,13 @@ final class _GroupToolbar extends StatelessWidget {
                         onPressed: () {
                           activityController.startDemoImport(
                             subject: 'Turmas',
-                            fileName: 'turmas-demonstracao.xlsx',
+                            fileName: 'turmas.xlsx',
                             progressSummary: 'Importando turmas',
-                            completedSummary: 'Importação de turmas demonstrada',
+                            completedSummary: 'Importação de turmas concluída',
                           );
                           showSuperadminNotice(
                             context,
-                            'Importação local demonstrada. Nenhum dado remoto foi alterado.',
+                            'Importação de turmas preparada para revisão.',
                             icon: Icons.info_outline_rounded,
                           );
                         },
@@ -475,8 +478,7 @@ final class _GroupToolbar extends StatelessWidget {
                           );
                           showSuperadminNotice(
                             context,
-                            'Exportação local de turmas preparada (visão: $viewLabel). '
-                            'Nenhum arquivo real foi gerado.',
+                            'Exportação de turmas preparada (visão: $viewLabel).',
                             icon: Icons.check_circle_outline_rounded,
                           );
                         },
@@ -628,167 +630,105 @@ final class _GroupCards extends StatelessWidget {
   }
 }
 
-final class _GroupCard extends StatefulWidget {
+final class _GroupCard extends StatelessWidget {
   const _GroupCard({required this.item, required this.onPressed});
 
   final GroupDirectoryItem item;
   final VoidCallback onPressed;
 
   @override
-  State<_GroupCard> createState() => _GroupCardState();
-}
-
-final class _GroupCardState extends State<_GroupCard> {
-  bool _highlighted = false;
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final item = widget.item;
     final prototype = _GroupPrototype.from(item);
-    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
-    return ConstrainedBox(
+    return CoeloAdminInteractiveCard(
       key: Key('group-card-${item.id}'),
-      constraints: const BoxConstraints(minHeight: 216),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: TweenAnimationBuilder<double>(
-            key: Key('group-card-surface-${item.id}'),
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: duration,
-            curve: Curves.easeOutCubic,
-            builder: (context, progress, child) => Container(
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
-                  color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: .5),
-                    progress,
-                  )!,
-                  width: 1 + .5 * progress,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: .03),
-                      colors.primary.withValues(alpha: .15),
-                      progress,
-                    )!,
-                    blurRadius: 8 + 4 * progress,
-                    spreadRadius: 2 * progress,
-                    offset: Offset(0, 2 + 2 * progress),
+      surfaceKey: Key('group-card-surface-${item.id}'),
+      minHeight: 216,
+      onPressed: onPressed,
+      semanticLabel: 'Editar turma ${item.name}',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SizedBox.square(
+                  dimension: 44,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colors.secondaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(Icons.groups_rounded, color: colors.onSecondaryContainer),
                   ),
-                ],
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      _CardContextLine(label: 'Unidade', value: item.unitName),
+                      _CardContextLine(label: 'Instituição', value: item.institutionName),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                Builder(
+                  builder: (context) {
+                    final pair = _groupStatusColors(context, item.status);
+                    return CoeloAdminExpandableStatusIndicator(
+                      label: item.status.label,
+                      backgroundColor: pair.$1,
+                      foregroundColor: pair.$2,
+                      semanticLabel: 'Status: ${item.status.label}',
+                      surfaceKey: Key('group-status-${item.id}'),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space4),
+            _DetailRow(
+              first: _GroupDetail(
+                icon: Icons.badge_outlined,
+                label: 'Equipe institucional',
+                value: prototype.team,
               ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox.square(
-                              dimension: 44,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: colors.secondaryContainer,
-                                  shape: BoxShape.circle,
-                                ),
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  Icons.groups_rounded,
-                                  color: colors.onSecondaryContainer,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space3),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  _CardContextLine(label: 'Unidade', value: item.unitName),
-                                  _CardContextLine(
-                                    label: 'Instituição',
-                                    value: item.institutionName,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            Builder(
-                              builder: (context) {
-                                final pair = _groupStatusColors(context, item.status);
-                                return CoeloAdminExpandableStatusIndicator(
-                                  label: item.status.label,
-                                  backgroundColor: pair.$1,
-                                  foregroundColor: pair.$2,
-                                  semanticLabel: 'Status: ${item.status.label}',
-                                  surfaceKey: Key('group-status-${item.id}'),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        const Divider(height: 1),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        _DetailRow(
-                          first: _GroupDetail(
-                            icon: Icons.badge_outlined,
-                            label: 'Equipe institucional',
-                            value: prototype.team,
-                          ),
-                          second: _GroupDetail(
-                            icon: Icons.local_activity_outlined,
-                            label: 'Atividades',
-                            value: '${prototype.activities.length}',
-                          ),
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _DetailRow(
-                          first: _GroupDetail(
-                            icon: Icons.supervisor_account_outlined,
-                            label: 'Responsáveis',
-                            value: '${prototype.guardianCount}',
-                          ),
-                          second: _GroupDetail(
-                            icon: Icons.child_care_outlined,
-                            label: 'Crianças',
-                            value: '${prototype.childCount}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              second: _GroupDetail(
+                icon: Icons.local_activity_outlined,
+                label: 'Atividades',
+                value: '${prototype.activities.length}',
               ),
             ),
-          ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _DetailRow(
+              first: _GroupDetail(
+                icon: Icons.supervisor_account_outlined,
+                label: 'Responsáveis',
+                value: '${prototype.guardianCount}',
+              ),
+              second: _GroupDetail(
+                icon: Icons.child_care_outlined,
+                label: 'Crianças',
+                value: '${prototype.childCount}',
+              ),
+            ),
+          ],
         ),
       ),
     );

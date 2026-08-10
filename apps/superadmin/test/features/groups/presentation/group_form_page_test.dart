@@ -3,6 +3,7 @@ import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repos
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
+    expect(find.byType(Stepper), findsNothing);
+    expect(tester.widget(find.byKey(const Key('group-hierarchy-section'))), isA<Column>());
+    expect(
+      tester.getRect(find.byType(SuperadminFormStepNavigation)).left,
+      lessThan(tester.getRect(find.byKey(const Key('group-form-scroll'))).left),
+    );
     expect(find.byKey(const Key('group-form-continue')), findsOneWidget);
     expect(find.byKey(const Key('group-form-save')), findsNothing);
     for (final label in [
@@ -42,15 +50,67 @@ void main() {
     ]) {
       expect(find.text(label), findsWidgets);
     }
+    final forbidden = RegExp(r'fake|demo|dev|catálogo|teste', caseSensitive: false);
+    for (final label in ['Vínculos e aparência', 'Profissionais e admins', 'Convites']) {
+      await tester.tap(find.widgetWithText(TextButton, label));
+      await tester.pumpAndSettle();
+      expect(find.textContaining(forbidden), findsNothing, reason: label);
+    }
 
     await tester.binding.setSurfaceSize(const Size(768, 900));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
+    final mediumNavigation = tester.getRect(find.byType(SuperadminFormStepNavigation));
+    final mediumForm = tester.getRect(find.byKey(const Key('group-form-scroll')));
+    final mediumFooter = tester.getRect(find.byKey(const Key('group-form-footer-surface')));
+    expect(mediumNavigation.width, 248);
+    expect(mediumForm.left - mediumNavigation.right, closeTo(CoeloSpacing.space6, 1));
+    expect(mediumFooter.left, greaterThanOrEqualTo(mediumNavigation.right + CoeloSpacing.space6));
     expect(tester.takeException(), isNull);
 
     await tester.binding.setSurfaceSize(const Size(375, 900));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    final footer = find.byType(SuperadminFormActionFooter);
+    expect(launcher, findsOneWidget);
+    expect(
+      tester.getBottomLeft(launcher).dy,
+      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+    );
+  });
+
+  testWidgets('supports 200 percent text at all approved widths', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      final institutions = FakeInstitutionDirectoryRepository();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: GroupFormPage(
+            key: ValueKey(width),
+            institutions: institutions,
+            repository: FakeGroupDirectoryRepository(institutions),
+            logout: () async => const LogoutResult.success(),
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('superadmin-form-step-summary')),
+        width < 768 ? findsOneWidget : findsNothing,
+        reason: '$width summary',
+      );
+      expect(tester.takeException(), isNull, reason: '$width overflow');
+    }
   });
 
   testWidgets('validates the identity step and preserves its draft when navigating back', (

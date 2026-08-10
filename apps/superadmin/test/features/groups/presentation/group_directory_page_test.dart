@@ -30,6 +30,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(
+      tester.widget(find.byKey(Key('group-card-${first.id}'))),
+      isA<CoeloAdminInteractiveCard>(),
+    );
 
     expect(find.text('Turmas'), findsWidgets);
     expect(find.text('Gerencie as turmas da plataforma.'), findsOneWidget);
@@ -138,6 +142,66 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('stacks filters by internal width at 200 percent text', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: GroupDirectoryPage(
+            repository: FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+            logout: () async => const LogoutResult.success(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final controlsRect = tester.getRect(find.byKey(const Key('group-filter-controls')));
+      final institutionRect = tester.getRect(find.byKey(const Key('group-institution-filter')));
+      final unitRect = tester.getRect(find.byKey(const Key('group-unit-filter')));
+      final typeRect = tester.getRect(find.byKey(const Key('group-type-filter')));
+      expect(institutionRect.width, closeTo(controlsRect.width, 1), reason: '$width institution');
+      expect(unitRect.width, closeTo(controlsRect.width, 1), reason: '$width unit');
+      expect(typeRect.width, closeTo(controlsRect.width, 1), reason: '$width type');
+      expect(unitRect.top, greaterThan(institutionRect.bottom), reason: '$width unit row');
+      expect(typeRect.top, greaterThan(unitRect.bottom), reason: '$width type row');
+      expect(tester.takeException(), isNull, reason: '$width overflow');
+    }
+  });
+
+  testWidgets('does not expose fixture or demonstration labels in file actions', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupDirectoryPage(
+          repository: FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final forbidden = RegExp(r'fake|demo|dev|catálogo|teste', caseSensitive: false);
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Importar turmas'));
+    await tester.pump();
+    expect(find.textContaining(forbidden), findsNothing);
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Exportar turmas'));
+    await tester.pump();
+    expect(find.textContaining(forbidden), findsNothing);
+  });
+
   testWidgets('uses only dependent units after selecting an institution', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -161,7 +225,7 @@ void main() {
     expect(find.text('Ativos'), findsOneWidget);
   });
 
-  testWidgets('offers explicit local import and export demonstrations', (tester) async {
+  testWidgets('offers explicit import and export actions', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
