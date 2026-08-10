@@ -61,6 +61,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   bool _noticeShown = false;
   double _paginationFooterHeight = 0;
 
+  bool _paginationExpected = false;
   void _changeDisplay(InstitutionDirectoryDisplay display) {
     if (display == _display) {
       return;
@@ -83,6 +84,13 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     }
   }
 
+  void _handleDirectoryChanged() {
+    final expected =
+        _viewModel.state == InstitutionDirectoryLoadState.success && _viewModel.page.totalCount > 0;
+    if (expected == _paginationExpected || !mounted) return;
+    setState(() => _paginationExpected = expected);
+  }
+
   void _handlePaginationFooterHeightChanged(double height) {
     if ((_paginationFooterHeight - height).abs() < 0.5) {
       return;
@@ -96,6 +104,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     _viewModel = InstitutionDirectoryViewModel(repository: widget.repository);
     _activityController = SuperadminActivityController();
     _searchController = TextEditingController();
+    _viewModel.addListener(_handleDirectoryChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _viewModel.load());
   }
 
@@ -110,6 +119,7 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _viewModel.removeListener(_handleDirectoryChanged);
     _viewModel.dispose();
     _activityController.dispose();
     super.dispose();
@@ -120,7 +130,9 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     return SuperadminShell(
       logout: widget.logout,
       activityController: _activityController,
-      showChatLauncher: widget.onConversationsOpen != null,
+      showChatLauncher:
+          widget.onConversationsOpen != null &&
+          (!_paginationExpected || _paginationFooterHeight > 0),
       chatLauncherBottomInset: _paginationFooterHeight,
       onBugReportSubmitted: widget.onBugReportSubmitted,
       onOpenConversations: widget.onConversationsOpen,
@@ -247,7 +259,9 @@ class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryConte
         return AnimatedBuilder(
           animation: widget.viewModel,
           builder: (context, child) {
-            final showPagination = widget.viewModel.state == InstitutionDirectoryLoadState.success;
+            final showPagination =
+                widget.viewModel.state == InstitutionDirectoryLoadState.success &&
+                widget.viewModel.page.totalCount > 0;
             _scheduleFooterMeasurement(showPagination);
             final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
             return Stack(
@@ -394,9 +408,17 @@ class _InstitutionDirectoryPaginationFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final page = viewModel.page;
+    final hasItems = page.totalCount > 0;
+    final totalPages = hasItems ? (page.totalCount / viewModel.query.pageSize).ceil() : null;
+
     return SuperadminListingPaginationFooter(
       semanticKey: const Key('institution-directory-pagination-footer'),
       horizontalPadding: horizontalPadding,
+      compactCurrentPage: hasItems ? page.page + 1 : null,
+      compactTotalPages: totalPages,
+      compactOnPrevious: page.hasPrevious ? () => viewModel.goToPage(page.page - 1) : null,
+      compactOnNext: page.hasNext ? () => viewModel.goToPage(page.page + 1) : null,
       child: KeyedSubtree(
         key: const Key('institution-directory-pagination-footer-surface'),
         child: InstitutionDirectoryPagination(

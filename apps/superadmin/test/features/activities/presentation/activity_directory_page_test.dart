@@ -173,7 +173,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('activity-files-export-xlsx')));
+    await tester.tap(find.text('Exportar XLSX'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Por Turmas'), findsOneWidget);

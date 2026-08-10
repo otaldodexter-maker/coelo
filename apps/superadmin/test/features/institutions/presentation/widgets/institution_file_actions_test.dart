@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_file_actions.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,7 +20,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-export-csv')));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Exportar CSV'));
     await tester.pump();
 
     expect(controller.activities.single.subject, 'Instituições · Grupos');
@@ -118,6 +119,7 @@ void main() {
     await tester.pumpWidget(_app(controller));
 
     expect(find.byKey(const Key('institution-files-action')), findsOneWidget);
+    expect(find.byType(CoeloAdminFileActions), findsOneWidget);
     expect(find.text('Arquivos'), findsOneWidget);
     expect(find.byKey(const Key('institution-import-action')), findsNothing);
     expect(find.byKey(const Key('institution-export-action')), findsNothing);
@@ -140,13 +142,13 @@ void main() {
     expect(find.text('Importar'), findsNothing);
   });
 
-  testWidgets('runs the two-step import demo and starts background progress', (tester) async {
+  testWidgets('runs the two-step import and starts background progress', (tester) async {
     final controller = SuperadminActivityController(tickInterval: const Duration(seconds: 30));
     await tester.pumpWidget(_app(controller));
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-import')));
+    await tester.tap(find.text('Importar'));
     await tester.pumpAndSettle();
     expect(find.text('Importar instituições'), findsOneWidget);
     expect(find.text('Importar arquivo'), findsOneWidget);
@@ -169,16 +171,14 @@ void main() {
     controller.dispose();
   });
 
-  testWidgets('uses a neutral surface and prepares the demo XLSX template download', (
-    tester,
-  ) async {
+  testWidgets('uses a neutral surface and prepares the XLSX template download', (tester) async {
     final controller = SuperadminActivityController();
     addTearDown(controller.dispose);
     await tester.pumpWidget(_app(controller));
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-import')));
+    await tester.tap(find.text('Importar'));
     await tester.pumpAndSettle();
 
     final dialog = tester.widget<Dialog>(find.byType(Dialog));
@@ -198,7 +198,8 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-import-template-export')));
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('Modelo XLSX preparado para download demonstrativo.'), findsOneWidget);
+    expect(find.text('Modelo XLSX pronto para download.'), findsOneWidget);
+    expect(find.textContaining('demonstra'), findsNothing);
     final notice = tester.widget<SnackBar>(find.byType(SnackBar));
     expect(notice.duration, const Duration(seconds: 6));
     expect(notice.behavior, SnackBarBehavior.floating);
@@ -212,7 +213,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-export-xlsx')));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Exportar XLSX'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 250));
 
@@ -234,7 +235,10 @@ void main() {
     await tester.tap(trigger);
     await tester.pumpAndSettle();
 
-    final firstItem = find.byKey(const Key('institution-files-import'));
+    final firstItem = find.ancestor(
+      of: find.text('Importar'),
+      matching: find.byType(MenuItemButton),
+    );
     final menuRect = tester.getRect(firstItem);
     expect(menuRect.left, greaterThanOrEqualTo(16));
     expect(menuRect.right, lessThanOrEqualTo(359));
@@ -248,7 +252,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-import')));
+    await tester.tap(find.text('Importar'));
     await tester.pumpAndSettle();
 
     final dialog = tester.widget<Dialog>(find.byType(Dialog));
@@ -276,7 +280,7 @@ void main() {
 
       await tester.tap(find.byKey(const Key('institution-files-action')));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('institution-files-import')));
+      await tester.tap(find.text('Importar'));
       await tester.pumpAndSettle();
 
       final dialogBarrier = find.byWidgetPredicate(
@@ -306,7 +310,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-export-csv')));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Exportar CSV'));
     await tester.pumpAndSettle();
 
     expect(controller.activities.single.fileName, 'instituicoes.csv');

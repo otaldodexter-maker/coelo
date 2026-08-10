@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 enum SuperadminFormStepStatus { current, complete, error, incomplete }
 
 final class SuperadminFormStep {
-  const SuperadminFormStep({required this.label, required this.status, this.enabled = true});
+  const SuperadminFormStep({
+    required this.label,
+    required this.status,
+    this.enabled = true,
+    this.key,
+  });
 
   final String label;
   final SuperadminFormStepStatus status;
   final bool enabled;
+  final Key? key;
 }
 
 /// Shared navigation for sequential Superadmin flows.
@@ -113,7 +119,7 @@ final class SuperadminFormStepNavigation extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
         child: TextButton.icon(
-          key: Key('step-$keyLabel'),
+          key: step.key ?? Key('step-$keyLabel'),
           onPressed: step.enabled ? () => onStepSelected(index) : null,
           style:
               TextButton.styleFrom(

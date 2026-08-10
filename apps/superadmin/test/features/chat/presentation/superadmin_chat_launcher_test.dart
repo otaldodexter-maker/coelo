@@ -225,19 +225,55 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('launcher uses a compact sheet below expanded', (tester) async {
+  testWidgets('compact launcher is a surface circle with the real unread count', (tester) async {
     _viewport(tester, 375);
     await tester.pumpWidget(_app());
 
-    expect(find.text('Mensagens'), findsOne);
-    expect(find.byTooltip('Abrir conversas'), findsNothing);
-    expect(find.bySemanticsLabel(RegExp('Abrir conversas')), findsOneWidget);
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    final material = tester.widget<Material>(launcher);
+    final size = tester.getSize(launcher);
 
-    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
+    expect(find.text('Mensagens'), findsNothing);
+    expect(find.byType(CircleAvatar), findsNothing);
+    expect(find.byIcon(Icons.forum_outlined), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(material.color, CoeloTheme.light.colorScheme.surface);
+    expect(material.shape, isA<CircleBorder>());
+    expect(material.elevation, greaterThan(0));
+    expect(size, const Size(CoeloSize.touchMin, CoeloSize.touchMin));
+    expect(find.byTooltip('Abrir conversas'), findsNothing);
+    expect(find.bySemanticsLabel('Abrir conversas, 3 mensagens não lidas'), findsOneWidget);
+
+    await tester.tap(launcher);
     await tester.pumpAndSettle();
     expect(find.byType(BottomSheet), findsOne);
     expect(find.text('Conversas'), findsOne);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+  });
+
+  testWidgets('compact launcher uses the semantic dark surface', (tester) async {
+    _viewport(tester, 375);
+    await tester.pumpWidget(_app(theme: CoeloTheme.dark));
+
+    final material = tester.widget<Material>(
+      find.byKey(const Key('superadmin-chat-launcher-surface')),
+    );
+    expect(material.color, CoeloTheme.dark.colorScheme.surface);
+    expect(material.shape, isA<CircleBorder>());
+  });
+
+  testWidgets('medium launcher preserves the orange capsule anatomy', (tester) async {
+    _viewport(tester, 768);
+    await tester.pumpWidget(_app());
+
+    final material = tester.widget<Material>(
+      find.byKey(const Key('superadmin-chat-launcher-surface')),
+    );
+    expect(find.text('Mensagens'), findsOneWidget);
+    expect(find.byType(CircleAvatar), findsNWidgets(7));
+    expect(find.byIcon(Icons.send_outlined), findsOneWidget);
+    expect(material.color, CoeloTheme.light.colorScheme.primary);
+    expect(material.shape, isA<StadiumBorder>());
   });
 
   testWidgets('clamps safely when the reserved footer consumes the viewport', (tester) async {
@@ -263,9 +299,9 @@ void main() {
   });
 }
 
-Widget _app() {
+Widget _app({ThemeData? theme}) {
   return MaterialApp(
-    theme: CoeloTheme.light,
+    theme: theme ?? CoeloTheme.light,
     home: Scaffold(
       body: Align(
         alignment: Alignment.bottomRight,

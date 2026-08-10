@@ -179,7 +179,9 @@ void main() {
     await tester.pumpAndSettle();
     final flyoutMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(flyoutMouse.removePointer);
-    await flyoutMouse.addPointer(location: tester.getCenter(find.widgetWithText(MenuItemButton, 'Unidades')));
+    await flyoutMouse.addPointer(
+      location: tester.getCenter(find.widgetWithText(MenuItemButton, 'Unidades')),
+    );
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),
@@ -203,7 +205,9 @@ void main() {
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer();
     await mouse.moveTo(
-      tester.getCenter(find.byKey(const Key('superadmin-navigation-internal-users'))),
+      tester.getCenter(
+        find.ancestor(of: find.textContaining('internos'), matching: find.byType(MenuItemButton)),
+      ),
     );
     await tester.pumpAndSettle();
     await expectLater(
@@ -240,9 +244,7 @@ void main() {
     await tester.pumpAndSettle();
     final filesMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await filesMouse.addPointer();
-    await filesMouse.moveTo(
-      tester.getCenter(find.byKey(const Key('institution-files-export-csv'))),
-    );
+    await filesMouse.moveTo(tester.getCenter(find.widgetWithText(MenuItemButton, 'Exportar CSV')));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),
@@ -286,7 +288,7 @@ void main() {
     await tester.pumpAndSettle();
     final profileMouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await profileMouse.addPointer();
-    await profileMouse.moveTo(tester.getCenter(find.byKey(const Key('superadmin-logout-action'))));
+    await profileMouse.moveTo(tester.getCenter(find.widgetWithText(MenuItemButton, 'Sair')));
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('institution-directory-golden-root')),

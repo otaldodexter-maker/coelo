@@ -15,9 +15,9 @@ void main() {
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
 
-    final import = find.byKey(const Key('people-files-import'));
-    final csv = find.byKey(const Key('people-files-export-csv'));
-    final xlsx = find.byKey(const Key('people-files-export-xlsx'));
+    final import = find.text('Importar');
+    final csv = find.text('Exportar CSV');
+    final xlsx = find.text('Exportar XLSX');
     expect(import, findsOneWidget);
     expect(csv, findsOneWidget);
     expect(xlsx, findsOneWidget);
@@ -50,7 +50,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('people-files-export-csv')));
+    await tester.tap(find.text('Exportar CSV'));
     await tester.pump(const Duration(milliseconds: 250));
 
     expect(controller.activities.single.subject, 'Pessoas · Atividades');
@@ -62,7 +62,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('people-files-import')));
+    await tester.tap(find.text('Importar'));
     await tester.pumpAndSettle();
     expect(find.text('Importar pessoas'), findsOneWidget);
     expect(find.text('Etapa 1 de 2 · Arquivo'), findsOneWidget);

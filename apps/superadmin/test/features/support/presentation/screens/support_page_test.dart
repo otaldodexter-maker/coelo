@@ -268,10 +268,10 @@ void main() {
     expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('support-files-export-csv')), findsOneWidget);
-    expect(find.byKey(const Key('support-files-export-xlsx')), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('support-files-export-csv')));
+    await tester.tap(find.text('Exportar CSV'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 250));
     expect(find.textContaining('Exportação CSV da lista filtrada'), findsOneWidget);

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../data/fake_institution_directory_repository.dart';
 import '../../data/institution_location_service.dart';
@@ -105,7 +106,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
       controller.markSaved();
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Alterações salvas localmente.')));
+      ).showSnackBar(const SnackBar(content: Text('Alterações salvas.')));
       return;
     }
     widget.onSaved(InstitutionFormSaveResult.created);
@@ -122,37 +123,37 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   @override
   Widget build(BuildContext context) {
     final title = widget.institutionId == null ? 'Criar instituição' : 'Editar instituição';
-    return LayoutBuilder(
-      builder: (context, constraints) => SuperadminShell(
-        logout: widget.logout,
-        title: title,
-        subtitle: widget.institutionId == null
-            ? 'Adicione uma nova instituição ao Coelo.'
-            : 'Atualize os dados da instituição selecionada.',
-        chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-        onDestinationSelected: _selectDestination,
-        child: _missingInstitution
-            ? CoeloStatePanel(
-                key: const Key('institution-form-not-found'),
-                title: 'Instituição não encontrada',
-                message: 'O registro solicitado não existe nesta sessão local.',
-                icon: Icons.search_off_rounded,
-                actionLabel: 'Voltar às instituições',
-                onAction: widget.onCancel,
-              )
-            : _FormBody(
-                controller: _controller!,
-                onCancel: _requestExit,
-                onSave: _save,
-                locationService: _locationService,
-                imagePicker: widget.imagePicker ?? pickInstitutionLogo,
-                onFooterHeightChanged: (height) {
-                  if (_footerHeight > 0) return;
-                  setState(() => _footerHeight = height);
-                },
-                desktopNavigation: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
-              ),
-      ),
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    return SuperadminShell(
+      logout: widget.logout,
+      title: title,
+      subtitle: widget.institutionId == null
+          ? 'Adicione uma nova instituição ao Coelo.'
+          : 'Atualize os dados da instituição selecionada.',
+      showChatLauncher: _missingInstitution || _footerHeight > 0,
+      chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
+      onDestinationSelected: _selectDestination,
+      child: _missingInstitution
+          ? CoeloStatePanel(
+              key: const Key('institution-form-not-found'),
+              title: 'Instituição não encontrada',
+              message: 'O registro solicitado não foi encontrado.',
+              icon: Icons.search_off_rounded,
+              actionLabel: 'Voltar às instituições',
+              onAction: widget.onCancel,
+            )
+          : _FormBody(
+              controller: _controller!,
+              onCancel: _requestExit,
+              onSave: _save,
+              locationService: _locationService,
+              imagePicker: widget.imagePicker ?? pickInstitutionLogo,
+              onFooterHeightChanged: (height) {
+                if ((_footerHeight - height).abs() < .5 || !mounted) return;
+                setState(() => _footerHeight = height);
+              },
+              viewportWidth: viewportWidth,
+            ),
     );
   }
 }
@@ -165,7 +166,7 @@ final class _FormBody extends StatelessWidget {
     required this.locationService,
     required this.imagePicker,
     required this.onFooterHeightChanged,
-    required this.desktopNavigation,
+    required this.viewportWidth,
   });
 
   final InstitutionFormController controller;
@@ -174,7 +175,7 @@ final class _FormBody extends StatelessWidget {
   final InstitutionLocationService locationService;
   final InstitutionLogoPicker imagePicker;
   final ValueChanged<double> onFooterHeightChanged;
-  final bool desktopNavigation;
+  final double viewportWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -188,78 +189,21 @@ final class _FormBody extends StatelessWidget {
               onCancel();
             }
           },
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final desktop = desktopNavigation;
-              final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-                  ? CoeloSpacing.space10
-                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                  ? CoeloSpacing.space6
-                  : CoeloSpacing.space4;
-              final navigation = InstitutionFormNavigation(controller: controller);
-              final content = Expanded(
-                child: Column(
-                  children: [
-                    if (!desktop) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
-                    Expanded(
-                      child: SingleChildScrollView(
-                        key: const Key('institution-form-scroll'),
-                        padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 880),
-                            child: AnimatedSwitcher(
-                              duration: MediaQuery.disableAnimationsOf(context)
-                                  ? Duration.zero
-                                  : CoeloMotion.short,
-                              transitionBuilder: (child, animation) => FadeTransition(
-                                opacity: animation,
-                                child: SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(0.025, 0),
-                                    end: Offset.zero,
-                                  ).animate(animation),
-                                  child: child,
-                                ),
-                              ),
-                              child: KeyedSubtree(
-                                key: ValueKey(controller.currentStep),
-                                child: InstitutionFormSection(
-                                  controller: controller,
-                                  locationService: locationService,
-                                  imagePicker: imagePicker,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    _FormFooter(
-                      controller: controller,
-                      onCancel: onCancel,
-                      onSave: onSave,
-                      onHeightChanged: onFooterHeightChanged,
-                    ),
-                  ],
-                ),
-              );
-              return Padding(
-                padding: EdgeInsets.fromLTRB(
-                  contentInset,
-                  contentInset,
-                  contentInset,
-                  CoeloSpacing.space4,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (desktop) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-                    content,
-                  ],
-                ),
-              );
-            },
+          child: SuperadminFormFrame(
+            viewportWidth: viewportWidth,
+            navigation: InstitutionFormNavigation(controller: controller),
+            scrollKey: const Key('institution-form-scroll'),
+            body: InstitutionFormSection(
+              controller: controller,
+              locationService: locationService,
+              imagePicker: imagePicker,
+            ),
+            footer: _FormFooter(
+              controller: controller,
+              onCancel: onCancel,
+              onSave: onSave,
+              onHeightChanged: onFooterHeightChanged,
+            ),
           ),
         );
       },

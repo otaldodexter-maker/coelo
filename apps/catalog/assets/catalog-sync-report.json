@@ -47,8 +47,12 @@
       "example": "07a3c792"
     },
     "admin.file-actions": {
-      "source": "b19a0ac0",
-      "example": "1a9de0e2"
+      "source": "6b3f3794",
+      "example": "a5c70196"
+    },
+    "admin.flyout": {
+      "source": "a46bc4fa",
+      "example": "90e01a37"
     },
     "admin.resizable-table": {
       "source": "eeab67fc",

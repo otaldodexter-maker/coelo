@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/features/institutions/presentation/screens/inst
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_logo_picker.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_form_navigation.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -32,12 +33,14 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
-    await tester.pump();
 
     final footer = find.byType(SuperadminFormActionFooter);
     final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
     expect(footer, findsOneWidget);
+    expect(launcher, findsNothing);
+
+    await tester.pump();
+
     expect(launcher, findsOneWidget);
     expect(
       tester.getBottomLeft(launcher).dy,
@@ -186,14 +189,21 @@ void main() {
     expect(find.byKey(const Key('institution-field-profileBio')), findsOneWidget);
     expect(find.text('0/220'), findsOneWidget);
     expect(find.byKey(const Key('institution-bio-emoji-picker')), findsOneWidget);
-    expect(find.byKey(const Key('institution-bio-emoji-palette')), findsNothing);
+    expect(find.byType(PopupMenuButton<String>), findsNothing);
+    expect(
+      find.ancestor(
+        of: find.byKey(const Key('institution-bio-emoji-picker')),
+        matching: find.byType(CoeloAdminFlyout<String>),
+      ),
+      findsOneWidget,
+    );
     await tester.enterText(find.byKey(const Key('institution-field-profileBio')), 'Olá mundo');
     final bio = tester.widget<TextFormField>(find.byKey(const Key('institution-field-profileBio')));
     bio.controller!.selection = const TextSelection.collapsed(offset: 4);
     await tester.tap(find.byKey(const Key('institution-bio-emoji-picker')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('institution-bio-emoji-palette')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('institution-bio-emoji-0')));
+    expect(find.text('😊'), findsOneWidget);
+    await tester.tap(find.text('😊'));
     await tester.pumpAndSettle();
     expect(bio.controller!.text, 'Olá 😊mundo');
     expect(find.text('10/220'), findsOneWidget);
@@ -201,6 +211,30 @@ void main() {
       expect(find.byKey(Key('institution-field-link${index}Label')), findsOneWidget);
       expect(find.byKey(Key('institution-field-link${index}Url')), findsOneWidget);
     }
+  });
+
+  testWidgets('emoji flyout closes with Escape', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.tap(find.byKey(const Key('institution-form-continue')));
+    await tester.pumpAndSettle();
+    final trigger = find.byKey(const Key('institution-bio-emoji-picker'));
+    await tester.tap(trigger);
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Inserir 😊 na bio'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Inserir 😊 na bio'), findsNothing);
   });
 
   testWidgets('separates address from basic contact with the approved fields', (tester) async {
@@ -798,10 +832,9 @@ void main() {
   });
 
   testWidgets('legacy edit cannot save until it has an administrator', (tester) async {
+    _useViewport(tester, const Size(1440, 1000));
     final repository = FakeInstitutionDirectoryRepository();
     var savedCallbackCalls = 0;
-    await tester.binding.setSurfaceSize(const Size(1440, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -813,12 +846,15 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.enterText(
       find.byKey(const Key('institution-field-brandDisplayName')),
       'Aurora atualizado',
     );
-    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    final saveCurrent = find.byKey(const Key('institution-form-save-current'));
+    await tester.ensureVisible(saveCurrent);
+    await tester.tap(saveCurrent);
     await tester.pumpAndSettle();
 
     expect(find.text('Administradores'), findsWidgets);
@@ -826,11 +862,18 @@ void main() {
       repository.findById('demo-institution-aurora')!.brandDisplayName,
       isNot('Aurora atualizado'),
     );
-    await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
+    final confirmAdministrators = find.byKey(
+      const Key('institution-confirm-representative-administrators'),
+    );
+    await tester.ensureVisible(confirmAdministrators);
+    await tester.tap(confirmAdministrators);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-form-save-current')));
+    await tester.ensureVisible(saveCurrent);
+    await tester.tap(saveCurrent);
     await tester.pumpAndSettle();
 
+    expect(find.text('Alterações salvas.'), findsOneWidget);
+    expect(find.textContaining('local'), findsNothing);
     expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
     expect(repository.findById('demo-institution-aurora')!.administrators, hasLength(1));
     expect(savedCallbackCalls, 0);
@@ -840,8 +883,7 @@ void main() {
   });
 
   testWidgets('edit footer keeps save as the only primary action at both widths', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    _useViewport(tester, const Size(1440, 1000));
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -860,7 +902,7 @@ void main() {
     expect(tester.widget<Widget>(continueAction), isA<OutlinedButton>());
     expect(tester.getCenter(save).dx, greaterThan(tester.getCenter(continueAction).dx));
 
-    await tester.binding.setSurfaceSize(const Size(375, 900));
+    tester.view.physicalSize = const Size(375, 900);
     await tester.pumpAndSettle();
 
     expect(tester.widget<Widget>(save), isA<FilledButton>());
@@ -1180,8 +1222,7 @@ void main() {
   });
 
   testWidgets('person dialog reveals required errors after submit attempt', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(375, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    _useViewport(tester, const Size(375, 900));
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -1219,8 +1260,7 @@ void main() {
   testWidgets('plan omits justification and exit actions split the dialog width equally', (
     tester,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    _useViewport(tester, const Size(1440, 1000));
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -1232,6 +1272,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     await tester.enterText(
       find.byKey(const Key('institution-field-brandDisplayName')),
@@ -1241,7 +1282,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Justificativa'), findsNothing);
 
-    await tester.tap(find.byKey(const Key('institution-form-cancel')));
+    final cancel = find.byKey(const Key('institution-form-cancel'));
+    await tester.ensureVisible(cancel);
+    await tester.tap(cancel);
     await tester.pumpAndSettle();
     expect(
       tester.getSize(find.widgetWithText(OutlinedButton, 'Continuar editando')).width,
@@ -1308,6 +1351,7 @@ void main() {
   });
 
   testWidgets('dirty exit dialog follows the neutral popup and red close contract', (tester) async {
+    _useViewport(tester, const Size(1440, 1000));
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -1318,11 +1362,14 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
     await tester.enterText(
       find.byKey(const Key('institution-field-brandDisplayName')),
       'Instituição em edição',
     );
-    await tester.tap(find.byKey(const Key('institution-form-cancel')));
+    final cancel = find.byKey(const Key('institution-form-cancel'));
+    await tester.ensureVisible(cancel);
+    await tester.tap(cancel);
     await tester.pumpAndSettle();
 
     final dialog = tester.widget<Dialog>(find.byKey(const Key('institution-confirm-exit-dialog')));
@@ -1340,7 +1387,7 @@ void main() {
   });
 
   testWidgets('review edit action returns directly to the selected section', (tester) async {
-    tester.view.physicalSize = const Size(375, 900);
+    tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
@@ -1355,9 +1402,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byTooltip('Selecionar etapa'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Revisão').last);
+    await tester.tap(find.byKey(const Key('institution-step-review')));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.byKey(const Key('institution-review-edit-branding')),
@@ -1371,7 +1416,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-field-brandDisplayName')), findsOneWidget);
-    expect(find.text('Etapa 1 de 7'), findsOneWidget);
+    expect(find.byKey(const Key('institution-step-branding')), findsOneWidget);
   });
 
   testWidgets('renders approved breakpoints without overflow', (tester) async {
@@ -1439,6 +1484,7 @@ void main() {
 
     expect(MediaQuery.sizeOf(tester.element(find.byType(InstitutionFormPage))).width, 1440);
     expect(tester.getSize(find.byType(InstitutionFormNavigation)).width, 248);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
   });
 
   testWidgets('supports 200 percent text on the mobile layout', (tester) async {
@@ -1460,11 +1506,20 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Etapa 1 de 7'), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(InstitutionFormNavigation),
+        matching: find.byType(MenuAnchor),
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets('uses the neutral dialog surface in dark mode and Escape keeps editing', (
     tester,
   ) async {
+    _useViewport(tester, const Size(1440, 1000));
     var canceled = false;
     await tester.pumpWidget(
       _app(
@@ -1477,11 +1532,14 @@ void main() {
         brightness: Brightness.dark,
       ),
     );
+    await tester.pumpAndSettle();
     await tester.enterText(
       find.byKey(const Key('institution-field-brandDisplayName')),
       'Instituição em edição',
     );
-    await tester.tap(find.byKey(const Key('institution-form-cancel')));
+    final cancel = find.byKey(const Key('institution-form-cancel'));
+    await tester.ensureVisible(cancel);
+    await tester.tap(cancel);
     await tester.pumpAndSettle();
 
     final dialog = tester.widget<Dialog>(find.byKey(const Key('institution-confirm-exit-dialog')));
@@ -1491,6 +1549,110 @@ void main() {
 
     expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsNothing);
     expect(canceled, isFalse);
+  });
+
+  testWidgets('keeps the 248 px lateral rail at 768 and 1024', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [768.0, 1024.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        _app(
+          InstitutionFormPage(
+            key: ValueKey(width),
+            repository: FakeInstitutionDirectoryRepository(),
+            logout: _logout,
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final railRect = tester.getRect(find.byType(InstitutionFormNavigation));
+      final footerRect = tester.getRect(find.byKey(const Key('institution-form-footer-surface')));
+      expect(railRect.width, 248, reason: 'rail at ${width.toInt()} px');
+      expect(find.text('Etapa 1 de 7'), findsNothing);
+      expect(
+        footerRect.left,
+        greaterThanOrEqualTo(railRect.right + CoeloSpacing.space6),
+        reason: 'footer after rail at ${width.toInt()} px',
+      );
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('changes steps without a visible content transition', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('institution-form-scroll')),
+        matching: find.byType(SlideTransition),
+      ),
+      findsNothing,
+    );
+    expect(find.byKey(const Key('institution-field-brandDisplayName')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('institution-step-profile')));
+    await tester.pump();
+    expect(find.byKey(const Key('institution-field-legalName')), findsOneWidget);
+    expect(find.byKey(const Key('institution-field-brandDisplayName')), findsNothing);
+  });
+
+  testWidgets('keeps the medium lateral rail with 200 percent text', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: FakeInstitutionDirectoryRepository(),
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+        textScaler: const TextScaler.linear(2),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(InstitutionFormNavigation)).width, 248);
+    expect(find.text('Etapa 1 de 7'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('supports 200 percent text on wide form breakpoints', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 1000));
+      await tester.pumpWidget(
+        _app(
+          InstitutionFormPage(
+            key: ValueKey(width),
+            repository: FakeInstitutionDirectoryRepository(),
+            logout: _logout,
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+          textScaler: const TextScaler.linear(2),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSize(find.byType(InstitutionFormNavigation)).width,
+        248,
+        reason: 'rail at ${width.toInt()} px with 200 percent text',
+      );
+      expect(find.text('Etapa 1 de 7'), findsNothing);
+      expect(tester.takeException(), isNull);
+    }
   });
 }
 
@@ -1519,6 +1681,17 @@ Widget _app(
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
+
+void _useViewport(WidgetTester tester, Size size) {
+  tester.view
+    ..physicalSize = size
+    ..devicePixelRatio = 1;
+  addTearDown(() {
+    tester.view
+      ..resetPhysicalSize()
+      ..resetDevicePixelRatio();
+  });
+}
 
 Future<void> _useDesktopSurface(WidgetTester tester) async {
   await tester.binding.setSurfaceSize(const Size(1440, 1100));

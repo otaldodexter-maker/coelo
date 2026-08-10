@@ -211,7 +211,7 @@ void main() {
 
     await tester.tap(find.text('Arquivos'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('health-care-files-export-csv')));
+    await tester.tap(find.text('Exportar CSV'));
     await tester.pumpAndSettle();
 
     expect(activityController.activities, hasLength(1));

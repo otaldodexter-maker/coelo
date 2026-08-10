@@ -18,9 +18,43 @@ import '../features/institutions/domain/institution_directory_repository.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
+
 import '../features/access_profiles/domain/access_profile.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
+
+const _instantPageTransitions = PageTransitionsTheme(
+  builders: {
+    TargetPlatform.android: _InstantPageTransitionsBuilder(),
+    TargetPlatform.fuchsia: _InstantPageTransitionsBuilder(),
+    TargetPlatform.iOS: _InstantPageTransitionsBuilder(),
+    TargetPlatform.linux: _InstantPageTransitionsBuilder(),
+    TargetPlatform.macOS: _InstantPageTransitionsBuilder(),
+    TargetPlatform.windows: _InstantPageTransitionsBuilder(),
+  },
+);
+
+final _superadminLightTheme = CoeloTheme.light.copyWith(
+  scaffoldBackgroundColor: CoeloTheme.light.colorScheme.surface,
+  pageTransitionsTheme: _instantPageTransitions,
+);
+final _superadminDarkTheme = CoeloTheme.dark.copyWith(
+  scaffoldBackgroundColor: CoeloTheme.dark.colorScheme.surface,
+  pageTransitionsTheme: _instantPageTransitions,
+);
+
+final class _InstantPageTransitionsBuilder extends PageTransitionsBuilder {
+  const _InstantPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => child;
+}
 
 class SuperadminApp extends StatefulWidget {
   const SuperadminApp({
@@ -117,8 +151,8 @@ class _SuperadminAppState extends State<SuperadminApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: CoeloTheme.light,
-      darkTheme: CoeloTheme.dark,
+      theme: _superadminLightTheme,
+      darkTheme: _superadminDarkTheme,
       themeMode: _preferencesController.preferences.themeMode,
       themeAnimationStyle: reduceMotion
           ? AnimationStyle.noAnimation

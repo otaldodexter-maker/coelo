@@ -24,6 +24,8 @@ void main() {
     );
     expect(app.theme?.colorScheme.primary, CoeloPalette.orange500);
     expect(app.darkTheme?.colorScheme.primary, CoeloPalette.orange300);
+    expect(app.theme?.scaffoldBackgroundColor, app.theme?.colorScheme.surface);
+    expect(app.darkTheme?.scaffoldBackgroundColor, app.darkTheme?.colorScheme.surface);
     expect(
       app.theme?.dataTableTheme.dataRowColor?.resolve(<WidgetState>{WidgetState.hovered}),
       app.theme?.colorScheme.primaryContainer,
@@ -35,6 +37,35 @@ void main() {
       tester.widget<SuperadminThemeModeScope>(find.byType(SuperadminThemeModeScope)).mode,
       ThemeMode.system,
     );
+  });
+
+  testWidgets('uses instantaneous page transitions on every target platform in light and dark', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      SuperadminApp(userPreferencesRepository: InMemoryUserPreferencesRepository()),
+    );
+    await tester.pumpAndSettle();
+
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    final context = tester.element(find.text('Acesse sua conta'));
+    const child = SizedBox(key: Key('instant-page-child'));
+    final route = MaterialPageRoute<void>(builder: (_) => child);
+    addTearDown(route.dispose);
+
+    for (final theme in [app.theme!, app.darkTheme!]) {
+      for (final platform in TargetPlatform.values) {
+        final builder = theme.pageTransitionsTheme.builders[platform]!;
+        final result = builder.buildTransitions<void>(
+          route,
+          context,
+          const AlwaysStoppedAnimation<double>(0.5),
+          const AlwaysStoppedAnimation<double>(0.25),
+          child,
+        );
+        expect(result, same(child), reason: '${theme.brightness} transition on $platform');
+      }
+    }
   });
 
   testWidgets('disables the global theme transition when reduced motion is requested', (

@@ -1361,7 +1361,7 @@ final class _PlanSection extends StatelessWidget {
     final confirmed = await showInstitutionSubscriptionDialog(
       context,
       title: 'Trocar para o plano ${value.label}?',
-      message: 'A nova seleção será aplicada localmente ao salvar as alterações.',
+      message: 'A nova seleção será aplicada ao salvar as alterações.',
     );
     if (!confirmed) {
       return;
@@ -1381,7 +1381,7 @@ final class _PlanSection extends StatelessWidget {
       context,
       title:
           '${_subscriptionActionLabel(value, current: controller.subscriptionStatus)} assinatura?',
-      message: 'Esta ação atualiza somente o protótipo local até o salvamento.',
+      message: 'Esta ação será aplicada ao salvar as alterações.',
     );
     if (!confirmed) {
       return;
@@ -1666,38 +1666,22 @@ final class _BioField extends StatelessWidget {
         const SizedBox(height: CoeloSpacing.space2),
         Row(
           children: [
-            PopupMenuButton<String>(
-              key: const Key('institution-bio-emoji-picker'),
-              tooltip: 'Selecionar emoji para a bio',
-              color: Theme.of(context).colorScheme.surface,
-              surfaceTintColor: Colors.transparent,
-              icon: const Icon(Icons.sentiment_satisfied_alt_outlined),
-              onSelected: controller.insertProfileBioEmoji,
-              itemBuilder: (context) => [
-                PopupMenuItem<String>(
-                  enabled: false,
-                  padding: const EdgeInsets.all(CoeloSpacing.space2),
-                  child: Semantics(
-                    label: 'Emojis para a bio',
-                    child: Wrap(
-                      key: const Key('institution-bio-emoji-palette'),
-                      spacing: CoeloSpacing.space1,
-                      runSpacing: CoeloSpacing.space1,
-                      children: [
-                        for (var index = 0; index < emojis.length; index++)
-                          IconButton(
-                            key: Key('institution-bio-emoji-$index'),
-                            tooltip: 'Inserir ${emojis[index]}',
-                            onPressed: () {
-                              Navigator.of(context).pop(emojis[index]);
-                            },
-                            icon: Text(emojis[index]),
-                          ),
-                      ],
-                    ),
+            CoeloAdminFlyout<String>(
+              items: [
+                for (final emoji in emojis)
+                  CoeloAdminFlyoutItem<String>(
+                    value: emoji,
+                    label: emoji,
+                    semanticLabel: 'Inserir $emoji na bio',
                   ),
-                ),
               ],
+              onSelected: controller.insertProfileBioEmoji,
+              builder: (context, menu) => IconButton(
+                key: const Key('institution-bio-emoji-picker'),
+                tooltip: 'Selecionar emoji para a bio',
+                onPressed: () => menu.isOpen ? menu.close() : menu.open(),
+                icon: const Icon(Icons.sentiment_satisfied_alt_outlined),
+              ),
             ),
             const Spacer(),
             Semantics(

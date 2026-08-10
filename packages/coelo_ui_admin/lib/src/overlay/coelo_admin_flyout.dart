@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 enum CoeloAdminFlyoutTone { standard, negative }
@@ -30,7 +33,7 @@ final class CoeloAdminFlyoutItem<T> {
 /// Canonical Coelo flyout used by administrative menus and local actions.
 ///
 /// Negative actions always use the semantic error palette, including hover.
-final class CoeloAdminFlyout<T> extends StatelessWidget {
+final class CoeloAdminFlyout<T> extends StatefulWidget {
   const CoeloAdminFlyout({
     required this.items,
     required this.onSelected,
@@ -47,42 +50,128 @@ final class CoeloAdminFlyout<T> extends StatelessWidget {
   final Offset alignmentOffset;
 
   @override
+  State<CoeloAdminFlyout<T>> createState() => _CoeloAdminFlyoutState<T>();
+}
+
+final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
+  final MenuController _menuController = MenuController();
+  FocusNode? _returnFocusNode;
+  bool _restoreFocusOnClose = false;
+
+  void _handleOpen() {
+    _returnFocusNode = FocusManager.instance.primaryFocus;
+    _restoreFocusOnClose = false;
+    FocusManager.instance.addEarlyKeyEventHandler(_handleKeyEvent);
+  }
+
+  void _handleClose() {
+    final returnFocusNode = _returnFocusNode;
+    final restoreFocus = _restoreFocusOnClose;
+    _restoreFocusOnClose = false;
+    _returnFocusNode = null;
+    FocusManager.instance.removeEarlyKeyEventHandler(_handleKeyEvent);
+    if (!restoreFocus ||
+        returnFocusNode == null ||
+        returnFocusNode.context == null ||
+        !returnFocusNode.canRequestFocus) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && returnFocusNode.context != null && returnFocusNode.canRequestFocus) {
+        returnFocusNode.requestFocus();
+      }
+    });
+  }
+
+  KeyEventResult _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+      _restoreFocusOnClose = true;
+      _menuController.close();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.removeEarlyKeyEventHandler(_handleKeyEvent);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final mediaQuery = MediaQuery.of(context);
     final radius = BorderRadius.circular(CoeloRadius.lg);
-    final panelWidth = itemWidth + (CoeloSpacing.space2 * 2);
-
-    return MenuAnchor(
-      alignmentOffset: alignmentOffset,
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-        elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-        minimumSize: WidgetStatePropertyAll(Size(panelWidth, 0)),
-        maximumSize: WidgetStatePropertyAll(Size(panelWidth, double.infinity)),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: radius,
-            side: BorderSide(color: colors.outlineVariant),
+    const panelPadding = CoeloSpacing.space2 * 2;
+    final safeLeft = math.max(mediaQuery.padding.left, mediaQuery.viewPadding.left);
+    final safeTop = math.max(mediaQuery.padding.top, mediaQuery.viewPadding.top);
+    final safeRight = math.max(mediaQuery.padding.right, mediaQuery.viewPadding.right);
+    final safeBottom = math.max(mediaQuery.padding.bottom, mediaQuery.viewPadding.bottom);
+    final desiredPanelWidth = widget.itemWidth + panelPadding;
+    final availablePanelWidth = math.max(
+      0.0,
+      mediaQuery.size.width - safeLeft - safeRight - (CoeloSpacing.space2 * 2),
+    );
+    final panelWidth = math.min(desiredPanelWidth, availablePanelWidth);
+    final effectiveItemWidth = math.max(0.0, panelWidth - panelPadding);
+    final overlayPadding = EdgeInsets.fromLTRB(
+      safeLeft + CoeloSpacing.space2,
+      safeTop + CoeloSpacing.space2,
+      safeRight + CoeloSpacing.space2,
+      safeBottom + CoeloSpacing.space2,
+    );
+    final reservedPadding = EdgeInsets.fromLTRB(
+      math.max(safeLeft + CoeloSpacing.space2, CoeloSpacing.space4),
+      math.max(safeTop + CoeloSpacing.space2, CoeloSpacing.space4),
+      math.max(safeRight + CoeloSpacing.space2, CoeloSpacing.space4),
+      math.max(safeBottom + CoeloSpacing.space2, CoeloSpacing.space4),
+    );
+    final effectiveAlignmentOffset = Offset(
+      widget.alignmentOffset.dx - safeRight - CoeloSpacing.space1,
+      widget.alignmentOffset.dy,
+    );
+    return MediaQuery(
+      data: mediaQuery.copyWith(padding: overlayPadding),
+      child: MenuAnchor(
+        controller: _menuController,
+        useRootOverlay: false,
+        crossAxisUnconstrained: false,
+        onOpen: _handleOpen,
+        onClose: _handleClose,
+        reservedPadding: reservedPadding,
+        alignmentOffset: effectiveAlignmentOffset,
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(colors.surface),
+          surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+          elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
+          padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+          minimumSize: WidgetStatePropertyAll(Size(panelWidth, 0)),
+          maximumSize: WidgetStatePropertyAll(Size(panelWidth, double.infinity)),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: radius,
+              side: BorderSide(color: colors.outlineVariant),
+            ),
           ),
         ),
-      ),
-      menuChildren: [
-        for (var index = 0; index < items.length; index++) ...[
-          if (index > 0 && !items[index].startsGroup) const SizedBox(height: CoeloSpacing.space1),
-          if (items[index].startsGroup)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
-              child: Divider(height: 1, color: colors.outlineVariant),
+        menuChildren: [
+          for (var index = 0; index < widget.items.length; index++) ...[
+            if (index > 0 && !widget.items[index].startsGroup)
+              const SizedBox(height: CoeloSpacing.space1),
+            if (widget.items[index].startsGroup)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                child: Divider(height: 1, color: colors.outlineVariant),
+              ),
+            SizedBox(
+              width: effectiveItemWidth,
+              child: _FlyoutMenuItem<T>(item: widget.items[index], onSelected: widget.onSelected),
             ),
-          SizedBox(
-            width: itemWidth,
-            child: _FlyoutMenuItem<T>(item: items[index], onSelected: onSelected),
-          ),
+          ],
         ],
-      ],
-      builder: (context, controller, child) => builder(context, controller),
+        builder: (context, controller, child) => widget.builder(context, controller),
+      ),
     );
   }
 }
@@ -124,6 +213,7 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
             if (!item.enabled) return colors.onSurface.withValues(alpha: 0.38);
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed) ||
                 item.selected) {
               return hoverForeground;
             }
@@ -132,6 +222,7 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed) ||
                 item.selected) {
               return hoverBackground;
             }

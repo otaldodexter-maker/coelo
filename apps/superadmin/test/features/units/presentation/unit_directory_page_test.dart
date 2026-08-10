@@ -300,7 +300,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('unit-files-import')));
+    await tester.tap(find.text('Importar'));
     await tester.pumpAndSettle();
 
     expect(find.text('Importar unidades'), findsOneWidget);

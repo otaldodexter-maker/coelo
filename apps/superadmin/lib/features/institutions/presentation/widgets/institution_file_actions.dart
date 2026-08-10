@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 
@@ -19,10 +20,6 @@ class InstitutionFileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final compactMenuOffset = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth
-        ? 0.0
-        : -128.0;
     void export(SuperadminExportFormat format) {
       final label = viewLabel;
       activityController.completeDemoExport(
@@ -37,59 +34,31 @@ class InstitutionFileActions extends StatelessWidget {
       );
     }
 
-    Widget constrainCompactMenuItem(Widget item) =>
-        compact ? SizedBox(width: 176, child: item) : item;
-
-    return MenuAnchor(
-      alignmentOffset: Offset(compact ? compactMenuOffset : -80, CoeloSpacing.space2),
-      style: _fileMenuStyle(context, compact: compact),
-      menuChildren: [
-        constrainCompactMenuItem(
-          MenuItemButton(
+    return KeyedSubtree(
+      key: const Key('institution-files-action'),
+      child: CoeloAdminFileActions(
+        compact: compact,
+        actions: [
+          CoeloAdminFileAction(
             key: const Key('institution-files-import'),
-            style: _fileMenuItemStyle(colors),
+            label: 'Importar',
+            icon: Icons.upload_file_outlined,
             onPressed: () => _showImportDialog(context, activityController),
-            leadingIcon: const Icon(Icons.upload_file_outlined),
-            child: const Text('Importar'),
           ),
-        ),
-        constrainCompactMenuItem(
-          MenuItemButton(
+          CoeloAdminFileAction(
             key: const Key('institution-files-export-csv'),
-            style: _fileMenuItemStyle(colors),
+            label: 'Exportar CSV',
+            icon: Icons.table_rows_outlined,
             onPressed: () => export(SuperadminExportFormat.csv),
-            leadingIcon: const Icon(Icons.table_rows_outlined),
-            child: const Text('Exportar CSV'),
           ),
-        ),
-        constrainCompactMenuItem(
-          MenuItemButton(
+          CoeloAdminFileAction(
             key: const Key('institution-files-export-xlsx'),
-            style: _fileMenuItemStyle(colors),
+            label: 'Exportar XLSX',
+            icon: Icons.grid_on_outlined,
             onPressed: () => export(SuperadminExportFormat.xlsx),
-            leadingIcon: const Icon(Icons.grid_on_outlined),
-            child: const Text('Exportar XLSX'),
           ),
-        ),
-      ],
-      builder: (context, controller, child) {
-        void onPressed() => controller.isOpen ? controller.close() : controller.open();
-        if (compact) {
-          return IconButton(
-            key: const Key('institution-files-action'),
-            tooltip: 'Arquivos',
-            style: IconButton.styleFrom(minimumSize: const Size.square(CoeloSize.touchMin)),
-            onPressed: onPressed,
-            icon: const Icon(Icons.folder_open_outlined),
-          );
-        }
-        return OutlinedButton.icon(
-          key: const Key('institution-files-action'),
-          onPressed: onPressed,
-          icon: const Icon(Icons.folder_open_outlined),
-          label: const Text('Arquivos'),
-        );
-      },
+        ],
+      ),
     );
   }
 }
@@ -99,48 +68,10 @@ String _viewFileSuffix(String value) => switch (value) {
   'Agrupado' => 'agrupado',
   'Unidades' => 'unidades',
   'Turmas' => 'turmas',
+  'Grupos' => 'grupos',
   'Cards' => 'cards',
   _ => 'visao',
 };
-
-MenuStyle _fileMenuStyle(BuildContext context, {required bool compact}) {
-  final colors = Theme.of(context).colorScheme;
-  return MenuStyle(
-    alignment: AlignmentDirectional.bottomStart,
-    backgroundColor: WidgetStatePropertyAll(colors.surface),
-    elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
-    padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-    shape: WidgetStatePropertyAll(
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        side: BorderSide(color: colors.outlineVariant),
-      ),
-    ),
-  );
-}
-
-ButtonStyle _fileMenuItemStyle(ColorScheme colors) {
-  return MenuItemButton.styleFrom(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-  ).copyWith(
-    foregroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      return highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    iconColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      return highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    backgroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      return highlighted ? colors.primaryContainer : Colors.transparent;
-    }),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-  );
-}
 
 Future<void> _showImportDialog(BuildContext context, SuperadminActivityController controller) {
   return showDialog<void>(
@@ -151,7 +82,7 @@ Future<void> _showImportDialog(BuildContext context, SuperadminActivityControlle
   );
 }
 
-void _showDemoDownload(BuildContext context, String message) {
+void _showTemplateDownload(BuildContext context, String message) {
   showSuperadminNotice(context, message, icon: Icons.file_download_outlined);
 }
 
@@ -216,16 +147,14 @@ class _InstitutionImportDialogState extends State<_InstitutionImportDialog> {
               const SizedBox(height: CoeloSpacing.space5),
               if (!_reviewing) ...[
                 Text(
-                  'Use o modelo CSV ou XLSX de instituições. Nesta demonstração nenhum arquivo real será enviado.',
+                  'Use o modelo CSV ou XLSX de instituições para preparar o arquivo de importação.',
                   style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
                 OutlinedButton.icon(
                   key: const Key('institution-import-template-export'),
-                  onPressed: () => _showDemoDownload(
-                    noticeContext,
-                    'Modelo XLSX preparado para download demonstrativo.',
-                  ),
+                  onPressed: () =>
+                      _showTemplateDownload(noticeContext, 'Modelo XLSX pronto para download.'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: colors.primary,
                     side: BorderSide(color: colors.primary),

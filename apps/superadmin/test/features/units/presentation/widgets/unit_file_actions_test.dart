@@ -19,7 +19,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('unit-files-export-csv')));
+    await tester.tap(find.text('Exportar CSV'));
     await tester.pump();
 
     expect(controller.activities.single.subject, 'Unidades · Por turmas');

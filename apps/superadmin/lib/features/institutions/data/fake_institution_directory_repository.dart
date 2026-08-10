@@ -492,7 +492,7 @@ InstitutionRecord _record({
     subscriptionStart: DateTime(2026, 1, 15),
     trialEnd: null,
     subscriptionJustification: status == InstitutionStatus.suspended
-        ? 'Revisão operacional demonstrativa.'
+        ? 'Revisão operacional programada.'
         : '',
     brandDisplayName: name,
     hasSimulatedLogo: true,

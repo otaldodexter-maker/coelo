@@ -11,9 +11,9 @@ void main() {
         theme: CoeloTheme.light,
         home: Scaffold(
           body: CoeloAdminFileActions(
+            compact: true,
             actions: [
               CoeloAdminFileAction(
-                key: const Key('export'),
                 label: 'Exportar CSV',
                 icon: Icons.table_rows_outlined,
                 onPressed: () => exports += 1,
@@ -26,16 +26,25 @@ void main() {
 
     final trigger = find.byKey(const Key('coelo-admin-files-action'));
     expect(trigger, findsOneWidget);
+    expect(find.byType(CoeloAdminFlyout<CoeloAdminFileAction>), findsOneWidget);
+    expect(
+      tester
+          .widget<CoeloAdminFlyout<CoeloAdminFileAction>>(
+            find.byType(CoeloAdminFlyout<CoeloAdminFileAction>),
+          )
+          .itemWidth,
+      220,
+    );
     expect(tester.getSize(trigger).height, greaterThanOrEqualTo(CoeloSize.touchMin));
 
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('export')), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
     final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
     expect(anchor.style?.surfaceTintColor?.resolve({}), Colors.transparent);
     expect(anchor.alignmentOffset?.dy, CoeloSpacing.spaceHalf);
 
-    await tester.tap(find.byKey(const Key('export')));
+    await tester.tap(find.text('Exportar CSV'));
     await tester.pump();
     expect(exports, 1);
   });

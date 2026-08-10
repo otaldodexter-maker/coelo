@@ -109,7 +109,7 @@ void main() {
     final searchField = tester.widget<TextField>(find.byType(TextField));
     expect(searchField.decoration?.hintText, 'Buscar por nome');
     expect(searchField.decoration?.hintText, isNot(contains('domínio')));
-    expect(tester.getSize(find.byType(TextField)).width, 216);
+    expect(tester.getSize(find.byType(TextField)).width, greaterThan(216));
     final searchBorder = searchField.decoration!.enabledBorder! as OutlineInputBorder;
     expect(searchBorder.borderRadius.topLeft.x, CoeloRadius.full);
     expect(find.text('Importar instituições'), findsNothing);
@@ -124,11 +124,53 @@ void main() {
     expect(createRequested, isTrue);
   });
 
+  testWidgets('distributes search and filters from the available width', (tester) async {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(_app(pageKey: ValueKey(width)));
+      await tester.pumpAndSettle();
+
+      final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
+      final searchRect = tester.getRect(find.byType(TextField).first);
+      final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
+      final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
+
+      expect(searchRect.left, closeTo(controlsRect.left, 1));
+      if (width == 375) {
+        expect(searchRect.width, closeTo(controlsRect.width, 1));
+        expect(typeRect.width, closeTo(controlsRect.width, 1));
+        expect(stateRect.width, closeTo(controlsRect.width, 1));
+        expect(stateRect.top, greaterThan(typeRect.bottom));
+      } else {
+        expect(typeRect.top, closeTo(stateRect.top, 1));
+        expect(typeRect.width, closeTo(stateRect.width, 1));
+        expect(typeRect.left, closeTo(controlsRect.left, 1));
+        expect(stateRect.right, closeTo(controlsRect.right, 1));
+      }
+      expect(tester.takeException(), isNull, reason: 'filter layout at $width');
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('reduces filter columns when text is scaled to 200 percent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+    await tester.pumpAndSettle();
+
+    final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
+    final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
+    final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
+    expect(typeRect.width, closeTo(controlsRect.width, 1));
+    expect(stateRect.width, closeTo(controlsRect.width, 1));
+    expect(stateRect.top, greaterThan(typeRect.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('filters institutions through the approved exclusive status tabs', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = _RecordingDirectoryRepository(FakeInstitutionDirectoryRepository());
-
     await tester.pumpWidget(_app(repository: repository));
     await tester.pumpAndSettle();
 
@@ -158,6 +200,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size-8')), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-pagination-page-size-9')), findsNothing);
+  });
+
+  testWidgets('uses compact pagination at 375 with text scaled to 200 percent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final semantics = tester.ensureSemantics();
+
+    await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsNothing);
+    expect(find.textContaining('Página 1 de'), findsOneWidget);
+    expect(find.bySemanticsLabel('Página anterior'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Próxima página'));
+    await tester.pumpAndSettle();
+    expect(find.text('Página 2 de 2'), findsOneWidget);
+
+    expect(find.bySemanticsLabel('Próxima página'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    semantics.dispose();
+  });
+
+  testWidgets('keeps canonical pagination at 768', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(768, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps pagination fixed at the bottom while cards scroll', (tester) async {
@@ -231,11 +306,20 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     for (final width in [375.0, 1024.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
-      await tester.pumpWidget(_app(onConversationsOpen: () {}));
-      await tester.pumpAndSettle();
+      await tester.pumpWidget(_app(pageKey: ValueKey(width), onConversationsOpen: () {}));
 
       final footer = find.byKey(const Key('institution-directory-pagination-footer'));
       final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+      expect(footer, findsNothing);
+      expect(launcher, findsOneWidget);
+
+      await tester.pump();
+
+      expect(footer, findsOneWidget);
+      expect(launcher, findsNothing);
+
+      await tester.pump();
+
       expect(footer, findsOneWidget);
       expect(launcher, findsOneWidget);
       expect(
@@ -261,6 +345,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-city-filter')), findsOneWidget);
+    final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
+    final cityRect = tester.getRect(find.byKey(const Key('institution-city-filter')));
+    expect(cityRect.width, closeTo(controlsRect.width, 1));
+
     expect(find.byKey(const Key('institution-district-filter')), findsNothing);
 
     await tester.tap(find.byKey(const Key('institution-city-filter')));
@@ -847,7 +935,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    final menuItem = tester.getRect(find.byKey(const Key('institution-files-import')));
+    final menuItem = tester.getRect(find.widgetWithText(MenuItemButton, 'Importar'));
     expect(menuItem.right, lessThanOrEqualTo(1320 - CoeloSpacing.space4));
   });
 
@@ -861,7 +949,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('institution-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-files-import')));
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Importar'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-demo-file-picker')));
     await tester.pumpAndSettle();
@@ -1196,13 +1284,14 @@ void main() {
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
   });
 
-  testWidgets('hides the page-size selector for empty and no-results states', (tester) async {
+  testWidgets('hides pagination for empty and no-results states', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(_app(repository: FakeInstitutionDirectoryRepository(items: [])));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('institution-directory-pagination-footer')), findsNothing);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
@@ -1215,11 +1304,25 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+    expect(find.byKey(const Key('institution-directory-pagination-footer')), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'no matches');
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('institution-directory-pagination-footer')), findsNothing);
+  });
+
+  testWidgets('hides pagination when a successful page reports zero total count', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final item = demoInstitutionDirectoryItems.first;
+    await tester.pumpWidget(_app(repository: _ZeroTotalCountRepository(item)));
+    await tester.pumpAndSettle();
+
+    expect(find.text(item.publicName), findsWidgets);
+    expect(find.byKey(const Key('institution-directory-pagination-footer')), findsNothing);
   });
 
   testWidgets('centers pagination below cards and table', (tester) async {
@@ -1491,6 +1594,30 @@ Widget _app({
       onConversationsOpen: onConversationsOpen,
     ),
   );
+}
+
+final class _ZeroTotalCountRepository implements InstitutionDirectoryRepository {
+  const _ZeroTotalCountRepository(this.item);
+
+  final InstitutionDirectoryItem item;
+
+  @override
+  Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
+    return domain.InstitutionDirectoryPage(
+      items: [item],
+      totalCount: 0,
+      page: query.page,
+      pageSize: query.pageSize,
+    );
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) async {
+    return InstitutionDirectoryFilterOptions.empty;
+  }
 }
 
 final class _PendingFilterOptionsRepository implements InstitutionDirectoryRepository {

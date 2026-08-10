@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/app/theme/superadmin_theme_mode_scope.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/support/domain/support_ticket.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,15 +76,13 @@ void main() {
       await tester.pumpWidget(configuration.preview());
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
-      expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
-      expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+      expect(find.text('Tour desta tela'), findsOneWidget);
+      expect(find.text('Tour do menu'), findsOneWidget);
+      expect(find.text('Tour completo'), findsOneWidget);
       final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
       final colors = Theme.of(tester.element(find.byType(MenuAnchor))).colorScheme;
-      expect(anchor.style?.elevation?.resolve({}), 4);
-      final screenItem = tester.widget<MenuItemButton>(
-        find.byKey(const Key('superadmin-tour-screen')),
-      );
+      expect(anchor.style?.elevation?.resolve({}), CoeloElevation.level2);
+      final screenItem = tester.widget<MenuItemButton>(_menuItemWithText('Tour desta tela'));
       expect(
         screenItem.style?.backgroundColor?.resolve({WidgetState.hovered}),
         colors.primaryContainer,
@@ -124,6 +123,21 @@ void main() {
         find.byKey(const Key('superadmin-footer-preview')),
         matchesGoldenFile('goldens/superadmin_footer_illustrations_${configuration.name}.png'),
       );
+    }
+  });
+
+  testWidgets('compact light shell uses the semantic surface at mobile and tablet widths', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [375.0, 768.0, 1024.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(_shellApp());
+      await tester.pumpAndSettle();
+
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+      final colors = Theme.of(tester.element(find.byType(Scaffold).first)).colorScheme;
+      expect(scaffold.backgroundColor, colors.surface, reason: 'width $width');
     }
   });
 
@@ -504,21 +518,14 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
     await tester.pumpAndSettle();
-    final flyout = find.byKey(const Key('superadmin-navigation-flyout-structure'));
-    expect(flyout, findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byKey(const Key('superadmin-navigation-section-structure')),
+        matching: find.byType(CoeloAdminFlyout<String>),
+      ),
+      findsOneWidget,
+    );
     expect(find.byType(SnackBar), findsNothing);
-    final triggerRect = tester.getRect(
-      find.byKey(const Key('superadmin-navigation-section-structure')),
-    );
-    final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
-    final flyoutRect = tester.getRect(
-      find.byKey(const Key('superadmin-navigation-flyout-structure')),
-    );
-    const flyoutSurfacePadding = CoeloSpacing.space2;
-    expect(flyoutRect.left, greaterThanOrEqualTo(triggerRect.right));
-    expect(flyoutRect.left, sidebarRect.right + CoeloSpacing.space1);
-    expect(flyoutRect.left - flyoutSurfacePadding, sidebarRect.right - CoeloSpacing.space1);
-    expect((flyoutRect.top - triggerRect.top).abs(), lessThanOrEqualTo(CoeloSpacing.space2));
     final navigationAnchor = tester.widget<MenuAnchor>(
       find
           .ancestor(
@@ -527,36 +534,25 @@ void main() {
           )
           .first,
     );
-    expect(
-      navigationAnchor.alignmentOffset,
-      const Offset(CoeloSpacing.space1, -CoeloSpacing.space1),
-    );
-    expect(navigationAnchor.style?.elevation?.resolve({}), 4);
+    expect(navigationAnchor.alignmentOffset, const Offset(0, -CoeloSpacing.space1));
+    expect(navigationAnchor.style?.elevation?.resolve({}), CoeloElevation.level2);
     expect(navigationAnchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
+    expect(navigationAnchor.style?.minimumSize?.resolve({})?.width, 236);
     expect(find.text('Unidades'), findsOneWidget);
     expect(find.text('Turmas'), findsOneWidget);
-    final units = tester.widget<MenuItemButton>(
-      find.byKey(const Key('superadmin-navigation-units')),
-    );
-    final institutions = tester.widget<MenuItemButton>(
-      find.byKey(const Key('superadmin-navigation-institutions')),
-    );
-    expect(
-      institutions.style?.backgroundColor?.resolve({}),
-      colors.primary.withValues(alpha: 0.10),
-    );
+    expect(find.bySemanticsLabel('Estrutura: Instituições'), findsOneWidget);
+    final units = tester.widget<MenuItemButton>(_menuItemWithText('Unidades'));
+    final institutions = tester.widget<MenuItemButton>(_menuItemWithText('Instituições'));
+    expect(institutions.style?.backgroundColor?.resolve({}), colors.primaryContainer);
     expect(
       institutions.style?.backgroundColor?.resolve({WidgetState.hovered}),
-      colors.primary.withValues(alpha: 0.16),
+      colors.primaryContainer,
     );
     expect(institutions.style?.foregroundColor?.resolve({}), colors.primary);
-    expect(institutions.style?.iconColor?.resolve({}), colors.primary);
     expect(units.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
     expect(units.style?.backgroundColor?.resolve({WidgetState.pressed}), colors.primaryContainer);
     expect(units.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
     expect(units.style?.foregroundColor?.resolve({WidgetState.pressed}), colors.primary);
-    expect(units.style?.iconColor?.resolve({WidgetState.hovered}), colors.primary);
-    expect(units.style?.iconColor?.resolve({WidgetState.pressed}), colors.primary);
     expect(units.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
   });
 
@@ -905,13 +901,9 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-settings-action')), findsOneWidget);
-    expect(
-      tester.getSize(find.byKey(const Key('superadmin-profile-divider-spacing'))).height,
-      CoeloSpacing.space2 + 1,
-    );
-    final logoutButton = find.byKey(const Key('superadmin-logout-action'));
+    expect(find.text('Perfil'), findsOneWidget);
+    expect(find.text('Configurações'), findsOneWidget);
+    final logoutButton = _menuItemWithText('Sair');
     expect(logoutButton, findsOneWidget);
 
     await tester.tap(logoutButton);
@@ -920,12 +912,36 @@ void main() {
     expect(logoutCount, 1);
   });
 
-  testWidgets('uses a soft semantic shadow for profile and tour flyouts', (tester) async {
+  testWidgets('uses canonical flyouts and keeps logout semantically negative', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_shellApp());
 
-    final expectedShadow = CoeloTheme.light.colorScheme.shadow.withValues(alpha: 0.12);
+    expect(find.byType(CoeloAdminFlyout<String>), findsNWidgets(2));
+
+    await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
+    await tester.pumpAndSettle();
+
+    final logout = tester.widget<MenuItemButton>(
+      find.ancestor(of: find.text('Sair'), matching: find.byType(MenuItemButton)),
+    );
+    final colors = CoeloTheme.light.colorScheme;
+    expect(logout.style?.foregroundColor?.resolve({}), colors.error);
+    expect(logout.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.errorContainer);
+
+    await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
+    await tester.pumpAndSettle();
+    expect(find.byType(CoeloAdminFlyout<String>), findsWidgets);
+  });
+
+  testWidgets('uses the canonical surface and elevation for profile and tour flyouts', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_shellApp());
+
+    final colors = CoeloTheme.light.colorScheme;
     for (final triggerKey in const [
       Key('superadmin-profile-menu'),
       Key('superadmin-onboarding-tour'),
@@ -933,8 +949,9 @@ void main() {
       final anchor = tester.widget<MenuAnchor>(
         find.ancestor(of: find.byKey(triggerKey), matching: find.byType(MenuAnchor)).first,
       );
-      expect(anchor.style?.shadowColor?.resolve({}), expectedShadow);
-      expect(anchor.style?.elevation?.resolve({}), 4);
+      expect(anchor.style?.backgroundColor?.resolve({}), colors.surface);
+      expect(anchor.style?.surfaceTintColor?.resolve({}), Colors.transparent);
+      expect(anchor.style?.elevation?.resolve({}), CoeloElevation.level2);
     }
   });
 
@@ -949,13 +966,10 @@ void main() {
       await tester.pumpAndSettle();
 
       final triggerRect = tester.getRect(trigger);
-      final actionRect = tester.getRect(find.byKey(const Key('superadmin-profile-action')));
+      final actionRect = tester.getRect(_menuItemWithText('Perfil'));
       final panelRects =
           find
-              .ancestor(
-                of: find.byKey(const Key('superadmin-profile-action')),
-                matching: find.byType(Material),
-              )
+              .ancestor(of: _menuItemWithText('Perfil'), matching: find.byType(Material))
               .evaluate()
               .map((element) {
                 final box = element.renderObject! as RenderBox;
@@ -968,14 +982,9 @@ void main() {
             );
       expect(panelRects, isNotEmpty);
       final panelRect = panelRects.first;
-      expect(
-        panelRect.right,
-        closeTo(triggerRect.right - CoeloSpacing.space2, 1),
-        reason:
-            'viewport $width, trigger $triggerRect, '
-            'panel $panelRect',
-      );
-      expect(panelRect.left, greaterThanOrEqualTo(0));
+      expect(panelRect.right, lessThanOrEqualTo(triggerRect.right));
+      expect(panelRect.right, lessThanOrEqualTo(width - CoeloSpacing.space2));
+      expect(panelRect.left, greaterThanOrEqualTo(CoeloSpacing.space2));
       expect(panelRect.bottom, lessThanOrEqualTo(800));
 
       await tester.tap(trigger);
@@ -990,15 +999,10 @@ void main() {
     final trigger = find.byKey(const Key('superadmin-profile-menu'));
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    final logout = tester.widget<MenuItemButton>(find.byKey(const Key('superadmin-logout-action')));
-    final profile = tester.widget<MenuItemButton>(
-      find.byKey(const Key('superadmin-profile-action')),
-    );
-    final settings = tester.widget<MenuItemButton>(
-      find.byKey(const Key('superadmin-settings-action')),
-    );
+    final logout = tester.widget<MenuItemButton>(_menuItemWithText('Sair'));
+    final profile = tester.widget<MenuItemButton>(_menuItemWithText('Perfil'));
+    final settings = tester.widget<MenuItemButton>(_menuItemWithText('Configurações'));
     expect(logout.style?.foregroundColor?.resolve({}), CoeloTheme.light.colorScheme.error);
-    expect(logout.style?.iconColor?.resolve({}), CoeloTheme.light.colorScheme.error);
     expect(
       logout.style?.backgroundColor?.resolve({WidgetState.hovered}),
       CoeloTheme.light.colorScheme.errorContainer,
@@ -1010,17 +1014,13 @@ void main() {
         CoeloTheme.light.colorScheme.primary,
       );
       expect(
-        action.style?.iconColor?.resolve({WidgetState.hovered}),
-        CoeloTheme.light.colorScheme.primary,
-      );
-      expect(
         action.style?.backgroundColor?.resolve({WidgetState.hovered}),
         CoeloTheme.light.colorScheme.primaryContainer,
       );
       expect(action.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
     }
     expect(
-      tester.getTopLeft(find.byKey(const Key('superadmin-profile-action'))).dy,
+      tester.getTopLeft(_menuItemWithText('Perfil')).dy,
       greaterThanOrEqualTo(tester.getBottomLeft(trigger).dy),
     );
 
@@ -1079,7 +1079,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-logout-action')));
+    await tester.tap(_menuItemWithText('Sair'));
     await tester.pumpAndSettle();
 
     expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
@@ -1131,7 +1131,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-settings-action')));
+    await tester.tap(_menuItemWithText('Configurações'));
     await tester.pumpAndSettle();
     expect(find.text('Configurações será implementado em breve.'), findsNothing);
   });
@@ -1184,7 +1184,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.widget<IconButton>(notifications).focusNode?.hasPrimaryFocus, isFalse);
-    expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
+    expect(find.text('Perfil'), findsOneWidget);
   });
 
   testWidgets('submits a bug report with current screen, multiline text and demo attachment', (
@@ -1581,12 +1581,12 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+    expect(find.text('Tour desta tela'), findsOneWidget);
+    expect(find.text('Tour do menu'), findsOneWidget);
+    expect(find.text('Tour completo'), findsOneWidget);
 
     await tester.tap(
-      find.byKey(const Key('superadmin-tour-screen')),
+      find.text('Tour desta tela'),
       buttons: kSecondaryMouseButton,
       kind: PointerDeviceKind.mouse,
     );
@@ -1594,11 +1594,11 @@ void main() {
     expect(find.text('O tour desta tela será implementado na etapa final.'), findsNothing);
 
     for (final option in {
-      'superadmin-tour-screen': 'O tour desta tela será implementado na etapa final.',
-      'superadmin-tour-menu': 'O tour do menu será implementado na etapa final.',
-      'superadmin-tour-complete': 'O tour completo será implementado na etapa final.',
+      'Tour desta tela': 'O tour desta tela será implementado na etapa final.',
+      'Tour do menu': 'O tour do menu será implementado na etapa final.',
+      'Tour completo': 'O tour completo será implementado na etapa final.',
     }.entries) {
-      await tester.tap(find.byKey(Key(option.key)));
+      await tester.tap(find.text(option.key));
       await tester.pumpAndSettle();
       expect(find.text(option.value), findsOneWidget);
       await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
@@ -1655,15 +1655,10 @@ void main() {
     var trigger = find.byKey(const Key('superadmin-onboarding-tour'));
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    var firstOption = find.byKey(const Key('superadmin-tour-screen'));
+    var firstOption = _menuItemWithText('Tour desta tela');
     var sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
-    const tourSurfacePadding = CoeloSpacing.space2;
     expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
     expect(tester.getTopLeft(firstOption).dx, sidebarRect.right + CoeloSpacing.space1);
-    expect(
-      tester.getTopLeft(firstOption).dx - tourSurfacePadding,
-      sidebarRect.right - CoeloSpacing.space1,
-    );
     var tourAnchor = tester.widget<MenuAnchor>(
       find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
     );
@@ -1679,14 +1674,10 @@ void main() {
     trigger = find.byKey(const Key('superadmin-onboarding-tour'));
     await tester.tap(trigger);
     await tester.pumpAndSettle();
-    firstOption = find.byKey(const Key('superadmin-tour-screen'));
+    firstOption = _menuItemWithText('Tour desta tela');
     sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
     expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
     expect(tester.getTopLeft(firstOption).dx, sidebarRect.right + CoeloSpacing.space1);
-    expect(
-      tester.getTopLeft(firstOption).dx - tourSurfacePadding,
-      sidebarRect.right - CoeloSpacing.space1,
-    );
     expect(tester.getRect(firstOption).right, lessThanOrEqualTo(1200));
     tourAnchor = tester.widget<MenuAnchor>(
       find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
@@ -1876,4 +1867,8 @@ Future<void> _loadGoldenFonts() async {
   final materialIconsLoader = FontLoader('MaterialIcons')
     ..addFont(Future.value(ByteData.sublistView(materialIcons)));
   await materialIconsLoader.load();
+}
+
+Finder _menuItemWithText(String label) {
+  return find.ancestor(of: find.text(label), matching: find.byType(MenuItemButton));
 }

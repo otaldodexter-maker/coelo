@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +24,7 @@ const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
-const _compactProfileMenuWidth = 176.0;
+const _compactProfileMenuWidth = 236.0;
 const _compactProfileTriggerWidth = 52.0;
 const _coeloMotionCurve = Curves.easeInOut;
 
@@ -156,6 +157,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
         if (!isDesktop) {
           if (widget.isHost) {
             return Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: _CompactAppBar(
                 onLogout: _handleLogout,
                 onDestinationSelected: widget.onDestinationSelected,
@@ -192,6 +194,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
           }
           return _withChatLauncher(
             Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.surface,
               appBar: _CompactAppBar(
                 onLogout: _handleLogout,
                 onDestinationSelected: widget.onDestinationSelected,
@@ -1090,54 +1093,25 @@ class _CollapsedNavigationSection extends StatelessWidget {
     final hoverColor = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
     return Padding(
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-      child: MenuAnchor(
-        alignmentOffset: const Offset(CoeloSpacing.space1, -CoeloSpacing.space1),
-        style: MenuStyle(
-          alignment: AlignmentDirectional.topEnd,
-          backgroundColor: WidgetStatePropertyAll(colors.surface),
-          elevation: const WidgetStatePropertyAll(4),
-          padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(CoeloRadius.lg),
-              side: BorderSide(color: colors.outlineVariant),
+      child: CoeloAdminFlyout<String>(
+        items: [
+          for (final destination in section.destinations)
+            CoeloAdminFlyoutItem<String>(
+              value: destination.id,
+              label: destination.label,
+              icon: destination.icon,
+              semanticLabel: '${section.label}: ${destination.label}',
+              selected: destination.id == currentDestination,
             ),
-          ),
-        ),
-        menuChildren: [
-          SizedBox(
-            key: Key('superadmin-navigation-flyout-${section.id}'),
-            width: 220 - CoeloSpacing.space4,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CoeloSpacing.space2,
-                    CoeloSpacing.space1,
-                    CoeloSpacing.space2,
-                    CoeloSpacing.space2,
-                  ),
-                  child: Text(section.label, style: Theme.of(context).textTheme.labelLarge),
-                ),
-                for (final destination in section.destinations)
-                  MenuItemButton(
-                    key: Key('superadmin-navigation-${destination.id}'),
-                    style: _navigationMenuItemStyle(
-                      theme,
-                      active: destination.id == currentDestination,
-                    ),
-                    leadingIcon: Icon(destination.icon),
-                    onPressed: () =>
-                        _handleDestinationTap(context, destination, onDestinationSelected),
-                    child: Text(destination.label),
-                  ),
-              ],
-            ),
-          ),
         ],
-        builder: (context, controller, child) {
+        onSelected: (destinationId) {
+          final destination = section.destinations.firstWhere(
+            (candidate) => candidate.id == destinationId,
+          );
+          _handleDestinationTap(context, destination, onDestinationSelected);
+        },
+        alignmentOffset: const Offset(CoeloSpacing.space1, -CoeloSpacing.space1),
+        builder: (context, controller) {
           final active = section.hasSelectedDestination(currentDestination);
           return Tooltip(
             message: section.label,
@@ -1180,40 +1154,6 @@ class _CollapsedNavigationSection extends StatelessWidget {
       ),
     );
   }
-}
-
-ButtonStyle _navigationMenuItemStyle(ThemeData theme, {required bool active}) {
-  final colors = theme.colorScheme;
-  final visual = theme.extension<CoeloVisualColors>()!;
-  return MenuItemButton.styleFrom(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-  ).copyWith(
-    foregroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed);
-      return active || highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    iconColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed);
-      return active || highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    backgroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed);
-      if (active) {
-        return highlighted ? visual.navigationActiveHover : visual.navigationActive;
-      }
-      return highlighted ? colors.primaryContainer : colors.primaryContainer.withValues(alpha: 0);
-    }),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-  );
 }
 
 void _handleDestinationTap(
@@ -1367,23 +1307,22 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final visual = theme.extension<CoeloVisualColors>()!;
-    final itemStyle = _tourMenuItemStyle(colors);
-    return MenuAnchor(
+    return CoeloAdminFlyout<String>(
+      items: _tourFlyoutItems,
+      onSelected: (selection) {
+        final message = switch (selection) {
+          'screen' => 'O tour desta tela ser\u00e1 implementado na etapa final.',
+          'menu' => 'O tour do menu ser\u00e1 implementado na etapa final.',
+          'complete' => 'O tour completo ser\u00e1 implementado na etapa final.',
+          _ => null,
+        };
+        if (message != null) _showMessage(context, message);
+      },
       alignmentOffset: Offset(
-        widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 : 252 - CoeloSpacing.space1,
+        widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 + CoeloSpacing.space1 : 252,
         -CoeloSize.touchMin,
       ),
-      style: _tourMenuStyle(colors),
-      menuChildren: _tourMenuItems(
-        itemStyle: itemStyle,
-        onScreenSelected: () =>
-            _showMessage(context, 'O tour desta tela será implementado na etapa final.'),
-        onMenuSelected: () =>
-            _showMessage(context, 'O tour do menu será implementado na etapa final.'),
-        onCompleteSelected: () =>
-            _showMessage(context, 'O tour completo será implementado na etapa final.'),
-      ),
-      builder: (context, controller, child) {
+      builder: (context, controller) {
         final content = Material(
           color: Colors.transparent,
           child: InkWell(
@@ -1456,107 +1395,19 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   }
 }
 
-MenuStyle _tourMenuStyle(ColorScheme colors) {
-  return MenuStyle(
-    backgroundColor: WidgetStatePropertyAll(colors.surface),
-    elevation: const WidgetStatePropertyAll(4),
-    shadowColor: WidgetStatePropertyAll(colors.shadow.withValues(alpha: 0.12)),
-    padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-    shape: WidgetStatePropertyAll(
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        side: BorderSide(color: colors.outlineVariant),
-      ),
-    ),
-  );
-}
-
-ButtonStyle _tourMenuItemStyle(ColorScheme colors) {
-  return MenuItemButton.styleFrom(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-  ).copyWith(
-    foregroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed);
-      return highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    iconColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed);
-      return highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    backgroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed);
-      return highlighted ? colors.primaryContainer : Colors.transparent;
-    }),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-  );
-}
-
-List<Widget> _tourMenuItems({
-  required ButtonStyle itemStyle,
-  required VoidCallback onScreenSelected,
-  required VoidCallback onMenuSelected,
-  required VoidCallback onCompleteSelected,
-}) {
-  return [
-    _TourMenuItem(
-      menuItemKey: const Key('superadmin-tour-screen'),
-      style: itemStyle,
-      leadingIcon: const Icon(Icons.web_asset_outlined),
-      onSelected: onScreenSelected,
-      label: 'Tour desta tela',
-    ),
-    _TourMenuItem(
-      menuItemKey: const Key('superadmin-tour-menu'),
-      style: itemStyle,
-      leadingIcon: const Icon(Icons.menu_open_rounded),
-      onSelected: onMenuSelected,
-      label: 'Tour do menu',
-    ),
-    _TourMenuItem(
-      menuItemKey: const Key('superadmin-tour-complete'),
-      style: itemStyle,
-      leadingIcon: const Icon(Icons.play_circle_outline_rounded),
-      onSelected: onCompleteSelected,
-      label: 'Tour completo',
-    ),
-  ];
-}
-
-class _TourMenuItem extends StatelessWidget {
-  const _TourMenuItem({
-    required this.menuItemKey,
-    required this.style,
-    required this.leadingIcon,
-    required this.onSelected,
-    required this.label,
-  });
-
-  final Key menuItemKey;
-  final ButtonStyle style;
-  final Widget leadingIcon;
-  final VoidCallback onSelected;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return MenuItemButton(
-      key: menuItemKey,
-      style: style,
-      leadingIcon: leadingIcon,
-      onPressed: onSelected,
-      child: Text(label),
-    );
-  }
-}
+const _tourFlyoutItems = <CoeloAdminFlyoutItem<String>>[
+  CoeloAdminFlyoutItem<String>(
+    value: 'screen',
+    label: 'Tour desta tela',
+    icon: Icons.web_asset_outlined,
+  ),
+  CoeloAdminFlyoutItem<String>(value: 'menu', label: 'Tour do menu', icon: Icons.menu_open_rounded),
+  CoeloAdminFlyoutItem<String>(
+    value: 'complete',
+    label: 'Tour completo',
+    icon: Icons.play_circle_outline_rounded,
+  ),
+];
 
 class _FlatEggPainter extends CustomPainter {
   const _FlatEggPainter({required this.baseColor, required this.ornamentColor});
@@ -2243,115 +2094,40 @@ class _ProfileSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final standardItemStyle =
-        MenuItemButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-        ).copyWith(
-          foregroundColor: WidgetStateProperty.resolveWith((states) {
-            final highlighted =
-                states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed);
-            return highlighted ? colors.primary : colors.onSurfaceVariant;
-          }),
-          iconColor: WidgetStateProperty.resolveWith((states) {
-            final highlighted =
-                states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed);
-            return highlighted ? colors.primary : colors.onSurfaceVariant;
-          }),
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            return states.contains(WidgetState.hovered) ||
-                    states.contains(WidgetState.focused) ||
-                    states.contains(WidgetState.pressed)
-                ? colors.primaryContainer
-                : Colors.transparent;
-          }),
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        );
-    final logoutStyle =
-        MenuItemButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-        ).copyWith(
-          foregroundColor: WidgetStatePropertyAll(colors.error),
-          iconColor: WidgetStatePropertyAll(colors.error),
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            return states.contains(WidgetState.hovered) ||
-                    states.contains(WidgetState.focused) ||
-                    states.contains(WidgetState.pressed)
-                ? colors.errorContainer
-                : Colors.transparent;
-          }),
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        );
-    final menuItems = <Widget>[
+    final items = <CoeloAdminFlyoutItem<String>>[
       for (final destination in _accountDestinations)
-        MenuItemButton(
-          key: Key('superadmin-${destination.id}-action'),
-          style: standardItemStyle,
-          leadingIcon: Icon(destination.icon),
-          onPressed: () {
-            onDestinationSelected?.call(destination.id);
-            final router = GoRouter.maybeOf(context);
-            final isDevelopmentPreview =
-                router?.routeInformationProvider.value.uri.path.startsWith('/dev/') ?? false;
-            final prefix = isDevelopmentPreview ? '/dev' : '';
-            router?.go('$prefix/${destination.id}');
-          },
-          child: Text(destination.label),
+        CoeloAdminFlyoutItem<String>(
+          value: destination.id,
+          label: destination.label,
+          icon: destination.icon,
         ),
-      const Padding(
-        key: Key('superadmin-profile-divider-spacing'),
-        padding: EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
-        child: _InsetDivider(key: Key('superadmin-profile-divider')),
-      ),
-      MenuItemButton(
-        key: const Key('superadmin-logout-action'),
-        style: logoutStyle,
-        leadingIcon: const Icon(Icons.logout),
-        onPressed: onLogout,
-        child: const Text('Sair'),
+      const CoeloAdminFlyoutItem<String>(
+        value: 'logout',
+        label: 'Sair',
+        icon: Icons.logout,
+        startsGroup: true,
+        tone: CoeloAdminFlyoutTone.negative,
       ),
     ];
-    return MenuAnchor(
-      // Keep the flyout in the overlay's available viewport instead of
-      // constraining its height to the compact header row.
-      crossAxisUnconstrained: true,
-      useRootOverlay: true,
+    return CoeloAdminFlyout<String>(
+      items: items,
+      onSelected: (selection) {
+        if (selection == 'logout') {
+          onLogout();
+          return;
+        }
+        onDestinationSelected?.call(selection);
+        final router = GoRouter.maybeOf(context);
+        final isDevelopmentPreview =
+            router?.routeInformationProvider.value.uri.path.startsWith('/dev/') ?? false;
+        final prefix = isDevelopmentPreview ? '/dev' : '';
+        router?.go('$prefix/$selection');
+      },
       alignmentOffset: Offset(
         compact ? _compactProfileTriggerWidth - _compactProfileMenuWidth : 0,
         CoeloSpacing.space2,
       ),
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(colors.surface),
-        elevation: const WidgetStatePropertyAll(4),
-        shadowColor: WidgetStatePropertyAll(colors.shadow.withValues(alpha: 0.12)),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-        alignment: compact ? AlignmentDirectional.bottomStart : null,
-        minimumSize: compact
-            ? const WidgetStatePropertyAll(Size(_compactProfileMenuWidth, 0))
-            : null,
-        maximumSize: compact
-            ? const WidgetStatePropertyAll(Size(_compactProfileMenuWidth, double.infinity))
-            : null,
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            side: BorderSide(color: colors.outlineVariant),
-          ),
-        ),
-      ),
-      // The compact header can leave a short overlay viewport. Keep the
-      // account actions reachable without forcing the menu's column to
-      // overflow vertically.
-      menuChildren: [
-        SingleChildScrollView(
-          primary: false,
-          child: Column(mainAxisSize: MainAxisSize.min, children: menuItems),
-        ),
-      ],
-      builder: (context, controller, child) {
+      builder: (context, controller) {
         return Tooltip(
           message: 'Abrir menu do usuário',
           child: Material(
@@ -2570,35 +2346,31 @@ class _TourSubmenuPreviewAnchor extends StatefulWidget {
 }
 
 class _TourSubmenuPreviewAnchorState extends State<_TourSubmenuPreviewAnchor> {
-  final _controller = MenuController();
+  MenuController? _controller;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _controller.open();
+        _controller?.open();
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return MenuAnchor(
-      controller: _controller,
-      style: _tourMenuStyle(colors),
-      menuChildren: _tourMenuItems(
-        itemStyle: _tourMenuItemStyle(colors),
-        onScreenSelected: _ignoreTourSelection,
-        onMenuSelected: _ignoreTourSelection,
-        onCompleteSelected: _ignoreTourSelection,
-      ),
-      builder: (context, controller, child) => const SizedBox.square(dimension: CoeloSize.touchMin),
+    return CoeloAdminFlyout<String>(
+      items: _tourFlyoutItems,
+      onSelected: _ignoreTourSelection,
+      builder: (context, controller) {
+        _controller = controller;
+        return const SizedBox.square(dimension: CoeloSize.touchMin);
+      },
     );
   }
 }
 
 void _ignoreThemeMode(ThemeMode mode) {}
 
-void _ignoreTourSelection() {}
+void _ignoreTourSelection(String selection) {}

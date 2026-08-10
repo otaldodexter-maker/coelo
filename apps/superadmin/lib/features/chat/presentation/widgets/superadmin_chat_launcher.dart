@@ -115,6 +115,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     super.initState();
     _controller = SuperadminChatController(superadminChatConversations);
     _ownsPositionController = widget.positionController == null;
+    _controller.addListener(_handleControllerChanged);
     _positionController = widget.positionController ?? SuperadminChatLauncherPositionController();
     _focusNode.addListener(_handleFocus);
     _positionController.addListener(_handlePositionController);
@@ -123,6 +124,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   @override
   void dispose() {
     _entry?.remove();
+    _controller.removeListener(_handleControllerChanged);
     _focusNode
       ..removeListener(_handleFocus)
       ..dispose();
@@ -131,6 +133,10 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     if (_ownsPositionController) _positionController.dispose();
     _positionController.removeListener(_handlePositionController);
     super.dispose();
+  }
+
+  void _handleControllerChanged() {
+    if (mounted) setState(() {});
   }
 
   void _handleFocus() => setState(() => _focused = _focusNode.hasFocus);
@@ -325,7 +331,25 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     _schedulePositionRestore();
     final colors = Theme.of(context).colorScheme;
     final highlighted = _hovered || _focused || _entry != null;
+    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth;
+    final unreadCount = _controller.conversations.fold<int>(
+      0,
+      (total, conversation) => total + conversation.unreadCount,
+    );
+    final unreadLabel = unreadCount == 1
+        ? '1 mensagem não lida'
+        : '$unreadCount mensagens não lidas';
+    final semanticsLabel = unreadCount == 0 ? 'Abrir conversas' : 'Abrir conversas, $unreadLabel';
     final foreground = colors.onPrimary;
+    final shape = compact
+        ? CircleBorder(
+            side: BorderSide(color: highlighted ? colors.primary : colors.outlineVariant),
+          )
+        : StadiumBorder(
+            side: BorderSide(
+              color: highlighted ? colors.onPrimary.withValues(alpha: 0.72) : colors.primary,
+            ),
+          );
     return Transform.translate(
       offset: _positionOffset,
       child: GestureDetector(
@@ -339,46 +363,62 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
             onExit: (_) => setState(() => _hovered = false),
             child: Semantics(
               button: true,
-              label: 'Abrir conversas. 3 mensagens não lidas. Alt mais setas move.',
+              excludeSemantics: true,
+              label: semanticsLabel,
+              onTap: _open,
               child: Material(
                 key: const Key('superadmin-chat-launcher-surface'),
-                color: colors.primary,
-                shape: StadiumBorder(
-                  side: BorderSide(
-                    color: highlighted ? colors.onPrimary.withValues(alpha: 0.72) : colors.primary,
-                  ),
-                ),
+                color: compact ? colors.surface : colors.primary,
+                elevation: compact ? 2 : 0,
+                shadowColor: colors.shadow.withValues(alpha: 0.18),
+                shape: shape,
                 clipBehavior: Clip.none,
                 child: InkWell(
                   focusNode: _focusNode,
                   onTap: _open,
-                  customBorder: const StadiumBorder(),
+                  customBorder: shape,
                   overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minHeight: CoeloSize.touchMin,
-                      minWidth: CoeloSize.touchMin,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Badge(
-                            label: const Text('3'),
-                            child: Icon(Icons.send_outlined, color: foreground),
+                  child: compact
+                      ? SizedBox.square(
+                          dimension: CoeloSize.touchMin,
+                          child: Center(
+                            child: Badge(
+                              isLabelVisible: unreadCount > 0,
+                              label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
+                              backgroundColor: colors.error,
+                              textColor: colors.onError,
+                              child: Icon(Icons.forum_outlined, color: colors.primary),
+                            ),
                           ),
-                          const SizedBox(width: CoeloSpacing.space2),
-                          Text(
-                            'Mensagens',
-                            style: TextStyle(color: foreground, fontWeight: FontWeight.w700),
+                        )
+                      : ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: CoeloSize.touchMin,
+                            minWidth: CoeloSize.touchMin,
                           ),
-                          const SizedBox(width: CoeloSpacing.space2),
-                          _LauncherAvatars(foreground: foreground),
-                        ],
-                      ),
-                    ),
-                  ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Badge(
+                                  isLabelVisible: unreadCount > 0,
+                                  label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
+                                  backgroundColor: colors.error,
+                                  textColor: colors.onError,
+                                  child: Icon(Icons.send_outlined, color: foreground),
+                                ),
+                                const SizedBox(width: CoeloSpacing.space2),
+                                Text(
+                                  'Mensagens',
+                                  style: TextStyle(color: foreground, fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(width: CoeloSpacing.space2),
+                                _LauncherAvatars(foreground: foreground),
+                              ],
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),

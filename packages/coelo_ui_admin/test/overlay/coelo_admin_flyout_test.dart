@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -109,6 +110,121 @@ void main() {
     );
   });
 
+  testWidgets('fits the safe viewport at 200 percent text', (tester) async {
+    tester.view.physicalSize = const Size(200, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(200, 600),
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            textScaler: TextScaler.linear(2),
+          ),
+          child: Scaffold(
+            body: Align(
+              alignment: Alignment.topRight,
+              child: CoeloAdminFlyout<String>(
+                items: const [
+                  CoeloAdminFlyoutItem(value: 'settings', label: 'Configurações da instituição'),
+                ],
+                onSelected: (_) {},
+                builder: (context, controller) =>
+                    TextButton(onPressed: controller.open, child: const Text('Abrir')),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Abrir'));
+    await tester.pumpAndSettle();
+    final anchor = tester.widget<MenuAnchor>(find.byType(MenuAnchor));
+    final itemRect = tester.getRect(find.byType(MenuItemButton));
+    const expectedPanelWidth = 200 - (12 * 2) - (CoeloSpacing.space2 * 2);
+    const expectedItemWidth = expectedPanelWidth - (CoeloSpacing.space2 * 2);
+    expect(anchor.style!.minimumSize!.resolve({})!.width, expectedPanelWidth);
+    expect(anchor.style!.maximumSize!.resolve({})!.width, expectedPanelWidth);
+    expect(itemRect.width, expectedItemWidth);
+    expect(itemRect.left, greaterThanOrEqualTo(12 + CoeloSpacing.space2 * 2));
+    expect(itemRect.right, lessThanOrEqualTo(200 - 12 - CoeloSpacing.space2 * 2));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Escape closes the flyout and restores trigger focus', (tester) async {
+    final triggerFocus = FocusNode();
+    addTearDown(triggerFocus.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminFlyout<String>(
+            items: const [CoeloAdminFlyoutItem(value: 'profile', label: 'Perfil')],
+            onSelected: (_) {},
+            builder: (context, controller) => TextButton(
+              focusNode: triggerFocus,
+              onPressed: controller.open,
+              child: const Text('Abrir'),
+            ),
+          ),
+        ),
+      ),
+    );
+    triggerFocus.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('Perfil'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.text('Perfil'), findsNothing);
+    expect(triggerFocus.hasPrimaryFocus, isTrue);
+  });
+
+  testWidgets('normal selection preserves focus acquired by the destination', (tester) async {
+    final triggerFocus = FocusNode();
+    final destinationFocus = FocusNode();
+    addTearDown(triggerFocus.dispose);
+    addTearDown(destinationFocus.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Column(
+            children: [
+              CoeloAdminFlyout<String>(
+                items: const [CoeloAdminFlyoutItem(value: 'import', label: 'Importar')],
+                onSelected: (_) => destinationFocus.requestFocus(),
+                builder: (context, controller) => TextButton(
+                  focusNode: triggerFocus,
+                  onPressed: controller.open,
+                  child: const Text('Abrir'),
+                ),
+              ),
+              TextButton(
+                focusNode: destinationFocus,
+                onPressed: () {},
+                child: const Text('Destino'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    triggerFocus.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Importar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Importar'), findsNothing);
+    expect(destinationFocus.hasPrimaryFocus, isTrue);
+    expect(triggerFocus.hasPrimaryFocus, isFalse);
+  });
   testWidgets('supports custom icon color with an accessible item label', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

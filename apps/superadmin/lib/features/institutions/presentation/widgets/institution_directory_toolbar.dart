@@ -15,6 +15,8 @@ import 'institution_file_actions.dart';
 
 enum InstitutionDirectoryDisplay { cards, table }
 
+const _minimumDirectoryFilterWidth = 220.0;
+
 final class InstitutionDirectoryToolbar extends StatelessWidget {
   const InstitutionDirectoryToolbar({
     required this.viewModel,
@@ -44,20 +46,73 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final compactFileAction = compact || constraints.maxWidth < 1000;
-        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 160.0;
-        final searchWidth = compact
-            ? constraints.maxWidth
-            : compactFileAction
-            ? 216.0
-            : 300.0;
-        final filters = Wrap(
-          key: const Key('institution-filter-controls'),
-          spacing: CoeloSpacing.space3,
-          runSpacing: CoeloSpacing.space2,
-          crossAxisAlignment: WrapCrossAlignment.center,
+        final filterControls = <Widget>[
+          _DirectoryFilterMenu<String>(
+            triggerKey: const Key('institution-type-filter'),
+            anchorKey: const Key('institution-type-filter-anchor'),
+            values: viewModel.query.typeIds,
+            allLabel: viewModel.filterOptions.types.isEmpty
+                ? 'Sem tipos cadastrados'
+                : 'Todos os tipos',
+            items: viewModel.filterOptions.types
+                .map((option) => _FilterMenuOption(value: option.id, label: option.label))
+                .toList(growable: false),
+            onApply: viewModel.filterOptions.types.isEmpty ? null : viewModel.setTypes,
+          ),
+          _DirectoryFilterMenu<String>(
+            triggerKey: const Key('institution-state-filter'),
+            anchorKey: const Key('institution-state-filter-anchor'),
+            searchFieldKey: const Key('institution-state-filter-search'),
+            searchHintText: 'Buscar UF',
+            searchable: true,
+            values: viewModel.query.states,
+            allLabel: viewModel.hasLoadedFilterOptions && viewModel.filterOptions.states.isEmpty
+                ? 'Sem UFs cadastradas'
+                : 'Todas as UFs',
+            selectedCountLabel: 'selecionadas',
+            items: stateOptions
+                .map(
+                  (option) =>
+                      _FilterMenuOption(value: option.id, label: _statePresentationLabel(option)),
+                )
+                .toList(growable: false),
+            onApply: viewModel.hasLoadedFilterOptions && viewModel.filterOptions.states.isNotEmpty
+                ? viewModel.setStates
+                : null,
+          ),
+          if (viewModel.query.states.isNotEmpty)
+            _DirectoryFilterMenu<String>(
+              triggerKey: const Key('institution-city-filter'),
+              anchorKey: const Key('institution-city-filter-anchor'),
+              searchFieldKey: const Key('institution-city-filter-search'),
+              searchHintText: 'Buscar município',
+              searchable: true,
+              values: viewModel.query.cities,
+              allLabel: 'Todos os municípios',
+              items: viewModel.filterOptions.cities
+                  .map((option) => _FilterMenuOption(value: option.id, label: option.label))
+                  .toList(growable: false),
+              onApply: viewModel.setCities,
+            ),
+          if (viewModel.query.cities.isNotEmpty)
+            _DirectoryFilterMenu<String>(
+              triggerKey: const Key('institution-district-filter'),
+              anchorKey: const Key('institution-district-filter-anchor'),
+              searchFieldKey: const Key('institution-district-filter-search'),
+              searchHintText: 'Buscar bairro',
+              searchable: true,
+              values: viewModel.query.districts,
+              allLabel: 'Todos os bairros',
+              items: viewModel.filterOptions.districts
+                  .map((option) => _FilterMenuOption(value: option.id, label: option.label))
+                  .toList(growable: false),
+              onApply: viewModel.setDistricts,
+            ),
+        ];
+        final filters = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              width: searchWidth,
               height: CoeloSize.touchMin,
               child: CoeloSearchField(
                 controller: searchController,
@@ -66,88 +121,46 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
                 onChanged: viewModel.setSearch,
               ),
             ),
-            SizedBox(
-              width: filterWidth,
-              child: _DirectoryFilterMenu<String>(
-                triggerKey: const Key('institution-type-filter'),
-                anchorKey: const Key('institution-type-filter-anchor'),
-                values: viewModel.query.typeIds,
-                allLabel: viewModel.filterOptions.types.isEmpty
-                    ? 'Sem tipos cadastrados'
-                    : 'Todos os tipos',
-                items: viewModel.filterOptions.types
-                    .map((option) => _FilterMenuOption(value: option.id, label: option.label))
-                    .toList(growable: false),
-                onApply: viewModel.filterOptions.types.isEmpty ? null : viewModel.setTypes,
-              ),
-            ),
-            SizedBox(
-              width: filterWidth,
-              child: _DirectoryFilterMenu<String>(
-                triggerKey: const Key('institution-state-filter'),
-                anchorKey: const Key('institution-state-filter-anchor'),
-                searchFieldKey: const Key('institution-state-filter-search'),
-                searchHintText: 'Buscar UF',
-                searchable: true,
-                values: viewModel.query.states,
-                allLabel: viewModel.hasLoadedFilterOptions && viewModel.filterOptions.states.isEmpty
-                    ? 'Sem UFs cadastradas'
-                    : 'Todas as UFs',
-                selectedCountLabel: 'selecionadas',
-                items: stateOptions
-                    .map(
-                      (option) => _FilterMenuOption(
-                        value: option.id,
-                        label: _statePresentationLabel(option),
+            const SizedBox(height: CoeloSpacing.space2),
+            LayoutBuilder(
+              builder: (context, filterConstraints) {
+                final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+                final twoColumns =
+                    filterConstraints.maxWidth >=
+                    (_minimumDirectoryFilterWidth * textScale * 2) + CoeloSpacing.space3;
+                final columnWidth = twoColumns
+                    ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
+                    : filterConstraints.maxWidth;
+                return Wrap(
+                  key: const Key('institution-filter-controls'),
+                  spacing: CoeloSpacing.space3,
+                  runSpacing: CoeloSpacing.space2,
+                  children: [
+                    for (var index = 0; index < filterControls.length; index++)
+                      SizedBox(
+                        width:
+                            twoColumns &&
+                                filterControls.length.isOdd &&
+                                index == filterControls.length - 1
+                            ? filterConstraints.maxWidth
+                            : columnWidth,
+                        child: filterControls[index],
                       ),
-                    )
-                    .toList(growable: false),
-                onApply:
-                    viewModel.hasLoadedFilterOptions && viewModel.filterOptions.states.isNotEmpty
-                    ? viewModel.setStates
-                    : null,
-              ),
+                  ],
+                );
+              },
             ),
-            if (viewModel.query.states.isNotEmpty)
-              SizedBox(
-                width: filterWidth,
-                child: _DirectoryFilterMenu<String>(
-                  triggerKey: const Key('institution-city-filter'),
-                  anchorKey: const Key('institution-city-filter-anchor'),
-                  searchFieldKey: const Key('institution-city-filter-search'),
-                  searchHintText: 'Buscar município',
-                  searchable: true,
-                  values: viewModel.query.cities,
-                  allLabel: 'Todos os municípios',
-                  items: viewModel.filterOptions.cities
-                      .map((option) => _FilterMenuOption(value: option.id, label: option.label))
-                      .toList(growable: false),
-                  onApply: viewModel.setCities,
+            if (viewModel.query.hasActiveFilters) ...[
+              const SizedBox(height: CoeloSpacing.space2),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onClearFilters,
+                  icon: const Icon(Icons.filter_alt_off_outlined),
+                  label: const Text('Limpar filtros'),
                 ),
               ),
-            if (viewModel.query.cities.isNotEmpty)
-              SizedBox(
-                width: filterWidth,
-                child: _DirectoryFilterMenu<String>(
-                  triggerKey: const Key('institution-district-filter'),
-                  anchorKey: const Key('institution-district-filter-anchor'),
-                  searchFieldKey: const Key('institution-district-filter-search'),
-                  searchHintText: 'Buscar bairro',
-                  searchable: true,
-                  values: viewModel.query.districts,
-                  allLabel: 'Todos os bairros',
-                  items: viewModel.filterOptions.districts
-                      .map((option) => _FilterMenuOption(value: option.id, label: option.label))
-                      .toList(growable: false),
-                  onApply: viewModel.setDistricts,
-                ),
-              ),
-            if (viewModel.query.hasActiveFilters)
-              TextButton.icon(
-                onPressed: onClearFilters,
-                icon: const Icon(Icons.filter_alt_off_outlined),
-                label: const Text('Limpar filtros'),
-              ),
+            ],
           ],
         );
         final actions = SizedBox(

@@ -181,7 +181,7 @@ void main() {
     expect(find.text('Importar turmas'), findsOneWidget);
     expect(find.text('Exportar turmas'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('group-export-action')));
+    await tester.tap(find.text('Exportar turmas'));
     await tester.pumpAndSettle();
     expect(find.textContaining('visão: Cards'), findsOneWidget);
 
@@ -192,7 +192,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('group-export-action')));
+    await tester.tap(find.text('Exportar turmas'));
     await tester.pumpAndSettle();
     expect(find.textContaining('visão: Detalhado por Atividades'), findsOneWidget);
   });
@@ -232,17 +232,17 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('superadmin-profile-action')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-settings-action')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-logout-action')), findsOneWidget);
+    expect(find.text('Perfil'), findsOneWidget);
+    expect(find.text('Configurações'), findsOneWidget);
+    expect(find.text('Sair'), findsOneWidget);
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+    expect(find.text('Tour desta tela'), findsOneWidget);
+    expect(find.text('Tour do menu'), findsOneWidget);
+    expect(find.text('Tour completo'), findsOneWidget);
   });
 
   for (final scenario in [
