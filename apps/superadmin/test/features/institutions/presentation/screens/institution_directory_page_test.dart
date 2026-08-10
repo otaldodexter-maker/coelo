@@ -109,7 +109,7 @@ void main() {
     final searchField = tester.widget<TextField>(find.byType(TextField));
     expect(searchField.decoration?.hintText, 'Buscar por nome');
     expect(searchField.decoration?.hintText, isNot(contains('domínio')));
-    expect(tester.getSize(find.byType(TextField)).width, greaterThan(216));
+    expect(tester.getSize(find.byType(TextField)).width, 216);
     final searchBorder = searchField.decoration!.enabledBorder! as OutlineInputBorder;
     expect(searchBorder.borderRadius.topLeft.x, CoeloRadius.full);
     expect(find.text('Importar instituições'), findsNothing);
@@ -124,7 +124,7 @@ void main() {
     expect(createRequested, isTrue);
   });
 
-  testWidgets('distributes search and filters from the available width', (tester) async {
+  testWidgets('matches the approved directory filter flow at every width', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
       await tester.pumpWidget(_app(pageKey: ValueKey(width)));
@@ -134,39 +134,48 @@ void main() {
       final searchRect = tester.getRect(find.byType(TextField).first);
       final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
       final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
-
+      final expectedSearchWidth = width == 375
+          ? controlsRect.width
+          : width == 1440
+          ? 300.0
+          : 216.0;
       expect(searchRect.left, closeTo(controlsRect.left, 1));
+      expect(searchRect.width, closeTo(expectedSearchWidth, 1));
+      expect(typeRect.width, closeTo(stateRect.width, 1));
       if (width == 375) {
-        expect(searchRect.width, closeTo(controlsRect.width, 1));
-        expect(typeRect.width, closeTo(controlsRect.width, 1));
-        expect(stateRect.width, closeTo(controlsRect.width, 1));
-        expect(stateRect.top, greaterThan(typeRect.bottom));
+        expect((typeRect.width * 2) + CoeloSpacing.space3, closeTo(searchRect.width, 1));
       } else {
-        expect(typeRect.top, closeTo(stateRect.top, 1));
-        expect(typeRect.width, closeTo(stateRect.width, 1));
-        expect(typeRect.left, closeTo(controlsRect.left, 1));
-        expect(stateRect.right, closeTo(controlsRect.right, 1));
+        expect(typeRect.width, 160);
       }
-      expect(tester.takeException(), isNull, reason: 'filter layout at $width');
+      expect(stateRect.top, greaterThanOrEqualTo(typeRect.top));
+      if ((stateRect.top - typeRect.top).abs() < 1) {
+        expect(stateRect.left, greaterThan(typeRect.right));
+      }
+      expect(tester.takeException(), isNull, reason: 'responsive filter flow');
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
-  testWidgets('reduces filter columns when text is scaled to 200 percent', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(768, 900));
+  testWidgets('reduces filters to one column with text scaled to 200 percent', (tester) async {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        _app(textScaler: const TextScaler.linear(2), pageKey: ValueKey(width)),
+      );
+      await tester.pumpAndSettle();
+
+      final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
+      final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
+      final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
+      expect(typeRect.width, closeTo(controlsRect.width, 1));
+      expect(stateRect.width, closeTo(controlsRect.width, 1));
+      expect(stateRect.top, greaterThan(typeRect.bottom));
+      expect(find.text('Todos os tipos'), findsOneWidget);
+      expect(find.text('Todas as UFs'), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: '200 percent text');
+    }
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
-    await tester.pumpAndSettle();
-
-    final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
-    final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
-    final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
-    expect(typeRect.width, closeTo(controlsRect.width, 1));
-    expect(stateRect.width, closeTo(controlsRect.width, 1));
-    expect(stateRect.top, greaterThan(typeRect.bottom));
-    expect(tester.takeException(), isNull);
   });
-
   testWidgets('filters institutions through the approved exclusive status tabs', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -345,9 +354,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('institution-city-filter')), findsOneWidget);
-    final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
+    final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
     final cityRect = tester.getRect(find.byKey(const Key('institution-city-filter')));
-    expect(cityRect.width, closeTo(controlsRect.width, 1));
+    expect(cityRect.width, closeTo(typeRect.width, 1));
 
     expect(find.byKey(const Key('institution-district-filter')), findsNothing);
 

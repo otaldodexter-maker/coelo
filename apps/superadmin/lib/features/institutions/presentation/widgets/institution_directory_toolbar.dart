@@ -15,8 +15,6 @@ import 'institution_file_actions.dart';
 
 enum InstitutionDirectoryDisplay { cards, table }
 
-const _minimumDirectoryFilterWidth = 220.0;
-
 final class InstitutionDirectoryToolbar extends StatelessWidget {
   const InstitutionDirectoryToolbar({
     required this.viewModel,
@@ -46,6 +44,11 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final compactFileAction = compact || constraints.maxWidth < 1000;
+        final searchWidth = compact
+            ? constraints.maxWidth
+            : compactFileAction
+            ? 216.0
+            : 300.0;
         final filterControls = <Widget>[
           _DirectoryFilterMenu<String>(
             triggerKey: const Key('institution-type-filter'),
@@ -109,59 +112,41 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
               onApply: viewModel.setDistricts,
             ),
         ];
-        final filters = Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: CoeloSize.touchMin,
-              child: CoeloSearchField(
-                controller: searchController,
-                hintText: 'Buscar por nome',
-                semanticLabel: 'Buscar por nome',
-                onChanged: viewModel.setSearch,
-              ),
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            LayoutBuilder(
-              builder: (context, filterConstraints) {
-                final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
-                final twoColumns =
-                    filterConstraints.maxWidth >=
-                    (_minimumDirectoryFilterWidth * textScale * 2) + CoeloSpacing.space3;
-                final columnWidth = twoColumns
-                    ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
-                    : filterConstraints.maxWidth;
-                return Wrap(
-                  key: const Key('institution-filter-controls'),
-                  spacing: CoeloSpacing.space3,
-                  runSpacing: CoeloSpacing.space2,
-                  children: [
-                    for (var index = 0; index < filterControls.length; index++)
-                      SizedBox(
-                        width:
-                            twoColumns &&
-                                filterControls.length.isOdd &&
-                                index == filterControls.length - 1
-                            ? filterConstraints.maxWidth
-                            : columnWidth,
-                        child: filterControls[index],
-                      ),
-                  ],
-                );
-              },
-            ),
-            if (viewModel.query.hasActiveFilters) ...[
-              const SizedBox(height: CoeloSpacing.space2),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: onClearFilters,
-                  icon: const Icon(Icons.filter_alt_off_outlined),
-                  label: const Text('Limpar filtros'),
+        final filters = LayoutBuilder(
+          builder: (context, filterConstraints) {
+            final largeText = MediaQuery.textScalerOf(context).scale(1) >= 2;
+            final filterWidth = largeText
+                ? filterConstraints.maxWidth
+                : compact
+                ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
+                : 160.0;
+            return Wrap(
+              key: const Key('institution-filter-controls'),
+              spacing: CoeloSpacing.space3,
+              runSpacing: CoeloSpacing.space2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                SizedBox(
+                  width: searchWidth.clamp(0, filterConstraints.maxWidth),
+                  height: CoeloSize.touchMin,
+                  child: CoeloSearchField(
+                    controller: searchController,
+                    hintText: 'Buscar por nome',
+                    semanticLabel: 'Buscar por nome',
+                    onChanged: viewModel.setSearch,
+                  ),
                 ),
-              ),
-            ],
-          ],
+                for (final filterControl in filterControls)
+                  SizedBox(width: filterWidth, child: filterControl),
+                if (viewModel.query.hasActiveFilters)
+                  TextButton.icon(
+                    onPressed: onClearFilters,
+                    icon: const Icon(Icons.filter_alt_off_outlined),
+                    label: const Text('Limpar filtros'),
+                  ),
+              ],
+            );
+          },
         );
         final actions = SizedBox(
           key: const Key('institution-toolbar-actions'),
