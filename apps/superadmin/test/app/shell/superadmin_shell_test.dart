@@ -1721,10 +1721,7 @@ void main() {
     var tourAnchor = tester.widget<MenuAnchor>(
       find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
     );
-    expect(
-      tourAnchor.alignmentOffset,
-      const Offset(252 - CoeloSpacing.space1, -CoeloSize.touchMin),
-    );
+    expect(tourAnchor.alignmentOffset, const Offset(252 - CoeloSpacing.space1, 0));
 
     await tester.tap(trigger);
     await tester.pumpAndSettle();
@@ -1738,13 +1735,13 @@ void main() {
     expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
     expect(tester.getTopLeft(firstOption).dx, sidebarRect.right + CoeloSpacing.space1);
     expect(tester.getRect(firstOption).right, lessThanOrEqualTo(1200));
+    final collapsedPanelBottom =
+        tester.getRect(_menuItemWithText('Tour completo')).bottom + CoeloSpacing.space2;
+    expect(collapsedPanelBottom, lessThanOrEqualTo(800 - CoeloSpacing.space2));
     tourAnchor = tester.widget<MenuAnchor>(
       find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
     );
-    expect(
-      tourAnchor.alignmentOffset,
-      const Offset(CoeloSize.touchMin + CoeloSpacing.space4, -CoeloSize.touchMin),
-    );
+    expect(tourAnchor.alignmentOffset, const Offset(CoeloSize.touchMin + CoeloSpacing.space4, 0));
   });
 
   testWidgets('does not schedule the egg timer in reduced motion and cancels it on dispose', (

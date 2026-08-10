@@ -1330,7 +1330,7 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
       },
       alignmentOffset: Offset(
         widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 + CoeloSpacing.space1 : 252,
-        -CoeloSize.touchMin,
+        0,
       ),
       builder: (context, controller) {
         final content = Material(

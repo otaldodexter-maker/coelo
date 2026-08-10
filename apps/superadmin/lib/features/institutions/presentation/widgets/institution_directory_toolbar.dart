@@ -109,62 +109,57 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
               onApply: viewModel.setDistricts,
             ),
         ];
-        final search = SizedBox(
-          height: CoeloSize.touchMin,
-          child: CoeloSearchField(
-            controller: searchController,
-            hintText: 'Buscar por nome',
-            semanticLabel: 'Buscar por nome',
-            onChanged: viewModel.setSearch,
-          ),
-        );
-        final filterControlsLayout = LayoutBuilder(
-          builder: (context, filterConstraints) {
-            final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
-            final twoColumns =
-                filterConstraints.maxWidth >=
-                (_minimumDirectoryFilterWidth * textScale * 2) + CoeloSpacing.space3;
-            final columnWidth = twoColumns
-                ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
-                : filterConstraints.maxWidth;
-            return Wrap(
-              key: const Key('institution-filter-controls'),
-              spacing: CoeloSpacing.space3,
-              runSpacing: CoeloSpacing.space2,
-              children: [
-                for (var index = 0; index < filterControls.length; index++)
-                  SizedBox(
-                    width:
-                        twoColumns &&
-                            filterControls.length.isOdd &&
-                            index == filterControls.length - 1
-                        ? filterConstraints.maxWidth
-                        : columnWidth,
-                    child: filterControls[index],
-                  ),
-              ],
-            );
-          },
-        );
-        final activeFiltersAction = viewModel.query.hasActiveFilters
-            ? Align(
+        final filters = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: CoeloSize.touchMin,
+              child: CoeloSearchField(
+                controller: searchController,
+                hintText: 'Buscar por nome',
+                semanticLabel: 'Buscar por nome',
+                onChanged: viewModel.setSearch,
+              ),
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            LayoutBuilder(
+              builder: (context, filterConstraints) {
+                final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+                final twoColumns =
+                    filterConstraints.maxWidth >=
+                    (_minimumDirectoryFilterWidth * textScale * 2) + CoeloSpacing.space3;
+                final columnWidth = twoColumns
+                    ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
+                    : filterConstraints.maxWidth;
+                return Wrap(
+                  key: const Key('institution-filter-controls'),
+                  spacing: CoeloSpacing.space3,
+                  runSpacing: CoeloSpacing.space2,
+                  children: [
+                    for (var index = 0; index < filterControls.length; index++)
+                      SizedBox(
+                        width:
+                            twoColumns &&
+                                filterControls.length.isOdd &&
+                                index == filterControls.length - 1
+                            ? filterConstraints.maxWidth
+                            : columnWidth,
+                        child: filterControls[index],
+                      ),
+                  ],
+                );
+              },
+            ),
+            if (viewModel.query.hasActiveFilters) ...[
+              const SizedBox(height: CoeloSpacing.space2),
+              Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: onClearFilters,
                   icon: const Icon(Icons.filter_alt_off_outlined),
                   label: const Text('Limpar filtros'),
                 ),
-              )
-            : null;
-        final compactFilters = Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            search,
-            const SizedBox(height: CoeloSpacing.space2),
-            filterControlsLayout,
-            if (activeFiltersAction != null) ...[
-              const SizedBox(height: CoeloSpacing.space2),
-              activeFiltersAction,
+              ),
             ],
           ],
         );
@@ -211,26 +206,11 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
             ],
           ),
         );
-        if (compact) {
-          return CoeloAdminListingToolbar(
-            key: const Key('institution-filter-toolbar'),
-            search: compactFilters,
-            filters: const [],
-            actions: [actions],
-          );
-        }
-        return Column(
+        return CoeloAdminListingToolbar(
           key: const Key('institution-filter-toolbar'),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CoeloAdminListingToolbar(search: search, filters: const [], actions: [actions]),
-            const SizedBox(height: CoeloSpacing.space2),
-            filterControlsLayout,
-            if (activeFiltersAction != null) ...[
-              const SizedBox(height: CoeloSpacing.space2),
-              activeFiltersAction,
-            ],
-          ],
+          search: filters,
+          filters: const [],
+          actions: [actions],
         );
       },
     );
