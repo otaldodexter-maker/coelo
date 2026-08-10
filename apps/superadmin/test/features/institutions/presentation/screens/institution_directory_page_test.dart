@@ -167,6 +167,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('uses the full tablet row for two equally distributed filters', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(974, 1022));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final toolbarRect = tester.getRect(find.byKey(const Key('institution-filter-toolbar')));
+    final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
+    final searchRect = tester.getRect(find.byType(TextField).first);
+    final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
+    final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
+
+    expect(controlsRect.left, closeTo(toolbarRect.left, 1));
+    expect(controlsRect.right, closeTo(toolbarRect.right, 1));
+    expect(controlsRect.width, greaterThan(searchRect.width));
+    expect(typeRect.top, closeTo(stateRect.top, 1));
+    expect(typeRect.width, closeTo(stateRect.width, 1));
+    expect(typeRect.left, closeTo(controlsRect.left, 1));
+    expect(stateRect.right, closeTo(controlsRect.right, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('filters institutions through the approved exclusive status tabs', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));

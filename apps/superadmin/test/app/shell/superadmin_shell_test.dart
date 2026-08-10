@@ -140,6 +140,49 @@ void main() {
       expect(scaffold.backgroundColor, colors.surface, reason: 'width $width');
     }
   });
+  testWidgets('mobile drawer uses the semantic surface in light and dark', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final brightness in [Brightness.light, Brightness.dark]) {
+      await tester.pumpWidget(_shellApp(brightness: brightness));
+      await tester.tap(find.byTooltip('Abrir menu'));
+      await tester.pumpAndSettle();
+
+      final drawer = tester.widget<Drawer>(find.byType(Drawer));
+      final colors = Theme.of(tester.element(find.byType(Drawer))).colorScheme;
+      expect(drawer.backgroundColor, colors.surface, reason: brightness.name);
+
+      await tester.tapAt(const Offset(360, 400));
+      await tester.pumpAndSettle();
+    }
+  });
+
+  testWidgets('host shell shows the compact chat launcher on mobile', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 812));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final destinations = <String>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell.host(
+          logout: () async => const LogoutResult.success(),
+          currentDestination: 'institutions',
+          onDestinationSelected: destinations.add,
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    expect(launcher, findsOneWidget);
+    expect(tester.getSize(launcher).width, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(tester.getSize(launcher).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(tester.getRect(launcher).right, lessThanOrEqualTo(375 - CoeloSpacing.space2));
+    expect(tester.getRect(launcher).bottom, lessThanOrEqualTo(812 - CoeloSpacing.space2));
+  });
 
   testWidgets('shows the approved floating hierarchical navigation', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
@@ -534,12 +577,24 @@ void main() {
           )
           .first,
     );
-    expect(navigationAnchor.alignmentOffset, const Offset(0, -CoeloSpacing.space1));
+    expect(
+      navigationAnchor.alignmentOffset,
+      const Offset(
+        CoeloSize.touchMin + (CoeloSpacing.space4 * 2) - CoeloSpacing.space1,
+        -CoeloSize.touchMin,
+      ),
+    );
     expect(navigationAnchor.style?.elevation?.resolve({}), CoeloElevation.level2);
     expect(navigationAnchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
     expect(navigationAnchor.style?.minimumSize?.resolve({})?.width, 236);
     expect(find.text('Unidades'), findsOneWidget);
     expect(find.text('Turmas'), findsOneWidget);
+    final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
+    expect(
+      tester.getTopLeft(_menuItemWithText('Unidades')).dx,
+      sidebarRect.right + CoeloSpacing.space1,
+    );
+    expect(tester.takeException(), isNull);
     expect(find.bySemanticsLabel('Estrutura: Instituições'), findsOneWidget);
     final units = tester.widget<MenuItemButton>(_menuItemWithText('Unidades'));
     final institutions = tester.widget<MenuItemButton>(_menuItemWithText('Instituições'));
@@ -1659,6 +1714,10 @@ void main() {
     var sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
     expect(tester.getTopLeft(firstOption).dx, greaterThanOrEqualTo(tester.getTopRight(trigger).dx));
     expect(tester.getTopLeft(firstOption).dx, sidebarRect.right + CoeloSpacing.space1);
+    expect(
+      tester.getRect(_menuItemWithText('Tour completo')).bottom,
+      lessThanOrEqualTo(800 - (CoeloSpacing.space2 * 2)),
+    );
     var tourAnchor = tester.widget<MenuAnchor>(
       find.ancestor(of: trigger, matching: find.byType(MenuAnchor)).first,
     );

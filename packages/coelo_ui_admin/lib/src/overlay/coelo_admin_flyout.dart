@@ -122,10 +122,10 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
       safeBottom + CoeloSpacing.space2,
     );
     final reservedPadding = EdgeInsets.fromLTRB(
-      math.max(safeLeft + CoeloSpacing.space2, CoeloSpacing.space4),
-      math.max(safeTop + CoeloSpacing.space2, CoeloSpacing.space4),
-      math.max(safeRight + CoeloSpacing.space2, CoeloSpacing.space4),
-      math.max(safeBottom + CoeloSpacing.space2, CoeloSpacing.space4),
+      safeLeft + CoeloSpacing.space2,
+      safeTop + CoeloSpacing.space2,
+      safeRight + CoeloSpacing.space2,
+      safeBottom + CoeloSpacing.space2,
     );
     final effectiveAlignmentOffset = Offset(
       widget.alignmentOffset.dx - safeRight - CoeloSpacing.space1,
@@ -135,7 +135,7 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
       data: mediaQuery.copyWith(padding: overlayPadding),
       child: MenuAnchor(
         controller: _menuController,
-        useRootOverlay: false,
+        useRootOverlay: true,
         crossAxisUnconstrained: false,
         onOpen: _handleOpen,
         onClose: _handleClose,

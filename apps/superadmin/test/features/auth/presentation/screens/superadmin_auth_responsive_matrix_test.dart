@@ -28,6 +28,11 @@ void main() {
 
           expect(tester.takeException(), isNull);
           expect(_primaryContentFinder(surface), findsOneWidget);
+          expect(
+            tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
+            theme.data.colorScheme.surface,
+            reason: '${surface.name} uses the semantic page surface in ${theme.name}',
+          );
         });
       }
 

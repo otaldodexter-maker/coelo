@@ -63,6 +63,7 @@ class _SuperadminForgotPasswordScreenState extends State<SuperadminForgotPasswor
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

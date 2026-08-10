@@ -156,40 +156,46 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
         final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
         if (!isDesktop) {
           if (widget.isHost) {
-            return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              appBar: _CompactAppBar(
-                onLogout: _handleLogout,
-                onDestinationSelected: widget.onDestinationSelected,
-                activityController: _activityController,
-                currentScreen: widget.currentDestination,
-                onBugReportSubmitted: widget.onBugReportSubmitted,
-              ),
-              drawer: Drawer(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+            return _withChatLauncher(
+              Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                appBar: _CompactAppBar(
+                  onLogout: _handleLogout,
+                  onDestinationSelected: widget.onDestinationSelected,
+                  activityController: _activityController,
+                  currentScreen: widget.currentDestination,
+                  onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      _BrandHeader(
-                        collapsed: false,
-                        currentDestination: widget.currentDestination,
-                        onDestinationSelected: widget.onDestinationSelected,
-                      ),
-                      const _InsetDivider(key: Key('superadmin-brand-divider')),
-                      Expanded(
-                        child: _NavigationContent(
+                onDrawerChanged: (open) => setState(() => _drawerOpen = open),
+                drawer: Drawer(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+                  ),
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        _BrandHeader(
                           collapsed: false,
                           currentDestination: widget.currentDestination,
                           onDestinationSelected: widget.onDestinationSelected,
                         ),
-                      ),
-                    ],
+                        const _InsetDivider(key: Key('superadmin-brand-divider')),
+                        Expanded(
+                          child: _NavigationContent(
+                            collapsed: false,
+                            currentDestination: widget.currentDestination,
+                            onDestinationSelected: widget.onDestinationSelected,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                body: SuperadminNoticeHost(child: _hostedContent(pageBody, isDesktop: false)),
               ),
-              body: SuperadminNoticeHost(child: _hostedContent(pageBody, isDesktop: false)),
+              onDestinationSelected: widget.onDestinationSelected,
+              positionController: _chatLauncherPositionController,
             );
           }
           return _withChatLauncher(
@@ -204,6 +210,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               ),
               onDrawerChanged: (open) => setState(() => _drawerOpen = open),
               drawer: Drawer(
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
                 ),
@@ -1110,7 +1117,10 @@ class _CollapsedNavigationSection extends StatelessWidget {
           );
           _handleDestinationTap(context, destination, onDestinationSelected);
         },
-        alignmentOffset: const Offset(CoeloSpacing.space1, -CoeloSpacing.space1),
+        alignmentOffset: const Offset(
+          CoeloSize.touchMin + (CoeloSpacing.space4 * 2),
+          -CoeloSize.touchMin,
+        ),
         builder: (context, controller) {
           final active = section.hasSelectedDestination(currentDestination);
           return Tooltip(

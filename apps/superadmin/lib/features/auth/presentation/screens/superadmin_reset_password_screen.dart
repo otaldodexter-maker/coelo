@@ -66,6 +66,7 @@ class _SuperadminResetPasswordScreenState extends State<SuperadminResetPasswordS
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
