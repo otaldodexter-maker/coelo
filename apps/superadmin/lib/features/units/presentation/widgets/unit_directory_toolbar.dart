@@ -40,7 +40,6 @@ final class UnitDirectoryToolbar extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final compactFiles = compact || constraints.maxWidth < 1000;
-        final filterWidth = compact ? (constraints.maxWidth - CoeloSpacing.space3) / 2 : 160.0;
         final searchWidth = compact
             ? constraints.maxWidth
             : compactFiles
@@ -50,6 +49,7 @@ final class UnitDirectoryToolbar extends StatelessWidget {
 
         Widget filter<T>({
           required Key key,
+          required double width,
           required String label,
           required List<T> values,
           required Set<T> selected,
@@ -59,7 +59,7 @@ final class UnitDirectoryToolbar extends StatelessWidget {
         }) {
           return SizedBox(
             key: key,
-            width: filterWidth,
+            width: width,
             child: CoeloAdminMultiSelectFilter<T>(
               label: label,
               options: values,
@@ -71,95 +71,113 @@ final class UnitDirectoryToolbar extends StatelessWidget {
           );
         }
 
-        final controls = Wrap(
-          key: const Key('unit-filter-controls'),
-          spacing: CoeloSpacing.space3,
-          runSpacing: CoeloSpacing.space2,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            SizedBox(
-              width: searchWidth,
-              height: CoeloSize.touchMin,
-              child: CoeloSearchField(
-                controller: searchController,
-                hintText: 'Buscar por nome',
-                semanticLabel: 'Buscar unidade por nome',
-                onChanged: viewModel.setSearch,
-              ),
-            ),
-            filter<UnitFilterOption>(
-              key: const Key('unit-institution-filter'),
-              label: 'Todas as instituições',
-              values: options.institutions,
-              selected: options.institutions
-                  .where((item) => viewModel.query.institutionIds.contains(item.id))
-                  .toSet(),
-              optionLabel: (item) => item.label,
-              onChanged: (items) => viewModel.setInstitutions(items.map((item) => item.id).toSet()),
-              searchHint: 'Buscar instituição',
-            ),
-            filter<UnitFilterOption>(
-              key: const Key('unit-type-filter'),
-              label: 'Todos os tipos',
-              values: options.types,
-              selected: options.types
-                  .where((item) => viewModel.query.typeIds.contains(item.id))
-                  .toSet(),
-              optionLabel: (item) => item.label,
-              onChanged: (items) => viewModel.setTypes(items.map((item) => item.id).toSet()),
-            ),
-            filter<UnitFilterOption>(
-              key: const Key('unit-plan-filter'),
-              label: 'Todos os planos',
-              values: options.plans,
-              selected: options.plans
-                  .where((item) => viewModel.query.planIds.contains(item.id))
-                  .toSet(),
-              optionLabel: (item) => item.label,
-              onChanged: (items) => viewModel.setPlans(items.map((item) => item.id).toSet()),
-            ),
-            filter<UnitFilterOption>(
-              key: const Key('unit-state-filter'),
-              label: 'Todas as UFs',
-              values: options.states,
-              selected: options.states
-                  .where((item) => viewModel.query.states.contains(item.id))
-                  .toSet(),
-              optionLabel: (item) => item.label,
-              onChanged: (items) => viewModel.setStates(items.map((item) => item.id).toSet()),
-              searchHint: 'Buscar UF',
-            ),
-            if (viewModel.query.states.isNotEmpty)
-              filter<UnitFilterOption>(
-                key: const Key('unit-city-filter'),
-                label: 'Todos os municípios',
-                values: options.cities,
-                selected: options.cities
-                    .where((item) => viewModel.query.cities.contains(item.id))
-                    .toSet(),
-                optionLabel: (item) => item.label,
-                onChanged: (items) => viewModel.setCities(items.map((item) => item.id).toSet()),
-                searchHint: 'Buscar município',
-              ),
-            if (viewModel.query.cities.isNotEmpty)
-              filter<UnitFilterOption>(
-                key: const Key('unit-district-filter'),
-                label: 'Todos os bairros',
-                values: options.districts,
-                selected: options.districts
-                    .where((item) => viewModel.query.districts.contains(item.id))
-                    .toSet(),
-                optionLabel: (item) => item.label,
-                onChanged: (items) => viewModel.setDistricts(items.map((item) => item.id).toSet()),
-                searchHint: 'Buscar bairro',
-              ),
-            if (viewModel.query.hasActiveFilters)
-              TextButton.icon(
-                onPressed: onClearFilters,
-                icon: const Icon(Icons.filter_alt_off_outlined),
-                label: const Text('Limpar filtros'),
-              ),
-          ],
+        final controls = LayoutBuilder(
+          builder: (context, filterConstraints) {
+            final largeText = MediaQuery.textScalerOf(context).scale(1) >= 2;
+            final filterWidth = largeText
+                ? filterConstraints.maxWidth
+                : compact
+                ? (filterConstraints.maxWidth - CoeloSpacing.space3) / 2
+                : 160.0;
+            return Wrap(
+              key: const Key('unit-filter-controls'),
+              spacing: CoeloSpacing.space3,
+              runSpacing: CoeloSpacing.space2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                SizedBox(
+                  width: searchWidth.clamp(0, filterConstraints.maxWidth),
+                  height: CoeloSize.touchMin,
+                  child: CoeloSearchField(
+                    controller: searchController,
+                    hintText: 'Buscar por nome',
+                    semanticLabel: 'Buscar unidade por nome',
+                    onChanged: viewModel.setSearch,
+                  ),
+                ),
+                filter<UnitFilterOption>(
+                  width: filterWidth,
+                  key: const Key('unit-institution-filter'),
+                  label: 'Todas as instituições',
+                  values: options.institutions,
+                  selected: options.institutions
+                      .where((item) => viewModel.query.institutionIds.contains(item.id))
+                      .toSet(),
+                  optionLabel: (item) => item.label,
+                  onChanged: (items) =>
+                      viewModel.setInstitutions(items.map((item) => item.id).toSet()),
+                  searchHint: 'Buscar instituição',
+                ),
+                filter<UnitFilterOption>(
+                  width: filterWidth,
+                  key: const Key('unit-type-filter'),
+                  label: 'Todos os tipos',
+                  values: options.types,
+                  selected: options.types
+                      .where((item) => viewModel.query.typeIds.contains(item.id))
+                      .toSet(),
+                  optionLabel: (item) => item.label,
+                  onChanged: (items) => viewModel.setTypes(items.map((item) => item.id).toSet()),
+                ),
+                filter<UnitFilterOption>(
+                  width: filterWidth,
+                  key: const Key('unit-plan-filter'),
+                  label: 'Todos os planos',
+                  values: options.plans,
+                  selected: options.plans
+                      .where((item) => viewModel.query.planIds.contains(item.id))
+                      .toSet(),
+                  optionLabel: (item) => item.label,
+                  onChanged: (items) => viewModel.setPlans(items.map((item) => item.id).toSet()),
+                ),
+                filter<UnitFilterOption>(
+                  width: filterWidth,
+                  key: const Key('unit-state-filter'),
+                  label: 'Todas as UFs',
+                  values: options.states,
+                  selected: options.states
+                      .where((item) => viewModel.query.states.contains(item.id))
+                      .toSet(),
+                  optionLabel: (item) => item.label,
+                  onChanged: (items) => viewModel.setStates(items.map((item) => item.id).toSet()),
+                  searchHint: 'Buscar UF',
+                ),
+                if (viewModel.query.states.isNotEmpty)
+                  filter<UnitFilterOption>(
+                    width: filterWidth,
+                    key: const Key('unit-city-filter'),
+                    label: 'Todos os municípios',
+                    values: options.cities,
+                    selected: options.cities
+                        .where((item) => viewModel.query.cities.contains(item.id))
+                        .toSet(),
+                    optionLabel: (item) => item.label,
+                    onChanged: (items) => viewModel.setCities(items.map((item) => item.id).toSet()),
+                    searchHint: 'Buscar município',
+                  ),
+                if (viewModel.query.cities.isNotEmpty)
+                  filter<UnitFilterOption>(
+                    width: filterWidth,
+                    key: const Key('unit-district-filter'),
+                    label: 'Todos os bairros',
+                    values: options.districts,
+                    selected: options.districts
+                        .where((item) => viewModel.query.districts.contains(item.id))
+                        .toSet(),
+                    optionLabel: (item) => item.label,
+                    onChanged: (items) =>
+                        viewModel.setDistricts(items.map((item) => item.id).toSet()),
+                    searchHint: 'Buscar bairro',
+                  ),
+                if (viewModel.query.hasActiveFilters)
+                  TextButton.icon(
+                    onPressed: onClearFilters,
+                    icon: const Icon(Icons.filter_alt_off_outlined),
+                    label: const Text('Limpar filtros'),
+                  ),
+              ],
+            );
+          },
         );
         final actions = SizedBox(
           key: const Key('unit-toolbar-actions'),

@@ -123,7 +123,7 @@ final class _UnitImportDialogState extends State<_UnitImportDialog> {
           const SizedBox(height: CoeloSpacing.space5),
           if (!_reviewing) ...[
             Text(
-              'Use o modelo CSV ou XLSX de unidades. Nesta demonstração nenhum arquivo real será enviado.',
+              'Use o modelo CSV ou XLSX de unidades. Selecione o arquivo para revisar antes da importação.',
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
@@ -168,7 +168,7 @@ final class _UnitImportDialogState extends State<_UnitImportDialog> {
             ? () => setState(() => _reviewing = false)
             : () => showSuperadminNotice(
                 widget.noticeContext,
-                'Modelo XLSX preparado para download demonstrativo.',
+                'Modelo XLSX preparado para download.',
                 icon: Icons.file_download_outlined,
               ),
         child: Text(_reviewing ? 'Voltar' : 'Exportar modelo .xlsx'),

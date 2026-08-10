@@ -10,6 +10,7 @@ import '../../institutions/data/institution_location_service.dart';
 import '../../institutions/domain/institution_record.dart';
 import '../../institutions/presentation/widgets/institution_form_dialogs.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../domain/unit_directory.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
@@ -368,63 +369,17 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         onAction: widget.onCancel,
       );
     }
-    return AnimatedBuilder(
-      animation: _formController,
-      builder: (context, child) => PopScope(
-        canPop: !_formController.isDirty,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop) _cancel();
-        },
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final desktop = outerConstraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-            final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-                ? CoeloSpacing.space10
-                : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                ? CoeloSpacing.space6
-                : CoeloSpacing.space4;
-            return Padding(
-              padding: EdgeInsets.fromLTRB(
-                contentInset,
-                contentInset,
-                contentInset,
-                CoeloSpacing.space4,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (desktop) ...[
-                    UnitFormNavigation(controller: _formController),
-                    const SizedBox(width: CoeloSpacing.space6),
-                  ],
-                  Expanded(
-                    child: Column(
-                      children: [
-                        if (!desktop) ...[
-                          UnitFormNavigation(controller: _formController),
-                          const SizedBox(height: CoeloSpacing.space4),
-                        ],
-                        Expanded(
-                          child: SingleChildScrollView(
-                            key: const Key('unit-form-scroll'),
-                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 880),
-                                child: _section(),
-                              ),
-                            ),
-                          ),
-                        ),
-                        _footer(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+    return PopScope(
+      canPop: !_formController.isDirty,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _cancel();
+      },
+      child: SuperadminFormFrame(
+        viewportWidth: outerConstraints.maxWidth,
+        navigation: UnitFormNavigation(controller: _formController),
+        scrollKey: const Key('unit-form-scroll'),
+        body: KeyedSubtree(key: const Key('unit-form-content'), child: _section()),
+        footer: _footer(),
       ),
     );
   }
@@ -793,7 +748,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             'CEP',
             Icons.location_searching_outlined,
             suffixIcon: IconButton(
+              key: const Key('unit-postal-code-lookup'),
               tooltip: 'Buscar CEP',
+              style: _semanticIconActionStyle(context),
               onPressed: _lookingUpPostalCode ? null : _lookupPostalCode,
               icon: _lookingUpPostalCode
                   ? const SizedBox.square(
@@ -834,29 +791,16 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         inherited: _inheritPlan,
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      Material(
-        color: Theme.of(context).colorScheme.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space4,
-            vertical: CoeloSpacing.space2,
-          ),
-          child: SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Herdar plano da instituição'),
-            subtitle: Text('Plano institucional: ${_institution.plan.label}'),
-            value: _inheritPlan,
-            onChanged: (value) => setState(() {
-              _inheritPlan = value;
-              if (value) _plan = _institution.plan;
-              _formController.markDirty();
-            }),
-          ),
-        ),
+      CoeloAdminToggleField(
+        key: const Key('unit-inherit-plan'),
+        label: 'Herdar plano da instituição',
+        description: 'Plano institucional: ${_institution.plan.label}',
+        value: _inheritPlan,
+        onChanged: (value) => setState(() {
+          _inheritPlan = value;
+          if (value) _plan = _institution.plan;
+          _formController.markDirty();
+        }),
       ),
       if (!_inheritPlan)
         Padding(
@@ -1009,6 +953,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       suffixIcon: IconButton(
         key: Key('unit-color-picker-$id'),
         tooltip: 'Selecionar $label',
+        style: _semanticIconActionStyle(context),
         onPressed: () async {
           final selected = await showSuperadminAdvancedColorPicker(
             context,
@@ -1104,52 +1049,43 @@ final class _InheritanceControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final copy = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final copy = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: CoeloSpacing.spaceHalf),
+            Text(
+              inherited ? 'Herdado de $institutionName.' : 'Personalizado nesta unidade.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        );
+        final action = OutlinedButton.icon(
+          key: controlKey,
+          onPressed: () => onChanged(!inherited),
+          icon: Icon(inherited ? Icons.link_off_rounded : Icons.link_rounded),
+          label: Text(inherited ? 'Personalizar' : 'Herdar'),
+        );
+        if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: CoeloSpacing.spaceHalf),
-              Text(
-                inherited ? 'Herdado de $institutionName.' : 'Personalizado nesta unidade.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          );
-          final action = OutlinedButton.icon(
-            key: controlKey,
-            onPressed: () => onChanged(!inherited),
-            icon: Icon(inherited ? Icons.link_off_rounded : Icons.link_rounded),
-            label: Text(inherited ? 'Personalizar' : 'Herdar'),
-          );
-          if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                copy,
-                const SizedBox(height: CoeloSpacing.space3),
-                action,
-              ],
-            );
-          }
-          return Row(
-            children: [
-              Expanded(child: copy),
-              const SizedBox(width: CoeloSpacing.space4),
+              copy,
+              const SizedBox(height: CoeloSpacing.space3),
               action,
             ],
           );
-        },
-      ),
+        }
+        return Row(
+          children: [
+            Expanded(child: copy),
+            const SizedBox(width: CoeloSpacing.space4),
+            action,
+          ],
+        );
+      },
     );
   }
 }
@@ -1353,7 +1289,13 @@ final class _UnitBrandMediaCard extends StatelessWidget {
                               : 'Escolher foto',
                         ),
                       ),
-                      if (selected) TextButton(onPressed: onToggle, child: const Text('Remover')),
+                      if (selected)
+                        TextButton(
+                          key: Key(isCover ? 'unit-cover-remove' : 'unit-logo-remove'),
+                          style: _negativeTextActionStyle(context),
+                          onPressed: onToggle,
+                          child: const Text('Remover'),
+                        ),
                     ],
                   ),
               ],
@@ -1528,6 +1470,34 @@ final class _UnitReviewCard extends StatelessWidget {
       ),
     );
   }
+}
+
+ButtonStyle _semanticIconActionStyle(BuildContext context) {
+  final colors = Theme.of(context).colorScheme;
+  return ButtonStyle(
+    foregroundColor: WidgetStatePropertyAll(colors.primary),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+        return colors.primaryContainer;
+      }
+      return Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+  );
+}
+
+ButtonStyle _negativeTextActionStyle(BuildContext context) {
+  final colors = Theme.of(context).colorScheme;
+  return ButtonStyle(
+    foregroundColor: WidgetStatePropertyAll(colors.error),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+        return colors.errorContainer;
+      }
+      return Colors.transparent;
+    }),
+    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+  );
 }
 
 String _unitInitials(String value) {

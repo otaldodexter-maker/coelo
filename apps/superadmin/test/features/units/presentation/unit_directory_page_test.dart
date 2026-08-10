@@ -396,6 +396,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('keeps table copy actions at the minimum touch target', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitDirectoryPage(
+          repository: repository,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('unit-view-table')));
+    await tester.pumpAndSettle();
+
+    final copyAction = find.byKey(Key('copy-unit-email-${repository.records.first.id}'));
+    expect(tester.getSize(copyAction).width, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(tester.getSize(copyAction).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+  });
   testWidgets('supports 200 percent text at all approved widths', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -414,6 +436,13 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+
+      final controlsRect = tester.getRect(find.byKey(const Key('unit-filter-controls')));
+      final institutionRect = tester.getRect(find.byKey(const Key('unit-institution-filter')));
+      final typeRect = tester.getRect(find.byKey(const Key('unit-type-filter')));
+      expect(institutionRect.width, closeTo(controlsRect.width, 1));
+      expect(typeRect.top, greaterThan(institutionRect.bottom));
+      expect(typeRect.width, closeTo(controlsRect.width, 1));
 
       expect(tester.takeException(), isNull, reason: '$width cards');
       expect(find.byKey(const Key('unit-directory-pagination-footer')), findsOneWidget);

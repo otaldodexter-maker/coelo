@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/units/domain/unit_directory.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_navigation.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -46,6 +47,7 @@ void main() {
     ]) {
       expect(find.text(label), findsWidgets);
     }
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
   });
@@ -74,11 +76,55 @@ void main() {
     for (final context in ['logo', 'cover', 'surface', 'brand', 'text']) {
       expect(find.byKey(Key('unit-inherit-$context')), findsOneWidget);
     }
+    expect(
+      find.ancestor(
+        of: find.byKey(const Key('unit-inherit-brand')),
+        matching: find.byType(Container),
+      ),
+      findsNothing,
+    );
 
     await _tapVisible(tester, find.byKey(const Key('unit-inherit-brand')));
     expect(find.byKey(const Key('unit-color-picker-accentColor')), findsOneWidget);
   });
 
+  testWidgets('restores inherited identity and plan summaries after customization', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+    final institution = institutions.records.first;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final inheritedIdentity = 'Identidade herdada de ${institution.publicName}';
+    expect(find.text(inheritedIdentity), findsOneWidget);
+    await _tapVisible(tester, find.byKey(const Key('unit-inherit-brand')));
+    expect(find.byKey(const Key('unit-color-picker-accentColor')), findsOneWidget);
+    expect(find.text(inheritedIdentity), findsNothing);
+    await _tapVisible(tester, find.byKey(const Key('unit-inherit-brand')));
+    expect(find.byKey(const Key('unit-color-picker-accentColor')), findsNothing);
+    expect(find.text(inheritedIdentity), findsOneWidget);
+
+    await _tapVisible(tester, find.byKey(const Key('step-plano')));
+    expect(find.text('Plano efetivo herdado de ${institution.publicName}'), findsOneWidget);
+    await _tapVisible(tester, find.byKey(const Key('unit-inherit-plan')));
+    await _tapVisible(tester, find.byKey(const Key('unit-plan-professional')));
+    expect(find.text('Plano específico desta unidade'), findsOneWidget);
+    await _tapVisible(tester, find.byKey(const Key('unit-inherit-plan')));
+    expect(find.text('Plano efetivo herdado de ${institution.publicName}'), findsOneWidget);
+    expect(find.text(institution.plan.label), findsWidgets);
+  });
   testWidgets('keeps administrators and people changes local to the unit form', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -293,7 +339,9 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _tapVisible(tester, find.byKey(const Key('step-plano')));
-    await tester.tap(find.byType(SwitchListTile));
+    expect(find.byType(SwitchListTile), findsNothing);
+    final inheritPlan = tester.widget<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField));
+    inheritPlan.onChanged!(false);
     await tester.pumpAndSettle();
 
     final button = tester.widget<OutlinedButton>(find.byKey(const Key('unit-plan-professional')));
@@ -373,9 +421,29 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await _tapVisible(tester, find.byKey(const Key('unit-inherit-logo')));
+    await _tapVisible(tester, find.byKey(const Key('unit-logo-picker')));
+    final removeLogo = tester.widget<TextButton>(find.byKey(const Key('unit-logo-remove')));
+    final colors = CoeloTheme.light.colorScheme;
+    expect(removeLogo.style?.foregroundColor?.resolve({}), colors.error);
+    expect(
+      removeLogo.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      colors.errorContainer,
+    );
+    expect(removeLogo.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+
     await _tapVisible(tester, find.byKey(const Key('unit-inherit-brand')));
     await tester.ensureVisible(find.byKey(const Key('unit-color-picker-accentColor')));
     await tester.pumpAndSettle();
+    final colorPicker = tester.widget<IconButton>(
+      find.byKey(const Key('unit-color-picker-accentColor')),
+    );
+    final semanticColors = CoeloTheme.light.colorScheme;
+    expect(colorPicker.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
+    expect(
+      colorPicker.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      semanticColors.primaryContainer,
+    );
     await tester.tap(find.byKey(const Key('unit-color-picker-accentColor')));
     await tester.pumpAndSettle();
 
@@ -454,33 +522,37 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps step navigation beside the form at the medium breakpoint', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1024, 900));
+  testWidgets('keeps the 248 px rail and footer after it at 768 and 1024', (tester) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final institutions = FakeInstitutionDirectoryRepository();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(institutions),
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onSaved: (_) {},
+    for (final width in [768.0, 1024.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: UnitFormPage(
+            key: ValueKey(width),
+            repository: FakeUnitDirectoryRepository(institutions),
+            logout: () async => const LogoutResult.success(),
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    final navigation = tester.getRect(find.byType(UnitFormNavigation));
-    final form = tester.getRect(find.byKey(const Key('unit-form-scroll')));
+      final navigation = tester.getRect(find.byType(UnitFormNavigation));
+      final form = tester.getRect(find.byKey(const Key('unit-form-scroll')));
+      final footer = tester.getRect(find.byKey(const Key('unit-form-footer')));
 
-    expect(navigation.left, lessThan(form.left));
-    expect((navigation.top - form.top).abs(), lessThan(CoeloSpacing.space4));
-    expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
-    expect(tester.takeException(), isNull);
+      expect(navigation.width, 248, reason: 'rail at ${width.toInt()}');
+      expect(form.left - navigation.right, closeTo(CoeloSpacing.space6, 1));
+      expect(footer.left, greaterThanOrEqualTo(navigation.right + CoeloSpacing.space6));
+      expect(find.byKey(const Key('superadmin-form-step-summary')), findsNothing);
+      expect(tester.takeException(), isNull);
+    }
   });
-
   testWidgets('keeps edit actions inline on a wide layout', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
