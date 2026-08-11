@@ -158,9 +158,15 @@ GoRouter createSuperadminRouter({
   if (!preferencesController.loaded) {
     unawaited(preferencesController.load());
   }
-  final prototypeRepository = institutionDirectoryRepository is FakeInstitutionDirectoryRepository
+  final fakeInstitutionRepository =
+      institutionDirectoryRepository is FakeInstitutionDirectoryRepository
       ? institutionDirectoryRepository
-      : FakeInstitutionDirectoryRepository();
+      : null;
+  final prototypeRepository =
+      fakeInstitutionRepository ?? FakeInstitutionDirectoryRepository();
+  final institutionPreviewRepository =
+      fakeInstitutionRepository ??
+      const UnavailableInstitutionDirectoryRepository();
   final unitRepository = FakeUnitDirectoryRepository(prototypeRepository);
   final groupRepository = FakeGroupDirectoryRepository(prototypeRepository);
   final activityPreviewRepository = FakeActivityDirectoryRepository();
@@ -1196,7 +1202,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devInstitutions,
             name: SuperadminRoutes.devInstitutionsName,
             builder: (context, state) => InstitutionDirectoryPage(
-              repository: prototypeRepository,
+              repository: institutionPreviewRepository,
               logout: _previewLogout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.devHomeName),
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.devUnitsName),
@@ -1220,7 +1226,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devInstitutionCreate,
             name: SuperadminRoutes.devInstitutionCreateName,
             builder: (context, state) => InstitutionFormPage(
-              repository: prototypeRepository,
+              repository: institutionPreviewRepository,
               logout: _previewLogout,
               onCancel: () => context.goNamed(SuperadminRoutes.devInstitutionsName),
               onSaved: (result) =>
@@ -1248,7 +1254,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devInstitutionEdit,
             name: SuperadminRoutes.devInstitutionEditName,
             builder: (context, state) => InstitutionFormPage(
-              repository: prototypeRepository,
+              repository: institutionPreviewRepository,
               institutionId: state.pathParameters['institutionId'],
               logout: _previewLogout,
               onCancel: () => context.goNamed(SuperadminRoutes.devInstitutionsName),

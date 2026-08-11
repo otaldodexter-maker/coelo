@@ -338,7 +338,7 @@ void main() {
         capturedRequest = request;
         final body = jsonDecode(request.body) as Map<String, dynamic>;
         expect(body['p_request_id'], isNotNull);
-        expect(body['p_payload'], isA<Map>());
+        expect(body['p_payload'], isA<Map<String, dynamic>>());
         return Response(
           jsonEncode({
             'id': 'created-1',
@@ -363,7 +363,7 @@ void main() {
     await repository.create(_institutionDraftForRpc());
 
     final body = jsonDecode(capturedRequest!.body) as Map<String, dynamic>;
-    final payload = Map<String, dynamic>.from(body['p_payload'] as Map);
+    final payload = Map<String, dynamic>.from(body['p_payload'] as Map<String, dynamic>);
     expect(capturedRequest!.url.pathSegments, contains('create_institution_for_superadmin'));
     expect(payload.keys.toSet(), {
       'public_name',

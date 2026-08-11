@@ -841,7 +841,7 @@ void main() {
     expect(repository.findById('demo-institution-aurora')!.postalCode, isNot('123'));
   });
 
-  testWidgets('legacy edit cannot save until it has an administrator', (tester) async {
+  testWidgets('legacy edit requires an administrator and then saves in preview', (tester) async {
     _useViewport(tester, const Size(1440, 1000));
     final repository = FakeInstitutionDirectoryRepository();
     var savedCallbackCalls = 0;
@@ -883,20 +883,10 @@ void main() {
     await tester.tap(saveCurrent);
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Representantes e administradores ainda não podem ser salvos neste fluxo.'),
-      findsOneWidget,
-    );
     expect(find.textContaining('fake'), findsNothing);
-    expect(
-      repository.findById('demo-institution-aurora')!.brandDisplayName,
-      isNot('Aurora atualizado'),
-    );
-    expect(repository.findById('demo-institution-aurora')!.administrators, isEmpty);
-    expect(savedCallbackCalls, 0);
-    await tester.tap(find.byKey(const Key('institution-form-cancel')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsOneWidget);
+    expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
+    expect(repository.findById('demo-institution-aurora')!.administrators, isNotEmpty);
+    expect(savedCallbackCalls, 1);
   });
 
   testWidgets('edit footer keeps save as the only primary action at both widths', (tester) async {
@@ -1107,7 +1097,7 @@ void main() {
 
     await tester.tap(find.text('Administradores'));
     await tester.pumpAndSettle();
-    expect(find.byType(CheckboxListTile), findsNothing);
+    expect(find.byType(CheckboxListTile), findsOneWidget);
     expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
     expect(
       find.byKey(const Key('institution-confirm-representative-administrators')),

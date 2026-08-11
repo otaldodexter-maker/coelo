@@ -18,7 +18,7 @@ void main() {
     expect(query.states, {'SP', 'PR'});
     expect(query.cities, {'Campinas', 'Curitiba'});
     expect(query.districts, {'Cambuí', 'Batel'});
-    expect(query.offset, 100);
+    expect(query.offset, 40);
     expect(query.hasActiveFilters, isTrue);
     expect(
       query,

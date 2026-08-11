@@ -1611,6 +1611,9 @@ final class _ZeroTotalCountRepository implements InstitutionDirectoryRepository 
   final InstitutionDirectoryItem item;
 
   @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
   Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
     return domain.InstitutionDirectoryPage(
       items: [item],
@@ -1631,6 +1634,9 @@ final class _ZeroTotalCountRepository implements InstitutionDirectoryRepository 
 
 final class _PendingFilterOptionsRepository implements InstitutionDirectoryRepository {
   final _options = Completer<InstitutionDirectoryFilterOptions>();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 
   @override
   Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
@@ -1660,6 +1666,9 @@ final class _RecordingDirectoryRepository implements InstitutionDirectoryReposit
 
   final InstitutionDirectoryRepository _delegate;
   final queries = <InstitutionDirectoryQuery>[];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 
   @override
   Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) {

@@ -68,8 +68,6 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
 
   @override
   Future<InstitutionRecord> create(InstitutionRecord draft) async {
-    _throwIfUnsupportedRelations(draft);
-
     final created = draft.copyWith(
       id: draft.id.isNotEmpty ? draft.id : createId(draft.slug),
       version: draft.version + 1,
@@ -80,7 +78,6 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
 
   @override
   Future<InstitutionRecord> update(InstitutionRecord draft, {required int expectedVersion}) async {
-    _throwIfUnsupportedRelations(draft);
     final index = _records.indexWhere((candidate) => candidate.id == draft.id);
     if (index == -1) {
       throw const InstitutionDirectoryNotFoundException();
@@ -94,14 +91,6 @@ final class FakeInstitutionDirectoryRepository implements InstitutionDirectoryRe
     final updated = draft.copyWith(version: expectedVersion + 1);
     _records[index] = updated;
     return updated;
-  }
-
-  void _throwIfUnsupportedRelations(InstitutionRecord record) {
-    if (record.hasUnsupportedRelations) {
-      throw InstitutionDirectoryUnsupportedRelationException(
-        'Não é possível salvar vínculos ainda não suportados.',
-      );
-    }
   }
 
   @override

@@ -79,7 +79,7 @@ void main() {
     );
   });
 
-  test('blocks unsupported relationship payloads', () async {
+  test('preserves relationship payloads for tests and previews', () async {
     final repository = FakeInstitutionDirectoryRepository(records: const []);
     final record = _recordForTest(
       administrators: const [
@@ -98,14 +98,15 @@ void main() {
       ],
     );
 
-    await expectLater(
-      repository.create(record),
-      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    final created = await repository.create(record);
+    expect(created.administrators.single.handle, '@ana');
+
+    final updated = await repository.update(
+      created.copyWith(brandDisplayName: 'Atualizada'),
+      expectedVersion: created.version,
     );
-    await expectLater(
-      repository.update(record.copyWith(id: 'inst-1'), expectedVersion: 1),
-      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
-    );
+    expect(updated.brandDisplayName, 'Atualizada');
+    expect(updated.administrators.single.id, 'admin-1');
   });
 
   test('reserves institution and administrator handles globally, except one institution', () {
