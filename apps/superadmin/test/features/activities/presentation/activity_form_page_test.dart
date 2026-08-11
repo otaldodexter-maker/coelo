@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_form_
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -19,7 +20,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.textContaining(RegExp(r'apenas nesta sess', caseSensitive: false)), findsNothing);
     expect(
       tester.getRect(find.byKey(const Key('step-identidade'))).right,
       lessThan(tester.getRect(find.byKey(const Key('activity-form-name'))).left),
@@ -73,6 +76,28 @@ void main() {
               padding.left == padding.right;
         });
     expect((outerPadding.padding as EdgeInsets).left, CoeloSpacing.space6);
+    final navigation = tester.getRect(find.byType(SuperadminFormStepNavigation));
+    final scroll = tester.getRect(find.byKey(const Key('activity-form-scroll')));
+    final footer = tester.getRect(find.byKey(const Key('activity-form-footer-surface')));
+    expect(navigation.width, 248);
+    expect(scroll.left - navigation.right, closeTo(CoeloSpacing.space6, 1));
+    expect(footer.left, greaterThanOrEqualTo(navigation.right + CoeloSpacing.space6));
+  });
+
+  testWidgets('keeps the compact chat launcher above the canonical footer', (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    final footer = find.byKey(const Key('activity-form-footer-surface'));
+    expect(launcher, findsOneWidget);
+    expect(
+      tester.getBottomLeft(launcher).dy,
+      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+    );
   });
 
   testWidgets('saves a minimum draft then completes links and professional permissions', (
@@ -244,8 +269,10 @@ void main() {
   testWidgets('stacks local selector and create action at full width on compact screens', (
     tester,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(375, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.physicalSize = const Size(375, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
@@ -259,6 +286,8 @@ void main() {
         .onChanged('institution-1');
     await tester.pump();
     await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.ensureVisible(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     final selectorRect = tester.getRect(find.byKey(const Key('activity-form-location')));
@@ -266,6 +295,24 @@ void main() {
     expect(actionRect.top, greaterThan(selectorRect.bottom));
     expect(actionRect.width, closeTo(selectorRect.width, 1));
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('supports 200 percent text at all approved widths', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1000);
+      await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+      await tester.pumpAndSettle();
+      if (width < 768) {
+        expect(find.text('Etapa 1 de 4'), findsOneWidget);
+      } else {
+        expect(find.text('Etapa 1 de 4'), findsNothing);
+        expect(tester.getSize(find.byType(SuperadminFormStepNavigation)).width, 248);
+      }
+      expect(tester.takeException(), isNull, reason: '$width overflow');
+    }
   });
 }
 
@@ -275,8 +322,13 @@ Widget _app({
   ActivityDirectoryRepository? repository,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
+  TextScaler textScaler = TextScaler.noScaling,
 }) => MaterialApp(
   theme: CoeloTheme.light,
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+    child: child!,
+  ),
   home: ActivityFormPage(
     activityId: activityId,
     initialDraft: initialDraft,

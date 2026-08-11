@@ -90,6 +90,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   late final SuperadminActivityController _activityController;
   late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
   late final bool _ownsActivityController;
+  double _embeddedChatLauncherBottomInset = 0;
 
   @override
   void initState() {
@@ -119,6 +120,13 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   }
 
   bool get _reduceMotion => MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+  void _handleEmbeddedChatLauncherBottomInset(double inset) {
+    if ((_embeddedChatLauncherBottomInset - inset).abs() < .5) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || (_embeddedChatLauncherBottomInset - inset).abs() < .5) return;
+      setState(() => _embeddedChatLauncherBottomInset = inset);
+    });
+  }
 
   void _toggleSidebar() {
     final collapsed = !_sidebarCollapsed;
@@ -149,6 +157,9 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     final pageBody = widget.child ?? const SizedBox.expand();
     final hostScope = _SuperadminShellHostScope.maybeOf(context);
     if (!widget.isHost && hostScope != null) {
+      hostScope.onChatLauncherBottomInsetChanged(
+        widget.showChatLauncher ? widget.chatLauncherBottomInset : 0,
+      );
       return _buildEmbeddedPage(pageBody, hostScope);
     }
     return LayoutBuilder(
@@ -347,6 +358,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       isDesktop: isDesktop,
       onDestinationSelected: widget.onDestinationSelected!,
       chatLauncherPositionController: _chatLauncherPositionController,
+      onChatLauncherBottomInsetChanged: _handleEmbeddedChatLauncherBottomInset,
       child: KeyedSubtree(key: const Key('superadmin-content-transition'), child: child),
     );
   }
@@ -405,8 +417,11 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     final openConversations =
         widget.onOpenConversations ??
         (destinationHandler == null ? () {} : () => destinationHandler('conversations'));
-    final launcherReservedBottom = widget.chatLauncherBottomInset > 0
-        ? _shellGutter + widget.chatLauncherBottomInset
+    final effectiveBottomInset = widget.isHost
+        ? _embeddedChatLauncherBottomInset
+        : widget.chatLauncherBottomInset;
+    final launcherReservedBottom = effectiveBottomInset > 0
+        ? _shellGutter + effectiveBottomInset
         : 0.0;
     final launcherBottom = CoeloSpacing.space4 + launcherReservedBottom;
     return Stack(
@@ -433,12 +448,14 @@ class _SuperadminShellHostScope extends InheritedWidget {
     required this.isDesktop,
     required this.onDestinationSelected,
     required this.chatLauncherPositionController,
+    required this.onChatLauncherBottomInsetChanged,
     required super.child,
   });
 
   final bool isDesktop;
   final ValueChanged<String> onDestinationSelected;
   final SuperadminChatLauncherPositionController chatLauncherPositionController;
+  final ValueChanged<double> onChatLauncherBottomInsetChanged;
 
   static _SuperadminShellHostScope? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_SuperadminShellHostScope>();
@@ -448,7 +465,8 @@ class _SuperadminShellHostScope extends InheritedWidget {
   bool updateShouldNotify(_SuperadminShellHostScope oldWidget) {
     return isDesktop != oldWidget.isDesktop ||
         onDestinationSelected != oldWidget.onDestinationSelected ||
-        chatLauncherPositionController != oldWidget.chatLauncherPositionController;
+        chatLauncherPositionController != oldWidget.chatLauncherPositionController ||
+        onChatLauncherBottomInsetChanged != oldWidget.onChatLauncherBottomInsetChanged;
   }
 }
 

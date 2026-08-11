@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -118,6 +119,47 @@ void main() {
     expect(slides.map((transition) => transition.position.value), everyElement(Offset.zero));
     expect(fades.map((transition) => transition.opacity.value), everyElement(1));
     expect(scales.map((transition) => transition.scale.value), everyElement(1));
+  });
+
+  testWidgets('propagates the activity footer inset through the persistent host', (tester) async {
+    tester.view.physicalSize = const Size(375, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devActivityCreate);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    final footer = find.byKey(const Key('activity-form-footer-surface'));
+    expect(launcher, findsOneWidget);
+    expect(
+      tester.getBottomLeft(launcher).dy,
+      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
+    );
+  });
+
+  testWidgets('uses the wide activity frame inset inside the persistent host', (tester) async {
+    tester.view.physicalSize = const Size(1440, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devActivityCreate);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+    final surface = find.byKey(const Key('superadmin-floating-content'));
+    final navigation = find.byType(SuperadminFormStepNavigation);
+    expect(surface, findsOneWidget);
+    expect(navigation, findsOneWidget);
+    final surfaceRect = tester.getRect(surface);
+    final navigationRect = tester.getRect(navigation);
+    expect(navigationRect.width, 248);
+    expect(navigationRect.left - surfaceRect.left, closeTo(CoeloSpacing.space10, 2));
   });
 
   testWidgets('keeps one shell while navigating non-linearly between development routes', (

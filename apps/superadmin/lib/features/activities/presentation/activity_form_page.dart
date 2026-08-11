@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker_stub.dart'
@@ -61,6 +62,7 @@ final class ActivityFormPage extends StatefulWidget {
 final class _ActivityFormPageState extends State<ActivityFormPage> {
   late final SuperadminActivityController _activityController;
   _ActivityFormLoadState _state = _ActivityFormLoadState.loading;
+  double _footerHeight = 0;
   ActivityFormController? _controller;
 
   bool get _isEditing => widget.activityId != null;
@@ -164,6 +166,11 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     }
   }
 
+  void _handleFooterHeightChanged(double height) {
+    if ((_footerHeight - height).abs() < .5) return;
+    setState(() => _footerHeight = height);
+  }
+
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
@@ -173,13 +180,13 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
         ? 'Revise identidade, vínculos e profissionais desta atividade.'
         : 'Configure a atividade e seus vínculos institucionais.',
     currentDestination: 'activities',
-    showChatLauncher: false,
+    chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
     onDestinationSelected: widget.onDestinationSelected == null ? null : _selectDestination,
     onBugReportSubmitted: widget.onBugReportSubmitted,
-    child: _body(),
+    child: _body(MediaQuery.sizeOf(context).width),
   );
 
-  Widget _body() => switch (_state) {
+  Widget _body(double viewportWidth) => switch (_state) {
     _ActivityFormLoadState.loading => const Center(child: CircularProgressIndicator()),
     _ActivityFormLoadState.notFound => CoeloStatePanel(
       title: 'Atividade não encontrada',
@@ -201,6 +208,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       icon: Icons.lock_outline_rounded,
     ),
     _ActivityFormLoadState.ready => _ActivityFormBody(
+      viewportWidth: viewportWidth,
+      onFooterHeightChanged: _handleFooterHeightChanged,
       controller: _controller!,
       onCancel: _requestCancel,
       onSaveDraft: _saveDraft,
@@ -214,6 +223,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
 final class _ActivityFormBody extends StatelessWidget {
   const _ActivityFormBody({
     required this.controller,
+    required this.viewportWidth,
+    required this.onFooterHeightChanged,
     required this.onCancel,
     required this.onSaveDraft,
     required this.onSubmit,
@@ -222,6 +233,8 @@ final class _ActivityFormBody extends StatelessWidget {
   });
 
   final ActivityFormController controller;
+  final double viewportWidth;
+  final ValueChanged<double> onFooterHeightChanged;
   final VoidCallback onCancel;
   final VoidCallback onSaveDraft;
   final VoidCallback onSubmit;
@@ -236,14 +249,8 @@ final class _ActivityFormBody extends StatelessWidget {
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) onCancel();
       },
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final desktop = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-          final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-              ? CoeloSpacing.space10
-              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-              ? CoeloSpacing.space6
-              : CoeloSpacing.space4;
+      child: Builder(
+        builder: (context) {
           final navigation = SuperadminFormStepNavigation(
             steps: [
               for (final step in ActivityFormStep.values)
@@ -264,43 +271,21 @@ final class _ActivityFormBody extends StatelessWidget {
             currentIndex: controller.currentStep.index,
             onStepSelected: controller.goToStep,
           );
-          final content = Expanded(
-            child: Column(
-              children: [
-                if (!desktop) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
-                Expanded(
-                  child: SingleChildScrollView(
-                    key: const Key('activity-form-scroll'),
-                    padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 880),
-                        child: ActivityFormSection(
-                          controller: controller,
-                          onCreateLocation: onCreateLocation,
-                          imagePicker: imagePicker,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                _ActivityFormFooter(
-                  controller: controller,
-                  onCancel: onCancel,
-                  onSaveDraft: onSaveDraft,
-                  onSubmit: onSubmit,
-                ),
-              ],
+          return SuperadminFormFrame(
+            viewportWidth: viewportWidth,
+            navigation: navigation,
+            scrollKey: const Key('activity-form-scroll'),
+            body: ActivityFormSection(
+              controller: controller,
+              onCreateLocation: onCreateLocation,
+              imagePicker: imagePicker,
             ),
-          );
-          return Padding(
-            padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (desktop) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-                content,
-              ],
+            footer: _ActivityFormFooter(
+              controller: controller,
+              onCancel: onCancel,
+              onSaveDraft: onSaveDraft,
+              onSubmit: onSubmit,
+              onHeightChanged: onFooterHeightChanged,
             ),
           );
         },
@@ -315,12 +300,14 @@ final class _ActivityFormFooter extends StatelessWidget {
     required this.onCancel,
     required this.onSaveDraft,
     required this.onSubmit,
+    required this.onHeightChanged,
   });
 
   final ActivityFormController controller;
   final VoidCallback onCancel;
   final VoidCallback onSaveDraft;
   final VoidCallback onSubmit;
+  final ValueChanged<double> onHeightChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -367,6 +354,7 @@ final class _ActivityFormFooter extends StatelessWidget {
             ),
     );
     return SuperadminFormActionFooter(
+      onHeightChanged: onHeightChanged,
       surfaceKey: const Key('activity-form-footer-surface'),
       tertiaryAction: cancel,
       continuationActions: [

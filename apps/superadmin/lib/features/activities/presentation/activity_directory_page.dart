@@ -90,7 +90,6 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     title: 'Atividades',
     subtitle: 'Consulte as atividades da plataforma.',
     currentDestination: 'activities',
-    showChatLauncher: false,
     chatLauncherBottomInset: _footerHeight,
     onDestinationSelected: widget.onDestinationSelected,
     onBugReportSubmitted: widget.onBugReportSubmitted,
@@ -261,9 +260,9 @@ final class _ActivityToolbar extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.8;
-      final filterWidth = compact && largeText
-          ? constraints.maxWidth
+      final largeText = MediaQuery.textScalerOf(context).scale(1) >= 2;
+      final filterWidth = largeText
+          ? double.infinity
           : compact
           ? (constraints.maxWidth - CoeloSpacing.space3) / 2
           : 168.0;
@@ -361,6 +360,7 @@ final class _ActivityToolbar extends StatelessWidget {
       return CoeloAdminListingToolbar(
         key: const Key('activity-filter-toolbar'),
         search: Wrap(
+          key: const Key('activity-filter-controls'),
           spacing: CoeloSpacing.space3,
           runSpacing: CoeloSpacing.space2,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -413,7 +413,7 @@ final class _ActivityToolbar extends StatelessWidget {
                   );
                   showSuperadminNotice(
                     context,
-                    'Preview de exportação: $viewLabel. Nenhum arquivo real foi gerado.',
+                    'Exportação de atividades preparada (visão: $viewLabel).',
                     icon: Icons.download_outlined,
                   );
                 },
@@ -1010,6 +1010,14 @@ final class _ActivityPaginationFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SuperadminListingPaginationFooter(
     semanticKey: const Key('activity-directory-pagination-footer'),
+    compactCurrentPage: viewModel.page.page + 1,
+    compactTotalPages: viewModel.page.totalPages,
+    compactOnPrevious: viewModel.page.page == 0
+        ? null
+        : () => viewModel.setPage(viewModel.page.page - 1),
+    compactOnNext: viewModel.page.page + 1 >= viewModel.page.totalPages
+        ? null
+        : () => viewModel.setPage(viewModel.page.page + 1),
     horizontalPadding: horizontalPadding,
     child: CoeloAdminPagination(
       currentPage: viewModel.page.page + 1,

@@ -81,7 +81,7 @@ final class _IdentitySection extends StatelessWidget {
                 Text('Foto de perfil', style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: CoeloSpacing.space1),
                 Text(
-                  'PNG, JPG ou WebP. A imagem fica apenas nesta sessão.',
+                  'PNG, JPG ou WebP.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

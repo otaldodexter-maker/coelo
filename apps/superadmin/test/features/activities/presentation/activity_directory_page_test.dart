@@ -138,7 +138,12 @@ void main() {
 
     expect(find.byKey(const Key('activity-directory-pagination-footer')), findsOneWidget);
     expect(find.byType(SuperadminListingPaginationFooter), findsOneWidget);
-    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsNothing);
+    expect(find.textContaining(RegExp(r'Página 1 de \d+')), findsOneWidget);
+    expect(find.bySemanticsLabel('Página anterior'), findsOneWidget);
+    expect(find.bySemanticsLabel('Próxima página'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     final toggle = tester.widget<SuperadminDirectoryViewToggle<ActivityDirectoryTableView>>(
@@ -151,7 +156,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('export preview identifies the selected table view', (tester) async {
+  testWidgets('export identifies the selected table view', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -177,7 +182,50 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Por Turmas'), findsOneWidget);
-    expect(find.textContaining('Nenhum arquivo real foi gerado'), findsOneWidget);
+    expect(find.textContaining(RegExp(r'Exporta.*atividades preparada')), findsOneWidget);
+    expect(
+      find.textContaining(RegExp(r'fake|demo|dev|catálogo|teste', caseSensitive: false)),
+      findsNothing,
+    );
+  });
+
+  testWidgets('stacks filters by internal width at 200 percent text', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: ActivityDirectoryPage(
+            repository: FakeActivityDirectoryRepository(),
+            logout: () async => const LogoutResult.success(),
+            onCreate: () {},
+            onView: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final controls = tester.getRect(find.byKey(const Key('activity-filter-controls')));
+      final filters = [
+        tester.getRect(find.byKey(const Key('activity-institution-filter'))),
+        tester.getRect(find.byKey(const Key('activity-unit-filter'))),
+        tester.getRect(find.byKey(const Key('activity-group-filter'))),
+        tester.getRect(find.byKey(const Key('activity-status-filter'))),
+        tester.getRect(find.byKey(const Key('activity-origin-filter'))),
+      ];
+      for (final filter in filters) {
+        expect(filter.width, closeTo(controls.width, 1), reason: '$width filter width');
+      }
+      for (var index = 1; index < filters.length; index++) {
+        expect(filters[index].top, greaterThan(filters[index - 1].bottom));
+      }
+      expect(tester.takeException(), isNull, reason: '$width overflow');
+    }
   });
 
   testWidgets('shows only confirmed filters and supports reduced motion focus', (tester) async {
