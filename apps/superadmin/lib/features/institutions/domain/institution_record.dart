@@ -15,14 +15,77 @@ enum InstitutionSubscriptionStatus {
 }
 
 enum InstitutionPlan {
-  essential('demo-plan-essential', 'Essencial'),
-  professional('demo-plan-professional', 'Profissional'),
-  complete('demo-plan-complete', 'Completo'),
-  custom('demo-plan-custom', 'Personalizado');
+  essential('essential', 'Essencial'),
+  professional('professional', 'Profissional'),
+  complete('complete', 'Completo'),
+  custom('custom', 'Personalizado');
 
   const InstitutionPlan(this.id, this.label);
   final String id;
   final String label;
+
+  static InstitutionPlan fromCode(String? value) => switch (value) {
+    'essential' => essential,
+    'professional' => professional,
+    'complete' => complete,
+    'custom' => custom,
+    _ => custom,
+  };
+}
+
+InstitutionSubscriptionStatus _subscriptionStatusFromCode(String? value) => switch (value) {
+  'active' => InstitutionSubscriptionStatus.active,
+  'trial' => InstitutionSubscriptionStatus.trial,
+  'paused' => InstitutionSubscriptionStatus.paused,
+  'suspended' => InstitutionSubscriptionStatus.suspended,
+  'canceled' || 'cancelled' => InstitutionSubscriptionStatus.canceled,
+  'draft' => InstitutionSubscriptionStatus.draft,
+  _ => InstitutionSubscriptionStatus.draft,
+};
+
+InstitutionStatus _institutionStatusFromCode(String? value) => switch (value) {
+  'active' => InstitutionStatus.active,
+  'onboarding' => InstitutionStatus.onboarding,
+  'inactive' => InstitutionStatus.inactive,
+  'suspended' => InstitutionStatus.suspended,
+  'archived' => InstitutionStatus.archived,
+  'draft' => InstitutionStatus.draft,
+  _ => InstitutionStatus.draft,
+};
+int _toInt(Object? value, {int fallback = 0}) {
+  if (value is int) {
+    return value;
+  }
+  if (value is num) {
+    return value.toInt();
+  }
+  return fallback;
+}
+
+String _toString(Object? value, {String fallback = ''}) {
+  if (value is String) {
+    return value;
+  }
+  return fallback;
+}
+
+DateTime _toDateTime(Object? value, {DateTime? fallback}) {
+  if (value is String) {
+    return DateTime.parse(value);
+  }
+  return fallback ?? DateTime.fromMillisecondsSinceEpoch(0);
+}
+
+DateTime? _toNullableDateTime(Object? value) {
+  if (value is String && value.isNotEmpty) {
+    return DateTime.parse(value);
+  }
+  return null;
+}
+
+Map<String, dynamic> _aggregate(Map<String, dynamic>? payload) {
+  if (payload == null) return const {};
+  return Map<String, dynamic>.from(payload);
 }
 
 final class InstitutionGroup {
@@ -163,6 +226,18 @@ final class InstitutionProfileLink {
   final String url;
 }
 
+List<InstitutionProfileLink> _profileLinksFromRpc(Object? value) {
+  if (value is! List) {
+    return const [];
+  }
+
+  return [
+    for (final item in value)
+      if (item is Map)
+        InstitutionProfileLink(label: _toString(item['label']), url: _toString(item['url'])),
+  ];
+}
+
 final class InstitutionRecord {
   const InstitutionRecord({
     required this.id,
@@ -197,7 +272,9 @@ final class InstitutionRecord {
     required this.plan,
     required this.subscriptionStatus,
     required this.subscriptionStart,
-    required this.trialEnd,
+    this.trialEnd,
+    this.subscriptionPausedAt,
+    this.subscriptionCancelledAt,
     required this.subscriptionJustification,
     required this.brandDisplayName,
     required this.hasSimulatedLogo,
@@ -217,6 +294,7 @@ final class InstitutionRecord {
     this.whatsappNumber = '',
     this.legalRepresentatives = const [],
     this.administrators = const [],
+    this.version = 0,
   });
 
   factory InstitutionRecord.fromDirectoryItem(InstitutionDirectoryItem item) {
@@ -278,6 +356,116 @@ final class InstitutionRecord {
     );
   }
 
+  factory InstitutionRecord.fromRpcPayload(Map<String, dynamic> payload) {
+    final root = _aggregate(payload);
+    final institutions = root.isNotEmpty && root['institutions'] is Map<String, dynamic>
+        ? _aggregate(root['institutions'] as Map<String, dynamic>?)
+        : const <String, dynamic>{};
+    final source = institutions.isNotEmpty ? institutions : root;
+
+    final institutionType = _aggregate(root['institution_type'] as Map<String, dynamic>?);
+    final address = _aggregate(root['address'] as Map<String, dynamic>?);
+    final contact = _aggregate(root['contact'] as Map<String, dynamic>?);
+    final branding = _aggregate(root['branding'] as Map<String, dynamic>?);
+    final subscription = _aggregate(root['subscription'] as Map<String, dynamic>?);
+    final latestSubscription = _aggregate(root['latest_subscription'] as Map<String, dynamic>?);
+
+    return InstitutionRecord(
+      id: _toString(source['id']),
+      publicName: _toString(source['public_name']),
+      tradeName: _toString(source['trade_name'], fallback: _toString(source['public_name'])),
+      legalName: _toString(source['legal_name']),
+      typeId: _toString(institutionType['id'], fallback: _toString(source['institution_type_id'])),
+      typeName: _toString(
+        institutionType['name'],
+        fallback: _toString(source['institution_type_name']),
+      ),
+      documentType: _toString(source['document_type']),
+      document: _toString(source['document_ref'], fallback: _toString(source['document'])),
+      slug: _toString(source['slug']),
+      primaryDomain: _toString(source['primary_domain']),
+      status: _institutionStatusFromCode(_toString(source['status'], fallback: 'draft')),
+      locale: _toString(source['locale'], fallback: 'pt-BR'),
+      timezone: _toString(source['timezone'], fallback: 'America/Sao_Paulo'),
+      postalCode: _toString(address['postal_code']),
+      country: _toString(address['country'], fallback: 'Brasil'),
+      state: _toString(address['state']),
+      city: _toString(address['city']),
+      district: _toString(address['district']),
+      street: _toString(address['street']),
+      addressNumber: _toString(address['number'], fallback: _toString(address['address_number'])),
+      complement: _toString(address['complement']),
+      contactEmail: _toString(contact['email']),
+      contactPhone: _toString(contact['phone']),
+      contactMobilePhone: _toString(contact['mobile_phone']),
+      ownerFirstName: _toString(source['owner_first_name']),
+      ownerLastName: _toString(source['owner_last_name']),
+      ownerDisplayName: _toString(source['owner_display_name']),
+      ownerEmail: _toString(source['owner_email']),
+      ownerMobilePhone: _toString(source['owner_mobile_phone']),
+      plan: InstitutionPlan.fromCode(
+        _toString(
+          subscription['plan_code'],
+          fallback: _toString(latestSubscription['plan_code'], fallback: 'custom'),
+        ),
+      ),
+      subscriptionStatus: _subscriptionStatusFromCode(
+        _toString(
+          subscription['status'],
+          fallback: _toString(
+            subscription['subscription_status'],
+            fallback: _toString(source['subscription_status']),
+          ),
+        ),
+      ),
+      subscriptionStart: _toDateTime(
+        subscription['starts_at'] ??
+            latestSubscription['subscription_start'] ??
+            source['subscription_start'],
+        fallback: DateTime(1970, 1, 1),
+      ),
+      trialEnd: _toNullableDateTime(
+        subscription['trial_ends_at'] ?? latestSubscription['trial_end'],
+      ),
+      subscriptionPausedAt: _toNullableDateTime(subscription['paused_at']),
+      subscriptionCancelledAt: _toNullableDateTime(subscription['cancelled_at']),
+      subscriptionJustification: _toString(
+        subscription['justification'],
+        fallback: _toString(
+          subscription['manual_reason'],
+          fallback: _toString(latestSubscription['subscription_justification']),
+        ),
+      ),
+      brandDisplayName: _toString(
+        branding['display_name'],
+        fallback: _toString(source['public_name']),
+      ),
+      hasSimulatedLogo: branding['logo_media_asset_id'] != null,
+      hasSimulatedCover: branding['cover_media_asset_id'] != null,
+      accentColor: _toString(branding['accent_color'], fallback: '#D63C00'),
+      secondaryColor: _toString(branding['secondary_color'], fallback: '#3F4549'),
+      units: const [],
+      textColor: _toString(branding['text_color'], fallback: '#3F4549'),
+      secondaryTextColor: _toString(branding['secondary_text_color'], fallback: '#3F4549'),
+      tertiaryTextColor: _toString(branding['tertiary_text_color'], fallback: '#3F4549'),
+      surfaceColor: _toString(branding['surface_color'], fallback: '#FFFFFF'),
+      secondarySurfaceColor: '#F4F5F5',
+      tertiaryColor: _toString(branding['tertiary_color'], fallback: '#D63C00'),
+      profileBio: _toString(branding['profile_bio']),
+      profileLinks: _profileLinksFromRpc(branding['profile_links']),
+      websiteUrl: _toString(contact['website_url']),
+      whatsappNumber: _toString(contact['whatsapp_number']),
+      legalRepresentatives: const [],
+      administrators: const [],
+      version: _toInt(
+        source['management_version'],
+        fallback: _toInt(
+          source['version'],
+          fallback: _toInt(latestSubscription['management_version']),
+        ),
+      ),
+    );
+  }
   final String id;
   final String publicName;
   final String tradeName;
@@ -311,6 +499,8 @@ final class InstitutionRecord {
   final InstitutionSubscriptionStatus subscriptionStatus;
   final DateTime subscriptionStart;
   final DateTime? trialEnd;
+  final DateTime? subscriptionPausedAt;
+  final DateTime? subscriptionCancelledAt;
   final String subscriptionJustification;
   final String brandDisplayName;
   final bool hasSimulatedLogo;
@@ -330,6 +520,12 @@ final class InstitutionRecord {
   final String whatsappNumber;
   final List<InstitutionLegalRepresentative> legalRepresentatives;
   final List<InstitutionAdministratorDraft> administrators;
+  final int version;
+
+  bool get hasUnsupportedRelations => legalRepresentatives.isNotEmpty || administrators.isNotEmpty;
+
+  bool get hasUnsupportedRemoteData =>
+      hasUnsupportedRelations || secondarySurfaceColor != '#F4F5F5';
 
   InstitutionDirectoryItem get directoryItem => InstitutionDirectoryItem(
     id: id,
@@ -355,6 +551,65 @@ final class InstitutionRecord {
     unitsCount: units.length,
     groupsCount: units.fold(0, (total, unit) => total + unit.groups.length),
   );
+
+  Map<String, dynamic> toRpcPayload() {
+    return {
+      'public_name': publicName,
+      'trade_name': tradeName,
+      'legal_name': legalName,
+      'slug': slug,
+      'primary_domain': primaryDomain,
+      'document_ref': document,
+      'document_type': documentType,
+      'status': status.databaseValue,
+      'timezone': timezone,
+      'locale': locale,
+      'institution_type_name': typeName,
+      'address': {
+        'postal_code': postalCode,
+        'country': country,
+        'state': state,
+        'city': city,
+        'district': district,
+        'street': street,
+        'number': addressNumber,
+        'complement': complement,
+      },
+      'contact': {
+        'email': contactEmail,
+        'phone': contactPhone,
+        'mobile_phone': contactMobilePhone,
+        'website_url': websiteUrl,
+        'whatsapp_number': whatsappNumber,
+      },
+      'branding': {
+        'display_name': brandDisplayName,
+        'accent_color': accentColor,
+        'secondary_color': secondaryColor,
+        'tertiary_color': tertiaryColor,
+        'text_color': textColor,
+        'secondary_text_color': secondaryTextColor,
+        'tertiary_text_color': tertiaryTextColor,
+        'surface_color': surfaceColor,
+
+        'profile_bio': profileBio,
+        'profile_links': [
+          for (final link in profileLinks) {'label': link.label, 'url': link.url},
+        ],
+      },
+      'subscription': {
+        'plan_code': plan.id,
+        'status': subscriptionStatus == InstitutionSubscriptionStatus.canceled
+            ? 'cancelled'
+            : subscriptionStatus.name,
+        'starts_at': subscriptionStart.toIso8601String(),
+        'trial_ends_at': trialEnd?.toIso8601String(),
+        'manual_reason': subscriptionJustification,
+        'paused_at': subscriptionPausedAt?.toIso8601String(),
+        'cancelled_at': subscriptionCancelledAt?.toIso8601String(),
+      },
+    };
+  }
 
   InstitutionRecord copyWith({
     String? id,
@@ -391,6 +646,8 @@ final class InstitutionRecord {
     DateTime? subscriptionStart,
     DateTime? trialEnd,
     bool clearTrialEnd = false,
+    DateTime? subscriptionPausedAt,
+    DateTime? subscriptionCancelledAt,
     String? subscriptionJustification,
     String? brandDisplayName,
     bool? hasSimulatedLogo,
@@ -410,6 +667,7 @@ final class InstitutionRecord {
     String? whatsappNumber,
     List<InstitutionLegalRepresentative>? legalRepresentatives,
     List<InstitutionAdministratorDraft>? administrators,
+    int? version,
   }) {
     return InstitutionRecord(
       id: id ?? this.id,
@@ -445,6 +703,8 @@ final class InstitutionRecord {
       subscriptionStatus: subscriptionStatus ?? this.subscriptionStatus,
       subscriptionStart: subscriptionStart ?? this.subscriptionStart,
       trialEnd: clearTrialEnd ? null : trialEnd ?? this.trialEnd,
+      subscriptionPausedAt: subscriptionPausedAt ?? this.subscriptionPausedAt,
+      subscriptionCancelledAt: subscriptionCancelledAt ?? this.subscriptionCancelledAt,
       subscriptionJustification: subscriptionJustification ?? this.subscriptionJustification,
       brandDisplayName: brandDisplayName ?? this.brandDisplayName,
       hasSimulatedLogo: hasSimulatedLogo ?? this.hasSimulatedLogo,
@@ -464,6 +724,7 @@ final class InstitutionRecord {
       whatsappNumber: whatsappNumber ?? this.whatsappNumber,
       legalRepresentatives: legalRepresentatives ?? this.legalRepresentatives,
       administrators: administrators ?? this.administrators,
+      version: version ?? this.version,
     );
   }
 }

@@ -17,6 +17,8 @@ enum InstitutionDirectoryLoadState {
   unauthorized,
 }
 
+enum InstitutionDirectoryLoadFailureKind { none, validation, unavailable, unexpected }
+
 final class InstitutionDirectoryViewModel extends ChangeNotifier {
   InstitutionDirectoryViewModel({
     required InstitutionDirectoryRepository repository,
@@ -25,6 +27,8 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
 
   static const genericErrorMessage = 'Não foi possível carregar as instituições. Tente novamente.';
   static const unauthorizedMessage = 'Você não tem permissão para ver as instituições.';
+  static const unavailableMessage = genericErrorMessage;
+  static const validationMessage = 'A busca foi rejeitada. Revise os filtros ou tente novamente.';
 
   final InstitutionDirectoryRepository _repository;
   final Duration searchDebounce;
@@ -38,6 +42,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   );
   InstitutionDirectoryFilterOptions _filterOptions = InstitutionDirectoryFilterOptions.empty;
   InstitutionDirectoryLoadState _state = InstitutionDirectoryLoadState.initial;
+  InstitutionDirectoryLoadFailureKind _failureKind = InstitutionDirectoryLoadFailureKind.none;
   String? _errorMessage;
   bool _isLoading = false;
   bool _hasLoadedFilterOptions = false;
@@ -49,6 +54,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
   InstitutionDirectoryPage get page => _page;
   InstitutionDirectoryFilterOptions get filterOptions => _filterOptions;
   InstitutionDirectoryLoadState get state => _state;
+  InstitutionDirectoryLoadFailureKind get failureKind => _failureKind;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
   bool get hasLoadedFilterOptions => _hasLoadedFilterOptions;
@@ -161,6 +167,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
     _isLoading = true;
     _hasLoadedFilterOptions = false;
     _errorMessage = null;
+    _failureKind = InstitutionDirectoryLoadFailureKind.none;
     _state = InstitutionDirectoryLoadState.loading;
     _notifyIfActive();
 
@@ -194,11 +201,61 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       if (requestVersion == _requestVersion) {
         _state = InstitutionDirectoryLoadState.unauthorized;
         _errorMessage = unauthorizedMessage;
+        _failureKind = InstitutionDirectoryLoadFailureKind.none;
+      }
+    } on InstitutionDirectoryUnavailableException {
+      if (requestVersion == _requestVersion) {
+        _setFailure(
+          state: InstitutionDirectoryLoadState.failure,
+          message: unavailableMessage,
+          kind: InstitutionDirectoryLoadFailureKind.unavailable,
+          requestVersion: requestVersion,
+        );
+      }
+    } on InstitutionDirectoryValidationException {
+      if (requestVersion == _requestVersion) {
+        _setFailure(
+          state: InstitutionDirectoryLoadState.failure,
+          message: validationMessage,
+          kind: InstitutionDirectoryLoadFailureKind.validation,
+          requestVersion: requestVersion,
+        );
+      }
+    } on InstitutionDirectoryConflictException {
+      if (requestVersion == _requestVersion) {
+        _setFailure(
+          state: InstitutionDirectoryLoadState.failure,
+          message: genericErrorMessage,
+          kind: InstitutionDirectoryLoadFailureKind.unexpected,
+          requestVersion: requestVersion,
+        );
+      }
+    } on InstitutionDirectoryNotFoundException {
+      if (requestVersion == _requestVersion) {
+        _setFailure(
+          state: InstitutionDirectoryLoadState.failure,
+          message: genericErrorMessage,
+          kind: InstitutionDirectoryLoadFailureKind.unexpected,
+          requestVersion: requestVersion,
+        );
+      }
+    } on InstitutionDirectoryUnexpectedException {
+      if (requestVersion == _requestVersion) {
+        _setFailure(
+          state: InstitutionDirectoryLoadState.failure,
+          message: genericErrorMessage,
+          kind: InstitutionDirectoryLoadFailureKind.unexpected,
+          requestVersion: requestVersion,
+        );
       }
     } on Exception {
       if (requestVersion == _requestVersion) {
-        _state = InstitutionDirectoryLoadState.failure;
-        _errorMessage = genericErrorMessage;
+        _setFailure(
+          state: InstitutionDirectoryLoadState.failure,
+          message: genericErrorMessage,
+          kind: InstitutionDirectoryLoadFailureKind.unexpected,
+          requestVersion: requestVersion,
+        );
       }
     } finally {
       if (requestVersion == _requestVersion) {
@@ -206,6 +263,21 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
         _notifyIfActive();
       }
     }
+  }
+
+  void _setFailure({
+    required InstitutionDirectoryLoadState state,
+    required String message,
+    required InstitutionDirectoryLoadFailureKind kind,
+    required int requestVersion,
+  }) {
+    if (requestVersion != _requestVersion) {
+      return;
+    }
+    _state = state;
+    _errorMessage = message;
+    _failureKind = kind;
+    _notifyIfActive();
   }
 
   InstitutionDirectoryQuery _sanitizeQuery(

@@ -360,6 +360,8 @@ List<InstitutionDirectoryItem> _paginationItems() {
 }
 
 final class _PendingRepository implements InstitutionDirectoryRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
   final Completer<domain.InstitutionDirectoryPage> _page =
       Completer<domain.InstitutionDirectoryPage>();
 
@@ -388,6 +390,8 @@ final class _PendingRepository implements InstitutionDirectoryRepository {
 }
 
 final class _FailureRepository implements InstitutionDirectoryRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
   const _FailureRepository();
 
   @override
@@ -403,6 +407,8 @@ final class _FailureRepository implements InstitutionDirectoryRepository {
 }
 
 final class _UnauthorizedRepository implements InstitutionDirectoryRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
   const _UnauthorizedRepository();
 
   @override

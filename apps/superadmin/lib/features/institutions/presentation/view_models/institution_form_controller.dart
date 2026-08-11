@@ -75,6 +75,7 @@ enum InstitutionFormField {
 final class InstitutionFormController extends ChangeNotifier {
   InstitutionFormController({InstitutionRecord? record, Set<String> reservedHandles = const {}})
     : original = record,
+      _version = record?.version ?? 0,
       _reservedHandles = reservedHandles.map(_normalizeHandle).toSet(),
       status = record?.status ?? InstitutionStatus.draft,
       plan = record?.plan ?? InstitutionPlan.essential,
@@ -111,6 +112,7 @@ final class InstitutionFormController extends ChangeNotifier {
   }
 
   final InstitutionRecord? original;
+  int _version;
   final Set<String> _reservedHandles;
   final Map<InstitutionFormField, TextEditingController> _controllers = {};
   final Set<InstitutionFormStep> _attemptedSteps = {};
@@ -142,6 +144,14 @@ final class InstitutionFormController extends ChangeNotifier {
 
   bool get isEditing => original != null;
   bool get isDirty => _signature != _initialSignature;
+  static const unpersistedMediaContractMessage =
+      'As mídias selecionadas ainda não podem ser salvas. Aguarde o contrato de mídia privada no R2.';
+
+  bool get hasUnpersistedMedia =>
+      logoBytes != null ||
+      coverBytes != null ||
+      _administrators.any((administrator) => administrator.avatarBytes != null);
+  String? get saveContractError => hasUnpersistedMedia ? unpersistedMediaContractMessage : null;
   List<InstitutionLegalRepresentative> get legalRepresentatives =>
       List.unmodifiable(_legalRepresentatives);
   List<InstitutionAdministratorDraft> get administrators => List.unmodifiable(_administrators);
@@ -534,7 +544,8 @@ final class InstitutionFormController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markSaved() {
+  void markSaved({int? version}) {
+    _version = version ?? _version;
     _initialSignature = _signature;
     notifyListeners();
   }
@@ -704,15 +715,7 @@ final class InstitutionFormController extends ChangeNotifier {
 
   InstitutionRecord toRecord({required String id}) {
     final primaryRepresentative = _legalRepresentatives.firstOrNull?.person;
-    final units =
-        original?.units ??
-        [
-          InstitutionUnit(
-            id: '$id-unit-01',
-            name: 'Unidade principal',
-            groups: [InstitutionGroup(id: '$id-unit-01-group-01', name: 'Turma 01')],
-          ),
-        ];
+    final units = original?.units ?? const <InstitutionUnit>[];
     return InstitutionRecord(
       id: id,
       publicName: text(InstitutionFormField.publicName),
@@ -753,6 +756,8 @@ final class InstitutionFormController extends ChangeNotifier {
       subscriptionStatus: subscriptionStatus,
       subscriptionStart: subscriptionStart,
       trialEnd: trialEnd,
+      subscriptionPausedAt: original?.subscriptionPausedAt,
+      subscriptionCancelledAt: original?.subscriptionCancelledAt,
       subscriptionJustification: text(InstitutionFormField.subscriptionJustification),
       brandDisplayName: text(InstitutionFormField.brandDisplayName),
       hasSimulatedLogo: hasSimulatedLogo,
@@ -774,6 +779,7 @@ final class InstitutionFormController extends ChangeNotifier {
       legalRepresentatives: List.unmodifiable(_legalRepresentatives),
       administrators: List.unmodifiable(_administrators),
       units: units,
+      version: _version,
     );
   }
 

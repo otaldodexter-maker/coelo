@@ -2,6 +2,8 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_people.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -36,6 +38,74 @@ void main() {
     );
     final page = await repository.fetchPage(InstitutionDirectoryQuery(search: 'Aurora Atualizado'));
     expect(page.items.single.id, 'demo-institution-aurora');
+  });
+
+  test('fetches by id and throws not found when missing', () async {
+    final repository = FakeInstitutionDirectoryRepository();
+
+    final found = await repository.fetchById('demo-institution-aurora');
+    expect(found.id, 'demo-institution-aurora');
+    await expectLater(
+      repository.fetchById('nao-existe'),
+      throwsA(isA<InstitutionDirectoryNotFoundException>()),
+    );
+  });
+
+  test('creates with deterministic id when blank and increments version', () async {
+    final repository = FakeInstitutionDirectoryRepository(records: const []);
+    final created = await repository.create(
+      _recordForTest(id: '', slug: 'instituicao-nova', version: 0),
+    );
+
+    expect(created.id, 'local-institution-instituicao-nova');
+    expect(created.version, 1);
+    expect(await repository.fetchById('local-institution-instituicao-nova'), isNotNull);
+  });
+
+  test('updates with optimistic version and returns conflict on mismatch', () async {
+    final base = _recordForTest(id: 'inst-1', version: 3);
+    final repository = FakeInstitutionDirectoryRepository(records: [base]);
+
+    final updated = await repository.update(
+      base.copyWith(publicName: 'Atualizada'),
+      expectedVersion: 3,
+    );
+    expect(updated.version, 4);
+    expect(updated.publicName, 'Atualizada');
+
+    await expectLater(
+      repository.update(base.copyWith(publicName: 'Falha'), expectedVersion: 2),
+      throwsA(isA<InstitutionDirectoryConflictException>()),
+    );
+  });
+
+  test('blocks unsupported relationship payloads', () async {
+    final repository = FakeInstitutionDirectoryRepository(records: const []);
+    final record = _recordForTest(
+      administrators: const [
+        InstitutionAdministratorDraft(
+          id: 'admin-1',
+          person: InstitutionPersonDraft(
+            firstName: 'Ana',
+            lastName: 'Silva',
+            displayName: 'Ana Silva',
+          ),
+          handle: '@ana',
+          level: InstitutionAdministratorLevel.adminMaster,
+          invitationStatus: InstitutionInvitationStatus.accepted,
+          invitationHistory: [],
+        ),
+      ],
+    );
+
+    await expectLater(
+      repository.create(record),
+      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    );
+    await expectLater(
+      repository.update(record.copyWith(id: 'inst-1'), expectedVersion: 1),
+      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+    );
   });
 
   test('reserves institution and administrator handles globally, except one institution', () {
@@ -82,8 +152,8 @@ void main() {
       InstitutionDirectoryQuery(
         statuses: {InstitutionStatus.active, InstitutionStatus.onboarding},
         states: {'SP', 'RJ'},
-        cities: {'Campinas', 'Niterói'},
-        districts: {'Cambuí', 'Icaraí'},
+        cities: {'Campinas', 'Niter\u00f3i'},
+        districts: {'Cambu\u00ed', 'Icara\u00ed'},
         typeIds: {'type-school', 'type-therapy'},
       ),
     );
@@ -97,11 +167,11 @@ void main() {
     final stateOptions = await repository.fetchFilterOptions(states: {'SP', 'RJ'});
     final cityOptions = await repository.fetchFilterOptions(
       states: {'SP', 'RJ'},
-      cities: {'Campinas', 'Niterói'},
+      cities: {'Campinas', 'Niter\u00f3i'},
     );
 
-    expect(stateOptions.cities.map((option) => option.label), ['Campinas', 'Niterói']);
-    expect(cityOptions.districts.map((option) => option.label), ['Cambuí', 'Icaraí']);
+    expect(stateOptions.cities.map((option) => option.label), ['Campinas', 'Niter\u00f3i']);
+    expect(cityOptions.districts.map((option) => option.label), ['Cambu\u00ed', 'Icara\u00ed']);
   });
 
   test('returns distinct states from all records and cascades geographic options', () async {
@@ -132,7 +202,7 @@ void main() {
       120,
       (index) => _item(
         id: 'institution-${index.toString().padLeft(3, '0')}',
-        publicName: 'Instituição ${index.toString().padLeft(3, '0')}',
+        publicName: 'Institui\u00e7\u00e3o ${index.toString().padLeft(3, '0')}',
       ),
     );
     final repository = FakeInstitutionDirectoryRepository(items: items);
@@ -173,17 +243,32 @@ void main() {
         _item(id: 'institution-a', publicName: 'Alpha'),
         _item(id: 'institution-b', publicName: 'Beta'),
         _item(id: 'institution-c', publicName: 'Charlie'),
+        _item(id: 'institution-d', publicName: 'Delta'),
+        _item(id: 'institution-e', publicName: 'Echo'),
+        _item(id: 'institution-f', publicName: 'Foxtrot'),
+        _item(id: 'institution-g', publicName: 'Golf'),
+        _item(id: 'institution-h', publicName: 'Hotel'),
+        _item(id: 'institution-i', publicName: 'India'),
       ],
     );
 
     final firstPage = await repository.fetchPage(
-      InstitutionDirectoryQuery(pageSize: 2, sortAscending: false),
+      InstitutionDirectoryQuery(pageSize: 8, sortAscending: false),
     );
     final secondPage = await repository.fetchPage(
-      InstitutionDirectoryQuery(page: 1, pageSize: 2, sortAscending: false),
+      InstitutionDirectoryQuery(page: 1, pageSize: 8, sortAscending: false),
     );
 
-    expect(firstPage.items.map((item) => item.publicName), ['Charlie', 'Beta']);
+    expect(firstPage.items.map((item) => item.publicName), [
+      'India',
+      'Hotel',
+      'Golf',
+      'Foxtrot',
+      'Echo',
+      'Delta',
+      'Charlie',
+      'Beta',
+    ]);
     expect(secondPage.items.map((item) => item.publicName), ['Alpha']);
     expect(firstPage.hasNext, isTrue);
   });
@@ -232,26 +317,26 @@ final _items = [
     id: 'institution-1',
     publicName: 'Instituto Aurora',
     tradeName: 'Aurora',
-    legalName: 'Aurora Educação LTDA',
+    legalName: 'Aurora Educa\u00e7\u00e3o LTDA',
     domain: 'instituto-aurora.coelo.me',
     status: InstitutionStatus.active,
     planId: 'plan-1',
     state: 'SP',
     city: 'Campinas',
-    district: 'Cambuí',
+    district: 'Cambu\u00ed',
     typeId: 'type-school',
   ),
   _item(
     id: 'institution-2',
     publicName: 'Centro Nuvem',
     tradeName: 'Nuvem',
-    legalName: 'Centro Terapêutico Nuvem LTDA',
+    legalName: 'Centro Terap\u00eautico Nuvem LTDA',
     domain: 'dominio-secreto-aurora.coelo.me',
     status: InstitutionStatus.onboarding,
     planId: 'plan-2',
     state: 'RJ',
-    city: 'Niterói',
-    district: 'Icaraí',
+    city: 'Niter\u00f3i',
+    district: 'Icara\u00ed',
     typeId: 'type-therapy',
   ),
 ];
@@ -285,5 +370,61 @@ InstitutionDirectoryItem _item({
     planName: null,
     unitsCount: 0,
     groupsCount: 0,
+  );
+}
+
+InstitutionRecord _recordForTest({
+  String id = 'inst-base',
+  String slug = 'instituicao-base',
+  String name = 'Instituicao Base',
+  String typeName = 'Escola',
+  int version = 1,
+  List<InstitutionLegalRepresentative> legalRepresentatives = const [],
+  List<InstitutionAdministratorDraft> administrators = const [],
+}) {
+  return InstitutionRecord(
+    id: id,
+    publicName: name,
+    tradeName: 'TB',
+    legalName: 'TB LTDA',
+    typeId: 'type',
+    typeName: typeName,
+    documentType: 'CNPJ',
+    document: '12.345.678/0001-99',
+    slug: slug,
+    primaryDomain: 'base.coelo.me',
+    status: InstitutionStatus.active,
+    locale: 'pt-BR',
+    timezone: 'America/Sao_Paulo',
+    postalCode: '00000-000',
+    country: 'Brasil',
+    state: 'SP',
+    city: 'Sao Paulo',
+    district: 'Centro',
+    street: 'Rua Um',
+    addressNumber: '100',
+    complement: '',
+    contactEmail: 'contato@base.coelo.me',
+    contactPhone: '+55 11 3333-0000',
+    contactMobilePhone: '+55 11 99999-0000',
+    ownerFirstName: 'Joana',
+    ownerLastName: 'Silva',
+    ownerDisplayName: 'Joana Silva',
+    ownerEmail: 'joana@base.coelo.me',
+    ownerMobilePhone: '+55 11 99999-1111',
+    plan: InstitutionPlan.essential,
+    subscriptionStatus: InstitutionSubscriptionStatus.active,
+    subscriptionStart: DateTime(2026, 1, 1),
+    trialEnd: null,
+    subscriptionJustification: '',
+    brandDisplayName: 'Base',
+    hasSimulatedLogo: true,
+    hasSimulatedCover: false,
+    accentColor: '#D63C00',
+    secondaryColor: '#3F4549',
+    units: const [],
+    version: version,
+    legalRepresentatives: legalRepresentatives,
+    administrators: administrators,
   );
 }

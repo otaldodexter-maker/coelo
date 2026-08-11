@@ -354,7 +354,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.institutions,
             name: SuperadminRoutes.institutionsName,
             builder: (context, state) => InstitutionDirectoryPage(
-              repository: prototypeRepository,
+              repository: institutionDirectoryRepository,
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),
@@ -379,7 +379,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.institutionCreate,
             name: SuperadminRoutes.institutionCreateName,
             builder: (context, state) => InstitutionFormPage(
-              repository: prototypeRepository,
+              repository: institutionDirectoryRepository,
               logout: logout,
               onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),
               onSaved: (result) =>
@@ -409,7 +409,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.institutionEdit,
             name: SuperadminRoutes.institutionEditName,
             builder: (context, state) => InstitutionFormPage(
-              repository: prototypeRepository,
+              repository: institutionDirectoryRepository,
               institutionId: state.pathParameters['institutionId'],
               logout: logout,
               onCancel: () => context.goNamed(SuperadminRoutes.institutionsName),

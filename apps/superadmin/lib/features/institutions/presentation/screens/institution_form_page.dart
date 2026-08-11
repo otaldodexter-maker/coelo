@@ -8,8 +8,8 @@ import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../auth/domain/logout_action.dart';
-import '../../data/fake_institution_directory_repository.dart';
 import '../../data/institution_location_service.dart';
+import '../../domain/institution_directory_repository.dart';
 import '../view_models/institution_form_controller.dart';
 import '../widgets/institution_form_dialogs.dart';
 import '../widgets/institution_form_navigation.dart';
@@ -31,7 +31,7 @@ final class InstitutionFormPage extends StatefulWidget {
     super.key,
   });
 
-  final FakeInstitutionDirectoryRepository repository;
+  final InstitutionDirectoryRepository repository;
   final String? institutionId;
   final InstitutionLocationService? locationService;
   final LogoutAction logout;
@@ -47,26 +47,57 @@ final class InstitutionFormPage extends StatefulWidget {
 final class _InstitutionFormPageState extends State<InstitutionFormPage> {
   InstitutionFormController? _controller;
   late final InstitutionLocationService _locationService;
-  bool _missingInstitution = false;
+  _InstitutionFormLoadState _loadState = _InstitutionFormLoadState.loading;
+  var _loadSequence = 0;
   double _footerHeight = 0;
 
   @override
   void initState() {
     super.initState();
     _locationService = widget.locationService ?? InstitutionLocationService();
-    final id = widget.institutionId;
-    final record = id == null ? null : widget.repository.findById(id);
-    _missingInstitution = id != null && record == null;
-    if (!_missingInstitution) {
-      _controller = InstitutionFormController(
-        record: record,
-        reservedHandles: widget.repository.reservedHandles(excludingInstitutionId: id),
-      );
+    if (widget.institutionId == null) {
+      _controller = InstitutionFormController();
+      _loadState = _InstitutionFormLoadState.ready;
+    } else {
+      unawaited(_load());
     }
+  }
+
+  Future<void> _load() async {
+    final id = widget.institutionId;
+    if (id == null) return;
+    final sequence = ++_loadSequence;
+    _controller?.dispose();
+    _controller = null;
+    if (mounted) {
+      setState(() => _loadState = _InstitutionFormLoadState.loading);
+    }
+    try {
+      final record = await widget.repository.fetchById(id);
+      if (!mounted || sequence != _loadSequence) return;
+      setState(() {
+        _controller = InstitutionFormController(record: record);
+        _loadState = _InstitutionFormLoadState.ready;
+      });
+    } on InstitutionDirectoryUnauthorizedException {
+      _completeLoad(sequence, _InstitutionFormLoadState.unauthorized);
+    } on InstitutionDirectoryNotFoundException {
+      _completeLoad(sequence, _InstitutionFormLoadState.notFound);
+    } on InstitutionDirectoryUnavailableException {
+      _completeLoad(sequence, _InstitutionFormLoadState.unavailable);
+    } catch (_) {
+      _completeLoad(sequence, _InstitutionFormLoadState.unexpected);
+    }
+  }
+
+  void _completeLoad(int sequence, _InstitutionFormLoadState state) {
+    if (!mounted || sequence != _loadSequence) return;
+    setState(() => _loadState = state);
   }
 
   @override
   void dispose() {
+    _loadSequence++;
     _controller?.dispose();
     if (widget.locationService == null) {
       _locationService.close();
@@ -87,29 +118,54 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
     if (!(creating ? controller.validateAll() : controller.validateEditSave())) {
       return;
     }
+    final saveContractError = controller.saveContractError;
+    if (saveContractError != null) {
+      _showSaveFailure(saveContractError);
+      return;
+    }
     controller.setSaving(true);
     await Future<void>.delayed(
       MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short,
     );
-    if (!mounted) {
-      return;
+    if (!mounted) return;
+    try {
+      final draft = controller.toRecord(id: widget.institutionId ?? '');
+      final saved = creating
+          ? await widget.repository.create(draft)
+          : await widget.repository.update(draft, expectedVersion: draft.version);
+      if (!mounted) return;
+      controller.setSaving(false);
+      if (!creating) {
+        controller.markSaved(version: saved.version);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Alterações salvas.')));
+        return;
+      }
+      widget.onSaved(InstitutionFormSaveResult.created);
+    } on InstitutionDirectoryUnauthorizedException {
+      _showSaveFailure('Você não tem permissão para salvar esta instituição.');
+    } on InstitutionDirectoryNotFoundException {
+      _showSaveFailure('A instituição não existe mais. Volte à lista e tente novamente.');
+    } on InstitutionDirectoryConflictException {
+      _showSaveFailure(
+        'Esta instituição foi alterada por outra pessoa. Recarregue antes de salvar.',
+      );
+    } on InstitutionDirectoryValidationException catch (error) {
+      _showSaveFailure(error.message);
+    } on InstitutionDirectoryUnsupportedRelationException {
+      _showSaveFailure('Representantes e administradores ainda não podem ser salvos neste fluxo.');
+    } on InstitutionDirectoryUnavailableException {
+      _showSaveFailure('Não foi possível conectar ao serviço. Tente novamente.');
+    } catch (_) {
+      _showSaveFailure('Não foi possível salvar a instituição. Tente novamente.');
     }
-    final id =
-        widget.institutionId ??
-        widget.repository.createId(controller.text(InstitutionFormField.slug));
-    await widget.repository.upsert(controller.toRecord(id: id));
-    if (!mounted) {
-      return;
-    }
-    controller.setSaving(false);
-    if (!creating) {
-      controller.markSaved();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Alterações salvas.')));
-      return;
-    }
-    widget.onSaved(InstitutionFormSaveResult.created);
+  }
+
+  void _showSaveFailure(String message) {
+    if (!mounted) return;
+    _controller?.setSaving(false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _selectDestination(String destination) async {
@@ -130,33 +186,64 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
       subtitle: widget.institutionId == null
           ? 'Adicione uma nova instituição ao Coelo.'
           : 'Atualize os dados da instituição selecionada.',
-      showChatLauncher: _missingInstitution || _footerHeight > 0,
+      showChatLauncher: _loadState != _InstitutionFormLoadState.ready || _footerHeight > 0,
       chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
       onDestinationSelected: _selectDestination,
-      child: _missingInstitution
-          ? CoeloStatePanel(
-              key: const Key('institution-form-not-found'),
-              title: 'Instituição não encontrada',
-              message: 'O registro solicitado não foi encontrado.',
-              icon: Icons.search_off_rounded,
-              actionLabel: 'Voltar às instituições',
-              onAction: widget.onCancel,
-            )
-          : _FormBody(
-              controller: _controller!,
-              onCancel: _requestExit,
-              onSave: _save,
-              locationService: _locationService,
-              imagePicker: widget.imagePicker ?? pickInstitutionLogo,
-              onFooterHeightChanged: (height) {
-                if ((_footerHeight - height).abs() < .5 || !mounted) return;
-                setState(() => _footerHeight = height);
-              },
-              viewportWidth: viewportWidth,
-            ),
+      child: switch (_loadState) {
+        _InstitutionFormLoadState.loading => const Center(
+          key: Key('institution-form-loading'),
+          child: CircularProgressIndicator(),
+        ),
+        _InstitutionFormLoadState.notFound => CoeloStatePanel(
+          key: const Key('institution-form-not-found'),
+          title: 'Instituição não encontrada',
+          message: 'O registro solicitado não foi encontrado.',
+          icon: Icons.search_off_rounded,
+          actionLabel: 'Voltar às instituições',
+          onAction: widget.onCancel,
+        ),
+        _InstitutionFormLoadState.unauthorized => CoeloStatePanel(
+          key: const Key('institution-form-unauthorized'),
+          title: 'Acesso não autorizado',
+          message: 'Você não tem permissão para acessar esta instituição.',
+          icon: Icons.lock_outline_rounded,
+          actionLabel: 'Voltar às instituições',
+          onAction: widget.onCancel,
+        ),
+        _InstitutionFormLoadState.unavailable => CoeloStatePanel(
+          key: const Key('institution-form-unavailable'),
+          title: 'Não foi possível carregar',
+          message: 'Verifique sua conexão e tente novamente.',
+          icon: Icons.cloud_off_outlined,
+          actionLabel: 'Tentar novamente',
+          onAction: _load,
+        ),
+        _InstitutionFormLoadState.unexpected => CoeloStatePanel(
+          key: const Key('institution-form-error'),
+          title: 'Não foi possível carregar',
+          message: 'Ocorreu uma falha inesperada. Tente novamente.',
+          icon: Icons.error_outline_rounded,
+          actionLabel: 'Tentar novamente',
+          onAction: _load,
+        ),
+        _InstitutionFormLoadState.ready => _FormBody(
+          controller: _controller!,
+          onCancel: _requestExit,
+          onSave: _save,
+          locationService: _locationService,
+          imagePicker: widget.imagePicker ?? pickInstitutionLogo,
+          onFooterHeightChanged: (height) {
+            if ((_footerHeight - height).abs() < .5 || !mounted) return;
+            setState(() => _footerHeight = height);
+          },
+          viewportWidth: viewportWidth,
+        ),
+      },
     );
   }
 }
+
+enum _InstitutionFormLoadState { loading, ready, notFound, unauthorized, unavailable, unexpected }
 
 final class _FormBody extends StatelessWidget {
   const _FormBody({

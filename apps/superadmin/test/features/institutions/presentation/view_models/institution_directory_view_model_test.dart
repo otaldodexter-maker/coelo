@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_page.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/view_models/institution_directory_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,6 +21,7 @@ void main() {
 
     expect(repository.queries, [InstitutionDirectoryQuery()]);
     expect(viewModel.state, InstitutionDirectoryLoadState.success);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.none);
     expect(viewModel.page.items, hasLength(1));
     expect(viewModel.filterOptions.plans.single.label, 'Essencial');
     expect(viewModel.isLoading, isFalse);
@@ -42,6 +46,49 @@ void main() {
     expect(repository.queries, hasLength(2));
     expect(repository.queries.last.search, 'Aurora');
     expect(repository.queries.last.page, 0);
+  });
+
+  test('ignora resposta antiga e mantém a consulta mais recente', () async {
+    final completerOld = Completer<InstitutionDirectoryPage>();
+    final completerNew = Completer<InstitutionDirectoryPage>();
+    final repository = _StubRepository(
+      onFetch: (query) {
+        if (query.search == 'Instituicao Antiga') {
+          return completerOld.future;
+        }
+        if (query.search == 'Instituicao Nova') {
+          return completerNew.future;
+        }
+        return Future.value(_page(query));
+      },
+    );
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    viewModel.setSearch('Instituicao Antiga');
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    viewModel.setSearch('Instituicao Nova');
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+
+    final newPage = _page(
+      InstitutionDirectoryQuery(search: 'Instituicao Nova'),
+      publicName: 'Nova',
+    );
+    final oldPage = _page(
+      InstitutionDirectoryQuery(search: 'Instituicao Antiga'),
+      publicName: 'Antiga',
+    );
+
+    completerNew.complete(newPage);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(viewModel.state, InstitutionDirectoryLoadState.success);
+    expect(viewModel.page.items.first.publicName, 'Nova');
+
+    completerOld.complete(oldPage);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(viewModel.state, InstitutionDirectoryLoadState.success);
+    expect(viewModel.query.search, 'Instituicao Nova');
+    expect(viewModel.page.items.first.publicName, 'Nova');
   });
 
   test('applies multiple statuses in one load and restarts pagination', () async {
@@ -89,15 +136,15 @@ void main() {
 
     await viewModel.setStates({'SP', 'PR'});
     await viewModel.setCities({'Campinas', 'Curitiba'});
-    await viewModel.setDistricts({'Cambuí', 'Batel'});
+    await viewModel.setDistricts({'Cambui', 'Batel'});
 
     expect(viewModel.query.states, {'SP', 'PR'});
     expect(viewModel.query.cities, {'Campinas', 'Curitiba'});
-    expect(viewModel.query.districts, {'Cambuí', 'Batel'});
+    expect(viewModel.query.districts, {'Cambui', 'Batel'});
     expect(repository.filterRequests.last.$1, {'SP', 'PR'});
     expect(repository.filterRequests.last.$2, {'Campinas', 'Curitiba'});
 
-    await viewModel.setCities({'São Paulo'});
+    await viewModel.setCities({'Sao Paulo'});
     expect(viewModel.query.districts, isEmpty);
 
     await viewModel.setStates({'RJ'});
@@ -168,6 +215,7 @@ void main() {
     await viewModel.load();
 
     expect(viewModel.state, InstitutionDirectoryLoadState.failure);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.unexpected);
     expect(viewModel.errorMessage, InstitutionDirectoryViewModel.genericErrorMessage);
     expect(viewModel.errorMessage, isNot(contains('sensitive backend detail')));
 
@@ -175,6 +223,39 @@ void main() {
     await viewModel.retry();
 
     expect(viewModel.state, InstitutionDirectoryLoadState.success);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.none);
+  });
+
+  test('mapeia falha de indisponibilidade sem vazar detalhe do backend', () async {
+    final repository = _StubRepository(
+      onFetch: (_) =>
+          Future<InstitutionDirectoryPage>.error(const InstitutionDirectoryUnavailableException()),
+    );
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load();
+
+    expect(viewModel.state, InstitutionDirectoryLoadState.failure);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.unavailable);
+    expect(viewModel.errorMessage, InstitutionDirectoryViewModel.unavailableMessage);
+  });
+
+  test('mapeia falha inesperada sem vazar detalhe do backend', () async {
+    final repository = _StubRepository(
+      onFetch: (_) => Future<InstitutionDirectoryPage>.error(
+        InstitutionDirectoryUnexpectedException('detailed reason'),
+      ),
+    );
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load();
+
+    expect(viewModel.state, InstitutionDirectoryLoadState.failure);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.unexpected);
+    expect(viewModel.errorMessage, InstitutionDirectoryViewModel.genericErrorMessage);
+    expect(viewModel.errorMessage, isNot(contains('detailed reason')));
   });
 
   test('shows the no-permission state returned by the repository', () async {
@@ -189,6 +270,7 @@ void main() {
 
     expect(viewModel.state, InstitutionDirectoryLoadState.unauthorized);
     expect(viewModel.errorMessage, InstitutionDirectoryViewModel.unauthorizedMessage);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.none);
   });
 
   test('distinguishes initial empty data from no search result', () async {
@@ -206,7 +288,7 @@ void main() {
     await viewModel.load();
     expect(viewModel.state, InstitutionDirectoryLoadState.empty);
 
-    viewModel.setSearch('não encontrada');
+    viewModel.setSearch('nao encontrada');
     await Future<void>.delayed(const Duration(milliseconds: 350));
     expect(viewModel.state, InstitutionDirectoryLoadState.noResults);
   });
@@ -244,7 +326,7 @@ final class _StubRepository implements InstitutionDirectoryRepository {
       ],
       districts: [
         InstitutionDirectoryFilterOption(id: 'Batel', label: 'Batel'),
-        InstitutionDirectoryFilterOption(id: 'Cambuí', label: 'Cambuí'),
+        InstitutionDirectoryFilterOption(id: 'Cambui', label: 'Cambui'),
       ],
     );
   }
@@ -252,16 +334,34 @@ final class _StubRepository implements InstitutionDirectoryRepository {
   @override
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
     queries.add(query);
-    return onFetch?.call(query) ?? _page(query);
+    return onFetch?.call(query) ?? Future.value(_page(query));
+  }
+
+  @override
+  Future<InstitutionRecord> fetchById(String institutionId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<InstitutionRecord> create(InstitutionRecord draft) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<InstitutionRecord> update(InstitutionRecord draft, {required int expectedVersion}) {
+    throw UnimplementedError();
   }
 }
 
-InstitutionDirectoryPage _page(InstitutionDirectoryQuery query) {
+InstitutionDirectoryPage _page(
+  InstitutionDirectoryQuery query, {
+  String publicName = 'Instituicao Aurora',
+}) {
   return InstitutionDirectoryPage(
-    items: const [
+    items: [
       InstitutionDirectoryItem(
         id: 'institution-1',
-        publicName: 'Instituição Aurora',
+        publicName: publicName,
         tradeName: null,
         legalName: null,
         primaryDomain: null,

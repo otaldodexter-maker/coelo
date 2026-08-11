@@ -1,14 +1,20 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/institution_directory_item.dart';
 import '../domain/institution_directory_page.dart';
 import '../domain/institution_directory_query.dart';
 import '../domain/institution_directory_repository.dart';
+import '../domain/institution_record.dart';
 
 final class SupabaseInstitutionDirectoryRepository implements InstitutionDirectoryRepository {
-  const SupabaseInstitutionDirectoryRepository(this._client);
+  SupabaseInstitutionDirectoryRepository(this._client);
 
   final SupabaseClient _client;
+  _PendingInstitutionRequest? _pendingRequest;
 
   @override
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
@@ -57,9 +63,104 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
         pageSize: query.pageSize,
       );
     } on PostgrestException catch (error) {
-      if (error.code == '42501' || error.code == 'PGRST301') {
-        throw const InstitutionDirectoryUnauthorizedException();
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
+    }
+  }
+
+  @override
+  Future<InstitutionRecord> fetchById(String institutionId) async {
+    try {
+      final response = await _client.rpc<Map<String, dynamic>>(
+        'get_institution_for_superadmin',
+        params: {'p_institution_id': institutionId},
+      );
+      if (response.isEmpty) {
+        throw const InstitutionDirectoryNotFoundException();
       }
+      return InstitutionRecord.fromRpcPayload(
+        _coercePayload(response, missingError: const InstitutionDirectoryNotFoundException()),
+      );
+    } on PostgrestException catch (error) {
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
+    } on InstitutionDirectoryNotFoundException {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<InstitutionRecord> create(InstitutionRecord draft) async {
+    _throwIfUnsupportedRelations(draft);
+    final payload = _normalizePayload(draft.toRpcPayload());
+    final signature = _requestSignature(operation: 'create', payload: payload);
+    final requestId = _requestIdFor(signature);
+    try {
+      final response = await _client.rpc<Map<String, dynamic>>(
+        'create_institution_for_superadmin',
+        params: {'p_request_id': requestId, 'p_payload': payload},
+      );
+      final record = InstitutionRecord.fromRpcPayload(
+        _coercePayload(
+          response,
+          missingError: const InstitutionDirectoryUnexpectedException('missing payload'),
+        ),
+      );
+      _clearPendingRequest(signature, requestId);
+      return record;
+    } on PostgrestException catch (error) {
+      if (!_isUnavailableCode(error.code)) {
+        _clearPendingRequest(signature, requestId);
+      }
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
+    } catch (_) {
+      _clearPendingRequest(signature, requestId);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<InstitutionRecord> update(InstitutionRecord draft, {required int expectedVersion}) async {
+    _throwIfUnsupportedRelations(draft);
+    final payload = _normalizePayload(draft.toRpcPayload());
+    final signature = _requestSignature(
+      operation: 'update',
+      institutionId: draft.id,
+      expectedVersion: expectedVersion,
+      payload: payload,
+    );
+    final requestId = _requestIdFor(signature);
+    try {
+      final response = await _client.rpc<Map<String, dynamic>>(
+        'update_institution_for_superadmin',
+        params: {
+          'p_request_id': requestId,
+          'p_institution_id': draft.id,
+          'p_expected_version': expectedVersion,
+          'p_payload': payload,
+        },
+      );
+      final record = InstitutionRecord.fromRpcPayload(
+        _coercePayload(
+          response,
+          missingError: const InstitutionDirectoryUnexpectedException('missing payload'),
+        ),
+      );
+      _clearPendingRequest(signature, requestId);
+      return record;
+    } on PostgrestException catch (error) {
+      if (!_isUnavailableCode(error.code)) {
+        _clearPendingRequest(signature, requestId);
+      }
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
+    } catch (_) {
+      _clearPendingRequest(signature, requestId);
       rethrow;
     }
   }
@@ -94,12 +195,84 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
         districts: cities.isEmpty ? const [] : _locationOptionsFromRows(results[3], 'district'),
       );
     } on PostgrestException catch (error) {
-      if (error.code == '42501' || error.code == 'PGRST301') {
-        throw const InstitutionDirectoryUnauthorizedException();
-      }
-      rethrow;
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
     }
   }
+
+  void _throwIfUnsupportedRelations(InstitutionRecord draft) {
+    if (draft.hasUnsupportedRemoteData) {
+      _pendingRequest = null;
+      throw InstitutionDirectoryUnsupportedRelationException(
+        'Não é possível salvar campos ou vínculos sem contrato remoto aprovado.',
+      );
+    }
+  }
+
+  String _requestSignature({
+    required String operation,
+    required Map<String, dynamic> payload,
+    String? institutionId,
+    int? expectedVersion,
+  }) {
+    return jsonEncode({
+      'operation': operation,
+      'institution_id': institutionId,
+      'expected_version': expectedVersion,
+      'payload': payload,
+    });
+  }
+
+  String _requestIdFor(String signature) {
+    final pending = _pendingRequest;
+    if (pending != null && pending.signature == signature) {
+      return pending.requestId;
+    }
+
+    final requestId = _nextRequestId();
+    _pendingRequest = _PendingInstitutionRequest(signature, requestId);
+    return requestId;
+  }
+
+  void _clearPendingRequest(String signature, String requestId) {
+    final pending = _pendingRequest;
+    if (pending?.signature == signature && pending?.requestId == requestId) {
+      _pendingRequest = null;
+    }
+  }
+
+  bool _isUnavailableCode(String? code) {
+    return code == 'PGRST000' || code == 'PGRST001' || code == 'PGRST002';
+  }
+
+  Never _throwMappedException(PostgrestException error) {
+    switch (error.code) {
+      case '42501':
+      case 'PGRST301':
+        throw const InstitutionDirectoryUnauthorizedException();
+      case 'P0002':
+        throw const InstitutionDirectoryNotFoundException();
+      case '40001':
+        throw const InstitutionDirectoryConflictException();
+      case '22023':
+      case '23514':
+        throw InstitutionDirectoryValidationException(error.message);
+      case 'PGRST000':
+      case 'PGRST001':
+      case 'PGRST002':
+        throw const InstitutionDirectoryUnavailableException();
+      default:
+        throw InstitutionDirectoryUnexpectedException(error.message);
+    }
+  }
+}
+
+final class _PendingInstitutionRequest {
+  const _PendingInstitutionRequest(this.signature, this.requestId);
+
+  final String signature;
+  final String requestId;
 }
 
 final class UnavailableInstitutionDirectoryRepository implements InstitutionDirectoryRepository {
@@ -108,6 +281,21 @@ final class UnavailableInstitutionDirectoryRepository implements InstitutionDire
   @override
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) {
     return Future<InstitutionDirectoryPage>.error(const InstitutionDirectoryUnavailableException());
+  }
+
+  @override
+  Future<InstitutionRecord> fetchById(String institutionId) {
+    return Future<InstitutionRecord>.error(const InstitutionDirectoryUnavailableException());
+  }
+
+  @override
+  Future<InstitutionRecord> create(InstitutionRecord draft) {
+    return Future<InstitutionRecord>.error(const InstitutionDirectoryUnavailableException());
+  }
+
+  @override
+  Future<InstitutionRecord> update(InstitutionRecord draft, {required int expectedVersion}) {
+    return Future<InstitutionRecord>.error(const InstitutionDirectoryUnavailableException());
   }
 
   @override
@@ -148,4 +336,31 @@ List<InstitutionDirectoryFilterOption> _optionsFromRows(List<dynamic> rows) {
 
 String _escapeLike(String value) {
   return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
+}
+
+Map<String, dynamic> _normalizePayload(Map<String, dynamic> payload) {
+  final normalized = Map<String, dynamic>.from(payload);
+  final json = jsonEncode(normalized);
+  return jsonDecode(json) as Map<String, dynamic>;
+}
+
+Map<String, dynamic> _coercePayload(Object? payload, {required Exception missingError}) {
+  if (payload is Map<String, dynamic>) {
+    return Map<String, dynamic>.from(payload);
+  }
+  throw missingError;
+}
+
+String _nextRequestId() {
+  final random = Random.secure();
+  final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+  String hex(int value) => value.toRadixString(16).padLeft(2, '0');
+  return '${hex(bytes[0])}${hex(bytes[1])}${hex(bytes[2])}${hex(bytes[3])}-'
+      '${hex(bytes[4])}${hex(bytes[5])}-'
+      '${hex(bytes[6])}${hex(bytes[7])}-'
+      '${hex(bytes[8])}${hex(bytes[9])}-'
+      '${hex(bytes[10])}${hex(bytes[11])}${hex(bytes[12])}${hex(bytes[13])}${hex(bytes[14])}${hex(bytes[15])}';
 }

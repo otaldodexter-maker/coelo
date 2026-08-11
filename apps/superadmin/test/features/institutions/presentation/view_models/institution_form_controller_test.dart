@@ -576,4 +576,37 @@ void main() {
     expect(saved.contactPhone, '+551133334444');
     expect(saved.whatsappNumber, '+5511999994444');
   });
+  test('new core record does not invent units and edit preserves loaded units', () {
+    final createController = InstitutionFormController();
+    final source = FakeInstitutionDirectoryRepository().records.first;
+    final editController = InstitutionFormController(record: source);
+    addTearDown(createController.dispose);
+    addTearDown(editController.dispose);
+
+    expect(createController.toRecord(id: '').units, isEmpty);
+    expect(editController.toRecord(id: source.id).units, same(source.units));
+  });
+
+  test('detects every local media kind that has no persistence contract', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    expect(controller.hasUnpersistedMedia, isFalse);
+    expect(controller.saveContractError, isNull);
+
+    controller.logoBytes = Uint8List.fromList(const [1]);
+    expect(controller.hasUnpersistedMedia, isTrue);
+    controller.logoBytes = null;
+
+    controller.coverBytes = Uint8List.fromList(const [2]);
+    expect(controller.hasUnpersistedMedia, isTrue);
+    controller.coverBytes = null;
+
+    controller.addAdministrator(
+      const InstitutionPersonDraft(firstName: 'Ana', lastName: 'Souza', displayName: 'Ana Souza'),
+      level: InstitutionAdministratorLevel.adminMaster,
+      avatarBytes: Uint8List.fromList(const [3]),
+      avatarFileName: 'avatar.png',
+    );
+    expect(controller.hasUnpersistedMedia, isTrue);
+  });
 }

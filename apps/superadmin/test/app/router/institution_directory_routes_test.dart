@@ -5,11 +5,35 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('production composition never sends its repository to dev institutions', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..signIn();
+    final repository = _ProductionInstitutionRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: (_) async => const LoginResult.success(),
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      institutionDirectoryRepository: repository,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devInstitutions);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(repository.calls, 0);
+    expect(find.text('Instituto Aurora'), findsNothing);
+  });
   testWidgets('protects the real institution directory without a session', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
@@ -204,4 +228,14 @@ Future<void> _enter(WidgetTester tester, String field, String value) async {
 Future<void> _continue(WidgetTester tester) async {
   await tester.tap(find.byKey(const Key('institution-form-continue')));
   await tester.pumpAndSettle();
+}
+
+final class _ProductionInstitutionRepository implements InstitutionDirectoryRepository {
+  int calls = 0;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    calls++;
+    throw StateError('production repository must not be used by dev institution routes');
+  }
 }

@@ -241,3 +241,17 @@ variante, token semântico ou mudança de padrão exigem aprovação explícita.
 Propostas criativas são livres; somente sua oficialização é bloqueada.
 
 O Design System Coelo prevalece sobre recomendações genéricas.
+## Instituições como baseline administrativa
+
+- Instituições é a referência visual congelada para diretórios administrativos do
+  Superadmin: cards, tabela, toolbar, filtros pequenos, paginação e estados de
+  loading, erro/retry, vazio, sem resultados, not-found e unauthorized.
+- Integrações de dados preservam essa composição e seus goldens; não autorizam
+  redesenho, reestruturação ou substituição local de componentes aprovados.
+- Ações principais de diretório (`Criar`, `Convidar` e `Cadastrar`) ficam acima
+  da tabela/grade, antes das filtragens pequenas e da paginação.
+- Criar/Editar Instituição permanece a baseline de formulários administrativos.
+  O fluxo de Pessoas em Instituições e Unidades deve ser sequencial, baseado em
+  vínculo, busca, convite e cadastro; não usar um popup genérico único.
+- Mídia privada segue Cloudflare R2 conforme AGENTS e a ADR aprovada. Supabase
+  Storage não substitui esse contrato sem nova decisão arquitetural.

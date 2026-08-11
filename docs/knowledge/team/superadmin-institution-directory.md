@@ -48,10 +48,10 @@ suspensas e arquivadas; as demais tabs correspondem, respectivamente, a
 
 Cada segmento do toggle Cards/Tabela mede 64 × 48 px. O menu de visões
 reutiliza `CoeloAdminFlyout`: cada item mantém a largura útil padrão de 220 px
-em painel de 236 px, sem recorte pelo padding,
-e itens interativos consecutivos têm `CoeloSpacing.space1` de separação,
-impedindo que seleção e hover laranja se unam. Na tabela, a largura natural nasce centralizada quando for
-menor que a viewport; quando ocupar ou exceder a área, preenche e rola
+em painel de 236 px, sem recorte pelo padding, e itens interativos
+consecutivos têm `CoeloSpacing.space1` de separação, impedindo que seleção e
+hover laranja se unam. Na tabela, a largura natural nasce centralizada quando
+for menor que a viewport; quando ocupar ou exceder a área, preenche e rola
 normalmente. Scrollbar e track horizontais permanecem visíveis desde a primeira
 coluna e são pintados acima da cópia visual fixa. A faixa de criação continua
 em largura total.
@@ -59,8 +59,26 @@ em largura total.
 Hover do card preserva `surface` e enfatiza borda/sombra com `primary`; hover de
 linha usa `primaryContainer` sem raio ou gap. O toggle segmentado usa
 `surface`/`outlineVariant`, com seleção, hover e foco em
-`primaryContainer`/`primary`. Clicar diretamente em Tabela ou ativá-la com Enter/Espaço abre `Agrupado`;
-as visões detalhadas abrem por hover no segmento inteiro, pressão longa em toda
-a área de 64 × 48 px ou `Alt+↓` com foco. `Esc` fecha e devolve foco ao gatilho,
-e a opção atual expõe `selected` semanticamente. Arquivos reutiliza
-`CoeloAdminFileActions`.
+`primaryContainer`/`primary`. Clicar diretamente em Tabela ou ativá-la com
+Enter/Espaço abre `Agrupado`; as visões detalhadas abrem por hover no segmento
+inteiro, pressão longa em toda a área de 64 × 48 px ou `Alt+↓` com foco. `Esc`
+fecha e devolve foco ao gatilho, e a opção atual expõe `selected` semanticamente.
+Arquivos reutiliza `CoeloAdminFileActions`.
+
+## Regras canônicas e pontos de integração
+
+Diretórios administrativos do Superadmin mantêm os botões de ação principais acima
+da lista e abaixo do bloco de criação de contexto: `Criar`, `Convidar` e
+`Cadastrar` aparecem antes dos resultados de cards/tabela, seguidos por busca,
+filtros pequenos e paginação.
+
+A referência visual de Instituições é a baseline congelada de cards, tabela e fluxo
+de criação/edição; integração de dados não pode redesenhar ou alterar composição
+sem aprovação explícita.
+
+Na composição de diretório, estados de `loading`, `erro`, `retry`, `vazio`,
+`sem resultados`, `not-found` e `unauthorized` preservam a composição existente.
+
+Mídia privada permanece com metadados em Supabase e armazenamento privado em
+Cloudflare R2 por decisão arquitetural (0010), sem destino Supabase Storage como
+padrão da família.

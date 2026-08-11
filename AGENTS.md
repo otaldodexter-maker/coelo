@@ -50,6 +50,16 @@ Regras globais:
 
 Dados pessoais, dados de criancas, CPF, midias, mensagens e logs devem respeitar LGPD, minimizacao, base legal, retencao definida, rastreabilidade e melhor interesse da crianca. Lacunas juridicas devem ficar abertas ate decisao formal.
 
+Invariantes obrigatorias de seguranca:
+
+- Regra de negocio, ownership, tenant, hierarquia e autorizacao sao validados no backend/RLS em toda leitura e escrita; o frontend apenas solicita e renderiza.
+- IDs, rotas, filtros, claims e parametros enviados pelo cliente sao nao confiaveis. Toda operacao deve impedir IDOR/BOLA conferindo ator, recurso, tenant e escopo real.
+- Tabelas expostas usam RLS deny-by-default. RPCs privilegiadas validam identidade, capacidade e, quando exigido, MFA; grants diretos desnecessarios permanecem revogados.
+- Inputs sao validados e limitados no servidor com allowlists, tipos e constraints. Saidas web nao usam HTML/JavaScript inseguro e devem prevenir XSS.
+- Rotas e respostas nao entregam dados antes da autorizacao. Ocultar botoes ou depender de permissoes do navegador nunca constitui controle de acesso.
+- Nenhum segredo entra em Git, bundle, asset, log, URL ou frontend. O gitignore, exemplos de ambiente e o diff staged devem ser revisados antes de cada entrega sensivel.
+- Revisoes de seguranca seguem OWASP ASVS para web/API e OWASP MASVS para clientes moveis, alem de testes cross-tenant e de acesso cruzado por ID.
+
 ## Design System
 
 O Coelo usa Nunito Sans, laranja de marca `#D63C00`, grafite `#3F4549`, temas claro/escuro e tokens semanticos. Componentes devem seguir `docs/design/design-system.md`, preservar acessibilidade WCAG 2.2 AA quando aplicavel e manter alvos de toque adequados.

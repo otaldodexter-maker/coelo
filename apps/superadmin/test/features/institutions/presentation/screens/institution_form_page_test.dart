@@ -129,6 +129,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     expect(find.text('Editar instituição'), findsOneWidget);
     final field = tester.widget<TextFormField>(
@@ -251,6 +252,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
@@ -464,6 +466,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('institution-field-postalCode')), '01310100');
@@ -534,6 +537,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
@@ -572,6 +576,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
@@ -631,6 +636,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.tap(find.text('Localização e contato'));
     await tester.pump();
     await tester.pump();
@@ -694,6 +700,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
     expect(_municipalitySelect(tester).options, contains('Campinas'));
@@ -736,6 +743,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
     await tester.enterText(
@@ -778,6 +786,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
     await tester.enterText(
@@ -816,6 +825,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
 
@@ -846,6 +856,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.pumpAndSettle();
 
     await tester.enterText(
@@ -872,14 +883,20 @@ void main() {
     await tester.tap(saveCurrent);
     await tester.pumpAndSettle();
 
-    expect(find.text('Alterações salvas.'), findsOneWidget);
-    expect(find.textContaining('local'), findsNothing);
-    expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
-    expect(repository.findById('demo-institution-aurora')!.administrators, hasLength(1));
+    expect(
+      find.text('Representantes e administradores ainda não podem ser salvos neste fluxo.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('fake'), findsNothing);
+    expect(
+      repository.findById('demo-institution-aurora')!.brandDisplayName,
+      isNot('Aurora atualizado'),
+    );
+    expect(repository.findById('demo-institution-aurora')!.administrators, isEmpty);
     expect(savedCallbackCalls, 0);
     await tester.tap(find.byKey(const Key('institution-form-cancel')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsNothing);
+    expect(find.byKey(const Key('institution-confirm-exit-dialog')), findsOneWidget);
   });
 
   testWidgets('edit footer keeps save as the only primary action at both widths', (tester) async {
@@ -895,6 +912,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     final save = find.byKey(const Key('institution-form-save-current'));
     final continueAction = find.byKey(const Key('institution-form-continue'));
@@ -1047,6 +1065,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Localização e contato'));
     await tester.pumpAndSettle();
@@ -1079,6 +1098,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Representantes legais'));
     await tester.pumpAndSettle();
@@ -1087,11 +1107,12 @@ void main() {
 
     await tester.tap(find.text('Administradores'));
     await tester.pumpAndSettle();
+    expect(find.byType(CheckboxListTile), findsNothing);
+    expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
     expect(
       find.byKey(const Key('institution-confirm-representative-administrators')),
       findsOneWidget,
     );
-    expect(find.text('Rafael Coelho'), findsOneWidget);
     expect(find.text('Admin Master'), findsNothing);
 
     await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
@@ -1142,6 +1163,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Administradores'));
     await tester.pumpAndSettle();
@@ -1201,6 +1223,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.text('Representantes legais'));
     await tester.pumpAndSettle();
@@ -1234,6 +1257,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     for (var step = 0; step < 3; step++) {
       await tester.tap(find.byKey(const Key('institution-form-continue')));
@@ -1272,6 +1296,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
     await tester.pumpAndSettle();
 
     await tester.enterText(
@@ -1401,6 +1426,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
 
     await tester.tap(find.byKey(const Key('institution-step-review')));
     await tester.pumpAndSettle();
