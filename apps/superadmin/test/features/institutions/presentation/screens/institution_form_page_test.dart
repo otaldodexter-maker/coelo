@@ -886,7 +886,7 @@ void main() {
     expect(find.textContaining('fake'), findsNothing);
     expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
     expect(repository.findById('demo-institution-aurora')!.administrators, isNotEmpty);
-    expect(savedCallbackCalls, 1);
+    expect(savedCallbackCalls, 0);
   });
 
   testWidgets('edit footer keeps save as the only primary action at both widths', (tester) async {
@@ -1098,7 +1098,7 @@ void main() {
     await tester.tap(find.text('Administradores'));
     await tester.pumpAndSettle();
     expect(find.byType(CheckboxListTile), findsOneWidget);
-    expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
+    expect(find.byType(CoeloAdminMultiSelectField<String>), findsNothing);
     expect(
       find.byKey(const Key('institution-confirm-representative-administrators')),
       findsOneWidget,

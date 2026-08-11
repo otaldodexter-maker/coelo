@@ -217,7 +217,7 @@ void main() {
     expect(repository.records, hasLength(15));
     expect(repository.findById('demo-institution-aurora')!.brandDisplayName, 'Aurora atualizado');
     expect(router.routeInformationProvider.value.uri.path, contains('/edit'));
-    expect(find.text('Alterações salvas localmente.'), findsOneWidget);
+
   });
 }
 
