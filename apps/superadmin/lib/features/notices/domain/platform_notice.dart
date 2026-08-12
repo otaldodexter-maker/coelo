@@ -88,6 +88,90 @@ extension NoticeImageOrientationLabel on NoticeImageOrientation {
 
 enum NoticeVisualTone { brand, dark, light, neutral, success, warning, danger }
 
+enum NoticePopupSize { compact, standard, large, fullscreen }
+
+enum NoticeAudienceDimension { platform, institution, unit, group, person, role, plan }
+
+final class NoticeAudienceRule {
+  const NoticeAudienceRule({
+    required this.dimension,
+    this.selectAll = false,
+    this.targetIds = const [],
+    this.excludedIds = const [],
+    this.filters = const {},
+  });
+
+  final NoticeAudienceDimension dimension;
+  final bool selectAll;
+  final List<String> targetIds;
+  final List<String> excludedIds;
+  final Map<String, List<String>> filters;
+
+  Map<String, Object?> toJson() => {
+    'dimension': dimension.name,
+    'select_all': selectAll,
+    'target_ids': targetIds,
+    'excluded_ids': excludedIds,
+    'filters': filters,
+  };
+
+  factory NoticeAudienceRule.fromJson(Map<String, dynamic> json) => NoticeAudienceRule(
+    dimension: NoticeAudienceDimension.values.firstWhere(
+      (value) => value.name == json['dimension'],
+      orElse: () => NoticeAudienceDimension.platform,
+    ),
+    selectAll: json['select_all'] as bool? ?? false,
+    targetIds: _noticeStringList(json['target_ids']),
+    excludedIds: _noticeStringList(json['excluded_ids']),
+    filters: _noticeStringListMap(json['filters']),
+  );
+}
+
+final class NoticeAudienceSelection {
+  const NoticeAudienceSelection({
+    this.rules = const [],
+    this.roleCodes = const [],
+    this.planIds = const [],
+  });
+
+  final List<NoticeAudienceRule> rules;
+  final List<String> roleCodes;
+  final List<String> planIds;
+
+  Map<String, Object?> toJson() => {
+    'rules': rules.map((rule) => rule.toJson()).toList(growable: false),
+    'role_codes': roleCodes,
+    'plan_ids': planIds,
+  };
+
+  factory NoticeAudienceSelection.fromJson(Map<String, dynamic> json) => NoticeAudienceSelection(
+    rules: (json['rules'] as List<dynamic>? ?? const [])
+        .whereType<Map<Object?, Object?>>()
+        .map((rule) => NoticeAudienceRule.fromJson(Map<String, dynamic>.from(rule)))
+        .toList(growable: false),
+    roleCodes: _noticeStringList(json['role_codes']),
+    planIds: _noticeStringList(json['plan_ids']),
+  );
+}
+
+final class NoticeAppearance {
+  const NoticeAppearance({
+    this.backgroundColorValue,
+    this.textColorValue,
+    this.buttonColorValue,
+    this.popupSize = NoticePopupSize.standard,
+    this.hasOuterInset = true,
+  });
+
+  final int? backgroundColorValue;
+  final int? textColorValue;
+  final int? buttonColorValue;
+  final NoticePopupSize popupSize;
+  final bool hasOuterInset;
+
+  bool get effectiveHasOuterInset => popupSize != NoticePopupSize.fullscreen && hasOuterInset;
+}
+
 extension NoticeVisualToneLabel on NoticeVisualTone {
   String get label => switch (this) {
     NoticeVisualTone.brand => 'Marca',
@@ -145,13 +229,16 @@ final class PlatformNotice {
     this.audienceRoleLabel,
     this.backgroundColorValue,
     this.textColorValue,
+    this.buttonColorValue,
+    this.popupSize = NoticePopupSize.standard,
+    bool hasOuterInset = true,
+    this.audienceSelection = const NoticeAudienceSelection(),
     this.recurrence = NoticeRecurrence.oneTime,
     this.intervalDays,
     this.weeklyDays = const [],
     this.dayOfMonth,
     this.recurrenceUntil,
     this.imageOrientation = NoticeImageOrientation.vertical,
-    this.showImagePlaceholder = false,
     this.backgroundTone = NoticeVisualTone.dark,
     this.textTone = NoticeVisualTone.light,
     this.buttonLabel = 'Confirmar',
@@ -159,7 +246,9 @@ final class PlatformNotice {
     this.deliveredCount = 0,
     this.viewedCount = 0,
     this.acceptedCount = 0,
-  }) : mandatory = behavior != NoticeBehavior.dismissible;
+    this.managementVersion = 0,
+  }) : mandatory = behavior != NoticeBehavior.dismissible,
+       hasOuterInset = popupSize == NoticePopupSize.fullscreen ? false : hasOuterInset;
 
   final String id;
   final String title;
@@ -178,13 +267,16 @@ final class PlatformNotice {
   final String? audienceRoleLabel;
   final int? backgroundColorValue;
   final int? textColorValue;
+  final int? buttonColorValue;
+  final NoticePopupSize popupSize;
+  final bool hasOuterInset;
+  final NoticeAudienceSelection audienceSelection;
   final NoticeRecurrence recurrence;
   final int? intervalDays;
   final List<int> weeklyDays;
   final int? dayOfMonth;
   final DateTime? recurrenceUntil;
   final NoticeImageOrientation imageOrientation;
-  final bool showImagePlaceholder;
   final NoticeVisualTone backgroundTone;
   final NoticeVisualTone textTone;
   final String buttonLabel;
@@ -192,6 +284,15 @@ final class PlatformNotice {
   final int deliveredCount;
   final int viewedCount;
   final int acceptedCount;
+  final int managementVersion;
+
+  NoticeAppearance get appearance => NoticeAppearance(
+    backgroundColorValue: backgroundColorValue,
+    textColorValue: textColorValue,
+    buttonColorValue: buttonColorValue,
+    popupSize: popupSize,
+    hasOuterInset: hasOuterInset,
+  );
 
   bool get canEdit =>
       status == NoticeStatus.draft ||
@@ -226,6 +327,10 @@ final class PlatformNotice {
     String? audienceRoleLabel,
     int? backgroundColorValue,
     int? textColorValue,
+    int? buttonColorValue,
+    NoticePopupSize? popupSize,
+    bool? hasOuterInset,
+    NoticeAudienceSelection? audienceSelection,
     NoticeRecurrence? recurrence,
     int? intervalDays,
     List<int>? weeklyDays,
@@ -233,7 +338,6 @@ final class PlatformNotice {
     DateTime? recurrenceUntil,
     bool clearRecurrenceUntil = false,
     NoticeImageOrientation? imageOrientation,
-    bool? showImagePlaceholder,
     NoticeVisualTone? backgroundTone,
     NoticeVisualTone? textTone,
     String? buttonLabel,
@@ -241,6 +345,7 @@ final class PlatformNotice {
     int? deliveredCount,
     int? viewedCount,
     int? acceptedCount,
+    int? managementVersion,
   }) => PlatformNotice(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -259,13 +364,16 @@ final class PlatformNotice {
     audienceRoleLabel: audienceRoleLabel ?? this.audienceRoleLabel,
     backgroundColorValue: backgroundColorValue ?? this.backgroundColorValue,
     textColorValue: textColorValue ?? this.textColorValue,
+    buttonColorValue: buttonColorValue ?? this.buttonColorValue,
+    popupSize: popupSize ?? this.popupSize,
+    hasOuterInset: hasOuterInset ?? this.hasOuterInset,
+    audienceSelection: audienceSelection ?? this.audienceSelection,
     recurrence: recurrence ?? this.recurrence,
     intervalDays: intervalDays ?? this.intervalDays,
     weeklyDays: weeklyDays ?? this.weeklyDays,
     dayOfMonth: dayOfMonth ?? this.dayOfMonth,
     recurrenceUntil: clearRecurrenceUntil ? null : recurrenceUntil ?? this.recurrenceUntil,
     imageOrientation: imageOrientation ?? this.imageOrientation,
-    showImagePlaceholder: showImagePlaceholder ?? this.showImagePlaceholder,
     backgroundTone: backgroundTone ?? this.backgroundTone,
     textTone: textTone ?? this.textTone,
     buttonLabel: buttonLabel ?? this.buttonLabel,
@@ -273,6 +381,7 @@ final class PlatformNotice {
     deliveredCount: deliveredCount ?? this.deliveredCount,
     viewedCount: viewedCount ?? this.viewedCount,
     acceptedCount: acceptedCount ?? this.acceptedCount,
+    managementVersion: managementVersion ?? this.managementVersion,
   );
 }
 
@@ -290,6 +399,10 @@ final class NoticeDraft {
     this.audienceRoleLabel,
     this.backgroundColorValue,
     this.textColorValue,
+    this.buttonColorValue,
+    this.popupSize = NoticePopupSize.standard,
+    bool hasOuterInset = true,
+    this.audienceSelection = const NoticeAudienceSelection(),
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
     this.recurrence = NoticeRecurrence.oneTime,
@@ -298,12 +411,11 @@ final class NoticeDraft {
     this.dayOfMonth,
     this.recurrenceUntil,
     this.imageOrientation = NoticeImageOrientation.vertical,
-    this.showImagePlaceholder = false,
     this.backgroundTone = NoticeVisualTone.dark,
     this.textTone = NoticeVisualTone.light,
     this.startsAt,
     this.endsAt,
-  });
+  }) : hasOuterInset = popupSize == NoticePopupSize.fullscreen ? false : hasOuterInset;
 
   final String title;
   final String message;
@@ -317,6 +429,10 @@ final class NoticeDraft {
   final String? audienceRoleLabel;
   final int? backgroundColorValue;
   final int? textColorValue;
+  final int? buttonColorValue;
+  final NoticePopupSize popupSize;
+  final bool hasOuterInset;
+  final NoticeAudienceSelection audienceSelection;
   final String buttonLabel;
   final String? linkLabel;
   final NoticeRecurrence recurrence;
@@ -325,9 +441,24 @@ final class NoticeDraft {
   final int? dayOfMonth;
   final DateTime? recurrenceUntil;
   final NoticeImageOrientation imageOrientation;
-  final bool showImagePlaceholder;
   final NoticeVisualTone backgroundTone;
   final NoticeVisualTone textTone;
   final DateTime? startsAt;
   final DateTime? endsAt;
+
+  NoticeAppearance get appearance => NoticeAppearance(
+    backgroundColorValue: backgroundColorValue,
+    textColorValue: textColorValue,
+    buttonColorValue: buttonColorValue,
+    popupSize: popupSize,
+    hasOuterInset: hasOuterInset,
+  );
+}
+
+List<String> _noticeStringList(Object? value) =>
+    (value as List<dynamic>? ?? const []).map((item) => item.toString()).toList(growable: false);
+
+Map<String, List<String>> _noticeStringListMap(Object? value) {
+  if (value is! Map) return const {};
+  return {for (final entry in value.entries) entry.key.toString(): _noticeStringList(entry.value)};
 }

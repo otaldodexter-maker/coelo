@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
-import 'package:coelo_superadmin/features/notices/data/fake_notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/fake_notice_repository.dart';
 
 void main() {
   setUpAll(_loadGoldenFonts);

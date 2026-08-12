@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
-import '../data/fake_notice_repository.dart';
+import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
+import 'notice_audience_selector.dart' as audience_picker;
 import 'notice_form_controller.dart';
 import 'notice_popup_preview.dart';
 import 'notice_preview_dialog.dart';
@@ -21,7 +23,7 @@ final class NoticeFormPage extends StatefulWidget {
     super.key,
   });
 
-  final FakeNoticeRepository repository;
+  final NoticeRepository repository;
   final String? noticeId;
   final ValueChanged<PlatformNotice>? onSaved;
   final VoidCallback? onCancel;
@@ -32,8 +34,8 @@ final class NoticeFormPage extends StatefulWidget {
 
 final class _NoticeFormPageState extends State<NoticeFormPage> {
   late final NoticeFormController _controller;
-  double _footerHeight = 0;
   bool _previewCheckboxChecked = false;
+  NoticeTargetDevice _previewDevice = NoticeTargetDevice.web;
 
   @override
   void initState() {
@@ -50,104 +52,78 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _controller,
-    builder: (context, _) => Column(
-      children: [
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) =>
-                _wizardBody(compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CoeloSpacing.space4,
-            CoeloSpacing.space2,
-            CoeloSpacing.space4,
-            CoeloSpacing.space4,
-          ),
-          child: _footer(),
-        ),
-      ],
+    builder: (context, _) => SuperadminFormFrame(
+      viewportWidth: MediaQuery.sizeOf(context).width,
+      navigation: _navigation(),
+      scrollKey: Key('notice-step-${_controller.currentStep.name}'),
+      body: _wizardContent(),
+      footer: _footer(),
     ),
   );
 
-  Widget _wizardBody({required bool compact}) {
-    final navigation = SuperadminFormStepNavigation(
-      steps: NoticeFormStep.values
-          .map(
-            (step) => SuperadminFormStep(
-              label: step.label,
-              status: _controller.statusFor(step),
-              enabled: step.index <= _controller.furthestStep,
-            ),
-          )
-          .toList(growable: false),
-      currentIndex: _controller.currentStep.index,
-      onStepSelected: _controller.goToStep,
-    );
-    final content = Expanded(
-      child: SingleChildScrollView(
-        key: Key('notice-step-${_controller.currentStep.name}'),
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 880),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  _controller.isEditing ? 'Editar aviso' : 'Novo aviso',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: CoeloSpacing.space1),
-                Text(
-                  _controller.currentStep.label,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: CoeloSpacing.space4),
-                if (_controller.stepsWithErrors.contains(_controller.currentStep)) ...[
-                  _errorBanner(_errorFor(_controller.currentStep)),
-                  const SizedBox(height: CoeloSpacing.space3),
-                ],
-                _buildStep(_controller.currentStep),
-              ],
-            ),
+  Widget _navigation() => SuperadminFormStepNavigation(
+    steps: NoticeFormStep.values
+        .map(
+          (step) => SuperadminFormStep(
+            label: step.label,
+            status: _controller.statusFor(step),
+            enabled: step.index <= _controller.furthestStep,
           ),
-        ),
-      ),
-    );
-    if (compact) {
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CoeloSpacing.space4,
-              CoeloSpacing.space4,
-              CoeloSpacing.space4,
-              0,
-            ),
-            child: navigation,
-          ),
-          content,
-        ],
+        )
+        .toList(growable: false),
+    currentIndex: _controller.currentStep.index,
+    onStepSelected: _controller.goToStep,
+  );
+
+  Widget _wizardContent() {
+    if (_controller.isLoading) {
+      return const CoeloStatePanel(
+        key: Key('notice-form-loading'),
+        title: 'Carregando aviso',
+        message: 'Aguarde enquanto os dados autorizados são carregados.',
+        loading: true,
       );
     }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    if (_controller.loadFailure case final failure?) {
+      return CoeloStatePanel(
+        key: const Key('notice-form-load-failure'),
+        title: switch (failure) {
+          NoticeUnauthorizedException() => 'Sem permissão',
+          NoticeNotFoundException() => 'Aviso não encontrado',
+          _ => 'Não foi possível carregar',
+        },
+        message: failure.safeMessage,
+        icon: failure is NoticeUnauthorizedException
+            ? Icons.lock_outline_rounded
+            : failure is NoticeNotFoundException
+            ? Icons.search_off_rounded
+            : Icons.error_outline_rounded,
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CoeloSpacing.space4,
-            CoeloSpacing.space4,
-            0,
-            CoeloSpacing.space4,
-          ),
-          child: navigation,
+        Text(
+          _controller.isEditing ? 'Editar aviso' : 'Novo aviso',
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        content,
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(
+          _controller.currentStep.label,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        if (_controller.errorMessage case final message?) ...[
+          _errorBanner(message),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+        if (_controller.stepsWithErrors.contains(_controller.currentStep)) ...[
+          _errorBanner(_errorFor(_controller.currentStep)),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+        _buildStep(_controller.currentStep),
       ],
     );
   }
@@ -195,40 +171,34 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         maxLines: 5,
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      _formGrid([
-        CoeloAdminSingleSelectField<NoticeContentFormat>(
-          label: 'Formato',
-          value: _controller.contentFormat,
-          options: NoticeContentFormat.values,
-          optionLabel: _contentFormatLabel,
-          onChanged: _controller.setContentFormat,
-        ),
-        CoeloAdminSingleSelectField<NoticeBehavior>(
-          label: 'Interação',
-          value: _controller.behavior,
-          options: NoticeBehavior.values,
-          optionLabel: _behaviorLabel,
-          onChanged: _controller.setBehavior,
-        ),
-      ]),
       if (_controller.contentFormat == NoticeContentFormat.image) ...[
-        const SizedBox(height: CoeloSpacing.space4),
+        _errorBanner(
+          'Este aviso usa mídia legada. Novas imagens estão bloqueadas até a decisão '
+          'Supabase Storage × R2. Converta para texto antes de salvar ou publicar.',
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        OutlinedButton.icon(
+          onPressed: () => _controller.setContentFormat(NoticeContentFormat.textBackground),
+          icon: const Icon(Icons.text_fields_rounded),
+          label: const Text('Converter para texto'),
+        ),
+      ] else
         _formGrid([
-          CoeloAdminSingleSelectField<NoticeImageOrientation>(
-            label: 'Orientação da imagem',
-            value: _controller.imageOrientation,
-            options: NoticeImageOrientation.values,
-            optionLabel: _orientationLabel,
-            onChanged: _controller.setImageOrientation,
+          CoeloAdminSingleSelectField<NoticeContentFormat>(
+            label: 'Formato',
+            value: _controller.contentFormat,
+            options: const [NoticeContentFormat.textBackground],
+            optionLabel: _contentFormatLabel,
+            onChanged: _controller.setContentFormat,
           ),
-          CoeloAdminToggleField(
-            label: 'Placeholder de imagem',
-            description: 'Simula a área ocupada pela mídia no popup.',
-            value: _controller.showImagePlaceholder,
-            onChanged: _controller.setShowImagePlaceholder,
+          CoeloAdminSingleSelectField<NoticeBehavior>(
+            label: 'Interação',
+            value: _controller.behavior,
+            options: NoticeBehavior.values,
+            optionLabel: _behaviorLabel,
+            onChanged: _controller.setBehavior,
           ),
         ]),
-      ],
       const SizedBox(height: CoeloSpacing.space4),
       _formGrid([
         _colorButton(
@@ -243,20 +213,49 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
           color: _controller.textColor,
           onPressed: () => _pickColor(background: false),
         ),
+        _colorButton(
+          key: const Key('notice-button-color'),
+          label: 'Cor do botão',
+          color: _controller.buttonColor,
+          onPressed: () => _pickColor(button: true),
+        ),
       ]),
       const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        controller: _controller.buttonLabelController,
-        labelText: 'Rótulo do botão principal',
-        hintText: 'Confirmar',
-        prefixIcon: Icons.smart_button_outlined,
+      _formGrid([
+        CoeloFormTextField(
+          controller: _controller.buttonLabelController,
+          labelText: 'Rótulo do botão principal',
+          hintText: 'Confirmar',
+          prefixIcon: Icons.smart_button_outlined,
+        ),
+        CoeloAdminSingleSelectField<NoticePopupSize>(
+          key: const Key('notice-popup-size'),
+          label: 'Tamanho do popup',
+          value: _controller.popupSize,
+          options: NoticePopupSize.values,
+          optionLabel: _popupSizeLabel,
+          onChanged: _controller.setPopupSize,
+        ),
+      ]),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloAdminToggleField(
+        key: const Key('notice-popup-outer-inset-toggle'),
+        label: 'Espaçamento externo',
+        description: _controller.popupSize == NoticePopupSize.fullscreen
+            ? 'Tela cheia ocupa toda a área disponível.'
+            : 'Mantém respiro entre o popup e as bordas da tela.',
+        value: _controller.hasOuterInset,
+        onChanged: _controller.popupSize == NoticePopupSize.fullscreen
+            ? null
+            : _controller.setHasOuterInset,
       ),
     ],
   );
 
   Widget _audienceStep() => _sectionCard(
     title: 'Público e dispositivos',
-    description: 'Escolha um único nível de público e onde o aviso será exibido.',
+    description:
+        'Escolha um nível hierárquico e selecione vários destinos ou todos os resultados filtrados.',
     children: [
       _formGrid([
         CoeloAdminSingleSelectField<NoticeAudience>(
@@ -275,21 +274,39 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         ),
       ]),
       const SizedBox(height: CoeloSpacing.space4),
-      _formGrid([
-        CoeloFormTextField(
-          key: const Key('notice-audience-label'),
-          controller: _controller.audienceLabelController,
-          labelText: 'Nome do público',
-          hintText: 'Ex.: Todas as instituições',
-          prefixIcon: Icons.groups_outlined,
+      if (_controller.audience == NoticeAudience.everyone)
+        Semantics(
+          label: 'Todos os públicos da plataforma selecionados',
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.public_rounded),
+            title: const Text('Todos'),
+            subtitle: const Text('O aviso será destinado a todo o escopo autorizado.'),
+          ),
+        )
+      else
+        audience_picker.NoticeAudienceSelector(
+          options: [
+            for (final option in _controller.audienceOptions)
+              audience_picker.NoticeAudienceOption(
+                id: option.id,
+                label: option.label,
+                groupLabel: _audienceTypeLabel(_controller.audience),
+              ),
+          ],
+          selection: _audiencePickerSelection,
+          onChanged: (selection) => _controller.setAudienceTargets(
+            selectAll: selection.allMatching,
+            selectedIds: selection.selectedIds,
+            excludedIds: selection.excludedIds,
+          ),
+          onQueryChanged: (query) => _controller.loadAudienceOptions(search: query),
+          hasMore: _controller.hasMoreAudienceOptions,
+          onLoadMore: _controller.loadMoreAudienceOptions,
+          isLoading: _controller.isLoadingAudience,
+          errorMessage: _controller.audienceErrorMessage,
+          onRetry: _controller.loadAudienceOptions,
         ),
-        CoeloFormTextField(
-          controller: _controller.audienceRoleLabelController,
-          labelText: 'Papel no público (opcional)',
-          hintText: 'Ex.: Responsáveis',
-          prefixIcon: Icons.badge_outlined,
-        ),
-      ]),
     ],
   );
 
@@ -395,11 +412,24 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         const SizedBox(height: CoeloSpacing.space4),
         _sectionCard(
           title: 'Prévia no dispositivo',
-          description: 'Representação local do popup no destino selecionado.',
+          description: 'Alterne a largura para conferir o popup final antes de publicar.',
           children: [
+            CoeloAdminSingleSelectField<NoticeTargetDevice>(
+              key: const Key('notice-preview-device'),
+              label: 'Visualizar como',
+              value: _previewDevice,
+              options: const [
+                NoticeTargetDevice.web,
+                NoticeTargetDevice.tablet,
+                NoticeTargetDevice.mobile,
+              ],
+              optionLabel: _deviceLabel,
+              onChanged: (value) => setState(() => _previewDevice = value),
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
             NoticePopupPreview(
               notice: notice,
-              device: notice.targetDevice,
+              device: _previewDevice,
               checkboxChecked: _previewCheckboxChecked,
               onCheckboxChanged: notice.behavior == NoticeBehavior.checkboxConfirmation
                   ? (value) => setState(() => _previewCheckboxChecked = value)
@@ -426,9 +456,10 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   Widget _footer() {
     const style = ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(0, CoeloSize.touchMin)));
+    final blocked =
+        _controller.isLoading || _controller.loadFailure != null || _controller.isSaving;
     return SuperadminFormActionFooter(
       surfaceKey: const Key('notice-form-footer-surface'),
-      onHeightChanged: _updateFooterHeight,
       tertiaryAction: TextButton(
         style: style,
         onPressed: widget.onCancel,
@@ -438,16 +469,28 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         if (_controller.currentStep.index > 0)
           OutlinedButton(
             style: style,
-            onPressed: _controller.previousStep,
+            onPressed: blocked ? null : _controller.previousStep,
             child: const Text('Anterior'),
           ),
-        OutlinedButton(style: style, onPressed: _onSaveDraft, child: const Text('Salvar rascunho')),
+        OutlinedButton(
+          style: style,
+          onPressed: blocked ? null : _onSaveDraft,
+          child: Text(_controller.isSaving ? 'Salvando…' : 'Salvar rascunho'),
+        ),
         FilledButton(
           style: style,
-          onPressed: _controller.isReviewStep
+          onPressed: blocked
+              ? null
+              : _controller.isReviewStep
               ? (_controller.hasAccessibleContrast ? _onSaveAndPublish : null)
               : _controller.continueFromCurrentStep,
-          child: Text(_controller.isReviewStep ? 'Publicar aviso' : 'Continuar'),
+          child: Text(
+            _controller.isSaving
+                ? 'Processando…'
+                : _controller.isReviewStep
+                ? 'Publicar aviso'
+                : 'Continuar',
+          ),
         ),
       ],
     );
@@ -457,21 +500,15 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     required String title,
     required String description,
     required List<Widget> children,
-  }) => Card(
-    margin: EdgeInsets.zero,
-    child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: CoeloSpacing.space1),
-          Text(description, style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: CoeloSpacing.space4),
-          ...children,
-        ],
-      ),
-    ),
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(title, style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text(description, style: Theme.of(context).textTheme.bodySmall),
+      const SizedBox(height: CoeloSpacing.space5),
+      ...children,
+    ],
   );
 
   Widget _formGrid(List<Widget> children) => LayoutBuilder(
@@ -590,28 +627,39 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         ('Visualizações', notice.viewedCount),
         ('Aceites', notice.acceptedCount),
       ];
-      return Wrap(
-        spacing: CoeloSpacing.space2,
-        runSpacing: CoeloSpacing.space2,
-        children: [
-          for (final metric in values)
-            SizedBox(
-              width: width,
-              child: Card(
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(CoeloSpacing.space3),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${metric.$2}', style: Theme.of(context).textTheme.titleLarge),
-                      Text(metric.$1, style: Theme.of(context).textTheme.bodySmall),
-                    ],
+      return Semantics(
+        key: const Key('notice-metrics-summary'),
+        container: true,
+        label: 'Resumo de desempenho do aviso',
+        child: Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            for (final metric in values)
+              SizedBox(
+                width: width,
+                child: Semantics(
+                  label: '${metric.$1}: ${metric.$2}',
+                  child: ExcludeSemantics(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CoeloSpacing.space2,
+                        vertical: CoeloSpacing.space3,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${metric.$2}', style: Theme.of(context).textTheme.titleLarge),
+                          const SizedBox(height: CoeloSpacing.space1),
+                          Text(metric.$1, style: Theme.of(context).textTheme.bodySmall),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       );
     },
   );
@@ -635,14 +683,26 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     ),
   );
 
-  Future<void> _pickColor({required bool background}) async {
+  Future<void> _pickColor({bool background = false, bool button = false}) async {
+    final initialColor = button
+        ? _controller.buttonColor
+        : background
+        ? _controller.backgroundColor
+        : _controller.textColor;
+    final targetLabel = button
+        ? 'botão'
+        : background
+        ? 'fundo'
+        : 'texto';
     final selected = await showSuperadminAdvancedColorPicker(
       context,
-      initialColor: background ? _controller.backgroundColor : _controller.textColor,
-      title: background ? 'Selecionar cor de fundo' : 'Selecionar cor do texto',
+      initialColor: initialColor,
+      title: 'Selecionar cor do $targetLabel',
     );
     if (!mounted || selected == null) return;
-    if (background) {
+    if (button) {
+      _controller.setButtonColor(selected);
+    } else if (background) {
       _controller.setBackgroundColor(selected);
     } else {
       _controller.setTextColor(selected);
@@ -666,40 +726,28 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     if (mounted && selected != null) onChanged(selected);
   }
 
-  PlatformNotice _persistDraft() {
-    final draft = _controller.draft;
-    final saved = _controller.savedNotice;
-    final notice = saved == null
-        ? widget.repository.create(draft)
-        : widget.repository.update(saved.id, draft);
-    _controller.recordSaved(notice);
-    return notice;
-  }
-
   Future<void> _onSaveDraft() async {
     if (!_controller.validateAll()) return;
-    try {
-      final notice = _persistDraft();
-      widget.onSaved?.call(notice);
-      _showFeedback('Rascunho salvo: ${notice.title}');
-    } on Object catch (error) {
-      _showFeedback(_cleanError(error));
+    final notice = await _controller.saveDraft();
+    if (!mounted) return;
+    if (notice == null) {
+      _showFeedback(_controller.errorMessage ?? 'Não foi possível salvar o rascunho.');
+      return;
     }
+    widget.onSaved?.call(notice);
+    _showFeedback('Rascunho salvo: ${notice.title}');
   }
 
   Future<void> _onSaveAndPublish() async {
     if (!_controller.validateAll(requireContrast: true)) return;
-    try {
-      final saved = _persistDraft();
-      final notice = saved.status == NoticeStatus.active || saved.status == NoticeStatus.scheduled
-          ? saved
-          : widget.repository.publish(saved.id);
-      _controller.recordSaved(notice);
-      widget.onSaved?.call(notice);
-      _showFeedback('Aviso publicado: ${notice.title}');
-    } on Object catch (error) {
-      _showFeedback(_cleanError(error));
+    final notice = await _controller.saveAndPublish();
+    if (!mounted) return;
+    if (notice == null) {
+      _showFeedback(_controller.errorMessage ?? 'Não foi possível publicar o aviso.');
+      return;
     }
+    widget.onSaved?.call(notice);
+    _showFeedback('Aviso publicado: ${notice.title}');
   }
 
   Future<void> _onPreview() =>
@@ -708,14 +756,6 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   void _showFeedback(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  String _cleanError(Object error) =>
-      error.toString().replaceFirst('StateError: ', '').replaceFirst('Invalid argument(s): ', '');
-
-  void _updateFooterHeight(double height) {
-    if ((height - _footerHeight).abs() < 0.5 || !mounted) return;
-    setState(() => _footerHeight = height);
   }
 
   String _errorFor(NoticeFormStep step) => switch (step) {
@@ -760,10 +800,25 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     NoticeRecurrence.monthly => 'Mensal',
     NoticeRecurrence.interval => 'Intervalo de dias',
   };
-  String _orientationLabel(NoticeImageOrientation value) => switch (value) {
-    NoticeImageOrientation.vertical => 'Vertical',
-    NoticeImageOrientation.horizontal => 'Horizontal',
+  String _popupSizeLabel(NoticePopupSize value) => switch (value) {
+    NoticePopupSize.compact => 'Compacto',
+    NoticePopupSize.standard => 'Padrão',
+    NoticePopupSize.large => 'Grande',
+    NoticePopupSize.fullscreen => 'Tela cheia',
   };
+
+  audience_picker.NoticeAudiencePickerSelection get _audiencePickerSelection {
+    final rules = _controller.audienceSelection.rules;
+    if (rules.isEmpty) return const audience_picker.NoticeAudiencePickerSelection.explicit();
+    final rule = rules.first;
+    if (rule.selectAll) {
+      return audience_picker.NoticeAudiencePickerSelection.allMatching(
+        excludedIds: rule.excludedIds.toSet(),
+      );
+    }
+    return audience_picker.NoticeAudiencePickerSelection.explicit(rule.targetIds.toSet());
+  }
+
   String _weekdayLabel(int day) => const ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][day - 1];
 
   String _recurrenceSummary(PlatformNotice notice) => switch (notice.recurrence) {

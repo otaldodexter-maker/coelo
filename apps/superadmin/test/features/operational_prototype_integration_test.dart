@@ -4,8 +4,6 @@ import 'package:coelo_superadmin/features/imports/data/fake_import_repository.da
 import 'package:coelo_superadmin/features/imports/presentation/import_wizard_controller.dart';
 import 'package:coelo_superadmin/features/invites/data/fake_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
-import 'package:coelo_superadmin/features/notices/data/fake_notice_repository.dart';
-import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/plans/data/fake_plan_catalog_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,24 +29,11 @@ void main() {
     final invites = FakeInviteRepository(now: () => now, prototypeStore: store);
     invites.resend(invites.list(const InviteQuery()).first.id);
 
-    final notices = FakeNoticeRepository(store: store, now: () => now);
-    final notice = notices.create(
-      const NoticeDraft(
-        title: 'Manutenção local',
-        message: 'Mensagem integral que não pode entrar na auditoria.',
-        priority: NoticePriority.important,
-        audience: NoticeAudience.coeloTeam,
-        audienceLabel: 'Equipe Coelo',
-        behavior: NoticeBehavior.dismissible,
-        mandatory: false,
-      ),
-    );
-    notices.publish(notice.id);
 
-    for (final module in ['Planos', 'Importações', 'Convites', 'Avisos']) {
+    for (final module in ['Planos', 'Importações', 'Convites']) {
       expect(store.auditEvents.where((event) => event.module == module), hasLength(1));
     }
-    for (final subject in ['Planos', 'Convites', 'Avisos']) {
+    for (final subject in ['Planos', 'Convites']) {
       expect(activities.activities.where((activity) => activity.subject == subject), isNotEmpty);
     }
     expect(

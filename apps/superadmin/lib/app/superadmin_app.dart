@@ -18,6 +18,7 @@ import '../features/institutions/domain/institution_directory_repository.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
+import '../features/notices/domain/notice_repository.dart';
 
 import '../features/access_profiles/domain/access_profile.dart';
 import 'router/superadmin_router.dart';
@@ -67,6 +68,7 @@ class SuperadminApp extends StatefulWidget {
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
+    this.noticeRepository = const UnavailableNoticeRepository(),
     this.userPreferencesRepository,
     super.key,
   });
@@ -80,6 +82,7 @@ class SuperadminApp extends StatefulWidget {
   final ActivityDirectoryRepository activityDirectoryRepository;
   final PersonDirectoryRepository personDirectoryRepository;
   final AccessProfileRepository accessProfileRepository;
+  final NoticeRepository noticeRepository;
   final UserPreferencesRepository? userPreferencesRepository;
 
   @override
@@ -111,6 +114,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       activityDirectoryRepository: widget.activityDirectoryRepository,
       personDirectoryRepository: widget.personDirectoryRepository,
       accessProfileRepository: widget.accessProfileRepository,
+      noticeRepository: widget.noticeRepository,
       userPreferencesController: _preferencesController,
       onThemeModeChanged: _setThemeMode,
     );

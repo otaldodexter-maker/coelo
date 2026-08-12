@@ -2,11 +2,18 @@
 title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
-generated_at: "2026-07-29"
+generated_at: "2026-08-11"
 ---
 
 # Perguntas abertas e conflitos
 
+## Avisos — armazenamento de mídia administrativa (2026-08-11)
+
+- A regra vigente reserva Supabase Storage privado para identidade e
+  Cloudflare R2 para Happens, Now e Moments, mas ainda não define o destino de
+  imagens de Avisos administrativos. Até decisão formal entre Storage e R2, o
+  backend deve rejeitar publicação de Avisos com imagem e a UI não deve simular
+  upload, preview ou sucesso.
 Este arquivo registra conflitos, lacunas e decisoes que nao devem ser resolvidas silenciosamente.
 
 | ID | Tema | Questao | Fonte/Contexto | Decisao necessaria |

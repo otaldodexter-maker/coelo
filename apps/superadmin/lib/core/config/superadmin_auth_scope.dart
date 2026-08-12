@@ -14,6 +14,8 @@ import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../../features/people/domain/person_directory.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
+import '../../features/notices/data/supabase_notice_repository.dart';
+import '../../features/notices/domain/notice_repository.dart';
 import '../guards/superadmin_session.dart';
 import 'superadmin_app_config.dart';
 
@@ -40,6 +42,7 @@ final class SuperadminAuthScope {
     required this.activityDirectoryRepository,
     required this.personDirectoryRepository,
     required this.accessProfileRepository,
+    required this.noticeRepository,
   });
 
   final SuperadminSession session;
@@ -50,6 +53,7 @@ final class SuperadminAuthScope {
   final ActivityDirectoryRepository activityDirectoryRepository;
   final PersonDirectoryRepository personDirectoryRepository;
   final AccessProfileRepository accessProfileRepository;
+  final NoticeRepository noticeRepository;
 }
 
 Future<SuperadminAuthScope> createSuperadminAuthScope({
@@ -85,6 +89,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
+      noticeRepository: SupabaseNoticeRepository(client),
     );
   } on Exception catch (error, stackTrace) {
     FlutterError.reportError(
@@ -114,6 +119,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
     personDirectoryRepository: const UnavailablePersonDirectoryRepository(),
     accessProfileRepository: const UnavailableAccessProfileRepository(),
+    noticeRepository: const UnavailableNoticeRepository(),
   );
 }
 

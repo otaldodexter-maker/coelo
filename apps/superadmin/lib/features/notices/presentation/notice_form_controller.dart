@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
-import '../data/fake_notice_repository.dart';
+import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 
 enum NoticeFormStep { identity, content, audience, schedule, review }
@@ -20,38 +20,30 @@ extension NoticeFormStepLabel on NoticeFormStep {
 
 final class NoticeFormController extends ChangeNotifier {
   NoticeFormController({required this.repository, String? noticeId}) {
-    final notice = noticeId == null ? null : repository.find(noticeId);
-    savedNotice = notice;
-    titleController = TextEditingController(text: notice?.title ?? '');
-    messageController = TextEditingController(text: notice?.message ?? '');
-    audienceLabelController = TextEditingController(text: notice?.audienceLabel ?? 'Todos');
-    audienceRoleLabelController = TextEditingController(text: notice?.audienceRoleLabel ?? '');
-    buttonLabelController = TextEditingController(text: notice?.buttonLabel ?? 'Confirmar');
-    intervalDaysController = TextEditingController(text: notice?.intervalDays?.toString() ?? '');
-    dayOfMonthController = TextEditingController(text: notice?.dayOfMonth?.toString() ?? '');
-    priority = notice?.priority ?? NoticePriority.important;
-    contentFormat = notice?.contentFormat ?? NoticeContentFormat.textBackground;
-    audience = _allowedAudiences.contains(notice?.audience)
-        ? notice!.audience
-        : NoticeAudience.everyone;
-    targetDevice = notice?.targetDevice ?? NoticeTargetDevice.all;
-    behavior = notice?.behavior ?? NoticeBehavior.confirmation;
-    recurrence = notice?.recurrence ?? NoticeRecurrence.oneTime;
-    imageOrientation = notice?.imageOrientation ?? NoticeImageOrientation.vertical;
-    showImagePlaceholder = notice?.showImagePlaceholder ?? false;
-    startsAt = notice?.startsAt ?? DateTime.now();
-    endsAt = notice?.endsAt;
-    recurrenceUntil = notice?.recurrenceUntil;
-    selectedWeekdays.addAll(notice?.weeklyDays ?? const <int>[]);
-    backgroundColor = notice?.backgroundColorValue == null
-        ? const Color(0xFFD63C00)
-        : Color(notice!.backgroundColorValue!);
-    textColor = notice?.textColorValue == null
-        ? const Color(0xFFFFFFFF)
-        : Color(notice!.textColorValue!);
+    _noticeId = noticeId;
+    titleController = TextEditingController();
+    messageController = TextEditingController();
+    audienceLabelController = TextEditingController(text: 'Todos');
+    buttonLabelController = TextEditingController(text: 'Confirmar');
+    intervalDaysController = TextEditingController();
+    dayOfMonthController = TextEditingController();
+    priority = NoticePriority.important;
+    contentFormat = NoticeContentFormat.textBackground;
+    audience = NoticeAudience.everyone;
+    targetDevice = NoticeTargetDevice.all;
+    behavior = NoticeBehavior.confirmation;
+    recurrence = NoticeRecurrence.oneTime;
+    imageOrientation = NoticeImageOrientation.vertical;
+    startsAt = DateTime.now();
+    backgroundColor = const Color(0xFFD63C00);
+    textColor = const Color(0xFFFFFFFF);
+    buttonColor = const Color(0xFFD63C00);
+    popupSize = NoticePopupSize.standard;
+    hasOuterInset = true;
     for (final controller in _textControllers) {
       controller.addListener(_onTextChanged);
     }
+    ready = noticeId == null ? Future.value() : _load(noticeId);
   }
 
   static const allowedAudiences = <NoticeAudience>[
@@ -62,11 +54,12 @@ final class NoticeFormController extends ChangeNotifier {
   ];
   static const _allowedAudiences = allowedAudiences;
 
-  final FakeNoticeRepository repository;
+  final NoticeRepository repository;
+  late final Future<void> ready;
+  String? _noticeId;
   late final TextEditingController titleController;
   late final TextEditingController messageController;
   late final TextEditingController audienceLabelController;
-  late final TextEditingController audienceRoleLabelController;
   late final TextEditingController buttonLabelController;
   late final TextEditingController intervalDaysController;
   late final TextEditingController dayOfMonthController;
@@ -75,6 +68,10 @@ final class NoticeFormController extends ChangeNotifier {
   int furthestStep = 0;
   final Set<NoticeFormStep> stepsWithErrors = {};
   PlatformNotice? savedNotice;
+  bool isLoading = false;
+  bool isSaving = false;
+  String? errorMessage;
+  NoticeRepositoryException? loadFailure;
   late NoticePriority priority;
   late NoticeContentFormat contentFormat;
   late NoticeAudience audience;
@@ -82,25 +79,39 @@ final class NoticeFormController extends ChangeNotifier {
   late NoticeBehavior behavior;
   late NoticeRecurrence recurrence;
   late NoticeImageOrientation imageOrientation;
-  late bool showImagePlaceholder;
   late DateTime startsAt;
   DateTime? endsAt;
   DateTime? recurrenceUntil;
   final Set<int> selectedWeekdays = {};
   late Color backgroundColor;
   late Color textColor;
+  late Color buttonColor;
+  late NoticePopupSize popupSize;
+  late bool hasOuterInset;
+  NoticeAudienceSelection audienceSelection = const NoticeAudienceSelection(
+    rules: [NoticeAudienceRule(dimension: NoticeAudienceDimension.platform, selectAll: true)],
+  );
+  List<NoticeAudienceOption> audienceOptions = const [];
+  bool isLoadingAudience = false;
+  String? audienceErrorMessage;
+  String? _saveRequestId;
+  String? _publishRequestId;
+  PlatformNotice? _pendingPublishNotice;
+  int _audienceLoadGeneration = 0;
+  String _audienceSearch = '';
+  String? _audienceNextCursorLabel;
+  String? _audienceNextCursorId;
 
   List<TextEditingController> get _textControllers => [
     titleController,
     messageController,
     audienceLabelController,
-    audienceRoleLabelController,
     buttonLabelController,
     intervalDaysController,
     dayOfMonthController,
   ];
 
-  bool get isEditing => savedNotice != null;
+  bool get isEditing => _noticeId != null;
   bool get isReviewStep => currentStep == NoticeFormStep.review;
   double get contrastRatio {
     final high = math.max(backgroundColor.computeLuminance(), textColor.computeLuminance());
@@ -109,6 +120,65 @@ final class NoticeFormController extends ChangeNotifier {
   }
 
   bool get hasAccessibleContrast => contrastRatio >= 4.5;
+  bool get hasMoreAudienceOptions =>
+      _audienceNextCursorLabel != null && _audienceNextCursorId != null;
+
+  Future<void> _load(String noticeId) async {
+    isLoading = true;
+    errorMessage = null;
+    loadFailure = null;
+    notifyListeners();
+    try {
+      final notice = await repository.getById(noticeId);
+      _applyNotice(notice);
+      await loadAudienceOptions();
+    } on NoticeRepositoryException catch (error) {
+      loadFailure = error;
+    } on Object {
+      loadFailure = const NoticeUnexpectedException();
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void _applyNotice(PlatformNotice notice) {
+    savedNotice = notice;
+    _noticeId = notice.id;
+    titleController.text = notice.title;
+    messageController.text = notice.message;
+    audienceLabelController.text = notice.audienceLabel;
+    buttonLabelController.text = notice.buttonLabel;
+    intervalDaysController.text = notice.intervalDays?.toString() ?? '';
+    dayOfMonthController.text = notice.dayOfMonth?.toString() ?? '';
+    priority = notice.priority;
+    contentFormat = notice.contentFormat;
+    audience = _allowedAudiences.contains(notice.audience)
+        ? notice.audience
+        : NoticeAudience.everyone;
+    targetDevice = notice.targetDevice;
+    behavior = notice.behavior;
+    recurrence = notice.recurrence;
+    imageOrientation = notice.imageOrientation;
+    startsAt = notice.startsAt;
+    endsAt = notice.endsAt;
+    recurrenceUntil = notice.recurrenceUntil;
+    selectedWeekdays
+      ..clear()
+      ..addAll(notice.weeklyDays);
+    backgroundColor = notice.backgroundColorValue == null
+        ? const Color(0xFFD63C00)
+        : Color(notice.backgroundColorValue!);
+    textColor = notice.textColorValue == null
+        ? const Color(0xFFFFFFFF)
+        : Color(notice.textColorValue!);
+    buttonColor = notice.buttonColorValue == null
+        ? const Color(0xFFD63C00)
+        : Color(notice.buttonColorValue!);
+    popupSize = notice.popupSize;
+    hasOuterInset = notice.hasOuterInset;
+    audienceSelection = notice.audienceSelection;
+  }
 
   SuperadminFormStepStatus statusFor(NoticeFormStep step) {
     if (stepsWithErrors.contains(step)) return SuperadminFormStepStatus.error;
@@ -121,7 +191,9 @@ final class NoticeFormController extends ChangeNotifier {
 
   bool validate(NoticeFormStep step) => switch (step) {
     NoticeFormStep.identity => titleController.text.trim().isNotEmpty,
-    NoticeFormStep.content => messageController.text.trim().isNotEmpty,
+    NoticeFormStep.content =>
+      messageController.text.trim().isNotEmpty &&
+          contentFormat == NoticeContentFormat.textBackground,
     NoticeFormStep.audience =>
       _allowedAudiences.contains(audience) && audienceLabelController.text.trim().isNotEmpty,
     NoticeFormStep.schedule =>
@@ -194,18 +266,43 @@ final class NoticeFormController extends ChangeNotifier {
   void setPriority(NoticePriority value) => _set(() => priority = value);
   void setContentFormat(NoticeContentFormat value) => _set(() {
     contentFormat = value;
-    if (value != NoticeContentFormat.image) showImagePlaceholder = false;
   });
-  void setAudience(NoticeAudience value) => _set(() => audience = value);
+  void setAudience(NoticeAudience value) {
+    _set(() {
+      audience = value;
+      audienceSelection = value == NoticeAudience.everyone
+          ? const NoticeAudienceSelection(
+              rules: [
+                NoticeAudienceRule(dimension: NoticeAudienceDimension.platform, selectAll: true),
+              ],
+            )
+          : const NoticeAudienceSelection();
+      audienceLabelController.text = value == NoticeAudience.everyone ? 'Todos' : '';
+      audienceOptions = const [];
+      _audienceSearch = '';
+      _audienceNextCursorLabel = null;
+      _audienceNextCursorId = null;
+      _audienceLoadGeneration += 1;
+    });
+    if (value != NoticeAudience.everyone) loadAudienceOptions();
+  }
+
   void setTargetDevice(NoticeTargetDevice value) => _set(() => targetDevice = value);
   void setBehavior(NoticeBehavior value) => _set(() => behavior = value);
   void setImageOrientation(NoticeImageOrientation value) => _set(() => imageOrientation = value);
-  void setShowImagePlaceholder(bool value) => _set(() => showImagePlaceholder = value);
   void setStartsAt(DateTime value) => _set(() => startsAt = value);
   void setEndsAt(DateTime? value) => _set(() => endsAt = value);
   void setRecurrenceUntil(DateTime? value) => _set(() => recurrenceUntil = value);
   void setBackgroundColor(Color value) => _set(() => backgroundColor = value);
   void setTextColor(Color value) => _set(() => textColor = value);
+  void setButtonColor(Color value) => _set(() => buttonColor = value);
+  void setPopupSize(NoticePopupSize value) => _set(() {
+    popupSize = value;
+    if (value == NoticePopupSize.fullscreen) hasOuterInset = false;
+  });
+  void setHasOuterInset(bool value) => _set(() {
+    if (popupSize != NoticePopupSize.fullscreen) hasOuterInset = value;
+  });
   void setSelectedWeekdays(Set<int> values) => _set(() {
     selectedWeekdays
       ..clear()
@@ -220,21 +317,147 @@ final class NoticeFormController extends ChangeNotifier {
   });
   void recordSaved(PlatformNotice notice) => _set(() => savedNotice = notice);
 
+  Future<void> loadAudienceOptions({String? search}) async {
+    final dimension = _dimensionFor(audience);
+    if (dimension == NoticeAudienceDimension.platform) return;
+    final normalizedSearch = search?.trim() ?? _audienceSearch;
+    final searchChanged = normalizedSearch != _audienceSearch;
+    if (searchChanged) _resetSelectAllSelection();
+    _audienceSearch = normalizedSearch;
+    _audienceNextCursorLabel = null;
+    _audienceNextCursorId = null;
+    final generation = ++_audienceLoadGeneration;
+    isLoadingAudience = true;
+    audienceErrorMessage = null;
+    notifyListeners();
+    try {
+      final page = await repository.fetchAudienceOptions(
+        dimension: dimension,
+        search: normalizedSearch.isEmpty ? null : normalizedSearch,
+      );
+      if (generation != _audienceLoadGeneration) return;
+      audienceOptions = page.items;
+      _audienceNextCursorLabel = page.nextCursorLabel;
+      _audienceNextCursorId = page.nextCursorId;
+    } on NoticeRepositoryException catch (error) {
+      if (generation != _audienceLoadGeneration) return;
+      audienceErrorMessage = error.safeMessage;
+    } on Object {
+      if (generation != _audienceLoadGeneration) return;
+      audienceErrorMessage = const NoticeUnexpectedException().safeMessage;
+    } finally {
+      if (generation == _audienceLoadGeneration) {
+        isLoadingAudience = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> loadMoreAudienceOptions() async {
+    final dimension = _dimensionFor(audience);
+    final cursorLabel = _audienceNextCursorLabel;
+    final cursorId = _audienceNextCursorId;
+    if (dimension == NoticeAudienceDimension.platform ||
+        cursorLabel == null ||
+        cursorId == null ||
+        isLoadingAudience) {
+      return;
+    }
+    final generation = ++_audienceLoadGeneration;
+    isLoadingAudience = true;
+    audienceErrorMessage = null;
+    notifyListeners();
+    try {
+      final page = await repository.fetchAudienceOptions(
+        dimension: dimension,
+        search: _audienceSearch.isEmpty ? null : _audienceSearch,
+        cursorLabel: cursorLabel,
+        cursorId: cursorId,
+      );
+      if (generation != _audienceLoadGeneration) return;
+      final knownIds = audienceOptions.map((option) => option.id).toSet();
+      audienceOptions = [
+        ...audienceOptions,
+        ...page.items.where((option) => knownIds.add(option.id)),
+      ];
+      _audienceNextCursorLabel = page.nextCursorLabel;
+      _audienceNextCursorId = page.nextCursorId;
+    } on NoticeRepositoryException catch (error) {
+      if (generation != _audienceLoadGeneration) return;
+      audienceErrorMessage = error.safeMessage;
+    } on Object {
+      if (generation != _audienceLoadGeneration) return;
+      audienceErrorMessage = const NoticeUnexpectedException().safeMessage;
+    } finally {
+      if (generation == _audienceLoadGeneration) {
+        isLoadingAudience = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  void setAudienceTargets({
+    required bool selectAll,
+    required Set<String> selectedIds,
+    required Set<String> excludedIds,
+  }) => _set(() {
+    final dimension = _dimensionFor(audience);
+    audienceSelection = NoticeAudienceSelection(
+      rules: [
+        NoticeAudienceRule(
+          dimension: dimension,
+          selectAll: selectAll,
+          targetIds: selectedIds.toList(growable: false),
+          excludedIds: excludedIds.toList(growable: false),
+          filters: selectAll && _audienceSearch.isNotEmpty
+              ? {
+                  'search': [_audienceSearch],
+                }
+              : const {},
+        ),
+      ],
+    );
+    if (selectAll) {
+      audienceLabelController.text = 'Todos os resultados';
+    } else {
+      final selectedLabels = audienceOptions
+          .where((option) => selectedIds.contains(option.id))
+          .map((option) => option.label)
+          .toList(growable: false);
+      audienceLabelController.text = selectedLabels.join(', ');
+    }
+  });
+
+  void _resetSelectAllSelection() {
+    if (audienceSelection.rules case [final rule] when rule.selectAll) {
+      audienceSelection = NoticeAudienceSelection(
+        rules: [NoticeAudienceRule(dimension: rule.dimension, selectAll: false)],
+        roleCodes: audienceSelection.roleCodes,
+        planIds: audienceSelection.planIds,
+      );
+      audienceLabelController.clear();
+      _invalidatePendingCommands();
+    }
+  }
+
   NoticeDraft get draft {
-    final role = audienceRoleLabelController.text.trim();
     return NoticeDraft(
       title: titleController.text.trim(),
       message: messageController.text.trim(),
       priority: priority,
       audience: audience,
       audienceLabel: audienceLabelController.text.trim(),
-      audienceRoleLabel: role.isEmpty ? null : role,
+      audienceRoleLabel: savedNotice?.audienceRoleLabel,
       behavior: behavior,
       mandatory: behavior != NoticeBehavior.dismissible,
       targetDevice: targetDevice,
       contentFormat: contentFormat,
       backgroundColorValue: backgroundColor.toARGB32(),
       textColorValue: textColor.toARGB32(),
+      buttonColorValue: buttonColor.toARGB32(),
+      popupSize: popupSize,
+      hasOuterInset: hasOuterInset,
+      audienceSelection: audienceSelection,
       buttonLabel: buttonLabelController.text.trim().isEmpty
           ? 'Confirmar'
           : buttonLabelController.text.trim(),
@@ -250,7 +473,6 @@ final class NoticeFormController extends ChangeNotifier {
           : null,
       recurrenceUntil: recurrence == NoticeRecurrence.oneTime ? null : recurrenceUntil,
       imageOrientation: imageOrientation,
-      showImagePlaceholder: contentFormat == NoticeContentFormat.image && showImagePlaceholder,
       startsAt: startsAt,
       endsAt: endsAt,
     );
@@ -261,8 +483,8 @@ final class NoticeFormController extends ChangeNotifier {
     final value = draft;
     return PlatformNotice(
       id: saved?.id ?? 'notice-preview',
-      title: value.title.isEmpty ? 'Prévia do aviso' : value.title,
-      message: value.message.isEmpty ? 'Mensagem do aviso.' : value.message,
+      title: value.title,
+      message: value.message,
       priority: value.priority,
       status: saved?.status ?? NoticeStatus.draft,
       startsAt: value.startsAt ?? DateTime.now(),
@@ -276,6 +498,10 @@ final class NoticeFormController extends ChangeNotifier {
       contentFormat: value.contentFormat,
       backgroundColorValue: value.backgroundColorValue,
       textColorValue: value.textColorValue,
+      buttonColorValue: value.buttonColorValue,
+      popupSize: value.popupSize,
+      hasOuterInset: value.hasOuterInset,
+      audienceSelection: value.audienceSelection,
       reach: saved?.reach ?? 0,
       deliveredCount: saved?.deliveredCount ?? 0,
       viewedCount: saved?.viewedCount ?? 0,
@@ -286,22 +512,99 @@ final class NoticeFormController extends ChangeNotifier {
       dayOfMonth: value.dayOfMonth,
       recurrenceUntil: value.recurrenceUntil,
       imageOrientation: value.imageOrientation,
-      showImagePlaceholder: value.showImagePlaceholder,
       buttonLabel: value.buttonLabel,
     );
   }
 
+  Future<PlatformNotice?> saveDraft() async {
+    if (isSaving) return null;
+    final requestId = _saveRequestId ??= _newRequestId();
+    isSaving = true;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      final current = savedNotice;
+      final notice = await repository.saveDraft(
+        draft,
+        requestId: requestId,
+        noticeId: current?.id ?? _noticeId,
+        expectedVersion: current?.managementVersion,
+      );
+      _saveRequestId = null;
+      _applyNotice(notice);
+      return notice;
+    } on NoticeRepositoryException catch (error) {
+      errorMessage = error.safeMessage;
+      return null;
+    } on Object {
+      errorMessage = const NoticeUnexpectedException().safeMessage;
+      return null;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<PlatformNotice?> saveAndPublish() async {
+    final saved = _pendingPublishNotice ?? await saveDraft();
+    if (saved == null) return null;
+    _pendingPublishNotice = saved;
+    final requestId = _publishRequestId ??= _newRequestId();
+    isSaving = true;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      final published = await repository.publish(
+        saved,
+        requestId: requestId,
+        expectedVersion: saved.managementVersion,
+      );
+      _publishRequestId = null;
+      _pendingPublishNotice = null;
+      _applyNotice(published);
+      return published;
+    } on NoticeRepositoryException catch (error) {
+      errorMessage = error.safeMessage;
+      return null;
+    } on Object {
+      errorMessage = const NoticeUnexpectedException().safeMessage;
+      return null;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+  }
+
   void _set(VoidCallback mutation) {
+    _invalidatePendingCommands();
     mutation();
     notifyListeners();
   }
 
-  void _onTextChanged() => notifyListeners();
+  void _onTextChanged() {
+    _invalidatePendingCommands();
+    notifyListeners();
+  }
+
+  void _invalidatePendingCommands() {
+    _saveRequestId = null;
+    _publishRequestId = null;
+    _pendingPublishNotice = null;
+  }
 
   static bool _validInteger(TextEditingController controller, int min, int max) {
     final value = int.tryParse(controller.text.trim());
     return value != null && value >= min && value <= max;
   }
+
+  static NoticeAudienceDimension _dimensionFor(NoticeAudience audience) => switch (audience) {
+    NoticeAudience.everyone || NoticeAudience.coeloTeam => NoticeAudienceDimension.platform,
+    NoticeAudience.institution => NoticeAudienceDimension.institution,
+    NoticeAudience.unit => NoticeAudienceDimension.unit,
+    NoticeAudience.group => NoticeAudienceDimension.group,
+    NoticeAudience.role => NoticeAudienceDimension.platform,
+    NoticeAudience.person => NoticeAudienceDimension.person,
+  };
 
   @override
   void dispose() {
@@ -310,4 +613,16 @@ final class NoticeFormController extends ChangeNotifier {
     }
     super.dispose();
   }
+}
+
+String _newRequestId() {
+  final bytes = List<int>.generate(16, (_) => math.Random.secure().nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-'
+      '${hex.substring(8, 12)}-'
+      '${hex.substring(12, 16)}-'
+      '${hex.substring(16, 20)}-'
+      '${hex.substring(20)}';
 }

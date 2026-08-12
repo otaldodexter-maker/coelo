@@ -19,6 +19,7 @@ Future<void> main() async {
       activityDirectoryRepository: authScope.activityDirectoryRepository,
       personDirectoryRepository: authScope.personDirectoryRepository,
       accessProfileRepository: authScope.accessProfileRepository,
+      noticeRepository: authScope.noticeRepository,
     ),
   );
 }

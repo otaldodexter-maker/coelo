@@ -1,7 +1,7 @@
 ---
-source: "docs/product/prd-superadmin.md; specs/010-superadmin-completo-v1-technical-spec.md; specs/012-superadmin-mvp.md; docs/design/design-system.md; aprovação do Owner Coelo em 2026-08-05"
+source: "docs/product/prd-superadmin.md; specs/010-superadmin-completo-v1-technical-spec.md; specs/012-superadmin-mvp.md; docs/design/design-system.md; aprovações do Owner Coelo em 2026-08-05 e 2026-08-11"
 status: "approved-design"
-generated_at: "2026-08-05"
+generated_at: "2026-08-11"
 ---
 
 # Avisos do Superadmin no MVP
@@ -25,8 +25,10 @@ genérica de campanhas nem um editor livre de layouts.
   horizontal/vertical. Pixels, proporção, limite e processamento pertencem à
   futura spec de mídia/R2.
 - Cores de fundo e texto pelo seletor avançado Coelo, com contraste validado.
-- Audiência com exatamente um alvo hierárquico — global, instituição, unidade
-  ou turma — e papel opcional, sem regras booleanas montadas no cliente.
+- Audiência controlada: cada aviso escolhe uma variação allowlisted — `Todos`,
+  instituição, unidade, turma ou pessoa — e aceita vários recursos explícitos
+  ou todos os resultados de um filtro autorizado. Papel é filtro opcional;
+  `Todos` é exclusivo e não há construtor booleano livre no cliente.
 - Exatamente um destino: web, mobile, tablet ou todos.
 - Início/fim e recorrência fechada: única, diária, semanal, mensal por dia do
   mês ou por intervalo inteiro de dias.
@@ -35,16 +37,18 @@ genérica de campanhas nem um editor livre de layouts.
   nunca impede a saída do app. Conteúdo crítico obrigatório permanece separado
   de conteúdo opcional silenciável.
 - Estados rascunho, agendado, ativo, pausado, expirado e inativo.
-- Prévia responsiva e métricas básicas de alcance, entrega, visualização e
-  aceite, fictícias no protótipo.
+- Prévia responsiva fiel ao popup entregue, inclusive CTA, cor do botão,
+  tamanhos compacto, padrão, expandido e tela cheia e espaçamento externo.
+- Dados, alcance, entrega, visualização e aceite vêm do backend; produção não
+  usa fixtures, métricas inventadas nem sucesso local.
 
 ## Fora de escopo
 
 - Drag-and-drop, HTML, blocos livres, carrossel ou múltiplas telas.
 - Jornadas, gatilhos comportamentais e regras AND/OR arbitrárias.
 - A/B testing, personalização, localização e analytics avançado.
-- Upload/R2, envio, aceite, auditoria ou autorização produtivos nesta entrega.
-- Mudança de arquitetura, RLS ou RPCs.
+- Upload de imagem enquanto a decisão Supabase Storage versus Cloudflare R2
+  permanecer aberta. Publicação de imagem falha fechada e não exibe placeholder.
 
 ## Superfícies e direção visual
 
@@ -71,11 +75,33 @@ etapa, erro ou ação. Foco visível, teclado, toque, alvos de 48 px, contraste
 
 `PlatformNotice` e `NoticeDraft` representam conteúdo, prioridade, estado,
 vigência, audiência, comportamento, destinos, recorrência, orientação, tons e
-métricas fictícias. O protótipo usa `FakeNoticeRepository` e não prova envio.
+aparência tipada. A produção usa contrato assíncrono e adapter Supabase; fake
+fica restrito a testes isolados.
 
 Produção exige perfil interno autorizado, audiência resolvida server-side e
 congelada ao publicar, isolamento entre tenants e auditoria minimizada. O
 cliente não amplia audiência nem usa metadados mutáveis como autorização.
+Salvar e publicar são comandos idempotentes, versionados e transacionais.
+
+## Matriz de aplicabilidade aprovada em 2026-08-11
+
+| Tema | Decisão para Avisos |
+| --- | --- |
+| Aparência | Aplica: fundo, texto, CTA, tamanho, tela cheia, inset e preview real. |
+| Herança | Não aplica. |
+| Localização/contato | Não aplica. |
+| Representantes, admins e profissionais | Aplica somente como vínculos/papéis de audiência. |
+| Pessoas/perfis | Aplica: pessoa global e vínculo contextual pesquisado no servidor. |
+| Tipos/subtipos | Aplica apenas enum fechado de aviso; sem subtipo livre ou `Outros`. |
+| Status | Aplica como `Status do aviso`: rascunho, agendado, ativo, pausado, expirado e inativo. |
+| Hierarquia | Aplica: instituição → unidade → turma, validada no servidor. |
+| Plano | Não aplica como edição; eventual filtro é somente regra server-side autorizada. |
+| Import/export | Não aplica ao construtor; não haverá ação de arquivo demonstrativa. |
+| Mídia | Bloqueada até decisão Storage × R2; texto continua disponível. |
+| Perfil público/descoberta | Não aplica. |
+
+Avatar, capa, bio, `@`, destaques, entitlement de fotos e descoberta pública
+não pertencem ao domínio de Avisos.
 
 ## Estados de UX
 
@@ -98,10 +124,10 @@ cliente não amplia audiência nem usa metadados mutáveis como autorização.
 
 ## Eventos, logs e notificações
 
-O protótipo registra resumos fictícios para criar, atualizar, duplicar,
-publicar, pausar, reativar, expirar e inativar. Logs não incluem mensagem
-integral, mídia, PII ou destinatários. Produção exigirá caminho server-side e
-eventos auditados de entrega, leitura e aceite.
+Produção registra no backend resumos minimizados para salvar, publicar, pausar,
+reativar e inativar. Logs não incluem mensagem integral, mídia, PII ou
+destinatários. Entrega, leitura e aceite ficam em recibos/eventos operacionais
+protegidos, separados da trilha administrativa append-only.
 
 ## Critérios de aceite
 

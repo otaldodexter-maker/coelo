@@ -1,12 +1,15 @@
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
-import 'package:coelo_superadmin/features/notices/data/fake_notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/fake_notice_repository.dart';
+
 void main() {
-  testWidgets('validates and advances through the five notice wizard steps on mobile', (tester) async {
+  testWidgets('validates and advances through the five notice wizard steps on mobile', (
+    tester,
+  ) async {
     await _pumpForm(tester, const Size(375, 812));
 
     expect(find.byKey(const Key('notice-step-identity')), findsOneWidget);
@@ -34,6 +37,8 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('notice-step-review')), findsOneWidget);
     expect(find.text('Manutenção programada'), findsWidgets);
+    expect(find.byType(Card), findsNothing);
+    expect(find.byKey(const Key('notice-metrics-summary')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -47,7 +52,8 @@ void main() {
   });
 }
 
-Finder _fieldIn(Key key) => find.descendant(of: find.byKey(key), matching: find.byType(EditableText));
+Finder _fieldIn(Key key) =>
+    find.descendant(of: find.byKey(key), matching: find.byType(EditableText));
 
 Future<void> _pumpForm(WidgetTester tester, Size size) async {
   tester.view.devicePixelRatio = 1;
@@ -59,7 +65,9 @@ Future<void> _pumpForm(WidgetTester tester, Size size) async {
   final repository = FakeNoticeRepository(store: store, now: () => now);
 
   await tester.pumpWidget(
-    MaterialApp(home: Scaffold(body: NoticeFormPage(repository: repository))),
+    MaterialApp(
+      home: Scaffold(body: NoticeFormPage(repository: repository)),
+    ),
   );
   await tester.pump();
 }

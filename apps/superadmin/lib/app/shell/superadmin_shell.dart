@@ -802,7 +802,7 @@ const _navigationSections = <_NavigationSectionData>[
       active: true,
     ),
     _NavigationDestinationData('invites', 'Convites', Icons.mail_outline),
-    _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined),
+    _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined, active: true),
   ]),
   _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
     _NavigationDestinationData(
@@ -1216,14 +1216,14 @@ String? _prototypeDestinationPath(BuildContext context, String destination) {
     'plans' => '/dev/plans',
     'import' => '/dev/imports',
     'invites' => '/dev/invites',
-    'notices' => '/dev/notices',
+    'notices' => '/notices',
     'audit' => '/dev/audit',
     _ => null,
   };
 }
 
 bool _destinationAvailable(BuildContext context, _NavigationDestinationData destination) {
-  const previewOnly = {'plans', 'import', 'invites', 'notices', 'audit', 'internal-users'};
+  const previewOnly = {'plans', 'import', 'invites', 'audit', 'internal-users'};
   return destination.active ||
       (_isDevelopmentRoute(context) && previewOnly.contains(destination.id));
 }

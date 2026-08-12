@@ -34,7 +34,7 @@ void main() {
       ('plans', '/dev/plans'),
       ('import', '/dev/imports'),
       ('invites', '/dev/invites'),
-      ('notices', '/dev/notices'),
+      ('notices', '/notices'),
       ('audit', '/dev/audit'),
       ('catalog', '/dev/catalog'),
     ];

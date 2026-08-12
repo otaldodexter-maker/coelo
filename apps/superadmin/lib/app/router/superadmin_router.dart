@@ -74,7 +74,7 @@ import '../../features/invites/data/fake_invite_repository.dart';
 import '../../features/invites/presentation/invite_detail_page.dart';
 import '../../features/invites/presentation/invite_directory_page.dart';
 import '../../features/invites/presentation/invite_form_page.dart';
-import '../../features/notices/data/fake_notice_repository.dart';
+import '../../features/notices/domain/notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
@@ -136,6 +136,7 @@ GoRouter createSuperadminRouter({
   ValueChanged<Uri>? openExternalCatalog,
   SupportPrototypeController? supportController,
   UserPreferencesController? userPreferencesController,
+  NoticeRepository noticeRepository = const UnavailableNoticeRepository(),
   bool allowDevelopmentPreview = !kReleaseMode || SuperadminAppConfig.environment == 'local',
   required ValueChanged<ThemeMode> onThemeModeChanged,
 }) {
@@ -146,7 +147,6 @@ GoRouter createSuperadminRouter({
   final planRepository = FakePlanCatalogRepository(store: operationalStore);
   final importRepository = FakeImportRepository();
   final inviteRepository = FakeInviteRepository(prototypeStore: operationalStore);
-  final noticeRepository = FakeNoticeRepository(store: operationalStore);
   final agendaPrototypeStore = AgendaPrototypeStore.seeded();
   final accountController = AccountController(
     repository: InMemoryAccountProfileRepository(),
@@ -2011,50 +2011,62 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.devNotices,
-            name: SuperadminRoutes.devNoticesName,
+            path: SuperadminRoutes.notices,
+            name: SuperadminRoutes.noticesName,
             builder: (context, state) => operationalPage(
               context,
               title: 'Avisos',
-              subtitle: 'Publique avisos fictícios para audiências identificadas.',
+              subtitle: 'Crie e acompanhe avisos oficiais da plataforma.',
               destination: 'notices',
               child: NoticeDirectoryPage(
                 repository: noticeRepository,
-                onCreate: () => context.goNamed(SuperadminRoutes.devNoticeCreateName),
+                onCreate: () => context.goNamed(SuperadminRoutes.noticeCreateName),
                 onEdit: (id) => context.goNamed(
-                  SuperadminRoutes.devNoticeEditName,
+                  SuperadminRoutes.noticeEditName,
                   pathParameters: {'noticeId': id},
                 ),
               ),
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.devNoticeCreate,
-            name: SuperadminRoutes.devNoticeCreateName,
+            path: SuperadminRoutes.noticeCreate,
+            name: SuperadminRoutes.noticeCreateName,
             builder: (context, state) => operationalPage(
               context,
               title: 'Novo aviso',
-              subtitle: 'Revise o preview antes de publicar.',
+              subtitle: 'Revise a prévia e o público antes de publicar.',
               destination: 'notices',
               child: NoticeFormPage(
                 repository: noticeRepository,
-                onSaved: (_) => context.goNamed(SuperadminRoutes.devNoticesName),
+                onSaved: (_) => context.goNamed(SuperadminRoutes.noticesName),
+                onCancel: () => context.goNamed(SuperadminRoutes.noticesName),
               ),
             ),
           ),
           GoRoute(
-            path: SuperadminRoutes.devNoticeEdit,
-            name: SuperadminRoutes.devNoticeEditName,
+            path: SuperadminRoutes.noticeEdit,
+            name: SuperadminRoutes.noticeEditName,
             builder: (context, state) => operationalPage(
               context,
               title: 'Editar aviso',
-              subtitle: 'Altere um aviso fictício.',
+              subtitle: 'Altere um aviso dentro do ciclo permitido.',
               destination: 'notices',
               child: NoticeFormPage(
                 repository: noticeRepository,
                 noticeId: state.pathParameters['noticeId'],
-                onSaved: (_) => context.goNamed(SuperadminRoutes.devNoticesName),
+                onSaved: (_) => context.goNamed(SuperadminRoutes.noticesName),
+                onCancel: () => context.goNamed(SuperadminRoutes.noticesName),
               ),
+            ),
+          ),
+          GoRoute(path: SuperadminRoutes.devNotices, name: SuperadminRoutes.devNoticesName, redirect: (context, state) => SuperadminRoutes.notices),
+          GoRoute(path: SuperadminRoutes.devNoticeCreate, name: SuperadminRoutes.devNoticeCreateName, redirect: (context, state) => SuperadminRoutes.noticeCreate),
+          GoRoute(
+            path: SuperadminRoutes.devNoticeEdit,
+            name: SuperadminRoutes.devNoticeEditName,
+            redirect: (context, state) => state.namedLocation(
+              SuperadminRoutes.noticeEditName,
+              pathParameters: {'noticeId': state.pathParameters['noticeId']!},
             ),
           ),
           GoRoute(

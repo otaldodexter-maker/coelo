@@ -1,4 +1,3 @@
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/platform_notice.dart';
@@ -20,28 +19,34 @@ final class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
   @override
   Widget build(BuildContext context) {
     final notice = widget.notice;
-    final requiresCheckbox = notice.behavior == NoticeBehavior.checkboxConfirmation;
-    final isDismissible = notice.behavior == NoticeBehavior.dismissible;
-    return CoeloAdminDialogShell(
-      dialogKey: const Key('notice-preview-dialog'),
-      title: notice.title,
-      closeTooltip: notice.mandatory ? 'Sair da simulação' : 'Fechar aviso',
+    final fullscreen = notice.popupSize == NoticePopupSize.fullscreen;
+    final preview = NoticePopupPreview(
+      notice: notice,
+      device: notice.targetDevice,
+      checkboxChecked: _checked,
+      onCheckboxChanged: notice.behavior == NoticeBehavior.checkboxConfirmation
+          ? (value) => setState(() => _checked = value)
+          : null,
       onClose: () => Navigator.of(context).pop(),
-      body: NoticePopupPreview(
-        notice: notice,
-        device: notice.targetDevice,
-        checkboxChecked: _checked,
-        onCheckboxChanged: requiresCheckbox ? (value) => setState(() => _checked = value) : null,
-      ),
-      primaryAction: FilledButton(
-        onPressed: requiresCheckbox && !_checked
-            ? null
-            : () {
-                if (!isDismissible) widget.onAccepted?.call();
-                Navigator.of(context).pop();
-              },
-        child: Text(isDismissible ? 'Fechar' : notice.buttonLabel),
-      ),
+      onPrimaryPressed: () {
+        if (notice.behavior != NoticeBehavior.dismissible) widget.onAccepted?.call();
+        Navigator.of(context).pop();
+      },
+    );
+
+    if (fullscreen) {
+      return Dialog.fullscreen(
+        key: const Key('notice-preview-dialog-fullscreen'),
+        backgroundColor: Colors.transparent,
+        child: preview,
+      );
+    }
+    return Dialog(
+      key: const Key('notice-preview-dialog'),
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      insetPadding: notice.hasOuterInset ? null : EdgeInsets.zero,
+      child: preview,
     );
   }
 }

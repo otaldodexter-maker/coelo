@@ -151,6 +151,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('keeps actions fixed while a 5000 character body scrolls at 200 percent', (
+    tester,
+  ) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(375, 600);
+    addTearDown(tester.view.reset);
+    await _openPreview(
+      tester,
+      _notice(message: List.filled(500, 'conteúdo').join(' ')),
+      textScale: 2,
+    );
+
+    expect(find.byKey(const Key('notice-popup-body-scroll')), findsOneWidget);
+    expect(find.byKey(const Key('notice-popup-primary-action')), findsOneWidget);
+    await tester.drag(find.byKey(const Key('notice-popup-body-scroll')), const Offset(0, -300));
+    await tester.pump();
+
+    expect(find.byKey(const Key('notice-popup-primary-action')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('checkbox notice requires acknowledgement before confirming', (tester) async {
     var accepted = false;
     final notice = PlatformNotice(
@@ -228,10 +250,11 @@ PlatformNotice _notice({
   NoticeVisualTone backgroundTone = NoticeVisualTone.dark,
   NoticeVisualTone textTone = NoticeVisualTone.light,
   String? linkLabel,
+  String message = 'Read before continuing.',
 }) => PlatformNotice(
   id: 'notice',
   title: 'Notice preview',
-  message: 'Read before continuing.',
+  message: message,
   priority: NoticePriority.important,
   status: NoticeStatus.active,
   startsAt: DateTime.utc(2026, 8, 3),
@@ -249,6 +272,4 @@ PlatformNotice _notice({
 );
 
 Color _surfaceColor(WidgetTester tester) =>
-    (tester.widget<DecoratedBox>(find.byKey(const Key('notice-popup-surface'))).decoration
-            as BoxDecoration)
-        .color!;
+    tester.widget<Material>(find.byKey(const Key('notice-popup-surface'))).color!;
