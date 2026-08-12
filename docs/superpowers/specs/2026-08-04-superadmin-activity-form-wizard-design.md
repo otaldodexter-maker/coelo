@@ -60,6 +60,15 @@ same result and cannot leave an orphan draft. Duplicating the model itself is a
 separate command that creates an institution-scoped model copy; it must not
 create an Activity.
 
+Creating an institution model from scratch is a separate privileged command,
+`superadmin_create_activity_template`. It accepts only institution, name,
+description, active subtype, Optional/Mandatory governance and an idempotency
+key. The backend requires `activities.templates.manage` and MFA AAL2,
+normalizes and bounds text, validates the institution/taxonomy relationship,
+persists an institution-scoped active model, and writes one audit event in the
+same transaction. Retrying the normalized request with the same key returns the
+same model; reusing the key with a different payload fails closed.
+
 Loading, empty options, validation failure, authorization failure, conflict and
 backend failure remain honest states. The form never injects local catalogs,
 fixtures or synthetic success when a relation is empty or unavailable.

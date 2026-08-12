@@ -13,6 +13,32 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
   final SupabaseClient _client;
 
   @override
+  Future<ActivityTemplateCreateResult> createTemplate(ActivityTemplateCreateCommand command) async {
+    try {
+      final response = _asMap(
+        await _client.rpc<Object?>(
+          'superadmin_create_activity_template',
+          params: {
+            'p_institution_id': command.institutionId,
+            'p_name': command.name.trim(),
+            'p_description': command.description.trim(),
+            'p_taxonomy_id': command.taxonomyId,
+            'p_governance_kind': command.governance.databaseValue,
+            'p_idempotency_key': _normalizeRequestId(command.requestId),
+          },
+        ),
+      );
+      return ActivityTemplateCreateResult(
+        id: response['id'] as String,
+        institutionId: response['institution_id'] as String,
+        name: response['name'] as String,
+      );
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
   Future<ActivityTemplateCopyResult> copyTemplate(ActivityTemplateCopyCommand command) async {
     try {
       final response = _asMap(
@@ -132,6 +158,10 @@ final class UnavailableActivityCommandRepository implements ActivityCommandRepos
   const UnavailableActivityCommandRepository();
 
   Future<T> _unavailable<T>() => Future<T>.error(const ActivityCommandUnavailableException());
+
+  @override
+  Future<ActivityTemplateCreateResult> createTemplate(ActivityTemplateCreateCommand command) =>
+      _unavailable();
 
   @override
   Future<List<ActivityLocationResult>> createLocations(ActivityLocationCommand command) =>

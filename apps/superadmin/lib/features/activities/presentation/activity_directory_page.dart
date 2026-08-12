@@ -47,6 +47,23 @@ typedef ActivityDirectoryImportRequested = Future<void> Function();
 typedef ActivityTemplateStarter = void Function(ActivityTemplateOption template);
 typedef ActivityTemplateDuplicator =
     Future<void> Function(ActivityTemplateOption template, String institutionId);
+typedef ActivityTemplateCreator = Future<void> Function(ActivityTemplateCreateDraft draft);
+
+final class ActivityTemplateCreateDraft {
+  const ActivityTemplateCreateDraft({
+    required this.institutionId,
+    required this.name,
+    required this.description,
+    required this.taxonomyId,
+    required this.governance,
+  });
+
+  final String institutionId;
+  final String name;
+  final String description;
+  final String taxonomyId;
+  final ActivityGovernance governance;
+}
 
 enum _ActivityContentKind { activities, templates }
 
@@ -66,6 +83,7 @@ final class ActivityDirectoryPage extends StatefulWidget {
     this.onImportRequested,
     this.onCreateFromTemplate,
     this.onDuplicateTemplate,
+    this.onCreateTemplate,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     super.key,
@@ -80,6 +98,7 @@ final class ActivityDirectoryPage extends StatefulWidget {
   final ActivityDirectoryImportRequested? onImportRequested;
   final ActivityTemplateStarter? onCreateFromTemplate;
   final ActivityTemplateDuplicator? onDuplicateTemplate;
+  final ActivityTemplateCreator? onCreateTemplate;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
@@ -150,6 +169,7 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
       repository: widget.repository,
       onCreateFromTemplate: widget.onCreateFromTemplate,
       onDuplicateTemplate: widget.onDuplicateTemplate,
+      onCreateTemplate: widget.onCreateTemplate,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() >= .5) {
           setState(() => _footerHeight = height);
@@ -175,6 +195,7 @@ final class _ActivityDirectoryContent extends StatefulWidget {
     required this.repository,
     this.onCreateFromTemplate,
     this.onDuplicateTemplate,
+    this.onCreateTemplate,
   });
 
   final ActivityDirectoryViewModel viewModel;
@@ -191,6 +212,7 @@ final class _ActivityDirectoryContent extends StatefulWidget {
   final ActivityDirectoryRepository repository;
   final ActivityTemplateStarter? onCreateFromTemplate;
   final ActivityTemplateDuplicator? onDuplicateTemplate;
+  final ActivityTemplateCreator? onCreateTemplate;
 
   @override
   State<_ActivityDirectoryContent> createState() => _ActivityDirectoryContentState();
@@ -502,7 +524,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                       display: widget.display,
                       onStart: widget.onCreateFromTemplate,
                       onDuplicate: widget.onDuplicateTemplate == null ? null : _duplicateTemplate,
-                      onCreate: widget.onCreate,
+                      onCreate: widget.onCreateTemplate,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                   ],
@@ -773,7 +795,7 @@ final class _ActivityTemplateSection extends StatelessWidget {
   final ActivityDirectoryDisplay display;
   final ActivityTemplateStarter? onStart;
   final ActivityTemplateDuplicator? onDuplicate;
-  final VoidCallback? onCreate;
+  final ActivityTemplateCreator? onCreate;
 
   Future<void> _requestDuplicate(BuildContext context, ActivityTemplateOption template) async {
     await showDialog<void>(
@@ -787,16 +809,35 @@ final class _ActivityTemplateSection extends StatelessWidget {
     );
   }
 
-  Widget _withCreateAction(Widget child) {
-    final create = onCreate;
-    if (create == null) return child;
+  Future<void> _requestCreate(BuildContext context) async {
+    final creator = onCreate;
+    if (creator == null) return;
+    final current = options;
+    if (current == null) return;
+    final created = await showDialog<bool>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (context) => _ActivityTemplateCreateDialog(
+        institutions: current.institutions,
+        taxonomy: current.taxonomy,
+        onCreate: creator,
+      ),
+    );
+    if (created == true && context.mounted) {
+      showSuperadminNotice(context, 'Modelo criado com sucesso.', icon: Icons.add_task_rounded);
+    }
+  }
+
+  Widget _withCreateAction(BuildContext context, Widget child) {
+    if (onCreate == null) return child;
+    final create = options == null ? onRetry : () => _requestCreate(context);
     if (display == ActivityDirectoryDisplay.table) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SuperadminDirectoryCreateBanner(
-            label: 'Criar atividade',
-            description: 'Adicionar uma atividade sem usar modelo.',
+            label: 'Criar modelo',
+            description: 'Adicionar um modelo institucional de atividade.',
             onPressed: create,
             bannerKey: const Key('create-activity-template-banner'),
             surfaceKey: const Key('create-activity-template-banner-surface'),
@@ -818,7 +859,7 @@ final class _ActivityTemplateSection extends StatelessWidget {
                 constraints: const BoxConstraints(minHeight: 216),
                 child: CoeloAdminCreateAction(
                   key: const Key('create-activity-template-tile'),
-                  label: 'Criar atividade',
+                  label: 'Criar modelo',
                   onPressed: create,
                   icon: Icons.add_task_rounded,
                 ),
@@ -836,6 +877,7 @@ final class _ActivityTemplateSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (loading && options == null) {
       return _withCreateAction(
+        context,
         const Column(
           key: Key('activity-templates-loading'),
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -849,6 +891,7 @@ final class _ActivityTemplateSection extends StatelessWidget {
     }
     if (failed && options == null) {
       return _withCreateAction(
+        context,
         CoeloStatePanel(
           key: const Key('activity-templates-failure'),
           title: 'Não foi possível carregar os modelos',
@@ -896,9 +939,9 @@ final class _ActivityTemplateSection extends StatelessWidget {
       children: [
         if (display == ActivityDirectoryDisplay.table && onCreate != null) ...[
           SuperadminDirectoryCreateBanner(
-            label: 'Criar atividade',
-            description: 'Adicionar uma atividade sem usar modelo.',
-            onPressed: onCreate!,
+            label: 'Criar modelo',
+            description: 'Adicionar um modelo institucional de atividade.',
+            onPressed: () => _requestCreate(context),
             bannerKey: const Key('create-activity-template-banner'),
             surfaceKey: const Key('create-activity-template-banner-surface'),
           ),
@@ -906,6 +949,7 @@ final class _ActivityTemplateSection extends StatelessWidget {
         ],
         if (visibleTemplates.isEmpty)
           _withCreateAction(
+            context,
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -1011,8 +1055,8 @@ final class _ActivityTemplateSection extends StatelessWidget {
                         constraints: const BoxConstraints(minHeight: 216),
                         child: CoeloAdminCreateAction(
                           key: const Key('create-activity-template-tile'),
-                          label: 'Criar atividade',
-                          onPressed: onCreate!,
+                          label: 'Criar modelo',
+                          onPressed: () => _requestCreate(context),
                           icon: Icons.add_task_rounded,
                         ),
                       ),
@@ -1108,6 +1152,151 @@ final class _ActivityTemplateSection extends StatelessWidget {
       ],
     );
   }
+}
+
+final class _ActivityTemplateCreateDialog extends StatefulWidget {
+  const _ActivityTemplateCreateDialog({
+    required this.institutions,
+    required this.taxonomy,
+    required this.onCreate,
+  });
+
+  final List<ActivityFormInstitutionOption> institutions;
+  final List<ActivityTaxonomyOption> taxonomy;
+  final ActivityTemplateCreator onCreate;
+
+  @override
+  State<_ActivityTemplateCreateDialog> createState() => _ActivityTemplateCreateDialogState();
+}
+
+final class _ActivityTemplateCreateDialogState extends State<_ActivityTemplateCreateDialog> {
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _description = TextEditingController();
+  String? _institutionId;
+  String? _taxonomyId;
+  ActivityGovernance _governance = ActivityGovernance.optional;
+  String? _error;
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _description.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final name = _name.text.trim();
+    if (_institutionId == null || name.isEmpty || _taxonomyId == null) {
+      setState(() => _error = 'Preencha instituição, nome e categoria.');
+      return;
+    }
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      await widget.onCreate(
+        ActivityTemplateCreateDraft(
+          institutionId: _institutionId!,
+          name: name,
+          description: _description.text.trim(),
+          taxonomyId: _taxonomyId!,
+          governance: _governance,
+        ),
+      );
+      if (mounted) Navigator.of(context).pop(true);
+    } on Exception {
+      if (mounted) {
+        setState(() => _error = 'Não foi possível criar o modelo. Tente novamente.');
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    dialogKey: const Key('activity-template-create-dialog'),
+    title: 'Criar modelo de atividade',
+    closeTooltip: 'Fechar criação de modelo',
+    body: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloAdminSingleSelectField<String?>(
+          key: const Key('activity-template-create-institution'),
+          label: 'Instituição',
+          value: _institutionId,
+          options: [null, ...widget.institutions.map((item) => item.id)],
+          optionLabel: (id) => id == null
+              ? 'Selecione uma instituição'
+              : widget.institutions.firstWhere((item) => item.id == id).name,
+          onChanged: (value) => setState(() {
+            _institutionId = value;
+            _error = null;
+          }),
+          prefixIcon: Icons.apartment_outlined,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloFormTextField(
+          fieldKey: const Key('activity-template-create-name'),
+          controller: _name,
+          labelText: 'Nome',
+          prefixIcon: Icons.local_activity_outlined,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloFormTextField(
+          fieldKey: const Key('activity-template-create-description'),
+          controller: _description,
+          labelText: 'Descrição',
+          prefixIcon: Icons.notes_rounded,
+          maxLines: 3,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloAdminSingleSelectField<String?>(
+          key: const Key('activity-template-create-taxonomy'),
+          label: 'Categoria',
+          value: _taxonomyId,
+          options: [null, ...widget.taxonomy.map((item) => item.id)],
+          optionLabel: (id) => id == null
+              ? 'Selecione uma categoria'
+              : widget.taxonomy.firstWhere((item) => item.id == id).label,
+          onChanged: (value) => setState(() {
+            _taxonomyId = value;
+            _error = null;
+          }),
+          prefixIcon: Icons.category_outlined,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloAdminSingleSelectField<ActivityGovernance>(
+          key: const Key('activity-template-create-governance'),
+          label: 'Tipo de atividade',
+          value: _governance,
+          options: const [ActivityGovernance.optional, ActivityGovernance.mandatory],
+          optionLabel: (value) => value.label,
+          onChanged: (value) => setState(() => _governance = value),
+          prefixIcon: Icons.rule_rounded,
+        ),
+        if (_error != null) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Semantics(
+            liveRegion: true,
+            child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          ),
+        ],
+      ],
+    ),
+    secondaryAction: OutlinedButton(
+      onPressed: _submitting ? null : Navigator.of(context).pop,
+      child: const Text('Cancelar'),
+    ),
+    primaryAction: FilledButton(
+      key: const Key('activity-template-create-submit'),
+      onPressed: _submitting ? null : _submit,
+      child: Text(_submitting ? 'Criando...' : 'Criar modelo'),
+    ),
+  );
 }
 
 final class _ActivityTemplateCopyDialog extends StatefulWidget {
@@ -1364,6 +1553,7 @@ final class _ActivityCards extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 216),
                 child: CoeloAdminCreateAction(
+                  key: const Key('create-activity-tile'),
                   label: 'Criar atividade',
                   icon: Icons.local_activity_rounded,
                   onPressed: onCreate!,

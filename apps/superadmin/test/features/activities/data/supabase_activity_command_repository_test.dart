@@ -234,6 +234,53 @@ void main() {
     expect(result.name, 'Robótica (cópia)');
   });
 
+  test('creates an institutional model through the typed RPC contract', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'id': 'template-created-1',
+            'institution_id': 'institution-1',
+            'name': 'Física',
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    final result = await SupabaseActivityCommandRepository(client).createTemplate(
+      const ActivityTemplateCreateCommand(
+        requestId: 'template-create-request-1',
+        institutionId: 'institution-1',
+        name: ' Física ',
+        description: ' Ciências exatas ',
+        taxonomyId: 'taxonomy-exact-sciences',
+        governance: ActivityGovernance.mandatory,
+      ),
+    );
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_create_activity_template'));
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    expect(body, {
+      'p_institution_id': 'institution-1',
+      'p_name': 'Física',
+      'p_description': 'Ciências exatas',
+      'p_taxonomy_id': 'taxonomy-exact-sciences',
+      'p_governance_kind': 'mandatory',
+      'p_idempotency_key': isA<String>(),
+    });
+    expect(result.id, 'template-created-1');
+    expect(result.institutionId, 'institution-1');
+    expect(result.name, 'Física');
+  });
+
   test('persists before preparing and finalizing a private identity upload', () async {
     final calls = <String>[];
     Map<String, dynamic>? prepareBody;
@@ -391,6 +438,19 @@ void main() {
           requestId: 'copy-1',
           templateId: 'template-1',
           institutionId: 'institution-1',
+        ),
+      ),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    expect(
+      repository.createTemplate(
+        const ActivityTemplateCreateCommand(
+          requestId: 'create-1',
+          institutionId: 'institution-1',
+          name: 'Física',
+          description: '',
+          taxonomyId: 'taxonomy-1',
+          governance: ActivityGovernance.optional,
         ),
       ),
       throwsA(isA<ActivityCommandUnavailableException>()),

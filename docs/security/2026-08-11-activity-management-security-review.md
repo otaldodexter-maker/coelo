@@ -32,6 +32,13 @@ forjado; exportacao de dados infantis; vazamento de segredo ou signed URL.
 | V12 Files | L3 | nome, MIME real, assinatura, 5 MB, checksum, path server-side e retencao |
 | V14 Configuration | L2 | grants explicitos, functions sem PUBLIC, search_path fixo, secret scan |
 
+O comando de criação de modelo institucional expõe somente a RPC
+`superadmin_create_activity_template` a `authenticated`; a implementação e
+o recibo idempotente permanecem em `app_private`, sem EXECUTE/SELECT para
+clientes. O backend exige `activities.templates.manage`, MFA AAL2, instituição
+ativa, subtipo ativo e governança allowlisted, limita nome/descrição e audita
+`activity.template.create`.
+
 ## Matriz negativa obrigatoria
 
 - Usuario A troca tenant, instituicao, unidade, turma, crianca ou profissional de B.
@@ -53,3 +60,5 @@ Testes Dart focados cobrem falha fechada do repository e sequence guard. Testes
 SQL estruturais e cross-tenant foram adicionados, mas a execucao local permanece
 bloqueada porque Docker/Podman nao esta instalado e o Supabase local nao responde
 em `127.0.0.1:54322`. Nenhuma verificacao bloqueada deve ser reportada como verde.
+O arquivo `activity_template_create_test.sql` adiciona 20 asserts para o novo
+comando; eles também permanecem pendentes de execução real pelo mesmo bloqueio.

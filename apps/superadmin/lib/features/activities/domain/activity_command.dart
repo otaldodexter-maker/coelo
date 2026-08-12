@@ -177,8 +177,40 @@ final class ActivityTemplateCopyResult {
   final String name;
 }
 
+final class ActivityTemplateCreateCommand {
+  const ActivityTemplateCreateCommand({
+    required this.requestId,
+    required this.institutionId,
+    required this.name,
+    required this.description,
+    required this.taxonomyId,
+    required this.governance,
+  });
+
+  final String requestId;
+  final String institutionId;
+  final String name;
+  final String description;
+  final String taxonomyId;
+  final ActivityGovernance governance;
+}
+
+final class ActivityTemplateCreateResult {
+  const ActivityTemplateCreateResult({
+    required this.id,
+    required this.institutionId,
+    required this.name,
+  });
+
+  final String id;
+  final String institutionId;
+  final String name;
+}
+
 abstract interface class ActivityCommandRepository {
   Future<ActivitySaveResult> save(ActivitySaveCommand command);
+
+  Future<ActivityTemplateCreateResult> createTemplate(ActivityTemplateCreateCommand command);
 
   Future<ActivityTemplateCopyResult> copyTemplate(ActivityTemplateCopyCommand command);
 
