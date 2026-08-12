@@ -1,83 +1,21 @@
-import 'dart:async';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../chat_controller.dart';
-import '../chat_fixtures.dart';
 import '../chat_models.dart';
 import 'superadmin_chat_avatar.dart';
 import 'superadmin_chat_composer.dart';
-import 'superadmin_chat_flow_dialog.dart';
 import 'superadmin_chat_message_bubble.dart';
 
-final class SuperadminChatLauncherPositionController extends ValueNotifier<Offset?> {
-  SuperadminChatLauncherPositionController({this.persist = false}) : super(null) {
-    if (persist) unawaited(_load());
-  }
+/// Compatibility holder while the shell migrates away from saved launcher positions.
+/// The launcher is intentionally fixed to its safe-area anchor.
+@Deprecated('The chat launcher is fixed; position is no longer configurable.')
+final class SuperadminChatLauncherPositionController extends ChangeNotifier {
+  SuperadminChatLauncherPositionController({bool persist = false});
 
-  static const _xKey = 'coelo.superadmin.chat_launcher.x';
-  static const _yKey = 'coelo.superadmin.chat_launcher.y';
-  final bool persist;
-  SharedPreferencesAsync? _preferences;
-  Offset? _normalized;
-
-  Future<void> _load() async {
-    final preferences = _localPreferences();
-    if (preferences == null) return;
-    final x = await preferences.getDouble(_xKey);
-    final y = await preferences.getDouble(_yKey);
-    if (x == null || y == null) return;
-    _normalized = Offset(x.clamp(0, 1).toDouble(), y.clamp(0, 1).toDouble());
-    notifyListeners();
-  }
-
-  SharedPreferencesAsync? _localPreferences() {
-    if (!persist) return null;
-    try {
-      return _preferences ??= SharedPreferencesAsync();
-    } on StateError {
-      return null;
-    }
-  }
-
-  Offset? resolve(Rect bounds) {
-    final normalized = _normalized;
-    if (normalized != null) {
-      return Offset(
-        bounds.left + bounds.width * normalized.dx,
-        bounds.top + bounds.height * normalized.dy,
-      );
-    }
-    return value;
-  }
-
-  void save(Offset position, Rect bounds) {
-    final x = bounds.width <= 0
-        ? 0.0
-        : ((position.dx - bounds.left) / bounds.width).clamp(0, 1).toDouble();
-    final y = bounds.height <= 0
-        ? 0.0
-        : ((position.dy - bounds.top) / bounds.height).clamp(0, 1).toDouble();
-    _normalized = Offset(x, y);
-    value = position;
-    final preferences = _localPreferences();
-    if (preferences == null) return;
-    unawaited(preferences.setDouble(_xKey, x));
-    unawaited(preferences.setDouble(_yKey, y));
-  }
-
-  void reset() {
-    _normalized = null;
-    value = null;
-    final preferences = _localPreferences();
-    if (preferences == null) return;
-    unawaited(preferences.remove(_xKey));
-    unawaited(preferences.remove(_yKey));
-  }
+  void reset() {}
 }
 
 final class SuperadminChatLauncher extends StatefulWidget {
@@ -85,6 +23,7 @@ final class SuperadminChatLauncher extends StatefulWidget {
     required this.onOpenConversations,
     this.bottomClearance = 0,
     this.positionController,
+    this.controller,
     super.key,
   }) : assert(bottomClearance >= 0);
 
@@ -92,33 +31,31 @@ final class SuperadminChatLauncher extends StatefulWidget {
   final double bottomClearance;
   final SuperadminChatLauncherPositionController? positionController;
 
+  /// The owner supplies production conversations. Without it, the panel stays
+  /// empty and routes creation to the full, authorised conversations surface.
+  final SuperadminChatController? controller;
+
   @override
   State<SuperadminChatLauncher> createState() => _SuperadminChatLauncherState();
 }
 
 final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
   late final SuperadminChatController _controller;
+  late final bool _ownsController;
   final _focusNode = FocusNode(debugLabel: 'Launcher de conversas');
   final _overlayFocusNode = FocusNode(debugLabel: 'Painel de conversas');
-  final _launcherKey = GlobalKey(debugLabel: 'Launcher móvel de conversas');
   OverlayEntry? _entry;
   var _hovered = false;
   var _focused = false;
   var _compactSheetOpen = false;
-  var _positionOffset = Offset.zero;
-  var _restoreScheduled = false;
-  late final SuperadminChatLauncherPositionController _positionController;
-  late final bool _ownsPositionController;
 
   @override
   void initState() {
     super.initState();
-    _controller = SuperadminChatController(superadminChatConversations);
-    _ownsPositionController = widget.positionController == null;
+    _ownsController = widget.controller == null;
+    _controller = widget.controller ?? SuperadminChatController(const []);
     _controller.addListener(_handleControllerChanged);
-    _positionController = widget.positionController ?? SuperadminChatLauncherPositionController();
     _focusNode.addListener(_handleFocus);
-    _positionController.addListener(_handlePositionController);
   }
 
   @override
@@ -129,9 +66,7 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
       ..removeListener(_handleFocus)
       ..dispose();
     _overlayFocusNode.dispose();
-    _controller.dispose();
-    if (_ownsPositionController) _positionController.dispose();
-    _positionController.removeListener(_handlePositionController);
+    if (_ownsController) _controller.dispose();
     super.dispose();
   }
 
@@ -141,23 +76,8 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
 
   void _handleFocus() => setState(() => _focused = _focusNode.hasFocus);
 
-  void _handlePositionController() {
-    if (_positionController.value != null || _positionOffset == Offset.zero || !mounted) return;
-    setState(() => _positionOffset = Offset.zero);
-    _schedulePositionRestore();
-  }
-
-  void _schedulePositionRestore() {
-    if (_restoreScheduled) return;
-    _restoreScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _restoreScheduled = false;
-      if (mounted) _restorePosition();
-    });
-  }
-
   Future<void> _open() async {
-    if (MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth) {
+    if (MediaQuery.sizeOf(context).width <= 600) {
       setState(() => _compactSheetOpen = true);
       await showModalBottomSheet<void>(
         context: context,
@@ -255,92 +175,22 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
     }
   }
 
-  KeyEventResult _handleLauncherKey(FocusNode _, KeyEvent event) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
-    if (event.logicalKey == LogicalKeyboardKey.home) {
-      _resetPosition();
-      return KeyEventResult.handled;
-    }
-    if (!HardwareKeyboard.instance.isAltPressed) return KeyEventResult.ignored;
-    final delta = switch (event.logicalKey) {
-      LogicalKeyboardKey.arrowLeft => const Offset(-CoeloSpacing.space3, 0),
-      LogicalKeyboardKey.arrowRight => const Offset(CoeloSpacing.space3, 0),
-      LogicalKeyboardKey.arrowUp => const Offset(0, -CoeloSpacing.space3),
-      LogicalKeyboardKey.arrowDown => const Offset(0, CoeloSpacing.space3),
-      _ => null,
-    };
-    if (delta == null) return KeyEventResult.ignored;
-    _moveBy(delta);
-    return KeyEventResult.handled;
-  }
-
-  void _resetPosition() {
-    if (_positionOffset == Offset.zero && _positionController.value == null) return;
-    _positionController.reset();
-    setState(() => _positionOffset = Offset.zero);
-  }
-
-  Rect _movementBounds(MediaQueryData media, Rect launcherRect) {
-    final minLeft = media.padding.left + CoeloSpacing.space2;
-    final maxLeft =
-        media.size.width - media.padding.right - CoeloSpacing.space2 - launcherRect.width;
-    final minTop = media.padding.top + CoeloSpacing.space2;
-    final maxTop =
-        media.size.height -
-        media.padding.bottom -
-        widget.bottomClearance -
-        CoeloSpacing.space2 -
-        launcherRect.height;
-    return Rect.fromLTRB(
-      minLeft,
-      minTop,
-      maxLeft < minLeft ? minLeft : maxLeft,
-      maxTop < minTop ? minTop : maxTop,
-    );
-  }
-
-  void _moveBy(Offset delta, {bool persist = true}) {
-    final renderObject = _launcherKey.currentContext?.findRenderObject();
-    if (renderObject is! RenderBox || !renderObject.hasSize) return;
-    final media = MediaQuery.of(context);
-    final rect = renderObject.localToGlobal(Offset.zero) & renderObject.size;
-    final bounds = _movementBounds(media, rect);
-    final targetLeft = (rect.left + delta.dx).clamp(bounds.left, bounds.right).toDouble();
-    final targetTop = (rect.top + delta.dy).clamp(bounds.top, bounds.bottom).toDouble();
-    final applied = Offset(targetLeft - rect.left, targetTop - rect.top);
-    if (applied != Offset.zero) setState(() => _positionOffset += applied);
-    if (persist) _positionController.save(Offset(targetLeft, targetTop), bounds);
-  }
-
-  void _restorePosition() {
-    final renderObject = _launcherKey.currentContext?.findRenderObject();
-    if (renderObject is! RenderBox || !renderObject.hasSize) return;
-    final current = renderObject.localToGlobal(Offset.zero);
-    final bounds = _movementBounds(MediaQuery.of(context), current & renderObject.size);
-    final desired = _positionController.resolve(bounds);
-    if (desired == null) {
-      _moveBy(Offset.zero, persist: false);
-      return;
-    }
-    _moveBy(desired - current, persist: false);
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_compactSheetOpen) return const SizedBox.shrink();
-    _schedulePositionRestore();
     final colors = Theme.of(context).colorScheme;
     final highlighted = _hovered || _focused || _entry != null;
-    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth;
+    final compact = MediaQuery.sizeOf(context).width <= 600;
     final unreadCount = _controller.conversations.fold<int>(
       0,
       (total, conversation) => total + conversation.unreadCount,
     );
-    final unreadLabel = unreadCount == 1
-        ? '1 mensagem não lida'
-        : '$unreadCount mensagens não lidas';
-    final semanticsLabel = unreadCount == 0 ? 'Abrir conversas' : 'Abrir conversas, $unreadLabel';
-    final foreground = colors.onPrimary;
+    final unreadLabel = switch (unreadCount) {
+      0 => 'nenhuma mensagem não lida',
+      1 => '1 mensagem não lida',
+      _ => '$unreadCount mensagens não lidas',
+    };
+    final semanticsLabel = 'Abrir conversas, $unreadLabel';
     final shape = compact
         ? CircleBorder(
             side: BorderSide(color: highlighted ? colors.primary : colors.outlineVariant),
@@ -350,119 +200,69 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
               color: highlighted ? colors.onPrimary.withValues(alpha: 0.72) : colors.primary,
             ),
           );
-    return Transform.translate(
-      offset: _positionOffset,
-      child: GestureDetector(
-        key: _launcherKey,
-        behavior: HitTestBehavior.opaque,
-        onPanUpdate: (details) => _moveBy(details.delta),
-        child: Focus(
-          onKeyEvent: _handleLauncherKey,
-          child: MouseRegion(
-            onEnter: (_) => setState(() => _hovered = true),
-            onExit: (_) => setState(() => _hovered = false),
-            child: Semantics(
-              button: true,
-              excludeSemantics: true,
-              label: semanticsLabel,
-              onTap: _open,
-              child: Material(
-                key: const Key('superadmin-chat-launcher-surface'),
-                color: compact ? colors.surface : colors.primary,
-                elevation: compact ? 2 : 0,
-                shadowColor: colors.shadow.withValues(alpha: 0.18),
-                shape: shape,
-                clipBehavior: Clip.none,
-                child: InkWell(
-                  focusNode: _focusNode,
-                  onTap: _open,
-                  customBorder: shape,
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: compact
-                      ? SizedBox.square(
-                          dimension: CoeloSize.touchMin,
-                          child: Center(
-                            child: Badge(
-                              isLabelVisible: unreadCount > 0,
-                              label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
-                              backgroundColor: colors.error,
-                              textColor: colors.onError,
-                              child: Icon(Icons.forum_outlined, color: colors.primary),
-                            ),
-                          ),
-                        )
-                      : ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            minHeight: CoeloSize.touchMin,
-                            minWidth: CoeloSize.touchMin,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Badge(
-                                  isLabelVisible: unreadCount > 0,
-                                  label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
-                                  backgroundColor: colors.error,
-                                  textColor: colors.onError,
-                                  child: Icon(Icons.send_outlined, color: foreground),
-                                ),
-                                const SizedBox(width: CoeloSpacing.space2),
-                                Text(
-                                  'Mensagens',
-                                  style: TextStyle(color: foreground, fontWeight: FontWeight.w700),
-                                ),
-                                const SizedBox(width: CoeloSpacing.space2),
-                                _LauncherAvatars(foreground: foreground),
-                              ],
-                            ),
-                          ),
-                        ),
-                ),
-              ),
-            ),
-          ),
-        ),
+    final badge = Badge(
+      isLabelVisible: true,
+      label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
+      backgroundColor: colors.error,
+      textColor: colors.onError,
+      child: Icon(
+        compact ? Icons.forum_outlined : Icons.send_outlined,
+        color: compact ? colors.primary : colors.onPrimary,
       ),
     );
-  }
-}
-
-final class _LauncherAvatars extends StatelessWidget {
-  const _LauncherAvatars({required this.foreground});
-
-  final Color foreground;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    const labels = ['TG', 'UC', 'AN', 'MA', 'IA', 'PA'];
-    return SizedBox(
-      width: 116,
-      height: 34,
-      child: Stack(
-        children: [
-          for (var index = 0; index < labels.length; index++)
-            Positioned(
-              left: index * 16,
-              child: CircleAvatar(
-                radius: 17,
-                backgroundColor: index.isEven
-                    ? colors.surfaceContainerLow
-                    : colors.surfaceContainerHigh,
-                child: Text(labels[index], style: Theme.of(context).textTheme.labelSmall),
-              ),
-            ),
-          Positioned(
-            right: 0,
-            child: CircleAvatar(
-              radius: 17,
-              backgroundColor: colors.surface,
-              child: Icon(Icons.more_horiz_rounded, size: 18, color: foreground),
-            ),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: Semantics(
+        button: true,
+        excludeSemantics: true,
+        label: semanticsLabel,
+        onTap: _open,
+        child: Material(
+          key: const Key('superadmin-chat-launcher-surface'),
+          color: compact ? colors.surface : colors.primary,
+          elevation: compact ? 2 : 0,
+          shadowColor: colors.shadow.withValues(alpha: 0.18),
+          shape: shape,
+          clipBehavior: Clip.none,
+          child: InkWell(
+            focusNode: _focusNode,
+            onFocusChange: (focused) => setState(() => _focused = focused),
+            onTap: _open,
+            customBorder: shape,
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            child: compact
+                ? SizedBox.square(
+                    dimension: CoeloSize.touchMin,
+                    child: Center(child: badge),
+                  )
+                : ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: CoeloSize.touchMin,
+                      minWidth: CoeloSize.touchMin,
+                      maxWidth: 148,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          badge,
+                          const SizedBox(width: CoeloSpacing.space2),
+                          const Flexible(
+                            child: Text(
+                              'Mens.',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -559,6 +359,7 @@ final class _CompactLauncherContentState extends State<_CompactLauncherContent> 
 
   Widget _inbox() {
     final controller = widget.controller;
+    final conversations = controller.visibleConversations;
     return Column(
       children: [
         Padding(
@@ -615,36 +416,33 @@ final class _CompactLauncherContentState extends State<_CompactLauncherContent> 
         ),
         const SizedBox(height: CoeloSpacing.space2),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-            itemCount: controller.visibleConversations.length,
-            itemBuilder: (context, index) {
-              final conversation = controller.visibleConversations[index];
-              return _CompactConversationItem(
-                conversation: conversation,
-                onTap: () {
-                  controller.selectConversation(conversation.id);
-                  setState(() => _threadId = conversation.id);
-                },
-              );
-            },
-          ),
+          child: conversations.isEmpty
+              ? _EmptyInbox(
+                  hasSearch: controller.search.trim().isNotEmpty,
+                  onCreate: _openNewMessage,
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
+                  itemCount: conversations.length,
+                  itemBuilder: (context, index) {
+                    final conversation = conversations[index];
+                    return _CompactConversationItem(
+                      conversation: conversation,
+                      onTap: () {
+                        controller.selectConversation(conversation.id);
+                        setState(() => _threadId = conversation.id);
+                      },
+                    );
+                  },
+                ),
         ),
       ],
     );
   }
 
-  Future<void> _openNewMessage() async {
-    widget.controller.clearRecipients();
-    final completed = await showDialog<bool>(
-      context: context,
-      builder: (_) => SuperadminChatMessageDialog(
-        controller: widget.controller,
-        options: superadminChatContextOptions,
-      ),
-    );
-    if (!mounted || completed != true) return;
-    setState(() => _threadId = widget.controller.selectedConversation.id);
+  void _openNewMessage() {
+    widget.onClose();
+    widget.onOpenConversations();
   }
 
   Widget _thread(SuperadminChatConversation conversation) {
@@ -666,11 +464,55 @@ final class _CompactLauncherContentState extends State<_CompactLauncherContent> 
             widget.controller.sendText(_composer.text);
             _composer.clear();
           },
-          onEmoji: () => widget.controller.sendEmoji('🙂'),
-          onAudio: () => widget.controller.sendAttachment(ChatMessageKind.audio),
-          onImage: () => widget.controller.sendAttachment(ChatMessageKind.image),
+          onEmojiSelected: widget.controller.sendEmoji,
+          onAudio: null,
+          onImage: null,
         ),
       ],
+    );
+  }
+}
+
+final class _EmptyInbox extends StatelessWidget {
+  const _EmptyInbox({required this.hasSearch, required this.onCreate});
+
+  final bool hasSearch;
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.forum_outlined, color: colors.onSurfaceVariant),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(
+              hasSearch ? 'Nenhuma conversa encontrada' : 'Nenhuma conversa ainda',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: CoeloSpacing.space1),
+            Text(
+              hasSearch ? 'Tente ajustar sua busca.' : 'Comece uma conversa na tela completa.',
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            FilledButton.icon(
+              key: const Key('superadmin-chat-launcher-empty-cta'),
+              onPressed: onCreate,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Nova mensagem'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

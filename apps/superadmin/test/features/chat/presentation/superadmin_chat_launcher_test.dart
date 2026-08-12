@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:coelo_superadmin/features/chat/presentation/chat_controller.dart';
+import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -11,7 +13,7 @@ void main() {
     _viewport(tester, 1024);
     await tester.pumpWidget(_app());
 
-    expect(find.text('Mensagens'), findsOne);
+    expect(find.text('Mens.'), findsOne);
     expect(find.byTooltip('Abrir conversas'), findsNothing);
     expect(find.text('3'), findsOne);
     expect(
@@ -32,9 +34,8 @@ void main() {
       location: tester.getCenter(find.byKey(const Key('superadmin-chat-launcher-surface'))),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Mensagens'), findsOne);
-    expect(find.byIcon(Icons.more_horiz_rounded), findsOne);
-    expect(find.byType(CircleAvatar), findsNWidgets(7));
+    expect(find.text('Mens.'), findsOne);
+    expect(find.byType(CircleAvatar), findsNothing);
 
     expect(tester.getSize(find.byKey(const Key('superadmin-chat-launcher-surface'))), idleSize);
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
@@ -62,68 +63,26 @@ void main() {
     expect(FocusManager.instance.primaryFocus?.debugLabel, isNot('Launcher de conversas'));
   });
 
-  testWidgets('Alt arrows move the launcher and Home resets it', (tester) async {
+  testWidgets('launcher is fixed: drag and Alt arrows cannot change its anchored position', (
+    tester,
+  ) async {
     _viewport(tester, 1024);
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
     final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
     final initial = tester.getTopLeft(launcher);
 
+    await tester.drag(launcher, const Offset(-180, -120));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(launcher), initial);
+
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pump();
     await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
     await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
     await tester.pumpAndSettle();
-    final moved = tester.getTopLeft(launcher);
-    expect(moved.dx, lessThan(initial.dx));
-
-    await tester.sendKeyEvent(LogicalKeyboardKey.home);
-    await tester.pumpAndSettle();
-    final resetRect = tester.getRect(launcher);
-    expect(resetRect.right, 1024 - CoeloSpacing.space2);
-    expect(resetRect.bottom, 720 - CoeloSpacing.space2);
+    expect(tester.getTopLeft(launcher), initial);
   });
-
-  testWidgets('keeps the dragged position when a routed page recreates the launcher', (
-    tester,
-  ) async {
-    _viewport(tester, 1024);
-    final secondPage = ValueNotifier(false);
-    final position = SuperadminChatLauncherPositionController();
-    addTearDown(secondPage.dispose);
-    addTearDown(position.dispose);
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: Scaffold(
-          body: ValueListenableBuilder<bool>(
-            valueListenable: secondPage,
-            builder: (context, value, _) => Align(
-              alignment: Alignment.bottomRight,
-              child: SuperadminChatLauncher(
-                key: ValueKey(value),
-                positionController: position,
-                onOpenConversations: () {},
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
-    final initial = tester.getTopLeft(launcher);
-    await tester.drag(launcher, const Offset(-180, -120));
-    await tester.pumpAndSettle();
-    final moved = tester.getTopLeft(launcher);
-    expect(moved.dx, lessThan(initial.dx));
-
-    secondPage.value = true;
-    await tester.pumpAndSettle();
-    expect(tester.getTopLeft(launcher), moved);
-  });
-
   testWidgets('opens compact inbox with canonical search and three audience tabs', (tester) async {
     _viewport(tester, 1024);
     await tester.pumpWidget(_app());
@@ -155,7 +114,10 @@ void main() {
               Positioned(
                 right: CoeloSpacing.space3,
                 bottom: CoeloSize.touchMin * 2,
-                child: SuperadminChatLauncher(onOpenConversations: () {}),
+                child: SuperadminChatLauncher(
+                  controller: SuperadminChatController(superadminChatConversations),
+                  onOpenConversations: () {},
+                ),
               ),
             ],
           ),
@@ -233,7 +195,7 @@ void main() {
     final material = tester.widget<Material>(launcher);
     final size = tester.getSize(launcher);
 
-    expect(find.text('Mensagens'), findsNothing);
+    expect(find.text('Mens.'), findsNothing);
     expect(find.byType(CircleAvatar), findsNothing);
     expect(find.byIcon(Icons.forum_outlined), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
@@ -242,7 +204,7 @@ void main() {
     expect(material.elevation, greaterThan(0));
     expect(size, const Size(CoeloSize.touchMin, CoeloSize.touchMin));
     expect(find.byTooltip('Abrir conversas'), findsNothing);
-    expect(find.bySemanticsLabel('Abrir conversas, 3 mensagens não lidas'), findsOneWidget);
+    expect(find.bySemanticsLabel('Abrir conversas, 3 mensagens n\u00E3o lidas'), findsOneWidget);
 
     await tester.tap(launcher);
     await tester.pumpAndSettle();
@@ -269,8 +231,8 @@ void main() {
     final material = tester.widget<Material>(
       find.byKey(const Key('superadmin-chat-launcher-surface')),
     );
-    expect(find.text('Mensagens'), findsOneWidget);
-    expect(find.byType(CircleAvatar), findsNWidgets(7));
+    expect(find.text('Mens.'), findsOneWidget);
+    expect(find.byType(CircleAvatar), findsNothing);
     expect(find.byIcon(Icons.send_outlined), findsOneWidget);
     expect(material.color, CoeloTheme.light.colorScheme.primary);
     expect(material.shape, isA<StadiumBorder>());
@@ -305,7 +267,10 @@ Widget _app({ThemeData? theme}) {
     home: Scaffold(
       body: Align(
         alignment: Alignment.bottomRight,
-        child: SuperadminChatLauncher(onOpenConversations: () {}),
+        child: SuperadminChatLauncher(
+          controller: SuperadminChatController(superadminChatConversations),
+          onOpenConversations: () {},
+        ),
       ),
     ),
   );

@@ -1,6 +1,10 @@
 import 'dart:io';
+import 'package:coelo_superadmin/features/chat/presentation/chat_controller.dart';
+import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 import 'dart:ui';
 
+import 'package:coelo_superadmin/features/chat/presentation/chat_controller.dart';
+import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +103,10 @@ Widget _stage(ThemeData theme) {
           Positioned(
             right: CoeloSpacing.space4,
             bottom: CoeloSpacing.space4,
-            child: SuperadminChatLauncher(onOpenConversations: _ignore),
+            child: SuperadminChatLauncher(
+              controller: SuperadminChatController(superadminChatConversations),
+              onOpenConversations: _ignore,
+            ),
           ),
         ],
       ),

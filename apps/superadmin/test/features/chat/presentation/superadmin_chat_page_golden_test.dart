@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -15,19 +16,9 @@ void main() {
     (name: 'dark', theme: CoeloTheme.dark),
   ]) {
     for (final width in [375, 768, 1024, 1440]) {
-      testWidgets('renders chat at $width in ${themeCase.name}', (tester) async {
-        tester.view.physicalSize = Size(width.toDouble(), 900);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: themeCase.theme,
-            home: const SuperadminChatPage(logout: _logout, onBack: _back),
-          ),
-        );
-        await tester.pumpAndSettle();
+      testWidgets('renders authorised chat data at $width in ${themeCase.name}', (tester) async {
+        _setGoldenView(tester, width.toDouble());
+        await _pumpChat(tester, theme: themeCase.theme);
 
         await expectLater(
           find.byType(SuperadminChatPage),
@@ -37,64 +28,7 @@ void main() {
     }
   }
 
-  testWidgets('renders the desktop context collapsed', (tester) async {
-    _setGoldenView(tester, 1440);
-    await _pumpChat(tester);
-    await tester.tap(find.byTooltip('Fechar contexto'));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(SuperadminChatPage),
-      matchesGoldenFile('goldens/superadmin_chat_context_collapsed_light_1440.png'),
-    );
-  });
-
-  testWidgets('renders the flag palette with accessible labels', (tester) async {
-    _setGoldenView(tester, 1440);
-    await _pumpChat(tester);
-    await tester.tap(find.byKey(const Key('superadmin-chat-flag-girassol')));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('goldens/superadmin_chat_flag_palette_open_light_1440.png'),
-    );
-  });
-
-  testWidgets('renders the canonical create group popup', (tester) async {
-    _setGoldenView(tester, 1440);
-    await _pumpChat(tester);
-    await tester.tap(find.byKey(const Key('superadmin-chat-action-create-group')));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('goldens/superadmin_chat_create_group_light_1440.png'),
-    );
-  });
-
-  testWidgets('renders the canonical bulk message popup', (tester) async {
-    _setGoldenView(tester, 1440);
-    await _pumpChat(tester);
-    await tester.tap(find.byKey(const Key('superadmin-chat-action-new-message')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Envio em massa'));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('goldens/superadmin_chat_bulk_message_light_1440.png'),
-    );
-  });
-
-  testWidgets('renders the canonical filters popup', (tester) async {
-    _setGoldenView(tester, 1440);
-    await _pumpChat(tester);
-    await tester.tap(find.byKey(const Key('superadmin-chat-action-filter')));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('goldens/superadmin_chat_filters_light_1440.png'),
-    );
-  });
-
-  testWidgets('renders compact chat with reduced motion', (tester) async {
+  testWidgets('renders authorised chat data with reduced motion', (tester) async {
     _setGoldenView(tester, 375);
     await tester.pumpWidget(
       MaterialApp(
@@ -103,10 +37,11 @@ void main() {
           data: MediaQuery.of(context).copyWith(disableAnimations: true),
           child: child!,
         ),
-        home: const SuperadminChatPage(logout: _logout, onBack: _back),
+        home: SuperadminChatPage(logout: _logout, chatRepository: _GoldenChatRepository()),
       ),
     );
     await tester.pumpAndSettle();
+
     await expectLater(
       find.byType(SuperadminChatPage),
       matchesGoldenFile('goldens/superadmin_chat_reduced_motion_light_375.png'),
@@ -121,11 +56,11 @@ void _setGoldenView(WidgetTester tester, double width) {
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
-Future<void> _pumpChat(WidgetTester tester) async {
+Future<void> _pumpChat(WidgetTester tester, {required ThemeData theme}) async {
   await tester.pumpWidget(
     MaterialApp(
-      theme: CoeloTheme.light,
-      home: const SuperadminChatPage(logout: _logout, onBack: _back),
+      theme: theme,
+      home: SuperadminChatPage(logout: _logout, chatRepository: _GoldenChatRepository()),
     ),
   );
   await tester.pumpAndSettle();
@@ -133,7 +68,49 @@ Future<void> _pumpChat(WidgetTester tester) async {
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
-void _back() {}
+final class _GoldenChatRepository implements ChatRepository {
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
+    totalUnread: 1,
+    items: [
+      ChatConversationSummary(
+        id: 'conversation-1',
+        title: 'Turma Girassol',
+        preview: 'Mensagem autorizada',
+        contextLabel: 'Unidade Cambui',
+        kind: 'group',
+        unreadCount: 1,
+        updatedAt: DateTime.utc(2026, 8, 12, 12),
+        isReadOnly: false,
+      ),
+    ],
+  );
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => ChatThreadPage(
+    items: [
+      ChatMessage(
+        id: 'message-1',
+        conversationId: 'conversation-1',
+        body: 'Mensagem autorizada',
+        authorName: 'Marina',
+        sentAt: DateTime.utc(2026, 8, 12, 12),
+        isMine: false,
+        kind: 'text',
+      ),
+    ],
+  );
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => throw UnimplementedError();
+}
 
 Future<void> _loadGoldenFonts() async {
   final fontLoader = FontLoader('Nunito Sans')

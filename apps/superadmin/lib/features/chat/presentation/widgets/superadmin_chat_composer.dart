@@ -2,22 +2,26 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'superadmin_chat_emoji_picker.dart';
+
 final class SuperadminChatComposer extends StatefulWidget {
   const SuperadminChatComposer({
     required this.controller,
     required this.onSend,
-    required this.onEmoji,
-    required this.onAudio,
-    required this.onImage,
+    this.onEmoji,
+    this.onEmojiSelected,
+    this.onAudio,
+    this.onImage,
     this.compact = false,
     super.key,
   });
 
   final TextEditingController controller;
   final VoidCallback onSend;
-  final VoidCallback onEmoji;
-  final VoidCallback onAudio;
-  final VoidCallback onImage;
+  final VoidCallback? onEmoji;
+  final ValueChanged<String>? onEmojiSelected;
+  final VoidCallback? onAudio;
+  final VoidCallback? onImage;
   final bool compact;
 
   @override
@@ -55,6 +59,30 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
     if (widget.controller.text.trim().isNotEmpty) widget.onSend();
   }
 
+  Future<void> _openEmojiPicker() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (pickerContext) => SuperadminChatEmojiPicker(
+        onSelected: (emoji) {
+          final value = widget.controller.value;
+          final selection = value.selection.isValid
+              ? value.selection
+              : TextSelection.collapsed(offset: value.text.length);
+          final text = value.text.replaceRange(selection.start, selection.end, emoji);
+          widget.controller.value = value.copyWith(
+            text: text,
+            selection: TextSelection.collapsed(offset: selection.start + emoji.length),
+            composing: TextRange.empty,
+          );
+          widget.onEmojiSelected?.call(emoji);
+          Navigator.pop(pickerContext);
+        },
+      ),
+    );
+  }
+
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent || event.logicalKey != LogicalKeyboardKey.enter) {
       return KeyEventResult.ignored;
@@ -78,7 +106,7 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
             _Action(
               icon: Icons.emoji_emotions_outlined,
               label: 'Adicionar emoji',
-              onTap: widget.onEmoji,
+              onTap: _openEmojiPicker,
             ),
             Expanded(
               child: TextField(
@@ -104,7 +132,7 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
               ),
             ),
             if (!widget.compact) ...[
-              _Action(icon: Icons.mic_none_rounded, label: 'Gravar áudio', onTap: widget.onAudio),
+              _Action(icon: Icons.mic_none_rounded, label: 'Gravar Ã¡udio', onTap: widget.onAudio),
               _Action(icon: Icons.image_outlined, label: 'Adicionar imagem', onTap: widget.onImage),
             ],
             const SizedBox(width: CoeloSpacing.space1),
@@ -140,7 +168,7 @@ final class _Action extends StatelessWidget {
 
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
