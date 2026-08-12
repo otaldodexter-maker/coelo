@@ -1,19 +1,22 @@
-import '../domain/import_job.dart';
+import 'package:coelo_superadmin/features/imports/domain/import_job.dart';
+import 'package:coelo_superadmin/features/imports/domain/import_repository.dart';
 
-final class FakeImportRepository {
-  FakeImportRepository({DateTime Function()? now}) : _now = now ?? DateTime.now;
+final class InMemoryImportRepository implements ImportRepository {
+  InMemoryImportRepository({DateTime Function()? now}) : _now = now ?? DateTime.now;
   final DateTime Function() _now;
   final List<ImportJob> _jobs = [];
   int _nextId = 1;
 
-  List<ImportJob> get jobs => List.unmodifiable(_jobs);
+  @override
+  Future<List<ImportJob>> fetchJobs() async => List.unmodifiable(_jobs);
 
-  ImportJob createDraft({
+  @override
+  Future<ImportJob> createDraft({
     required ImportEntity entity,
     required ImportStrategy strategy,
     String context = 'Coelo',
     ImportFileFixture file = ImportFileFixture.csv,
-  }) {
+  }) async {
     final label = entity.label.substring(
       0,
       entity.label.length - (entity == ImportEntity.people ? 1 : 0),
@@ -47,14 +50,17 @@ final class FakeImportRepository {
     );
   }
 
-  ImportJob save(ImportJob job) {
+  @override
+  Future<ImportJob> save(ImportJob job, {ImportSourceFile? sourceFile}) async {
     _jobs.insert(0, job);
     return job;
   }
 
-  ImportJob update(ImportJob job) {
+  @override
+  Future<ImportJob> update(ImportJob job) async {
+    final completed = job.copyWith(status: ImportJobStatus.completed, progress: 100);
     final index = _jobs.indexWhere((item) => item.id == job.id);
-    if (index >= 0) _jobs[index] = job;
-    return job;
+    if (index >= 0) _jobs[index] = completed;
+    return completed;
   }
 }

@@ -1,19 +1,36 @@
 import 'package:flutter/foundation.dart';
 
-enum ImportEntity { institutions, units, groups, people, internalUsers }
+enum ImportEntity { institutions, units, groups, activities, people, internalUsers }
 
 enum ImportStrategy { createOnly, createAndUpdate }
 
 enum ImportFileFixture { csv, xlsx }
 
-enum ImportCreationPreset { institutions, units, newInstitution, newFamily, fileByStep }
+enum ImportCreationPreset {
+  institutions,
+  units,
+  groups,
+  activities,
+  newInstitution,
+  newFamily,
+  fileByStep,
+}
 
-enum ImportJobStatus { draft, inProgress, completed }
+enum ImportJobStatus { draft, inProgress, completed, rejected, error }
+
+extension ImportJobStatusState on ImportJobStatus {
+  bool get isTerminal =>
+      this == ImportJobStatus.completed ||
+      this == ImportJobStatus.rejected ||
+      this == ImportJobStatus.error;
+}
 
 extension ImportCreationPresetLabels on ImportCreationPreset {
   String get label => switch (this) {
     ImportCreationPreset.institutions => 'Instituições',
     ImportCreationPreset.units => 'Unidades',
+    ImportCreationPreset.groups => 'Turmas',
+    ImportCreationPreset.activities => 'Atividades',
     ImportCreationPreset.newInstitution => 'Nova instituição',
     ImportCreationPreset.newFamily => 'Nova família',
     ImportCreationPreset.fileByStep => 'Upload por arquivo por etapa',
@@ -23,12 +40,16 @@ extension ImportCreationPresetLabels on ImportCreationPreset {
     ImportCreationPreset.institutions ||
     ImportCreationPreset.newInstitution => ImportEntity.institutions,
     ImportCreationPreset.units || ImportCreationPreset.fileByStep => ImportEntity.units,
+    ImportCreationPreset.groups => ImportEntity.groups,
+    ImportCreationPreset.activities => ImportEntity.activities,
     ImportCreationPreset.newFamily => ImportEntity.groups,
   };
 
   String get defaultContext => switch (this) {
     ImportCreationPreset.institutions => 'Instituições',
     ImportCreationPreset.units => 'Unidades',
+    ImportCreationPreset.groups => 'Turmas',
+    ImportCreationPreset.activities => 'Atividades',
     ImportCreationPreset.newInstitution => 'Nova instituição',
     ImportCreationPreset.newFamily => 'Nova família',
     ImportCreationPreset.fileByStep => 'Importação por etapa',
@@ -40,6 +61,7 @@ extension ImportEntityLabels on ImportEntity {
     ImportEntity.institutions => 'Instituições',
     ImportEntity.units => 'Unidades',
     ImportEntity.groups => 'Turmas',
+    ImportEntity.activities => 'Atividades',
     ImportEntity.people => 'Pessoas',
     ImportEntity.internalUsers => 'Usuários internos',
   };
@@ -48,6 +70,7 @@ extension ImportEntityLabels on ImportEntity {
     ImportEntity.institutions => 'Código da instituição',
     ImportEntity.units => 'Código da unidade',
     ImportEntity.groups => 'Código da turma',
+    ImportEntity.activities => '@ da atividade',
     ImportEntity.people => 'Documento interno',
     ImportEntity.internalUsers => 'ID do usuário',
   };
@@ -60,6 +83,15 @@ extension ImportStrategyLabels on ImportStrategy {
 extension ImportFileFixtureLabels on ImportFileFixture {
   String get fileName =>
       this == ImportFileFixture.csv ? 'modelo-importacao.csv' : 'modelo-importacao.xlsx';
+}
+
+@immutable
+final class ImportSourceFile {
+  const ImportSourceFile({required this.name, required this.bytes, required this.mimeType});
+
+  final String name;
+  final Uint8List bytes;
+  final String mimeType;
 }
 
 @immutable

@@ -1,25 +1,19 @@
+import 'dart:async';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
-import '../data/fake_import_repository.dart';
+import '../domain/import_repository.dart';
 import '../domain/import_job.dart';
-
-enum _ImportStatusFilter { all, active, inDeployment, inactive }
 
 enum _ImportPeriodFilter { all, last7Days, last30Days, last90Days, thisMonth }
 
 enum _ImportFileFilter { all, csv, xlsx }
 
-enum _ImportExportAction { csv, xlsx }
-
-enum _ImportRowAction { details, rerun }
-
 final class ImportDirectoryPage extends StatefulWidget {
   const ImportDirectoryPage({required this.repository, required this.onNewImport, super.key});
-  final FakeImportRepository repository;
+  final ImportRepository repository;
   final ValueChanged<ImportCreationPreset> onNewImport;
   @override
   State<ImportDirectoryPage> createState() => _ImportDirectoryPageState();
@@ -28,9 +22,29 @@ final class ImportDirectoryPage extends StatefulWidget {
 final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
   final _search = TextEditingController();
   final Set<ImportEntity> _entityFilters = {};
+  bool _loading = true;
+  bool _unavailable = false;
+  List<ImportJob> _jobs = const [];
+
   _ImportPeriodFilter _periodFilter = _ImportPeriodFilter.all;
   _ImportFileFilter _fileFilter = _ImportFileFilter.all;
-  _ImportStatusFilter _statusFilter = _ImportStatusFilter.all;
+  int _page = 1;
+  static const _pageSize = 8;
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(() => setState(() => _page = 1));
+    unawaited(_loadJobs());
+  }
+
+  @override
+  void didUpdateWidget(covariant ImportDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.repository != widget.repository) {
+      unawaited(_loadJobs());
+    }
+  }
 
   @override
   void dispose() {
@@ -42,29 +56,36 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
       _search.text.isNotEmpty ||
       _periodFilter != _ImportPeriodFilter.all ||
       _fileFilter != _ImportFileFilter.all ||
-      _entityFilters.isNotEmpty ||
-      _statusFilter != _ImportStatusFilter.all;
+      _entityFilters.isNotEmpty;
+
+  Future<void> _loadJobs() async {
+    setState(() => _loading = true);
+    try {
+      final jobs = await widget.repository.fetchJobs();
+      if (!mounted) return;
+      setState(() {
+        _jobs = jobs;
+        _unavailable = false;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _jobs = const [];
+        _unavailable = true;
+        _loading = false;
+      });
+    }
+  }
 
   void _clearFilters() {
     setState(() {
       _entityFilters.clear();
       _periodFilter = _ImportPeriodFilter.all;
       _fileFilter = _ImportFileFilter.all;
-      _statusFilter = _ImportStatusFilter.all;
       _search.clear();
+      _page = 1;
     });
-  }
-
-  bool _matchStatus(ImportJob job) {
-    final status = _statusFilter;
-    if (status == _ImportStatusFilter.all) return true;
-    if (status == _ImportStatusFilter.active) {
-      return job.status == ImportJobStatus.inProgress || job.status == ImportJobStatus.draft;
-    }
-    if (status == _ImportStatusFilter.inDeployment) {
-      return job.status == ImportJobStatus.inProgress;
-    }
-    return job.status == ImportJobStatus.completed;
   }
 
   bool _matchEntities(ImportJob job) =>
@@ -109,7 +130,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
     _ImportPeriodFilter.last7Days => 'Últimos 7 dias',
     _ImportPeriodFilter.last30Days => 'Últimos 30 dias',
     _ImportPeriodFilter.last90Days => 'Últimos 90 dias',
-    _ImportPeriodFilter.thisMonth => 'Este mês',
+    _ImportPeriodFilter.thisMonth => 'Este màs',
   };
 
   String _fileFilterLabel(_ImportFileFilter filter) => switch (filter) {
@@ -141,32 +162,48 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
     widget.onNewImport(selected);
   }
 
-  void _export(BuildContext context, _ImportExportAction action) {
-    final label = switch (action) {
-      _ImportExportAction.csv => 'CSV',
-      _ImportExportAction.xlsx => 'XLSX',
-    };
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Exportando lista de importações em $label...')));
-  }
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final isMobileOrTablet = constraints.maxWidth < CoeloBreakpoints.large.minWidth;
       final searchWidth = compact ? constraints.maxWidth : 280.0;
       final filterWidth = compact ? constraints.maxWidth : CoeloSpacing.space20 * 2;
-      final filteredJobs = widget.repository.jobs
+      if (_loading) {
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.surface,
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (_unavailable) {
+        return ColoredBox(
+          key: const Key('imports-unavailable'),
+          color: Theme.of(context).colorScheme.surface,
+          child: CoeloStatePanel(
+            title: 'Importações indisponíveis',
+            message: 'Não foi possível carregar os processamentos autorizados. Tente novamente.',
+            icon: Icons.cloud_off_outlined,
+            actionLabel: 'Tentar novamente',
+            onAction: _loadJobs,
+          ),
+        );
+      }
+      final jobs = _jobs;
+      final filteredJobs = jobs
           .where(_matchSearch)
           .where(_matchFile)
-          .where(_matchStatus)
           .where(_matchEntities)
           .where(_matchPeriod)
           .toList();
-      return Container(
-        color: isMobileOrTablet ? Colors.white : Colors.transparent,
+      final totalPages = (filteredJobs.length / _pageSize).ceil();
+      final currentPage = totalPages == 0
+          ? 1
+          : _page > totalPages
+          ? totalPages
+          : _page;
+      final visibleJobs = filteredJobs.skip((currentPage - 1) * _pageSize).take(_pageSize).toList();
+      return ColoredBox(
+        key: const Key('import-directory-surface'),
+        color: Theme.of(context).colorScheme.surface,
         child: Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space4),
           child: Column(
@@ -180,7 +217,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
                     controller: _search,
                     semanticLabel: 'Buscar importações',
                     hintText: 'Buscar importação',
-                    onChanged: (_) => setState(() {}),
+                    onChanged: (_) => setState(() => _page = 1),
                   ),
                 ),
                 filters: [
@@ -223,23 +260,6 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
                   ),
                 ],
                 actions: [
-                  CoeloAdminFileActions(
-                    compact: compact,
-                    actions: [
-                      CoeloAdminFileAction(
-                        key: const Key('imports-export-csv'),
-                        label: 'Exportar CSV',
-                        icon: Icons.file_download_outlined,
-                        onPressed: () => _export(context, _ImportExportAction.csv),
-                      ),
-                      CoeloAdminFileAction(
-                        key: const Key('imports-export-xlsx'),
-                        label: 'Exportar XLSX',
-                        icon: Icons.file_download_outlined,
-                        onPressed: () => _export(context, _ImportExportAction.xlsx),
-                      ),
-                    ],
-                  ),
                   if (_hasFilters)
                     TextButton.icon(
                       onPressed: _clearFilters,
@@ -249,10 +269,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
                 ],
               ),
               const SizedBox(height: CoeloSpacing.space3),
-              _ImportStatusTabs(
-                selected: _statusFilter,
-                onSelected: (value) => setState(() => _statusFilter = value),
-              ),
+              _ImportMetrics(jobs: jobs),
               const SizedBox(height: CoeloSpacing.space4),
               Expanded(
                 child: filteredJobs.isEmpty
@@ -281,7 +298,27 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
                           ],
                         ),
                       )
-                    : _ImportTable(jobs: filteredJobs, onNew: _openNewImportDialog),
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: _ImportTable(jobs: visibleJobs, onNew: _openNewImportDialog),
+                          ),
+                          if (totalPages > 1) ...[
+                            const SizedBox(height: CoeloSpacing.space3),
+                            CoeloAdminPagination(
+                              currentPage: currentPage,
+                              totalPages: totalPages,
+                              onPrevious: currentPage > 1
+                                  ? () => setState(() => _page = currentPage - 1)
+                                  : null,
+                              onNext: currentPage < totalPages
+                                  ? () => setState(() => _page = currentPage + 1)
+                                  : null,
+                              onPageSelected: (page) => setState(() => _page = page),
+                            ),
+                          ],
+                        ],
+                      ),
               ),
             ],
           ),
@@ -346,6 +383,8 @@ final class _ImportCreationDialogState extends State<_ImportCreationDialog> {
 String _presetDescription(ImportCreationPreset preset) => switch (preset) {
   ImportCreationPreset.institutions => 'Importações de instituições existentes.',
   ImportCreationPreset.units => 'Importações de unidades vinculadas.',
+  ImportCreationPreset.groups => 'Importações de Turmas.',
+  ImportCreationPreset.activities => 'Importações de Atividades.',
   ImportCreationPreset.newInstitution => 'Criar nova instituição e importar dados relacionados.',
   ImportCreationPreset.newFamily => 'Criar nova família e continuar por etapas.',
   ImportCreationPreset.fileByStep => 'Enviar arquivos por etapa para revisão guiada.',
@@ -415,22 +454,78 @@ final class _ImportCreationPresetTile extends StatelessWidget {
   }
 }
 
-final class _ImportStatusTabs extends StatelessWidget {
-  const _ImportStatusTabs({required this.selected, required this.onSelected});
-  final _ImportStatusFilter selected;
-  final ValueChanged<_ImportStatusFilter> onSelected;
+final class _ImportMetrics extends StatelessWidget {
+  const _ImportMetrics({required this.jobs});
+
+  final List<ImportJob> jobs;
 
   @override
-  Widget build(BuildContext context) => SuperadminUnderlineTabs<_ImportStatusFilter>(
-    tabs: const [
-      SuperadminUnderlineTab(value: _ImportStatusFilter.all, label: 'Todos'),
-      SuperadminUnderlineTab(value: _ImportStatusFilter.active, label: 'Ativos'),
-      SuperadminUnderlineTab(value: _ImportStatusFilter.inDeployment, label: 'Em Implantação'),
-      SuperadminUnderlineTab(value: _ImportStatusFilter.inactive, label: 'Inativos'),
+  Widget build(BuildContext context) => Wrap(
+    spacing: CoeloSpacing.space3,
+    runSpacing: CoeloSpacing.space3,
+    children: [
+      _ImportMetric(
+        key: const Key('import-metric-total'),
+        label: 'Processamentos',
+        value: '${jobs.length}',
+        icon: Icons.inventory_2_outlined,
+      ),
+      _ImportMetric(
+        key: const Key('import-metric-in-progress'),
+        label: 'Em andamento',
+        value: '${jobs.where((job) => job.status == ImportJobStatus.inProgress).length}',
+        icon: Icons.pending_actions_outlined,
+      ),
+      _ImportMetric(
+        key: const Key('import-metric-rejected'),
+        label: 'Registros rejeitados',
+        value: '${jobs.fold<int>(0, (sum, job) => sum + job.result.rejected)}',
+        icon: Icons.report_gmailerrorred_outlined,
+      ),
     ],
-    selected: selected,
-    onSelected: onSelected,
   );
+}
+
+final class _ImportMetric extends StatelessWidget {
+  const _ImportMetric({required this.label, required this.value, required this.icon, super.key});
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return SizedBox(
+      width: 208,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          border: Border.all(color: colors.outlineVariant),
+          borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          child: Row(
+            children: [
+              Icon(icon, color: colors.primary),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(value, style: theme.textTheme.titleLarge),
+                    Text(label, style: theme.textTheme.bodySmall),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 final class _ImportTable extends StatelessWidget {
@@ -471,7 +566,6 @@ final class _ImportTable extends StatelessWidget {
                 initialWidth: 280,
                 minWidth: 220,
                 maxWidth: 320,
-                sortable: true,
                 cellBuilder: (context, job) => Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,7 +592,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 120,
                   minWidth: 100,
                   maxWidth: 140,
-                  sortable: true,
                   cellBuilder: (context, job) => Text(job.file.name.toUpperCase()),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -507,7 +600,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 160,
                   minWidth: 130,
                   maxWidth: 220,
-                  sortable: true,
                   cellBuilder: (context, job) => Text(job.entity.label),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -516,7 +608,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 180,
                   minWidth: 130,
                   maxWidth: 240,
-                  sortable: true,
                   cellBuilder: (context, job) => Text(job.actor),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -525,7 +616,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 180,
                   minWidth: 120,
                   maxWidth: 220,
-                  sortable: true,
                   cellBuilder: (context, job) => _ImportStatusChip(status: job.status),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -534,7 +624,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 180,
                   minWidth: 130,
                   maxWidth: 220,
-                  sortable: true,
                   cellBuilder: (context, job) => Text(job.actor),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -543,7 +632,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 140,
                   minWidth: 120,
                   maxWidth: 180,
-                  sortable: true,
                   cellBuilder: (context, job) => Text(_formatDate(job.createdAt)),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -572,7 +660,6 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 220,
                   minWidth: 180,
                   maxWidth: 280,
-                  sortable: true,
                   cellBuilder: (context, job) => Text(_importResultSummary(job)),
                 ),
                 CoeloAdminTableColumn<ImportJob>(
@@ -581,7 +668,7 @@ final class _ImportTable extends StatelessWidget {
                   initialWidth: 160,
                   minWidth: 140,
                   maxWidth: 180,
-                  cellBuilder: (context, job) => _ImportRowActions(job: job),
+                  cellBuilder: (context, job) => const SizedBox.shrink(),
                 ),
               ],
             ),
@@ -590,58 +677,6 @@ final class _ImportTable extends StatelessWidget {
       ),
     ),
   );
-}
-
-final class _ImportRowActions extends StatelessWidget {
-  const _ImportRowActions({required this.job});
-  final ImportJob job;
-
-  @override
-  Widget build(BuildContext context) {
-    void showInfo(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-    }
-
-    final colors = Theme.of(context).colorScheme;
-    return CoeloAdminFlyout<_ImportRowAction>(
-      alignmentOffset: const Offset(0, CoeloSpacing.space1),
-      itemWidth: 210,
-      items: [
-        CoeloAdminFlyoutItem(
-          value: _ImportRowAction.details,
-          icon: Icons.visibility_outlined,
-          label: 'Detalhes',
-        ),
-        CoeloAdminFlyoutItem(
-          value: _ImportRowAction.rerun,
-          icon: Icons.restart_alt_rounded,
-          label: 'Repetir importação',
-        ),
-      ],
-      onSelected: (action) {
-        switch (action) {
-          case _ImportRowAction.details:
-            showInfo('Detalhes de ${job.file.fileName} em construção.');
-          case _ImportRowAction.rerun:
-            showInfo('Nova execução de ${job.file.fileName} em construção.');
-        }
-      },
-      builder: (context, controller) {
-        void open() => controller.isOpen ? controller.close() : controller.open();
-        return IconButton(
-          key: Key('import-row-actions-${job.id}'),
-          tooltip: 'Ações da importação',
-          style: IconButton.styleFrom(
-            foregroundColor: colors.onSurface,
-            minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
-            padding: const EdgeInsets.all(CoeloSpacing.space1),
-          ),
-          onPressed: open,
-          icon: const Icon(Icons.more_horiz_rounded),
-        );
-      },
-    );
-  }
 }
 
 final class _ImportStatusChip extends StatelessWidget {
@@ -658,6 +693,8 @@ final class _ImportStatusChip extends StatelessWidget {
             : CoeloStatusColors.light);
     final (background, foreground) = switch (status) {
       ImportJobStatus.completed => (statusColors.successContainer, statusColors.onSuccessContainer),
+      ImportJobStatus.rejected => (colors.errorContainer, colors.onErrorContainer),
+      ImportJobStatus.error => (colors.errorContainer, colors.onErrorContainer),
       ImportJobStatus.inProgress => (
         statusColors.warningContainer,
         statusColors.onWarningContainer,
@@ -665,9 +702,11 @@ final class _ImportStatusChip extends StatelessWidget {
       ImportJobStatus.draft => (colors.surfaceContainer, colors.onSurfaceVariant),
     };
     final label = switch (status) {
-      ImportJobStatus.draft => 'Rascunho',
+      ImportJobStatus.draft => 'Pendente',
       ImportJobStatus.inProgress => 'Em andamento',
       ImportJobStatus.completed => 'Concluído',
+      ImportJobStatus.rejected => 'Rejeitado',
+      ImportJobStatus.error => 'Erro',
     };
     return CoeloStatusChip(label: label, backgroundColor: background, foregroundColor: foreground);
   }
