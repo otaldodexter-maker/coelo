@@ -1,10 +1,30 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/widgets/health_care_profile_draft_fields.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+const _profileTaxonomy = HealthCareProfileFormTaxonomy(
+  childLabels: {'child-a': 'Criança A', 'child-b': 'Criança B'},
+  allergyItems: {
+    HealthCareAllergyKind.food: ['peanut', 'other'],
+    HealthCareAllergyKind.medication: ['medicine', 'other'],
+    HealthCareAllergyKind.restriction: ['lactose', 'other'],
+    HealthCareAllergyKind.other: ['other'],
+  },
+  allergyLabels: {
+    'peanut': 'Amendoim',
+    'medicine': 'Medicamento',
+    'lactose': 'Lactose',
+    'other': 'Outro',
+  },
+  otherAllergyItemId: 'other',
+  careItemLabels: {'autism': 'Autismo', 'diabetes': 'Diabetes'},
+);
 
 void main() {
   testWidgets('profile create is a responsive full page with canonical fields', (tester) async {
@@ -15,6 +35,7 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: HealthCareProfileFormPage(
+          taxonomy: _profileTaxonomy,
           logout: unavailableSuperadminLogout,
           onCancel: () {},
           onSaved: () async {},
@@ -28,6 +49,7 @@ void main() {
     await tester.tap(find.text('Orientações de cuidado'));
     await tester.pumpAndSettle();
     expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
     expect(find.byType(RadioListTile), findsNothing);
@@ -39,8 +61,9 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: HealthCareProfileFormPage(
+          taxonomy: _profileTaxonomy,
           logout: unavailableSuperadminLogout,
-          childId: 'child-demo-a',
+          childId: 'child-a',
           onCancel: () {},
           onSaved: () async {},
         ),
@@ -48,16 +71,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Criança Demo A'), findsWidgets);
+    expect(find.text('Criança A'), findsWidgets);
     expect(find.byType(CoeloAdminSingleSelectField<String>), findsNothing);
     await tester.tap(find.text('Alergias e restrições'));
     await tester.pumpAndSettle();
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget.runtimeType.toString().startsWith('CoeloAdminSingleSelectField<'),
-      ),
-      findsNWidgets(3),
-    );
+    expect(find.byType(HealthCareAllergyDraftsEditor), findsOneWidget);
+    for (final label in const ['Muito leve', 'Leve', 'Moderada', 'Grave', 'Muito grave']) {
+      expect(find.text(label), findsOneWidget);
+    }
   });
 
   testWidgets('medication plan separates medicine, period, schedules and document', (tester) async {
@@ -73,15 +94,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Criança e medicamento'), findsOneWidget);
+    expect(find.text('Criança e medicamento'), findsWidgets);
     expect(find.text('Vigência'), findsOneWidget);
     expect(find.text('Horários e responsáveis'), findsOneWidget);
     await tester.tap(find.text('Horários e responsáveis'));
     await tester.pumpAndSettle();
-    expect(find.text('Contextos de administração'), findsOneWidget);
+    expect(find.text('Horário'), findsWidgets);
+    expect(find.text('Dias da semana'), findsOneWidget);
+    expect(find.text('Responsável'), findsWidgets);
     await tester.tap(find.text('Documento'));
     await tester.pumpAndSettle();
-    expect(find.text('Documento opcional'), findsOneWidget);
+    expect(find.text('Prescrição'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
   });
 
@@ -92,6 +115,7 @@ void main() {
 
       for (final page in <Widget>[
         HealthCareProfileFormPage(
+          taxonomy: _profileTaxonomy,
           logout: unavailableSuperadminLogout,
           onCancel: () {},
           onSaved: () async {},
@@ -138,6 +162,7 @@ void main() {
 
       for (final page in <Widget>[
         HealthCareProfileFormPage(
+          taxonomy: _profileTaxonomy,
           logout: unavailableSuperadminLogout,
           onCancel: () {},
           onSaved: () async {},

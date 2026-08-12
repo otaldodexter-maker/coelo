@@ -1,5 +1,5 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
+import '../support/health_care_fixture_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
@@ -12,7 +12,7 @@ void main() {
   testWidgets('uses profile tabs, canonical cards and no status or dose filters', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final controller = HealthCareController(DemoHealthCareRepository());
+    final controller = HealthCareController(FixtureHealthCareRepository());
     addTearDown(controller.dispose);
 
     await tester.pumpWidget(

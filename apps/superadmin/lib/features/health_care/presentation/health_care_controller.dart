@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../data/demo_health_care_repository.dart';
+import '../domain/health_care_repository.dart';
 import '../domain/health_care.dart';
 
 enum HealthCareLoadState { loading, ready, empty, noResults, error, unauthorized, minimized }
@@ -8,17 +8,19 @@ enum HealthCareLoadState { loading, ready, empty, noResults, error, unauthorized
 enum HealthCareDirectoryDisplay { cards, table }
 
 final class HealthCareController extends ChangeNotifier {
-  HealthCareController(this.repository, {HealthCareActor? actor})
-    : _actor =
-          actor ??
-          HealthCareActor(
-            id: 'owner-demo',
-            profile: DemoHealthCareProfile.owner,
-            authorizedChildIds: const {'child-demo-a', 'child-demo-b'},
-          );
+  HealthCareController(
+    this.repository, {
+    HealthCareActor? actor,
+    Map<String, String> unitInstitution = const {},
+    Map<String, String> groupUnit = const {},
+  }) : _actor = actor ?? repository.defaultActor,
+       _unitInstitution = Map.unmodifiable(unitInstitution),
+       _groupUnit = Map.unmodifiable(groupUnit);
 
-  final DemoHealthCareRepository repository;
-  final HealthCareActor _actor;
+  final HealthCareRepository repository;
+  final HealthCareActor? _actor;
+  final Map<String, String> _unitInstitution;
+  final Map<String, String> _groupUnit;
   HealthCareDirectoryQuery _query = const HealthCareDirectoryQuery(pageSize: 11);
   HealthCareDirectoryPage? _page;
   HealthCareChild? _detail;
@@ -26,7 +28,7 @@ final class HealthCareController extends ChangeNotifier {
   HealthCareDirectoryDisplay _display = HealthCareDirectoryDisplay.cards;
   Object? _error;
 
-  DemoHealthCareProfile get profile => _actor.profile;
+  bool get isMinimized => _actor?.profile == HealthCareAccessProfile.minimized;
   HealthCareDirectoryQuery get query => _query;
   HealthCareDirectoryPage? get page => _page;
   List<HealthCareChildSummary> get items => _page?.items ?? const [];
@@ -34,15 +36,16 @@ final class HealthCareController extends ChangeNotifier {
   HealthCareLoadState get state => _state;
   HealthCareDirectoryDisplay get display => _display;
   Object? get error => _error;
-  bool get canReadSensitive => _actor.can(HealthCareCapability.sensitiveRead);
-  bool get canEdit => _actor.can(HealthCareCapability.recordCreateEdit);
+  bool get canReadSensitive => _actor?.can(HealthCareCapability.sensitiveRead) ?? false;
+  bool get canEdit => _actor?.can(HealthCareCapability.recordCreateEdit) ?? false;
   bool get isReadOnly => !canEdit;
   int get totalPages {
     final total = _page?.totalCount ?? 0;
     return total == 0 ? 1 : (total / _query.pageSize).ceil();
   }
 
-  HealthCareActor get actor => _actor;
+  HealthCareActor get actor =>
+      _actor ?? (throw StateError('Authenticated health care actor is required.'));
   Set<String> get availableUnitIds => _query.institutionIds.isEmpty
       ? const {}
       : _unitInstitution.entries
@@ -57,12 +60,19 @@ final class HealthCareController extends ChangeNotifier {
             .toSet();
 
   Future<void> load() async {
+    if (_actor == null) {
+      _page = null;
+      _error = null;
+      _state = HealthCareLoadState.unauthorized;
+      notifyListeners();
+      return;
+    }
     _state = HealthCareLoadState.loading;
     _error = null;
     notifyListeners();
     try {
       _page = await repository.fetchDirectory(_query, actor: actor);
-      _state = profile == DemoHealthCareProfile.minimized
+      _state = isMinimized
           ? HealthCareLoadState.minimized
           : (_page!.items.isEmpty
                 ? (_hasFilters ? HealthCareLoadState.noResults : HealthCareLoadState.empty)
@@ -77,7 +87,7 @@ final class HealthCareController extends ChangeNotifier {
   Future<void> loadDetail(String childId) async {
     _detail = null;
     if (!canReadSensitive) {
-      _state = HealthCareLoadState.minimized;
+      _state = _actor == null ? HealthCareLoadState.unauthorized : HealthCareLoadState.minimized;
       notifyListeners();
       return;
     }
@@ -94,10 +104,6 @@ final class HealthCareController extends ChangeNotifier {
       _state = HealthCareLoadState.error;
     }
     notifyListeners();
-  }
-
-  Future<void> setProfile(DemoHealthCareProfile value) async {
-    if (value != profile) throw StateError('The authenticated actor profile cannot be changed.');
   }
 
   void setDisplay(HealthCareDirectoryDisplay value) {
@@ -196,12 +202,6 @@ final class HealthCareController extends ChangeNotifier {
     page: page ?? _query.page,
     pageSize: pageSize ?? _query.pageSize,
   );
-
-  static const _unitInstitution = {
-    'unit-demo-a': 'institution-demo-a',
-    'unit-demo-b': 'institution-demo-b',
-  };
-  static const _groupUnit = {'group-demo-a': 'unit-demo-a', 'group-demo-b': 'unit-demo-b'};
 
   Future<void> correctMedication(HealthMedicationCorrectionCommand command) async {
     await repository.changeMedicationRelevant(
