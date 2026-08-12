@@ -1,6 +1,8 @@
-import '../domain/activity_directory.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 
-final class FakeActivityDirectoryRepository implements ActivityDirectoryRepository {
+/// Deterministic data used only by development previews and visual tests.
+
+class FakeActivityDirectoryRepository implements ActivityDirectoryRepository {
   FakeActivityDirectoryRepository({List<ActivityDetail>? seed})
     : _details = seed ?? _seedActivities();
 
@@ -51,7 +53,7 @@ final class FakeActivityDirectoryRepository implements ActivityDirectoryReposito
   }
 
   @override
-  Future<ActivityFormOptions> fetchFormOptions() async {
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async {
     final institutions = <String, String>{
       for (final detail in _details) detail.item.institutionId: detail.item.institutionName,
     };
@@ -98,10 +100,70 @@ final class FakeActivityDirectoryRepository implements ActivityDirectoryReposito
         ActivityFormProfessionalOption(
           id: 'professional-2',
           name: 'Rafael Lima',
-          role: 'Coordenador',
+          role: 'Administrador',
+        ),
+      ],
+      taxonomy: const [
+        ActivityTaxonomyOption(
+          id: 'taxonomy-sciences',
+          label: 'Ciências e tecnologia',
+          subtypes: [ActivityTaxonomySubtypeOption(id: 'subtype-robotics', label: 'Robótica')],
+        ),
+      ],
+      templates: [
+        const ActivityTemplateOption(
+          id: 'template-robotics',
+          name: 'Robótica',
+          description: 'Modelo Coelo para atividades de robótica.',
+          taxonomyId: 'taxonomy-sciences',
+          subtypeId: 'subtype-robotics',
+          governance: ActivityGovernance.optional,
+        ),
+        ActivityTemplateOption(
+          id: 'template-robotics-institution',
+          name: 'Robótica da instituição',
+          description: 'Cópia institucional editável.',
+          taxonomyId: 'taxonomy-sciences',
+          subtypeId: 'subtype-robotics',
+          scopeKind: ActivityTemplateScopeKind.institution,
+          institutionId: institutionId,
+          governance: ActivityGovernance.mandatory,
         ),
       ],
     );
+  }
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async {
+    final form = await fetchFormOptions(institutionId: institutionId ?? 'institution-1');
+    return ActivityTemplateOptions(
+      institutions: form.institutions,
+      taxonomy: form.taxonomy,
+      templates: form.templates
+          .where(
+            (template) =>
+                template.scopeKind == ActivityTemplateScopeKind.platform ||
+                template.institutionId == institutionId,
+          )
+          .toList(growable: false),
+    );
+  }
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) async {
+    final options = await fetchFormOptions(institutionId: institutionId);
+    final normalized = query.trim().toLowerCase();
+    return options.professionals
+        .where(
+          (professional) =>
+              normalized.isEmpty || professional.name.toLowerCase().contains(normalized),
+        )
+        .take(limit.clamp(1, 20))
+        .toList(growable: false);
   }
 
   @override

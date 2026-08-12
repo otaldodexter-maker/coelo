@@ -78,8 +78,16 @@ final class ActivityDirectoryItem {
     required this.origin,
     required this.distribution,
     required this.governance,
+    this.handleStem,
+    this.canonicalHandle,
     required this.activeUnitCount,
     required this.activeGroupCount,
+    this.locationNames = const [],
+    this.activeProfessionalCount,
+    this.activeParticipantCount,
+    this.linkedUnits = const [],
+    this.linkedGroups = const [],
+    this.managementVersion = 0,
     required this.updatedAt,
   });
 
@@ -88,15 +96,43 @@ final class ActivityDirectoryItem {
     return ActivityDirectoryItem(
       id: json['id'] as String,
       institutionId: json['institution_id'] as String,
-      institutionName: institution?['name'] as String? ?? 'Instituição não identificada',
+      institutionName:
+          json['institution_name'] as String? ??
+          institution?['name'] as String? ??
+          'Instituição não identificada',
       name: json['name'] as String,
       description: json['description'] as String?,
       status: ActivityStatus.fromDatabase(json['status'] as String),
       origin: ActivityOrigin.fromDatabase(json['origin_scope_kind'] as String),
       distribution: ActivityDistribution.fromDatabase(json['distribution_scope'] as String),
       governance: ActivityGovernance.fromDatabase(json['governance_kind'] as String),
-      activeUnitCount: _activeCount(json['activity_unit_links']),
-      activeGroupCount: _activeCount(json['activity_group_links']),
+      handleStem: json['handle_stem'] as String?,
+      canonicalHandle: json['canonical_handle'] as String?,
+      activeUnitCount: _activeCount(json['activity_unit_links'], json['active_unit_count']),
+      activeGroupCount: _activeCount(json['activity_group_links'], json['active_group_count']),
+      locationNames: _strings(json['location_names']),
+      activeProfessionalCount: (json['active_professional_count'] as num?)?.toInt(),
+      activeParticipantCount: (json['active_participant_count'] as num?)?.toInt(),
+      linkedUnits: _rows(json['linked_units'])
+          .map(
+            (row) => ActivityDirectoryUnitSummary(
+              id: row['id'] as String,
+              name: row['name'] as String,
+              institutionId: row['institution_id'] as String,
+            ),
+          )
+          .toList(growable: false),
+      linkedGroups: _rows(json['linked_groups'])
+          .map(
+            (row) => ActivityDirectoryGroupSummary(
+              id: row['id'] as String,
+              name: row['name'] as String,
+              unitId: row['unit_id'] as String,
+              unitName: row['unit_name'] as String,
+            ),
+          )
+          .toList(growable: false),
+      managementVersion: (json['management_version'] as num?)?.toInt() ?? 0,
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
@@ -110,8 +146,16 @@ final class ActivityDirectoryItem {
   final ActivityOrigin origin;
   final ActivityDistribution distribution;
   final ActivityGovernance governance;
+  final String? handleStem;
+  final String? canonicalHandle;
   final int activeUnitCount;
   final int activeGroupCount;
+  final List<String> locationNames;
+  final int? activeProfessionalCount;
+  final int? activeParticipantCount;
+  final List<ActivityDirectoryUnitSummary> linkedUnits;
+  final List<ActivityDirectoryGroupSummary> linkedGroups;
+  final int managementVersion;
   final DateTime updatedAt;
 }
 
@@ -151,12 +195,79 @@ final class ActivityGroupLink {
   final int participantCount;
 }
 
+enum ActivityDetailIdentityKind { photo, initials, icon }
+
+final class ActivityIdentityStorageRef {
+  const ActivityIdentityStorageRef({required this.bucket, required this.path});
+
+  final String bucket;
+  final String path;
+}
+
+final class ActivityDetailIdentity {
+  const ActivityDetailIdentity({
+    required this.kind,
+    this.initials,
+    this.color,
+    this.icon,
+    this.storageRef,
+  });
+
+  const ActivityDetailIdentity.initials()
+    : kind = ActivityDetailIdentityKind.initials,
+      initials = null,
+      color = null,
+      icon = null,
+      storageRef = null;
+
+  final ActivityDetailIdentityKind kind;
+  final String? initials;
+  final String? color;
+  final String? icon;
+  final ActivityIdentityStorageRef? storageRef;
+}
+
+final class ActivityDetailParticipant {
+  const ActivityDetailParticipant({
+    required this.groupId,
+    required this.childGroupLinkId,
+    required this.belongs,
+  });
+
+  final String groupId;
+  final String childGroupLinkId;
+  final bool belongs;
+}
+
+enum ActivityDetailProfessionalRole { instructor, activityAdmin }
+
+final class ActivityDetailProfessionalAssignment {
+  const ActivityDetailProfessionalAssignment({
+    required this.groupId,
+    required this.membershipId,
+    required this.role,
+    this.capabilities = const {},
+  });
+
+  final String? groupId;
+  final String membershipId;
+  final ActivityDetailProfessionalRole role;
+  final Map<String, String> capabilities;
+}
+
 final class ActivityDetail {
   const ActivityDetail({
     required this.item,
     required this.createdAt,
     required this.units,
     required this.groups,
+    this.taxonomyId,
+    this.subtypeId,
+    this.templateId,
+    this.taxonomyOtherDescription = '',
+    this.identity = const ActivityDetailIdentity.initials(),
+    this.participants = const [],
+    this.professionalAssignments = const [],
     this.originUnitName,
     this.archivedAt,
   });
@@ -167,6 +278,13 @@ final class ActivityDetail {
   final String? originUnitName;
   final List<ActivityUnitLink> units;
   final List<ActivityGroupLink> groups;
+  final String? taxonomyId;
+  final String? subtypeId;
+  final String? templateId;
+  final String taxonomyOtherDescription;
+  final ActivityDetailIdentity identity;
+  final List<ActivityDetailParticipant> participants;
+  final List<ActivityDetailProfessionalAssignment> professionalAssignments;
 }
 
 enum ActivityDirectorySortColumn { name }
@@ -178,6 +296,8 @@ final class ActivityDirectoryQuery {
   ActivityDirectoryQuery({
     this.search = '',
     Set<String> institutionIds = const {},
+    Set<String> unitIds = const {},
+    Set<String> groupIds = const {},
     Set<ActivityStatus> statuses = const {},
     Set<ActivityOrigin> origins = const {},
     this.page = 0,
@@ -187,11 +307,15 @@ final class ActivityDirectoryQuery {
   }) : assert(page >= 0),
        assert(allowedPageSizes.contains(pageSize)),
        institutionIds = Set.unmodifiable(institutionIds),
+       unitIds = Set.unmodifiable(unitIds),
+       groupIds = Set.unmodifiable(groupIds),
        statuses = Set.unmodifiable(statuses),
        origins = Set.unmodifiable(origins);
 
   final String search;
   final Set<String> institutionIds;
+  final Set<String> unitIds;
+  final Set<String> groupIds;
   final Set<ActivityStatus> statuses;
   final Set<ActivityOrigin> origins;
   final int page;
@@ -203,6 +327,8 @@ final class ActivityDirectoryQuery {
   bool get hasActiveFilters =>
       search.trim().isNotEmpty ||
       institutionIds.isNotEmpty ||
+      unitIds.isNotEmpty ||
+      groupIds.isNotEmpty ||
       statuses.isNotEmpty ||
       origins.isNotEmpty;
 }
@@ -224,16 +350,49 @@ final class ActivityDirectoryResult {
 }
 
 final class ActivityFilterOption {
-  const ActivityFilterOption({required this.id, required this.label});
+  const ActivityFilterOption({required this.id, required this.label, this.parentId});
 
   final String id;
   final String label;
+  final String? parentId;
+}
+
+final class ActivityDirectoryUnitSummary {
+  const ActivityDirectoryUnitSummary({
+    required this.id,
+    required this.name,
+    required this.institutionId,
+  });
+
+  final String id;
+  final String name;
+  final String institutionId;
+}
+
+final class ActivityDirectoryGroupSummary {
+  const ActivityDirectoryGroupSummary({
+    required this.id,
+    required this.name,
+    required this.unitId,
+    required this.unitName,
+  });
+
+  final String id;
+  final String name;
+  final String unitId;
+  final String unitName;
 }
 
 final class ActivityFilterOptions {
-  const ActivityFilterOptions({this.institutions = const []});
+  const ActivityFilterOptions({
+    this.institutions = const [],
+    this.units = const [],
+    this.groups = const [],
+  });
 
   final List<ActivityFilterOption> institutions;
+  final List<ActivityFilterOption> units;
+  final List<ActivityFilterOption> groups;
 }
 
 final class ActivityFormInstitutionOption {
@@ -251,16 +410,58 @@ final class ActivityFormUnitOption {
   final String name;
 }
 
-enum ActivityCategory {
-  languages('Idiomas', ['Português', 'Inglês', 'Outro']),
-  exactSciences('Exatas', ['Matemática', 'Robótica', 'Outro']),
-  martialArts('Lutas', ['Judô', 'Outro']),
-  arts('Artes', ['Desenho', 'Outro']);
+final class ActivityTaxonomySubtypeOption {
+  const ActivityTaxonomySubtypeOption({required this.id, required this.label});
 
-  const ActivityCategory(this.label, this.suggestions);
-
+  final String id;
   final String label;
-  final List<String> suggestions;
+}
+
+final class ActivityTaxonomyOption {
+  const ActivityTaxonomyOption({
+    required this.id,
+    required this.label,
+    this.isOther = false,
+    this.subtypes = const [],
+  });
+
+  final String id;
+  final String label;
+  final bool isOther;
+  final List<ActivityTaxonomySubtypeOption> subtypes;
+}
+
+enum ActivityTemplateScopeKind {
+  platform('platform'),
+  institution('institution');
+
+  const ActivityTemplateScopeKind(this.databaseValue);
+  final String databaseValue;
+
+  static ActivityTemplateScopeKind fromDatabase(String value) =>
+      values.firstWhere((item) => item.databaseValue == value);
+}
+
+final class ActivityTemplateOption {
+  const ActivityTemplateOption({
+    required this.id,
+    required this.name,
+    required this.taxonomyId,
+    this.subtypeId,
+    this.description = '',
+    this.scopeKind = ActivityTemplateScopeKind.platform,
+    this.institutionId,
+    this.governance = ActivityGovernance.optional,
+  });
+
+  final String id;
+  final String name;
+  final String taxonomyId;
+  final String? subtypeId;
+  final String description;
+  final ActivityTemplateScopeKind scopeKind;
+  final String? institutionId;
+  final ActivityGovernance governance;
 }
 
 final class ActivityFormLocationOption {
@@ -272,9 +473,14 @@ final class ActivityFormLocationOption {
 }
 
 final class ActivityLocationDraft {
-  const ActivityLocationDraft({required this.unitId, required this.name});
+  const ActivityLocationDraft({
+    required this.institutionId,
+    required this.unitIds,
+    required this.name,
+  });
 
-  final String unitId;
+  final String institutionId;
+  final Set<String> unitIds;
   final String name;
 }
 
@@ -293,11 +499,36 @@ final class ActivityFormGroupOption {
 }
 
 final class ActivityFormProfessionalOption {
-  const ActivityFormProfessionalOption({required this.id, required this.name, required this.role});
+  const ActivityFormProfessionalOption({
+    required this.id,
+    required this.name,
+    required this.role,
+    this.personId,
+  });
 
+  /// Contextual membership id used by commands. It is never a global person id.
   final String id;
   final String name;
   final String role;
+  final String? personId;
+}
+
+final class ActivityFormStudentOption {
+  const ActivityFormStudentOption({
+    required this.childGroupLinkId,
+    required this.id,
+    required this.groupId,
+    required this.name,
+    this.age,
+    this.gender,
+  });
+
+  final String childGroupLinkId;
+  final String id;
+  final String groupId;
+  final String name;
+  final int? age;
+  final String? gender;
 }
 
 final class ActivityFormOptions {
@@ -307,6 +538,9 @@ final class ActivityFormOptions {
     this.locations = const [],
     this.groups = const [],
     this.professionals = const [],
+    this.students = const [],
+    this.taxonomy = const [],
+    this.templates = const [],
   });
 
   final List<ActivityFormInstitutionOption> institutions;
@@ -314,15 +548,36 @@ final class ActivityFormOptions {
   final List<ActivityFormLocationOption> locations;
   final List<ActivityFormGroupOption> groups;
   final List<ActivityFormProfessionalOption> professionals;
+  final List<ActivityFormStudentOption> students;
+  final List<ActivityTaxonomyOption> taxonomy;
+  final List<ActivityTemplateOption> templates;
 
   List<ActivityFormUnitOption> unitsFor(String institutionId) =>
       units.where((unit) => unit.institutionId == institutionId).toList(growable: false);
 }
 
+final class ActivityTemplateOptions {
+  const ActivityTemplateOptions({
+    this.institutions = const [],
+    this.taxonomy = const [],
+    this.templates = const [],
+  });
+
+  final List<ActivityFormInstitutionOption> institutions;
+  final List<ActivityTaxonomyOption> taxonomy;
+  final List<ActivityTemplateOption> templates;
+}
+
 abstract interface class ActivityDirectoryRepository {
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query);
   Future<ActivityFilterOptions> fetchFilterOptions();
-  Future<ActivityFormOptions> fetchFormOptions();
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId});
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId});
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  });
   Future<ActivityDetail?> fetchById(String activityId);
 }
 
@@ -336,6 +591,16 @@ final class ActivityDirectoryUnavailableException implements Exception {
 
 Map<String, dynamic>? _map(Object? value) => value is Map ? Map<String, dynamic>.from(value) : null;
 
-int _activeCount(Object? value) => value is List
+int _activeCount(Object? value, [Object? projected]) => projected is num
+    ? projected.toInt()
+    : value is List
     ? value.where((entry) => _map(entry)?['status'] == ActivityStatus.active.databaseValue).length
     : 0;
+
+List<String> _strings(Object? value) => value is List
+    ? value.whereType<String>().where((item) => item.trim().isNotEmpty).toList(growable: false)
+    : const [];
+
+List<Map<String, dynamic>> _rows(Object? value) => value is List
+    ? value.map((row) => Map<String, dynamic>.from(row as Map)).toList(growable: false)
+    : const [];

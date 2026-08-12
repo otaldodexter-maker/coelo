@@ -4,49 +4,6 @@ import 'package:flutter/foundation.dart';
 
 import '../domain/activity_directory.dart';
 
-final class ActivityHierarchyFilterOption {
-  const ActivityHierarchyFilterOption({
-    required this.id,
-    required this.label,
-    required this.parentId,
-  });
-
-  final String id;
-  final String label;
-  final String parentId;
-
-  @override
-  bool operator ==(Object other) => other is ActivityHierarchyFilterOption && other.id == id;
-
-  @override
-  int get hashCode => id.hashCode;
-}
-
-final class ActivityDirectoryHierarchy {
-  const ActivityDirectoryHierarchy({required this.unit, required this.group});
-
-  factory ActivityDirectoryHierarchy.from(ActivityDirectoryItem item) {
-    final index = int.tryParse(RegExp(r'\d+').firstMatch(item.id)?.group(0) ?? '') ?? 1;
-    final unitNumber = index % 2 + 1;
-    final unitId = '${item.institutionId}-unit-$unitNumber';
-    return ActivityDirectoryHierarchy(
-      unit: ActivityHierarchyFilterOption(
-        id: unitId,
-        label: unitNumber == 1 ? 'Unidade Centro' : 'Unidade Norte',
-        parentId: item.institutionId,
-      ),
-      group: ActivityHierarchyFilterOption(
-        id: '$unitId-group-${index % 3 + 1}',
-        label: 'Turma ${index % 3 + 1}',
-        parentId: unitId,
-      ),
-    );
-  }
-
-  final ActivityHierarchyFilterOption unit;
-  final ActivityHierarchyFilterOption group;
-}
-
 enum ActivityDirectoryLoadState {
   initial,
   loading,
@@ -76,35 +33,33 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   ActivityDirectoryLoadState _state = ActivityDirectoryLoadState.initial;
   Timer? _searchTimer;
   int _requestVersion = 0;
-  Set<String> _selectedUnitIds = const {};
-  Set<String> _selectedGroupIds = const {};
 
   ActivityDirectoryQuery get query => _query;
   ActivityDirectoryResult get page => _page;
   ActivityFilterOptions get filterOptions => _filterOptions;
   ActivityDirectoryLoadState get state => _state;
-  Set<String> get selectedUnitIds => _selectedUnitIds;
-  Set<String> get selectedGroupIds => _selectedGroupIds;
+  Set<String> get selectedUnitIds => _query.unitIds;
+  Set<String> get selectedGroupIds => _query.groupIds;
 
-  List<ActivityHierarchyFilterOption> get unitOptions =>
-      _uniqueOptions(_page.items.map((item) => ActivityDirectoryHierarchy.from(item).unit));
-
-  List<ActivityHierarchyFilterOption> get groupOptions {
-    final options = _uniqueOptions(
-      _page.items.map((item) => ActivityDirectoryHierarchy.from(item).group),
-    );
-    return _selectedUnitIds.isEmpty
-        ? options
-        : options.where((option) => _selectedUnitIds.contains(option.parentId)).toList();
-  }
-
-  List<ActivityDirectoryItem> get visibleItems => _page.items
-      .where((item) {
-        final hierarchy = ActivityDirectoryHierarchy.from(item);
-        return (_selectedUnitIds.isEmpty || _selectedUnitIds.contains(hierarchy.unit.id)) &&
-            (_selectedGroupIds.isEmpty || _selectedGroupIds.contains(hierarchy.group.id));
-      })
+  List<ActivityFilterOption> get unitOptions => _filterOptions.units
+      .where(
+        (option) =>
+            _query.institutionIds.isEmpty ||
+            option.parentId == null ||
+            _query.institutionIds.contains(option.parentId),
+      )
       .toList(growable: false);
+
+  List<ActivityFilterOption> get groupOptions => _filterOptions.groups
+      .where(
+        (option) =>
+            _query.unitIds.isEmpty ||
+            option.parentId == null ||
+            _query.unitIds.contains(option.parentId),
+      )
+      .toList(growable: false);
+
+  List<ActivityDirectoryItem> get visibleItems => _page.items;
 
   Future<void> load() => _load(_query);
   Future<void> retry() => _load(_query);
@@ -116,18 +71,12 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setInstitutions(Set<String> value) => _replace(_copy(institutionIds: value));
-  void setUnits(Set<String> value) {
-    _selectedUnitIds = Set.unmodifiable(value);
-    final allowedGroups = groupOptions.map((option) => option.id).toSet();
-    _selectedGroupIds = Set.unmodifiable(_selectedGroupIds.intersection(allowedGroups));
-    notifyListeners();
-  }
+  Future<void> setInstitutions(Set<String> value) =>
+      _replace(_copy(institutionIds: value, unitIds: const {}, groupIds: const {}));
 
-  void setGroups(Set<String> value) {
-    _selectedGroupIds = Set.unmodifiable(value);
-    notifyListeners();
-  }
+  Future<void> setUnits(Set<String> value) => _replace(_copy(unitIds: value, groupIds: const {}));
+
+  Future<void> setGroups(Set<String> value) => _replace(_copy(groupIds: value));
 
   Future<void> setStatuses(Set<ActivityStatus> value) => _replace(_copy(statuses: value));
   Future<void> setOrigins(Set<ActivityOrigin> value) => _replace(_copy(origins: value));
@@ -139,16 +88,23 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
       : Future.value();
 
   Future<void> clearFilters() {
-    _selectedUnitIds = const {};
-    _selectedGroupIds = const {};
     return _replace(
-      _copy(search: '', institutionIds: const {}, statuses: const {}, origins: const {}),
+      _copy(
+        search: '',
+        institutionIds: const {},
+        unitIds: const {},
+        groupIds: const {},
+        statuses: const {},
+        origins: const {},
+      ),
     );
   }
 
   ActivityDirectoryQuery _copy({
     String? search,
     Set<String>? institutionIds,
+    Set<String>? unitIds,
+    Set<String>? groupIds,
     Set<ActivityStatus>? statuses,
     Set<ActivityOrigin>? origins,
     int? page,
@@ -158,6 +114,8 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
   }) => ActivityDirectoryQuery(
     search: search ?? _query.search,
     institutionIds: institutionIds ?? _query.institutionIds,
+    unitIds: unitIds ?? _query.unitIds,
+    groupIds: groupIds ?? _query.groupIds,
     statuses: statuses ?? _query.statuses,
     origins: origins ?? _query.origins,
     page: keepPage ? page ?? _query.page : 0,
@@ -183,7 +141,6 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
       if (version != _requestVersion) return;
       _page = results[0] as ActivityDirectoryResult;
       _filterOptions = results[1] as ActivityFilterOptions;
-      _pruneHierarchy();
       _state = _page.items.isNotEmpty
           ? ActivityDirectoryLoadState.success
           : value.hasActiveFilters
@@ -199,24 +156,6 @@ final class ActivityDirectoryViewModel extends ChangeNotifier {
       }
     }
     if (version == _requestVersion) notifyListeners();
-  }
-
-  void _pruneHierarchy() {
-    final units = unitOptions.map((option) => option.id).toSet();
-    _selectedUnitIds = Set.unmodifiable(_selectedUnitIds.intersection(units));
-    final groups = groupOptions.map((option) => option.id).toSet();
-    _selectedGroupIds = Set.unmodifiable(_selectedGroupIds.intersection(groups));
-  }
-
-  List<ActivityHierarchyFilterOption> _uniqueOptions(
-    Iterable<ActivityHierarchyFilterOption> options,
-  ) {
-    final unique = <String, ActivityHierarchyFilterOption>{};
-    for (final option in options) {
-      unique[option.id] = option;
-    }
-    final values = unique.values.toList()..sort((left, right) => left.label.compareTo(right.label));
-    return values;
   }
 
   @override

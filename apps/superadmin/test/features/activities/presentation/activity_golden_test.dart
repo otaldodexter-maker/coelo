@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_detail_page.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_directory_page.dart';
@@ -48,6 +48,35 @@ void main() {
         );
       }
     }
+  });
+
+  testWidgets('matches the approved models directory on desktop', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _app(
+        brightness: Brightness.light,
+        child: ActivityDirectoryPage(
+          repository: FakeActivityDirectoryRepository(),
+          logout: _logout,
+          onCreate: () {},
+          onView: (_) {},
+          onCreateFromTemplate: (_) {},
+          onDuplicateTemplate: (_, _) async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('activity-type-tabs')), findsOneWidget);
+    expect(find.byKey(const Key('create-activity-template-tile')), findsOneWidget);
+    await expectLater(
+      find.byKey(const Key('activity-golden-frame')),
+      matchesGoldenFile('../../../goldens/activities/activity_directory_models_light_1440.png'),
+    );
   });
 
   testWidgets('matches hover, filter and pagination references', (tester) async {
@@ -252,6 +281,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-invite-institution-1-group-1')));
     await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-professional-search')), 'Marina');
+    await tester.pump(const Duration(milliseconds: 351));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-professional-professional-1')));
     await tester.pump();
     await tester.tap(find.text('Concluir convite'));
@@ -288,7 +320,10 @@ Widget _directoryApp({
   child: ActivityDirectoryPage(
     repository: FakeActivityDirectoryRepository(),
     logout: _logout,
+    onCreate: () {},
     onView: (_) {},
+    onExportRequested: (_) async =>
+        const ActivityDirectoryExportResult(fileName: 'atividades.xlsx'),
     onBugReportSubmitted: (_) {},
   ),
 );
@@ -313,8 +348,10 @@ Widget _formApp({required Brightness brightness, String? activityId}) => _app(
     onCancel: () {},
     onSaveDraft: (_) async {},
     onSubmit: (_) async {},
-    onCreateLocation: (draft) async =>
-        ActivityFormLocationOption(id: 'golden-location', unitId: draft.unitId, name: draft.name),
+    onCreateLocation: (draft) async => [
+      for (final unitId in draft.unitIds)
+        ActivityFormLocationOption(id: 'golden-location-$unitId', unitId: unitId, name: draft.name),
+    ],
     imagePicker: () async => null,
   ),
 );

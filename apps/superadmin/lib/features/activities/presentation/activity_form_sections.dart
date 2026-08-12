@@ -3,8 +3,11 @@ import 'dart:typed_data';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker_stub.dart'
     if (dart.library.html) '../../institutions/presentation/widgets/institution_logo_picker_web.dart';
@@ -17,37 +20,65 @@ final class ActivityFormSection extends StatelessWidget {
   const ActivityFormSection({
     required this.controller,
     required this.onCreateLocation,
+    required this.onRetryCatalogOptions,
     required this.imagePicker,
     super.key,
   });
 
   final ActivityFormController controller;
   final ActivityLocationCreator onCreateLocation;
+  final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
 
   @override
   Widget build(BuildContext context) => KeyedSubtree(
     key: ValueKey(controller.currentStep),
-    child: switch (controller.currentStep) {
-      ActivityFormStep.identity => _IdentitySection(
-        controller: controller,
-        imagePicker: imagePicker,
-      ),
-      ActivityFormStep.structure => _StructureSection(
-        controller: controller,
-        onCreateLocation: onCreateLocation,
-      ),
-      ActivityFormStep.links => _LinksSection(controller: controller),
-      ActivityFormStep.professionals => _ProfessionalsSection(controller: controller),
-    },
+    child:
+        (controller.currentStep == ActivityFormStep.links ||
+                controller.currentStep == ActivityFormStep.professionals) &&
+            !controller.scopedOptionsAvailable
+        ? CoeloStatePanel(
+            title: controller.scopedOptionsLoading
+                ? 'Carregando dados da instituição'
+                : controller.scopedOptionsError != null
+                ? 'Não foi possível carregar os vínculos'
+                : 'Selecione uma instituição',
+            message: controller.scopedOptionsLoading
+                ? 'Aguarde para configurar estrutura e vínculos.'
+                : controller.scopedOptionsError ??
+                      'Volte à identidade e escolha a instituição da atividade.',
+            icon: controller.scopedOptionsLoading
+                ? Icons.hourglass_top_rounded
+                : Icons.cloud_off_outlined,
+            actionLabel: controller.scopedOptionsError == null ? null : 'Tentar novamente',
+            onAction: controller.scopedOptionsError == null ? null : controller.retryScopedOptions,
+          )
+        : switch (controller.currentStep) {
+            ActivityFormStep.identity => _IdentitySection(
+              controller: controller,
+              imagePicker: imagePicker,
+              onRetryCatalogOptions: onRetryCatalogOptions,
+            ),
+            ActivityFormStep.structure => _StructureSection(
+              controller: controller,
+              onCreateLocation: onCreateLocation,
+            ),
+            ActivityFormStep.links => _LinksSection(controller: controller),
+            ActivityFormStep.professionals => _ProfessionalsSection(controller: controller),
+          },
   );
 }
 
 final class _IdentitySection extends StatelessWidget {
-  const _IdentitySection({required this.controller, required this.imagePicker});
+  const _IdentitySection({
+    required this.controller,
+    required this.imagePicker,
+    required this.onRetryCatalogOptions,
+  });
 
   final ActivityFormController controller;
   final InstitutionLogoPicker imagePicker;
+  final Future<void> Function() onRetryCatalogOptions;
 
   Future<void> _pickImage(BuildContext context) async {
     final file = await imagePicker();
@@ -60,6 +91,18 @@ final class _IdentitySection extends StatelessWidget {
     if (result != null) controller.setImage(name: file.name, bytes: result.bytes);
   }
 
+  Future<void> _pickColor(BuildContext context) async {
+    final selected = await showSuperadminAdvancedColorPicker(
+      context,
+      initialColor: _activityIdentityColor(controller.identityColor),
+      title: 'Cor da sigla',
+    );
+    if (selected == null) return;
+    controller.setIdentityColor(
+      '#${selected.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,11 +111,40 @@ final class _IdentitySection extends StatelessWidget {
         title: 'Identidade da atividade',
         description: 'Defina como a atividade será reconhecida nos contextos da instituição.',
       ),
+      if (controller.catalogOptionsLoading || controller.catalogOptionsError != null) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloStatePanel(
+          key: const Key('activity-catalog-options-state'),
+          title: controller.catalogOptionsLoading
+              ? 'Carregando categorias e modelos'
+              : 'Categorias e modelos indisponíveis',
+          message: controller.catalogOptionsLoading
+              ? 'Aguarde enquanto o catálogo é atualizado.'
+              : 'Você pode continuar preenchendo a atividade e tentar carregar o catálogo novamente.',
+          loading: controller.catalogOptionsLoading,
+          icon: controller.catalogOptionsLoading ? null : Icons.cloud_off_outlined,
+        ),
+        if (!controller.catalogOptionsLoading)
+          Align(
+            alignment: Alignment.center,
+            child: TextButton.icon(
+              key: const Key('activity-catalog-options-retry'),
+              onPressed: onRetryCatalogOptions,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Tentar novamente'),
+            ),
+          ),
+      ],
       const SizedBox(height: CoeloSpacing.space5),
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _ActivityAvatar(bytes: controller.imageBytes),
+          _ActivityAvatar(
+            bytes: controller.imageBytes,
+            initials: controller.initials.text,
+            color: controller.identityColor,
+            icon: controller.identityIcon,
+          ),
           const SizedBox(width: CoeloSpacing.space4),
           Expanded(
             child: Column(
@@ -91,7 +163,7 @@ final class _IdentitySection extends StatelessWidget {
                   key: const Key('activity-form-image'),
                   onPressed: () => _pickImage(context),
                   icon: const Icon(Icons.add_a_photo_outlined),
-                  label: Text(controller.imageBytes == null ? 'Adicionar foto' : 'Trocar foto'),
+                  label: Text(controller.hasIdentityImage ? 'Trocar foto' : 'Adicionar foto'),
                 ),
               ],
             ),
@@ -110,6 +182,59 @@ final class _IdentitySection extends StatelessWidget {
             errorText: controller.nameError,
             textInputAction: TextInputAction.next,
           ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CoeloFormTextField(
+                fieldKey: const Key('activity-form-handle'),
+                controller: controller.handleStem,
+                labelText: '@ da atividade',
+                hintText: controller.name.text.trim().isEmpty
+                    ? 'nome-da-atividade'
+                    : controller.name.text.trim(),
+                prefixIcon: Icons.alternate_email_rounded,
+                errorText: controller.handleStemError,
+                maxLength: 64,
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: CoeloSpacing.space1),
+              Text(
+                'Opcional. O Coelo sugere a partir do nome e aplica o sufixo hierárquico no servidor.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          CoeloFormTextField(
+            fieldKey: const Key('activity-form-initials'),
+            controller: controller.initials,
+            labelText: 'Sigla sem foto',
+            hintText: 'RB',
+            prefixIcon: Icons.text_fields_rounded,
+            maxLength: 4,
+            textInputAction: TextInputAction.next,
+          ),
+          OutlinedButton.icon(
+            key: const Key('activity-form-identity-color'),
+            onPressed: () => _pickColor(context),
+            icon: DecoratedBox(
+              decoration: BoxDecoration(
+                color: _activityIdentityColor(controller.identityColor),
+                shape: BoxShape.circle,
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
+              ),
+              child: const SizedBox.square(dimension: CoeloSize.iconMd),
+            ),
+            label: const Text('Escolher cor da sigla'),
+          ),
+          CoeloAdminSingleSelectField<ActivityIdentityIcon>(
+            key: const Key('activity-form-identity-icon'),
+            label: 'Ícone sem foto ou sigla',
+            value: controller.identityIcon,
+            options: ActivityIdentityIcon.values,
+            optionLabel: _activityIdentityIconLabel,
+            onChanged: controller.selectIdentityIcon,
+            prefixIcon: Icons.local_activity_outlined,
+          ),
           CoeloAdminSingleSelectField<ActivityGovernance>(
             key: const Key('activity-form-governance'),
             label: 'Tipo da atividade',
@@ -118,7 +243,7 @@ final class _IdentitySection extends StatelessWidget {
                 ? const [ActivityGovernance.fixed]
                 : const [ActivityGovernance.optional, ActivityGovernance.mandatory],
             optionLabel: (value) => switch (value) {
-              ActivityGovernance.optional => 'Simples/Opcional',
+              ActivityGovernance.optional => 'Opcional',
               ActivityGovernance.mandatory => 'Obrigatória',
               ActivityGovernance.fixed => 'Fixa',
             },
@@ -126,33 +251,43 @@ final class _IdentitySection extends StatelessWidget {
             enabled: !controller.governanceLocked,
             prefixIcon: Icons.rule_rounded,
           ),
-          CoeloAdminSingleSelectField<ActivityCategory?>(
+          CoeloAdminSingleSelectField<ActivityTaxonomyOption?>(
             key: const Key('activity-form-category'),
             label: 'Categoria',
-            value: controller.category,
-            options: const [null, ...ActivityCategory.values],
+            value: controller.taxonomy,
+            options: [null, ...controller.taxonomyOptions],
             optionLabel: (value) => value?.label ?? 'Selecione a categoria',
             onChanged: (value) {
-              if (value != null) controller.selectCategory(value);
+              if (value != null) controller.selectTaxonomy(value);
             },
             prefixIcon: Icons.category_outlined,
           ),
-          CoeloAdminSingleSelectField<String>(
-            key: const Key('activity-form-suggestion'),
-            label: 'Atividade',
-            value: controller.selectedActivitySuggestion ?? '',
-            options: ['', ...controller.activitySuggestions],
-            optionLabel: (value) => value.isEmpty ? 'Selecione a atividade' : value,
-            onChanged: controller.selectActivitySuggestion,
-            enabled: controller.category != null,
-            prefixIcon: Icons.local_activity_outlined,
-          ),
-          if (controller.selectedActivitySuggestion == 'Outro')
+          if (controller.subtypeOptions.isNotEmpty)
+            CoeloAdminSingleSelectField<ActivityTaxonomySubtypeOption?>(
+              key: const Key('activity-form-subtype'),
+              label: 'Subtipo',
+              value: controller.subtype,
+              options: [null, ...controller.subtypeOptions],
+              optionLabel: (value) => value?.label ?? 'Sem subtipo',
+              onChanged: controller.selectSubtype,
+              prefixIcon: Icons.account_tree_outlined,
+            ),
+          if (controller.taxonomy?.isOther != true && controller.activityTemplates.isNotEmpty)
+            CoeloAdminSingleSelectField<ActivityTemplateOption?>(
+              key: const Key('activity-form-template'),
+              label: 'Atividade',
+              value: controller.template,
+              options: [null, ...controller.activityTemplates],
+              optionLabel: (value) => value?.name ?? 'Sem modelo',
+              onChanged: controller.selectTemplate,
+              prefixIcon: Icons.local_activity_outlined,
+            ),
+          if (controller.taxonomy?.isOther == true)
             CoeloFormTextField(
               fieldKey: const Key('activity-form-other'),
               controller: controller.otherActivity,
-              labelText: 'Outra atividade',
-              hintText: 'Informe o nome da atividade',
+              labelText: 'Descrição de Outros',
+              hintText: 'Descreva a categoria da atividade',
               prefixIcon: Icons.edit_outlined,
             ),
         ],
@@ -178,18 +313,20 @@ final class _StructureSection extends StatelessWidget {
   final ActivityLocationCreator onCreateLocation;
 
   Future<void> _createLocation(BuildContext context) async {
-    if (controller.selectedUnitIds.isEmpty) return;
-    final unitId = controller.selectedUnitIds.first;
-    final option = await showDialog<ActivityFormLocationOption>(
+    final institutionId = controller.selectedInstitutionId;
+    if (institutionId == null || controller.selectedUnitIds.isEmpty) return;
+    final options = await showDialog<List<ActivityFormLocationOption>>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
       builder: (context) => _CreateLocationDialog(
-        unitId: unitId,
-        unitName: controller.units.firstWhere((unit) => unit.id == unitId).name,
+        institutionId: institutionId,
+        units: controller.units
+            .where((unit) => controller.selectedUnitIds.contains(unit.id))
+            .toList(growable: false),
         onCreate: onCreateLocation,
       ),
     );
-    if (option != null) controller.addLocation(option);
+    if (options != null) controller.addLocations(options);
   }
 
   @override
@@ -216,21 +353,39 @@ final class _StructureSection extends StatelessWidget {
         searchable: true,
         searchHintText: 'Buscar instituição',
       ),
+      if (controller.scopedOptionsLoading) ...[
+        const SizedBox(height: CoeloSpacing.space2),
+        const LinearProgressIndicator(key: Key('activity-scoped-options-loading')),
+      ],
+      if (controller.scopedOptionsError != null) ...[
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(
+          controller.scopedOptionsError!,
+          key: const Key('activity-scoped-options-error'),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+        TextButton(
+          key: const Key('activity-scoped-options-retry'),
+          onPressed: controller.retryScopedOptions,
+          child: const Text('Tentar novamente'),
+        ),
+      ],
       const SizedBox(height: CoeloSpacing.space5),
-      _SelectionSection(
+      _SearchableSelectionSection<ActivityFormUnitOption>(
         title: 'Unidades',
         description: 'Selecione todas as unidades em que a atividade estará disponível.',
         error: controller.unitsError,
-        children: [
-          for (final unit in controller.units)
-            _SelectableCard(
-              key: Key('activity-unit-${unit.id}'),
-              label: unit.name,
-              supportingText: 'Unidade da instituição selecionada',
-              selected: controller.selectedUnitIds.contains(unit.id),
-              onPressed: () => controller.toggleUnit(unit.id),
-            ),
-        ],
+        items: controller.units,
+        itemLabel: (unit) => unit.name,
+        searchKey: const Key('activity-units-search'),
+        searchHintText: 'Buscar unidade',
+        itemBuilder: (unit) => _SelectableCard(
+          key: Key('activity-unit-${unit.id}'),
+          label: unit.name,
+          supportingText: 'Unidade da instituição selecionada',
+          selected: controller.selectedUnitIds.contains(unit.id),
+          onPressed: () => controller.toggleUnit(unit.id),
+        ),
       ),
       const SizedBox(height: CoeloSpacing.space5),
       LayoutBuilder(
@@ -298,7 +453,7 @@ final class _LinksSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SectionHeader(
-          title: 'Vínculos da atividade',
+          title: 'Vínculo Aluno',
           description: 'Confira a instituição, as unidades e selecione as turmas separadamente.',
         ),
         const SizedBox(height: CoeloSpacing.space5),
@@ -308,29 +463,35 @@ final class _LinksSection extends StatelessWidget {
           value: institution?.name ?? 'Não selecionada',
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        _SelectionSection(
+        _SearchableSelectionSection<ActivityFormUnitOption>(
           title: 'Unidades vinculadas',
           description: 'Ajuste as unidades antes de escolher as turmas.',
           error: controller.unitsError,
-          children: [
-            for (final unit in controller.units)
-              _SelectableCard(
-                label: unit.name,
-                supportingText: controller.selectedUnitIds.contains(unit.id)
-                    ? 'Vinculada'
-                    : 'Disponível',
-                selected: controller.selectedUnitIds.contains(unit.id),
-                onPressed: () => controller.toggleUnit(unit.id),
-              ),
-          ],
+          items: controller.units,
+          itemLabel: (unit) => unit.name,
+          searchKey: const Key('activity-units-search'),
+          searchHintText: 'Buscar unidade',
+          itemBuilder: (unit) => _SelectableCard(
+            label: unit.name,
+            supportingText: controller.selectedUnitIds.contains(unit.id)
+                ? 'Vinculada'
+                : 'Disponível',
+            selected: controller.selectedUnitIds.contains(unit.id),
+            onPressed: () => controller.toggleUnit(unit.id),
+          ),
         ),
         const SizedBox(height: CoeloSpacing.space5),
-        _SelectionSection(
+        _SearchableSelectionSection<ActivityFormGroupOption>(
           title: 'Turmas',
           description: 'A atividade só produz efeitos operacionais dentro das turmas vinculadas.',
           error: controller.groupsError,
-          children: [
-            for (final group in controller.groups)
+          items: controller.groups,
+          itemLabel: (group) => group.name,
+          searchKey: const Key('activity-groups-search'),
+          searchHintText: 'Buscar turma',
+          itemBuilder: (group) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               _SelectableCard(
                 key: Key('activity-group-${group.id}'),
                 label: group.name,
@@ -338,8 +499,114 @@ final class _LinksSection extends StatelessWidget {
                 selected: controller.selectedGroupIds.contains(group.id),
                 onPressed: () => controller.toggleGroup(group.id),
               ),
-          ],
+              if (controller.selectedGroupIds.contains(group.id)) ...[
+                const SizedBox(height: CoeloSpacing.space2),
+                CoeloAdminSingleSelectField<ActivityParticipation>(
+                  key: Key('activity-participation-${group.id}'),
+                  label: 'Participação dos alunos',
+                  value: controller.groupParticipation[group.id] ?? ActivityParticipation.all,
+                  options: ActivityParticipation.values,
+                  optionLabel: (value) => value.label,
+                  onChanged: (value) => controller.setGroupParticipation(group.id, value),
+                  prefixIcon: Icons.groups_outlined,
+                ),
+              ],
+            ],
+          ),
         ),
+        if (controller.selectedGroupIds.isNotEmpty && controller.options.students.isNotEmpty) ...[
+          const SizedBox(height: CoeloSpacing.space5),
+          _StudentLinkTables(controller: controller),
+        ],
+      ],
+    );
+  }
+}
+
+final class _StudentLinkTables extends StatelessWidget {
+  const _StudentLinkTables({required this.controller});
+
+  final ActivityFormController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = controller.groups
+        .where((group) => controller.selectedGroupIds.contains(group.id))
+        .toList(growable: false);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const _SectionHeader(
+          title: 'Alunos por turma',
+          description: 'Revise individualmente quem pertence à atividade em cada turma.',
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        for (final group in groups) ...[
+          Text(group.name, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space2),
+          CoeloAdminResizableTable<ActivityFormStudentOption>(
+            key: Key('activity-students-${group.id}'),
+            items: controller.options.students
+                .where((student) => student.groupId == group.id)
+                .toList(growable: false),
+            rowKey: (student) => 'activity-student-${student.childGroupLinkId}',
+            pinnedColumn: CoeloAdminTableColumn(
+              id: 'name',
+              label: 'Nome',
+              initialWidth: 220,
+              minWidth: 160,
+              maxWidth: 360,
+              cellBuilder: (_, student) => Text(student.name),
+            ),
+            columns: [
+              CoeloAdminTableColumn(
+                id: 'group',
+                label: 'Turma',
+                initialWidth: 180,
+                minWidth: 140,
+                maxWidth: 280,
+                cellBuilder: (_, _) => Text(group.name),
+              ),
+              CoeloAdminTableColumn(
+                id: 'age',
+                label: 'Idade',
+                initialWidth: 96,
+                minWidth: 80,
+                maxWidth: 140,
+                cellBuilder: (_, student) => Text(student.age?.toString() ?? '—'),
+              ),
+              CoeloAdminTableColumn(
+                id: 'gender',
+                label: 'Sexo',
+                initialWidth: 120,
+                minWidth: 100,
+                maxWidth: 180,
+                cellBuilder: (_, student) => Text(student.gender ?? '—'),
+              ),
+              CoeloAdminTableColumn(
+                id: 'belongs',
+                label: 'Pertence',
+                initialWidth: 160,
+                minWidth: 140,
+                maxWidth: 220,
+                cellBuilder: (_, student) => CoeloAdminToggleField(
+                  key: Key('activity-student-belongs-${student.childGroupLinkId}'),
+                  label: 'Pertence: ${student.name}',
+                  value:
+                      controller.groupParticipation[group.id] == ActivityParticipation.all ||
+                      (controller.studentSelection[student.childGroupLinkId] ?? true),
+                  onChanged:
+                      controller.groupParticipation[group.id] == ActivityParticipation.selected
+                      ? (value) => controller.setStudentIncluded(student.childGroupLinkId, value)
+                      : null,
+                ),
+              ),
+            ],
+            headerHeight: 56,
+            rowHeight: 136,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
       ],
     );
   }
@@ -350,10 +617,15 @@ final class _ProfessionalsSection extends StatelessWidget {
 
   final ActivityFormController controller;
 
-  Future<void> _invite(BuildContext context, String groupId) => showDialog<void>(
+  Future<void> _invite(
+    BuildContext context,
+    String? groupId, {
+    ActivityAssignmentRole role = ActivityAssignmentRole.instructor,
+  }) => showDialog<void>(
     context: context,
     barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-    builder: (context) => _ProfessionalPickerDialog(controller: controller, groupId: groupId),
+    builder: (context) =>
+        _ProfessionalPickerDialog(controller: controller, groupId: groupId, role: role),
   );
 
   @override
@@ -361,7 +633,7 @@ final class _ProfessionalsSection extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const _SectionHeader(
-        title: 'Profissionais e revisão',
+        title: 'Vínculos Profissionais',
         description: 'Convide profissionais por turma e revise as permissões contextuais.',
       ),
       const SizedBox(height: CoeloSpacing.space3),
@@ -371,6 +643,26 @@ final class _ProfessionalsSection extends StatelessWidget {
           context,
         ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
+      const SizedBox(height: CoeloSpacing.space5),
+      OutlinedButton.icon(
+        key: const Key('activity-invite-admin'),
+        onPressed: () => _invite(context, null, role: ActivityAssignmentRole.activityAdmin),
+        icon: const Icon(Icons.admin_panel_settings_outlined),
+        label: const Text('Adicionar administrador da atividade'),
+      ),
+      for (final assignment in controller.assignments.where(
+        (item) => item.role == ActivityAssignmentRole.activityAdmin,
+      ))
+        Padding(
+          padding: const EdgeInsets.only(top: CoeloSpacing.space3),
+          child: _SummarySurface(
+            icon: Icons.admin_panel_settings_outlined,
+            title: controller.options.professionals
+                .firstWhere((item) => item.id == assignment.professionalId)
+                .name,
+            value: ActivityAssignmentRole.activityAdmin.label,
+          ),
+        ),
       const SizedBox(height: CoeloSpacing.space5),
       for (final group in controller.groups.where(
         (group) => controller.selectedGroupIds.contains(group.id),
@@ -391,13 +683,17 @@ final class _ProfessionalsSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: CoeloSpacing.space3),
-        if (!controller.assignments.any((item) => item.groupId == group.id))
+        if (!controller.assignments.any(
+          (item) => item.groupId == group.id && item.role == ActivityAssignmentRole.instructor,
+        ))
           const _SummarySurface(
             icon: Icons.people_outline_rounded,
             title: 'Nenhum profissional convidado',
             value: 'Você pode concluir o vínculo depois.',
           ),
-        for (final assignment in controller.assignments.where((item) => item.groupId == group.id))
+        for (final assignment in controller.assignments.where(
+          (item) => item.groupId == group.id && item.role == ActivityAssignmentRole.instructor,
+        ))
           Padding(
             padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
             child: _ProfessionalPermissionCard(controller: controller, assignment: assignment),
@@ -443,13 +739,13 @@ final class _ProfessionalsSection extends StatelessWidget {
 
 final class _CreateLocationDialog extends StatefulWidget {
   const _CreateLocationDialog({
-    required this.unitId,
-    required this.unitName,
+    required this.institutionId,
+    required this.units,
     required this.onCreate,
   });
 
-  final String unitId;
-  final String unitName;
+  final String institutionId;
+  final List<ActivityFormUnitOption> units;
   final ActivityLocationCreator onCreate;
 
   @override
@@ -460,6 +756,7 @@ final class _CreateLocationDialogState extends State<_CreateLocationDialog> {
   final _name = TextEditingController();
   String? _error;
   bool _saving = false;
+  late final Set<String> _unitIds = widget.units.map((unit) => unit.id).toSet();
 
   @override
   void dispose() {
@@ -473,10 +770,18 @@ final class _CreateLocationDialogState extends State<_CreateLocationDialog> {
       return;
     }
     setState(() => _saving = true);
-    final option = await widget.onCreate(
-      ActivityLocationDraft(unitId: widget.unitId, name: _name.text.trim()),
+    if (_unitIds.isEmpty) {
+      setState(() => _error = 'Selecione ao menos uma unidade.');
+      return;
+    }
+    final options = await widget.onCreate(
+      ActivityLocationDraft(
+        institutionId: widget.institutionId,
+        unitIds: Set.unmodifiable(_unitIds),
+        name: _name.text.trim(),
+      ),
     );
-    if (mounted) Navigator.of(context).pop(option);
+    if (mounted) Navigator.of(context).pop(options);
   }
 
   @override
@@ -488,7 +793,21 @@ final class _CreateLocationDialogState extends State<_CreateLocationDialog> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('O local será criado dentro de ${widget.unitName}.'),
+        const Text('Escolha uma, algumas ou todas as unidades selecionadas.'),
+        const SizedBox(height: CoeloSpacing.space3),
+        for (final unit in widget.units)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+            child: _SelectableCard(
+              key: Key('activity-location-unit-${unit.id}'),
+              label: unit.name,
+              supportingText: 'Criar um local irmão nesta unidade',
+              selected: _unitIds.contains(unit.id),
+              onPressed: () => setState(() {
+                if (!_unitIds.add(unit.id)) _unitIds.remove(unit.id);
+              }),
+            ),
+          ),
         const SizedBox(height: CoeloSpacing.space3),
         CoeloFormTextField(
           fieldKey: const Key('activity-location-name'),
@@ -513,10 +832,15 @@ final class _CreateLocationDialogState extends State<_CreateLocationDialog> {
 }
 
 final class _ProfessionalPickerDialog extends StatefulWidget {
-  const _ProfessionalPickerDialog({required this.controller, required this.groupId});
+  const _ProfessionalPickerDialog({
+    required this.controller,
+    required this.groupId,
+    required this.role,
+  });
 
   final ActivityFormController controller;
-  final String groupId;
+  final String? groupId;
+  final ActivityAssignmentRole role;
 
   @override
   State<_ProfessionalPickerDialog> createState() => _ProfessionalPickerDialogState();
@@ -524,34 +848,91 @@ final class _ProfessionalPickerDialog extends StatefulWidget {
 
 final class _ProfessionalPickerDialogState extends State<_ProfessionalPickerDialog> {
   final _search = TextEditingController();
+  Timer? _debounce;
+  int _requestSequence = 0;
+  List<ActivityFormProfessionalOption> _items = const [];
+  bool _loading = false;
+  bool _failed = false;
+
+  void _searchChanged(String value) {
+    _debounce?.cancel();
+    final query = value.trim();
+    final sequence = ++_requestSequence;
+    if (query.isEmpty) {
+      setState(() {
+        _items = const [];
+        _loading = false;
+        _failed = false;
+      });
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _failed = false;
+    });
+    _debounce = Timer(const Duration(milliseconds: 350), () async {
+      try {
+        final results = await widget.controller.searchProfessionals(query);
+        if (!mounted || sequence != _requestSequence) return;
+        widget.controller.acceptProfessionalResults(results);
+        setState(() {
+          _items = results;
+          _loading = false;
+        });
+      } catch (_) {
+        if (!mounted || sequence != _requestSequence) return;
+        setState(() {
+          _items = const [];
+          _loading = false;
+          _failed = true;
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
+    _requestSequence++;
     _search.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final query = _search.text.trim().toLowerCase();
-    final items = widget.controller.options.professionals
-        .where((item) => item.name.toLowerCase().contains(query))
-        .toList(growable: false);
     return CoeloAdminDialogShell(
       dialogKey: const Key('activity-professional-dialog'),
-      title: 'Convidar profissional',
+      title: widget.role == ActivityAssignmentRole.activityAdmin
+          ? 'Adicionar administrador'
+          : 'Convidar profissional',
       closeTooltip: 'Fechar convite',
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CoeloSearchField(
+            key: const Key('activity-professional-search'),
             controller: _search,
-            hintText: 'Buscar profissional',
+            hintText: 'Buscar por nome ou @',
             semanticLabel: 'Buscar profissional para a atividade',
-            onChanged: (_) => setState(() {}),
+            onChanged: _searchChanged,
           ),
           const SizedBox(height: CoeloSpacing.space3),
-          for (final professional in items)
+          if (_loading)
+            const LinearProgressIndicator(key: Key('activity-professional-search-loading'))
+          else if (_failed)
+            Text(
+              'Não foi possível buscar profissionais. Tente novamente.',
+              key: const Key('activity-professional-search-failure'),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            )
+          else if (_search.text.trim().isEmpty)
+            const Text('Digite um nome ou @ para buscar.')
+          else if (_items.isEmpty)
+            const Text(
+              'Nenhum profissional encontrado.',
+              key: Key('activity-professional-search-empty'),
+            ),
+          for (final professional in _items)
             Padding(
               padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
               child: _SelectableCard(
@@ -560,11 +941,17 @@ final class _ProfessionalPickerDialogState extends State<_ProfessionalPickerDial
                 supportingText: professional.role,
                 selected: widget.controller.assignments.any(
                   (item) =>
-                      item.groupId == widget.groupId && item.professionalId == professional.id,
+                      item.groupId == widget.groupId &&
+                      item.professionalId == professional.id &&
+                      item.role == widget.role,
                 ),
                 onPressed: () {
                   setState(
-                    () => widget.controller.toggleProfessional(widget.groupId, professional.id),
+                    () => widget.controller.toggleProfessional(
+                      widget.groupId,
+                      professional.id,
+                      role: widget.role,
+                    ),
                   );
                 },
               ),
@@ -590,8 +977,19 @@ final class _ProfessionalPermissionCard extends StatelessWidget {
     final professional = controller.options.professionals.firstWhere(
       (item) => item.id == assignment.professionalId,
     );
-    Widget permission(String label, bool value, ValueChanged<bool> onChanged) =>
-        CoeloAdminToggleField(label: label, value: value, onChanged: onChanged);
+    Widget permission(
+      String id,
+      String label,
+      ActivityProfessionalAccess value,
+      ValueChanged<ActivityProfessionalAccess> onChanged,
+    ) => CoeloAdminSingleSelectField<ActivityProfessionalAccess>(
+      key: Key('activity-permission-${assignment.groupId}-${assignment.professionalId}-$id'),
+      label: label,
+      value: value,
+      options: ActivityProfessionalAccess.values,
+      optionLabel: (option) => option.label,
+      onChanged: onChanged,
+    );
     return Container(
       key: Key('activity-assignment-${assignment.groupId}-${assignment.professionalId}'),
       padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -606,34 +1004,48 @@ final class _ProfessionalPermissionCard extends StatelessWidget {
           Text(professional.name, style: Theme.of(context).textTheme.titleSmall),
           Text(professional.role, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: CoeloSpacing.space3),
-          Wrap(
-            spacing: CoeloSpacing.space4,
-            runSpacing: CoeloSpacing.space2,
+          _ResponsiveGrid(
             children: [
-              permission('Happens', assignment.permissions.happens, (value) {
+              permission('happens', 'Happens', assignment.permissions.happens, (value) {
                 controller.setPermission(
                   assignment.groupId,
                   assignment.professionalId,
                   happens: value,
                 );
               }),
-              permission('Now', assignment.permissions.now, (value) {
+              permission('now', 'Now', assignment.permissions.now, (value) {
                 controller.setPermission(assignment.groupId, assignment.professionalId, now: value);
               }),
-              permission('Moments', assignment.permissions.moments, (value) {
+              permission('moments', 'Moments', assignment.permissions.moments, (value) {
                 controller.setPermission(
                   assignment.groupId,
                   assignment.professionalId,
                   moments: value,
                 );
               }),
-              permission('Chat', assignment.permissions.chat, (value) {
+              permission('chat', 'Chat', assignment.permissions.chat, (value) {
                 controller.setPermission(
                   assignment.groupId,
                   assignment.professionalId,
                   chat: value,
                 );
               }),
+              permission('attendance', 'Chamada', assignment.permissions.attendance, (value) {
+                controller.setPermission(
+                  assignment.groupId,
+                  assignment.professionalId,
+                  attendance: value,
+                );
+              }),
+              OutlinedButton.icon(
+                key: Key(
+                  'activity-permission-${assignment.groupId}-'
+                  '${assignment.professionalId}-notes',
+                ),
+                onPressed: null,
+                icon: const Icon(Icons.notes_outlined),
+                label: const Text('Notas · Em breve'),
+              ),
             ],
           ),
         ],
@@ -643,9 +1055,17 @@ final class _ProfessionalPermissionCard extends StatelessWidget {
 }
 
 final class _ActivityAvatar extends StatelessWidget {
-  const _ActivityAvatar({required this.bytes});
+  const _ActivityAvatar({
+    required this.bytes,
+    required this.initials,
+    required this.color,
+    required this.icon,
+  });
 
   final Uint8List? bytes;
+  final String initials;
+  final String color;
+  final ActivityIdentityIcon icon;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -654,14 +1074,54 @@ final class _ActivityAvatar extends StatelessWidget {
     clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: bytes == null
+          ? _activityIdentityColor(color)
+          : Theme.of(context).colorScheme.surfaceContainer,
       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
     ),
-    child: bytes == null
-        ? Icon(Icons.local_activity_outlined, color: Theme.of(context).colorScheme.primary)
-        : Image.memory(bytes!, fit: BoxFit.cover),
+    child: bytes != null
+        ? Image.memory(bytes!, fit: BoxFit.cover)
+        : Center(
+            child: initials.trim().isNotEmpty
+                ? Text(
+                    initials.trim().toUpperCase(),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: _activityIdentityForeground(_activityIdentityColor(color)),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  )
+                : Icon(
+                    _activityIdentityIconData(icon),
+                    color: _activityIdentityForeground(_activityIdentityColor(color)),
+                  ),
+          ),
   );
 }
+
+Color _activityIdentityColor(String value) {
+  final normalized = value.replaceFirst('#', '');
+  final parsed = int.tryParse(normalized, radix: 16);
+  return Color(0xFF000000 | (parsed ?? 0xD63C00));
+}
+
+Color _activityIdentityForeground(Color color) =>
+    ThemeData.estimateBrightnessForColor(color) == Brightness.dark ? Colors.white : Colors.black;
+
+String _activityIdentityIconLabel(ActivityIdentityIcon icon) => switch (icon) {
+  ActivityIdentityIcon.activity => 'Atividade',
+  ActivityIdentityIcon.sports => 'Esportes',
+  ActivityIdentityIcon.music => 'Música',
+  ActivityIdentityIcon.science => 'Ciências',
+  ActivityIdentityIcon.arts => 'Artes',
+};
+
+IconData _activityIdentityIconData(ActivityIdentityIcon icon) => switch (icon) {
+  ActivityIdentityIcon.activity => Icons.local_activity_outlined,
+  ActivityIdentityIcon.sports => Icons.sports_soccer_outlined,
+  ActivityIdentityIcon.music => Icons.music_note_outlined,
+  ActivityIdentityIcon.science => Icons.science_outlined,
+  ActivityIdentityIcon.arts => Icons.palette_outlined,
+};
 
 final class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title, required this.description});
@@ -707,6 +1167,70 @@ final class _ResponsiveGrid extends StatelessWidget {
       );
     },
   );
+}
+
+final class _SearchableSelectionSection<T> extends StatefulWidget {
+  const _SearchableSelectionSection({
+    required this.title,
+    required this.description,
+    required this.items,
+    required this.itemLabel,
+    required this.itemBuilder,
+    required this.searchKey,
+    required this.searchHintText,
+    this.error,
+  });
+
+  final String title;
+  final String description;
+  final List<T> items;
+  final String Function(T item) itemLabel;
+  final Widget Function(T item) itemBuilder;
+  final Key searchKey;
+  final String searchHintText;
+  final String? error;
+
+  @override
+  State<_SearchableSelectionSection<T>> createState() => _SearchableSelectionSectionState<T>();
+}
+
+final class _SearchableSelectionSectionState<T> extends State<_SearchableSelectionSection<T>> {
+  final TextEditingController _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _search.text.trim().toLowerCase();
+    final filtered = widget.items
+        .where((item) => widget.itemLabel(item).toLowerCase().contains(query))
+        .toList(growable: false);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.items.length > 6) ...[
+          CoeloSearchField(
+            key: widget.searchKey,
+            controller: _search,
+            hintText: widget.searchHintText,
+            semanticLabel: widget.searchHintText,
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+        _SelectionSection(
+          title: widget.title,
+          description: widget.description,
+          error: widget.error,
+          children: [for (final item in filtered) widget.itemBuilder(item)],
+        ),
+      ],
+    );
+  }
 }
 
 final class _SelectionSection extends StatelessWidget {

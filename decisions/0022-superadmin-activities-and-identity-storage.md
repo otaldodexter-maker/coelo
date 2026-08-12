@@ -1,0 +1,38 @@
+---
+title: Atividades privilegiadas no Superadmin e storage de identidade
+source: plano de Atividades aprovado pelo fundador em 2026-08-11
+status: approved
+generated_at: 2026-08-11
+---
+
+# ADR 0022 - Atividades privilegiadas e identidade
+
+## Decisao
+
+O Superadmin pode criar, editar, vincular, importar e exportar Atividades quando
+o usuario interno possuir a capability de plataforma correspondente. Owner recebe
+o conjunto completo; Operations recebe governanca de taxonomia; outros usuarios
+internos dependem do perfil de acesso. O Flutter apenas coleta intencao: RPCs, RLS
+e funcoes server-side recalculam ator, MFA, capability, tenant e hierarquia.
+
+Fotos de perfil e identidade, incluindo a identidade de Atividades, usam bucket
+privado do Supabase Storage. Conteudo operacional de Now, Happens e Moments
+continua no Cloudflare R2. Postgres permanece fonte de verdade para ownership,
+escopo, metadados, auditoria e retencao em ambos os casos.
+
+## Controles obrigatorios
+
+- Capabilities de leitura, criacao, gestao, vinculos, pessoas, permissoes,
+  taxonomia, modelos, importacao e exportacao sao independentes e opt-in.
+- Policies e RPCs falham fechado e impedem IDOR/BOLA por tenant, instituicao,
+  unidade, turma, crianca, profissional, handle e caminho de arquivo.
+- Upload de identidade usa caminho gerado no servidor, MIME/tamanho allowlisted,
+  bucket privado e URL assinada curta; nenhuma chave privilegiada entra no app.
+- Alteracoes sensiveis exigem MFA quando aplicavel e auditoria before/after.
+- O handle canonico da Atividade e global, editavel e preserva aliases historicos.
+
+## Consequencias
+
+As specs antigas que descreviam Atividades no Superadmin como somente leitura
+ficam substituidas por esta decisao. Criar/editar jamais pode ser apresentado se
+o backend nao oferecer o comando autorizado correspondente.

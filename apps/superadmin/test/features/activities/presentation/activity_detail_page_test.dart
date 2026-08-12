@@ -1,4 +1,4 @@
-import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_detail_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';

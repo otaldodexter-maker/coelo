@@ -1,4 +1,4 @@
-import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -57,7 +57,7 @@ void main() {
 
   test('returns institutions and active units for the visual form prototype', () async {
     final repository = FakeActivityDirectoryRepository();
-    final options = await repository.fetchFormOptions();
+    final options = await repository.fetchFormOptions(institutionId: 'institution-1');
 
     expect(options.institutions, isNotEmpty);
     expect(options.units, isNotEmpty);

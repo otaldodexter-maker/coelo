@@ -19,7 +19,7 @@ import 'activity_form_sections.dart';
 
 typedef ActivityFormSubmit = Future<void> Function(ActivityFormDraft draft);
 typedef ActivityLocationCreator =
-    Future<ActivityFormLocationOption> Function(ActivityLocationDraft draft);
+    Future<List<ActivityFormLocationOption>> Function(ActivityLocationDraft draft);
 
 enum _ActivityFormLoadState { loading, ready, notFound, failure, unauthorized }
 
@@ -34,6 +34,7 @@ final class ActivityFormPage extends StatefulWidget {
     this.activityId,
     this.initialInstitutionId,
     this.initialUnitId,
+    this.initialTemplateId,
     this.initialDraft,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
@@ -44,6 +45,7 @@ final class ActivityFormPage extends StatefulWidget {
   final String? activityId;
   final String? initialInstitutionId;
   final String? initialUnitId;
+  final String? initialTemplateId;
   final ActivityFormDraft? initialDraft;
   final ActivityDirectoryRepository repository;
   final LogoutAction logout;
@@ -84,21 +86,62 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   Future<void> _load() async {
     setState(() => _state = _ActivityFormLoadState.loading);
     try {
-      final options = await widget.repository.fetchFormOptions();
       final detail = _isEditing ? await widget.repository.fetchById(widget.activityId!) : null;
-      if (!mounted) return;
       if (_isEditing && detail == null) {
-        setState(() => _state = _ActivityFormLoadState.notFound);
+        if (mounted) setState(() => _state = _ActivityFormLoadState.notFound);
         return;
       }
+      ActivityFormOptions options;
+      String? initialCatalogError;
+      if (_isEditing || widget.initialInstitutionId != null) {
+        options = await widget.repository.fetchFormOptions(
+          institutionId: detail?.item.institutionId ?? widget.initialInstitutionId!,
+        );
+      } else {
+        try {
+          options = _formOptionsFromTemplates(await widget.repository.fetchTemplateOptions());
+        } on ActivityDirectoryUnauthorizedException {
+          rethrow;
+        } on Exception {
+          ActivityFilterOptions filters;
+          try {
+            filters = await widget.repository.fetchFilterOptions();
+          } on ActivityDirectoryUnauthorizedException {
+            rethrow;
+          } on Exception {
+            filters = const ActivityFilterOptions();
+          }
+          options = ActivityFormOptions(
+            institutions: filters.institutions
+                .map((item) => ActivityFormInstitutionOption(id: item.id, name: item.label))
+                .toList(growable: false),
+          );
+          initialCatalogError = 'Não foi possível carregar categorias e modelos.';
+        }
+      }
+      if (!mounted) return;
       _controller?.dispose();
       setState(() {
         _controller = _isEditing
-            ? ActivityFormController.edit(options, detail!, initialDraft: widget.initialDraft)
+            ? ActivityFormController.edit(
+                options,
+                detail!,
+                initialDraft: widget.initialDraft,
+                professionalSearcher: (institutionId, query) => widget.repository
+                    .searchProfessionals(institutionId: institutionId, query: query),
+              )
             : ActivityFormController.create(
                 options,
                 initialInstitutionId: widget.initialInstitutionId,
                 initialUnitId: widget.initialUnitId,
+                initialTemplateId: widget.initialTemplateId,
+                loadScopedOptions: (institutionId) =>
+                    widget.repository.fetchFormOptions(institutionId: institutionId),
+                loadTemplateOptions: (institutionId) =>
+                    widget.repository.fetchTemplateOptions(institutionId: institutionId),
+                initialCatalogError: initialCatalogError,
+                professionalSearcher: (institutionId, query) => widget.repository
+                    .searchProfessionals(institutionId: institutionId, query: query),
               );
         _state = _ActivityFormLoadState.ready;
       });
@@ -166,6 +209,14 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     }
   }
 
+  Future<void> _retryCatalogOptions() async {
+    try {
+      await _controller!.retryCatalogOptions();
+    } on ActivityDirectoryUnauthorizedException {
+      if (mounted) setState(() => _state = _ActivityFormLoadState.unauthorized);
+    }
+  }
+
   void _handleFooterHeightChanged(double height) {
     if ((_footerHeight - height).abs() < .5) return;
     setState(() => _footerHeight = height);
@@ -215,10 +266,18 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       onSaveDraft: _saveDraft,
       onSubmit: _submit,
       onCreateLocation: widget.onCreateLocation,
+      onRetryCatalogOptions: _retryCatalogOptions,
       imagePicker: widget.imagePicker ?? pickInstitutionLogo,
     ),
   };
 }
+
+ActivityFormOptions _formOptionsFromTemplates(ActivityTemplateOptions options) =>
+    ActivityFormOptions(
+      institutions: options.institutions,
+      taxonomy: options.taxonomy,
+      templates: options.templates,
+    );
 
 final class _ActivityFormBody extends StatelessWidget {
   const _ActivityFormBody({
@@ -229,6 +288,7 @@ final class _ActivityFormBody extends StatelessWidget {
     required this.onSaveDraft,
     required this.onSubmit,
     required this.onCreateLocation,
+    required this.onRetryCatalogOptions,
     required this.imagePicker,
   });
 
@@ -239,6 +299,7 @@ final class _ActivityFormBody extends StatelessWidget {
   final VoidCallback onSaveDraft;
   final VoidCallback onSubmit;
   final ActivityLocationCreator onCreateLocation;
+  final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
 
   @override
@@ -278,6 +339,7 @@ final class _ActivityFormBody extends StatelessWidget {
             body: ActivityFormSection(
               controller: controller,
               onCreateLocation: onCreateLocation,
+              onRetryCatalogOptions: onRetryCatalogOptions,
               imagePicker: imagePicker,
             ),
             footer: _ActivityFormFooter(

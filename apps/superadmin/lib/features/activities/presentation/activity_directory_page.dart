@@ -11,6 +11,7 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_create_banner.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
@@ -20,6 +21,40 @@ enum ActivityDirectoryDisplay { cards, table }
 
 enum ActivityDirectoryTableView { grouped, units, groups }
 
+enum ActivityDirectoryExportFormat { csv, xlsx }
+
+final class ActivityDirectoryExportRequest {
+  const ActivityDirectoryExportRequest({
+    required this.format,
+    required this.tableView,
+    required this.query,
+  });
+
+  final ActivityDirectoryExportFormat format;
+  final ActivityDirectoryTableView tableView;
+  final ActivityDirectoryQuery query;
+}
+
+final class ActivityDirectoryExportResult {
+  const ActivityDirectoryExportResult({required this.fileName});
+
+  final String fileName;
+}
+
+typedef ActivityDirectoryExporter =
+    Future<ActivityDirectoryExportResult> Function(ActivityDirectoryExportRequest request);
+typedef ActivityDirectoryImportRequested = Future<void> Function();
+typedef ActivityTemplateStarter = void Function(ActivityTemplateOption template);
+typedef ActivityTemplateDuplicator =
+    Future<void> Function(ActivityTemplateOption template, String institutionId);
+
+enum _ActivityContentKind { activities, templates }
+
+double _activityCardWidth(double availableWidth) {
+  final columns = math.max(1, (availableWidth / 340).floor());
+  return (availableWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+}
+
 final class ActivityDirectoryPage extends StatefulWidget {
   const ActivityDirectoryPage({
     required this.repository,
@@ -27,6 +62,10 @@ final class ActivityDirectoryPage extends StatefulWidget {
     required this.onView,
     this.onCreate,
     this.onEdit,
+    this.onExportRequested,
+    this.onImportRequested,
+    this.onCreateFromTemplate,
+    this.onDuplicateTemplate,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     super.key,
@@ -37,6 +76,10 @@ final class ActivityDirectoryPage extends StatefulWidget {
   final ValueChanged<String> onView;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+  final ActivityDirectoryExporter? onExportRequested;
+  final ActivityDirectoryImportRequested? onImportRequested;
+  final ActivityTemplateStarter? onCreateFromTemplate;
+  final ActivityTemplateDuplicator? onDuplicateTemplate;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
@@ -95,14 +138,18 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
     onBugReportSubmitted: widget.onBugReportSubmitted,
     child: _ActivityDirectoryContent(
       viewModel: _viewModel,
-      activityController: _activityController,
       searchController: _searchController,
       display: _display,
       tableView: _tableView,
       onDisplayChanged: _setDisplay,
       onTableViewChanged: _setTableView,
-      onCreate: widget.onCreate ?? () {},
-      onEdit: widget.onEdit ?? widget.onView,
+      onCreate: widget.onCreate,
+      onView: widget.onView,
+      onExportRequested: widget.onExportRequested,
+      onImportRequested: widget.onImportRequested,
+      repository: widget.repository,
+      onCreateFromTemplate: widget.onCreateFromTemplate,
+      onDuplicateTemplate: widget.onDuplicateTemplate,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() >= .5) {
           setState(() => _footerHeight = height);
@@ -115,27 +162,35 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
 final class _ActivityDirectoryContent extends StatefulWidget {
   const _ActivityDirectoryContent({
     required this.viewModel,
-    required this.activityController,
     required this.searchController,
     required this.display,
     required this.tableView,
     required this.onDisplayChanged,
     required this.onTableViewChanged,
     required this.onCreate,
-    required this.onEdit,
+    required this.onView,
     required this.onFooterHeightChanged,
+    this.onExportRequested,
+    this.onImportRequested,
+    required this.repository,
+    this.onCreateFromTemplate,
+    this.onDuplicateTemplate,
   });
 
   final ActivityDirectoryViewModel viewModel;
-  final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final ActivityDirectoryDisplay display;
   final ActivityDirectoryTableView tableView;
   final ValueChanged<ActivityDirectoryDisplay> onDisplayChanged;
   final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String> onView;
   final ValueChanged<double> onFooterHeightChanged;
+  final ActivityDirectoryExporter? onExportRequested;
+  final ActivityDirectoryImportRequested? onImportRequested;
+  final ActivityDirectoryRepository repository;
+  final ActivityTemplateStarter? onCreateFromTemplate;
+  final ActivityTemplateDuplicator? onDuplicateTemplate;
 
   @override
   State<_ActivityDirectoryContent> createState() => _ActivityDirectoryContentState();
@@ -145,6 +200,111 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
   final GlobalKey _footerKey = GlobalKey();
   double _footerHeight = 0;
   bool _measurementScheduled = false;
+  String? _fileActionLabel;
+  ActivityTemplateOptions? _templateOptions;
+  bool _templatesLoading = false;
+  bool _templatesFailed = false;
+  bool _templatesRequested = false;
+  final Set<String> _selectedTemplateTaxonomyIds = {};
+  final TextEditingController _templateSearchController = TextEditingController();
+  _ActivityContentKind _content = _ActivityContentKind.templates;
+  String _templateSearch = '';
+  String _templateOrigin = 'Todas';
+  int _templatePage = 0;
+
+  bool get _templatesEnabled =>
+      widget.onCreateFromTemplate != null || widget.onDuplicateTemplate != null;
+
+  @override
+  void dispose() {
+    _templateSearchController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _loadTemplates({String? institutionId}) async {
+    _templatesRequested = true;
+    setState(() {
+      _templatesLoading = true;
+      _templatesFailed = false;
+    });
+    try {
+      final options = await widget.repository.fetchTemplateOptions(institutionId: institutionId);
+      if (!mounted) return false;
+      setState(() => _templateOptions = options);
+      return true;
+    } catch (_) {
+      if (mounted) setState(() => _templatesFailed = true);
+      return false;
+    } finally {
+      if (mounted) setState(() => _templatesLoading = false);
+    }
+  }
+
+  Future<void> _duplicateTemplate(ActivityTemplateOption template, String institutionId) async {
+    await widget.onDuplicateTemplate!(template, institutionId);
+    if (!mounted) return;
+    showSuperadminNotice(
+      context,
+      'Modelo duplicado com sucesso.',
+      icon: Icons.content_copy_rounded,
+    );
+    final refreshed = await _loadTemplates(institutionId: institutionId);
+    if (!refreshed && mounted) {
+      showSuperadminNotice(
+        context,
+        'A cópia foi criada, mas os modelos não puderam ser atualizados.',
+        icon: Icons.error_outline_rounded,
+      );
+    }
+  }
+
+  Future<void> _export(ActivityDirectoryExportFormat format) async {
+    final exporter = widget.onExportRequested;
+    if (exporter == null || _fileActionLabel != null) return;
+    setState(() => _fileActionLabel = 'Exportando atividades...');
+    try {
+      final result = await exporter(
+        ActivityDirectoryExportRequest(
+          format: format,
+          tableView: widget.tableView,
+          query: widget.viewModel.query,
+        ),
+      );
+      if (!mounted) return;
+      showSuperadminNotice(
+        context,
+        'Arquivo ${result.fileName} exportado.',
+        icon: Icons.download_done_outlined,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      showSuperadminNotice(
+        context,
+        'Não foi possível exportar as atividades.',
+        icon: Icons.error_outline_rounded,
+      );
+    } finally {
+      if (mounted) setState(() => _fileActionLabel = null);
+    }
+  }
+
+  Future<void> _openImport() async {
+    final openImport = widget.onImportRequested;
+    if (openImport == null || _fileActionLabel != null) return;
+    setState(() => _fileActionLabel = 'Abrindo importação...');
+    try {
+      await openImport();
+    } catch (_) {
+      if (!mounted) return;
+      showSuperadminNotice(
+        context,
+        'Não foi possível abrir a importação de atividades.',
+        icon: Icons.error_outline_rounded,
+      );
+    } finally {
+      if (mounted) setState(() => _fileActionLabel = null);
+    }
+  }
 
   void _measureFooter(bool visible) {
     if (_measurementScheduled) return;
@@ -175,7 +335,26 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
       return AnimatedBuilder(
         animation: widget.viewModel,
         builder: (context, _) {
-          final showFooter = widget.viewModel.state == ActivityDirectoryLoadState.success;
+          final directoryUnauthorized =
+              widget.viewModel.state == ActivityDirectoryLoadState.unauthorized;
+          final directoryPending =
+              widget.viewModel.state == ActivityDirectoryLoadState.initial ||
+              widget.viewModel.state == ActivityDirectoryLoadState.loading;
+          final showingActivities =
+              !_templatesEnabled || _content == _ActivityContentKind.activities;
+          final showFooter =
+              showingActivities && widget.viewModel.state == ActivityDirectoryLoadState.success;
+          final showTemplates =
+              _templatesEnabled &&
+              !showingActivities &&
+              widget.viewModel.state != ActivityDirectoryLoadState.initial &&
+              widget.viewModel.state != ActivityDirectoryLoadState.loading &&
+              widget.viewModel.state != ActivityDirectoryLoadState.unauthorized;
+          if (showTemplates && !_templatesRequested) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && !_templatesRequested) _loadTemplates();
+            });
+          }
           _measureFooter(showFooter);
           return Stack(
             fit: StackFit.expand,
@@ -189,24 +368,152 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                   padding + (showFooter ? _footerHeight + CoeloSpacing.space4 : 0),
                 ),
                 children: [
-                  _ActivityToolbar(
-                    viewModel: widget.viewModel,
-                    activityController: widget.activityController,
-                    searchController: widget.searchController,
-                    display: widget.display,
-                    tableView: widget.tableView,
-                    onDisplayChanged: widget.onDisplayChanged,
-                    onTableViewChanged: widget.onTableViewChanged,
-                  ),
+                  if (_templatesEnabled && !directoryUnauthorized) ...[
+                    SuperadminUnderlineTabs<_ActivityContentKind>(
+                      key: const Key('activity-type-tabs'),
+                      selected: _content,
+                      tabs: const [
+                        SuperadminUnderlineTab(
+                          value: _ActivityContentKind.templates,
+                          label: 'Modelos',
+                        ),
+                        SuperadminUnderlineTab(
+                          value: _ActivityContentKind.activities,
+                          label: 'Atividades',
+                        ),
+                      ],
+                      onSelected: (value) => setState(() => _content = value),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                  ],
+                  if (directoryUnauthorized)
+                    const SizedBox.shrink()
+                  else if (showingActivities)
+                    _ActivityToolbar(
+                      viewModel: widget.viewModel,
+                      searchController: widget.searchController,
+                      display: widget.display,
+                      tableView: widget.tableView,
+                      onDisplayChanged: widget.onDisplayChanged,
+                      onTableViewChanged: widget.onTableViewChanged,
+                      fileActionLabel: _fileActionLabel,
+                      onExport: widget.onExportRequested == null ? null : _export,
+                      onImport: widget.onImportRequested == null ? null : _openImport,
+                    )
+                  else
+                    CoeloAdminListingToolbar(
+                      key: const Key('activity-template-toolbar'),
+                      search: SizedBox(
+                        width: 300,
+                        height: CoeloSize.touchMin,
+                        child: CoeloSearchField(
+                          key: const Key('activity-template-search'),
+                          controller: _templateSearchController,
+                          hintText: 'Buscar modelo',
+                          semanticLabel: 'Buscar modelo de atividade',
+                          onChanged: (value) => setState(() {
+                            _templateSearch = value.trim();
+                            _templatePage = 0;
+                          }),
+                        ),
+                      ),
+                      filters: [
+                        SizedBox(
+                          width: 168,
+                          child: CoeloAdminSingleSelectField<String>(
+                            key: const Key('activity-template-origin-filter'),
+                            label: 'Origem',
+                            value: _templateOrigin,
+                            options: const ['Todas', 'Coelo', 'Institucional'],
+                            optionLabel: (value) => value,
+                            searchable: false,
+                            onChanged: (value) => setState(() {
+                              _templateOrigin = value;
+                              _templatePage = 0;
+                            }),
+                          ),
+                        ),
+                        if (_templateOptions case final options?)
+                          SizedBox(
+                            width: 196,
+                            child: CoeloAdminMultiSelectFilter<ActivityTaxonomyOption>(
+                              key: const Key('activity-template-taxonomy-filter'),
+                              label: 'Categorias',
+                              options: options.taxonomy,
+                              selectedValues: options.taxonomy
+                                  .where((item) => _selectedTemplateTaxonomyIds.contains(item.id))
+                                  .toSet(),
+                              optionLabel: (item) => item.label,
+                              onChanged: (items) => setState(() {
+                                _selectedTemplateTaxonomyIds
+                                  ..clear()
+                                  ..addAll(items.map((item) => item.id));
+                                _templatePage = 0;
+                              }),
+                            ),
+                          ),
+                      ],
+                      actions: [
+                        SuperadminDirectoryViewToggle<ActivityDirectoryTableView>(
+                          cardsSelected: widget.display == ActivityDirectoryDisplay.cards,
+                          groupedView: ActivityDirectoryTableView.grouped,
+                          selectedTableView: ActivityDirectoryTableView.grouped,
+                          tableViews: const [
+                            SuperadminDirectoryTableViewOption(
+                              value: ActivityDirectoryTableView.grouped,
+                              label: 'Tabela',
+                            ),
+                          ],
+                          cardsKey: const Key('activity-template-view-cards'),
+                          tableKey: const Key('activity-template-view-table'),
+                          onCardsSelected: () =>
+                              widget.onDisplayChanged(ActivityDirectoryDisplay.cards),
+                          onTableViewSelected: (_) =>
+                              widget.onDisplayChanged(ActivityDirectoryDisplay.table),
+                        ),
+                      ],
+                    ),
 
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _ActivityResults(
-                    viewModel: widget.viewModel,
-                    display: widget.display,
-                    tableView: widget.tableView,
-                    onCreate: widget.onCreate,
-                    onEdit: widget.onEdit,
-                  ),
+                  if (!directoryUnauthorized) const SizedBox(height: CoeloSpacing.space4),
+                  if (showTemplates) ...[
+                    _ActivityTemplateSection(
+                      options: _templateOptions,
+                      loading: _templatesLoading,
+                      failed: _templatesFailed,
+                      onRetry: () => _loadTemplates(),
+                      selectedTaxonomyIds: _selectedTemplateTaxonomyIds,
+                      onTaxonomyChanged: (value) => setState(() {
+                        _selectedTemplateTaxonomyIds
+                          ..clear()
+                          ..addAll(value);
+                        _templatePage = 0;
+                      }),
+                      search: _templateSearch,
+                      origin: _templateOrigin,
+                      page: _templatePage,
+                      onPageChanged: (value) => setState(() => _templatePage = value),
+                      onClearFilters: () => setState(() {
+                        _templateSearchController.clear();
+                        _templateSearch = '';
+                        _templateOrigin = 'Todas';
+                        _selectedTemplateTaxonomyIds.clear();
+                        _templatePage = 0;
+                      }),
+                      display: widget.display,
+                      onStart: widget.onCreateFromTemplate,
+                      onDuplicate: widget.onDuplicateTemplate == null ? null : _duplicateTemplate,
+                      onCreate: widget.onCreate,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                  ],
+                  if (showingActivities || directoryPending || directoryUnauthorized)
+                    _ActivityResults(
+                      viewModel: widget.viewModel,
+                      display: widget.display,
+                      tableView: widget.tableView,
+                      onCreate: widget.onCreate,
+                      onView: widget.onView,
+                    ),
                 ],
               ),
               if (showFooter)
@@ -240,21 +547,25 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
 final class _ActivityToolbar extends StatelessWidget {
   const _ActivityToolbar({
     required this.viewModel,
-    required this.activityController,
     required this.searchController,
     required this.display,
     required this.tableView,
     required this.onDisplayChanged,
     required this.onTableViewChanged,
+    required this.fileActionLabel,
+    this.onExport,
+    this.onImport,
   });
 
   final ActivityDirectoryViewModel viewModel;
-  final SuperadminActivityController activityController;
   final TextEditingController searchController;
   final ActivityDirectoryDisplay display;
   final ActivityDirectoryTableView tableView;
   final ValueChanged<ActivityDirectoryDisplay> onDisplayChanged;
   final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
+  final String? fileActionLabel;
+  final Future<void> Function(ActivityDirectoryExportFormat format)? onExport;
+  final Future<void> Function()? onImport;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -309,7 +620,7 @@ final class _ActivityToolbar extends StatelessWidget {
           optionLabel: (option) => option.label,
           onChanged: (value) => viewModel.setInstitutions(value.map((option) => option.id).toSet()),
         ),
-        filter<ActivityHierarchyFilterOption>(
+        filter<ActivityFilterOption>(
           key: const Key('activity-unit-filter'),
           label: 'Unidades',
           values: viewModel.unitOptions,
@@ -319,7 +630,7 @@ final class _ActivityToolbar extends StatelessWidget {
           optionLabel: (option) => option.label,
           onChanged: (value) => viewModel.setUnits(value.map((option) => option.id).toSet()),
         ),
-        filter<ActivityHierarchyFilterOption>(
+        filter<ActivityFilterOption>(
           key: const Key('activity-group-filter'),
           label: 'Turmas',
           values: viewModel.groupOptions,
@@ -391,38 +702,495 @@ final class _ActivityToolbar extends StatelessWidget {
             onCardsSelected: () => onDisplayChanged(ActivityDirectoryDisplay.cards),
             onTableViewSelected: onTableViewChanged,
           ),
-          CoeloAdminFileActions(
-            compact: compact,
-            actions: [
-              CoeloAdminFileAction(
-                key: const Key('activity-files-export-xlsx'),
-                label: 'Exportar XLSX',
-                icon: Icons.grid_on_outlined,
-                onPressed: () {
-                  final viewLabel = display == ActivityDirectoryDisplay.cards
-                      ? 'Cards'
-                      : switch (tableView) {
-                          ActivityDirectoryTableView.grouped => 'Agrupado',
-                          ActivityDirectoryTableView.units => 'Por Unidades',
-                          ActivityDirectoryTableView.groups => 'Por Turmas',
-                        };
-                  activityController.completeDemoExport(
-                    SuperadminExportFormat.xlsx,
-                    subject: 'Atividades · $viewLabel',
-                    fileBaseName: 'atividades-${tableView.name}',
-                  );
-                  showSuperadminNotice(
-                    context,
-                    'Exportação de atividades preparada (visão: $viewLabel).',
-                    icon: Icons.download_outlined,
-                  );
-                },
+          if (fileActionLabel != null)
+            Semantics(
+              liveRegion: true,
+              child: Text(fileActionLabel!, key: const Key('activity-file-action-loading')),
+            )
+          else if (onExport != null || onImport != null)
+            CoeloAdminFileActions(
+              compact: compact,
+              actions: [
+                if (onImport != null)
+                  CoeloAdminFileAction(
+                    key: const Key('activity-files-import'),
+                    label: 'Importar',
+                    icon: Icons.upload_file_outlined,
+                    onPressed: onImport!,
+                  ),
+                if (onExport != null) ...[
+                  CoeloAdminFileAction(
+                    key: const Key('activity-files-export-csv'),
+                    label: 'Exportar CSV',
+                    icon: Icons.table_rows_outlined,
+                    onPressed: () => onExport!(ActivityDirectoryExportFormat.csv),
+                  ),
+                  CoeloAdminFileAction(
+                    key: const Key('activity-files-export-xlsx'),
+                    label: 'Exportar XLSX',
+                    icon: Icons.grid_on_outlined,
+                    onPressed: () => onExport!(ActivityDirectoryExportFormat.xlsx),
+                  ),
+                ],
+              ],
+            ),
+        ],
+      );
+    },
+  );
+}
+
+final class _ActivityTemplateSection extends StatelessWidget {
+  const _ActivityTemplateSection({
+    required this.options,
+    required this.loading,
+    required this.failed,
+    required this.onRetry,
+    required this.selectedTaxonomyIds,
+    required this.onTaxonomyChanged,
+    required this.search,
+    required this.origin,
+    required this.page,
+    required this.onPageChanged,
+    required this.onClearFilters,
+    required this.display,
+    this.onStart,
+    this.onDuplicate,
+    this.onCreate,
+  });
+
+  final ActivityTemplateOptions? options;
+  final bool loading;
+  final bool failed;
+  final VoidCallback onRetry;
+  final Set<String> selectedTaxonomyIds;
+  final ValueChanged<Set<String>> onTaxonomyChanged;
+  final String search;
+  final String origin;
+  final int page;
+  final ValueChanged<int> onPageChanged;
+  final VoidCallback onClearFilters;
+  final ActivityDirectoryDisplay display;
+  final ActivityTemplateStarter? onStart;
+  final ActivityTemplateDuplicator? onDuplicate;
+  final VoidCallback? onCreate;
+
+  Future<void> _requestDuplicate(BuildContext context, ActivityTemplateOption template) async {
+    await showDialog<void>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (context) => _ActivityTemplateCopyDialog(
+        template: template,
+        institutions: options!.institutions,
+        onDuplicate: onDuplicate!,
+      ),
+    );
+  }
+
+  Widget _withCreateAction(Widget child) {
+    final create = onCreate;
+    if (create == null) return child;
+    if (display == ActivityDirectoryDisplay.table) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SuperadminDirectoryCreateBanner(
+            label: 'Criar atividade',
+            description: 'Adicionar uma atividade sem usar modelo.',
+            onPressed: create,
+            bannerKey: const Key('create-activity-template-banner'),
+            surfaceKey: const Key('create-activity-template-banner-surface'),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          child,
+        ],
+      );
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: _activityCardWidth(constraints.maxWidth),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 216),
+                child: CoeloAdminCreateAction(
+                  key: const Key('create-activity-template-tile'),
+                  label: 'Criar atividade',
+                  onPressed: create,
+                  icon: Icons.add_task_rounded,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space6),
+          child,
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (loading && options == null) {
+      return _withCreateAction(
+        const Column(
+          key: Key('activity-templates-loading'),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Modelos de atividades'),
+            SizedBox(height: CoeloSpacing.space2),
+            LinearProgressIndicator(),
+          ],
+        ),
+      );
+    }
+    if (failed && options == null) {
+      return _withCreateAction(
+        CoeloStatePanel(
+          key: const Key('activity-templates-failure'),
+          title: 'Não foi possível carregar os modelos',
+          message: 'Tente novamente sem interromper a consulta de atividades.',
+          icon: Icons.cloud_off_outlined,
+          actionLabel: 'Tentar novamente',
+          onAction: onRetry,
+        ),
+      );
+    }
+    final current = options;
+    if (current == null) return const SizedBox.shrink();
+    final taxonomyTemplates = selectedTaxonomyIds.isEmpty
+        ? current.templates
+        : current.templates
+              .where((template) => selectedTaxonomyIds.contains(template.taxonomyId))
+              .toList(growable: false);
+    final originTemplates = taxonomyTemplates.where(
+      (template) => switch (origin) {
+        'Coelo' => template.scopeKind == ActivityTemplateScopeKind.platform,
+        'Institucional' => template.scopeKind == ActivityTemplateScopeKind.institution,
+        _ => true,
+      },
+    );
+    final normalizedSearch = search.toLowerCase();
+    final visibleTemplates = normalizedSearch.isEmpty
+        ? originTemplates.toList(growable: false)
+        : originTemplates
+              .where(
+                (template) =>
+                    template.name.toLowerCase().contains(normalizedSearch) ||
+                    template.description.toLowerCase().contains(normalizedSearch),
+              )
+              .toList(growable: false);
+    const pageSize = 12;
+    final pageCount = (visibleTemplates.length / pageSize).ceil();
+    final safePage = pageCount == 0 ? 0 : page.clamp(0, pageCount - 1);
+    final pageTemplates = visibleTemplates
+        .skip(safePage * pageSize)
+        .take(pageSize)
+        .toList(growable: false);
+    return Column(
+      key: const Key('activity-template-section'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (display == ActivityDirectoryDisplay.table && onCreate != null) ...[
+          SuperadminDirectoryCreateBanner(
+            label: 'Criar atividade',
+            description: 'Adicionar uma atividade sem usar modelo.',
+            onPressed: onCreate!,
+            bannerKey: const Key('create-activity-template-banner'),
+            surfaceKey: const Key('create-activity-template-banner-surface'),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
+        if (visibleTemplates.isEmpty)
+          _withCreateAction(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const CoeloStatePanel(
+                  title: 'Nenhum modelo encontrado',
+                  message: 'Ajuste a busca, a origem ou as categorias.',
+                  icon: Icons.search_off_rounded,
+                ),
+                if (selectedTaxonomyIds.isNotEmpty || search.isNotEmpty || origin != 'Todas')
+                  Align(
+                    alignment: Alignment.center,
+                    child: TextButton.icon(
+                      key: const Key('activity-template-clear-filters'),
+                      onPressed: onClearFilters,
+                      icon: const Icon(Icons.filter_alt_off_outlined),
+                      label: const Text('Limpar filtros'),
+                    ),
+                  ),
+              ],
+            ),
+          )
+        else if (display == ActivityDirectoryDisplay.table)
+          CoeloAdminResizableTable<ActivityTemplateOption>(
+            key: const Key('activity-template-table'),
+            items: pageTemplates,
+            rowKey: (template) => 'activity-template-row-${template.id}',
+            pinnedColumn: CoeloAdminTableColumn(
+              id: 'name',
+              label: 'Modelo',
+              initialWidth: 280,
+              minWidth: 180,
+              maxWidth: 420,
+              cellBuilder: (_, template) => Text(template.name),
+            ),
+            columns: [
+              CoeloAdminTableColumn(
+                id: 'scope',
+                label: 'Origem',
+                initialWidth: 180,
+                minWidth: 140,
+                maxWidth: 240,
+                cellBuilder: (_, template) => Text(
+                  template.scopeKind == ActivityTemplateScopeKind.platform
+                      ? 'Modelo Coelo'
+                      : 'Modelo institucional',
+                ),
+              ),
+              CoeloAdminTableColumn(
+                id: 'category',
+                label: 'Categoria',
+                initialWidth: 180,
+                minWidth: 140,
+                maxWidth: 260,
+                cellBuilder: (_, template) => Text(
+                  current.taxonomy
+                          .where((item) => item.id == template.taxonomyId)
+                          .firstOrNull
+                          ?.label ??
+                      'Categoria não informada',
+                ),
+              ),
+              CoeloAdminTableColumn(
+                id: 'actions',
+                label: 'Ações',
+                initialWidth: 180,
+                minWidth: 144,
+                maxWidth: 220,
+                cellBuilder: (context, template) => Row(
+                  children: [
+                    if (onDuplicate != null && current.institutions.isNotEmpty)
+                      IconButton(
+                        key: Key('activity-template-table-duplicate-${template.id}'),
+                        tooltip: 'Duplicar ${template.name}',
+                        onPressed: () => _requestDuplicate(context, template),
+                        icon: const Icon(Icons.content_copy_rounded),
+                      ),
+                    if (onStart != null)
+                      IconButton(
+                        key: Key('activity-template-table-start-${template.id}'),
+                        tooltip: 'Começar atividade de ${template.name}',
+                        onPressed: () => onStart!(template),
+                        icon: const Icon(Icons.playlist_add_rounded),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+            headerHeight: 56,
+            rowHeight: 64,
+          )
+        else
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final width = _activityCardWidth(constraints.maxWidth);
+              return Wrap(
+                spacing: CoeloSpacing.space6,
+                runSpacing: CoeloSpacing.space6,
+                children: [
+                  if (onCreate != null)
+                    SizedBox(
+                      width: width,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 216),
+                        child: CoeloAdminCreateAction(
+                          key: const Key('create-activity-template-tile'),
+                          label: 'Criar atividade',
+                          onPressed: onCreate!,
+                          icon: Icons.add_task_rounded,
+                        ),
+                      ),
+                    ),
+                  for (final template in pageTemplates)
+                    SizedBox(
+                      width: width,
+                      child: CoeloAdminInteractiveCard(
+                        key: Key('activity-template-${template.id}'),
+                        semanticLabel: 'Começar atividade a partir de ${template.name}',
+                        onPressed: onStart == null ? null : () => onStart!(template),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 216),
+                          child: Padding(
+                            padding: const EdgeInsets.all(CoeloSpacing.space4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        template.name,
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
+                                    ),
+                                    if (onDuplicate != null && current.institutions.isNotEmpty)
+                                      IconButton(
+                                        key: Key('activity-template-duplicate-${template.id}'),
+                                        tooltip: 'Duplicar ${template.name}',
+                                        onPressed: () => _requestDuplicate(context, template),
+                                        icon: const Icon(Icons.content_copy_rounded),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: CoeloSpacing.space2),
+                                Text(
+                                  template.scopeKind == ActivityTemplateScopeKind.platform
+                                      ? 'Modelo Coelo'
+                                      : 'Modelo institucional',
+                                ),
+                                if (template.description.trim().isNotEmpty) ...[
+                                  const SizedBox(height: CoeloSpacing.space1),
+                                  Text(template.description),
+                                ],
+                                const SizedBox(height: CoeloSpacing.space1),
+                                Text(
+                                  current.taxonomy
+                                          .where((item) => item.id == template.taxonomyId)
+                                          .firstOrNull
+                                          ?.label ??
+                                      'Categoria não informada',
+                                ),
+                                if (onStart != null)
+                                  TextButton.icon(
+                                    key: Key('activity-template-start-${template.id}'),
+                                    onPressed: () => onStart!(template),
+                                    icon: const Icon(Icons.playlist_add_rounded),
+                                    label: const Text('Começar a partir deste modelo'),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        if (pageCount > 1) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                key: const Key('activity-template-page-previous'),
+                tooltip: 'Página anterior de modelos',
+                onPressed: safePage == 0 ? null : () => onPageChanged(safePage - 1),
+                icon: const Icon(Icons.chevron_left_rounded),
+              ),
+              Text('Página ${safePage + 1} de $pageCount'),
+              IconButton(
+                key: const Key('activity-template-page-next'),
+                tooltip: 'Próxima página de modelos',
+                onPressed: safePage >= pageCount - 1 ? null : () => onPageChanged(safePage + 1),
+                icon: const Icon(Icons.chevron_right_rounded),
               ),
             ],
           ),
         ],
-      );
-    },
+      ],
+    );
+  }
+}
+
+final class _ActivityTemplateCopyDialog extends StatefulWidget {
+  const _ActivityTemplateCopyDialog({
+    required this.template,
+    required this.institutions,
+    required this.onDuplicate,
+  });
+
+  final ActivityTemplateOption template;
+  final List<ActivityFormInstitutionOption> institutions;
+  final ActivityTemplateDuplicator onDuplicate;
+
+  @override
+  State<_ActivityTemplateCopyDialog> createState() => _ActivityTemplateCopyDialogState();
+}
+
+final class _ActivityTemplateCopyDialogState extends State<_ActivityTemplateCopyDialog> {
+  String? _institutionId;
+  bool _submitting = false;
+  String? _error;
+
+  Future<void> _submit() async {
+    final institutionId = _institutionId;
+    if (institutionId == null) {
+      setState(() => _error = 'Selecione a instituição da cópia.');
+      return;
+    }
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      await widget.onDuplicate(widget.template, institutionId);
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _submitting = false;
+          _error = 'Não foi possível duplicar o modelo.';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    dialogKey: const Key('activity-template-copy-dialog'),
+    title: 'Duplicar ${widget.template.name}',
+    closeTooltip: 'Fechar duplicação de modelo',
+    body: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloAdminSingleSelectField<String?>(
+          key: const Key('activity-template-copy-institution'),
+          label: 'Instituição',
+          value: _institutionId,
+          options: [null, ...widget.institutions.map((item) => item.id)],
+          optionLabel: (id) => id == null
+              ? 'Selecione uma instituição'
+              : widget.institutions.firstWhere((item) => item.id == id).name,
+          onChanged: (value) => setState(() {
+            _institutionId = value;
+            _error = null;
+          }),
+          prefixIcon: Icons.apartment_outlined,
+        ),
+        if (_error != null) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+        ],
+      ],
+    ),
+    secondaryAction: OutlinedButton(
+      onPressed: _submitting ? null : Navigator.of(context).pop,
+      child: const Text('Cancelar'),
+    ),
+    primaryAction: FilledButton(
+      key: const Key('activity-template-copy-submit'),
+      onPressed: _submitting ? null : _submit,
+      child: Text(_submitting ? 'Duplicando...' : 'Duplicar modelo'),
+    ),
   );
 }
 
@@ -432,24 +1200,35 @@ final class _ActivityResults extends StatelessWidget {
     required this.display,
     required this.tableView,
     required this.onCreate,
-    required this.onEdit,
+    required this.onView,
   });
 
   final ActivityDirectoryViewModel viewModel;
   final ActivityDirectoryDisplay display;
   final ActivityDirectoryTableView tableView;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String> onView;
 
   @override
   Widget build(BuildContext context) {
+    if (viewModel.state == ActivityDirectoryLoadState.initial ||
+        viewModel.state == ActivityDirectoryLoadState.loading) {
+      return const CoeloStatePanel(
+        key: Key('activity-directory-loading'),
+        title: 'Carregando atividades',
+        message: 'Aguarde enquanto o diretório é preparado.',
+        loading: true,
+      );
+    }
     if (viewModel.state == ActivityDirectoryLoadState.failure) {
-      return CoeloStatePanel(
-        title: 'Não foi possível carregar as atividades',
-        message: 'Tente novamente.',
-        icon: Icons.cloud_off_outlined,
-        actionLabel: 'Tentar novamente',
-        onAction: viewModel.retry,
+      return _withCreateAction(
+        CoeloStatePanel(
+          title: 'Não foi possível carregar as atividades',
+          message: 'Tente novamente.',
+          icon: Icons.cloud_off_outlined,
+          actionLabel: 'Tentar novamente',
+          onAction: viewModel.retry,
+        ),
       );
     }
     if (viewModel.state == ActivityDirectoryLoadState.unauthorized) {
@@ -462,50 +1241,53 @@ final class _ActivityResults extends StatelessWidget {
     if (viewModel.state == ActivityDirectoryLoadState.empty ||
         viewModel.state == ActivityDirectoryLoadState.noResults) {
       final empty = viewModel.state == ActivityDirectoryLoadState.empty;
-      return CoeloStatePanel(
-        title: empty ? 'Nenhuma atividade cadastrada' : 'Nenhuma atividade encontrada',
-        message: empty ? 'Crie a primeira atividade da plataforma.' : 'Ajuste ou limpe os filtros.',
-        icon: Icons.local_activity_outlined,
-        actionLabel: empty ? 'Criar atividade' : 'Limpar filtros',
-        onAction: empty ? onCreate : viewModel.clearFilters,
+      return _withCreateAction(
+        CoeloStatePanel(
+          title: empty ? 'Nenhuma atividade cadastrada' : 'Nenhuma atividade encontrada',
+          message: empty
+              ? 'Crie a primeira atividade da plataforma.'
+              : 'Ajuste ou limpe os filtros.',
+          icon: Icons.local_activity_outlined,
+          actionLabel: empty ? null : 'Limpar filtros',
+          onAction: empty ? null : viewModel.clearFilters,
+        ),
       );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (viewModel.state == ActivityDirectoryLoadState.loading) const LinearProgressIndicator(),
-        if (viewModel.state == ActivityDirectoryLoadState.loading)
-          const SizedBox(height: CoeloSpacing.space4),
         if (viewModel.state == ActivityDirectoryLoadState.success)
           display == ActivityDirectoryDisplay.cards
-              ? _ActivityCards(items: viewModel.visibleItems, onCreate: onCreate, onEdit: onEdit)
+              ? _ActivityCards(items: viewModel.visibleItems, onCreate: onCreate, onView: onView)
               : Column(
                   children: [
-                    SuperadminDirectoryCreateBanner(
-                      label: 'Criar atividade',
-                      description: 'Adicionar nova atividade ao sistema.',
-                      onPressed: onCreate,
-                      bannerKey: const Key('create-activity-banner'),
-                      surfaceKey: const Key('create-activity-banner-surface'),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
+                    if (onCreate != null) ...[
+                      SuperadminDirectoryCreateBanner(
+                        label: 'Criar atividade',
+                        description: 'Adicionar nova atividade ao sistema.',
+                        onPressed: onCreate!,
+                        bannerKey: const Key('create-activity-banner'),
+                        surfaceKey: const Key('create-activity-banner-surface'),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                    ],
                     switch (tableView) {
                       ActivityDirectoryTableView.grouped => _ActivityTable(
                         items: viewModel.visibleItems,
                         viewModel: viewModel,
-                        onView: onEdit,
+                        onView: onView,
                       ),
                       ActivityDirectoryTableView.units => _ActivityHierarchyTable(
                         key: const Key('activity-unit-directory-table'),
                         items: viewModel.visibleItems,
                         level: ActivityDirectoryTableView.units,
-                        onEdit: onEdit,
+                        onView: onView,
                       ),
                       ActivityDirectoryTableView.groups => _ActivityHierarchyTable(
                         key: const Key('activity-group-directory-table'),
                         items: viewModel.visibleItems,
                         level: ActivityDirectoryTableView.groups,
-                        onEdit: onEdit,
+                        onView: onView,
                       ),
                     },
                   ],
@@ -513,40 +1295,85 @@ final class _ActivityResults extends StatelessWidget {
       ],
     );
   }
+
+  Widget _withCreateAction(Widget stateContent) {
+    if (onCreate == null) return stateContent;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (display == ActivityDirectoryDisplay.table)
+          SuperadminDirectoryCreateBanner(
+            label: 'Criar atividade',
+            description: 'Adicionar nova atividade ao sistema.',
+            onPressed: onCreate!,
+            bannerKey: const Key('create-activity-banner'),
+            surfaceKey: const Key('create-activity-banner-surface'),
+          )
+        else
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                  ? 3
+                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                  ? 2
+                  : 1;
+              final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: width,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 216),
+                    child: CoeloAdminCreateAction(
+                      key: const Key('create-activity-tile'),
+                      label: 'Criar atividade',
+                      onPressed: onCreate!,
+                      icon: Icons.add_rounded,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        const SizedBox(height: CoeloSpacing.space4),
+        stateContent,
+      ],
+    );
+  }
 }
 
 final class _ActivityCards extends StatelessWidget {
-  const _ActivityCards({required this.items, required this.onCreate, required this.onEdit});
+  const _ActivityCards({required this.items, required this.onCreate, required this.onView});
 
   final List<ActivityDirectoryItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String> onView;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     key: const Key('activity-card-grid'),
     builder: (context, constraints) {
-      final columns = math.max(1, (constraints.maxWidth / 340).floor());
-      final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+      final width = _activityCardWidth(constraints.maxWidth);
       return Wrap(
         spacing: CoeloSpacing.space6,
         runSpacing: CoeloSpacing.space6,
         children: [
-          SizedBox(
-            width: width,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar atividade',
-                icon: Icons.local_activity_rounded,
-                onPressed: onCreate,
+          if (onCreate != null)
+            SizedBox(
+              width: width,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 216),
+                child: CoeloAdminCreateAction(
+                  label: 'Criar atividade',
+                  icon: Icons.local_activity_rounded,
+                  onPressed: onCreate!,
+                ),
               ),
             ),
-          ),
           for (final item in items)
             SizedBox(
               width: width,
-              child: _ActivityCard(item: item, onPressed: () => onEdit(item.id)),
+              child: _ActivityCard(item: item, onPressed: () => onView(item.id)),
             ),
         ],
       );
@@ -563,7 +1390,6 @@ final class _ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final prototype = _ActivityCardPrototype.from(item);
     return ConstrainedBox(
       key: Key('activity-card-${item.id}'),
       constraints: const BoxConstraints(minHeight: 216),
@@ -581,7 +1407,7 @@ final class _ActivityCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ActivityCardHeader(item: item, colors: colors, location: prototype.location),
+              _ActivityCardHeader(item: item, colors: colors),
               const SizedBox(height: CoeloSpacing.space4),
               const Divider(height: 1),
               const SizedBox(height: CoeloSpacing.space4),
@@ -600,14 +1426,14 @@ final class _ActivityCard extends StatelessWidget {
               const SizedBox(height: CoeloSpacing.space3),
               _DetailRow(
                 first: _ActivityDetail(
-                  icon: Icons.badge_outlined,
-                  label: 'Equipe institucional',
-                  value: '${prototype.teamCount}',
+                  icon: Icons.apartment_outlined,
+                  label: 'Instituição',
+                  value: item.institutionName,
                 ),
                 second: _ActivityDetail(
-                  icon: Icons.child_care_outlined,
-                  label: 'Crianças',
-                  value: '${prototype.childrenCount}',
+                  icon: Icons.rule_rounded,
+                  label: 'Tipo',
+                  value: item.governance.label,
                 ),
               ),
             ],
@@ -619,11 +1445,10 @@ final class _ActivityCard extends StatelessWidget {
 }
 
 final class _ActivityCardHeader extends StatelessWidget {
-  const _ActivityCardHeader({required this.item, required this.colors, required this.location});
+  const _ActivityCardHeader({required this.item, required this.colors});
 
   final ActivityDirectoryItem item;
   final ColorScheme colors;
-  final String location;
 
   @override
   Widget build(BuildContext context) {
@@ -639,7 +1464,7 @@ final class _ActivityCardHeader extends StatelessWidget {
             style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           Text(
-            'Local: $location',
+            item.institutionName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
@@ -675,28 +1500,6 @@ final class _ActivityCardHeader extends StatelessWidget {
       ],
     );
   }
-}
-
-final class _ActivityCardPrototype {
-  const _ActivityCardPrototype({
-    required this.location,
-    required this.teamCount,
-    required this.childrenCount,
-  });
-
-  factory _ActivityCardPrototype.from(ActivityDirectoryItem item) {
-    const locations = ['Sala de Informática', 'Piscina', 'Quadra', 'Horta'];
-    final seed = item.id.codeUnits.fold<int>(0, (sum, value) => sum + value);
-    return _ActivityCardPrototype(
-      location: locations[seed % locations.length],
-      teamCount: 2 + seed % 5,
-      childrenCount: 8 + seed % 17,
-    );
-  }
-
-  final String location;
-  final int teamCount;
-  final int childrenCount;
 }
 
 final class _ActivityIcon extends StatelessWidget {
@@ -871,23 +1674,16 @@ final class _ActivityHierarchyTable extends StatelessWidget {
   const _ActivityHierarchyTable({
     required this.items,
     required this.level,
-    required this.onEdit,
+    required this.onView,
     super.key,
   });
 
   final List<ActivityDirectoryItem> items;
   final ActivityDirectoryTableView level;
-  final ValueChanged<String> onEdit;
+  final ValueChanged<String> onView;
 
   @override
   Widget build(BuildContext context) {
-    String hierarchyLabel(ActivityDirectoryItem item) {
-      final hierarchy = ActivityDirectoryHierarchy.from(item);
-      return level == ActivityDirectoryTableView.units
-          ? hierarchy.unit.label
-          : hierarchy.group.label;
-    }
-
     CoeloAdminTableColumn<ActivityDirectoryItem> column(
       String id,
       String label,
@@ -913,11 +1709,13 @@ final class _ActivityHierarchyTable extends StatelessWidget {
           rowKey: (item) => 'activity-hierarchy-row-${item.id}',
           headerHeight: 56,
           rowHeight: 64,
-          onRowPressed: (item) => onEdit(item.id),
+          onRowPressed: (item) => onView(item.id),
           pinnedColumn: column(
             'hierarchy',
-            level == ActivityDirectoryTableView.units ? 'Unidade' : 'Turma',
-            hierarchyLabel,
+            level == ActivityDirectoryTableView.units ? 'Unidades vinculadas' : 'Turmas vinculadas',
+            (item) => level == ActivityDirectoryTableView.units
+                ? item.linkedUnits.map((unit) => unit.name).join(', ')
+                : item.linkedGroups.map((group) => group.name).join(', '),
             width: 240,
           ),
           columns: [

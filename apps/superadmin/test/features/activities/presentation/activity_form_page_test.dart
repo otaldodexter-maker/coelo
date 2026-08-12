@@ -1,4 +1,4 @@
-import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
@@ -36,22 +36,51 @@ void main() {
       expect(find.text(label), findsWidgets);
     }
     expect(find.byKey(const Key('activity-form-name')), findsOneWidget);
+    expect(find.byKey(const Key('activity-form-initials')), findsOneWidget);
+    expect(find.byKey(const Key('activity-form-identity-color')), findsOneWidget);
+    expect(find.byKey(const Key('activity-form-identity-icon')), findsOneWidget);
     expect(find.byKey(const Key('activity-form-category')), findsOneWidget);
-    expect(find.text('Simples/Opcional'), findsOneWidget);
+    expect(find.text('Opcional'), findsOneWidget);
+    final governance = tester.widget<CoeloAdminSingleSelectField<ActivityGovernance>>(
+      find.byKey(const Key('activity-form-governance')),
+    );
+    expect(governance.options, [ActivityGovernance.optional, ActivityGovernance.mandatory]);
+    expect(governance.optionLabel(ActivityGovernance.mandatory), 'Obrigatória');
 
-    final category = tester.widget<CoeloAdminSingleSelectField<ActivityCategory?>>(
+    final category = tester.widget<CoeloAdminSingleSelectField<ActivityTaxonomyOption?>>(
       find.byKey(const Key('activity-form-category')),
     );
-    category.onChanged(ActivityCategory.languages);
+    category.onChanged(_languagesTaxonomy);
     await tester.pump();
-    final suggestion = tester.widget<CoeloAdminSingleSelectField<String>>(
-      find.byKey(const Key('activity-form-suggestion')),
+    final template = tester.widget<CoeloAdminSingleSelectField<ActivityTemplateOption?>>(
+      find.byKey(const Key('activity-form-template')),
     );
-    expect(suggestion.options, ['', 'Português', 'Inglês', 'Outro']);
-    suggestion.onChanged('Outro');
+    expect(template.options, [null, _englishTemplate]);
+    category.onChanged(_otherTaxonomy);
     await tester.pump();
     expect(find.byKey(const Key('activity-form-other')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps create form usable and retries a failed template catalog locally', (
+    tester,
+  ) async {
+    final repository = _RecoveringCatalogRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('activity-form-name')), findsOneWidget);
+    expect(find.byKey(const Key('activity-catalog-options-state')), findsOneWidget);
+    expect(find.text('Não foi possível carregar o formulário'), findsNothing);
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.ensureVisible(find.byKey(const Key('activity-catalog-options-retry')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-catalog-options-retry')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('activity-catalog-options-state')), findsNothing);
+    expect(find.text('Robótica'), findsWidgets);
+    expect(repository.templateCalls, 2);
   });
 
   testWidgets('uses the medium form inset at 768 pixels', (tester) async {
@@ -82,6 +111,78 @@ void main() {
     expect(navigation.width, 248);
     expect(scroll.left - navigation.right, closeTo(CoeloSpacing.space6, 1));
     expect(footer.left, greaterThanOrEqualTo(navigation.right + CoeloSpacing.space6));
+  });
+
+  testWidgets('searches dense units and groups and separates student from professional links', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app(repository: _DenseOptionsRepository()));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('activity-form-institution')),
+        )
+        .onChanged('institution-1');
+    await tester.pump();
+
+    expect(find.byKey(const Key('activity-units-search')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('activity-units-search')), 'Unidade 7');
+    await tester.pump();
+    expect(find.byKey(const Key('activity-unit-unit-7')), findsOneWidget);
+    expect(find.byKey(const Key('activity-unit-unit-1')), findsNothing);
+    tester
+        .widget<CoeloAdminInteractiveCard>(
+          find.descendant(
+            of: find.byKey(const Key('activity-unit-unit-7')),
+            matching: find.byType(CoeloAdminInteractiveCard),
+          ),
+        )
+        .onPressed!();
+    await tester.pump();
+    tester.widget<FilledButton>(find.byKey(const Key('activity-form-continue'))).onPressed!();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Vínculo Aluno'), findsOneWidget);
+    expect(find.byKey(const Key('activity-groups-search')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('activity-groups-search')), 'Turma 7');
+    await tester.pump();
+    tester
+        .widget<CoeloAdminInteractiveCard>(
+          find.descendant(
+            of: find.byKey(const Key('activity-group-group-7')),
+            matching: find.byType(CoeloAdminInteractiveCard),
+          ),
+        )
+        .onPressed!();
+    await tester.pump();
+    expect(find.byKey(const Key('activity-participation-group-7')), findsOneWidget);
+    tester
+        .widget<CoeloAdminSingleSelectField<ActivityParticipation>>(
+          find.byKey(const Key('activity-participation-group-7')),
+        )
+        .onChanged(ActivityParticipation.selected);
+    await tester.pump();
+    expect(find.byType(CoeloAdminResizableTable<ActivityFormStudentOption>), findsOneWidget);
+    expect(find.text('Ana Silva'), findsAtLeastNWidgets(1));
+    expect(find.text('9'), findsOneWidget);
+    expect(find.text('Feminino'), findsOneWidget);
+    final belongs = tester.widget<CoeloAdminToggleField>(
+      find.byKey(const Key('activity-student-belongs-child-group-link-7')),
+    );
+    expect(belongs.value, isTrue);
+    belongs.onChanged!(false);
+    await tester.pump();
+
+    tester.widget<FilledButton>(find.byKey(const Key('activity-form-continue'))).onPressed!();
+    await tester.pumpAndSettle();
+    expect(find.text('Vínculos Profissionais'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps the compact chat launcher above the canonical footer', (tester) async {
@@ -142,6 +243,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('activity-invite-institution-1-group-1')));
     await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'Marina');
+    await tester.pump(const Duration(milliseconds: 351));
+    await tester.pumpAndSettle();
     expect(find.text('Marina Costa'), findsOneWidget);
     expect(find.text('Rafael Lima'), findsNothing);
     await tester.tap(find.byKey(const Key('activity-professional-professional-1')));
@@ -149,17 +253,45 @@ void main() {
     await tester.tap(find.text('Concluir convite'));
     await tester.pumpAndSettle();
 
-    final toggles = tester
-        .widgetList<CoeloAdminToggleField>(find.byType(CoeloAdminToggleField))
-        .toList();
-    expect(toggles, hasLength(4));
+    for (final permission in ['happens', 'now', 'moments', 'chat', 'attendance']) {
+      final field = tester.widget<CoeloAdminSingleSelectField<ActivityProfessionalAccess>>(
+        find.byKey(Key('activity-permission-institution-1-group-1-professional-1-$permission')),
+      );
+      expect(field.value, ActivityProfessionalAccess.both);
+    }
+    final notes = tester.widget<OutlinedButton>(
+      find.byKey(const Key('activity-permission-institution-1-group-1-professional-1-notes')),
+    );
+    expect(notes.onPressed, isNull);
+
+    await tester.tap(find.byKey(const Key('activity-invite-admin')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-professional-search')), 'Marina');
+    await tester.pump(const Duration(milliseconds: 351));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-professional-professional-1')));
+    await tester.pump();
+    await tester.tap(find.text('Concluir convite'));
+    await tester.pumpAndSettle();
+    expect(find.text('Administrador da atividade'), findsOneWidget);
+    expect(find.text('Notas · Em breve'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('activity-form-submit')));
     await tester.pumpAndSettle();
     expect(submittedDraft?.groupIds, {'institution-1-group-1'});
-    expect(submittedDraft?.assignments.single.groupId, 'institution-1-group-1');
-    expect(submittedDraft?.assignments.single.professionalId, 'professional-1');
-    expect(submittedDraft?.assignments.single.permissions.happens, isTrue);
+    expect(submittedDraft?.assignments, hasLength(2));
+    final submitted = submittedDraft!;
+    final submittedInstructor = submitted.assignments.firstWhere(
+      (item) => item.role == ActivityAssignmentRole.instructor,
+    );
+    expect(submittedInstructor.groupId, 'institution-1-group-1');
+    expect(submittedInstructor.professionalId, 'professional-1');
+    expect(submittedInstructor.permissions.happens, ActivityProfessionalAccess.both);
+    final submittedAdmin = submitted.assignments.firstWhere(
+      (item) => item.role == ActivityAssignmentRole.activityAdmin,
+    );
+    expect(submittedAdmin.groupId, isNull);
+    expect(submittedAdmin.professionalId, 'professional-1');
     expect(tester.takeException(), isNull);
   });
 
@@ -207,8 +339,10 @@ void main() {
     const initialDraft = ActivityFormDraft(
       name: 'Ingl\u00EAs avan\u00E7ado',
       description: 'Conversa\u00E7\u00E3o para a Turma 1.',
-      category: ActivityCategory.languages,
-      activityLabel: 'Ingl\u00EAs',
+      taxonomy: _languagesTaxonomy,
+      subtype: null,
+      template: _englishTemplate,
+      taxonomyOtherDescription: '',
       governance: ActivityGovernance.optional,
       institutionId: 'institution-1',
       unitIds: {'institution-1-unit-1'},
@@ -219,14 +353,18 @@ void main() {
           groupId: 'institution-1-group-1',
           professionalId: 'professional-1',
           permissions: ActivityProfessionalPermissions(
-            happens: true,
-            now: false,
-            moments: true,
-            chat: false,
+            happens: ActivityProfessionalAccess.both,
+            now: ActivityProfessionalAccess.none,
+            moments: ActivityProfessionalAccess.both,
+            chat: ActivityProfessionalAccess.none,
           ),
         ),
       ],
       imageName: 'atividade.png',
+      identityStorageRef: ActivityIdentityStorageRef(
+        bucket: 'coelo-identities',
+        path: 'activities/activity-1/profile.webp',
+      ),
     );
 
     await tester.pumpWidget(
@@ -242,27 +380,30 @@ void main() {
       tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
       'Ingl\u00EAs avan\u00E7ado',
     );
+    expect(find.text('Trocar foto'), findsOneWidget);
     expect(
       tester
-          .widget<CoeloAdminSingleSelectField<ActivityCategory?>>(
+          .widget<CoeloAdminSingleSelectField<ActivityTaxonomyOption?>>(
             find.byKey(const Key('activity-form-category')),
           )
           .value,
-      ActivityCategory.languages,
+      _languagesTaxonomy,
     );
 
     await tester.tap(find.byKey(const Key('activity-form-save-draft')));
     await tester.pumpAndSettle();
 
-    expect(savedDraft?.activityLabel, 'Ingl\u00EAs');
+    expect(savedDraft?.taxonomy, _languagesTaxonomy);
+    expect(savedDraft?.template, _englishTemplate);
     expect(savedDraft?.institutionId, 'institution-1');
     expect(savedDraft?.unitIds, {'institution-1-unit-1'});
     expect(savedDraft?.locationId, 'institution-1-unit-1-location-1');
     expect(savedDraft?.groupIds, {'institution-1-group-1'});
     expect(savedDraft?.assignments.single.professionalId, 'professional-1');
-    expect(savedDraft?.assignments.single.permissions.now, isFalse);
-    expect(savedDraft?.assignments.single.permissions.chat, isFalse);
+    expect(savedDraft?.assignments.single.permissions.now, ActivityProfessionalAccess.none);
+    expect(savedDraft?.assignments.single.permissions.chat, ActivityProfessionalAccess.none);
     expect(savedDraft?.imageName, 'atividade.png');
+    expect(savedDraft?.identityStorageRef, initialDraft.identityStorageRef);
     expect(tester.takeException(), isNull);
   });
 
@@ -332,13 +473,19 @@ Widget _app({
   home: ActivityFormPage(
     activityId: activityId,
     initialDraft: initialDraft,
-    repository: repository ?? FakeActivityDirectoryRepository(),
+    repository: repository ?? _TaxonomyOptionsRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},
     onSaveDraft: onSaveDraft ?? (_) async {},
     onSubmit: onSubmit ?? (_) async {},
-    onCreateLocation: (draft) async =>
-        ActivityFormLocationOption(id: 'session-location', unitId: draft.unitId, name: draft.name),
+    onCreateLocation: (draft) async => [
+      for (final unitId in draft.unitIds)
+        ActivityFormLocationOption(
+          id: 'session-location-$unitId',
+          unitId: unitId,
+          name: draft.name,
+        ),
+    ],
     imagePicker: () async => null,
   ),
 );
@@ -353,8 +500,8 @@ final class _ProfessionalOptionsRepository implements ActivityDirectoryRepositor
   Future<ActivityFilterOptions> fetchFilterOptions() => _delegate.fetchFilterOptions();
 
   @override
-  Future<ActivityFormOptions> fetchFormOptions() async {
-    final options = await _delegate.fetchFormOptions();
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async {
+    final options = await _delegate.fetchFormOptions(institutionId: institutionId);
     return ActivityFormOptions(
       institutions: options.institutions,
       units: options.units,
@@ -367,8 +514,153 @@ final class _ProfessionalOptionsRepository implements ActivityDirectoryRepositor
           role: 'Professora',
         ),
       ],
+      taxonomy: const [_languagesTaxonomy, _otherTaxonomy],
+      templates: const [_englishTemplate],
     );
   }
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) =>
+      _delegate.fetchTemplateOptions(institutionId: institutionId);
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) async => const [
+    ActivityFormProfessionalOption(id: 'professional-1', name: 'Marina Costa', role: 'Professora'),
+  ];
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
+      _delegate.fetchPage(query);
+}
+
+final class _RecoveringCatalogRepository extends FakeActivityDirectoryRepository {
+  int templateCalls = 0;
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) {
+    templateCalls++;
+    if (templateCalls == 1) {
+      return Future.error(const ActivityDirectoryUnavailableException());
+    }
+    return super.fetchTemplateOptions(institutionId: institutionId);
+  }
+}
+
+const _languagesTaxonomy = ActivityTaxonomyOption(id: 'languages', label: 'Idiomas');
+const _otherTaxonomy = ActivityTaxonomyOption(id: 'other', label: 'Outros', isOther: true);
+const _englishTemplate = ActivityTemplateOption(
+  id: 'english',
+  name: 'Inglês',
+  taxonomyId: 'languages',
+);
+
+final class _TaxonomyOptionsRepository implements ActivityDirectoryRepository {
+  final FakeActivityDirectoryRepository _delegate = FakeActivityDirectoryRepository();
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) => _delegate.fetchById(activityId);
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() => _delegate.fetchFilterOptions();
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async {
+    final options = await _delegate.fetchFormOptions(institutionId: institutionId);
+    return ActivityFormOptions(
+      institutions: options.institutions,
+      units: options.units,
+      locations: options.locations,
+      groups: options.groups,
+      professionals: options.professionals,
+      taxonomy: const [_languagesTaxonomy, _otherTaxonomy],
+      templates: const [_englishTemplate],
+    );
+  }
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async {
+    final options = await fetchFormOptions(institutionId: institutionId ?? 'institution-1');
+    return ActivityTemplateOptions(
+      institutions: options.institutions,
+      taxonomy: options.taxonomy,
+      templates: options.templates,
+    );
+  }
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) => _delegate.searchProfessionals(institutionId: institutionId, query: query, limit: limit);
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
+      _delegate.fetchPage(query);
+}
+
+final class _DenseOptionsRepository implements ActivityDirectoryRepository {
+  final FakeActivityDirectoryRepository _delegate = FakeActivityDirectoryRepository();
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) => _delegate.fetchById(activityId);
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() => _delegate.fetchFilterOptions();
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async =>
+      ActivityFormOptions(
+        institutions: const [
+          ActivityFormInstitutionOption(id: 'institution-1', name: 'Colégio Horizonte'),
+        ],
+        units: [
+          for (var index = 1; index <= 7; index++)
+            ActivityFormUnitOption(
+              id: 'unit-$index',
+              institutionId: 'institution-1',
+              name: 'Unidade $index',
+            ),
+        ],
+        groups: [
+          for (var index = 1; index <= 7; index++)
+            ActivityFormGroupOption(
+              id: 'group-$index',
+              unitId: 'unit-7',
+              name: 'Turma $index',
+              participantCount: 14 + index,
+            ),
+        ],
+        students: const [
+          ActivityFormStudentOption(
+            childGroupLinkId: 'child-group-link-7',
+            id: 'child-7',
+            groupId: 'group-7',
+            name: 'Ana Silva',
+            age: 9,
+            gender: 'Feminino',
+          ),
+        ],
+      );
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async =>
+      const ActivityTemplateOptions(
+        institutions: [
+          ActivityFormInstitutionOption(id: 'institution-1', name: 'Colégio Horizonte'),
+        ],
+      );
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) async => const [];
 
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>

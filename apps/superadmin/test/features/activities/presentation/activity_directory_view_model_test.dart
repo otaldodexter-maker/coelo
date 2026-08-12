@@ -1,4 +1,4 @@
-import 'package:coelo_superadmin/features/activities/data/fake_activity_directory_repository.dart';
+import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_directory_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('isolates loading, success, no-results and empty states', () async {
     final viewModel = ActivityDirectoryViewModel(
-      FakeActivityDirectoryRepository(),
+      _RelationalFilterRepository(),
       searchDebounce: Duration.zero,
     );
     addTearDown(viewModel.dispose);
@@ -56,7 +56,7 @@ void main() {
 
   test('clears descendant unit and group filters when the institution changes', () async {
     final viewModel = ActivityDirectoryViewModel(
-      FakeActivityDirectoryRepository(),
+      _RelationalFilterRepository(),
       searchDebounce: Duration.zero,
     );
     addTearDown(viewModel.dispose);
@@ -69,6 +69,9 @@ void main() {
     viewModel.setGroups({group.id});
     expect(viewModel.selectedUnitIds, {unit.id});
     expect(viewModel.selectedGroupIds, {group.id});
+    expect(viewModel.query.unitIds, {unit.id});
+    expect(viewModel.query.groupIds, {group.id});
+    expect(viewModel.visibleItems, viewModel.page.items);
 
     await viewModel.setInstitutions({'institution-2'});
     expect(viewModel.selectedUnitIds, isEmpty);
@@ -84,7 +87,19 @@ final class _EmptyRepository implements ActivityDirectoryRepository {
   Future<ActivityFilterOptions> fetchFilterOptions() async => const ActivityFilterOptions();
 
   @override
-  Future<ActivityFormOptions> fetchFormOptions() async => const ActivityFormOptions();
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async =>
+      const ActivityFormOptions();
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async =>
+      const ActivityTemplateOptions();
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) async => const [];
 
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) async =>
@@ -94,6 +109,51 @@ final class _EmptyRepository implements ActivityDirectoryRepository {
         page: query.page,
         pageSize: query.pageSize,
       );
+}
+
+final class _RelationalFilterRepository implements ActivityDirectoryRepository {
+  final FakeActivityDirectoryRepository _delegate = FakeActivityDirectoryRepository();
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) => _delegate.fetchById(activityId);
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() async => const ActivityFilterOptions(
+    institutions: [ActivityFilterOption(id: 'institution-1', label: 'Casa Nuvem')],
+    units: [
+      ActivityFilterOption(
+        id: 'institution-1-unit-1',
+        label: 'Unidade Centro',
+        parentId: 'institution-1',
+      ),
+    ],
+    groups: [
+      ActivityFilterOption(
+        id: 'institution-1-group-1',
+        label: 'Turma 1',
+        parentId: 'institution-1-unit-1',
+      ),
+    ],
+  );
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) =>
+      _delegate.fetchFormOptions(institutionId: institutionId);
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) =>
+      _delegate.fetchTemplateOptions(institutionId: institutionId);
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) => _delegate.searchProfessionals(institutionId: institutionId, query: query, limit: limit);
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
+      _delegate.fetchPage(query);
 }
 
 final class _ThrowingRepository implements ActivityDirectoryRepository {
@@ -108,7 +168,17 @@ final class _ThrowingRepository implements ActivityDirectoryRepository {
   Future<ActivityFilterOptions> fetchFilterOptions() => _fail();
 
   @override
-  Future<ActivityFormOptions> fetchFormOptions() => _fail();
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) => _fail();
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) => _fail();
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) => _fail();
 
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) => _fail();
