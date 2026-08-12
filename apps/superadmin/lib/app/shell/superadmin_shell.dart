@@ -817,7 +817,7 @@ const _navigationSections = <_NavigationSectionData>[
       Icons.chat_bubble_outline,
       active: true,
     ),
-    _NavigationDestinationData('invites', 'Convites', Icons.mail_outline),
+    _NavigationDestinationData('invites', 'Convites', Icons.mail_outline, active: true),
     _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined, active: true),
   ]),
   _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
@@ -1231,7 +1231,7 @@ String? _prototypeDestinationPath(BuildContext context, String destination) {
     'catalog' => development ? '/dev/catalog' : '/governance/catalog',
     'plans' => '/dev/plans',
     'import' => '/dev/imports',
-    'invites' => '/dev/invites',
+    'invites' => development ? '/dev/invites' : '/invites',
     'notices' => '/notices',
     'audit' => '/dev/audit',
     _ => null,

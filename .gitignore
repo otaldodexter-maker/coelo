@@ -15,6 +15,11 @@
 !.env.example
 *.pem
 *.key
+*.dump
+*.dump.gz
+*.sql.gz
+credentials*.json
+secrets*.json
 
 # Dependencies and package managers
 node_modules/
@@ -57,3 +62,12 @@ packages/coelo_database/supabase/migrations/*.sql
 
 # Local visual brainstorming state
 .superpowers/
+
+*.p12
+*.pfx
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+*.mobileprovision
+*.provisionprofile

@@ -1,187 +1,241 @@
 import 'dart:async';
 
-import 'package:coelo_superadmin/features/invites/data/fake_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_detail_page.dart';
-import 'package:coelo_superadmin/features/invites/presentation/invite_presentation_support.dart';
+import 'package:coelo_superadmin/features/invites/presentation/invite_form_sections.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'invite_test_repository.dart';
+
 void main() {
-  testWidgets('shows a masked read-only detail with semantic status and timeline', (tester) async {
-    await _pumpDetail(tester, inviteId: 'invite-1', size: const Size(375, 900));
-
-    final pageSurface = tester.widget<ColoredBox>(
-      find.byKey(const Key('invite-detail-page-surface')),
-    );
-    expect(pageSurface.color, CoeloTheme.light.colorScheme.surface);
-    expect(find.text('o***@aurora.test'), findsOneWidget);
-    expect(find.text('owner@aurora.test'), findsNothing);
-    expect(find.textContaining('https://preview.coelo.test'), findsNothing);
-    expect(find.byType(InviteStatusChip), findsOneWidget);
-    await tester.drag(find.byKey(const Key('invite-detail-scroll')), const Offset(0, -600));
-    await tester.pumpAndSettle();
-    expect(find.text('Linha do tempo'), findsOneWidget);
-    expect(find.text('Convite criado'), findsOneWidget);
-    expect(find.text('Editar'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('copies safely and revokes a pending invitation after confirmation', (tester) async {
-    final repository = FakeInviteRepository(now: () => DateTime(2026, 8, 4, 12));
-    await _pumpDetail(tester, repository: repository, inviteId: 'invite-1');
-
-    expect(find.text('Copiar link'), findsOneWidget);
-    expect(find.text('Reenviar convite'), findsOneWidget);
-    expect(find.text('Revogar convite'), findsOneWidget);
-
-    final divider = find.descendant(
-      of: find.byKey(const Key('invite-detail-actions')),
-      matching: find.byType(Divider),
-    );
-    expect(divider, findsOneWidget);
-    expect(
-      tester.getTopLeft(divider).dy,
-      greaterThanOrEqualTo(tester.getBottomLeft(find.byKey(const Key('invite-detail-resend'))).dy),
-    );
-    expect(
-      tester.getTopLeft(find.byKey(const Key('invite-detail-revoke'))).dy,
-      greaterThanOrEqualTo(tester.getBottomLeft(divider).dy),
-    );
-    final revoke = tester.widget<TextButton>(find.byKey(const Key('invite-detail-revoke')));
-    expect(
-      revoke.style?.foregroundColor?.resolve(<WidgetState>{}),
-      CoeloTheme.light.colorScheme.error,
-    );
-    expect(
-      revoke.style?.backgroundColor?.resolve(<WidgetState>{WidgetState.hovered}),
-      CoeloTheme.light.colorScheme.errorContainer,
-    );
-
-    await tester.tap(find.text('Copiar link'));
-    await tester.pumpAndSettle();
-    expect(find.text('Link do convite copiado.'), findsOneWidget);
-    expect(find.textContaining('https://preview.coelo.test'), findsNothing);
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Revogar convite'));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('invite-revoke-dialog')), findsOneWidget);
-    expect(repository.find('invite-1')!.status, InviteStatus.pending);
-
-    await tester.tap(find.byKey(const Key('invite-revoke-confirm')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(repository.find('invite-1')!.status, InviteStatus.revoked);
-    expect(find.text('Convite revogado com sucesso.'), findsOneWidget);
-    expect(find.text('Reenviar convite'), findsNothing);
-    expect(find.text('Revogar convite'), findsNothing);
-  });
-
-  testWidgets('shows processing and error feedback for a failed safe copy', (tester) async {
-    await _pumpDetail(tester, inviteId: 'invite-1');
-    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-    final pendingCopy = Completer<void>();
-    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) => pendingCopy.future);
-
-    await tester.tap(find.byKey(const Key('invite-detail-copy')));
-    await tester.pump();
-
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('invite-detail-copy')),
-        matching: find.byType(CircularProgressIndicator),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      tester.widget<OutlinedButton>(find.byKey(const Key('invite-detail-resend'))).onPressed,
-      isNull,
-    );
-
-    pendingCopy.complete();
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Link do convite copiado.'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pumpAndSettle();
-
-    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
-      if (call.method == 'Clipboard.setData') {
-        throw PlatformException(code: 'clipboard-failed');
-      }
-      return null;
-    });
-    await tester.tap(find.byKey(const Key('invite-detail-copy')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(find.text('Não foi possível concluir a ação.'), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsNothing);
-  });
-
-  testWidgets('groups each timeline event semantically and hides its decorative icon', (
+  testWidgets('expired invitation presents resend as the primary action and shows new link', (
     tester,
   ) async {
-    final semantics = tester.ensureSemantics();
-    await _pumpDetail(tester, inviteId: 'invite-1', size: const Size(375, 900));
-
-    await tester.drag(find.byKey(const Key('invite-detail-scroll')), const Offset(0, -600));
+    final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
+    await tester.pumpWidget(
+      _app(InviteDetailPage(repository: repository, inviteId: repository.invites.single.id)),
+    );
     await tester.pumpAndSettle();
 
-    expect(
-      find.bySemanticsLabel('Convite criado, ${formatInviteDate(DateTime(2026, 8, 4, 8))}'),
-      findsOneWidget,
-    );
-    final eventSemantics = tester.widget<Semantics>(
-      find.byKey(const Key('invite-timeline-event-0')),
-    );
-    expect(eventSemantics.excludeSemantics, isTrue);
-    semantics.dispose();
+    final resend = tester.widget<FilledButton>(find.byKey(const Key('invite-detail-resend')));
+    expect(resend.onPressed, isNotNull);
+
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pumpAndSettle();
+
+    expect(repository.lastResend?.expectedVersion, 1);
+    expect(find.byKey(const Key('invite-result-link')), findsOneWidget);
   });
 
-  testWidgets('hides invalid actions for an accepted invitation', (tester) async {
-    await _pumpDetail(tester, inviteId: 'invite-2');
+  testWidgets('revocation remains negative, confirmed and versioned', (tester) async {
+    final repository = TestInviteRepository();
+    await tester.pumpWidget(
+      _app(InviteDetailPage(repository: repository, inviteId: repository.invites.single.id)),
+    );
+    await tester.pumpAndSettle();
 
-    expect(find.text('Copiar link'), findsOneWidget);
-    expect(find.text('Reenviar convite'), findsNothing);
-    expect(find.text('Revogar convite'), findsNothing);
+    await tester.tap(find.byKey(const Key('invite-detail-revoke')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-revoke-dialog')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('invite-revoke-confirm')));
+    await tester.pumpAndSettle();
+
+    expect(repository.lastRevoke?.expectedVersion, 1);
+    expect(repository.lastRevoke?.reason, isNotEmpty);
+    expect(find.text('Revogado'), findsOneWidget);
   });
 
-  testWidgets('uses the canonical missing invitation state', (tester) async {
-    await _pumpDetail(tester, inviteId: 'missing');
+  testWidgets('does not enumerate an unavailable invitation', (tester) async {
+    final repository = TestInviteRepository(invites: const []);
+    await tester.pumpWidget(_app(InviteDetailPage(repository: repository, inviteId: 'other')));
+    await tester.pumpAndSettle();
 
-    expect(find.byType(CoeloStatePanel), findsOneWidget);
     expect(find.text('Convite não encontrado'), findsOneWidget);
+    expect(find.textContaining('tenant'), findsNothing);
   });
-}
 
-Future<void> _pumpDetail(
-  WidgetTester tester, {
-  FakeInviteRepository? repository,
-  required String inviteId,
-  Size size = const Size(1024, 900),
-}) async {
-  await tester.binding.setSurfaceSize(size);
-  addTearDown(() => tester.binding.setSurfaceSize(null));
-  final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async => null);
-  addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
-  await tester.pumpWidget(
-    MaterialApp(
-      theme: CoeloTheme.light,
-      home: Scaffold(
-        body: InviteDetailPage(
-          repository: repository ?? FakeInviteRepository(now: () => DateTime(2026, 8, 4, 12)),
-          inviteId: inviteId,
+  testWidgets('does not resend a fresh pending invitation before expiry', (tester) async {
+    final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.pending)]);
+    await tester.pumpWidget(
+      _app(InviteDetailPage(repository: repository, inviteId: repository.invites.single.id)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('invite-detail-resend')), findsNothing);
+    expect(find.byKey(const Key('invite-detail-revoke')), findsOneWidget);
+  });
+
+  testWidgets('shows email delivery state only when email is selected', (tester) async {
+    final emailInvite = testInvite(channels: const {InviteChannel.email});
+    await tester.pumpWidget(
+      _app(
+        InviteDeliveryResult(
+          result: InviteCommandResult(invite: emailInvite, replayed: false),
+          onDone: () {},
         ),
       ),
-    ),
-  );
-  await tester.pumpAndSettle();
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('invite-result-email-state')), findsOneWidget);
+    expect(
+      find.text('E-mail na fila. A entrega ainda depende da confirmação do provedor.'),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('invite-result-link')), findsNothing);
+
+    final linkInvite = testInvite(channels: const {InviteChannel.link});
+    const dangerousText = 'javascript:alert(1)';
+    await tester.pumpWidget(
+      _app(
+        InviteDeliveryResult(
+          result: InviteCommandResult(
+            invite: linkInvite,
+            replayed: false,
+            link: Uri.parse(dangerousText),
+          ),
+          onDone: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('invite-result-email-state')), findsNothing);
+    expect(find.byKey(const Key('invite-result-link')), findsOneWidget);
+    expect(find.text(dangerousText), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('invite-result-link')),
+        matching: find.byType(GestureDetector),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('clears a one-time link when the routed invitation id changes', (tester) async {
+    final first = testInvite(status: InviteStatus.expired);
+    final second = testInvite(
+      id: '77777777-7777-4777-8777-777777777777',
+      recipient: 'b***@aurora.test',
+    );
+    final repository = TestInviteRepository(invites: [first, second]);
+
+    await tester.pumpWidget(
+      _app(
+        InviteDetailPage(
+          key: const Key('routed-invite-detail'),
+          repository: repository,
+          inviteId: first.id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-result-link')), findsOneWidget);
+
+    await tester.pumpWidget(
+      _app(
+        InviteDetailPage(
+          key: const Key('routed-invite-detail'),
+          repository: repository,
+          inviteId: second.id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('b***@aurora.test'), findsOneWidget);
+    expect(find.byKey(const Key('invite-result-link')), findsNothing);
+  });
+
+  testWidgets('route change isolates a late resend and starts with a new request id', (
+    tester,
+  ) async {
+    final first = testInvite(status: InviteStatus.expired);
+    final second = testInvite(
+      id: '77777777-7777-4777-8777-777777777777',
+      recipient: 'b***@aurora.test',
+      status: InviteStatus.expired,
+    );
+    final repository = _DeferredResendRepository([first, second]);
+
+    await tester.pumpWidget(
+      _app(
+        InviteDetailPage(
+          key: const Key('routed-invite-detail'),
+          repository: repository,
+          inviteId: first.id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pump();
+    expect(repository.commands, hasLength(1));
+
+    await tester.pumpWidget(
+      _app(
+        InviteDetailPage(
+          key: const Key('routed-invite-detail'),
+          repository: repository,
+          inviteId: second.id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    repository.completeNext(first);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('invite-result-link')), findsNothing);
+    expect(find.text('Não foi possível reenviar o convite.'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('invite-detail-resend')));
+    await tester.pump();
+    expect(repository.commands, hasLength(2));
+    expect(repository.commands[1].requestId, isNot(repository.commands[0].requestId));
+
+    repository.completeNext(second);
+    await tester.pumpAndSettle();
+  });
 }
+
+final class _DeferredResendRepository implements InviteRepository {
+  _DeferredResendRepository(this.invites);
+
+  final List<PlatformInvite> invites;
+  final List<InviteResendCommand> commands = [];
+  final List<Completer<InviteCommandResult>> _pending = [];
+
+  @override
+  Future<PlatformInvite?> fetchById(String inviteId) async =>
+      invites.where((invite) => invite.id == inviteId).firstOrNull;
+
+  @override
+  Future<InviteCommandResult> resend(InviteResendCommand command) {
+    commands.add(command);
+    final completer = Completer<InviteCommandResult>();
+    _pending.add(completer);
+    return completer.future;
+  }
+
+  void completeNext(PlatformInvite invite) {
+    _pending
+        .removeAt(0)
+        .complete(
+          InviteCommandResult(
+            invite: invite,
+            replayed: false,
+            link: Uri.parse('https://app.coelo.me/convites/once'),
+          ),
+        );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+Widget _app(Widget child) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: Scaffold(body: child),
+);
