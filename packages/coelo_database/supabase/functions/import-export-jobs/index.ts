@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
+import { validateXlsxArchive, validateXlsxWorkbook } from "./xlsx_guard.ts";
 
 const BUCKET = "coelo-operations";
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -11,13 +12,7 @@ function cors(origin: string | null): HeadersInit {
   const configured = (Deno.env.get("COELO_ALLOWED_ORIGINS") ?? "").split(",").map((item) => item.trim()).filter(Boolean);
   const local = origin?.startsWith("http://127.0.0.1:") || origin?.startsWith("http://localhost:");
   const allowed = origin && (local || configured.includes(origin)) ? origin : configured[0] ?? "https://superadmin.coelo.me";
-  return {
-    "Access-Control-Allow-Origin": allowed,
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-coelo-import-action, x-coelo-import-job-id",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Cache-Control": "no-store",
-    Vary: "Origin",
-  };
+  return { "Access-Control-Allow-Origin": allowed, "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-coelo-import-action, x-coelo-import-job-id", "Access-Control-Allow-Methods": "POST, OPTIONS", "Cache-Control": "no-store", Vary: "Origin" };
 }
 
 function response(origin: string | null, status: number, body: Json) {
@@ -26,21 +21,10 @@ function response(origin: string | null, status: number, body: Json) {
 
 function secret() {
   const keys = Deno.env.get("SUPABASE_SECRET_KEYS");
-  if (keys) {
-    const parsed = JSON.parse(keys) as Record<string, string>;
-    if (parsed.default) return parsed.default;
-  }
+  if (keys) { const parsed = JSON.parse(keys) as Record<string, string>; if (parsed.default) return parsed.default; }
   const legacy = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!legacy) throw new Error("server_secret_unavailable");
   return legacy;
-}
-
-function mimeFor(format: unknown) {
-  return format === "csv"
-    ? "text/csv"
-    : format === "xlsx"
-    ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    : null;
 }
 
 function column(value: unknown) {
@@ -63,11 +47,8 @@ function csv(bytes: Uint8Array) {
   let row: string[] = [], cell = "", quoted = false;
   for (let index = 0; index < text.length; index++) {
     const char = text[index];
-    if (quoted) {
-      if (char === '"' && text[index + 1] === '"') { cell += '"'; index++; }
-      else if (char === '"') quoted = false;
-      else cell += char;
-    } else if (char === '"') quoted = true;
+    if (quoted) { if (char === '"' && text[index + 1] === '"') { cell += '"'; index++; } else if (char === '"') quoted = false; else cell += char; }
+    else if (char === '"') quoted = true;
     else if (char === "," || char === ";") { row.push(cell); cell = ""; }
     else if (char === "\n") { row.push(cell.replace(/\r$/, "")); matrix.push(row); row = []; cell = ""; }
     else cell += char;
@@ -78,8 +59,9 @@ function csv(bytes: Uint8Array) {
 }
 
 function xlsx(bytes: Uint8Array) {
-  if (bytes[0] !== 0x50 || bytes[1] !== 0x4b) throw new Error("invalid_xlsx_signature");
+  validateXlsxArchive(bytes);
   const book = XLSX.read(bytes, { type: "array", cellDates: false, dense: true });
+  validateXlsxWorkbook(book);
   const first = book.SheetNames[0];
   if (!first) throw new Error("empty_import");
   return rowsFromMatrix(XLSX.utils.sheet_to_json<unknown[]>(book.Sheets[first], { header: 1, defval: "", raw: false, blankrows: false }));
@@ -91,11 +73,7 @@ async function checksum(bytes: Uint8Array) {
 }
 
 async function unitExport(url: string, authorization: string, body: Json) {
-  const delegated = await fetch(`${url}/functions/v1/unit-export`, {
-    method: "POST",
-    headers: { Authorization: authorization, "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  const delegated = await fetch(`${url}/functions/v1/unit-export`, { method: "POST", headers: { Authorization: authorization, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const payload = await delegated.json() as Json;
   if (!delegated.ok) throw new Error(String(payload.error ?? "unit_export_failed"));
   return payload;
@@ -107,7 +85,6 @@ Deno.serve(async (request) => {
   if (request.method !== "POST") return response(origin, 405, { error: "method_not_allowed" });
   const authorization = request.headers.get("authorization");
   if (!authorization?.startsWith("Bearer ")) return response(origin, 401, { error: "authentication_required" });
-
   let jobId: string | null = null;
   try {
     const url = Deno.env.get("SUPABASE_URL")!;
@@ -115,7 +92,6 @@ Deno.serve(async (request) => {
     const user = createClient(url, anon, { global: { headers: { Authorization: authorization } } });
     const admin = createClient(url, secret(), { auth: { persistSession: false } });
     const action = request.headers.get("x-coelo-import-action");
-
     if (action === "upload") {
       jobId = request.headers.get("x-coelo-import-job-id");
       if (!jobId || !UUID.test(jobId)) return response(origin, 400, { error: "invalid_request" });
@@ -136,21 +112,13 @@ Deno.serve(async (request) => {
       const format = mime === "text/csv" ? "csv" : "xlsx";
       const rows = format === "csv" ? csv(bytes) : xlsx(bytes);
       if (!rows.length || rows.length > MAX_ROWS) return response(origin, 400, { error: "invalid_row_count" });
-      const preview = await admin.rpc("superadmin_preview_unit_import_from_edge", {
-        p_request_id: crypto.randomUUID(), p_import_job_id: jobId, p_rows: rows,
-        p_mapping_columns: {}, p_checksum_sha256: await checksum(bytes), p_size_bytes: bytes.length,
-        p_mime_type: mime, p_parser_version: "units-v2",
-      });
+      const preview = await admin.rpc("superadmin_preview_unit_import_from_edge", { p_request_id: crypto.randomUUID(), p_import_job_id: jobId, p_rows: rows, p_mapping_columns: {}, p_checksum_sha256: await checksum(bytes), p_size_bytes: bytes.length, p_mime_type: mime, p_parser_version: "units-v2" });
       if (preview.error) throw new Error("preview_failed");
       return response(origin, 200, preview.data as Json);
     }
-
     const body = await request.json() as Json;
     if (body.action === "create_import") {
-      const result = await user.rpc("superadmin_create_import_export_job", {
-        p_domain: body.domain, p_file_name: body.file_name, p_mime_type: body.mime_type,
-        p_source_format: body.source_format, p_idempotency_key: body.idempotency_key,
-      });
+      const result = await user.rpc("superadmin_create_import_export_job", { p_domain: body.domain, p_file_name: body.file_name, p_mime_type: body.mime_type, p_source_format: body.source_format, p_idempotency_key: body.idempotency_key });
       if (result.error) throw new Error("job_create_failed");
       return response(origin, 200, result.data as Json);
     }
@@ -176,10 +144,7 @@ Deno.serve(async (request) => {
   } catch (error) {
     const code = error instanceof Error ? error.message.split(":")[0] : "worker_error";
     if (jobId) {
-      try {
-        const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), { auth: { persistSession: false } });
-        await admin.rpc("superadmin_fail_unit_file_job", { p_import_job_id: jobId, p_error_code: code.slice(0, 80) });
-      } catch { /* job remains auditable if failure recording is unavailable */ }
+      try { const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), { auth: { persistSession: false } }); await admin.rpc("superadmin_fail_unit_file_job", { p_import_job_id: jobId, p_error_code: code.slice(0, 80) }); } catch { /* job remains auditable if failure recording is unavailable */ }
     }
     return response(origin, 422, { error: code });
   }
