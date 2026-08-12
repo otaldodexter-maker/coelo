@@ -1,291 +1,343 @@
+import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/safety/application/child_safety_controller.dart';
+import 'package:coelo_superadmin/features/safety/domain/child_safety.dart';
+import 'package:coelo_superadmin/features/safety/domain/child_safety_contract.dart';
+import 'package:coelo_superadmin/features/safety/presentation/safety_pages.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/features/safety/domain/child_safety.dart';
-import 'package:coelo_superadmin/features/safety/presentation/safety_pages.dart';
 
 void main() {
-  testWidgets('landing renders grouped children and switches to table', (tester) async {
-    await _surface(tester, const Size(1440, 1000));
-    final store = ChildSafetyStore.demo();
-    await tester.pumpWidget(_landingApp(store));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Segurança da criança'), findsNWidgets(2));
-    expect(find.text('Instituição 2 · Unidade 2'), findsOneWidget);
-    expect(find.text('Criança Coelo 2'), findsOneWidget);
-    expect(find.text('Aguardando aprovação'), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('safety-view-table')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('safety-children-table')), findsOneWidget);
-    expect(find.text('Pessoas autorizadas'), findsOneWidget);
-    expect(find.text('Validação'), findsOneWidget);
-  });
-
-  testWidgets('child cards expose institutional hierarchy without unsupported PII search', (
-    tester,
-  ) async {
-    await _surface(tester, const Size(1440, 1000));
-    await tester.pumpWidget(_landingApp(ChildSafetyStore.demo()));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('safety-child-institution-person-1')), findsOneWidget);
-    expect(find.byKey(const Key('safety-child-unit-person-1')), findsOneWidget);
-    expect(find.textContaining('CPF'), findsNothing);
-  });
-
-  testWidgets('child cards use compact expandable status with semantics', (tester) async {
-    await _surface(tester, const Size(1440, 1000));
-    await tester.pumpWidget(_landingApp(ChildSafetyStore.demo()));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsNWidgets(3));
-    final status = find.byKey(const Key('safety-child-status-person-1'));
-    expect(status, findsOneWidget);
-    expect(tester.getSize(status), const Size.square(24));
-    expect(
-      find.bySemanticsLabel(
-        'Abrir segurança de Criança Coelo 2. Status das autorizações: Pendente',
-      ),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('landing communicates loading, error and unauthorized states', (tester) async {
-    await _surface(tester, const Size(700, 1000));
-
-    await tester.pumpWidget(_landingApp(ChildSafetyStore.loading()));
-    await tester.pump();
-    expect(find.bySemanticsLabel('Carregando segurança da criança'), findsOneWidget);
-
-    for (final entry in <(ChildSafetyStore, String)>[
-      (ChildSafetyStore.failure(), 'Não foi possível carregar'),
-      (ChildSafetyStore.unauthorized(), 'Sem permissão'),
-      (ChildSafetyStore.seeded(const []), 'Nenhuma criança cadastrada'),
-    ]) {
-      await tester.pumpWidget(_landingApp(entry.$1));
-      await tester.pump();
-      expect(find.text(entry.$2), findsOneWidget);
-    }
-  });
-
-  testWidgets('search and status filters preserve no-results feedback', (tester) async {
-    await _surface(tester, const Size(1440, 1000));
-    await tester.pumpWidget(_landingApp(ChildSafetyStore.demo()));
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.byType(TextField).first, 'criança inexistente');
-    await tester.pumpAndSettle();
-
-    expect(find.text('Nenhuma criança encontrada'), findsOneWidget);
-    expect(find.text('Limpar filtros'), findsOneWidget);
-  });
-
-  testWidgets('guardian registration starts pending and can be approved', (tester) async {
-    await _surface(tester, const Size(575, 1200));
-    final store = ChildSafetyStore.demo();
-    await tester.pumpWidget(_detailApp(store, 'person-4'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Cadastrar pessoa'));
-    await tester.pumpAndSettle();
-
-    final origin = tester.widget<CoeloAdminSingleSelectField<PickupAuthorizationOrigin>>(
-      find.byType(CoeloAdminSingleSelectField<PickupAuthorizationOrigin>),
-    );
-    origin.onChanged(PickupAuthorizationOrigin.guardian);
-    await tester.pump();
-
-    final fields = find.byType(TextFormField);
-    await tester.enterText(fields.at(1), 'Lúcia Teste');
-    await tester.enterText(fields.at(2), 'Avó');
-    await tester.tap(find.text('Salvar autorização'));
-    await tester.pumpAndSettle();
-
-    final created = store.findChild('person-4')!.authorizations.last;
-    expect(created.name, 'Lúcia Teste');
-    expect(created.status, PickupAuthorizationStatus.pending);
-    expect(find.text('Retirada bloqueada até aprovação.'), findsOneWidget);
-
-    await tester.ensureVisible(find.text('Aprovar'));
-    await tester.tap(find.text('Aprovar'));
-    await tester.pumpAndSettle();
-
-    expect(
-      store.findChild('person-4')!.authorizations.last.status,
-      PickupAuthorizationStatus.approved,
-    );
-  });
-
-  testWidgets('removal requires confirmation before deleting authorization', (tester) async {
-    await _surface(tester, const Size(575, 1000));
-    final store = ChildSafetyStore.demo();
-    await tester.pumpWidget(_detailApp(store, 'person-4'));
-    await tester.pumpAndSettle();
-
-    expect(store.findChild('person-4')!.authorizations, hasLength(1));
-    await tester.tap(find.text('Remover'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Remover autorização'), findsOneWidget);
-    expect(store.findChild('person-4')!.authorizations, hasLength(1));
-
-    await tester.tap(find.text('Remover').last);
-    await tester.pumpAndSettle();
-
-    expect(store.findChild('person-4')!.authorizations, isEmpty);
-    expect(find.text('Nenhuma pessoa cadastrada'), findsOneWidget);
-  });
-
-  testWidgets('detail uses table from medium constraints and cards only when compact', (
-    tester,
-  ) async {
+  testWidgets('directory uses exclusive counted tabs, canonical cards and table', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-
-    for (final width in const [768.0, 1024.0, 1440.0]) {
-      await tester.binding.setSurfaceSize(Size(width, 1000));
-      await tester.pumpWidget(_detailApp(ChildSafetyStore.demo(), 'person-1'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.byKey(const Key('authorized-persons-table')),
-        findsOneWidget,
-        reason: 'A tabela deve ser usada em $width px.',
-      );
-      expect(tester.takeException(), isNull);
-    }
-
-    for (final label in const [
-      'Nome',
-      'Relação / hierarquia',
-      'Instituição / unidade',
-      'Período de retirada',
-      'Status',
-      'Origem',
-      'Ações',
-    ]) {
-      expect(find.text(label), findsWidgets);
-    }
-
-    await tester.binding.setSurfaceSize(const Size(375, 1000));
-    await tester.pumpWidget(_detailApp(ChildSafetyStore.demo(), 'person-1'));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('authorized-persons-table')), findsNothing);
-    expect(find.text('Editar'), findsWidgets);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('responsive surface stays semantic without overflow in light and dark', (
-    tester,
-  ) async {
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final cases = <(double, ThemeMode)>[
-      (375, ThemeMode.light),
-      (768, ThemeMode.light),
-      (1024, ThemeMode.dark),
-      (1440, ThemeMode.dark),
-    ];
-
-    for (final entry in cases) {
-      await tester.binding.setSurfaceSize(Size(entry.$1, 1000));
-      await tester.pumpWidget(_landingApp(ChildSafetyStore.demo(), themeMode: entry.$2));
-      await tester.pumpAndSettle();
-
-      final surface = tester.widget<ColoredBox>(find.byKey(const Key('safety-directory-surface')));
-      final theme = entry.$2 == ThemeMode.dark ? CoeloTheme.dark : CoeloTheme.light;
-      expect(surface.color, theme.colorScheme.surface);
-      expect(tester.takeException(), isNull, reason: 'Overflow em ${entry.$1} px.');
-    }
-  });
-
-  testWidgets('child summary exposes recent authorizations and full CTA', (tester) async {
-    var opened = false;
+    final controller = ChildSafetyController(_Repository(), searchDebounce: Duration.zero);
+    await controller.load();
+    var created = false;
     await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: Scaffold(
-          body: ChildSecuritySummaryCard(
-            childId: 'person-1',
-            store: ChildSafetyStore.demo(),
-            onOpen: () => opened = true,
-          ),
+      _app(
+        SafetyLandingPage(
+          controller: controller,
+          logout: _logout,
+          onOpenChild: (_) {},
+          onCreate: () => created = true,
+          onExport: () {},
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Pessoas que podem retirar'), findsOneWidget);
-    expect(find.textContaining('Marina Coelo'), findsOneWidget);
-    await tester.tap(find.text('Ver completa'));
-    expect(opened, isTrue);
+    expect(find.text('Todos (3)'), findsOneWidget);
+    expect(find.text('Aguardando aprovação (1)'), findsOneWidget);
+    expect(find.text('Atenção (0)'), findsOneWidget);
+    expect(find.text('Autorizadas (1)'), findsOneWidget);
+    expect(find.text('Sem autorização (1)'), findsOneWidget);
+    expect(find.byType(CoeloAdminInteractiveCard), findsNWidgets(3));
+    expect(find.byKey(const Key('safety-create-card')), findsOneWidget);
+    expect(find.byType(CoeloAdminFileActions), findsOneWidget);
+
+    await tester.tap(find.text('Criar segurança'));
+    expect(created, isTrue);
+    await tester.tap(find.byKey(const Key('safety-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('safety-children-table')), findsOneWidget);
+    expect(find.byKey(const Key('safety-create-banner')), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('directory paginates large child collections', (tester) async {
-    await _surface(tester, const Size(1440, 1000));
-    final records = List.generate(
-      12,
-      (index) => ChildSafetyRecord(
-        childId: 'child-' + index.toString(),
-        childName: 'Criança ' + index.toString(),
-        internalId: 'RA ' + index.toString(),
-        institutionName: 'Instituição teste',
-        unitName: 'Unidade teste',
-        authorizations: const [],
+  testWidgets('unauthorized fails closed without create action', (tester) async {
+    final controller = ChildSafetyController(_Repository(unauthorized: true));
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        SafetyLandingPage(
+          controller: controller,
+          logout: _logout,
+          onOpenChild: (_) {},
+          onCreate: () {},
+        ),
       ),
     );
-    await tester.pumpWidget(_landingApp(ChildSafetyStore.seeded(records)));
+    await tester.pump();
+    expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.text('Criar segurança'), findsNothing);
+  });
+
+  testWidgets('detail uses table at 768 and cards at 375', (tester) async {
+    final controller = ChildSafetyController(_Repository());
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(768, 1000));
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+          onCreate: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('authorized-persons-table')), findsOneWidget);
+    expect(find.text('Cadastrar pessoa'), findsOneWidget);
+
+    await tester.binding.setSurfaceSize(const Size(375, 1000));
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+          onCreate: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('wizard searches server-side and requires child selection', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = ChildSafetyController(_Repository());
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
-    expect(find.byType(CoeloAdminPagination), findsOneWidget);
-    expect(find.text('Criança 0'), findsOneWidget);
-    expect(find.text('Criança 8'), findsNothing);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(tester.getSize(find.byKey(const Key('superadmin-form-steps-scroll'))).width, 248);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Busque e selecione uma criança.'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextFormField).first, 'Ana');
+    await tester.tap(find.byTooltip('Buscar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ana Criança'), findsWidgets);
+    await tester.tap(find.text('Ana Criança'));
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Pessoa autorizada'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('wizard preselects deep-linked child and loads edit version', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          childId: 'child-1',
+          authorizationId: 'auth-1',
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ana Criança'), findsWidgets);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Pessoa autorizada'), findsWidgets);
+    expect(find.text('Solicitação familiar'), findsOneWidget);
+  });
+
+  testWidgets('directory stays responsive in light and dark at 200 percent text', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in <double>[375, 768, 1024, 1440]) {
+      for (final mode in <ThemeMode>[ThemeMode.light, ThemeMode.dark]) {
+        await tester.binding.setSurfaceSize(Size(width, 1200));
+        final controller = ChildSafetyController(_Repository());
+        await controller.load();
+        await tester.pumpWidget(
+          _app(
+            SafetyLandingPage(
+              controller: controller,
+              logout: _logout,
+              onOpenChild: (_) {},
+              onCreate: () {},
+              onExport: () {},
+            ),
+            themeMode: mode,
+            textScaler: const TextScaler.linear(2),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: '$width / $mode');
+        expect(find.text('Todos (3)'), findsOneWidget);
+        controller.dispose();
+      }
+    }
+  });
+
+  testWidgets('directory golden matches approved institution-card anatomy', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = ChildSafetyController(_Repository());
+    await controller.load();
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: const Key('safety-directory-golden'),
+        child: _app(
+          SafetyLandingPage(
+            controller: controller,
+            logout: _logout,
+            onOpenChild: (_) {},
+            onCreate: () {},
+            onExport: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('safety-directory-golden')),
+      matchesGoldenFile('goldens/child_safety_directory_light_1440.png'),
+    );
   });
 }
 
-Widget _landingApp(ChildSafetyStore store, {ThemeMode themeMode = ThemeMode.light}) {
-  final router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) =>
-            SafetyLandingPage(store: store, logout: _logout, onOpenChild: (_) {}),
-      ),
-    ],
-  );
-  return MaterialApp.router(
-    theme: CoeloTheme.light,
-    darkTheme: CoeloTheme.dark,
-    themeMode: themeMode,
-    routerConfig: router,
-  );
-}
-
-Widget _detailApp(ChildSafetyStore store, String childId) {
-  final router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) =>
-            ChildSecurityPage(childId: childId, store: store, logout: _logout, onBack: () {}),
-      ),
-    ],
-  );
-  return MaterialApp.router(
-    theme: CoeloTheme.light,
-    darkTheme: CoeloTheme.dark,
-    routerConfig: router,
-  );
-}
-
+Widget _app(
+  Widget child, {
+  ThemeMode themeMode = ThemeMode.light,
+  TextScaler textScaler = TextScaler.noScaling,
+}) => MaterialApp(
+  theme: CoeloTheme.light,
+  darkTheme: CoeloTheme.dark,
+  themeMode: themeMode,
+  builder: (context, body) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+    child: body!,
+  ),
+  home: child,
+);
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
-Future<void> _surface(WidgetTester tester, Size size) async {
-  await tester.binding.setSurfaceSize(size);
-  addTearDown(() => tester.binding.setSurfaceSize(null));
+final class _Repository implements ChildSafetyRepository {
+  _Repository({this.unauthorized = false});
+  final bool unauthorized;
+  static final records = [
+    ChildSafetyRecord(
+      childId: 'child-1',
+      childName: 'Ana Criança',
+      internalId: 'RA 1',
+      institutionName: 'Instituição Aurora',
+      unitName: 'Unidade Centro',
+      authorizations: [
+        PickupAuthorization(
+          id: 'auth-1',
+          name: 'Maria',
+          relationship: 'Mãe',
+          institutionName: 'Instituição Aurora',
+          unitName: 'Unidade Centro',
+          status: PickupAuthorizationStatus.approved,
+          origin: PickupAuthorizationOrigin.institution,
+          startsAt: DateTime(2026, 1, 1),
+          lifetime: true,
+          personId: 'person-1',
+          childContextId: 'context-1',
+          unitId: 'unit-1',
+          capabilityCodes: {'pickup'},
+          requestReason: 'Solicitação familiar',
+          version: 7,
+        ),
+        const PickupAuthorization(
+          id: 'auth-2',
+          name: 'Carlos',
+          relationship: 'Avô',
+          institutionName: 'Instituição Aurora',
+          unitName: 'Unidade Centro',
+          status: PickupAuthorizationStatus.pending,
+          origin: PickupAuthorizationOrigin.guardian,
+        ),
+      ],
+      childContextId: 'context-1',
+      institutionId: 'institution-1',
+      unitId: 'unit-1',
+      directorySegment: ChildSafetyDirectorySegment.awaitingApproval,
+      authorizationCount: 1,
+    ),
+    const ChildSafetyRecord(
+      childId: 'child-2',
+      childName: 'Bia Criança',
+      internalId: 'RA 2',
+      institutionName: 'Instituição Aurora',
+      unitName: 'Unidade Norte',
+      authorizations: [],
+      directorySegment: ChildSafetyDirectorySegment.withoutAuthorization,
+    ),
+    const ChildSafetyRecord(
+      childId: 'child-3',
+      childName: 'Caio Criança',
+      internalId: 'RA 3',
+      institutionName: 'Instituição Horizonte',
+      unitName: 'Unidade Sul',
+      authorizations: [],
+      directorySegment: ChildSafetyDirectorySegment.authorized,
+      authorizationCount: 1,
+    ),
+  ];
+  @override
+  Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query) async {
+    if (unauthorized) throw const ChildSafetyUnauthorizedException();
+    return ChildSafetyDirectoryPage(
+      records: records,
+      totalCount: 3,
+      segmentCounts: const ChildSafetySegmentCounts(
+        all: 3,
+        awaitingApproval: 1,
+        authorized: 1,
+        withoutAuthorization: 1,
+      ),
+      canCreate: true,
+    );
+  }
+
+  @override
+  Future<ChildSafetyRecord?> fetchChild(String childId) async {
+    for (final record in records) {
+      if (record.childId == childId) return record;
+    }
+    return null;
+  }
+
+  @override
+  Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async =>
+      const [
+        ChildSafetyChildOption(
+          id: 'child-1',
+          name: 'Ana Criança',
+          internalId: 'RA 1',
+          childContextId: 'context-1',
+          institutionId: 'institution-1',
+          institutionName: 'Instituição Aurora',
+          unitId: 'unit-1',
+          unitName: 'Unidade Centro',
+        ),
+      ];
+  @override
+  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {}
+  @override
+  Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) async {}
+  @override
+  Future<void> removeAuthorization(RemovePickupAuthorizationCommand command) async {}
+  @override
+  Future<void> requestExport(ChildSafetyExportCommand command) async {}
 }

@@ -8,8 +8,6 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
-import '../../safety/domain/child_safety.dart';
-import '../../safety/presentation/safety_pages.dart';
 import '../domain/person_directory.dart';
 import 'person_form_view_model.dart';
 
@@ -67,8 +65,12 @@ final class PersonFormPage extends StatefulWidget {
     this.onCancel,
     this.onSaved,
     this.onDestinationSelected,
-    this.childSafetyStore,
     this.onOpenChildSecurity,
+    this.initialInstitutionId,
+    this.initialUnitId,
+    this.initialGroupId,
+    this.initialRole,
+    this.initialPersonType,
     super.key,
   });
 
@@ -78,15 +80,19 @@ final class PersonFormPage extends StatefulWidget {
   final VoidCallback? onCancel;
   final ValueChanged<PersonDirectoryItem>? onSaved;
   final ValueChanged<String>? onDestinationSelected;
-  final ChildSafetyStore? childSafetyStore;
   final VoidCallback? onOpenChildSecurity;
+  final String? initialInstitutionId;
+  final String? initialUnitId;
+  final String? initialGroupId;
+  final String? initialRole;
+  final PersonType? initialPersonType;
 
   @override
   State<PersonFormPage> createState() => _PersonFormPageState();
 }
 
 final class _PersonFormSurface extends StatelessWidget {
-  const _PersonFormSurface({required this.child, required this.padding});
+  const _PersonFormSurface({super.key, required this.child, required this.padding});
 
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -137,15 +143,43 @@ final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> 
   }) => Column(
     children: [
       for (final candidate in candidates)
-        ListTile(
+        TextButton(
           key: Key('$keyPrefix-${candidate.id}'),
-          contentPadding: EdgeInsets.zero,
-          title: Text(candidate.name),
-          subtitle: Text(candidate.summary),
-          trailing: selectedId == candidate.id
-              ? const Icon(Icons.check_circle_rounded)
-              : const Icon(Icons.add_circle_outline_rounded),
-          onTap: () => onSelected(candidate),
+          onPressed: () => onSelected(candidate),
+          style: ButtonStyle(
+            alignment: Alignment.centerLeft,
+            padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+            minimumSize: const WidgetStatePropertyAll(Size(0, CoeloSize.touchMin)),
+            foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.onSurface),
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              final highlighted =
+                  selectedId == candidate.id ||
+                  states.contains(WidgetState.hovered) ||
+                  states.contains(WidgetState.focused);
+              return highlighted
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Colors.transparent;
+            }),
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [Text(candidate.name), Text(candidate.summary)],
+                  ),
+                ),
+                Icon(
+                  selectedId == candidate.id
+                      ? Icons.check_circle_rounded
+                      : Icons.add_circle_outline_rounded,
+                ),
+              ],
+            ),
+          ),
         ),
     ],
   );
@@ -158,65 +192,63 @@ final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> 
   }
 
   @override
-  Widget build(BuildContext context) => _PersonFormSurface(
-    padding: const EdgeInsets.all(CoeloSpacing.space4),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Busca demonstrativa de vínculos', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: CoeloSpacing.space4),
-        Text('Buscar adulto existente', style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: CoeloSpacing.space1),
-        const Text('Consulte por nome ou dados mascarados de e-mail e celular.'),
-        const SizedBox(height: CoeloSpacing.space2),
-        SizedBox(
-          height: CoeloSize.touchMin,
-          child: CoeloSearchField(
-            key: const Key('person-adult-link-search'),
-            controller: _adultController,
-            hintText: 'Nome, arroba, CPF ou contato mascarado',
-            semanticLabel: 'Buscar adulto por nome, arroba, CPF, e-mail ou celular mascarados',
-            onChanged: (value) => setState(() => _adultQuery = value),
+  Widget build(BuildContext context) => Column(
+    key: const Key('person-relationship-search-section'),
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text('Busca demonstrativa de vínculos', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space4),
+      Text('Buscar adulto existente', style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      const Text('Consulte por nome ou dados mascarados de e-mail e celular.'),
+      const SizedBox(height: CoeloSpacing.space2),
+      SizedBox(
+        height: CoeloSize.touchMin,
+        child: CoeloSearchField(
+          key: const Key('person-adult-link-search'),
+          controller: _adultController,
+          hintText: 'Nome, arroba, CPF ou contato mascarado',
+          semanticLabel: 'Buscar adulto por nome, arroba, CPF, e-mail ou celular mascarados',
+          onChanged: (value) => setState(() => _adultQuery = value),
+        ),
+      ),
+      _results(
+        _matches(_adultLinkCandidates, _adultQuery),
+        selectedId: _selectedAdultId,
+        keyPrefix: 'person-adult-link-result',
+        onSelected: (candidate) => setState(() => _selectedAdultId = candidate.id),
+      ),
+      if (_selectedAdultId case final id?)
+        Padding(
+          padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+          child: Text(
+            'Vínculo selecionado: ${_adultLinkCandidates.firstWhere((item) => item.id == id).name}',
           ),
         ),
-        _results(
-          _matches(_adultLinkCandidates, _adultQuery),
-          selectedId: _selectedAdultId,
-          keyPrefix: 'person-adult-link-result',
-          onSelected: (candidate) => setState(() => _selectedAdultId = candidate.id),
+      const SizedBox(height: CoeloSpacing.space4),
+      Text('Buscar criança existente', style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      const Text(
+        'Consulte por nome, identificador ou contexto; e-mail e celular não são exigidos.',
+      ),
+      const SizedBox(height: CoeloSpacing.space2),
+      SizedBox(
+        height: CoeloSize.touchMin,
+        child: CoeloSearchField(
+          key: const Key('person-child-link-search'),
+          controller: _childController,
+          hintText: 'Nome, identificador ou contexto',
+          semanticLabel: 'Buscar criança por nome, identificador ou contexto',
+          onChanged: (value) => setState(() => _childQuery = value),
         ),
-        if (_selectedAdultId case final id?)
-          Padding(
-            padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-            child: Text(
-              'Vínculo selecionado: ${_adultLinkCandidates.firstWhere((item) => item.id == id).name}',
-            ),
-          ),
-        const SizedBox(height: CoeloSpacing.space4),
-        Text('Buscar criança existente', style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: CoeloSpacing.space1),
-        const Text(
-          'Consulte por nome, identificador ou contexto; e-mail e celular não são exigidos.',
-        ),
-        const SizedBox(height: CoeloSpacing.space2),
-        SizedBox(
-          height: CoeloSize.touchMin,
-          child: CoeloSearchField(
-            key: const Key('person-child-link-search'),
-            controller: _childController,
-            hintText: 'Nome, identificador ou contexto',
-            semanticLabel: 'Buscar criança por nome, identificador ou contexto',
-            onChanged: (value) => setState(() => _childQuery = value),
-          ),
-        ),
-        _results(
-          _matches(_childLinkCandidates, _childQuery),
-          selectedId: _selectedChildId,
-          keyPrefix: 'person-child-link-result',
-          onSelected: (candidate) => setState(() => _selectedChildId = candidate.id),
-        ),
-      ],
-    ),
+      ),
+      _results(
+        _matches(_childLinkCandidates, _childQuery),
+        selectedId: _selectedChildId,
+        keyPrefix: 'person-child-link-result',
+        onSelected: (candidate) => setState(() => _selectedChildId = candidate.id),
+      ),
+    ],
   );
 }
 
@@ -251,6 +283,9 @@ final class _PersonFormPageState extends State<PersonFormPage> {
   void initState() {
     super.initState();
     _viewModel = PersonFormViewModel(widget.repository, original: widget.original);
+    if (widget.initialPersonType != null) {
+      _viewModel.type = widget.initialPersonType!;
+    }
     _activityController = SuperadminActivityController();
     _controllers = {
       'firstName': TextEditingController(text: _viewModel.firstName),
@@ -280,6 +315,9 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         _options = value;
         _loadingOptions = false;
       });
+      if (widget.initialInstitutionId != null) {
+        _applyInitialMembershipContext();
+      }
     } on Object catch (error) {
       if (!mounted) return;
       setState(() {
@@ -297,6 +335,51 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     _viewModel.dispose();
     _activityController.dispose();
     super.dispose();
+  }
+
+  void _applyInitialMembershipContext() {
+    final institution = _options.institutions
+        .where((option) => option.id == widget.initialInstitutionId)
+        .firstOrNull;
+    if (institution == null) return;
+
+    _selectedInstitution = institution;
+    if (widget.initialUnitId != null) {
+      final unit = _options.units
+          .where(
+            (option) => option.id == widget.initialUnitId && option.institutionId == institution.id,
+          )
+          .firstOrNull;
+      if (unit != null) {
+        _selectedUnit = unit;
+      }
+    }
+    if (widget.initialGroupId != null) {
+      final group = _options.groups
+          .where(
+            (option) =>
+                option.id == widget.initialGroupId &&
+                option.institutionId == institution.id &&
+                option.unitId == _selectedUnit.id,
+          )
+          .firstOrNull;
+      if (group != null) {
+        _selectedGroup = group;
+      }
+    }
+    if (widget.initialRole != null) {
+      final role = _options.roles
+          .where(
+            (option) => option.id == widget.initialRole && option.institutionId == institution.id,
+          )
+          .firstOrNull;
+      if (role != null) {
+        _selectedRole = role;
+      }
+    } else if (_roleOptions.isNotEmpty) {
+      _selectedRole = _roleOptions.first;
+    }
+    setState(() {});
   }
 
   void _syncIdentity() {
@@ -470,6 +553,20 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     ],
   );
 
+  ButtonStyle _negativeActionStyle() {
+    final colors = Theme.of(context).colorScheme;
+    return ButtonStyle(
+      foregroundColor: WidgetStatePropertyAll(colors.error),
+      backgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+          return colors.errorContainer;
+        }
+        return Colors.transparent;
+      }),
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+    );
+  }
+
   Widget _identity() => Column(
     key: const ValueKey(PersonFormStep.identity),
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -629,8 +726,10 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         ),
         const SizedBox(height: CoeloSpacing.space4),
         if (_viewModel.type == PersonType.adult)
-          for (final membership in _viewModel.memberships)
+          for (final (index, membership) in _viewModel.memberships.indexed) ...[
+            if (index > 0) const SizedBox(height: CoeloSpacing.space3),
             _PersonFormSurface(
+              key: Key('person-membership-card-${membership.id}'),
               padding: const EdgeInsets.all(CoeloSpacing.space3),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -661,6 +760,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       onPressed: () => _viewModel.removeMembership(membership),
+                      style: _negativeActionStyle(),
                       icon: const Icon(Icons.link_off_rounded),
                       label: const Text('Revogar vínculo'),
                     ),
@@ -668,8 +768,12 @@ final class _PersonFormPageState extends State<PersonFormPage> {
                 ],
               ),
             ),
+          ],
         if (_viewModel.type == PersonType.child)
-          for (final childContext in _viewModel.childContexts) _childContextEditor(childContext),
+          for (final (index, childContext) in _viewModel.childContexts.indexed) ...[
+            if (index > 0) const SizedBox(height: CoeloSpacing.space3),
+            _childContextEditor(childContext),
+          ],
         if (_options.institutions.isNotEmpty) ...[
           const SizedBox(height: CoeloSpacing.space4),
           _responsiveFields([
@@ -737,16 +841,6 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         ],
         if (_viewModel.type == PersonType.child) ...[
           const SizedBox(height: CoeloSpacing.space4),
-          if (widget.original != null &&
-              widget.childSafetyStore != null &&
-              widget.onOpenChildSecurity != null) ...[
-            ChildSecuritySummaryCard(
-              childId: widget.original!.id,
-              store: widget.childSafetyStore!,
-              onOpen: widget.onOpenChildSecurity!,
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-          ],
           const CoeloStatePanel(
             title: 'Vínculos de responsável',
             message: 'Os vínculos de responsável permanecem somente leitura nesta etapa.',
@@ -775,6 +869,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         .where((option) => option.id == childContext.groupId)
         .firstOrNull;
     return _PersonFormSurface(
+      key: Key('person-child-context-card-${childContext.id}'),
       padding: const EdgeInsets.all(CoeloSpacing.space3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -829,6 +924,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
             alignment: Alignment.centerRight,
             child: TextButton.icon(
               onPressed: () => _viewModel.removeChildContext(childContext),
+              style: _negativeActionStyle(),
               icon: const Icon(Icons.link_off_rounded),
               label: const Text('Revogar contexto'),
             ),

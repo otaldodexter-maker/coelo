@@ -1,44 +1,48 @@
+import 'dart:math';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-
-import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
+import '../application/child_safety_controller.dart';
 import '../domain/child_safety.dart';
+import '../domain/child_safety_contract.dart';
 
-enum _SafetyLayout { cards, table }
-
-enum _SafetyTableView { grouped }
+enum _TableView { grouped }
 
 final class SafetyLandingPage extends StatefulWidget {
   const SafetyLandingPage({
-    required this.store,
+    required this.controller,
     required this.logout,
     required this.onOpenChild,
+    this.onCreate,
+    this.onExport,
     this.onDestinationSelected,
     super.key,
   });
-  final ChildSafetyStore store;
+  final ChildSafetyController controller;
   final LogoutAction logout;
   final ValueChanged<String> onOpenChild;
+  final VoidCallback? onCreate;
+  final VoidCallback? onExport;
   final ValueChanged<String>? onDestinationSelected;
-
   @override
   State<SafetyLandingPage> createState() => _SafetyLandingPageState();
 }
 
 final class _SafetyLandingPageState extends State<SafetyLandingPage> {
   final search = TextEditingController();
-  var query = '';
-  var statuses = <PickupAuthorizationStatus>{};
-  var institutions = <String>{};
-  var units = <String>{};
-  var layout = _SafetyLayout.cards;
-  var page = 1;
-  var pageSize = 8;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller.state == ChildSafetyLoadState.loading) widget.controller.load();
+  }
 
   @override
   void dispose() {
@@ -46,189 +50,89 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
     super.dispose();
   }
 
-  List<ChildSafetyRecord> get visible {
-    final term = query.trim().toLowerCase();
-    return widget.store.records.where((record) {
-      final haystack = [
-        record.childName,
-        record.internalId,
-        record.institutionName,
-        record.unitName,
-      ].join(' ').toLowerCase();
-      return (term.isEmpty || haystack.contains(term)) &&
-          (institutions.isEmpty || institutions.contains(record.institutionName)) &&
-          (units.isEmpty || units.contains(record.unitName)) &&
-          (statuses.isEmpty || record.authorizations.any((item) => statuses.contains(item.status)));
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
     title: 'Segurança da criança',
-    subtitle: 'Gerencie quem pode retirar cada criança e acompanhe aprovações.',
+    subtitle: 'Autorizações, restrições e alertas com revisão auditada pela unidade.',
     currentDestination: 'safety',
     onDestinationSelected: widget.onDestinationSelected,
     child: AnimatedBuilder(
-      animation: widget.store,
-      builder: (context, child) => LayoutBuilder(
+      animation: widget.controller,
+      builder: (context, _) => LayoutBuilder(
         builder: (context, constraints) {
-          final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          final inset = constraints.maxWidth >= 1200
               ? CoeloSpacing.space10
-              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              : constraints.maxWidth >= 768
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
-          final statePanel = switch (widget.store.state) {
-            ChildSafetyLoadState.loading => Semantics(
-              label: 'Carregando segurança da criança',
-              liveRegion: true,
-              child: CoeloStatePanel(
-                title: 'Carregando segurança da criança',
-                message: 'Buscando crianças e autorizações no contexto permitido.',
-                loading: true,
-              ),
-            ),
-            ChildSafetyLoadState.error => const CoeloStatePanel(
-              title: 'Não foi possível carregar',
-              message: 'Tente novamente mais tarde.',
-              icon: Icons.error_outline_rounded,
-            ),
-            ChildSafetyLoadState.unauthorized => const CoeloStatePanel(
-              title: 'Sem permissão',
-              message: 'O contexto atual não autoriza esta consulta.',
-              icon: Icons.lock_outline_rounded,
-            ),
-            ChildSafetyLoadState.ready =>
-              widget.store.records.isEmpty
-                  ? const CoeloStatePanel(
-                      title: 'Nenhuma criança cadastrada',
-                      message: 'Não há crianças disponíveis no contexto atual.',
-                      icon: Icons.child_care_outlined,
-                    )
-                  : null,
-          };
-          if (statePanel != null) {
-            return ColoredBox(
-              color: Theme.of(context).colorScheme.surface,
-              child: Center(
-                child: Padding(padding: EdgeInsets.all(padding), child: statePanel),
-              ),
-            );
-          }
           return ColoredBox(
             key: const Key('safety-directory-surface'),
             color: Theme.of(context).colorScheme.surface,
             child: ListView(
-              padding: EdgeInsets.all(padding),
+              padding: EdgeInsets.all(inset),
               children: [
                 CoeloAdminListingToolbar(
                   search: SizedBox(
-                    width: constraints.maxWidth < CoeloBreakpoints.medium.minWidth
-                        ? constraints.maxWidth
-                        : 300,
+                    width: constraints.maxWidth < 768 ? constraints.maxWidth : 320,
                     height: CoeloSize.touchMin,
                     child: CoeloSearchField(
                       controller: search,
-                      hintText: 'Nome, RA ou contexto',
-                      semanticLabel: 'Buscar criança por nome, RA, instituição ou unidade',
-                      onChanged: (value) => setState(() {
-                        query = value;
-                        page = 1;
-                      }),
+                      hintText: 'Nome ou identificação interna',
+                      semanticLabel: 'Buscar criança no escopo autorizado',
+                      onChanged: widget.controller.setSearch,
                     ),
                   ),
-                  filters: [
-                    SizedBox(
-                      width: 180,
-                      child: CoeloAdminMultiSelectFilter<String>(
-                        label: 'Instituição',
-                        options: widget.store.records
-                            .map((item) => item.institutionName)
-                            .toSet()
-                            .toList(),
-                        selectedValues: institutions,
-                        optionLabel: (value) => value,
-                        onChanged: (value) => setState(() {
-                          institutions = value;
-                          page = 1;
-                        }),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 180,
-                      child: CoeloAdminMultiSelectFilter<String>(
-                        label: 'Unidade',
-                        options: widget.store.records.map((item) => item.unitName).toSet().toList(),
-                        selectedValues: units,
-                        optionLabel: (value) => value,
-                        onChanged: (value) => setState(() {
-                          units = value;
-                          page = 1;
-                        }),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 180,
-                      child: CoeloAdminMultiSelectFilter<PickupAuthorizationStatus>(
-                        label: 'Status',
-                        options: PickupAuthorizationStatus.values,
-                        selectedValues: statuses,
-                        optionLabel: (value) => value.label,
-                        onChanged: (value) => setState(() {
-                          statuses = value;
-                          page = 1;
-                        }),
-                      ),
-                    ),
-                  ],
+                  filters: const [],
                   actions: [
-                    SuperadminDirectoryViewToggle<_SafetyTableView>(
-                      cardsSelected: layout == _SafetyLayout.cards,
-                      groupedView: _SafetyTableView.grouped,
-                      selectedTableView: _SafetyTableView.grouped,
+                    SuperadminDirectoryViewToggle<_TableView>(
+                      cardsSelected: widget.controller.query.view == ChildSafetyDirectoryView.cards,
+                      groupedView: _TableView.grouped,
+                      selectedTableView: _TableView.grouped,
                       tableViews: const [
                         SuperadminDirectoryTableViewOption(
-                          value: _SafetyTableView.grouped,
+                          value: _TableView.grouped,
                           label: 'Agrupado',
                         ),
                       ],
                       cardsKey: const Key('safety-view-cards'),
                       tableKey: const Key('safety-view-table'),
-                      onCardsSelected: () => setState(() => layout = _SafetyLayout.cards),
-                      onTableViewSelected: (_) => setState(() => layout = _SafetyLayout.table),
+                      onCardsSelected: () =>
+                          widget.controller.setView(ChildSafetyDirectoryView.cards),
+                      onTableViewSelected: (_) =>
+                          widget.controller.setView(ChildSafetyDirectoryView.table),
                     ),
-                    FilledButton.icon(
-                      onPressed: widget.store.records.isEmpty
-                          ? null
-                          : () => widget.onOpenChild(widget.store.records.first.childId),
-                      icon: const Icon(Icons.person_add_alt_1_rounded),
-                      label: const Text('Nova autorização'),
-                    ),
+                    if (widget.onExport != null)
+                      CoeloAdminFileActions(
+                        actions: [
+                          CoeloAdminFileAction(
+                            key: const Key('safety-export-csv'),
+                            label: 'Exportar CSV',
+                            icon: Icons.download_outlined,
+                            onPressed: widget.onExport!,
+                          ),
+                        ],
+                      ),
                   ],
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
-                _Metrics(records: widget.store.records),
-                const SizedBox(height: CoeloSpacing.space6),
-                _SafetyDirectory(
-                  records: visible,
-                  layout: layout,
-                  page: page,
-                  pageSize: pageSize,
-                  onOpen: widget.onOpenChild,
-                  onClear: () => setState(() {
-                    search.clear();
-                    query = '';
-                    statuses = {};
-                    institutions = {};
-                    units = {};
-                    page = 1;
-                  }),
-                  onPageChanged: (value) => setState(() => page = value),
-                  onPageSizeChanged: (value) => setState(() {
-                    pageSize = value;
-                    page = 1;
-                  }),
+                SuperadminUnderlineTabs<ChildSafetyDirectorySegment>(
+                  tabs: [
+                    for (final value in ChildSafetyDirectorySegment.values)
+                      SuperadminUnderlineTab(
+                        value: value,
+                        label:
+                            value.label +
+                            ' (' +
+                            widget.controller.segmentCounts[value].toString() +
+                            ')',
+                      ),
+                  ],
+                  selected: widget.controller.query.segment,
+                  onSelected: widget.controller.setStatusSegment,
                 ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _body(),
               ],
             ),
           );
@@ -236,63 +140,101 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
       ),
     ),
   );
-}
-
-final class _SafetyDirectory extends StatelessWidget {
-  const _SafetyDirectory({
-    required this.records,
-    required this.layout,
-    required this.page,
-    required this.pageSize,
-    required this.onOpen,
-    required this.onClear,
-    required this.onPageChanged,
-    required this.onPageSizeChanged,
-  });
-
-  final List<ChildSafetyRecord> records;
-  final _SafetyLayout layout;
-  final int page;
-  final int pageSize;
-  final ValueChanged<String> onOpen;
-  final VoidCallback onClear;
-  final ValueChanged<int> onPageChanged;
-  final ValueChanged<int> onPageSizeChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    if (records.isEmpty) {
+  Widget _body() => switch (widget.controller.state) {
+    ChildSafetyLoadState.loading => const CoeloStatePanel(
+      title: 'Carregando segurança da criança',
+      message: 'Buscando somente contextos autorizados.',
+      loading: true,
+    ),
+    ChildSafetyLoadState.unauthorized => const CoeloStatePanel(
+      title: 'Sem permissão',
+      message: 'O contexto atual não autoriza esta consulta.',
+      icon: Icons.lock_outline_rounded,
+    ),
+    ChildSafetyLoadState.error => CoeloStatePanel(
+      title: 'Não foi possível carregar',
+      message: 'Nenhum dado anterior foi mantido.',
+      icon: Icons.error_outline_rounded,
+      actionLabel: 'Tentar novamente',
+      onAction: widget.controller.retry,
+    ),
+    ChildSafetyLoadState.ready => _ready(),
+  };
+  Widget _ready() {
+    final c = widget.controller;
+    if (c.records.isEmpty && !c.canCreate)
       return CoeloStatePanel(
-        title: 'Nenhuma criança encontrada',
-        message: 'Revise a busca ou os filtros aplicados.',
+        title: c.query.hasActiveFilters
+            ? 'Nenhuma criança encontrada'
+            : 'Nenhuma criança disponível',
+        message: 'Revise a busca ou a segmentação.',
         icon: Icons.search_off_rounded,
-        actionLabel: 'Limpar filtros',
-        onAction: onClear,
       );
-    }
-    final totalPages = (records.length / pageSize).ceil().clamp(1, 999999);
-    final safePage = page.clamp(1, totalPages);
-    final items = records.skip((safePage - 1) * pageSize).take(pageSize).toList(growable: false);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (layout == _SafetyLayout.cards)
-          _InstitutionGroups(records: items, onOpen: onOpen)
-        else
-          _SafetyChildrenTable(records: items, onOpen: onOpen),
-        if (records.length > pageSize) ...[
-          const SizedBox(height: CoeloSpacing.space4),
-          Center(
-            child: CoeloAdminPagination(
-              currentPage: safePage,
-              totalPages: totalPages,
-              pageSize: pageSize,
-              pageSizeOptions: const [8, 20, 50, 100],
-              onPageSelected: onPageChanged,
-              onPageSizeChanged: onPageSizeChanged,
-              onPrevious: safePage > 1 ? () => onPageChanged(safePage - 1) : null,
-              onNext: safePage < totalPages ? () => onPageChanged(safePage + 1) : null,
+        if (c.query.view == ChildSafetyDirectoryView.cards)
+          LayoutBuilder(
+            builder: (context, box) {
+              final columns = box.maxWidth >= 1180
+                  ? 3
+                  : box.maxWidth >= 720
+                  ? 2
+                  : 1;
+              final width = (box.maxWidth - CoeloSpacing.space4 * (columns - 1)) / columns;
+              return Wrap(
+                spacing: CoeloSpacing.space4,
+                runSpacing: CoeloSpacing.space4,
+                children: [
+                  if (c.canCreate && widget.onCreate != null)
+                    SizedBox(
+                      key: const Key('safety-create-card'),
+                      width: width,
+                      height: 220,
+                      child: CoeloAdminCreateAction(
+                        label: 'Criar segurança',
+                        icon: Icons.add_moderator_outlined,
+                        onPressed: widget.onCreate,
+                      ),
+                    ),
+                  for (final record in c.records)
+                    SizedBox(
+                      width: width,
+                      child: SafetyChildDirectoryCard(
+                        record: record,
+                        onPressed: () => widget.onOpenChild(record.childId),
+                      ),
+                    ),
+                ],
+              );
+            },
+          )
+        else ...[
+          if (c.canCreate && widget.onCreate != null) ...[
+            CoeloAdminCreateAction(
+              key: const Key('safety-create-banner'),
+              label: 'Criar segurança',
+              description: 'Busque e selecione a criança antes de cadastrar.',
+              icon: Icons.add_moderator_outlined,
+              variant: CoeloAdminCreateActionVariant.banner,
+              onPressed: widget.onCreate,
             ),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
+          _SafetyTable(records: c.records, onOpen: widget.onOpenChild),
+        ],
+        if (c.totalPages > 1) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloAdminPagination(
+            currentPage: c.currentPage + 1,
+            totalPages: c.totalPages,
+            pageSize: c.pageSize,
+            pageSizeOptions: c.query.view == ChildSafetyDirectoryView.cards
+                ? const [11, 20, 50, 100]
+                : const [8, 20, 50, 100],
+            onPageSelected: (v) => c.goToPage(v - 1),
+            onPageSizeChanged: c.setPageSize,
+            onPrevious: c.currentPage > 0 ? () => c.goToPage(c.currentPage - 1) : null,
+            onNext: c.currentPage + 1 < c.totalPages ? () => c.goToPage(c.currentPage + 1) : null,
           ),
         ],
       ],
@@ -300,38 +242,106 @@ final class _SafetyDirectory extends StatelessWidget {
   }
 }
 
-final class _SafetyChildrenTable extends StatelessWidget {
-  const _SafetyChildrenTable({required this.records, required this.onOpen});
+final class SafetyChildDirectoryCard extends StatelessWidget {
+  const SafetyChildDirectoryCard({required this.record, required this.onPressed, super.key});
+  final ChildSafetyRecord record;
+  final VoidCallback onPressed;
+  @override
+  Widget build(BuildContext context) {
+    final status = switch (record.directorySegment) {
+      ChildSafetyDirectorySegment.awaitingApproval => PickupAuthorizationStatus.pending,
+      ChildSafetyDirectorySegment.authorized => PickupAuthorizationStatus.approved,
+      ChildSafetyDirectorySegment.attention ||
+      ChildSafetyDirectorySegment.withoutAuthorization ||
+      ChildSafetyDirectorySegment.all => PickupAuthorizationStatus.rejected,
+    };
+    final statusLabel = switch (record.directorySegment) {
+      ChildSafetyDirectorySegment.awaitingApproval => 'Aguardando aprovação',
+      ChildSafetyDirectorySegment.attention => 'Atenção',
+      ChildSafetyDirectorySegment.authorized => 'Autorizada',
+      ChildSafetyDirectorySegment.withoutAuthorization => 'Sem autorização',
+      ChildSafetyDirectorySegment.all => status.label,
+    };
+    final colors = _statusPair(context, status);
+    final active = record.authorizationCount;
+    return CoeloAdminInteractiveCard(
+      semanticLabel: 'Abrir segurança de ' + record.childName + '. ' + status.label,
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                CoeloAvatar(
+                  initials: _initials(record.childName),
+                  semanticLabel: 'Avatar de ' + record.childName,
+                  size: CoeloAvatarSize.medium,
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(record.childName, style: Theme.of(context).textTheme.titleMedium),
+                      Text(record.internalId),
+                    ],
+                  ),
+                ),
+                CoeloAdminExpandableStatusIndicator(
+                  key: Key('safety-child-status-' + record.childId),
+                  label: statusLabel,
+                  semanticLabel: 'Status de ' + record.childName + ': ' + statusLabel,
+                  backgroundColor: colors.$1,
+                  foregroundColor: colors.$2,
+                ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            Divider(color: Theme.of(context).colorScheme.outlineVariant),
+            Text(record.institutionName, key: Key('safety-child-institution-' + record.childId)),
+            Text(record.unitName, key: Key('safety-child-unit-' + record.childId)),
+            const SizedBox(height: CoeloSpacing.space3),
+            Row(
+              children: [
+                Expanded(child: Text('Autorizações\n' + active.toString())),
+                Expanded(child: Text('Em análise\n' + record.pendingCount.toString())),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _SafetyTable extends StatelessWidget {
+  const _SafetyTable({required this.records, required this.onOpen});
   final List<ChildSafetyRecord> records;
   final ValueChanged<String> onOpen;
-
   @override
-  Widget build(BuildContext context) => CoeloAdminResizableTable<ChildSafetyRecord>(
-    key: const Key('safety-children-table'),
-    items: records,
-    rowKey: (item) => 'safety-child-row-' + item.childId,
-    headerHeight: 56,
-    rowHeight: 64,
-    onRowPressed: (item) => onOpen(item.childId),
-    pinnedColumn: _column('child', 'Criança', (item) => item.childName, 240),
-    columns: [
-      _column('institution', 'Instituição', (item) => item.institutionName, 220),
-      _column('unit', 'Unidade', (item) => item.unitName, 200),
-      _column(
-        'authorized',
-        'Pessoas autorizadas',
-        (item) => item.authorizations.length.toString(),
-        180,
-      ),
-      _column(
-        'validation',
-        'Validação',
-        (item) => item.pendingCount > 0 ? 'Há pendentes' : 'Todas ativas',
-        180,
-      ),
-    ],
-  );
-
+  Widget build(BuildContext context) => records.isEmpty
+      ? const CoeloStatePanel(
+          title: 'Nenhuma criança encontrada',
+          message: 'Revise a busca ou a segmentação.',
+          icon: Icons.search_off_rounded,
+        )
+      : CoeloAdminResizableTable<ChildSafetyRecord>(
+          key: const Key('safety-children-table'),
+          items: records,
+          rowKey: (r) => 'safety-child-row-' + r.childId,
+          headerHeight: 56,
+          rowHeight: 64,
+          onRowPressed: (r) => onOpen(r.childId),
+          pinnedColumn: _column('child', 'Criança', (r) => r.childName, 240),
+          columns: [
+            _column('institution', 'Instituição', (r) => r.institutionName, 220),
+            _column('unit', 'Unidade', (r) => r.unitName, 200),
+            _column('authorized', 'Autorizadas', (r) => r.authorizations.length.toString(), 160),
+            _column('pending', 'Em análise', (r) => r.pendingCount.toString(), 150),
+          ],
+        );
   CoeloAdminTableColumn<ChildSafetyRecord> _column(
     String id,
     String label,
@@ -341,330 +351,178 @@ final class _SafetyChildrenTable extends StatelessWidget {
     id: id,
     label: label,
     initialWidth: width,
-    minWidth: 150,
+    minWidth: 140,
     maxWidth: 360,
-    cellBuilder: (context, item) => Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+    cellBuilder: (_, item) => Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
   );
 }
 
-final class _Metrics extends StatelessWidget {
-  const _Metrics({required this.records});
-  final List<ChildSafetyRecord> records;
-
-  @override
-  Widget build(BuildContext context) {
-    final pending = records.fold<int>(0, (sum, item) => sum + item.pendingCount);
-    final approved = records.fold<int>(
-      0,
-      (sum, item) =>
-          sum +
-          item.authorizations
-              .where((value) => value.status == PickupAuthorizationStatus.approved)
-              .length,
-    );
-    return Wrap(
-      spacing: CoeloSpacing.space3,
-      runSpacing: CoeloSpacing.space3,
-      children: [
-        _Metric('Crianças', records.length.toString(), Icons.child_care_rounded),
-        _Metric('Autorizações ativas', approved.toString(), Icons.verified_user_outlined),
-        _Metric('Aguardando aprovação', pending.toString(), Icons.pending_actions_outlined),
-      ],
-    );
-  }
-}
-
-final class _Metric extends StatelessWidget {
-  const _Metric(this.label, this.value, this.icon);
-  final String label, value;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    constraints: const BoxConstraints(minWidth: 180),
-    padding: const EdgeInsets.all(CoeloSpacing.space4),
-    decoration: _surface(context),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: CoeloSpacing.space3),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(value, style: Theme.of(context).textTheme.titleLarge),
-            Text(label, style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
-      ],
-    ),
-  );
-}
-
-final class _InstitutionGroups extends StatelessWidget {
-  const _InstitutionGroups({required this.records, required this.onOpen});
-  final List<ChildSafetyRecord> records;
-  final ValueChanged<String> onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final groups = <String, List<ChildSafetyRecord>>{};
-    for (final record in records) {
-      groups.putIfAbsent(record.institutionName + ' · ' + record.unitName, () => []).add(record);
-    }
-    final entries = groups.entries.toList();
-    return Column(
-      children: [
-        for (var group = 0; group < entries.length; group++) ...[
-          Container(
-            padding: const EdgeInsets.all(CoeloSpacing.space6),
-            decoration: _surface(context),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(entries[group].key, style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: CoeloSpacing.space4),
-                LayoutBuilder(
-                  builder: (context, constraints) => Wrap(
-                    spacing: CoeloSpacing.space4,
-                    runSpacing: CoeloSpacing.space4,
-                    children: [
-                      for (final record in entries[group].value)
-                        SizedBox(
-                          width: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                              ? (constraints.maxWidth - CoeloSpacing.space4) / 2
-                              : constraints.maxWidth,
-                          child: CoeloAdminInteractiveCard(
-                            semanticLabel:
-                                'Abrir segurança de ${record.childName}. '
-                                'Status das autorizações: ${_childAuthorizationStatus(record).label}',
-                            onPressed: () => onOpen(record.childId),
-                            child: Padding(
-                              padding: const EdgeInsets.all(CoeloSpacing.space4),
-                              child: Row(
-                                children: [
-                                  CoeloAvatar(
-                                    initials: _initials(record.childName),
-                                    semanticLabel: 'Avatar de ' + record.childName,
-                                    size: CoeloAvatarSize.medium,
-                                  ),
-                                  const SizedBox(width: CoeloSpacing.space3),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          record.childName,
-                                          style: Theme.of(context).textTheme.titleMedium,
-                                        ),
-                                        Text(record.internalId),
-                                        Text(
-                                          'Instituição: ${record.institutionName}',
-                                          key: Key('safety-child-institution-${record.childId}'),
-                                        ),
-                                        Text(
-                                          'Unidade: ${record.unitName}',
-                                          key: Key('safety-child-unit-${record.childId}'),
-                                        ),
-                                        Text(
-                                          record.authorizations.length.toString() +
-                                              ' pessoas cadastradas',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  _ChildAuthorizationStatusIndicator(record: record),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (group < entries.length - 1) const SizedBox(height: CoeloSpacing.space6),
-        ],
-      ],
-    );
-  }
-}
-
-PickupAuthorizationStatus _childAuthorizationStatus(ChildSafetyRecord record) =>
-    record.pendingCount > 0
-    ? PickupAuthorizationStatus.pending
-    : PickupAuthorizationStatus.approved;
-
-final class _ChildAuthorizationStatusIndicator extends StatelessWidget {
-  const _ChildAuthorizationStatusIndicator({required this.record});
-
-  final ChildSafetyRecord record;
-
-  @override
-  Widget build(BuildContext context) {
-    final status = _childAuthorizationStatus(record);
-    final colors = _statusPair(context, status);
-    return CoeloAdminExpandableStatusIndicator(
-      label: status.label,
-      backgroundColor: colors.$1,
-      foregroundColor: colors.$2,
-      semanticLabel: 'Status das autorizações de ${record.childName}: ${status.label}',
-      surfaceKey: Key('safety-child-status-${record.childId}'),
-    );
-  }
-}
-
-final class ChildSecurityPage extends StatelessWidget {
+final class ChildSecurityPage extends StatefulWidget {
   const ChildSecurityPage({
     required this.childId,
-    required this.store,
+    required this.controller,
     required this.logout,
     required this.onBack,
+    this.onCreate,
+    this.onEdit,
     this.onDestinationSelected,
     super.key,
   });
   final String childId;
-  final ChildSafetyStore store;
+  final ChildSafetyController controller;
   final LogoutAction logout;
   final VoidCallback onBack;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final ValueChanged<String>? onDestinationSelected;
+  @override
+  State<ChildSecurityPage> createState() => _ChildSecurityPageState();
+}
+
+final class _ChildSecurityPageState extends State<ChildSecurityPage> {
+  late Future<ChildSafetyRecord?> record;
+  late int dataVersion;
+  @override
+  void initState() {
+    super.initState();
+    record = widget.controller.fetchChild(widget.childId);
+    dataVersion = widget.controller.dataVersion;
+    widget.controller.addListener(_controllerChanged);
+  }
+
+  void _controllerChanged() {
+    if (!mounted || dataVersion == widget.controller.dataVersion) return;
+    dataVersion = widget.controller.dataVersion;
+    setState(() => record = widget.controller.fetchChild(widget.childId));
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_controllerChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
-    logout: logout,
-    title: 'Pessoas que podem retirar',
-    subtitle: 'A autorização só entra em vigor após aprovação institucional.',
+    logout: widget.logout,
+    title: 'Segurança da criança',
+    subtitle: 'Contexto privado, vigência e histórico auditável.',
     currentDestination: 'safety',
-    onDestinationSelected: onDestinationSelected,
-    child: AnimatedBuilder(
-      animation: store,
-      builder: (context, child) {
-        final record = store.findChild(childId);
-        if (record == null) {
-          return Center(
-            child: CoeloStatePanel(
-              title: 'Criança não encontrada',
-              message: 'O vínculo pode ter sido removido ou está fora do seu escopo.',
-              icon: Icons.search_off_rounded,
-              actionLabel: 'Voltar para Segurança',
-              onAction: onBack,
-            ),
+    onDestinationSelected: widget.onDestinationSelected,
+    child: FutureBuilder<ChildSafetyRecord?>(
+      future: record,
+      builder: (context, snapshot) => LayoutBuilder(
+        builder: (context, constraints) {
+          if (snapshot.connectionState != ConnectionState.done)
+            return const Center(
+              child: CoeloStatePanel(
+                title: 'Carregando contexto',
+                message: 'Revalidando acesso.',
+                loading: true,
+              ),
+            );
+          if (snapshot.hasError)
+            return Center(
+              child: CoeloStatePanel(
+                title: 'Contexto indisponível',
+                message: 'Não foi possível abrir este registro.',
+                icon: Icons.error_outline_rounded,
+                actionLabel: 'Voltar',
+                onAction: widget.onBack,
+              ),
+            );
+          final child = snapshot.data;
+          if (child == null)
+            return Center(
+              child: CoeloStatePanel(
+                title: 'Registro não encontrado',
+                message: 'O registro não existe ou não pertence ao seu escopo.',
+                icon: Icons.search_off_rounded,
+                actionLabel: 'Voltar',
+                onAction: widget.onBack,
+              ),
+            );
+          final inset = constraints.maxWidth >= 1200 ? CoeloSpacing.space10 : CoeloSpacing.space4;
+          return ListView(
+            padding: EdgeInsets.all(inset),
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    tooltip: 'Voltar',
+                    constraints: const BoxConstraints.tightFor(
+                      width: CoeloSize.touchMin,
+                      height: CoeloSize.touchMin,
+                    ),
+                    onPressed: widget.onBack,
+                    icon: const Icon(Icons.arrow_back_rounded),
+                  ),
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(child.childName, style: Theme.of(context).textTheme.headlineSmall),
+                        Text(
+                          child.institutionName + ' · ' + child.unitName + ' · ' + child.internalId,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (widget.onCreate != null)
+                    FilledButton.icon(
+                      key: const Key('safety-add-authorized-person'),
+                      onPressed: widget.onCreate,
+                      icon: const Icon(Icons.person_add_alt_1_outlined),
+                      label: const Text('Cadastrar pessoa'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: CoeloSpacing.space6),
+              if (child.pendingCount > 0) ...[
+                _PendingNotice(count: child.pendingCount),
+                const SizedBox(height: CoeloSpacing.space4),
+              ],
+              if (child.authorizations.isEmpty)
+                CoeloStatePanel(
+                  title: 'Nenhuma pessoa autorizada',
+                  message: 'A retirada permanece bloqueada até uma autorização ser aprovada.',
+                  icon: Icons.gpp_bad_outlined,
+                  actionLabel: widget.onCreate == null ? null : 'Cadastrar pessoa',
+                  onAction: widget.onCreate,
+                )
+              else if (constraints.maxWidth >= 768)
+                _AuthorizedTable(
+                  record: child,
+                  controller: widget.controller,
+                  onEdit: widget.onEdit,
+                )
+              else
+                Column(
+                  children: [
+                    for (final item in child.authorizations)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+                        child: AuthorizedPersonCard(
+                          record: child,
+                          authorization: item,
+                          controller: widget.controller,
+                          onEdit: widget.onEdit == null ? null : () => widget.onEdit!(item.id),
+                        ),
+                      ),
+                  ],
+                ),
+            ],
           );
-        }
-        return _ChildDetail(record: record, store: store, onBack: onBack);
-      },
+        },
+      ),
     ),
   );
 }
 
-final class _ChildDetail extends StatelessWidget {
-  const _ChildDetail({required this.record, required this.store, required this.onBack});
-  final ChildSafetyRecord record;
-  final ChildSafetyStore store;
-  final VoidCallback onBack;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-          ? CoeloSpacing.space10
-          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-          ? CoeloSpacing.space6
-          : CoeloSpacing.space4;
-      return ColoredBox(
-        color: Theme.of(context).colorScheme.surface,
-        child: ListView(
-          padding: EdgeInsets.all(padding),
-          children: [
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              spacing: CoeloSpacing.space3,
-              runSpacing: CoeloSpacing.space3,
-              children: [
-                TextButton.icon(
-                  onPressed: onBack,
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Segurança'),
-                ),
-                FilledButton.icon(
-                  onPressed: () => _openForm(context, record, store),
-                  icon: const Icon(Icons.person_add_alt_1_rounded),
-                  label: const Text('Cadastrar pessoa'),
-                ),
-              ],
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            Container(
-              padding: const EdgeInsets.all(CoeloSpacing.space6),
-              decoration: _surface(context),
-              child: Wrap(
-                spacing: CoeloSpacing.space4,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  CoeloAvatar(
-                    initials: _initials(record.childName),
-                    semanticLabel: 'Avatar de ' + record.childName,
-                    size: CoeloAvatarSize.large,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(record.childName, style: Theme.of(context).textTheme.headlineSmall),
-                      Text(
-                        record.internalId +
-                            ' · ' +
-                            record.institutionName +
-                            ' · ' +
-                            record.unitName,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            if (record.pendingCount > 0) ...[
-              const SizedBox(height: CoeloSpacing.space4),
-              _Pending(count: record.pendingCount),
-            ],
-            const SizedBox(height: CoeloSpacing.space6),
-            Text('Pessoas cadastradas', style: Theme.of(context).textTheme.titleLarge),
-            const Text(
-              'A instituição e a unidade visualizam apenas autorizações dentro da própria hierarquia.',
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            if (record.authorizations.isEmpty)
-              CoeloStatePanel(
-                title: 'Nenhuma pessoa cadastrada',
-                message: 'Cadastre alguém e defina a vigência da autorização.',
-                icon: Icons.person_add_alt_1_outlined,
-                actionLabel: 'Cadastrar pessoa',
-                onAction: () => _openForm(context, record, store),
-              )
-            else if (constraints.maxWidth >= CoeloBreakpoints.medium.minWidth)
-              _AuthorizedPersonsTable(record: record, store: store)
-            else
-              for (var index = 0; index < record.authorizations.length; index++) ...[
-                _AuthorizationCard(
-                  record: record,
-                  authorization: record.authorizations[index],
-                  store: store,
-                ),
-                if (index < record.authorizations.length - 1)
-                  const SizedBox(height: CoeloSpacing.space4),
-              ],
-          ],
-        ),
-      );
-    },
-  );
-}
-
-final class _Pending extends StatelessWidget {
-  const _Pending({required this.count});
+final class _PendingNotice extends StatelessWidget {
+  const _PendingNotice({required this.count});
   final int count;
-
   @override
   Widget build(BuildContext context) {
     final colors = _statusColors(context);
@@ -674,68 +532,45 @@ final class _Pending extends StatelessWidget {
         color: colors.warningContainer,
         borderRadius: BorderRadius.circular(CoeloRadius.lg),
       ),
-      child: Row(
-        children: [
-          Icon(Icons.pending_actions_rounded, color: colors.onWarningContainer),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: Text(
-              count.toString() +
-                  ' solicitação(ões) pendente(s), em revisão. A retirada permanece bloqueada até aprovação.',
-              style: TextStyle(color: colors.onWarningContainer),
-            ),
-          ),
-        ],
+      child: Text(
+        count.toString() +
+            ' solicitação(ões) aguardando aprovação. A retirada permanece bloqueada.',
+        style: TextStyle(color: colors.onWarningContainer),
       ),
     );
   }
 }
 
-final class _AuthorizedPersonsTable extends StatelessWidget {
-  const _AuthorizedPersonsTable({required this.record, required this.store});
+final class _AuthorizedTable extends StatelessWidget {
+  const _AuthorizedTable({required this.record, required this.controller, required this.onEdit});
   final ChildSafetyRecord record;
-  final ChildSafetyStore store;
-
+  final ChildSafetyController controller;
+  final ValueChanged<String>? onEdit;
   @override
   Widget build(BuildContext context) => CoeloAdminResizableTable<PickupAuthorization>(
     key: const Key('authorized-persons-table'),
     items: record.authorizations,
-    rowKey: (item) => 'authorized-person-row-' + item.id,
+    rowKey: (a) => 'authorized-person-row-' + a.id,
     headerHeight: 56,
     rowHeight: 72,
-    pinnedColumn: _column('name', 'Nome', (item) => item.name, 220),
+    pinnedColumn: _column('name', 'Nome', (a) => a.name, 220),
     columns: [
-      _column('relationship', 'Relação / hierarquia', (item) => item.relationship, 190),
-      _column(
-        'context',
-        'Instituição / unidade',
-        (item) => item.institutionName + ' · ' + item.unitName,
-        260,
-      ),
-      _column('period', 'Período de retirada', _period, 220),
-      CoeloAdminTableColumn(
-        id: 'status',
-        label: 'Status',
-        initialWidth: 140,
-        minWidth: 120,
-        maxWidth: 200,
-        cellBuilder: (context, item) => _Status(status: item.status),
-      ),
-      _column('origin', 'Origem', (item) => item.origin.label, 180),
+      _column('relationship', 'Relação', (a) => a.relationship, 180),
+      _column('validity', 'Validade', _period, 220),
+      _column('status', 'Status', (a) => a.status.label, 150),
       CoeloAdminTableColumn(
         id: 'actions',
         label: 'Ações',
-        initialWidth: 160,
+        initialWidth: 150,
         minWidth: 140,
         maxWidth: 220,
         cellBuilder: (context, item) => OutlinedButton(
-          onPressed: () => _openManagement(context, record, item, store),
+          onPressed: () => _manage(context, record, item, controller, onEdit),
           child: const Text('Gerenciar'),
         ),
       ),
     ],
   );
-
   CoeloAdminTableColumn<PickupAuthorization> _column(
     String id,
     String label,
@@ -747,109 +582,502 @@ final class _AuthorizedPersonsTable extends StatelessWidget {
     initialWidth: width,
     minWidth: 140,
     maxWidth: 360,
-    cellBuilder: (context, item) => Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
+    cellBuilder: (_, item) => Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
   );
 }
 
-final class _AuthorizationCard extends StatelessWidget {
-  const _AuthorizationCard({
+final class AuthorizedPersonCard extends StatelessWidget {
+  const AuthorizedPersonCard({
     required this.record,
     required this.authorization,
-    required this.store,
+    required this.controller,
+    this.onEdit,
+    super.key,
   });
   final ChildSafetyRecord record;
   final PickupAuthorization authorization;
-  final ChildSafetyStore store;
+  final ChildSafetyController controller;
+  final VoidCallback? onEdit;
+  @override
+  Widget build(BuildContext context) => CoeloAdminInteractiveCard(
+    semanticLabel: authorization.name + ', ' + authorization.status.label,
+    onPressed: () => _manage(
+      context,
+      record,
+      authorization,
+      controller,
+      onEdit == null ? null : (_) => onEdit!(),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              CoeloAvatar(
+                initials: _initials(authorization.name),
+                semanticLabel: 'Avatar de ' + authorization.name,
+                size: CoeloAvatarSize.medium,
+              ),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(authorization.name, style: Theme.of(context).textTheme.titleMedium),
+                    Text(authorization.relationship),
+                  ],
+                ),
+              ),
+              _Status(status: authorization.status),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          AuthorizationValiditySummary(authorization: authorization),
+        ],
+      ),
+    ),
+  );
+}
+
+final class AuthorizationValiditySummary extends StatelessWidget {
+  const AuthorizationValiditySummary({required this.authorization, super.key});
+  final PickupAuthorization authorization;
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Validade da autorização: ' + _period(authorization),
+    child: Row(
+      children: [
+        const Icon(Icons.event_available_outlined, size: CoeloSize.iconSm),
+        const SizedBox(width: CoeloSpacing.space2),
+        Expanded(child: Text(_period(authorization))),
+      ],
+    ),
+  );
+}
+
+final class ChildSafetyWizardPage extends StatefulWidget {
+  const ChildSafetyWizardPage({
+    required this.controller,
+    required this.logout,
+    required this.onCancel,
+    required this.onSaved,
+    this.childId,
+    this.authorizationId,
+    this.onDestinationSelected,
+    super.key,
+  });
+  final ChildSafetyController controller;
+  final LogoutAction logout;
+  final VoidCallback onCancel;
+  final VoidCallback onSaved;
+  final String? childId;
+  final String? authorizationId;
+  final ValueChanged<String>? onDestinationSelected;
+  @override
+  State<ChildSafetyWizardPage> createState() => _ChildSafetyWizardPageState();
+}
+
+final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
+  final childSearch = TextEditingController(),
+      personId = TextEditingController(),
+      relationshipDetail = TextEditingController(),
+      requestReason = TextEditingController(),
+      validFrom = TextEditingController(),
+      validUntil = TextEditingController();
+  var step = 0,
+      searching = false,
+      relationship = 'mother',
+      pickup = true,
+      emergency = false,
+      transport = false;
+  var options = const <ChildSafetyChildOption>[];
+  ChildSafetyChildOption? child;
+  String? error;
+  int expectedVersion = 1;
+  static const labels = ['Criança', 'Pessoa autorizada', 'Validade e capacidades', 'Revisão'];
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(CoeloSpacing.space4),
-    decoration: _surface(context),
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_controllerChanged);
+    if (widget.childId != null) _loadInitialContext();
+  }
+
+  void _controllerChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _loadInitialContext() async {
+    try {
+      final record = await widget.controller.fetchChild(widget.childId!);
+      if (!mounted || record == null) return;
+      var option = ChildSafetyChildOption(
+        id: record.childId,
+        name: record.childName,
+        internalId: record.internalId,
+        childContextId: record.childContextId,
+        institutionId: record.institutionId,
+        institutionName: record.institutionName,
+        unitId: record.unitId,
+        unitName: record.unitName,
+      );
+      PickupAuthorization? authorization;
+      if (widget.authorizationId != null) {
+        for (final value in record.authorizations) {
+          if (value.id == widget.authorizationId) authorization = value;
+        }
+        if (authorization == null) throw const ChildSafetyNotFoundException();
+        option = ChildSafetyChildOption(
+          id: record.childId,
+          name: record.childName,
+          internalId: record.internalId,
+          childContextId: authorization.childContextId,
+          institutionName: authorization.institutionName,
+          unitId: authorization.unitId,
+          unitName: authorization.unitName,
+        );
+      }
+      setState(() {
+        child = option;
+        options = [option];
+        childSearch.text = record.childName;
+        if (authorization != null) {
+          personId.text = authorization.personId ?? '';
+          relationship = _relationshipCode(authorization.relationship);
+          relationshipDetail.text = relationship == 'other' ? authorization.relationship : '';
+          requestReason.text = authorization.requestReason ?? '';
+          validFrom.text = _date(authorization.startsAt);
+          validUntil.text = _date(authorization.endsAt);
+          pickup = authorization.capabilityCodes.contains('pickup');
+          emergency = authorization.capabilityCodes.contains('emergency_contact');
+          transport = authorization.capabilityCodes.contains('transport');
+          expectedVersion = authorization.version;
+        }
+      });
+    } on Exception {
+      if (mounted) setState(() => error = 'Não foi possível carregar o contexto solicitado.');
+    }
+  }
+
+  @override
+  void dispose() {
+    childSearch.dispose();
+    personId.dispose();
+    relationshipDetail.dispose();
+    requestReason.dispose();
+    validFrom.dispose();
+    validUntil.dispose();
+    widget.controller.removeListener(_controllerChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => SuperadminShell(
+    logout: widget.logout,
+    title: widget.authorizationId == null ? 'Criar segurança' : 'Editar segurança',
+    subtitle: 'A autorização individual nunca é herdada e depende de revisão da unidade.',
+    currentDestination: 'safety',
+    onDestinationSelected: widget.onDestinationSelected,
+    child: LayoutBuilder(
+      builder: (context, constraints) => SuperadminFormFrame(
+        viewportWidth: MediaQuery.sizeOf(context).width,
+        navigation: SuperadminFormStepNavigation(
+          currentIndex: step,
+          steps: [
+            for (var index = 0; index < labels.length; index++)
+              SuperadminFormStep(
+                label: labels[index],
+                enabled: index <= step,
+                status: index == step
+                    ? SuperadminFormStepStatus.current
+                    : index < step
+                    ? SuperadminFormStepStatus.complete
+                    : SuperadminFormStepStatus.incomplete,
+              ),
+          ],
+          onStepSelected: (value) => setState(() => step = value),
+        ),
+        body: _section(),
+        footer: SuperadminFormActionFooter(
+          tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
+          continuationActions: [
+            if (step > 0)
+              OutlinedButton(
+                onPressed: () => setState(() => step--),
+                child: const Text('Anterior'),
+              ),
+            FilledButton(
+              key: const Key('safety-wizard-primary'),
+              onPressed: widget.controller.isSaving ? null : _continue,
+              child: Text(step == 3 ? 'Enviar para aprovação' : 'Continuar'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+  Widget _section() => _panel(labels[step], switch (step) {
+    0 => [
+      CoeloFormTextField(
+        controller: childSearch,
+        labelText: 'Buscar criança',
+        hintText: 'Nome ou identificação interna',
+        prefixIcon: Icons.search_rounded,
+        suffixIcon: IconButton(
+          tooltip: 'Buscar',
+          constraints: const BoxConstraints.tightFor(
+            width: CoeloSize.touchMin,
+            height: CoeloSize.touchMin,
+          ),
+          onPressed: searching ? null : _search,
+          icon: searching
+              ? const SizedBox.square(
+                  dimension: CoeloSize.iconSm,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.search_rounded),
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      for (final option in options) ...[
+        CoeloAdminInteractiveCard(
+          semanticLabel: 'Selecionar ' + option.name,
+          onPressed: () => setState(() => child = option),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Row(
+              children: [
+                Icon(
+                  child == option ? Icons.check_circle_rounded : Icons.child_care_outlined,
+                  color: child == option
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(option.name, style: Theme.of(context).textTheme.titleMedium),
+                      Text(option.institutionName + ' · ' + option.unitName),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+      ],
+    ],
+    1 => [
+      CoeloFormTextField(
+        controller: personId,
+        labelText: 'Identificador da pessoa global',
+        hintText: 'UUID da pessoa selecionada',
+        prefixIcon: Icons.person_search_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloFormTextField(
+        controller: requestReason,
+        labelText: 'Motivo da solicitação',
+        hintText: 'Informe o motivo auditável',
+        prefixIcon: Icons.notes_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloAdminSingleSelectField<String>(
+        label: 'Relação',
+        value: relationship,
+        options: const ['mother', 'father', 'grandparent', 'other'],
+        optionLabel: (value) => switch (value) {
+          'mother' => 'Mãe',
+          'father' => 'Pai',
+          'grandparent' => 'Avó/Avô',
+          _ => 'Outros',
+        },
+        onChanged: (value) => setState(() => relationship = value),
+        prefixIcon: Icons.family_restroom_outlined,
+      ),
+      if (relationship == 'other') ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloFormTextField(
+          controller: relationshipDetail,
+          labelText: 'Detalhe da relação',
+          prefixIcon: Icons.account_tree_outlined,
+        ),
+      ],
+    ],
+    2 => [
+      CoeloFormTextField(
+        controller: validFrom,
+        labelText: 'Válida a partir de',
+        hintText: 'DD/MM/AAAA',
+        prefixIcon: Icons.event_available_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloFormTextField(
+        controller: validUntil,
+        labelText: 'Válida até (opcional)',
+        hintText: 'DD/MM/AAAA',
+        prefixIcon: Icons.event_busy_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloAdminToggleField(
+        label: 'Retirada',
+        description: 'Pode retirar após aprovação.',
+        value: pickup,
+        onChanged: (v) => setState(() => pickup = v),
+      ),
+      const SizedBox(height: CoeloSpacing.space2),
+      CoeloAdminToggleField(
+        label: 'Contato de emergência',
+        description: 'Pode ser acionada em emergência.',
+        value: emergency,
+        onChanged: (v) => setState(() => emergency = v),
+      ),
+      const SizedBox(height: CoeloSpacing.space2),
+      CoeloAdminToggleField(
+        label: 'Transporte',
+        description: 'Pode realizar transporte autorizado.',
+        value: transport,
+        onChanged: (v) => setState(() => transport = v),
+      ),
+    ],
+    _ => [
+      _Review(label: 'Criança', value: child?.name ?? 'Não selecionada'),
+      _Review(
+        label: 'Contexto',
+        value: (child?.institutionName ?? '—') + ' · ' + (child?.unitName ?? '—'),
+      ),
+      _Review(label: 'Pessoa global', value: personId.text.trim()),
+      _Review(label: 'Capacidades', value: _capabilities().join(', ')),
+      const SizedBox(height: CoeloSpacing.space4),
+      Text(
+        'Solicitação individual: não herda política e não autoriza retirada antes da aprovação.',
+        style: TextStyle(color: Theme.of(context).colorScheme.error),
+      ),
+    ],
+  });
+  Widget _panel(String title, List<Widget> children) => Container(
+    padding: const EdgeInsets.all(CoeloSpacing.space6),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            CoeloAvatar(
-              initials: _initials(authorization.name),
-              semanticLabel: 'Avatar de ' + authorization.name,
-              size: CoeloAvatarSize.medium,
-            ),
-            const SizedBox(width: CoeloSpacing.space3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(authorization.name, style: Theme.of(context).textTheme.titleMedium),
-                  Text(
-                    authorization.relationship +
-                        ' · ' +
-                        authorization.institutionName +
-                        ' · ' +
-                        authorization.unitName,
-                  ),
-                ],
-              ),
-            ),
-            _Status(status: authorization.status),
-          ],
+        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(
+          step == 0
+              ? 'A busca é server-side e restrita ao escopo autorizado.'
+              : step == 3
+              ? 'A unidade decidirá; até lá a retirada permanece bloqueada.'
+              : 'Preencha apenas os dados necessários.',
         ),
-        const SizedBox(height: CoeloSpacing.space3),
-        Text('Período: ' + _period(authorization)),
-        Text('Origem: ' + authorization.origin.label),
-        if (authorization.status != PickupAuthorizationStatus.approved)
-          Text(
-            'Retirada bloqueada até aprovação.',
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
-        const SizedBox(height: CoeloSpacing.space3),
-        Wrap(
-          spacing: CoeloSpacing.space2,
-          runSpacing: CoeloSpacing.space2,
-          children: [
-            if (authorization.status == PickupAuthorizationStatus.pending)
-              FilledButton.icon(
-                onPressed: () => store.setStatus(
-                  record.childId,
-                  authorization.id,
-                  PickupAuthorizationStatus.approved,
-                ),
-                icon: const Icon(Icons.check_rounded),
-                label: const Text('Aprovar'),
-              ),
-            if (authorization.status == PickupAuthorizationStatus.pending)
-              OutlinedButton.icon(
-                style: _negative(context),
-                onPressed: () => store.setStatus(
-                  record.childId,
-                  authorization.id,
-                  PickupAuthorizationStatus.rejected,
-                ),
-                icon: const Icon(Icons.close_rounded),
-                label: const Text('Rejeitar'),
-              ),
-            OutlinedButton.icon(
-              onPressed: () => _openForm(context, record, store, authorization: authorization),
-              icon: const Icon(Icons.edit_outlined),
-              label: const Text('Editar'),
-            ),
-            TextButton.icon(
-              onPressed: () => showSuperadminNotice(
-                context,
-                'Convite reenviado para ' + (authorization.identifier ?? authorization.name) + '.',
-                icon: Icons.mark_email_read_outlined,
-              ),
-              icon: const Icon(Icons.forward_to_inbox_outlined),
-              label: const Text('Reenviar convite'),
-            ),
-            TextButton.icon(
-              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-              onPressed: () => _confirmRemove(context, record, authorization, store),
-              icon: const Icon(Icons.delete_outline_rounded),
-              label: const Text('Remover'),
-            ),
-          ],
-        ),
+        const SizedBox(height: CoeloSpacing.space6),
+        ...children,
+        if (error != null) ...[
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+        ],
+      ],
+    ),
+  );
+  Future<void> _search() async {
+    setState(() {
+      searching = true;
+      error = null;
+    });
+    try {
+      final result = await widget.controller.searchChildren(childSearch.text);
+      if (mounted) setState(() => options = result);
+    } on Exception {
+      if (mounted) setState(() => error = 'Não foi possível buscar crianças.');
+    } finally {
+      if (mounted) setState(() => searching = false);
+    }
+  }
+
+  Future<void> _continue() async {
+    setState(() => error = null);
+    if (step == 0 && child == null) {
+      setState(() => error = 'Busque e selecione uma criança.');
+      return;
+    }
+    if (step == 1 &&
+        (personId.text.trim().isEmpty ||
+            requestReason.text.trim().length < 3 ||
+            (relationship == 'other' && relationshipDetail.text.trim().isEmpty))) {
+      setState(() => error = 'Selecione a pessoa global e informe relação e motivo.');
+      return;
+    }
+    if (step == 2 && _capabilities().isEmpty) {
+      setState(() => error = 'Selecione ao menos uma capacidade.');
+      return;
+    }
+    if (step < 3) {
+      setState(() => step++);
+      return;
+    }
+    final selected = child!;
+    if (selected.childContextId == null || selected.unitId == null) {
+      setState(() => error = 'O contexto autorizado da criança está incompleto.');
+      return;
+    }
+    final saved = await widget.controller.saveAuthorization(
+      SavePickupAuthorizationCommand(
+        requestId: _uuid(),
+        childId: selected.id,
+        childContextId: selected.childContextId!,
+        unitId: selected.unitId!,
+        personId: personId.text.trim(),
+        authorizationId: widget.authorizationId,
+        expectedVersion: expectedVersion,
+        relationshipCode: relationship,
+        relationshipDetail: relationship == 'other' ? relationshipDetail.text.trim() : null,
+        capabilityCodes: _capabilities(),
+        requestReason: requestReason.text.trim(),
+        validFrom: _parseDate(validFrom.text),
+        validUntil: _parseDate(validUntil.text),
+      ),
+    );
+    if (!mounted) return;
+    if (saved)
+      widget.onSaved();
+    else
+      setState(() => error = widget.controller.errorMessage);
+  }
+
+  Set<String> _capabilities() => {
+    if (pickup) 'pickup',
+    if (emergency) 'emergency_contact',
+    if (transport) 'transport',
+  };
+}
+
+String _relationshipCode(String value) => switch (value.toLowerCase()) {
+  'mother' || 'mãe' => 'mother',
+  'father' || 'pai' => 'father',
+  'grandparent' || 'avó' || 'avô' => 'grandparent',
+  _ => 'other',
+};
+
+final class _Review extends StatelessWidget {
+  const _Review({required this.label, required this.value});
+  final String label, value;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(width: 160, child: Text(label, style: Theme.of(context).textTheme.labelLarge)),
+        Expanded(child: Text(value)),
       ],
     ),
   );
@@ -858,7 +1086,6 @@ final class _AuthorizationCard extends StatelessWidget {
 final class _Status extends StatelessWidget {
   const _Status({required this.status});
   final PickupAuthorizationStatus status;
-
   @override
   Widget build(BuildContext context) {
     final colors = _statusPair(context, status);
@@ -876,73 +1103,65 @@ final class _Status extends StatelessWidget {
   }
 }
 
-final class ChildSecuritySummaryCard extends StatelessWidget {
-  const ChildSecuritySummaryCard({
-    required this.childId,
-    required this.store,
-    required this.onOpen,
-    super.key,
-  });
-  final String childId;
-  final ChildSafetyStore store;
-  final VoidCallback onOpen;
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: store,
-    builder: (context, child) {
-      final record = store.findChild(childId);
-      if (record == null) return const SizedBox.shrink();
-      return Container(
-        key: const Key('child-security-summary-card'),
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
-        decoration: _surface(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.shield_outlined, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: CoeloSpacing.space3),
-                Expanded(
-                  child: Text(
-                    'Pessoas que podem retirar',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                _Status(
-                  status: record.pendingCount > 0
-                      ? PickupAuthorizationStatus.pending
-                      : PickupAuthorizationStatus.approved,
-                ),
-              ],
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            for (final item in record.authorizations.take(2))
-              Text(item.name + ' · ' + item.relationship + ' · ' + item.status.label),
-            if (record.authorizations.isEmpty)
-              const Text('Nenhuma pessoa cadastrada para retirada.'),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(onPressed: onOpen, child: const Text('Ver completa')),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-Future<void> _openManagement(
+Future<void> _manage(
   BuildContext context,
   ChildSafetyRecord record,
   PickupAuthorization authorization,
-  ChildSafetyStore store,
+  ChildSafetyController controller,
+  ValueChanged<String>? onEdit,
 ) => showDialog<void>(
   context: context,
   builder: (dialogContext) => CoeloAdminDialogShell(
     title: 'Gerenciar ' + authorization.name,
-    body: _AuthorizationCard(record: record, authorization: authorization, store: store),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Status(status: authorization.status),
+        const SizedBox(height: CoeloSpacing.space4),
+        AuthorizationValiditySummary(authorization: authorization),
+        if (authorization.status == PickupAuthorizationStatus.pending) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          FilledButton.icon(
+            onPressed: () => _transition(
+              dialogContext,
+              controller,
+              record,
+              authorization,
+              PickupAuthorizationStatus.approved,
+              'Documento e vínculo conferidos pela unidade',
+            ),
+            icon: const Icon(Icons.check_rounded),
+            label: const Text('Aprovar'),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              side: BorderSide(color: Theme.of(context).colorScheme.error),
+            ),
+            onPressed: () => _transition(
+              dialogContext,
+              controller,
+              record,
+              authorization,
+              PickupAuthorizationStatus.rejected,
+              'Solicitação rejeitada pela unidade',
+            ),
+            icon: const Icon(Icons.close_rounded),
+            label: const Text('Rejeitar'),
+          ),
+        ],
+      ],
+    ),
+    secondaryAction: onEdit == null
+        ? null
+        : OutlinedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              onEdit(authorization.id);
+            },
+            child: const Text('Editar'),
+          ),
     primaryAction: FilledButton(
       onPressed: () => Navigator.of(dialogContext).pop(),
       child: const Text('Concluir'),
@@ -950,244 +1169,32 @@ Future<void> _openManagement(
   ),
 );
 
-Future<void> _confirmRemove(
+Future<void> _transition(
   BuildContext context,
+  ChildSafetyController controller,
   ChildSafetyRecord record,
   PickupAuthorization authorization,
-  ChildSafetyStore store,
-) => showDialog<void>(
-  context: context,
-  builder: (dialogContext) => CoeloAdminDialogShell(
-    title: 'Remover autorização',
-    body: Text(
-      'A autorização de ' +
-          authorization.name +
-          ' será removida de ' +
-          record.childName +
-          '. A retirada ficará bloqueada imediatamente.',
+  PickupAuthorizationStatus status,
+  String reason,
+) async {
+  final succeeded = await controller.transitionAuthorization(
+    TransitionPickupAuthorizationCommand(
+      requestId: _uuid(),
+      childId: record.childId,
+      authorizationId: authorization.id,
+      status: status,
+      reason: reason,
+      expectedVersion: authorization.version,
     ),
-    secondaryAction: OutlinedButton(
-      onPressed: () => Navigator.of(dialogContext).pop(),
-      child: const Text('Cancelar'),
-    ),
-    primaryAction: FilledButton(
-      style: FilledButton.styleFrom(
-        backgroundColor: Theme.of(dialogContext).colorScheme.error,
-        foregroundColor: Theme.of(dialogContext).colorScheme.onError,
-      ),
-      onPressed: () {
-        store.remove(record.childId, authorization.id);
-        Navigator.of(dialogContext).pop();
-      },
-      child: const Text('Remover'),
-    ),
-  ),
-);
-
-Future<void> _openForm(
-  BuildContext context,
-  ChildSafetyRecord record,
-  ChildSafetyStore store, {
-  PickupAuthorization? authorization,
-}) => showDialog<void>(
-  context: context,
-  builder: (context) =>
-      _AuthorizationForm(record: record, store: store, authorization: authorization),
-);
-
-final class _AuthorizationForm extends StatefulWidget {
-  const _AuthorizationForm({required this.record, required this.store, this.authorization});
-  final ChildSafetyRecord record;
-  final ChildSafetyStore store;
-  final PickupAuthorization? authorization;
-
-  @override
-  State<_AuthorizationForm> createState() => _AuthorizationFormState();
-}
-
-final class _AuthorizationFormState extends State<_AuthorizationForm> {
-  late final name = TextEditingController(text: widget.authorization?.name);
-  late final relationship = TextEditingController(text: widget.authorization?.relationship);
-  late final identifier = TextEditingController(text: widget.authorization?.identifier);
-  late final starts = TextEditingController(text: _date(widget.authorization?.startsAt));
-  late final ends = TextEditingController(text: _date(widget.authorization?.endsAt));
-  late bool hasAccount = widget.authorization?.hasAppAccount ?? true;
-  late bool lifetime = widget.authorization?.lifetime ?? true;
-  late PickupAuthorizationOrigin origin =
-      widget.authorization?.origin ?? PickupAuthorizationOrigin.institution;
-  String? feedback;
-  String? error;
-
-  @override
-  void dispose() {
-    name.dispose();
-    relationship.dispose();
-    identifier.dispose();
-    starts.dispose();
-    ends.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => CoeloAdminDialogShell(
-    title: widget.authorization == null ? 'Cadastrar autorização' : 'Editar autorização',
-    maxWidth: 680,
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _toggle(
-          'É alguém com conta no app?',
-          'Busque por @, celular, e-mail ou CPF para convidar.',
-          hasAccount,
-          (value) => setState(() => hasAccount = value),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          controller: identifier,
-          labelText: hasAccount ? 'Buscar usuário existente' : 'Canal para convite',
-          hintText: '@, celular, e-mail ou CPF',
-          prefixIcon: Icons.alternate_email_rounded,
-          suffixIcon: IconButton(
-            tooltip: 'Buscar',
-            onPressed: () => setState(() {
-              feedback = identifier.text.trim().isEmpty
-                  ? 'Informe um identificador.'
-                  : 'Conta verificada ou convite preparado para o canal informado.';
-            }),
-            icon: const Icon(Icons.search_rounded),
-          ),
-        ),
-        if (feedback != null)
-          Text(feedback!, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          controller: name,
-          labelText: 'Nome',
-          prefixIcon: Icons.person_outline_rounded,
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          controller: relationship,
-          labelText: 'Relação / hierarquia',
-          hintText: 'Ex.: avó, tio, motorista',
-          prefixIcon: Icons.account_tree_outlined,
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloAdminSingleSelectField<PickupAuthorizationOrigin>(
-          label: 'Origem do cadastro',
-          value: origin,
-          options: PickupAuthorizationOrigin.values,
-          optionLabel: (value) => value.label,
-          onChanged: (value) => setState(() => origin = value),
-          prefixIcon: Icons.how_to_reg_outlined,
-        ),
-        if (origin == PickupAuthorizationOrigin.guardian)
-          Padding(
-            padding: const EdgeInsets.only(top: CoeloSpacing.space3),
-            child: Text(
-              'Cadastro do responsável: ficará Pendente até aprovação institucional.',
-              style: TextStyle(color: _statusColors(context).onWarningContainer),
-            ),
-          ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _toggle(
-          'Vitalício / até o responsável retirar',
-          'Permanece válido até revogação explícita.',
-          lifetime,
-          (value) => setState(() => lifetime = value),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          controller: starts,
-          labelText: 'De',
-          hintText: 'DD/MM/AAAA',
-          prefixIcon: Icons.event_available_outlined,
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          controller: ends,
-          labelText: 'Até',
-          hintText: 'DD/MM/AAAA',
-          prefixIcon: Icons.event_busy_outlined,
-          enabled: !lifetime,
-        ),
-        if (error != null)
-          Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-      ],
-    ),
-    secondaryAction: OutlinedButton(
-      onPressed: () => Navigator.of(context).pop(),
-      child: const Text('Cancelar'),
-    ),
-    primaryAction: FilledButton(onPressed: _save, child: const Text('Salvar autorização')),
   );
-
-  Widget _toggle(String title, String subtitle, bool value, ValueChanged<bool> changed) => Row(
-    children: [
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleSmall),
-            Text(subtitle),
-          ],
-        ),
-      ),
-      Switch(value: value, onChanged: changed),
-    ],
-  );
-
-  void _save() {
-    if (name.text.trim().isEmpty || relationship.text.trim().isEmpty) {
-      setState(() => error = 'Informe nome e relação / hierarquia.');
-      return;
-    }
-    final end = lifetime ? null : _parseDate(ends.text);
-    if (!lifetime && end == null) {
-      setState(() => error = 'Informe a data final ou marque como vitalícia.');
-      return;
-    }
-    final previous = widget.authorization;
-    widget.store.save(
-      widget.record.childId,
-      PickupAuthorization(
-        id: previous?.id ?? 'authorization-' + DateTime.now().microsecondsSinceEpoch.toString(),
-        name: name.text.trim(),
-        relationship: relationship.text.trim(),
-        institutionName: widget.record.institutionName,
-        unitName: widget.record.unitName,
-        status: origin == PickupAuthorizationOrigin.guardian
-            ? PickupAuthorizationStatus.pending
-            : previous?.status ?? PickupAuthorizationStatus.approved,
-        origin: origin,
-        identifier: identifier.text.trim().isEmpty ? null : identifier.text.trim(),
-        startsAt: _parseDate(starts.text),
-        endsAt: end,
-        lifetime: lifetime,
-        hasAppAccount: hasAccount,
-      ),
-    );
-    Navigator.of(context).pop();
-  }
+  if (context.mounted && succeeded) Navigator.of(context).pop();
 }
-
-BoxDecoration _surface(BuildContext context) => BoxDecoration(
-  color: Theme.of(context).colorScheme.surface,
-  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-);
-
-ButtonStyle _negative(BuildContext context) => OutlinedButton.styleFrom(
-  foregroundColor: Theme.of(context).colorScheme.error,
-  side: BorderSide(color: Theme.of(context).colorScheme.error),
-);
 
 CoeloStatusColors _statusColors(BuildContext context) =>
     Theme.of(context).extension<CoeloStatusColors>() ??
     (Theme.brightnessOf(context) == Brightness.dark
         ? CoeloStatusColors.dark
         : CoeloStatusColors.light);
-
 (Color, Color) _statusPair(BuildContext context, PickupAuthorizationStatus status) {
   final colors = _statusColors(context);
   return switch (status) {
@@ -1197,10 +1204,12 @@ CoeloStatusColors _statusColors(BuildContext context) =>
   };
 }
 
-String _period(PickupAuthorization item) {
-  final from = _date(item.startsAt);
-  if (item.lifetime) return from.isEmpty ? 'Vitalício' : 'Desde ' + from + ' · Vitalício';
-  return from + ' até ' + _date(item.endsAt);
+String _period(PickupAuthorization value) {
+  final from = _date(value.startsAt);
+  if (value.lifetime) return from.isEmpty ? 'Até revogação' : 'Desde ' + from + ' · até revogação';
+  return (from.isEmpty ? 'Início não informado' : from) +
+      ' até ' +
+      (_date(value.endsAt).isEmpty ? 'data não informada' : _date(value.endsAt));
 }
 
 String _date(DateTime? value) => value == null
@@ -1210,18 +1219,34 @@ String _date(DateTime? value) => value == null
           value.month.toString().padLeft(2, '0') +
           '/' +
           value.year.toString();
-
-DateTime? _parseDate(String value) {
-  final parts = value.trim().split('/');
+DateTime? _parseDate(String raw) {
+  if (raw.trim().isEmpty) return null;
+  final parts = raw.trim().split('/');
   if (parts.length != 3) return null;
   final day = int.tryParse(parts[0]), month = int.tryParse(parts[1]), year = int.tryParse(parts[2]);
   if (day == null || month == null || year == null) return null;
-  final result = DateTime(year, month, day);
-  return result.day == day && result.month == month && result.year == year ? result : null;
+  final value = DateTime(year, month, day);
+  return value.day == day && value.month == month && value.year == year ? value : null;
 }
 
 String _initials(String name) {
-  final parts = name.trim().split(RegExp(r'\\s+')).where((item) => item.isNotEmpty).toList();
+  final parts = name.trim().split(RegExp(r'\s+')).where((value) => value.isNotEmpty).toList();
   if (parts.isEmpty) return '?';
   return (parts.first[0] + (parts.length > 1 ? parts.last[0] : '')).toUpperCase();
+}
+
+String _uuid() {
+  final random = Random.secure(), bytes = List<int>.generate(16, (_) => random.nextInt(256));
+  bytes[6] = (bytes[6] & 15) | 64;
+  bytes[8] = (bytes[8] & 63) | 128;
+  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return hex.substring(0, 8) +
+      '-' +
+      hex.substring(8, 12) +
+      '-' +
+      hex.substring(12, 16) +
+      '-' +
+      hex.substring(16, 20) +
+      '-' +
+      hex.substring(20);
 }

@@ -6,21 +6,38 @@ import 'package:go_router/go_router.dart';
 import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/activities/data/supabase_activity_directory_repository.dart';
+import '../features/activities/data/supabase_activity_command_repository.dart';
+import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
 import '../features/auth/domain/reset_password_action.dart';
+import '../features/attendance/attendance.dart';
+import '../features/attendance/data/supabase_attendance_repository.dart';
 import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
+import '../features/units/data/supabase_unit_directory_repository.dart';
+import '../features/units/domain/unit_backend_commands.dart';
+import '../features/units/domain/unit_directory.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
+import '../features/access_profiles/data/unavailable_access_profile_extended_repository.dart';
+import '../features/imports/domain/import_repository.dart';
+import '../features/invites/domain/platform_invite.dart';
 import '../features/notices/domain/notice_repository.dart';
+import '../features/daily_routine/domain/routine_contract.dart';
+import '../features/audit/domain/audit.dart';
+import '../features/safety/application/child_safety_controller.dart';
+import '../features/safety/domain/child_safety_contract.dart';
 
 import '../features/access_profiles/domain/access_profile.dart';
+import '../features/groups/data/supabase_group_directory_repository.dart';
+import '../features/groups/domain/group_directory.dart';
+import '../features/health_care/domain/medication_plan_repository.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 
@@ -65,10 +82,23 @@ class SuperadminApp extends StatefulWidget {
     this.requestPasswordRecovery = unavailableSuperadminPasswordRecovery,
     this.resetPassword = unavailableResetPassword,
     this.institutionDirectoryRepository = const UnavailableInstitutionDirectoryRepository(),
+    this.groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
+    this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
+    this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
+    this.unitBackendCommands,
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
+    this.accessProfileExtendedRepository = const UnavailableAccessProfileExtendedRepository(),
+    this.importRepository = const UnavailableImportRepository(),
+    this.inviteRepository = const UnavailableInviteRepository(),
     this.noticeRepository = const UnavailableNoticeRepository(),
+    this.attendanceRepository = const UnavailableAttendanceRepository(),
+    this.attendancePermissions = const AttendancePermissions.readOnly(),
+    this.routineRepository = const UnavailableRoutineRepository(),
+    this.auditRepository = const UnavailableAuditRepository(),
+    this.childSafetyRepository = const UnavailableChildSafetyRepository(),
+    this.medicationPlanRepository = const UnavailableMedicationPlanRepository(),
     this.userPreferencesRepository,
     super.key,
   });
@@ -79,10 +109,23 @@ class SuperadminApp extends StatefulWidget {
   final PasswordRecoveryAction requestPasswordRecovery;
   final ResetPasswordAction resetPassword;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
+  final GroupDirectoryRepository groupDirectoryRepository;
   final ActivityDirectoryRepository activityDirectoryRepository;
+  final ActivityCommandRepository activityCommandRepository;
   final PersonDirectoryRepository personDirectoryRepository;
+  final UnitDirectoryRepository unitDirectoryRepository;
+  final UnitBackendCommandsGateway? unitBackendCommands;
   final AccessProfileRepository accessProfileRepository;
+  final AccessProfileExtendedRepository accessProfileExtendedRepository;
+  final ImportRepository importRepository;
+  final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
+  final AttendanceRepository attendanceRepository;
+  final AttendancePermissions attendancePermissions;
+  final RoutineRepository routineRepository;
+  final AuditRepository auditRepository;
+  final ChildSafetyRepository childSafetyRepository;
+  final MedicationPlanRepository medicationPlanRepository;
   final UserPreferencesRepository? userPreferencesRepository;
 
   @override
@@ -94,6 +137,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
   late final GoRouter _router;
   late final bool _ownsSession;
   late final UserPreferencesController _preferencesController;
+  late final ChildSafetyController _childSafetyController;
 
   @override
   void initState() {
@@ -104,6 +148,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       widget.userPreferencesRepository ?? SharedPreferencesUserPreferencesRepository(),
     )..addListener(_preferencesChanged);
     _preferencesController.load();
+    _childSafetyController = ChildSafetyController(widget.childSafetyRepository);
     _router = createSuperadminRouter(
       session: _session,
       login: widget.login,
@@ -111,10 +156,23 @@ class _SuperadminAppState extends State<SuperadminApp> {
       requestPasswordRecovery: widget.requestPasswordRecovery,
       resetPassword: widget.resetPassword,
       institutionDirectoryRepository: widget.institutionDirectoryRepository,
+      groupDirectoryRepository: widget.groupDirectoryRepository,
       activityDirectoryRepository: widget.activityDirectoryRepository,
+      activityCommandRepository: widget.activityCommandRepository,
       personDirectoryRepository: widget.personDirectoryRepository,
+      unitDirectoryRepository: widget.unitDirectoryRepository,
+      unitBackendCommands: widget.unitBackendCommands,
       accessProfileRepository: widget.accessProfileRepository,
+      accessProfileExtendedRepository: widget.accessProfileExtendedRepository,
+      importRepository: widget.importRepository,
+      inviteRepository: widget.inviteRepository,
       noticeRepository: widget.noticeRepository,
+      attendanceRepository: widget.attendanceRepository,
+      attendancePermissions: widget.attendancePermissions,
+      routineRepository: widget.routineRepository,
+      auditRepository: widget.auditRepository,
+      childSafetyController: _childSafetyController,
+      medicationPlanRepository: widget.medicationPlanRepository,
       userPreferencesController: _preferencesController,
       onThemeModeChanged: _setThemeMode,
     );
@@ -131,6 +189,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
   @override
   void dispose() {
     _router.dispose();
+    _childSafetyController.dispose();
     _preferencesController
       ..removeListener(_preferencesChanged)
       ..dispose();
