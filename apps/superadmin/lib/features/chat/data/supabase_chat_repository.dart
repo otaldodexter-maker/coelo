@@ -15,6 +15,16 @@ final class SupabaseChatRepository implements ChatRepository {
   final SupabaseClient _client;
 
   @override
+  Future<int> fetchUnreadTotal() async {
+    try {
+      final row = _singleRow(_rows(await _client.rpc<Object?>('chat_unread_total')));
+      return _int(row['total_unread']);
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
     try {
       final rows = _rows(
@@ -78,10 +88,7 @@ final class SupabaseChatRepository implements ChatRepository {
         conversationId: command.conversationId,
         messageId: messageId,
       );
-      // The send command is attributable to the current actor. Its table RPC
-      // does not expose author identity, so retain this proven local fact only
-      // for the returned command result; subsequent reads stay server-shaped.
-      return _message(message, conversationId: command.conversationId, isMine: true);
+      return _message(message, conversationId: command.conversationId);
     } catch (error) {
       throw _mapError(error);
     }
@@ -160,24 +167,17 @@ ChatConversationSummary _conversation(Map<String, dynamic> json) => ChatConversa
   kind: json['conversation_type'] as String? ?? '',
   unreadCount: _int(json['unread_count']),
   updatedAt: _date(json, 'next_cursor_activity_at'),
-  // The typed read RPC deliberately does not return this presentational flag.
-  // Writes are still denied by chat_send_message when the conversation is read-only.
-  isReadOnly: false,
+  isReadOnly: _bool(json['is_read_only']),
 );
 
-ChatMessage _message(
-  Map<String, dynamic> json, {
-  required String conversationId,
-  bool isMine = false,
-}) => ChatMessage(
+ChatMessage _message(Map<String, dynamic> json, {required String conversationId}) => ChatMessage(
   id: _string(json, 'message_id'),
   conversationId: conversationId,
   body: json['body_text'] as String? ?? '',
-  // Identity display remains a separate, authorised profile projection. Never
-  // manufacture a name from a globally supplied person id.
-  authorName: '',
+  // Author presentation is supplied only by the contextual, authorised RPC.
+  authorName: json['author_name'] as String? ?? '',
   sentAt: _date(json, 'created_at'),
-  isMine: isMine,
+  isMine: _bool(json['is_mine']),
   kind: json['message_type'] as String? ?? '',
   attachments: _rows(json['attachments']).map(_attachment).toList(growable: false),
 );
@@ -243,6 +243,8 @@ String _string(Map<String, dynamic> json, String key) {
 }
 
 int _int(Object? value) => value is num ? value.toInt() : 0;
+
+bool _bool(Object? value) => value is bool ? value : false;
 
 DateTime _date(Map<String, dynamic> json, String key) {
   final value = json[key];

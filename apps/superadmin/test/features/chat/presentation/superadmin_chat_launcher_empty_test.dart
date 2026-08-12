@@ -1,12 +1,10 @@
-import 'dart:ui';
-
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('empty launcher routes a new conversation to the real conversations page', (
+  testWidgets('empty launcher opens the real conversations page instead of a local inbox', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -27,15 +25,11 @@ void main() {
       ),
     );
 
-    expect(find.bySemanticsLabel('Abrir conversas, nenhuma mensagem não lida'), findsOneWidget);
+    expect(find.bySemanticsLabel('Abrir conversas, nenhuma mensagem nao lida'), findsOneWidget);
     await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('superadmin-chat-launcher-header')), findsOneWidget);
-    expect(find.text('Nenhuma conversa ainda'), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-chat-launcher-new-message')), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('superadmin-chat-launcher-new-message')));
     expect(openCount, 1);
+    expect(find.byKey(const Key('superadmin-chat-launcher-panel')), findsNothing);
   });
 }

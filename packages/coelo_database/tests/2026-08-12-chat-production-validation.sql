@@ -33,7 +33,8 @@ begin
     'public.chat_thread_page(uuid,timestamptz,uuid,integer)',
     'public.chat_send_message(uuid,text,uuid,uuid[])',
     'public.chat_mark_read(uuid,uuid)',
-    'public.chat_realtime_refresh(uuid)'
+    'public.chat_realtime_refresh(uuid)',
+    'public.chat_unread_total()'
   ] loop
     if to_regprocedure(required_function) is null then
       raise exception 'chat production RPC is missing: %', required_function;
@@ -61,6 +62,9 @@ declare
   inbox_count integer;
   thread_count integer;
   read_count integer;
+  unread_total bigint;
+  author_name text;
+  is_mine boolean;
   send_denied boolean := false;
 begin
   insert into auth.users(id, aud, role, email, created_at, updated_at)
@@ -138,8 +142,18 @@ begin
   select count(*) into thread_count
   from public.chat_thread_page(conversation_id, null, null, 20);
   if thread_count <> 1 then raise exception 'authorized thread omitted message'; end if;
+  select thread.author_name, thread.is_mine into author_name, is_mine
+  from public.chat_thread_page(conversation_id, null, null, 20) thread
+  limit 1;
+  if author_name <> 'Chat Actor' or is_mine then
+    raise exception 'thread did not expose contextual author presentation safely';
+  end if;
+  select total_unread into unread_total from public.chat_unread_total();
+  if unread_total <> 1 then raise exception 'chat_unread_total omitted an authorized unread message'; end if;
   select updated_count into read_count from public.chat_mark_read(conversation_id, message_id);
   if read_count <> 1 then raise exception 'chat_mark_read did not create the reader receipt'; end if;
+  select total_unread into unread_total from public.chat_unread_total();
+  if unread_total <> 0 then raise exception 'chat_unread_total did not reflect the receipt'; end if;
   execute 'reset role';
 
   execute 'set local role authenticated';
@@ -147,6 +161,8 @@ begin
   if exists (select 1 from public.chat_thread_page(conversation_id, null, null, 20)) then
     raise exception 'outsider read another conversation by UUID';
   end if;
+  select total_unread into unread_total from public.chat_unread_total();
+  if unread_total <> 0 then raise exception 'outsider unread total leaked another conversation'; end if;
   begin
     perform * from public.chat_send_message(
       conversation_id, 'Unauthorized message', '25000000-0000-0000-0000-000000000011', array[]::uuid[]

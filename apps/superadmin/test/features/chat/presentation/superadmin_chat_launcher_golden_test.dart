@@ -1,10 +1,6 @@
 import 'dart:io';
-import 'package:coelo_superadmin/features/chat/presentation/chat_controller.dart';
-import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 import 'dart:ui';
 
-import 'package:coelo_superadmin/features/chat/presentation/chat_controller.dart';
-import 'package:coelo_superadmin/features/chat/presentation/chat_fixtures.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -66,30 +62,6 @@ void main() {
       matchesGoldenFile('goldens/superadmin_chat_launcher_focus_light.png'),
     );
   });
-
-  for (final themeCase in [
-    (name: 'light', theme: CoeloTheme.light),
-    (name: 'dark', theme: CoeloTheme.dark),
-  ]) {
-    testWidgets('renders compact inbox and thread in ${themeCase.name}', (tester) async {
-      _configureViewport(tester);
-      await tester.pumpWidget(_stage(themeCase.theme));
-      await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
-      await tester.pumpAndSettle();
-
-      await expectLater(
-        find.byType(Overlay).first,
-        matchesGoldenFile('goldens/superadmin_chat_launcher_inbox_${themeCase.name}.png'),
-      );
-
-      await tester.tap(find.text('Turma Girassol'));
-      await tester.pumpAndSettle();
-      await expectLater(
-        find.byType(Overlay).first,
-        matchesGoldenFile('goldens/superadmin_chat_launcher_thread_${themeCase.name}.png'),
-      );
-    });
-  }
 }
 
 Widget _stage(ThemeData theme) {
@@ -103,10 +75,7 @@ Widget _stage(ThemeData theme) {
           Positioned(
             right: CoeloSpacing.space4,
             bottom: CoeloSpacing.space4,
-            child: SuperadminChatLauncher(
-              controller: SuperadminChatController(superadminChatConversations),
-              onOpenConversations: _ignore,
-            ),
+            child: SuperadminChatLauncher(unreadCount: 3, onOpenConversations: _ignore),
           ),
         ],
       ),

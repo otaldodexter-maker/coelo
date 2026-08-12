@@ -188,6 +188,7 @@ final class ChatRealtimeRefresh {
 }
 
 abstract interface class ChatRepository {
+  Future<int> fetchUnreadTotal();
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query);
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query);
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command);

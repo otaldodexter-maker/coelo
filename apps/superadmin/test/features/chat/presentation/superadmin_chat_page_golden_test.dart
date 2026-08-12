@@ -70,6 +70,9 @@ Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 final class _GoldenChatRepository implements ChatRepository {
   @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
     totalUnread: 1,
     items: [

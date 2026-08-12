@@ -24,6 +24,7 @@ void main() {
           'unread_count': 3,
           'next_cursor_activity_at': '2026-08-11T12:00:00Z',
           'next_cursor_conversation_id': 'conversation-1',
+          'is_read_only': false,
         },
       ], request);
     });
@@ -47,10 +48,25 @@ void main() {
     });
     expect(page.items.single.id, 'conversation-1');
     expect(page.items.single.unreadCount, 3);
+    expect(page.items.single.isReadOnly, isFalse);
     expect(page.nextCursor, ChatCursor(DateTime.utc(2026, 8, 11, 12), 'conversation-1'));
     expect(page.totalUnread, 3);
   });
 
+  test('fetches the authorised global unread total through its dedicated RPC', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json([
+        {'total_unread': 12},
+      ], request);
+    });
+    addTearDown(client.dispose);
+
+    expect(await SupabaseChatRepository(client).fetchUnreadTotal(), 12);
+    expect(captured!.url.path, endsWith('/rpc/chat_unread_total'));
+    expect(captured!.body, anyOf(isNull, isEmpty));
+  });
   test(
     'loads a thread and re-fetches the authorised full message after an idempotent send',
     () async {
@@ -64,6 +80,8 @@ void main() {
                 'message_id': 'message-1',
                 'body_text': 'Ola',
                 'author_person_id': 'person-1',
+                'author_name': 'Marina',
+                'is_mine': false,
                 'message_type': 'text',
                 'created_at': '2026-08-11T12:00:00Z',
                 'updated_at': '2026-08-11T12:00:00Z',
@@ -75,6 +93,8 @@ void main() {
               {
                 'message_id': 'message-2',
                 'author_person_id': 'person-self',
+                'author_name': 'Eu',
+                'is_mine': true,
                 'body_text': 'Oi!',
                 'message_type': 'text',
                 'created_at': '2026-08-11T12:01:00Z',
@@ -114,8 +134,10 @@ void main() {
         ),
       );
 
-      expect(thread.items.single.authorName, '');
+      expect(thread.items.single.authorName, 'Marina');
+      expect(thread.items.single.isMine, isFalse);
       expect(sent.id, 'message-2');
+      expect(sent.authorName, 'Eu');
       expect(sent.isMine, isTrue);
       expect(sent.attachments.single.downloadUrl, isNull);
       expect(threadFetches, 2);

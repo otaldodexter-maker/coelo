@@ -6,10 +6,12 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
 import '../../features/auth/domain/logout_action.dart';
+import '../../features/chat/data/supabase_chat_repository.dart';
 import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
@@ -89,6 +91,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   late final AnimationController _sidebarController;
   late final SuperadminActivityController _activityController;
   late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
+  late final Future<int> Function()? _chatUnreadCountLoader;
   late final bool _ownsActivityController;
   double _embeddedChatLauncherBottomInset = 0;
 
@@ -99,6 +102,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     _ownsActivityController = widget.activityController == null;
     _activityController = widget.activityController ?? SuperadminActivityController();
     _chatLauncherPositionController = SuperadminChatLauncherPositionController(persist: true);
+    _chatUnreadCountLoader = _createChatUnreadCountLoader();
   }
 
   @override
@@ -117,6 +121,17 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     }
     _chatLauncherPositionController.dispose();
     super.dispose();
+  }
+
+  Future<int> Function()? _createChatUnreadCountLoader() {
+    try {
+      final repository = SupabaseChatRepository(Supabase.instance.client);
+      return repository.fetchUnreadTotal;
+    } on Object {
+      // Demo and unauthenticated shells do not initialize Supabase. Zero is the
+      // only safe display value until an authorised server response exists.
+      return null;
+    }
   }
 
   bool get _reduceMotion => MediaQuery.maybeOf(context)?.disableAnimations ?? false;
@@ -436,6 +451,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               onOpenConversations: openConversations,
               bottomClearance: launcherReservedBottom,
               positionController: positionController ?? _chatLauncherPositionController,
+              loadUnreadCount: _chatUnreadCountLoader,
             ),
           ),
       ],

@@ -91,6 +91,9 @@ final class _ChatRepository implements ChatRepository {
   final List<ChatSendMessageCommand> sent = [];
 
   @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => inbox;
 
   @override

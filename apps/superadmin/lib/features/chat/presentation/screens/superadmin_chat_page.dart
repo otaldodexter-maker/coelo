@@ -400,6 +400,9 @@ final class _MessageBubble extends StatelessWidget {
 final class _UnavailableChatRepository implements ChatRepository {
   const _UnavailableChatRepository();
   @override
+  Future<int> fetchUnreadTotal() async => 0;
+
+  @override
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) =>
       Future<ChatInboxPage>.error(const ChatFailureException());
   @override
