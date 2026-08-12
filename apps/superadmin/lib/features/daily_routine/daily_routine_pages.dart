@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -12,6 +10,7 @@ import '../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../auth/domain/logout_action.dart';
 import 'daily_routine.dart';
 import 'daily_routine_form_sections.dart';
+import 'presentation/routine_directory_controller.dart';
 
 enum _RoutineDisplay { cards, table }
 
@@ -20,11 +19,12 @@ enum _RoutineTableView { grouped }
 class DailyRoutineDirectoryPage extends StatefulWidget {
   const DailyRoutineDirectoryPage({
     required this.repository,
-    required this.permissions,
     required this.logout,
     this.onCreate,
     this.onCreateEntry,
     this.onEdit,
+    this.onImport,
+    this.onExport,
     this.activityController,
     this.loading = false,
     this.errorMessage,
@@ -32,12 +32,13 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     super.key,
   });
 
-  final InMemoryDailyRoutineRepository repository;
-  final DailyRoutinePermissions permissions;
+  final RoutineRepository repository;
   final LogoutAction logout;
   final VoidCallback? onCreate;
-  final ValueChanged<DailyRoutineEntryType>? onCreateEntry;
-  final ValueChanged<String>? onEdit;
+  final ValueChanged<RoutineEntryKind>? onCreateEntry;
+  final ValueChanged<RoutineDirectoryItem>? onEdit;
+  final VoidCallback? onImport;
+  final VoidCallback? onExport;
   final SuperadminActivityController? activityController;
   final bool loading;
   final String? errorMessage;
@@ -48,50 +49,53 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
 }
 
 class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
+  bool get _canManage => _controller.state.page?.canManage ?? false;
   final _search = TextEditingController();
+  late RoutineDirectoryController _controller;
   var _display = _RoutineDisplay.cards;
-  var _origin = 'Todas';
-  var _selectedType = DailyRoutineEntryType.model;
-  var _page = 1;
+  var _selectedType = RoutineEntryKind.model;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = RoutineDirectoryController(widget.repository)..addListener(_refresh);
+    _controller.load();
+  }
 
   @override
   void dispose() {
+    _controller
+      ..removeListener(_refresh)
+      ..dispose();
     _search.dispose();
     super.dispose();
   }
 
-  void updateDirectory(VoidCallback update) {
-    setState(() {
-      update();
-      _page = 1;
-    });
+  void _refresh() {
+    if (mounted) setState(() {});
   }
+
+  void updateDirectory(VoidCallback update) {
+    setState(update);
+    _load();
+  }
+
+  void _load({int page = 1}) => _controller.load(
+    query: RoutineDirectoryQuery(
+      kind: _selectedType,
+      search: _search.text.trim(),
+      page: page,
+      pageSize: _display == _RoutineDisplay.cards ? 11 : 8,
+    ),
+  );
 
   void clearFilters() {
     _search.clear();
-    updateDirectory(() => _origin = 'Todas');
+    _load();
   }
 
   @override
   Widget build(BuildContext context) {
-    final query = _search.text.trim().toLowerCase();
-    final filteredModels = widget.repository.models
-        .where((model) {
-          final matchesSearch = model.name.toLowerCase().contains(query);
-          final matchesOrigin =
-              _origin == 'Todas' ||
-              (_origin == 'Instituição' && model.origin == DailyRoutineOrigin.institution) ||
-              (_origin == 'Unidade' && model.origin == DailyRoutineOrigin.unit);
-          return matchesSearch && matchesOrigin && model.type == _selectedType;
-        })
-        .toList(growable: false);
-    final hasSelectedType = widget.repository.models.any((model) => model.type == _selectedType);
-    final pageSize = _display == _RoutineDisplay.cards ? 11 : 8;
-    final totalPages = math.max(1, (filteredModels.length / pageSize).ceil());
-    final currentPage = math.min(_page, totalPages);
-    final first = (currentPage - 1) * pageSize;
-    final visibleModels = filteredModels.skip(first).take(pageSize).toList(growable: false);
-
     return SuperadminShell(
       logout: widget.logout,
       currentDestination: 'daily-routine',
@@ -107,83 +111,24 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             return ListView(
               padding: const EdgeInsets.all(CoeloSpacing.space5),
               children: [
-                if (!widget.permissions.canManage) ...[
+                if (!_canManage) ...[
                   const Text('Modo somente leitura'),
                   const SizedBox(height: CoeloSpacing.space4),
                 ],
-                SuperadminUnderlineTabs<DailyRoutineEntryType>(
+                SuperadminUnderlineTabs<RoutineEntryKind>(
                   key: const Key('daily-routine-type-tabs'),
                   selected: _selectedType,
                   tabs: const [
-                    SuperadminUnderlineTab(value: DailyRoutineEntryType.model, label: 'Modelos'),
-                    SuperadminUnderlineTab(value: DailyRoutineEntryType.routine, label: 'Rotinas'),
+                    SuperadminUnderlineTab(value: RoutineEntryKind.model, label: 'Modelos'),
+                    SuperadminUnderlineTab(value: RoutineEntryKind.application, label: 'Rotinas'),
+                    SuperadminUnderlineTab(value: RoutineEntryKind.launch, label: 'Lancamentos'),
                   ],
                   onSelected: (value) => updateDirectory(() => _selectedType = value),
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
                 _toolbar(compact, constraints.maxWidth, textScale > 1.3),
                 const SizedBox(height: CoeloSpacing.space5),
-                if (widget.loading)
-                  const CoeloStatePanel(
-                    key: Key('daily-routine-loading'),
-                    title: 'Carregando rotinas',
-                    message: 'Aguarde enquanto os modelos são preparados.',
-                    loading: true,
-                  )
-                else if (widget.errorMessage case final message?)
-                  CoeloStatePanel(
-                    key: const Key('daily-routine-error'),
-                    title: 'Não foi possível carregar as rotinas',
-                    message: message,
-                    icon: Icons.error_outline_rounded,
-                    actionLabel: widget.onRetry == null ? null : 'Tentar novamente',
-                    onAction: widget.onRetry,
-                  )
-                else if (widget.repository.models.isEmpty)
-                  CoeloStatePanel(
-                    key: const Key('daily-routine-empty'),
-                    title: 'Nenhuma rotina criada',
-                    message: widget.permissions.canManage
-                        ? 'Crie o primeiro modelo para organizar o registro cotidiano.'
-                        : 'Não há modelos disponíveis para consulta.',
-                    icon: Icons.event_note_outlined,
-                    actionLabel: widget.permissions.canManage
-                        ? _selectedType == DailyRoutineEntryType.model
-                              ? 'Criar modelo'
-                              : 'Nova rotina'
-                        : null,
-                    onAction: widget.permissions.canManage ? _requestCreate : null,
-                  )
-                else if (!hasSelectedType)
-                  CoeloStatePanel(
-                    key: const Key('daily-routine-category-empty'),
-                    title: _selectedType == DailyRoutineEntryType.model
-                        ? 'Nenhum modelo criado'
-                        : 'Nenhuma rotina criada',
-                    message: _selectedType == DailyRoutineEntryType.model
-                        ? 'Crie uma base reutilizável para começar.'
-                        : 'Crie uma rotina do zero ou use um modelo como ponto de partida.',
-                    icon: Icons.event_note_outlined,
-                    actionLabel: widget.permissions.canManage
-                        ? _selectedType == DailyRoutineEntryType.model
-                              ? 'Criar modelo'
-                              : 'Nova rotina'
-                        : null,
-                    onAction: widget.permissions.canManage ? _requestCreate : null,
-                  )
-                else if (filteredModels.isEmpty)
-                  CoeloStatePanel(
-                    key: const Key('daily-routine-no-results'),
-                    title: 'Nenhum resultado',
-                    message: 'Ajuste a busca ou o filtro de origem.',
-                    icon: Icons.search_off_rounded,
-                    actionLabel: 'Limpar filtros',
-                    onAction: clearFilters,
-                  )
-                else if (_display == _RoutineDisplay.cards)
-                  _cards(visibleModels, currentPage, totalPages)
-                else
-                  _table(visibleModels, currentPage, totalPages),
+                _content(),
               ],
             );
           },
@@ -204,29 +149,14 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
           child: CoeloSearchField(
             key: const Key('daily-routine-search'),
             controller: _search,
-            semanticLabel: _selectedType == DailyRoutineEntryType.model
+            semanticLabel: _selectedType == RoutineEntryKind.model
                 ? 'Buscar modelos de rotina diária'
                 : 'Buscar rotinas diárias',
-            hintText: _selectedType == DailyRoutineEntryType.model
-                ? 'Buscar modelos'
-                : 'Buscar rotinas',
+            hintText: _selectedType == RoutineEntryKind.model ? 'Buscar modelos' : 'Buscar rotinas',
             onChanged: (_) => updateDirectory(() {}),
           ),
         ),
-        filters: [
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: compact ? availableWidth : 168),
-            child: CoeloAdminSingleSelectField<String>(
-              key: const Key('daily-routine-origin-filter'),
-              label: 'Origem',
-              value: _origin,
-              options: const ['Todas', 'Instituição', 'Unidade'],
-              optionLabel: (value) => value,
-              searchable: false,
-              onChanged: (value) => updateDirectory(() => _origin = value),
-            ),
-          ),
-        ],
+        filters: const [],
         actions: [
           SuperadminDirectoryViewToggle<_RoutineTableView>(
             cardsSelected: _display == _RoutineDisplay.cards,
@@ -240,20 +170,84 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             onCardsSelected: () => updateDirectory(() => _display = _RoutineDisplay.cards),
             onTableViewSelected: (_) => updateDirectory(() => _display = _RoutineDisplay.table),
           ),
-          if (widget.permissions.canManage)
-            FilledButton.icon(
-              onPressed: _requestCreate,
-              icon: const Icon(Icons.add_rounded),
-              label: Text(
-                _selectedType == DailyRoutineEntryType.model ? 'Criar modelo' : 'Nova rotina',
-              ),
+          if (widget.onImport != null || widget.onExport != null)
+            CoeloAdminFileActions(
+              compact: compact,
+              actions: [
+                if (widget.onImport != null)
+                  CoeloAdminFileAction(
+                    label: 'Importar configuracao',
+                    icon: Icons.upload_file_outlined,
+                    onPressed: widget.onImport!,
+                  ),
+                if (widget.onExport != null)
+                  CoeloAdminFileAction(
+                    label: 'Exportar configuracao',
+                    icon: Icons.download_outlined,
+                    onPressed: widget.onExport!,
+                  ),
+              ],
             ),
         ],
       ),
     ),
   );
 
-  Widget _cards(List<DailyRoutineModel> models, int currentPage, int totalPages) => Column(
+  Widget _content() {
+    final state = _controller.state;
+    return switch (state.status) {
+      RoutineDirectoryStatus.loading => const CoeloStatePanel(
+        key: Key('daily-routine-loading'),
+        title: 'Carregando rotina diaria',
+        message: 'Aguarde enquanto os dados autorizados sao carregados.',
+        loading: true,
+      ),
+      RoutineDirectoryStatus.empty => CoeloStatePanel(
+        key: Key(
+          _selectedType == RoutineEntryKind.launch
+              ? 'daily-routine-launches-empty'
+              : 'daily-routine-empty',
+        ),
+        title: 'Nenhum item criado',
+        message: 'Nao ha itens neste escopo.',
+        icon: Icons.event_note_outlined,
+        actionLabel: _canManage ? 'Criar' : null,
+        onAction: _canManage ? _requestCreate : null,
+      ),
+      RoutineDirectoryStatus.noResults => CoeloStatePanel(
+        key: const Key('daily-routine-no-results'),
+        title: 'Nenhum resultado',
+        message: 'Ajuste a busca.',
+        icon: Icons.search_off_rounded,
+        actionLabel: 'Limpar busca',
+        onAction: clearFilters,
+      ),
+      RoutineDirectoryStatus.unauthorized => const CoeloStatePanel(
+        key: Key('daily-routine-unauthorized'),
+        title: 'Acesso nao autorizado',
+        message: 'Seu acesso a este escopo nao esta disponivel.',
+        icon: Icons.lock_outline_rounded,
+      ),
+      RoutineDirectoryStatus.notFound => const CoeloStatePanel(
+        key: Key('daily-routine-not-found'),
+        title: 'Conteudo nao encontrado',
+        message: 'O recurso solicitado nao esta disponivel.',
+        icon: Icons.search_off_rounded,
+      ),
+      RoutineDirectoryStatus.conflict || RoutineDirectoryStatus.failure => CoeloStatePanel(
+        key: const Key('daily-routine-error'),
+        title: 'Nao foi possivel carregar a rotina diaria',
+        message: state.message ?? 'Atualize para tentar novamente.',
+        icon: Icons.error_outline_rounded,
+        actionLabel: 'Tentar novamente',
+        onAction: _load,
+      ),
+      RoutineDirectoryStatus.data =>
+        _display == _RoutineDisplay.cards ? _cards(state.page!) : _table(state.page!),
+    };
+  }
+
+  Widget _cards(RoutineDirectoryPage page) => Column(
     children: [
       LayoutBuilder(
         builder: (context, constraints) {
@@ -262,47 +256,46 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
               : constraints.maxWidth >= 680
               ? 2
               : 1;
-          final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
+          final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
           return Wrap(
             key: const Key('daily-routine-cards'),
-            spacing: CoeloSpacing.space4,
-            runSpacing: CoeloSpacing.space4,
+            spacing: CoeloSpacing.space6,
+            runSpacing: CoeloSpacing.space6,
             children: [
-              if (widget.permissions.canManage)
+              if (_canCreate)
                 SizedBox(
                   width: width,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(minHeight: 216),
                     child: CoeloAdminCreateAction(
                       key: const Key('daily-routine-create-tile'),
-                      label: _selectedType == DailyRoutineEntryType.model
-                          ? 'Criar modelo'
-                          : 'Nova rotina',
+                      label: 'Criar item',
                       onPressed: _requestCreate,
                       icon: Icons.add_task_rounded,
                     ),
                   ),
                 ),
-              for (final model in models)
+              for (final item in page.items)
                 SizedBox(
                   width: width,
                   child: CoeloAdminInteractiveCard(
-                    key: Key('daily-routine-card-${model.id}'),
-                    semanticLabel: widget.permissions.canManage
-                        ? 'Editar ${model.name}'
-                        : 'Consultar ${model.name}',
-                    onPressed: widget.onEdit == null ? null : () => widget.onEdit!(model.id),
+                    key: Key('daily-routine-card-${item.id}'),
+                    semanticLabel: 'Abrir ${item.name}',
+                    onPressed: widget.onEdit == null ? null : () => widget.onEdit!(item),
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 184),
+                      constraints: const BoxConstraints(minHeight: 216),
                       child: Padding(
                         padding: const EdgeInsets.all(CoeloSpacing.space4),
-                        child: _RoutineSummary(
-                          model: model,
-                          canManage: widget.permissions.canManage,
-                          onDuplicate: () => _confirmDuplicate(model),
-                          onCreateRoutine: model.type == DailyRoutineEntryType.model
-                              ? () => _createRoutineFromModel(model)
-                              : null,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item.name, style: Theme.of(context).textTheme.titleMedium),
+                            const SizedBox(height: CoeloSpacing.space3),
+                            Text('${item.status} - v${item.version}'),
+                            if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
+                            if (item.effectiveLabel != null)
+                              Text('Efetivo: ${item.effectiveLabel}'),
+                          ],
                         ),
                       ),
                     ),
@@ -312,93 +305,76 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
           );
         },
       ),
-      if (totalPages > 1) ...[
-        const SizedBox(height: CoeloSpacing.space5),
-        _pagination(currentPage, totalPages),
-      ],
+      _pagination(page),
     ],
   );
 
-  Widget _table(List<DailyRoutineModel> models, int currentPage, int totalPages) => Column(
+  Widget _table(RoutineDirectoryPage page) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      if (widget.permissions.canManage) ...[
-        CoeloAdminCreateAction(
-          key: const Key('daily-routine-create-banner'),
-          label: _selectedType == DailyRoutineEntryType.model ? 'Criar modelo' : 'Nova rotina',
-          description: _selectedType == DailyRoutineEntryType.model
-              ? 'Configure uma base reutilizável em quatro etapas.'
-              : 'Configure o registro cotidiano em quatro etapas.',
-          onPressed: _requestCreate,
-          icon: Icons.add_task_rounded,
-          variant: CoeloAdminCreateActionVariant.banner,
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-      ],
-      CoeloAdminResizableTable<DailyRoutineModel>(
+      CoeloAdminResizableTable<RoutineDirectoryItem>(
         key: const Key('daily-routine-table'),
-        items: models,
-        rowKey: (model) => 'daily-routine-row-${model.id}',
+        items: page.items,
+        rowKey: (item) => 'daily-routine-row-${item.id}',
         pinnedColumn: CoeloAdminTableColumn(
           id: 'name',
-          label: _selectedType == DailyRoutineEntryType.model ? 'Modelo' : 'Rotina',
-          initialWidth: 260,
+          label: 'Nome',
+          initialWidth: 280,
           minWidth: 180,
           maxWidth: 420,
-          cellBuilder: (_, model) => Text(model.name),
+          cellBuilder: (_, item) => Text(item.name),
         ),
         columns: [
           CoeloAdminTableColumn(
             id: 'origin',
             label: 'Origem',
-            initialWidth: 160,
+            initialWidth: 180,
             minWidth: 120,
-            maxWidth: 240,
-            cellBuilder: (_, model) => Text(model.origin.label),
+            maxWidth: 260,
+            cellBuilder: (_, item) => Text(item.originLabel ?? '-'),
+          ),
+          CoeloAdminTableColumn(
+            id: 'status',
+            label: 'Status',
+            initialWidth: 140,
+            minWidth: 110,
+            maxWidth: 200,
+            cellBuilder: (_, item) => Text(item.status),
           ),
           CoeloAdminTableColumn(
             id: 'version',
-            label: 'Versão',
-            initialWidth: 120,
-            minWidth: 100,
-            maxWidth: 180,
-            cellBuilder: (_, model) => Text('v${model.version}'),
-          ),
-          CoeloAdminTableColumn(
-            id: 'actions',
-            label: 'Ações',
-            initialWidth: 144,
-            minWidth: 120,
-            maxWidth: 180,
-            cellBuilder: (_, model) => widget.permissions.canManage
-                ? Row(
-                    children: [
-                      IconButton(
-                        tooltip: 'Duplicar ${model.name}',
-                        onPressed: () => _confirmDuplicate(model),
-                        icon: const Icon(Icons.content_copy_rounded),
-                      ),
-                      if (model.type == DailyRoutineEntryType.model)
-                        IconButton(
-                          tooltip: 'Criar rotina de ${model.name}',
-                          onPressed: () => _createRoutineFromModel(model),
-                          icon: const Icon(Icons.playlist_add_rounded),
-                        ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
+            label: 'Versao',
+            initialWidth: 100,
+            minWidth: 90,
+            maxWidth: 140,
+            cellBuilder: (_, item) => Text('v${item.version}'),
           ),
         ],
         headerHeight: 56,
         rowHeight: 64,
-        onRowPressed: widget.onEdit == null ? null : (model) => widget.onEdit!(model.id),
+        onRowPressed: widget.onEdit == null ? null : (item) => widget.onEdit!(item),
       ),
-      if (totalPages > 1) ...[
-        const SizedBox(height: CoeloSpacing.space5),
-        _pagination(currentPage, totalPages),
-      ],
+      _pagination(page),
     ],
   );
+
+  Widget _pagination(RoutineDirectoryPage page) {
+    final totalPages = (page.totalCount / page.pageSize).ceil().clamp(1, 999999);
+    if (totalPages <= 1) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: CoeloSpacing.space5),
+      child: CoeloAdminPagination(
+        key: const Key('daily-routine-pagination'),
+        currentPage: page.page,
+        totalPages: totalPages,
+        onPrevious: page.page > 1 ? () => _load(page: page.page - 1) : null,
+        onNext: page.page < totalPages ? () => _load(page: page.page + 1) : null,
+        onPageSelected: (value) => _load(page: value),
+      ),
+    );
+  }
+
+  bool get _canCreate => _canManage && _selectedType == RoutineEntryKind.model;
 
   void _requestCreate() {
     final callback = widget.onCreateEntry;
@@ -408,116 +384,22 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
       widget.onCreate?.call();
     }
   }
-
-  Future<void> _confirmDuplicate(DailyRoutineModel model) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        title: 'Duplicar ${model.type == DailyRoutineEntryType.model ? 'modelo' : 'rotina'}?',
-        body: Text(
-          'Uma cópia editável de ${model.name} será criada com o próximo sufixo disponível.',
-        ),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.pop(dialogContext, false),
-          child: const Text('Cancelar'),
-        ),
-        primaryAction: FilledButton(
-          key: const Key('daily-routine-confirm-duplicate'),
-          onPressed: () => Navigator.pop(dialogContext, true),
-          child: const Text('Duplicar'),
-        ),
-      ),
-    );
-    if (confirmed != true || !mounted) return;
-    widget.repository.duplicate(model.id);
-    setState(() => _page = 1);
-  }
-
-  void _createRoutineFromModel(DailyRoutineModel model) {
-    final routine = widget.repository.createRoutineFromModel(model.id);
-    setState(() {
-      _selectedType = DailyRoutineEntryType.routine;
-      _page = 1;
-    });
-    widget.onEdit?.call(routine.id);
-  }
-
-  Widget _pagination(int currentPage, int totalPages) => CoeloAdminPagination(
-    key: const Key('daily-routine-pagination'),
-    currentPage: currentPage,
-    totalPages: totalPages,
-    onPrevious: currentPage > 1 ? () => setState(() => _page = currentPage - 1) : null,
-    onNext: currentPage < totalPages ? () => setState(() => _page = currentPage + 1) : null,
-    onPageSelected: (page) => setState(() => _page = page),
-  );
-}
-
-class _RoutineSummary extends StatelessWidget {
-  const _RoutineSummary({
-    required this.model,
-    required this.canManage,
-    required this.onDuplicate,
-    this.onCreateRoutine,
-  });
-
-  final DailyRoutineModel model;
-  final bool canManage;
-  final VoidCallback onDuplicate;
-  final VoidCallback? onCreateRoutine;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: Text(model.name, style: Theme.of(context).textTheme.titleMedium)),
-          if (canManage)
-            IconButton(
-              key: Key('daily-routine-duplicate-${model.id}'),
-              tooltip: 'Duplicar ${model.name}',
-              onPressed: onDuplicate,
-              icon: const Icon(Icons.content_copy_rounded),
-            ),
-        ],
-      ),
-      const SizedBox(height: CoeloSpacing.space2),
-      Text(model.description),
-      const SizedBox(height: CoeloSpacing.space3),
-      if (model.isCoeloProvided) const Text('Modelo Coelo • Somente leitura'),
-      Text('${model.origin.label} • v${model.version} • ${model.status.label}'),
-      if (model.updateAvailable) const Text('Atualização opcional disponível'),
-      if (canManage && onCreateRoutine != null)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            key: Key('daily-routine-use-model-${model.id}'),
-            onPressed: onCreateRoutine,
-            icon: const Icon(Icons.playlist_add_rounded),
-            label: const Text('Criar rotina deste modelo'),
-          ),
-        ),
-    ],
-  );
 }
 
 class DailyRoutineEditorPage extends StatefulWidget {
   const DailyRoutineEditorPage({
     required this.repository,
-    required this.permissions,
     required this.logout,
     this.modelId,
-    this.entryType = DailyRoutineEntryType.model,
+    this.entryType = RoutineEntryKind.model,
     this.activityController,
     super.key,
   });
 
-  final InMemoryDailyRoutineRepository repository;
-  final DailyRoutinePermissions permissions;
+  final RoutineRepository repository;
   final LogoutAction logout;
   final String? modelId;
-  final DailyRoutineEntryType entryType;
+  final RoutineEntryKind entryType;
   final SuperadminActivityController? activityController;
 
   @override
@@ -528,24 +410,9 @@ class _DailyRoutineEditorPageState extends State<DailyRoutineEditorPage> {
   @override
   Widget build(BuildContext context) => DailyRoutineWizardPage(
     repository: widget.repository,
-    permissions: widget.permissions,
     logout: widget.logout,
-    modelId: widget.modelId,
-    entryType: widget.entryType,
+    entryId: widget.modelId,
+    entryKind: widget.entryType,
     activityController: widget.activityController,
   );
-}
-
-extension on DailyRoutineOrigin {
-  String get label => switch (this) {
-    DailyRoutineOrigin.institution => 'Instituição',
-    DailyRoutineOrigin.unit => 'Unidade',
-  };
-}
-
-extension on DailyRoutineStatus {
-  String get label => switch (this) {
-    DailyRoutineStatus.draft => 'Rascunho',
-    DailyRoutineStatus.active => 'Ativo',
-  };
 }
