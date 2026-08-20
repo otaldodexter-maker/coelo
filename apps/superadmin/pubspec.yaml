@@ -10,8 +10,12 @@ environment:
 dependencies:
   characters: 1.4.1
   crypto: 3.0.6
+  coelo_api:
+    path: ../../packages/coelo_api
   coelo_auth:
     path: ../../packages/coelo_auth
+  coelo_domain:
+    path: ../../packages/coelo_domain
   coelo_tokens:
     path: ../../packages/coelo_tokens
   coelo_ui_admin:
@@ -28,6 +32,7 @@ dependencies:
     sdk: flutter
   go_router: ^16.0.0
   http: 1.6.0
+  image_picker: ^1.2.3
   shared_preferences: ^2.5.4
   supabase_flutter: 2.16.0
   url_launcher: 6.3.2
