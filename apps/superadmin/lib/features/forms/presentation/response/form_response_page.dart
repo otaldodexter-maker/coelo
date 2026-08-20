@@ -32,10 +32,20 @@ final class FormResponsePage extends StatefulWidget {
     this.assetPicker,
     this.assetUploader,
     super.key,
-  });
+  }) : testDefinition = null;
+
+  const FormResponsePage.test({required FormDefinition definition, super.key})
+    : api = null,
+      occurrenceId = 'local-test-occurrence',
+      secretStore = null,
+      requestIdFactory = null,
+      assetPicker = null,
+      assetUploader = null,
+      testDefinition = definition;
 
   final FormsApi? api;
   final String occurrenceId;
+  final FormDefinition? testDefinition;
   final FormAnonymousEditSecretStore? secretStore;
   final FormRequestIdFactory? requestIdFactory;
   final FormResponseAssetPicker? assetPicker;
@@ -74,6 +84,31 @@ final class _FormResponsePageState extends State<FormResponsePage> {
   void initState() {
     super.initState();
     _defaultAssetPicker = FormAssetPicker();
+    if (widget.testDefinition case final definition?) {
+      final now = DateTime.now();
+      _projection = FormOccurrenceForResponse(
+        occurrence: FormOccurrence(
+          id: widget.occurrenceId,
+          applicationId: 'local-test-application',
+          formVersionId: 'local-test-version',
+          opensAt: now,
+          closesAt: now,
+          status: FormOccurrenceStatus.open,
+          managementVersion: 0,
+        ),
+        version: FormVersion(
+          id: 'local-test-version',
+          formId: definition.id,
+          number: 0,
+          sections: definition.sections,
+          isPublished: false,
+        ),
+        participationId: 'local-test-participation',
+        identityMode: definition.identityMode,
+        canEdit: true,
+      );
+      return;
+    }
     if (widget.api case final api?) {
       final uploader = FormAssetUploader();
       _defaultRawUploader = uploader;
@@ -288,6 +323,17 @@ final class _FormResponsePageState extends State<FormResponsePage> {
       setState(() => _inlineMessage = 'Responda aos campos obrigatórios visíveis para continuar.');
       return;
     }
+    if (widget.testDefinition != null) {
+      setState(() {
+        _inlineMessage = null;
+        if (_sectionIndex + 1 < projection.version.sections.length) {
+          _sectionIndex++;
+        } else {
+          _stage = _ResponseStage.review;
+        }
+      });
+      return;
+    }
     final api = widget.api!;
     final draft = _draft!;
     if (_editingSubmitted) {
@@ -341,6 +387,10 @@ final class _FormResponsePageState extends State<FormResponsePage> {
   }
 
   Future<void> _submit() async {
+    if (widget.testDefinition != null) {
+      setState(() => _stage = _ResponseStage.submitted);
+      return;
+    }
     final api = widget.api!;
     final projection = _projection!;
     final draft = _draft!;
@@ -409,6 +459,21 @@ final class _FormResponsePageState extends State<FormResponsePage> {
 
   Future<void> _selectAndUploadAssets(FormItem item) async {
     final existing = (_answers[item.id]?.value as FormAssetValue?)?.assetIds ?? const <String>[];
+    if (widget.testDefinition != null) {
+      final maximum = item.kind == FormItemKind.photo ? 1 : 5;
+      if (existing.length >= maximum) {
+        setState(() => _inlineMessage = 'O limite de imagens desta pergunta foi atingido.');
+        return;
+      }
+      final simulated = [...existing, 'local-test-${item.id}-${existing.length + 1}'];
+      setState(() {
+        _inlineMessage = null;
+        _answers[item.id] = item.kind == FormItemKind.photo
+            ? FormAnswer.photo(itemId: item.id, assetIds: simulated)
+            : FormAnswer.gallery(itemId: item.id, assetIds: simulated);
+      });
+      return;
+    }
     final maximum = item.kind == FormItemKind.photo ? 1 : 5;
     final remaining = maximum - existing.length;
     if (remaining <= 0) {
@@ -459,6 +524,20 @@ final class _FormResponsePageState extends State<FormResponsePage> {
   }
 
   Future<void> _discardAsset(FormItem item, String assetId) async {
+    if (widget.testDefinition != null) {
+      final current = (_answers[item.id]?.value as FormAssetValue?)?.assetIds ?? const <String>[];
+      final remaining = current.where((id) => id != assetId).toList(growable: false);
+      setState(() {
+        if (remaining.isEmpty) {
+          _answers.remove(item.id);
+        } else {
+          _answers[item.id] = item.kind == FormItemKind.photo
+              ? FormAnswer.photo(itemId: item.id, assetIds: remaining)
+              : FormAnswer.gallery(itemId: item.id, assetIds: remaining);
+        }
+      });
+      return;
+    }
     final api = widget.api;
     if (api == null) return;
     setState(() => _uploadingItems.add(item.id));
@@ -545,6 +624,13 @@ final class _FormResponsePageState extends State<FormResponsePage> {
       );
     }
     if (_stage == _ResponseStage.submitted) {
+      if (widget.testDefinition != null) {
+        return const CoeloStatePanel(
+          title: 'Teste concluído',
+          message: 'Nenhuma resposta, participação, mídia ou métrica foi registrada.',
+          icon: Icons.check_circle_outline_rounded,
+        );
+      }
       return CoeloStatePanel(
         title: _editingSubmitted ? 'Resposta atualizada' : 'Resposta enviada',
         message: _editingSubmitted
@@ -561,6 +647,27 @@ final class _FormResponsePageState extends State<FormResponsePage> {
             child: ListView(
               padding: const EdgeInsets.all(CoeloSpacing.space5),
               children: [
+                if (widget.testDefinition != null)
+                  Semantics(
+                    liveRegion: true,
+                    container: true,
+                    label: 'Modo de teste. Nenhum dado será registrado.',
+                    child: const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(CoeloSpacing.space4),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Modo de teste'),
+                            SizedBox(height: CoeloSpacing.space1),
+                            Text(
+                              'Nenhuma resposta, participação, mídia ou métrica será registrada.',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 if (projection.identityMode == FormIdentityMode.anonymous)
                   Semantics(
                     liveRegion: true,
@@ -791,7 +898,11 @@ final class _FormResponsePageState extends State<FormResponsePage> {
                 children: [
                   for (var index = 0; index < assetIds.length; index++)
                     InputChip(
-                      label: Text('Imagem ${index + 1}'),
+                      label: Text(
+                        widget.testDefinition != null
+                            ? 'Imagem de teste ${index + 1}'
+                            : 'Imagem ${index + 1}',
+                      ),
                       onDeleted: uploading ? null : () => _discardAsset(item, assetIds[index]),
                       deleteButtonTooltipMessage: 'Remover imagem ${index + 1}',
                     ),
@@ -809,7 +920,15 @@ final class _FormResponsePageState extends State<FormResponsePage> {
                       ? Icons.photo_camera_outlined
                       : Icons.add_photo_alternate_outlined,
                 ),
-                label: Text(item.kind == FormItemKind.photo ? 'Tirar foto' : 'Escolher imagens'),
+                label: Text(
+                  widget.testDefinition != null
+                      ? item.kind == FormItemKind.photo
+                            ? 'Simular foto'
+                            : 'Simular imagens'
+                      : item.kind == FormItemKind.photo
+                      ? 'Tirar foto'
+                      : 'Escolher imagens',
+                ),
               ),
             ),
             if (progress != null) ...[
@@ -854,6 +973,8 @@ final class _FormResponsePageState extends State<FormResponsePage> {
               child: Text(
                 _busy
                     ? 'Salvando…'
+                    : widget.testDefinition != null
+                    ? 'Concluir teste'
                     : _editingSubmitted
                     ? 'Confirmar alteração'
                     : 'Confirmar envio',
