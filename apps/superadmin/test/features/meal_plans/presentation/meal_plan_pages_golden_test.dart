@@ -5,6 +5,7 @@ import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_image_repo
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_directory_page.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,27 +81,216 @@ void main() {
       matchesGoldenFile('goldens/meal_plan_model_new_light_1440.png'),
     );
   });
+
+  testWidgets('matches the meal plan directory cards on mobile', (tester) async {
+    _configureSize(tester, const Size(375, 1000));
+    final repository = FakeMealPlanRepository();
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-directory-mobile-golden-root'),
+        child: MealPlanDirectoryPage(
+          repository: repository,
+          onCreate: (_) {},
+          onEdit: (_) {},
+          onCreateTemplate: () {},
+          onEditTemplate: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-directory-mobile-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_directory_light_375.png'),
+    );
+  });
+
+  testWidgets('matches the meal plan directory cards in dark theme', (tester) async {
+    _configureDesktop(tester);
+    final repository = FakeMealPlanRepository();
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-directory-dark-golden-root'),
+        theme: CoeloTheme.dark,
+        child: MealPlanDirectoryPage(
+          repository: repository,
+          onCreate: (_) {},
+          onEdit: (_) {},
+          onCreateTemplate: () {},
+          onEditTemplate: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-directory-dark-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_directory_dark_1440.png'),
+    );
+  });
+
+  testWidgets('matches directory card hover at desktop', (tester) async {
+    _configureDesktop(tester);
+    final repository = FakeMealPlanRepository();
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-directory-hover-golden-root'),
+        child: MealPlanDirectoryPage(
+          repository: repository,
+          onCreate: (_) {},
+          onEdit: (_) {},
+          onCreateTemplate: () {},
+          onEditTemplate: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(tester.getCenter(find.text('Cardápio semanal - Educação Infantil')));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-directory-hover-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_directory_card_hover_light_1440.png'),
+    );
+  });
+
+  testWidgets('matches directory flyout at desktop', (tester) async {
+    _configureDesktop(tester);
+    final repository = FakeMealPlanRepository();
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-directory-flyout-golden-root'),
+        child: MealPlanDirectoryPage(
+          repository: repository,
+          onCreate: (_) {},
+          onEdit: (_) {},
+          onCreateTemplate: () {},
+          onEditTemplate: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Ações').first);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-directory-flyout-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_directory_flyout_light_1440.png'),
+    );
+  });
+
+  testWidgets('matches new meal plan identification on mobile', (tester) async {
+    _configureSize(tester, const Size(375, 1000));
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-wizard-new-mobile-golden-root'),
+        child: MealPlanWizardPage(
+          repository: FakeMealPlanRepository(),
+          imageRepository: const _UnavailableMealPlanImageRepository(),
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-wizard-new-mobile-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_wizard_new_light_375.png'),
+    );
+  });
+
+  testWidgets('matches edit meal plan identification in dark theme', (tester) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-wizard-edit-dark-golden-root'),
+        theme: CoeloTheme.dark,
+        child: MealPlanWizardPage(
+          repository: FakeMealPlanRepository(),
+          imageRepository: const _UnavailableMealPlanImageRepository(),
+          mealPlanId: _publishedPlan.id,
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-wizard-edit-dark-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_wizard_edit_dark_1440.png'),
+    );
+  });
+
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    testWidgets('renders directory and wizard without overflow at ${width.toInt()}', (
+      tester,
+    ) async {
+      _configureSize(tester, Size(width, 1000));
+      final repository = FakeMealPlanRepository();
+
+      await tester.pumpWidget(
+        _goldenApp(
+          boundaryKey: Key('meal-plan-responsive-directory-${width.toInt()}'),
+          child: MealPlanDirectoryPage(
+            repository: repository,
+            onCreate: (_) {},
+            onEdit: (_) {},
+            onCreateTemplate: () {},
+            onEditTemplate: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(
+        _goldenApp(
+          boundaryKey: Key('meal-plan-responsive-wizard-${width.toInt()}'),
+          child: MealPlanWizardPage(
+            repository: repository,
+            imageRepository: const _UnavailableMealPlanImageRepository(),
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+  }
 }
 
-void _configureDesktop(WidgetTester tester) {
+void _configureDesktop(WidgetTester tester) => _configureSize(tester, const Size(1440, 1000));
+
+void _configureSize(WidgetTester tester, Size size) {
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = const Size(1440, 1000);
+  tester.view.physicalSize = size;
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
 }
 
-Widget _goldenApp({required Key boundaryKey, required Widget child}) {
+Widget _goldenApp({required Key boundaryKey, required Widget child, ThemeData? theme}) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: CoeloTheme.light.copyWith(scaffoldBackgroundColor: Colors.white),
+    theme: theme ?? CoeloTheme.light.copyWith(scaffoldBackgroundColor: Colors.white),
     themeAnimationStyle: AnimationStyle.noAnimation,
     builder: (context, page) => RepaintBoundary(
       key: boundaryKey,
       child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          disableAnimations: true,
-          textScaler: TextScaler.noScaling,
-        ),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(disableAnimations: true, textScaler: TextScaler.noScaling),
         child: page!,
       ),
     ),
@@ -110,54 +300,52 @@ Widget _goldenApp({required Key boundaryKey, required Widget child}) {
 
 final class FakeMealPlanRepository implements MealPlanRepository {
   FakeMealPlanRepository()
-      : mealPlans = [_publishedPlan, _reviewPlan],
-        templates = [_template],
-        audienceOptions = const MealPlanAudienceOptions(
-          institutions: [
-            MealPlanAudienceOption(id: 'institution-coelo', label: 'Colégio Coelo'),
-          ],
-          units: [
-            MealPlanAudienceOption(
-              id: 'unit-centro',
-              label: 'Unidade Centro',
-              institutionId: 'institution-coelo',
-            ),
-          ],
-          groups: [
-            MealPlanAudienceOption(
-              id: 'group-5a',
-              label: 'Turma 5A',
-              institutionId: 'institution-coelo',
-              unitId: 'unit-centro',
-            ),
-          ],
-          activities: [
-            MealPlanAudienceOption(
-              id: 'activity-integral',
-              label: 'Período integral',
-              institutionId: 'institution-coelo',
-              unitId: 'unit-centro',
-              groupId: 'group-5a',
-            ),
-          ],
-          people: [
-            MealPlanAudienceOption(
-              id: 'person-ana',
-              label: 'Ana Martins',
-              institutionId: 'institution-coelo',
-              unitId: 'unit-centro',
-              groupId: 'group-5a',
-              audienceSegment: MealPlanAudienceSegment.students,
-            ),
-            MealPlanAudienceOption(
-              id: 'person-carlos',
-              label: 'Carlos Lima',
-              institutionId: 'institution-coelo',
-              unitId: 'unit-centro',
-              audienceSegment: MealPlanAudienceSegment.staff,
-            ),
-          ],
-        );
+    : mealPlans = [_publishedPlan, _reviewPlan],
+      templates = [_template],
+      audienceOptions = const MealPlanAudienceOptions(
+        institutions: [MealPlanAudienceOption(id: 'institution-coelo', label: 'Colégio Coelo')],
+        units: [
+          MealPlanAudienceOption(
+            id: 'unit-centro',
+            label: 'Unidade Centro',
+            institutionId: 'institution-coelo',
+          ),
+        ],
+        groups: [
+          MealPlanAudienceOption(
+            id: 'group-5a',
+            label: 'Turma 5A',
+            institutionId: 'institution-coelo',
+            unitId: 'unit-centro',
+          ),
+        ],
+        activities: [
+          MealPlanAudienceOption(
+            id: 'activity-integral',
+            label: 'Período integral',
+            institutionId: 'institution-coelo',
+            unitId: 'unit-centro',
+            groupId: 'group-5a',
+          ),
+        ],
+        people: [
+          MealPlanAudienceOption(
+            id: 'person-ana',
+            label: 'Ana Martins',
+            institutionId: 'institution-coelo',
+            unitId: 'unit-centro',
+            groupId: 'group-5a',
+            audienceSegment: MealPlanAudienceSegment.students,
+          ),
+          MealPlanAudienceOption(
+            id: 'person-carlos',
+            label: 'Carlos Lima',
+            institutionId: 'institution-coelo',
+            unitId: 'unit-centro',
+            audienceSegment: MealPlanAudienceSegment.staff,
+          ),
+        ],
+      );
 
   final List<MealPlan> mealPlans;
   final List<MealPlanTemplate> templates;
@@ -165,19 +353,19 @@ final class FakeMealPlanRepository implements MealPlanRepository {
 
   @override
   Future<MealPlanPage> fetchPage(MealPlanListFilter filter) async => MealPlanPage(
-        items: mealPlans,
-        total: mealPlans.length,
-        limit: filter.pageSize,
-        offset: filter.offset,
-      );
+    items: mealPlans,
+    total: mealPlans.length,
+    limit: filter.pageSize,
+    offset: filter.offset,
+  );
 
   @override
   Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(
-        items: templates.map((template) => template.toDirectoryItem()).toList(),
-        total: templates.length,
-        limit: filter.pageSize,
-        offset: filter.offset,
-      );
+    items: templates.map((template) => template.toDirectoryItem()).toList(),
+    total: templates.length,
+    limit: filter.pageSize,
+    offset: filter.offset,
+  );
 
   @override
   Future<MealPlan> getById(String id) async => mealPlans.firstWhere((item) => item.id == id);
@@ -193,27 +381,29 @@ final class FakeMealPlanRepository implements MealPlanRepository {
   Future<MealPlanTemplate> saveTemplate(
     MealPlanTemplateDraft draft, {
     required bool publish,
-  }) async =>
-      MealPlanTemplate(
-        id: draft.id ?? 'template-created',
-        tenantId: 'tenant-coelo',
-        institutionId: 'institution-coelo',
-        name: draft.name,
-        planVariant: draft.planVariant,
-        audienceSegment: draft.audienceSegment,
-        status: publish ? 'published' : 'draft',
-        version: draft.expectedVersion + 1,
-        payload: draft.payload,
-        createdAt: _fixedNow,
-        updatedAt: _fixedNow,
-      );
+  }) async => MealPlanTemplate(
+    id: draft.id ?? 'template-created',
+    tenantId: 'tenant-coelo',
+    institutionId: 'institution-coelo',
+    name: draft.name,
+    planVariant: draft.planVariant,
+    audienceSegment: draft.audienceSegment,
+    status: publish ? 'published' : 'draft',
+    version: draft.expectedVersion + 1,
+    payload: draft.payload,
+    createdAt: _fixedNow,
+    updatedAt: _fixedNow,
+  );
 
   @override
   Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) async => _fromDraft(draft);
 
   @override
-  Future<MealPlan> submitForReview(String mealPlanId, String requestId, int expectedRevision) async =>
-      mealPlans.firstWhere((item) => item.id == mealPlanId);
+  Future<MealPlan> submitForReview(
+    String mealPlanId,
+    String requestId,
+    int expectedRevision,
+  ) async => mealPlans.firstWhere((item) => item.id == mealPlanId);
 
   @override
   Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) async =>
@@ -227,8 +417,7 @@ final class FakeMealPlanRepository implements MealPlanRepository {
     required DateTime endDate,
     required MealPlanRecurrence recurrence,
     required List<MealPlanMenuEntry> menu,
-  }) async =>
-      const [];
+  }) async => const [];
 
   @override
   Future<MealPlan> fetchEffectiveSnapshot(MealPlanDraft draft) async => _fromDraft(draft);
@@ -334,43 +523,43 @@ final _template = MealPlanTemplate(
 );
 
 MealPlan _fromDraft(MealPlanDraft draft) => MealPlan(
-      id: draft.mealPlanId ?? 'meal-plan-created',
-      tenantId: draft.tenantId,
-      institutionId: draft.institutionId,
-      unitId: draft.unitId,
-      classId: draft.classId,
-      personId: draft.personId,
-      name: draft.name,
-      status: MealPlanStatus.draft,
-      sourceType: draft.sourceType,
-      scopeLevel: draft.scopeLevel,
-      scopeId: draft.scopeId,
-      startDate: draft.startDate,
-      endDate: draft.endDate,
-      recurrence: draft.recurrence,
-      menu: draft.menu,
-      allergens: draft.allergens,
-      alerts: draft.alerts,
-      attachments: draft.attachments,
-      priority: draft.priority,
-      conflictState: false,
-      revision: draft.expectedRevision + 1,
-      isDraft: true,
-      requiresReview: false,
-      createdBy: 'person-admin',
-      updatedBy: 'person-admin',
-      inheritanceOriginId: draft.inheritanceOriginId,
-      planVariant: draft.planVariant,
-      audienceSegment: draft.audienceSegment,
-      visibilityMode: draft.visibilityMode,
-      visibleFrom: draft.visibleFrom,
-      sourceTemplateId: draft.sourceTemplateId,
-      sourceTemplateVersion: draft.sourceTemplateVersion,
-      scopeRules: draft.scopeRules,
-      simpleImage: draft.simpleImage,
-      simpleImageAlt: draft.simpleImageAlt,
-      simpleNotes: draft.simpleNotes,
-    );
+  id: draft.mealPlanId ?? 'meal-plan-created',
+  tenantId: draft.tenantId,
+  institutionId: draft.institutionId,
+  unitId: draft.unitId,
+  classId: draft.classId,
+  personId: draft.personId,
+  name: draft.name,
+  status: MealPlanStatus.draft,
+  sourceType: draft.sourceType,
+  scopeLevel: draft.scopeLevel,
+  scopeId: draft.scopeId,
+  startDate: draft.startDate,
+  endDate: draft.endDate,
+  recurrence: draft.recurrence,
+  menu: draft.menu,
+  allergens: draft.allergens,
+  alerts: draft.alerts,
+  attachments: draft.attachments,
+  priority: draft.priority,
+  conflictState: false,
+  revision: draft.expectedRevision + 1,
+  isDraft: true,
+  requiresReview: false,
+  createdBy: 'person-admin',
+  updatedBy: 'person-admin',
+  inheritanceOriginId: draft.inheritanceOriginId,
+  planVariant: draft.planVariant,
+  audienceSegment: draft.audienceSegment,
+  visibilityMode: draft.visibilityMode,
+  visibleFrom: draft.visibleFrom,
+  sourceTemplateId: draft.sourceTemplateId,
+  sourceTemplateVersion: draft.sourceTemplateVersion,
+  scopeRules: draft.scopeRules,
+  simpleImage: draft.simpleImage,
+  simpleImageAlt: draft.simpleImageAlt,
+  simpleNotes: draft.simpleNotes,
+);
 
 Future<void> _loadGoldenFonts() async {
   final nunitoSans = FontLoader('Nunito Sans')
