@@ -1,7 +1,9 @@
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../domain/principal_moments_feed_repository.dart';
 import '../domain/principal_moments_preview_data.dart';
 
 final class PrincipalMomentsPreviewPage extends StatefulWidget {
@@ -9,6 +11,9 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
     this.onOpenHappens,
     this.onOpenProfile,
     this.onCreateMoment,
+    this.feedRepository,
+    this.feedScope,
+    this.refreshSignal,
     this.data = PrincipalMomentsPreviewData.demo,
     super.key,
   });
@@ -16,6 +21,9 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenProfile;
   final VoidCallback? onCreateMoment;
+  final PrincipalMomentsFeedRepository? feedRepository;
+  final PrincipalMomentsFeedScope? feedScope;
+  final PrincipalMomentsFeedRefreshSignal? refreshSignal;
   final PrincipalMomentsPreviewData data;
 
   @override
@@ -29,12 +37,96 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
   final _saved = <int>{};
   var _currentIndex = 0;
   var _muted = true;
+  List<PrincipalMomentPreviewItem>? _remoteMoments;
+  PrincipalMomentsFeedFailure? _feedFailure;
+  var _feedLoading = false;
+  var _loadGeneration = 0;
+
+  bool get _feedConfigurationInvalid =>
+      (widget.feedRepository == null) != (widget.feedScope == null);
+
+  bool get _usesRemoteFeed => widget.feedRepository != null && widget.feedScope != null;
+
+  List<PrincipalMomentPreviewItem> get _moments =>
+      _usesRemoteFeed ? (_remoteMoments ?? const []) : widget.data.moments;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.refreshSignal?.addListener(_reloadAfterPublication);
+    if (_usesRemoteFeed) {
+      _feedLoading = true;
+      Future<void>.microtask(_loadFeed);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant PrincipalMomentsPreviewPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) {
+      oldWidget.refreshSignal?.removeListener(_reloadAfterPublication);
+      widget.refreshSignal?.addListener(_reloadAfterPublication);
+    }
+    if (oldWidget.feedRepository != widget.feedRepository ||
+        oldWidget.feedScope != widget.feedScope) {
+      _loadGeneration += 1;
+      _remoteMoments = null;
+      _feedFailure = null;
+      _feedLoading = _usesRemoteFeed;
+      if (_usesRemoteFeed) Future<void>.microtask(_loadFeed);
+    }
+  }
 
   @override
   void dispose() {
+    widget.refreshSignal?.removeListener(_reloadAfterPublication);
+    _loadGeneration += 1;
     _pageController.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _reloadAfterPublication() => _loadFeed();
+
+  Future<void> _loadFeed() async {
+    final repository = widget.feedRepository;
+    final scope = widget.feedScope;
+    if (repository == null || scope == null) return;
+
+    final generation = ++_loadGeneration;
+    if (mounted) {
+      setState(() {
+        _feedLoading = true;
+        _feedFailure = null;
+      });
+    }
+
+    try {
+      final moments = await repository.listVisibleMoments(scope);
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _remoteMoments = List.unmodifiable(moments);
+        _feedLoading = false;
+        _currentIndex = 0;
+        _liked.clear();
+        _saved.clear();
+      });
+      if (_pageController.hasClients) _pageController.jumpToPage(0);
+    } on PrincipalMomentsFeedFailure catch (failure) {
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _remoteMoments = null;
+        _feedLoading = false;
+        _feedFailure = failure;
+      });
+    } on Exception {
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _remoteMoments = null;
+        _feedLoading = false;
+        _feedFailure = const PrincipalMomentsFeedUnavailable();
+      });
+    }
   }
 
   void _prototypeMessage(String label) {
@@ -48,7 +140,8 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
   }
 
   void _movePage(int delta) {
-    final target = (_currentIndex + delta).clamp(0, widget.data.moments.length - 1);
+    if (_moments.isEmpty) return;
+    final target = (_currentIndex + delta).clamp(0, _moments.length - 1);
     if (target == _currentIndex) return;
     if (MediaQuery.disableAnimationsOf(context)) {
       _pageController.jumpToPage(target);
@@ -89,30 +182,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(maxWidth: desktop ? 820 : double.infinity),
-                        child: _MomentPager(
-                          controller: _pageController,
-                          focusNode: _focusNode,
-                          moments: widget.data.moments,
-                          currentIndex: _currentIndex,
-                          liked: _liked.contains(_currentIndex),
-                          saved: _saved.contains(_currentIndex),
-                          muted: _muted,
-                          compact: !desktop,
-                          onPageChanged: (value) => setState(() => _currentIndex = value),
-                          onMovePage: _movePage,
-                          onLike: () => setState(() {
-                            _liked.contains(_currentIndex)
-                                ? _liked.remove(_currentIndex)
-                                : _liked.add(_currentIndex);
-                          }),
-                          onSave: () => setState(() {
-                            _saved.contains(_currentIndex)
-                                ? _saved.remove(_currentIndex)
-                                : _saved.add(_currentIndex);
-                          }),
-                          onMute: () => setState(() => _muted = !_muted),
-                          onAction: _prototypeMessage,
-                        ),
+                        child: _buildFeedSurface(desktop: desktop),
                       ),
                     ),
                     if (desktop) ...[
@@ -120,7 +190,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
                       SizedBox(
                         width: 280,
                         child: _DesktopAside(
-                          items: widget.data.trending,
+                          items: _usesRemoteFeed ? const [] : widget.data.trending,
                           onSend: () => _invoke(widget.onCreateMoment, 'Publicação de Momentos'),
                           onOpen: () => _prototypeMessage('Momento em alta'),
                         ),
@@ -156,6 +226,106 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
         ),
       );
     },
+  );
+
+  Widget _buildFeedSurface({required bool desktop}) {
+    if (_feedConfigurationInvalid) {
+      return const _MomentsStateSurface(
+        title: 'Momentos indisponíveis',
+        message: 'O contexto necessário para carregar os momentos não está disponível.',
+        icon: Icons.lock_outline_rounded,
+      );
+    }
+    if (_feedLoading) {
+      return const _MomentsStateSurface(
+        semanticsLabel: 'Carregando momentos',
+        title: 'Carregando momentos',
+        message: 'Buscando publicações disponíveis para você.',
+        loading: true,
+      );
+    }
+    if (_feedFailure case final failure?) {
+      final unauthorized = failure is PrincipalMomentsFeedUnauthorized;
+      return _MomentsStateSurface(
+        title: unauthorized ? 'Momentos indisponíveis' : 'Não foi possível carregar',
+        message: unauthorized
+            ? 'Seu vínculo atual não permite acessar estes momentos.'
+            : 'Confira sua conexão e tente novamente.',
+        icon: unauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
+        actionLabel: unauthorized ? null : 'Tentar novamente',
+        onAction: unauthorized ? null : _loadFeed,
+      );
+    }
+    if (_moments.isEmpty) {
+      return const _MomentsStateSurface(
+        title: 'Nenhum momento por aqui',
+        message: 'Novos momentos aparecerão quando forem publicados para você.',
+        icon: Icons.video_library_outlined,
+      );
+    }
+    return _MomentPager(
+      controller: _pageController,
+      focusNode: _focusNode,
+      moments: _moments,
+      currentIndex: _currentIndex,
+      liked: _liked.contains(_currentIndex),
+      saved: _saved.contains(_currentIndex),
+      muted: _muted,
+      compact: !desktop,
+      onPageChanged: (value) => setState(() => _currentIndex = value),
+      onMovePage: _movePage,
+      onLike: () => setState(() {
+        _liked.contains(_currentIndex) ? _liked.remove(_currentIndex) : _liked.add(_currentIndex);
+      }),
+      onSave: () => setState(() {
+        _saved.contains(_currentIndex) ? _saved.remove(_currentIndex) : _saved.add(_currentIndex);
+      }),
+      onMute: () => setState(() => _muted = !_muted),
+      onAction: _prototypeMessage,
+    );
+  }
+}
+
+final class _MomentsStateSurface extends StatelessWidget {
+  const _MomentsStateSurface({
+    required this.title,
+    required this.message,
+    this.semanticsLabel,
+    this.icon,
+    this.actionLabel,
+    this.onAction,
+    this.loading = false,
+  });
+
+  final String title;
+  final String message;
+  final String? semanticsLabel;
+  final IconData? icon;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+    color: Theme.of(context).colorScheme.surface,
+    child: Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Semantics(
+          container: true,
+          liveRegion: true,
+          label: semanticsLabel,
+          child: CoeloStatePanel(
+            title: title,
+            message: message,
+            icon: icon,
+            actionLabel: actionLabel,
+            onAction: onAction,
+            loading: loading,
+          ),
+        ),
+      ),
+    ),
   );
 }
 
@@ -677,69 +847,71 @@ final class _DesktopAside extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
     key: const Key('principal-moments-desktop-aside'),
     children: [
-      _AsideCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Em alta na escola', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: CoeloSpacing.space3),
-            for (final item in items)
-              Padding(
-                padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
-                child: TextButton(
-                  onPressed: onOpen,
-                  style: _discreteTextButtonStyle(context).copyWith(
-                    minimumSize: const WidgetStatePropertyAll(
-                      Size(double.infinity, CoeloSize.touchMin),
+      if (items.isNotEmpty) ...[
+        _AsideCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Em alta na escola', style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: CoeloSpacing.space3),
+              for (final item in items)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+                  child: TextButton(
+                    onPressed: onOpen,
+                    style: _discreteTextButtonStyle(context).copyWith(
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size(double.infinity, CoeloSize.touchMin),
+                      ),
+                      padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+                      alignment: Alignment.centerLeft,
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+                      ),
                     ),
-                    padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-                    alignment: Alignment.centerLeft,
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 86,
-                        height: 62,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(CoeloRadius.md),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              _SpriteImage(index: item.imageIndex, count: 5),
-                              Positioned(
-                                right: 4,
-                                bottom: 3,
-                                child: Text(
-                                  item.duration,
-                                  style: const TextStyle(color: Colors.white, fontSize: 9),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 86,
+                          height: 62,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(CoeloRadius.md),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                _SpriteImage(index: item.imageIndex, count: 5),
+                                Positioned(
+                                  right: 4,
+                                  bottom: 3,
+                                  child: Text(
+                                    item.duration,
+                                    style: const TextStyle(color: Colors.white, fontSize: 9),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: CoeloSpacing.space2),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                              Text(item.context, style: Theme.of(context).textTheme.bodySmall),
+                              Text('Há 4h', style: Theme.of(context).textTheme.bodySmall),
                             ],
                           ),
                         ),
-                      ),
-                      const SizedBox(width: CoeloSpacing.space2),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis),
-                            Text(item.context, style: Theme.of(context).textTheme.bodySmall),
-                            Text('Há 4h', style: Theme.of(context).textTheme.bodySmall),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
-      const SizedBox(height: CoeloSpacing.space3),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
       _AsideCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

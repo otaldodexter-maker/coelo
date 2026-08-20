@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:coelo_superadmin/features/principal_moments/domain/principal_moments_feed_repository.dart';
+import 'package:coelo_superadmin/features/principal_moments/domain/principal_moments_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_moments/presentation/principal_moments_preview_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/gestures.dart';
@@ -14,6 +18,10 @@ void main() {
     VoidCallback? onCreateMoment,
     double textScale = 1,
     bool disableAnimations = false,
+    PrincipalMomentsFeedRepository? feedRepository,
+    PrincipalMomentsFeedScope? feedScope,
+    PrincipalMomentsFeedRefreshSignal? refreshSignal,
+    bool settle = true,
   }) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -29,12 +37,21 @@ void main() {
             onOpenHappens: onOpenHappens,
             onOpenProfile: onOpenProfile,
             onCreateMoment: onCreateMoment,
+            feedRepository: feedRepository,
+            feedScope: feedScope,
+            refreshSignal: refreshSignal,
           ),
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
   }
+
+  const scope = PrincipalMomentsFeedScope(institutionId: 'institution-coelo');
 
   testWidgets('renders the canonical immersive mobile anatomy and social states', (tester) async {
     await pumpMoments(tester, size: const Size(375, 900));
@@ -153,6 +170,153 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('shows the canonical loading and empty states for an authorized feed', (
+    tester,
+  ) async {
+    final pending = Completer<List<PrincipalMomentPreviewItem>>();
+    final repository = _FakeMomentsFeedRepository((_) => pending.future);
+
+    await pumpMoments(
+      tester,
+      size: const Size(375, 900),
+      feedRepository: repository,
+      feedScope: scope,
+      settle: false,
+    );
+
+    expect(find.bySemanticsLabel('Carregando momentos'), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-page-view')), findsNothing);
+
+    pending.complete(const []);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nenhum momento por aqui'), findsOneWidget);
+    expect(
+      find.text('Novos momentos aparecerão quando forem publicados para você.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('keeps unauthorized failures fail-closed and without retry', (tester) async {
+    final repository = _FakeMomentsFeedRepository(
+      (_) async => throw const PrincipalMomentsFeedUnauthorized(),
+    );
+
+    await pumpMoments(
+      tester,
+      size: const Size(768, 1024),
+      feedRepository: repository,
+      feedScope: scope,
+    );
+
+    expect(find.text('Momentos indisponíveis'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
+    expect(find.byKey(const Key('principal-moments-page-view')), findsNothing);
+  });
+
+  testWidgets('retries an unavailable feed', (tester) async {
+    var attempts = 0;
+    final repository = _FakeMomentsFeedRepository((_) async {
+      attempts += 1;
+      if (attempts == 1) throw const PrincipalMomentsFeedUnavailable();
+      return const [_refreshedMoment];
+    });
+
+    await pumpMoments(
+      tester,
+      size: const Size(375, 900),
+      feedRepository: repository,
+      feedScope: scope,
+    );
+
+    expect(find.text('Não foi possível carregar'), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_refreshedMoment.caption), findsOneWidget);
+    expect(attempts, 2);
+  });
+
+  testWidgets('reloads the authorized feed after a publication signal', (tester) async {
+    final refreshSignal = PrincipalMomentsFeedRefreshSignal();
+    addTearDown(refreshSignal.dispose);
+    var loads = 0;
+    final repository = _FakeMomentsFeedRepository((_) async {
+      loads += 1;
+      return loads == 1
+          ? [PrincipalMomentsPreviewData.demo.moments.first]
+          : const [_refreshedMoment];
+    });
+
+    await pumpMoments(
+      tester,
+      size: const Size(375, 900),
+      feedRepository: repository,
+      feedScope: scope,
+      refreshSignal: refreshSignal,
+    );
+
+    refreshSignal.markPublished('moment-confirmed-42');
+    await tester.pumpAndSettle();
+
+    expect(find.text(_refreshedMoment.caption), findsOneWidget);
+    expect(loads, 2);
+    expect(refreshSignal.lastPublishedMomentId, 'moment-confirmed-42');
+  });
+
+  testWidgets('fails closed when the repository configuration is incomplete', (tester) async {
+    final repository = _FakeMomentsFeedRepository((_) async => const [_refreshedMoment]);
+
+    await pumpMoments(
+      tester,
+      size: const Size(375, 900),
+      feedRepository: repository,
+      settle: false,
+    );
+
+    expect(find.text('Momentos indisponíveis'), findsOneWidget);
+    expect(find.text(PrincipalMomentsPreviewData.demo.moments.first.caption), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('ignores a stale load after returning to preview data', (tester) async {
+    final pending = Completer<List<PrincipalMomentPreviewItem>>();
+    final repository = _FakeMomentsFeedRepository((_) => pending.future);
+
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    Widget app({PrincipalMomentsFeedRepository? source}) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: PrincipalMomentsPreviewPage(
+        feedRepository: source,
+        feedScope: source == null ? null : scope,
+      ),
+    );
+
+    await tester.pumpWidget(app(source: repository));
+    await tester.pump();
+    await tester.pumpWidget(app());
+    pending.complete(const [_refreshedMoment]);
+    await tester.pumpAndSettle();
+
+    expect(find.text(PrincipalMomentsPreviewData.demo.moments.first.caption), findsOneWidget);
+    expect(find.text(_refreshedMoment.caption), findsNothing);
+  });
+
+  testWidgets('does not render fixture trending content for a repository feed', (tester) async {
+    final repository = _FakeMomentsFeedRepository((_) async => const [_refreshedMoment]);
+
+    await pumpMoments(
+      tester,
+      size: const Size(1440, 1000),
+      feedRepository: repository,
+      feedScope: scope,
+    );
+
+    expect(find.text('Em alta na escola'), findsNothing);
+    expect(find.byKey(const Key('principal-moments-create')), findsOneWidget);
+  });
+
   for (final width in [600.0, 839.0, 840.0, 1024.0]) {
     testWidgets('has no overflow at ${width.toInt()} px with enlarged text', (tester) async {
       await pumpMoments(tester, size: Size(width, 1000), textScale: 2);
@@ -161,4 +325,26 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+}
+
+const _refreshedMoment = PrincipalMomentPreviewItem(
+  author: 'Colégio Coelo',
+  context: 'Projeto de ciências',
+  time: 'Agora',
+  caption: 'Momento confirmado e recarregado.',
+  likes: 0,
+  comments: 0,
+  shares: 0,
+  saves: 0,
+  imageIndex: 1,
+);
+
+final class _FakeMomentsFeedRepository implements PrincipalMomentsFeedRepository {
+  _FakeMomentsFeedRepository(this._load);
+
+  final Future<List<PrincipalMomentPreviewItem>> Function(PrincipalMomentsFeedScope scope) _load;
+
+  @override
+  Future<List<PrincipalMomentPreviewItem>> listVisibleMoments(PrincipalMomentsFeedScope scope) =>
+      _load(scope);
 }
