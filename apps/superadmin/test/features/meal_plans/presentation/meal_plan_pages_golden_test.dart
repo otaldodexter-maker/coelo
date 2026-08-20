@@ -1,0 +1,403 @@
+import 'dart:io';
+
+import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_repository.dart';
+import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_image_repository.dart';
+import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_directory_page.dart';
+import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wizard_page.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  setUpAll(_loadGoldenFonts);
+
+  testWidgets('matches the meal plan directory cards at desktop', (tester) async {
+    _configureDesktop(tester);
+    final repository = FakeMealPlanRepository();
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-directory-golden-root'),
+        child: MealPlanDirectoryPage(
+          repository: repository,
+          onCreate: (_) {},
+          onEdit: (_) {},
+          onCreateTemplate: () {},
+          onEditTemplate: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-directory-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_directory_light_1440.png'),
+    );
+  });
+
+  testWidgets('matches new meal plan identification at desktop', (tester) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-wizard-new-golden-root'),
+        child: MealPlanWizardPage(
+          repository: FakeMealPlanRepository(),
+          imageRepository: const _UnavailableMealPlanImageRepository(),
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-wizard-new-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_wizard_new_light_1440.png'),
+    );
+  });
+
+  testWidgets('matches new meal plan model identification at desktop', (tester) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-model-new-golden-root'),
+        child: MealPlanWizardPage(
+          repository: FakeMealPlanRepository(),
+          imageRepository: const _UnavailableMealPlanImageRepository(),
+          isTemplate: true,
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(const Key('meal-plan-model-new-golden-root')),
+      matchesGoldenFile('goldens/meal_plan_model_new_light_1440.png'),
+    );
+  });
+}
+
+void _configureDesktop(WidgetTester tester) {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = const Size(1440, 1000);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.view.resetPhysicalSize);
+}
+
+Widget _goldenApp({required Key boundaryKey, required Widget child}) {
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: CoeloTheme.light.copyWith(scaffoldBackgroundColor: Colors.white),
+    themeAnimationStyle: AnimationStyle.noAnimation,
+    builder: (context, page) => RepaintBoundary(
+      key: boundaryKey,
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          disableAnimations: true,
+          textScaler: TextScaler.noScaling,
+        ),
+        child: page!,
+      ),
+    ),
+    home: Scaffold(body: child),
+  );
+}
+
+final class FakeMealPlanRepository implements MealPlanRepository {
+  FakeMealPlanRepository()
+      : mealPlans = [_publishedPlan, _reviewPlan],
+        templates = [_template],
+        audienceOptions = const MealPlanAudienceOptions(
+          institutions: [
+            MealPlanAudienceOption(id: 'institution-coelo', label: 'Colégio Coelo'),
+          ],
+          units: [
+            MealPlanAudienceOption(
+              id: 'unit-centro',
+              label: 'Unidade Centro',
+              institutionId: 'institution-coelo',
+            ),
+          ],
+          groups: [
+            MealPlanAudienceOption(
+              id: 'group-5a',
+              label: 'Turma 5A',
+              institutionId: 'institution-coelo',
+              unitId: 'unit-centro',
+            ),
+          ],
+          activities: [
+            MealPlanAudienceOption(
+              id: 'activity-integral',
+              label: 'Período integral',
+              institutionId: 'institution-coelo',
+              unitId: 'unit-centro',
+              groupId: 'group-5a',
+            ),
+          ],
+          people: [
+            MealPlanAudienceOption(
+              id: 'person-ana',
+              label: 'Ana Martins',
+              institutionId: 'institution-coelo',
+              unitId: 'unit-centro',
+              groupId: 'group-5a',
+              audienceSegment: MealPlanAudienceSegment.students,
+            ),
+            MealPlanAudienceOption(
+              id: 'person-carlos',
+              label: 'Carlos Lima',
+              institutionId: 'institution-coelo',
+              unitId: 'unit-centro',
+              audienceSegment: MealPlanAudienceSegment.staff,
+            ),
+          ],
+        );
+
+  final List<MealPlan> mealPlans;
+  final List<MealPlanTemplate> templates;
+  final MealPlanAudienceOptions audienceOptions;
+
+  @override
+  Future<MealPlanPage> fetchPage(MealPlanListFilter filter) async => MealPlanPage(
+        items: mealPlans,
+        total: mealPlans.length,
+        limit: filter.pageSize,
+        offset: filter.offset,
+      );
+
+  @override
+  Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(
+        items: templates.map((template) => template.toDirectoryItem()).toList(),
+        total: templates.length,
+        limit: filter.pageSize,
+        offset: filter.offset,
+      );
+
+  @override
+  Future<MealPlan> getById(String id) async => mealPlans.firstWhere((item) => item.id == id);
+
+  @override
+  Future<MealPlanTemplate> getTemplateById(String id) async =>
+      templates.firstWhere((item) => item.id == id);
+
+  @override
+  Future<MealPlanAudienceOptions> fetchAudienceOptions() async => audienceOptions;
+
+  @override
+  Future<MealPlanTemplate> saveTemplate(
+    MealPlanTemplateDraft draft, {
+    required bool publish,
+  }) async =>
+      MealPlanTemplate(
+        id: draft.id ?? 'template-created',
+        tenantId: 'tenant-coelo',
+        institutionId: 'institution-coelo',
+        name: draft.name,
+        planVariant: draft.planVariant,
+        audienceSegment: draft.audienceSegment,
+        status: publish ? 'published' : 'draft',
+        version: draft.expectedVersion + 1,
+        payload: draft.payload,
+        createdAt: _fixedNow,
+        updatedAt: _fixedNow,
+      );
+
+  @override
+  Future<MealPlan> createOrUpdateDraft(MealPlanDraft draft) async => _fromDraft(draft);
+
+  @override
+  Future<MealPlan> submitForReview(String mealPlanId, String requestId, int expectedRevision) async =>
+      mealPlans.firstWhere((item) => item.id == mealPlanId);
+
+  @override
+  Future<MealPlan> publish(String mealPlanId, String requestId, int expectedRevision) async =>
+      mealPlans.firstWhere((item) => item.id == mealPlanId);
+
+  @override
+  Future<List<MealPlanConflict>> checkConflicts({
+    required String scopeLevel,
+    required String scopeId,
+    required DateTime startDate,
+    required DateTime endDate,
+    required MealPlanRecurrence recurrence,
+    required List<MealPlanMenuEntry> menu,
+  }) async =>
+      const [];
+
+  @override
+  Future<MealPlan> fetchEffectiveSnapshot(MealPlanDraft draft) async => _fromDraft(draft);
+}
+
+final _fixedNow = DateTime(2026, 8, 20, 12);
+
+final _publishedPlan = MealPlan(
+  id: 'meal-plan-1',
+  tenantId: 'tenant-coelo',
+  institutionId: 'institution-coelo',
+  unitId: 'unit-centro',
+  name: 'Cardápio semanal - Educação Infantil',
+  status: MealPlanStatus.published,
+  sourceType: MealPlanSourceType.institution,
+  scopeLevel: MealPlanScopeLevel.unit,
+  scopeId: 'unit-centro',
+  startDate: DateTime(2026, 8, 24),
+  endDate: DateTime(2026, 8, 28),
+  recurrence: MealPlanRecurrence(
+    kind: MealPlanRecurrenceKind.weekly,
+    weekdays: const {1, 2, 3, 4, 5},
+  ),
+  menu: [
+    MealPlanMenuEntry(
+      mealType: 'lunch',
+      dishName: 'Arroz, feijão, frango assado e legumes',
+      hasTime: true,
+      startTime: '11:30',
+      endTime: '12:30',
+      weekdays: const {1, 2, 3, 4, 5},
+    ),
+  ],
+  allergens: const [],
+  alerts: const [],
+  attachments: const [],
+  priority: 10,
+  conflictState: false,
+  revision: 3,
+  isDraft: false,
+  requiresReview: false,
+  createdBy: 'person-admin',
+  updatedBy: 'person-admin',
+  planVariant: MealPlanPlanVariant.complete,
+  audienceSegment: MealPlanAudienceSegment.students,
+);
+
+final _reviewPlan = MealPlan(
+  id: 'meal-plan-2',
+  tenantId: 'tenant-coelo',
+  institutionId: 'institution-coelo',
+  classId: 'group-5a',
+  name: 'Cardápio especial - Semana da Família',
+  status: MealPlanStatus.inReview,
+  sourceType: MealPlanSourceType.classLevel,
+  scopeLevel: MealPlanScopeLevel.classLevel,
+  scopeId: 'group-5a',
+  startDate: DateTime(2026, 8, 31),
+  endDate: DateTime(2026, 9, 4),
+  recurrence: MealPlanRecurrence(kind: MealPlanRecurrenceKind.singleWeek),
+  menu: [
+    MealPlanMenuEntry(
+      mealType: 'afternoonSnack',
+      dishName: 'Bolo de banana e suco natural',
+      weekdays: const {1, 2, 3, 4, 5},
+      restrictions: const ['Contém glúten'],
+    ),
+  ],
+  allergens: const ['Glúten'],
+  alerts: const ['Revisão nutricional pendente'],
+  attachments: const [],
+  priority: 20,
+  conflictState: false,
+  revision: 1,
+  isDraft: false,
+  requiresReview: true,
+  createdBy: 'person-admin',
+  updatedBy: 'person-admin',
+  planVariant: MealPlanPlanVariant.complete,
+  audienceSegment: MealPlanAudienceSegment.all,
+);
+
+final _template = MealPlanTemplate(
+  id: 'template-1',
+  tenantId: 'tenant-coelo',
+  institutionId: 'institution-coelo',
+  name: 'Modelo semanal equilibrado',
+  planVariant: MealPlanPlanVariant.complete,
+  audienceSegment: MealPlanAudienceSegment.students,
+  status: 'published',
+  version: 2,
+  payload: {
+    'menu': [
+      MealPlanMenuEntry(
+        mealType: 'lunch',
+        dishName: 'Prato principal equilibrado',
+        weekdays: const {1, 2, 3, 4, 5},
+      ).toJson(),
+    ],
+  },
+  createdAt: DateTime(2026, 8, 1),
+  updatedAt: DateTime(2026, 8, 18),
+);
+
+MealPlan _fromDraft(MealPlanDraft draft) => MealPlan(
+      id: draft.mealPlanId ?? 'meal-plan-created',
+      tenantId: draft.tenantId,
+      institutionId: draft.institutionId,
+      unitId: draft.unitId,
+      classId: draft.classId,
+      personId: draft.personId,
+      name: draft.name,
+      status: MealPlanStatus.draft,
+      sourceType: draft.sourceType,
+      scopeLevel: draft.scopeLevel,
+      scopeId: draft.scopeId,
+      startDate: draft.startDate,
+      endDate: draft.endDate,
+      recurrence: draft.recurrence,
+      menu: draft.menu,
+      allergens: draft.allergens,
+      alerts: draft.alerts,
+      attachments: draft.attachments,
+      priority: draft.priority,
+      conflictState: false,
+      revision: draft.expectedRevision + 1,
+      isDraft: true,
+      requiresReview: false,
+      createdBy: 'person-admin',
+      updatedBy: 'person-admin',
+      inheritanceOriginId: draft.inheritanceOriginId,
+      planVariant: draft.planVariant,
+      audienceSegment: draft.audienceSegment,
+      visibilityMode: draft.visibilityMode,
+      visibleFrom: draft.visibleFrom,
+      sourceTemplateId: draft.sourceTemplateId,
+      sourceTemplateVersion: draft.sourceTemplateVersion,
+      scopeRules: draft.scopeRules,
+      simpleImage: draft.simpleImage,
+      simpleImageAlt: draft.simpleImageAlt,
+      simpleNotes: draft.simpleNotes,
+    );
+
+Future<void> _loadGoldenFonts() async {
+  final nunitoSans = FontLoader('Nunito Sans')
+    ..addFont(rootBundle.load('assets/brand/NunitoSans-VariableFont.ttf'));
+  await nunitoSans.load();
+
+  final flutterArtifacts = File(Platform.resolvedExecutable).parent.parent.parent;
+  final materialIcons = File(
+    '${flutterArtifacts.path}/material_fonts/MaterialIcons-Regular.otf',
+  ).readAsBytesSync();
+  final materialIconsLoader = FontLoader('MaterialIcons')
+    ..addFont(Future.value(ByteData.sublistView(materialIcons)));
+  await materialIconsLoader.load();
+}
+
+final class _UnavailableMealPlanImageRepository implements MealPlanImageRepository {
+  const _UnavailableMealPlanImageRepository();
+
+  @override
+  Future<MealPlanImageAsset> upload(MealPlanImageUploadRequest request) =>
+      Future<MealPlanImageAsset>.error(const MealPlanImageUnavailableException());
+
+  @override
+  Future<Uri> createSignedReadUrl(String assetId) =>
+      Future<Uri>.error(const MealPlanImageUnavailableException());
+
+  @override
+  Future<void> delete({required String assetId, required String requestId}) =>
+      Future<void>.error(const MealPlanImageUnavailableException());
+}
