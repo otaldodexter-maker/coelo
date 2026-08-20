@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/principal_for_you_preview_data.dart';
+import 'widgets/coelo_principal_action_card.dart';
 
 final class PrincipalForYouPreviewPage extends StatefulWidget {
   const PrincipalForYouPreviewPage({
@@ -417,7 +418,7 @@ final class _Shortcuts extends StatelessWidget {
         ),
         itemBuilder: (context, index) {
           final item = items[index];
-          return _InteractiveCard(
+          return CoeloPrincipalActionCard(
             key: index == 0 ? const Key('principal-for-you-shortcut-agenda') : null,
             onPressed: () => onAction(item.label),
             child: Column(
@@ -507,7 +508,7 @@ final class _EditorialCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-    return _InteractiveCard(
+    return CoeloPrincipalActionCard(
       onPressed: () => onAction(item.title),
       padding: EdgeInsets.zero,
       child: Column(
@@ -795,7 +796,7 @@ final class _ContextOption extends StatelessWidget {
     child: Semantics(
       selected: selected,
       button: true,
-      child: _InteractiveCard(
+      child: CoeloPrincipalActionCard(
         onPressed: onPressed,
         selected: selected,
         child: Row(
@@ -822,74 +823,6 @@ final class _ContextOption extends StatelessWidget {
       ),
     ),
   );
-}
-
-final class _InteractiveCard extends StatefulWidget {
-  const _InteractiveCard({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.padding = const EdgeInsets.all(CoeloSpacing.space3),
-    this.selected = false,
-  });
-  final VoidCallback onPressed;
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-  final bool selected;
-
-  @override
-  State<_InteractiveCard> createState() => _InteractiveCardState();
-}
-
-final class _InteractiveCardState extends State<_InteractiveCard> {
-  bool _highlighted = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final emphasized = widget.selected || _highlighted;
-    return AnimatedContainer(
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 160),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(CoeloRadius.lg),
-        border: Border.all(
-          color: emphasized ? scheme.primary : scheme.outlineVariant,
-          width: emphasized ? 2 : 1,
-        ),
-        boxShadow: _highlighted
-            ? [
-                BoxShadow(
-                  color: scheme.primary.withValues(alpha: .12),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : const [],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: Focus(
-          onFocusChange: (value) => setState(() => _highlighted = value),
-          child: TextButton(
-            onPressed: widget.onPressed,
-            style: TextButton.styleFrom(
-              foregroundColor: scheme.onSurface,
-              backgroundColor: Colors.transparent,
-              padding: widget.padding,
-              minimumSize: const Size(48, 48),
-              shape: const RoundedRectangleBorder(),
-            ).copyWith(overlayColor: const WidgetStatePropertyAll(Colors.transparent)),
-            child: widget.child,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 final class _DesktopRail extends StatelessWidget {

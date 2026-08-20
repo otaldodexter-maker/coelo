@@ -69,7 +69,7 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
             Text('Eventos', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: CoeloSpacing.space1),
             Text(
-              'Busque, compare e revise os itens da agenda local.',
+              'Busque, compare e revise os itens da agenda.',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: CoeloSpacing.space6),
@@ -313,7 +313,7 @@ final class AgendaEventDetailPage extends StatelessWidget {
     if (item == null) {
       return CoeloStatePanel(
         title: 'Item não encontrado',
-        message: 'O item solicitado não existe nesta sessão local.',
+        message: 'O item solicitado não foi encontrado.',
         icon: Icons.event_busy_rounded,
         actionLabel: 'Voltar aos eventos',
         onAction: onBack,

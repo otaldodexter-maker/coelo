@@ -284,6 +284,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       int hour,
       int duration, {
       String location = '',
+      String description = '',
       AgendaPriority priority = AgendaPriority.normal,
       bool allDay = false,
     }) => AgendaItem.fixture(
@@ -294,6 +295,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       startsAt: DateTime(2026, 8, day, hour),
       endsAt: DateTime(2026, 8, day, hour).add(Duration(hours: duration)),
       location: location,
+      description: description,
       priority: priority,
       allDay: allDay,
     );
@@ -306,11 +308,39 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         9,
         9,
         4,
+        description: 'Celebração da comunidade escolar com atividades para toda a família.',
         priority: AgendaPriority.important,
       ),
-      item('event-pajama', 'Festa do Pijama', AgendaItemType.event, u, 7, 18, 3),
-      item('event-paint', 'Pintando o 7', AgendaItemType.event, g, 5, 10, 2),
-      item('activity-yellow', 'Aprendendo a Cor Amarela', AgendaItemType.event, a, 5, 10, 1),
+      item(
+        'event-pajama',
+        'Festa do Pijama',
+        AgendaItemType.event,
+        u,
+        7,
+        18,
+        3,
+        description: 'Uma noite especial de convivência, histórias e brincadeiras.',
+      ),
+      item(
+        'event-paint',
+        'Pintando o 7',
+        AgendaItemType.event,
+        g,
+        5,
+        10,
+        2,
+        description: 'Vivência artística com cores, texturas e criação coletiva.',
+      ),
+      item(
+        'activity-yellow',
+        'Aprendendo a Cor Amarela',
+        AgendaItemType.event,
+        a,
+        5,
+        10,
+        1,
+        description: 'Atividade lúdica para explorar cores no cotidiano da turma.',
+      ),
       AgendaItem.fixture(
         id: 'routine-ballet',
         title: 'Ballet',
@@ -318,6 +348,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         audience: a,
         startsAt: DateTime(2026, 8, 4, 17),
         endsAt: DateTime(2026, 8, 4, 18),
+        description: 'Movimento, musicalidade e expressão corporal em grupo.',
         location: 'Studio Movimento',
         recurrence: AgendaRecurrence.weekly(
           until: DateTime(2026, 8, 25),
@@ -333,6 +364,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         8,
         9,
         location: 'Centro Horizonte',
+        description: 'Atividades e acompanhamento durante todo o período escolar.',
       ),
       item(
         'routine-swim',
@@ -343,6 +375,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         16,
         1,
         location: 'Clube da Lagoa',
+        description: 'Prática orientada com segurança e acompanhamento da turma.',
       ),
       AgendaItem.fixture(
         id: 'birthday-lia',
@@ -351,6 +384,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         audience: const AgendaAudience(institutionId: 'inst-horizonte', personIds: {'child-lia'}),
         startsAt: DateTime(2026, 8, 5),
         endsAt: DateTime(2026, 8, 6),
+        description: 'Um registro carinhoso para celebrar a data com a comunidade.',
         allDay: true,
       ),
       item(

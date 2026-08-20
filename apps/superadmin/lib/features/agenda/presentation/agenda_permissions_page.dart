@@ -26,7 +26,7 @@ final class AgendaPermissionsPage extends StatelessWidget {
             Text('Permissões', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: CoeloSpacing.space1),
             const Text(
-              'Simulação local da herança descendente. Um nível pode restringir, nunca ampliar.',
+              'A herança é descendente: um nível pode restringir, nunca ampliar permissões.',
             ),
             const SizedBox(height: CoeloSpacing.space6),
             if (compact)

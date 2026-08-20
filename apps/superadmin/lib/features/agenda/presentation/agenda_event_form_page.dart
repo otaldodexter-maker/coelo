@@ -3,7 +3,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
 
@@ -81,17 +82,37 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final wide = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
-      final nav = _WizardNav(step: _step, onSelect: (value) => setState(() => _step = value));
+      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      final nav = SuperadminFormStepNavigation(
+        steps: [
+          for (var index = 0; index < 4; index++)
+            SuperadminFormStep(
+              key: Key('agenda-form-step-$index'),
+              label: const [
+                'Tipo e contexto',
+                'Data e local',
+                'Público e regras',
+                'Revisão',
+              ][index],
+              status: index == _step
+                  ? SuperadminFormStepStatus.current
+                  : index < _step
+                  ? SuperadminFormStepStatus.complete
+                  : SuperadminFormStepStatus.incomplete,
+              enabled: index <= _step,
+            ),
+        ],
+        currentIndex: _step,
+        onStepSelected: (value) {
+          if (value <= _step) setState(() => _step = value);
+        },
+      );
       return Padding(
-        padding: EdgeInsets.all(wide ? CoeloSpacing.space10 : CoeloSpacing.space4),
+        padding: EdgeInsets.all(compact ? CoeloSpacing.space4 : CoeloSpacing.space6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (wide) ...[
-              SizedBox(width: 220, child: nav),
-              const SizedBox(width: CoeloSpacing.space6),
-            ],
+            if (!compact) ...[nav, const SizedBox(width: CoeloSpacing.space6)],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -100,9 +121,8 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
                     widget.eventId == null ? 'Criar item' : 'Editar item',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  const Text('Os dados ficam somente nesta sessão local.'),
                   const SizedBox(height: CoeloSpacing.space4),
-                  if (!wide) ...[nav, const SizedBox(height: CoeloSpacing.space4)],
+                  if (compact) ...[nav, const SizedBox(height: CoeloSpacing.space4)],
                   Expanded(
                     child: SingleChildScrollView(
                       key: const Key('agenda-event-form-scroll'),
@@ -122,7 +142,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
                           child: const Text('Anterior'),
                         ),
                       if (_step < 3)
-                        FilledButton(
+                        OutlinedButton(
                           key: const Key('agenda-wizard-continue'),
                           onPressed: () => setState(() => _step++),
                           child: const Text('Continuar'),
@@ -136,7 +156,7 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
                         FilledButton(
                           key: const Key('agenda-wizard-publish'),
                           onPressed: () => _save(AgendaItemStatus.published),
-                          child: const Text('Publicar localmente'),
+                          child: const Text('Publicar'),
                         ),
                       ],
                     ],
@@ -204,30 +224,12 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
         _Fact(label: 'Item', value: '${_title.text} · ${_type.label}'),
         _Fact(label: 'Período', value: '${_date(_start)} — ${_date(_end)}'),
         _Fact(label: 'Quem verá', value: 'Responsáveis e equipe da Unidade Centro'),
-        const _Fact(label: 'Notificação simulada', value: 'Nenhuma mensagem real será enviada.'),
+        const _Fact(
+          label: 'Notificações',
+          value: 'Serão enviadas conforme as preferências e permissões da audiência.',
+        ),
       ],
     },
-  );
-}
-
-final class _WizardNav extends StatelessWidget {
-  const _WizardNav({required this.step, required this.onSelect});
-  final int step;
-  final ValueChanged<int> onSelect;
-  @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Etapa ${step + 1} de 4',
-    child: Wrap(
-      spacing: CoeloSpacing.space2,
-      runSpacing: CoeloSpacing.space2,
-      children: [
-        for (var i = 0; i < 4; i++)
-          TextButton(
-            onPressed: i <= step ? () => onSelect(i) : null,
-            child: Text('${i + 1}. ${const ['Tipo', 'Data', 'Público', 'Revisão'][i]}'),
-          ),
-      ],
-    ),
   );
 }
 

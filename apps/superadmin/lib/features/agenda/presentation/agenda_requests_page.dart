@@ -27,6 +27,20 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
   int _requestStep = 0;
   String _child = 'Lia';
 
+  DateTime? get _requestStartsAt => _parseTime(_parseDate(_requestDate.text), _requestStart.text);
+  DateTime? get _requestEndsAt => _parseTime(_parseDate(_requestDate.text), _requestEnd.text);
+
+  void _setRequestDateTime(DateTime? value, {required bool start}) {
+    if (value == null) return;
+    setState(() {
+      _requestDate.text =
+          '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+      final time =
+          '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+      (start ? _requestStart : _requestEnd).text = time;
+    });
+  }
+
   @override
   void dispose() {
     _reason.dispose();
@@ -52,7 +66,7 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
         id: 'request-local-${DateTime.now().microsecondsSinceEpoch}',
         childId: lia ? 'child-lia' : 'child-noah',
         childName: _child,
-        guardianName: 'Responsável simulado',
+        guardianName: 'Responsável',
         contextId: lia ? 'group-girassol' : 'group-estrelas',
         institutionId: lia ? 'inst-horizonte' : 'inst-aurora',
         title: _requestTitle.text.trim(),
@@ -65,7 +79,7 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
     setState(() {
       _creating = false;
       _requestStep = 0;
-      _notice = 'Solicitação de festa de aniversário enviada localmente.';
+      _notice = 'Solicitação de festa de aniversário enviada.';
     });
   }
 
@@ -114,7 +128,7 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
           children: [
             Text('Solicitações', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: CoeloSpacing.space1),
-            const Text('Pedidos fictícios de festa de aniversário enviados por responsáveis.'),
+            const Text('Pedidos de festa de aniversário enviados por responsáveis.'),
             const SizedBox(height: CoeloSpacing.space3),
             Align(
               alignment: Alignment.centerLeft,
@@ -122,7 +136,7 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
                 key: const Key('agenda-request-create'),
                 onPressed: () => setState(() => _creating = !_creating),
                 icon: const Icon(Icons.cake_outlined),
-                label: const Text('Simular solicitação'),
+                label: const Text('Nova solicitação'),
               ),
             ),
             if (_creating) ...[
@@ -135,6 +149,10 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
                 date: _requestDate,
                 start: _requestStart,
                 end: _requestEnd,
+                startAt: _requestStartsAt,
+                endAt: _requestEndsAt,
+                onStartChanged: (value) => _setRequestDateTime(value, start: true),
+                onEndChanged: (value) => _setRequestDateTime(value, start: false),
                 onChildChanged: (value) => setState(() => _child = value),
                 onPrevious: () => setState(() => _requestStep--),
                 onContinue: () => setState(() => _requestStep++),
@@ -246,6 +264,10 @@ final class _RequestForm extends StatelessWidget {
     required this.date,
     required this.start,
     required this.end,
+    required this.startAt,
+    required this.endAt,
+    required this.onStartChanged,
+    required this.onEndChanged,
     required this.onChildChanged,
     required this.onPrevious,
     required this.onContinue,
@@ -256,6 +278,8 @@ final class _RequestForm extends StatelessWidget {
   final int step;
   final String child;
   final TextEditingController title, details, date, start, end;
+  final DateTime? startAt, endAt;
+  final ValueChanged<DateTime?> onStartChanged, onEndChanged;
   final ValueChanged<String> onChildChanged;
   final VoidCallback onPrevious, onContinue, onCancel, onSubmit;
 
@@ -306,30 +330,22 @@ final class _RequestForm extends StatelessWidget {
                 prefixIcon: Icons.cake_outlined,
               ),
               const SizedBox(height: CoeloSpacing.space4),
-              CoeloFormTextField(
-                controller: date,
-                labelText: 'Data (DD/MM/AAAA)',
-                prefixIcon: Icons.calendar_today_outlined,
+              CoeloDateTimeField(
+                value: startAt,
+                onChanged: onStartChanged,
+                firstDate: DateTime(2025),
+                lastDate: DateTime(2030, 12, 31),
+                currentDate: DateTime(2026, 8, 3),
+                labelText: 'Início',
               ),
               const SizedBox(height: CoeloSpacing.space4),
-              Row(
-                children: [
-                  Expanded(
-                    child: CoeloFormTextField(
-                      controller: start,
-                      labelText: 'Início (HH:MM)',
-                      prefixIcon: Icons.schedule_rounded,
-                    ),
-                  ),
-                  const SizedBox(width: CoeloSpacing.space3),
-                  Expanded(
-                    child: CoeloFormTextField(
-                      controller: end,
-                      labelText: 'Fim (HH:MM)',
-                      prefixIcon: Icons.schedule_rounded,
-                    ),
-                  ),
-                ],
+              CoeloDateTimeField(
+                value: endAt,
+                onChanged: onEndChanged,
+                firstDate: DateTime(2025),
+                lastDate: DateTime(2030, 12, 31),
+                currentDate: DateTime(2026, 8, 3),
+                labelText: 'Fim',
               ),
               const SizedBox(height: CoeloSpacing.space4),
               CoeloFormTextField(
