@@ -67,3 +67,9 @@ cron versionado chama o worker server-side, que resolve destinatários em lotes
 e ativa a comunicação somente após a materialização completa. Leases expiradas
 são recuperáveis; versões obsoletas e itens pausados falham fechados. O receipt
 nasce sem `delivered_at`, preenchido apenas quando houver entrega real.
+
+Cada materialização fica vinculada ao job e à versão publicados. A comunicação
+aponta para sua publicação corrente, e alcance, entrega, visualização e aceite
+consideram somente os receipts dessa geração. Republicar mantém as gerações
+anteriores como histórico, sem misturar audiência ou métricas; vigência já
+encerrada falha antes de materializar ou ativar.

@@ -94,7 +94,14 @@ Salvar e publicar são comandos idempotentes, versionados e transacionais.
 A publicação congela a audiência e cria um job. Um cron versionado aciona uma
 Edge Function autenticada por segredo, que materializa a audiência em páginas
 limitadas e só então ativa a comunicação. Jobs obsoletos, pausados ou com lease
-expirada falham fechados ou voltam para retry; o Flutter nunca executa o worker.
+expirada falham fechados ou voltam para retry; itens cuja vigência terminou
+falham antes da materialização. O Flutter nunca executa o worker.
+
+Cada geração de audiência pertence ao `publication_job_id` e à versão congelada
+da comunicação. A comunicação aponta para sua publicação corrente; diretório,
+detalhe e métricas agregam somente os recibos dessa geração. Republicar preserva
+o histórico anterior para auditoria, sem misturar destinatários ou métricas com
+a nova publicação.
 
 ## Matriz de aplicabilidade aprovada em 2026-08-11
 
@@ -144,6 +151,9 @@ destinatários. Entrega, leitura e aceite ficam em recibos/eventos operacionais
 protegidos, separados da trilha administrativa append-only.
 Criar um receipt materializa o destinatário, mas não preenche `delivered_at`;
 esse timestamp pertence ao runtime que realmente entregar ou exibir o item.
+O receipt nasce `pending`, registra separadamente `materialized_at`, job e
+versão, e só avança para entregue, visualizado ou aceito por evento real do
+runtime consumidor.
 
 ## Critérios de aceite
 
@@ -171,6 +181,10 @@ esse timestamp pertence ao runtime que realmente entregar ou exibir o item.
 - Audiência hierárquica com papel opcional, isolamento cross-tenant, escolha
   única de destino e cada variante da recorrência fechada.
 - Métricas restritas a alcance, entrega, visualização e aceite.
+- Republicação cria uma geração independente de receipts; métricas da
+  publicação corrente não reutilizam entregas de versões anteriores.
+- Vigência encerrada falha fechada antes de criar novos receipts ou ativar o
+  item.
 - Goldens mobile light e desktop dark, mais estados interativos dedicados.
 - Validador visual administrativo, analyzer focado e suíte da feature.
 
