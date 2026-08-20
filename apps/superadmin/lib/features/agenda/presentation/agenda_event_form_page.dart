@@ -4,6 +4,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../data/agenda_prototype_store.dart';
 import '../domain/agenda_models.dart';
@@ -82,7 +83,6 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
       final nav = SuperadminFormStepNavigation(
         steps: [
           for (var index = 0; index < 4; index++)
@@ -107,63 +107,48 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
           if (value <= _step) setState(() => _step = value);
         },
       );
-      return Padding(
-        padding: EdgeInsets.all(compact ? CoeloSpacing.space4 : CoeloSpacing.space6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      return SuperadminFormFrame(
+        viewportWidth: constraints.maxWidth,
+        navigation: nav,
+        scrollKey: const Key('agenda-event-form-scroll'),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!compact) ...[nav, const SizedBox(width: CoeloSpacing.space6)],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    widget.eventId == null ? 'Criar item' : 'Editar item',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  if (compact) ...[nav, const SizedBox(height: CoeloSpacing.space4)],
-                  Expanded(
-                    child: SingleChildScrollView(
-                      key: const Key('agenda-event-form-scroll'),
-                      child: _content(),
-                    ),
-                  ),
-                  SuperadminFormActionFooter(
-                    tertiaryAction: TextButton(
-                      onPressed: widget.onCancel,
-                      child: const Text('Cancelar'),
-                    ),
-                    continuationActions: [
-                      if (_step > 0)
-                        OutlinedButton(
-                          key: const Key('agenda-wizard-previous'),
-                          onPressed: () => setState(() => _step--),
-                          child: const Text('Anterior'),
-                        ),
-                      if (_step < 3)
-                        OutlinedButton(
-                          key: const Key('agenda-wizard-continue'),
-                          onPressed: () => setState(() => _step++),
-                          child: const Text('Continuar'),
-                        )
-                      else ...[
-                        OutlinedButton(
-                          key: const Key('agenda-wizard-save-draft'),
-                          onPressed: () => _save(AgendaItemStatus.draft),
-                          child: const Text('Salvar rascunho'),
-                        ),
-                        FilledButton(
-                          key: const Key('agenda-wizard-publish'),
-                          onPressed: () => _save(AgendaItemStatus.published),
-                          child: const Text('Publicar'),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
+            Text(
+              widget.eventId == null ? 'Criar item' : 'Editar item',
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
+            const SizedBox(height: CoeloSpacing.space4),
+            _content(),
+          ],
+        ),
+        footer: SuperadminFormActionFooter(
+          tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
+          continuationActions: [
+            if (_step > 0)
+              OutlinedButton(
+                key: const Key('agenda-wizard-previous'),
+                onPressed: () => setState(() => _step--),
+                child: const Text('Anterior'),
+              ),
+            if (_step < 3)
+              OutlinedButton(
+                key: const Key('agenda-wizard-continue'),
+                onPressed: () => setState(() => _step++),
+                child: const Text('Continuar'),
+              )
+            else ...[
+              OutlinedButton(
+                key: const Key('agenda-wizard-save-draft'),
+                onPressed: () => _save(AgendaItemStatus.draft),
+                child: const Text('Salvar rascunho'),
+              ),
+              FilledButton(
+                key: const Key('agenda-wizard-publish'),
+                onPressed: () => _save(AgendaItemStatus.published),
+                child: const Text('Publicar'),
+              ),
+            ],
           ],
         ),
       );

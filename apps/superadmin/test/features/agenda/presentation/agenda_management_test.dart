@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/agenda/presentation/agenda_event_form_
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_events_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_permissions_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_requests_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -30,6 +31,7 @@ void main() {
     await tester.pumpWidget(
       app(AgendaEventFormPage(store: prototype, onCancel: () {}, onSaved: (_) {})),
     );
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
     expect(find.textContaining('somente nesta sessão local'), findsNothing);
     await tester.enterText(find.byType(TextFormField).first, 'Encontro da turma');

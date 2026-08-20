@@ -40,7 +40,7 @@ final class AgendaModuleShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SuperadminShell(
     title: 'Agenda',
-    subtitle: 'Valide calendários, eventos, solicitações e permissões com dados locais.',
+    subtitle: 'Acompanhe calendários, eventos, solicitações e permissões.',
     logout: logout,
     currentDestination: 'agenda',
     actions: actions,
