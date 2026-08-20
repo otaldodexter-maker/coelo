@@ -13,11 +13,6 @@ Separar informações permanentes da criança da operação periódica de
 medicamentos. O módulo demonstrativo possui duas áreas irmãs: **Perfis de
 cuidado** e **Planos de medicação**.
 
-## Substituição parcial
-
-A spec 029 substitui os limites demonstrativos desta spec somente para Planos de
-medicação. Perfis de cuidado permanecem demonstrativos até spec própria.
-
 ## Escopo
 
 - diretório, detalhe e formulário para as duas áreas;

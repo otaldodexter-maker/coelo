@@ -1,11 +1,147 @@
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('builds a valid structure from an empty new form', (tester) async {
+    final api = _EditorApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormsEditorPage(
+          api: api,
+          initialDefinition: FormDefinition(
+            id: 'form-new',
+            institutionId: 'institution-1',
+            kind: FormKind.form,
+            identityMode: FormIdentityMode.identified,
+            responseUnit: FormResponseUnit.person,
+            title: 'Novo formulário',
+            sections: const [],
+          ),
+          autosaveDebounce: Duration.zero,
+          requestIdFactory: () => '11111111-1111-4111-8111-111111111111',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('form-add-section')));
+    await tester.pumpAndSettle();
+    expect(find.text('Seção 1'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('form-add-item')));
+    await tester.pumpAndSettle();
+    expect(find.text('Pergunta 1'), findsWidgets);
+
+    await tester.enterText(find.byKey(const Key('form-item-label')), 'Como foi o dia?');
+    await tester.pumpAndSettle();
+    expect(api.savedTitle, 'Novo formulário');
+    expect(api.savedItemLabel, 'Como foi o dia?');
+  });
+
+  testWidgets('duplicates and deletes sections and items without corrupting positions', (
+    tester,
+  ) async {
+    final api = _EditorApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormsEditorPage(
+          api: api,
+          initialDefinition: _definition(),
+          autosaveDebounce: Duration.zero,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Duplicar item'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pergunta (cópia)'), findsOneWidget);
+    tester.widget<IconButton>(find.byKey(const Key('form-delete-item-0-1'))).onPressed!();
+    await tester.pumpAndSettle();
+    expect(find.text('Pergunta (cópia)'), findsNothing);
+
+    await tester.tap(find.byTooltip('Duplicar seção'));
+    await tester.pumpAndSettle();
+    expect(find.text('Seção 1 (cópia)'), findsOneWidget);
+    tester.widget<IconButton>(find.byKey(const Key('form-delete-section-1'))).onPressed!();
+    await tester.pumpAndSettle();
+    expect(find.text('Seção 1 (cópia)'), findsNothing);
+  });
+  testWidgets('configures item kind options required state and a condition', (tester) async {
+    final api = _EditorApi();
+    final source = FormItem(
+      id: 'source-item',
+      kind: FormItemKind.yesNo,
+      label: 'Autorizou?',
+      position: 0,
+    );
+    final target = FormItem(
+      id: 'target-item',
+      kind: FormItemKind.shortText,
+      label: 'Detalhes',
+      position: 1,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormsEditorPage(
+          api: api,
+          initialDefinition: FormDefinition(
+            id: 'form-conditions',
+            institutionId: 'institution-1',
+            kind: FormKind.form,
+            identityMode: FormIdentityMode.identified,
+            responseUnit: FormResponseUnit.person,
+            title: 'Condições',
+            sections: [
+              FormSection(
+                id: 'section-1',
+                title: 'Perguntas',
+                position: 0,
+                items: [source, target],
+              ),
+            ],
+          ),
+          autosaveDebounce: Duration.zero,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    tester.widget<ListTile>(find.widgetWithText(ListTile, 'Detalhes')).onTap!();
+    await tester.pumpAndSettle();
+
+    final kindField = tester.widget<CoeloAdminSingleSelectField<FormItemKind>>(
+      find.byKey(const Key('form-item-kind')),
+    );
+    kindField.onChanged(FormItemKind.singleChoice);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('form-option-label-0')), findsOneWidget);
+    expect(find.byKey(const Key('form-option-label-1')), findsOneWidget);
+
+    final requiredField = tester.widget<CoeloAdminToggleField>(
+      find.byKey(const Key('form-item-required')),
+    );
+    requiredField.onChanged!(true);
+    tester.widget<OutlinedButton>(find.byKey(const Key('form-add-condition'))).onPressed!();
+    await tester.pumpAndSettle();
+
+    final saved = api.lastSavedDefinition!;
+    final savedTarget = saved.sections.single.items.last;
+    expect(savedTarget.kind, FormItemKind.singleChoice);
+    expect(savedTarget.options, hasLength(2));
+    expect(savedTarget.isRequired, isTrue);
+    expect(savedTarget.conditions.single.sourceItemId, 'source-item');
+  });
   testWidgets('walks the six steps, autosaves and publishes the current version', (tester) async {
     final api = _EditorApi();
     await tester.pumpWidget(
@@ -70,8 +206,8 @@ void main() {
 
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
-    expect(find.byType(TextFormField), findsOneWidget);
-    await tester.enterText(find.byType(TextFormField), 'Explique com detalhes');
+    expect(find.byKey(const Key('form-item-help-text')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('form-item-help-text')), 'Explique com detalhes');
     await tester.pumpAndSettle();
 
     expect(api.savedHelpText, 'Explique com detalhes');
@@ -138,6 +274,33 @@ void main() {
     );
   });
 
+  testWidgets('creates and saves an institution application from a new form', (tester) async {
+    final api = _EditorApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: FormsEditorPage(
+          api: api,
+          initialDefinition: _definition(),
+          requestIdFactory: () => '11111111-1111-4111-8111-111111111111',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('form-create-application')));
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição atual · incluir'), findsOneWidget);
+
+    await tester.tap(find.text('Salvar aplicação'));
+    await tester.pumpAndSettle();
+    expect(api.applicationSaved, isTrue);
+    expect(api.lastApplication!.audienceRules.single.targetId, 'institution-1');
+    expect(api.lastApplication!.managementVersion, 0);
+  });
   testWidgets('saves normalized audience rules and a real schedule through the API', (
     tester,
   ) async {
@@ -339,8 +502,11 @@ final class _EditorApi implements FormsApi {
 
   String? savedTitle;
   String? savedHelpText;
+  String? savedItemLabel;
+  FormDefinition? lastSavedDefinition;
   bool published = false;
   bool applicationSaved = false;
+  FormApplication? lastApplication;
   bool scheduleSaved = false;
   FormApplication? scheduleState;
   final scheduleCommands = <FormCommand<FormSaveSchedulePayload>>[];
@@ -349,7 +515,9 @@ final class _EditorApi implements FormsApi {
   @override
   Future<FormDefinition> saveDraft(FormCommand<FormDefinition> command) async {
     savedTitle = command.payload.title;
-    savedHelpText = command.payload.sections.single.items.single.helpText;
+    savedHelpText = command.payload.sections.firstOrNull?.items.firstOrNull?.helpText;
+    savedItemLabel = command.payload.sections.firstOrNull?.items.firstOrNull?.label;
+    lastSavedDefinition = command.payload;
     return command.payload;
   }
 
@@ -362,6 +530,7 @@ final class _EditorApi implements FormsApi {
   @override
   Future<FormApplication> saveApplication(FormCommand<FormSaveApplicationPayload> command) async {
     applicationSaved = true;
+    lastApplication = command.payload.application;
     return command.payload.application;
   }
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
+import 'package:coelo_superadmin/features/invites/data/fake_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_detail_page.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_page.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_form_page.dart';
@@ -10,135 +10,158 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'invite_test_repository.dart';
-
 void main() {
   setUpAll(_loadGoldenFonts);
 
-  testWidgets('directory mobile light', (tester) async {
-    await _golden(
-      tester,
-      size: const Size(375, 900),
-      theme: CoeloTheme.light,
-      child: InviteDirectoryPage(repository: TestInviteRepository()),
-      file: 'goldens/invite_directory_light_375.png',
-    );
-  });
+  testWidgets('matches invitation directory references', (tester) async {
+    final repository = _repository();
 
-  testWidgets('directory desktop dark', (tester) async {
-    await _golden(
-      tester,
-      size: const Size(1440, 900),
-      theme: CoeloTheme.dark,
-      child: InviteDirectoryPage(repository: TestInviteRepository()),
-      file: 'goldens/invite_directory_dark_1440.png',
-    );
-  });
-
-  testWidgets('canonical form mobile light', (tester) async {
-    await _golden(
-      tester,
-      size: const Size(375, 900),
-      theme: CoeloTheme.light,
-      child: InviteFormPage(repository: TestInviteRepository(), onCancel: () {}),
-      file: 'goldens/invite_form_light_375.png',
-    );
-  });
-
-  testWidgets('canonical form desktop dark', (tester) async {
-    await _golden(
-      tester,
-      size: const Size(1440, 900),
-      theme: CoeloTheme.dark,
-      child: InviteFormPage(repository: TestInviteRepository(), onCancel: () {}),
-      file: 'goldens/invite_form_dark_1440.png',
-    );
-  });
-
-  testWidgets('canonical form mobile light at 200 percent text', (tester) async {
-    await _golden(
-      tester,
-      size: const Size(375, 900),
-      theme: CoeloTheme.light,
-      textScaler: const TextScaler.linear(2),
-      child: InviteFormPage(repository: TestInviteRepository(), onCancel: () {}),
-      file: 'goldens/invite_form_text_200_light_375.png',
-    );
-  });
-
-  testWidgets('expired detail makes resend dominant', (tester) async {
-    final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
-    await _golden(
-      tester,
-      size: const Size(1440, 900),
-      theme: CoeloTheme.light,
-      child: InviteDetailPage(repository: repository, inviteId: repository.invites.single.id),
-      file: 'goldens/invite_detail_expired_resend_light_1440.png',
-    );
-  });
-
-  testWidgets('directory flyout open follows the canonical invitation actions', (tester) async {
-    const inviteId = '11111111-1111-4111-8111-111111111111';
     await _pumpGolden(
       tester,
-      size: const Size(1440, 900),
-      theme: CoeloTheme.light,
-      child: InviteDirectoryPage(
-        repository: TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]),
-        onOpen: (_) {},
-      ),
+      InviteDirectoryPage(repository: repository, onOpen: (_) {}),
+      size: const Size(375, 900),
     );
-
-    final trigger = find.byKey(const Key('invite-actions-$inviteId'));
-    await tester.ensureVisible(trigger);
-    await tester.pumpAndSettle();
-    await tester.tap(trigger);
-    await tester.pumpAndSettle();
-
     await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/invite_directory_flyout_open_light_1440.png'),
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_directory_mobile_light.png'),
+    );
+
+    await _pumpGolden(
+      tester,
+      InviteDirectoryPage(repository: _repository(), onOpen: (_) {}),
+      size: const Size(1440, 900),
+      brightness: Brightness.dark,
+    );
+    await expectLater(
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_directory_desktop_dark.png'),
     );
   });
 
-  testWidgets('directory row hover follows the canonical continuous table row', (tester) async {
-    const inviteId = '11111111-1111-4111-8111-111111111111';
+  testWidgets('matches invitation flyout and revoke confirmation references', (tester) async {
     await _pumpGolden(
       tester,
+      InviteDirectoryPage(repository: _repository(), onOpen: (_) {}),
       size: const Size(1440, 900),
-      theme: CoeloTheme.light,
-      child: InviteDirectoryPage(repository: TestInviteRepository()),
+    );
+
+    await tester.tap(find.byKey(const Key('invite-actions-invite-1')));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_directory_flyout_open_light.png'),
+    );
+
+    await tester.tap(find.text('Revogar convite'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_revoke_confirmation_light.png'),
+    );
+  });
+
+  testWidgets('matches invitation table row hover reference', (tester) async {
+    await _pumpGolden(
+      tester,
+      InviteDirectoryPage(repository: _repository(), onOpen: (_) {}),
+      size: const Size(1440, 900),
     );
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
-    await mouse.addPointer();
     addTearDown(mouse.removePointer);
-    await mouse.moveTo(tester.getCenter(find.byKey(const Key('invite-row-$inviteId'))));
+    await mouse.addPointer();
+    await mouse.moveTo(
+      tester.getCenter(
+        find.byKey(const Key('coelo-admin-table-row-background-invite-row-invite-1')),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/invite_directory_table_row_hover_light_1440.png'),
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_directory_table_row_hover_light.png'),
     );
   });
-
-  testWidgets('revoke confirmation follows the canonical negative dialog', (tester) async {
-    final repository = TestInviteRepository();
+  testWidgets('matches invitation form references', (tester) async {
     await _pumpGolden(
       tester,
-      size: const Size(1440, 900),
-      theme: CoeloTheme.light,
-      child: InviteDetailPage(repository: repository, inviteId: repository.invites.single.id),
+      InviteFormPage(repository: _repository(), onCancel: () {}),
+      size: const Size(375, 900),
+    );
+    await expectLater(
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_form_mobile_light.png'),
     );
 
-    await tester.tap(find.byKey(const Key('invite-detail-revoke')));
-    await tester.pumpAndSettle();
-
+    await _pumpGolden(
+      tester,
+      InviteFormPage(repository: _repository(), onCancel: () {}),
+      size: const Size(1440, 900),
+      brightness: Brightness.dark,
+    );
     await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/invite_revoke_confirmation_light_1440.png'),
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_form_desktop_dark.png'),
     );
   });
+
+  testWidgets('matches invitation detail references', (tester) async {
+    await _pumpGolden(
+      tester,
+      InviteDetailPage(repository: _repository(), inviteId: 'invite-1'),
+      size: const Size(375, 900),
+    );
+    await expectLater(
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_detail_mobile_light.png'),
+    );
+
+    await _pumpGolden(
+      tester,
+      InviteDetailPage(repository: _repository(), inviteId: 'invite-1'),
+      size: const Size(1440, 900),
+      brightness: Brightness.dark,
+    );
+    await expectLater(
+      find.byKey(const Key('invite-golden-root')),
+      matchesGoldenFile('goldens/invite_detail_desktop_dark.png'),
+    );
+  });
+}
+
+FakeInviteRepository _repository() => FakeInviteRepository(now: () => DateTime(2026, 8, 4, 12));
+
+Future<void> _pumpGolden(
+  WidgetTester tester,
+  Widget child, {
+  required Size size,
+  Brightness brightness = Brightness.light,
+}) async {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = size;
+  addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.view.resetPhysicalSize);
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pumpWidget(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: CoeloTheme.light,
+      darkTheme: CoeloTheme.dark,
+      themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+      themeAnimationStyle: AnimationStyle.noAnimation,
+      builder: (context, child) => RepaintBoundary(
+        key: const Key('invite-golden-root'),
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(disableAnimations: true, textScaler: TextScaler.noScaling),
+          child: child!,
+        ),
+      ),
+      home: Scaffold(body: child),
+    ),
+  );
+  await tester.pumpAndSettle();
 }
 
 Future<void> _loadGoldenFonts() async {
@@ -153,43 +176,4 @@ Future<void> _loadGoldenFonts() async {
   final materialIconsLoader = FontLoader('MaterialIcons')
     ..addFont(Future.value(ByteData.sublistView(materialIcons)));
   await materialIconsLoader.load();
-}
-
-Future<void> _golden(
-  WidgetTester tester, {
-  required Size size,
-  required ThemeData theme,
-  required Widget child,
-  required String file,
-  TextScaler textScaler = TextScaler.noScaling,
-}) async {
-  await _pumpGolden(tester, size: size, theme: theme, textScaler: textScaler, child: child);
-  await expectLater(find.byType(MaterialApp), matchesGoldenFile(file));
-}
-
-Future<void> _pumpGolden(
-  WidgetTester tester, {
-  required Size size,
-  required ThemeData theme,
-  required Widget child,
-  TextScaler textScaler = TextScaler.noScaling,
-}) async {
-  await tester.binding.setSurfaceSize(size);
-  addTearDown(() => tester.binding.setSurfaceSize(null));
-  Widget app() => MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: theme,
-    themeAnimationStyle: AnimationStyle.noAnimation,
-    builder: (context, content) => MediaQuery(
-      data: MediaQuery.of(context).copyWith(disableAnimations: true, textScaler: textScaler),
-      child: content!,
-    ),
-    home: Scaffold(body: child),
-  );
-  await tester.pumpWidget(app());
-  await tester.pumpAndSettle();
-  // Warm image assets so a cold logo decode cannot make the golden order-dependent.
-  await tester.pumpWidget(const SizedBox.shrink());
-  await tester.pumpWidget(app());
-  await tester.pumpAndSettle();
 }

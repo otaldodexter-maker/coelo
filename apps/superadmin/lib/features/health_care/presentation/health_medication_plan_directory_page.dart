@@ -189,6 +189,7 @@ final class _HealthMedicationPlanDirectoryPageState
     currentDestination: 'health-medication-plans',
     title: 'Planos de medica\u00e7\u00e3o',
     subtitle: 'Vig\u00eancia, hor\u00e1rios, respons\u00e1veis e registros de doses.',
+    showChatLauncher: false,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final padding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
@@ -214,22 +215,20 @@ final class _HealthMedicationPlanDirectoryPageState
                     message: 'Detalhes de medicamentos e doses foram omitidos neste perfil.',
                   )
                 else if (_loadError != null)
-                  _stateWithCreate(
-                    CoeloStatePanel(
-                      title: 'Não foi possível carregar',
-                      message: 'Tente novamente.',
-                      actionLabel: 'Tentar novamente',
-                      onAction: _load,
-                    ),
+                  CoeloStatePanel(
+                    title: 'Não foi possível carregar',
+                    message: 'Tente novamente.',
+                    actionLabel: 'Tentar novamente',
+                    onAction: _load,
                   )
                 else if (_filteredItems.isEmpty)
-                  _stateWithCreate(
-                    CoeloStatePanel(
-                      title: 'Nenhum plano',
-                      message: _hasActiveFilters
-                          ? 'Revise a busca ou os filtros de plano e dose.'
-                          : 'Ainda não existem planos de medicação.',
-                    ),
+                  CoeloStatePanel(
+                    title: 'Nenhum plano',
+                    message: _hasActiveFilters
+                        ? 'Revise a busca ou os filtros de plano e dose.'
+                        : 'Ainda não existem planos de medicação demonstrativos.',
+                    actionLabel: _hasActiveFilters ? null : 'Criar plano',
+                    onAction: _hasActiveFilters ? null : widget.onCreate,
                   )
                 else
                   LayoutBuilder(
@@ -268,22 +267,6 @@ final class _HealthMedicationPlanDirectoryPageState
       },
     ),
   ).withHealthCareResponsiveSurface();
-
-  Widget _stateWithCreate(Widget state) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      CoeloAdminCreateAction(
-        label: 'Criar plano de medicação',
-        description: 'Cadastre vigência, horários e responsáveis.',
-        variant: _display == _MedicationDirectoryDisplay.cards
-            ? CoeloAdminCreateActionVariant.tile
-            : CoeloAdminCreateActionVariant.banner,
-        onPressed: widget.onCreate,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      state,
-    ],
-  );
 
   Widget _toolbar() => CoeloAdminListingToolbar(
     search: ConstrainedBox(
@@ -552,9 +535,18 @@ String _administrationContextLabel(HealthMedicationVersion version) {
   return '$contextLabel • $responsibleLabel';
 }
 
-String _institutionLabel(String _) => 'Contexto institucional indisponível';
+String _institutionLabel(String value) => switch (value) {
+  'institution-demo-a' => 'Instituição Demo A',
+  'institution-demo-b' => 'Instituição Demo B',
+  _ => value,
+};
 
-String _responsibleLabel(String _) => 'Responsável indisponível';
+String _responsibleLabel(String value) => switch (value) {
+  'professional-demo-professor' => 'Professor Demo',
+  'professional-demo-nurse' => 'Enfermagem Demo',
+  'coordinator-demo-a' => 'Coordenação Demo',
+  _ => value,
+};
 String _periodLabel(HealthMedicationVersion version) =>
     '${_dateLabel(version.startsAt)} \u2014 ${_dateLabel(version.endsAt)}';
 

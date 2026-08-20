@@ -1,9 +1,10 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
-import '../support/health_care_fixture_repository.dart';
+import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_care_detail_page.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_file_actions.dart';
@@ -16,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('controller keeps identity filters independent from hierarchy filters', () async {
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
     await controller.load();
     await controller.setPersonIds({'person-demo-a'});
@@ -32,10 +33,10 @@ void main() {
 
   test('controller scopes results to the actor', () async {
     final controller = HealthCareController(
-      FixtureHealthCareRepository(),
+      DemoHealthCareRepository(),
       actor: HealthCareActor(
         id: 'reader-b',
-        profile: HealthCareAccessProfile.sensitiveReader,
+        profile: DemoHealthCareProfile.sensitiveReader,
         institutionId: 'institution-demo-b',
         authorizedChildIds: {'child-demo-b'},
       ),
@@ -46,21 +47,23 @@ void main() {
     expect(controller.items.map((item) => item.id), ['child-demo-b']);
   });
 
-  test('minimized actor remains read-only', () async {
+  test('minimized actor cannot elevate itself to Owner', () async {
     final controller = HealthCareController(
-      FixtureHealthCareRepository(),
+      DemoHealthCareRepository(),
       actor: HealthCareActor(
         id: 'minimized-demo',
-        profile: HealthCareAccessProfile.minimized,
+        profile: DemoHealthCareProfile.minimized,
         authorizedChildIds: {'child-demo-a'},
       ),
     );
     addTearDown(controller.dispose);
+
+    await expectLater(controller.setProfile(DemoHealthCareProfile.owner), throwsStateError);
     expect(controller.canEdit, isFalse);
   });
 
   test('clearing institution prunes hierarchy and preserves identity', () async {
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
     await controller.setPersonIds({'person-demo-a'});
     await controller.setInstitutionIds({'institution-demo-a'});
@@ -75,7 +78,7 @@ void main() {
   });
 
   test('owner mutations stay audited in the demonstrative repository', () async {
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
     await controller.loadDetail('child-demo-a');
 
@@ -101,7 +104,7 @@ void main() {
 
   testWidgets('profile directory uses canonical cards, table and linear tabs', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
 
     await _pump(
@@ -114,7 +117,7 @@ void main() {
     );
 
     expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
-    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     expect(find.textContaining('Demonstra\u00e7\u00e3o local'), findsNothing);
     expect(find.text('Todos'), findsOneWidget);
     expect(find.text('Em Implanta\u00e7\u00e3o'), findsOneWidget);
@@ -136,7 +139,7 @@ void main() {
 
   testWidgets('profile directory exposes import and export file actions', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
 
     await _pump(
@@ -162,7 +165,7 @@ void main() {
 
   testWidgets('medication plan directory exposes import and export file actions', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
 
     await _pump(
@@ -192,7 +195,7 @@ void main() {
     expect(find.text('Exportar XLSX'), findsOneWidget);
   });
 
-  testWidgets('file export stays unavailable without fake activity', (tester) async {
+  testWidgets('file export completes through the activity controller', (tester) async {
     final activityController = SuperadminActivityController();
     addTearDown(activityController.dispose);
     await _pump(
@@ -211,17 +214,66 @@ void main() {
     await tester.tap(find.text('Exportar CSV'));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Exportação CSV de Perfis de cuidado ainda não está liberada.'),
-      findsOneWidget,
+    expect(activityController.activities, hasLength(1));
+    expect(activityController.activities.single.kind, SuperadminActivityKind.export);
+    expect(activityController.activities.single.fileName, 'perfis-de-cuidado.csv');
+  });
+
+  testWidgets('profile detail separates care from medication plans', (tester) async {
+    await _setViewport(tester, const Size(1024, 900));
+    final controller = HealthCareController(DemoHealthCareRepository());
+    addTearDown(controller.dispose);
+    var plansOpened = false;
+
+    await _pump(
+      tester,
+      HealthCareProfileDetailPage(
+        controller: controller,
+        childId: 'child-demo-a',
+        logout: unavailableSuperadminLogout,
+        onMedicationPlans: () => plansOpened = true,
+        onEditCareProfile: () {},
+      ),
     );
-    expect(activityController.activities, isEmpty);
+
+    expect(find.text('Alergias e restri\u00e7\u00f5es'), findsOneWidget);
+    expect(find.text('Em acompanhamento'), findsNothing);
+    expect(find.text('Epis\u00f3dio grave'), findsNothing);
+    expect(find.text('Hist\u00f3rico'), findsNothing);
+    expect(find.text('Epis\u00f3dio leve'), findsNothing);
+    expect(find.text('Planos de medica\u00e7\u00e3o'), findsWidgets);
+    expect(find.text('Ver planos da crian\u00e7a'), findsNothing);
+
+    await tester.tap(find.text('Alergias e restri\u00e7\u00f5es'));
+    await tester.pumpAndSettle();
+    expect(find.text('Em acompanhamento'), findsOneWidget);
+    expect(find.text('Epis\u00f3dio grave'), findsOneWidget);
+    expect(find.text('Hist\u00f3rico'), findsOneWidget);
+    expect(find.text('Epis\u00f3dio leve'), findsOneWidget);
+
+    await tester.tap(find.text('Orienta\u00e7\u00f5es de cuidado'));
+    await tester.pumpAndSettle();
+    expect(find.text('Autismo'), findsOneWidget);
+    expect(find.text('Em acompanhamento'), findsNothing);
+
+    expect(find.text('Perfil de cuidado'), findsWidgets);
+    expect(find.text('Planos de medica\u00e7\u00e3o'), findsWidgets);
+    expect(find.text('Medicamentos'), findsNothing);
+    expect(find.byKey(const Key('health-medication-create')), findsNothing);
+
+    await tester.tap(find.widgetWithText(TextButton, 'Planos de medica\u00e7\u00e3o'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ver planos da crian\u00e7a'), findsOneWidget);
+
+    await tester.tap(find.text('Ver planos da crian\u00e7a'));
+    await tester.pump();
+    expect(plansOpened, isTrue);
   });
 
   for (final width in [375.0, 768.0]) {
     testWidgets('health care uses a clean light surface at $width px', (tester) async {
       await _setViewport(tester, Size(width, 1000));
-      final controller = HealthCareController(FixtureHealthCareRepository());
+      final controller = HealthCareController(DemoHealthCareRepository());
       addTearDown(controller.dispose);
 
       for (final page in <Widget>[
@@ -259,7 +311,7 @@ void main() {
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     testWidgets('profile directory has no overflow at $width with 200% text', (tester) async {
       await _setViewport(tester, Size(width, 1000));
-      final controller = HealthCareController(FixtureHealthCareRepository());
+      final controller = HealthCareController(DemoHealthCareRepository());
       addTearDown(controller.dispose);
 
       await _pump(
@@ -268,6 +320,26 @@ void main() {
           controller: controller,
           logout: unavailableSuperadminLogout,
           onCreate: () {},
+        ),
+        textScale: 2,
+      );
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('profile detail has no overflow at $width with 200% text', (tester) async {
+      await _setViewport(tester, Size(width, 1000));
+      final controller = HealthCareController(DemoHealthCareRepository());
+      addTearDown(controller.dispose);
+
+      await _pump(
+        tester,
+        HealthCareProfileDetailPage(
+          controller: controller,
+          childId: 'child-demo-a',
+          logout: unavailableSuperadminLogout,
+          onMedicationPlans: () {},
+          onEditCareProfile: () {},
         ),
         textScale: 2,
       );

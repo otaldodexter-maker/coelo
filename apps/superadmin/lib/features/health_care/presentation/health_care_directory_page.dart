@@ -79,6 +79,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
     currentDestination: 'health-care-profiles',
     title: 'Perfis de cuidado',
     subtitle: 'Alergias, restrições e características permanentes de cada criança.',
+    showChatLauncher: false,
     child: LayoutBuilder(
       builder: (context, constraints) {
         final padding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
@@ -142,14 +143,19 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
     filters: [
       _filter(
         'Pessoa',
-        const [],
+        const ['person-demo-a', 'person-demo-b'],
         widget.controller.query.personIds,
         widget.controller.setPersonIds,
       ),
-      _filter('Criança', const [], widget.controller.query.childIds, widget.controller.setChildIds),
+      _filter(
+        'Criança',
+        const ['child-demo-a', 'child-demo-b'],
+        widget.controller.query.childIds,
+        widget.controller.setChildIds,
+      ),
       _filter(
         'Instituição',
-        const [],
+        const ['institution-demo-a', 'institution-demo-b'],
         widget.controller.query.institutionIds,
         widget.controller.setInstitutionIds,
       ),
@@ -226,7 +232,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
       label: label,
       options: options,
       selectedValues: selected,
-      optionLabel: (value) => value,
+      optionLabel: _contextLabel,
       onChanged: onChanged,
     ),
   );
@@ -246,28 +252,19 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
           message: 'Buscando registros locais.',
           loading: true,
         ),
-        HealthCareLoadState.empty => _stateWithCreate(
-          constraints,
-          const CoeloStatePanel(
-            title: 'Nenhum registro',
-            message: 'Ainda não existem perfis de cuidado cadastrados.',
-          ),
+        HealthCareLoadState.empty => const CoeloStatePanel(
+          title: 'Nenhum registro',
+          message: 'Ainda não existem registros demonstrativos.',
         ),
-        HealthCareLoadState.noResults => _stateWithCreate(
-          constraints,
-          const CoeloStatePanel(
-            title: 'Nenhum resultado',
-            message: 'Revise a busca ou os filtros.',
-          ),
+        HealthCareLoadState.noResults => const CoeloStatePanel(
+          title: 'Nenhum resultado',
+          message: 'Revise a busca ou os filtros independentes.',
         ),
-        HealthCareLoadState.error => _stateWithCreate(
-          constraints,
-          CoeloStatePanel(
-            title: 'Não foi possível carregar',
-            message: 'Tente novamente.',
-            actionLabel: 'Tentar novamente',
-            onAction: controller.load,
-          ),
+        HealthCareLoadState.error => CoeloStatePanel(
+          title: 'Não foi possível carregar',
+          message: 'Tente novamente.',
+          actionLabel: 'Tentar novamente',
+          onAction: controller.load,
         ),
         HealthCareLoadState.unauthorized => const CoeloStatePanel(
           title: 'Sem permissão',
@@ -287,34 +284,6 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
         : _table();
   }
 
-  Widget _stateWithCreate(BoxConstraints constraints, Widget statePanel) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      statePanel,
-      const SizedBox(height: CoeloSpacing.space4),
-      if (widget.controller.display == HealthCareDirectoryDisplay.cards)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: SizedBox(
-            width: math.min(340, constraints.maxWidth),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 216),
-              child: CoeloAdminCreateAction(
-                label: 'Criar perfil de cuidado',
-                onPressed: widget.onCreate,
-              ),
-            ),
-          ),
-        )
-      else
-        CoeloAdminCreateAction(
-          label: 'Criar perfil de cuidado',
-          description: 'Cadastre alergias, restri��es e caracter�sticas de cuidado.',
-          variant: CoeloAdminCreateActionVariant.banner,
-          onPressed: widget.onCreate,
-        ),
-    ],
-  );
   Widget _cards(BuildContext context, BoxConstraints constraints) {
     const minimumCardWidth = 340.0;
     final usable = constraints.maxWidth;
@@ -340,7 +309,7 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
             width: width,
             child: _ProfileCard(
               item: item,
-              minimized: widget.controller.isMinimized,
+              minimized: widget.controller.profile == DemoHealthCareProfile.minimized,
               onPressed: widget.controller.canReadSensitive
                   ? () => widget.onChildSelected?.call(item.id)
                   : null,
@@ -507,4 +476,18 @@ String _statusLabel(HealthCareOperationalStatus value) => switch (value) {
   HealthCareOperationalStatus.active => 'Ativo',
   HealthCareOperationalStatus.implementation => 'Em Implantação',
   HealthCareOperationalStatus.inactive => 'Inativo',
+};
+
+String _contextLabel(String value) => switch (value) {
+  'person-demo-a' => 'Pessoa Demo A',
+  'person-demo-b' => 'Pessoa Demo B',
+  'child-demo-a' => 'Criança Demo A',
+  'child-demo-b' => 'Criança Demo B',
+  'institution-demo-a' => 'Instituição Demo A',
+  'institution-demo-b' => 'Instituição Demo B',
+  'unit-demo-a' => 'Unidade Demo A',
+  'unit-demo-b' => 'Unidade Demo B',
+  'group-demo-a' => 'Turma Demo A',
+  'group-demo-b' => 'Turma Demo B',
+  _ => value,
 };

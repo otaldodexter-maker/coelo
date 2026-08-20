@@ -723,37 +723,79 @@ class _SidebarToggle extends StatelessWidget {
   }
 }
 
-class _NavigationDestinationData {
-  const _NavigationDestinationData(this.id, this.label, this.icon, {this.active = false});
+enum _NavigationStatus { none, implantation, planned }
 
+class _NavigationDestinationData {
+  const _NavigationDestinationData(
+    this.id,
+    this.label,
+    this.icon, {
+    this.active = false,
+    this.status = _NavigationStatus.none,
+    this.children = const <_NavigationDestinationData>[],
+  });
   final String id;
   final String label;
   final IconData icon;
   final bool active;
+  final _NavigationStatus status;
+  final List<_NavigationDestinationData> children;
+  bool containsDestination(String value) =>
+      id == value || children.any((child) => child.containsDestination(value));
 }
 
 class _NavigationSectionData {
-  const _NavigationSectionData(this.id, this.label, this.icon, this.destinations);
-
+  const _NavigationSectionData(
+    this.id,
+    this.label,
+    this.icon,
+    this.destinations, {
+    this.status = _NavigationStatus.none,
+  });
   final String id;
   final String label;
   final IconData icon;
   final List<_NavigationDestinationData> destinations;
-
-  bool hasSelectedDestination(String id) {
-    return destinations.any((destination) => destination.id == id);
-  }
+  final _NavigationStatus status;
+  bool hasSelectedDestination(String value) =>
+      destinations.any((destination) => destination.containsDestination(value));
 }
 
 const _navigationSections = <_NavigationSectionData>[
-  _NavigationSectionData('structure', 'Estrutura', Icons.account_balance_outlined, [
+  _NavigationSectionData('platform', 'Plataforma', Icons.dashboard_outlined, [
+    _NavigationDestinationData(
+      'platform-overview',
+      'Visão geral',
+      Icons.dashboard_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'platform-adoption',
+      'Uso e adoção',
+      Icons.trending_up_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'platform-health',
+      'Saúde operacional',
+      Icons.monitor_heart_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'platform-activity',
+      'Atividade da plataforma',
+      Icons.timeline_outlined,
+      status: _NavigationStatus.planned,
+    ),
+  ]),
+  _NavigationSectionData('structure', 'Estrutura', Icons.account_tree_outlined, [
     _NavigationDestinationData(
       'institutions',
       'Instituições',
-      Icons.account_balance_outlined,
+      Icons.apartment_outlined,
       active: true,
     ),
-    _NavigationDestinationData('units', 'Unidades', Icons.apartment_outlined, active: true),
+    _NavigationDestinationData('units', 'Unidades', Icons.location_city_outlined, active: true),
     _NavigationDestinationData('groups', 'Turmas', Icons.groups_outlined, active: true),
     _NavigationDestinationData(
       'activities',
@@ -762,53 +804,116 @@ const _navigationSections = <_NavigationSectionData>[
       active: true,
     ),
   ]),
-  _NavigationSectionData('monitoring', 'Acompanhamento', Icons.monitor_heart_outlined, [
+  _NavigationSectionData('access', 'Pessoas e acessos', Icons.people_alt_outlined, [
+    _NavigationDestinationData('people', 'Pessoas', Icons.people_outline, active: true),
     _NavigationDestinationData(
-      'attendance',
+      'internal-users',
+      'Usuários internos',
+      Icons.admin_panel_settings_outlined,
+      active: true,
+    ),
+    _NavigationDestinationData(
+      'profiles',
+      'Perfis e permissões',
+      Icons.security_outlined,
+      active: true,
+    ),
+    _NavigationDestinationData('profile-models', 'Modelos de perfil', Icons.badge_outlined),
+    _NavigationDestinationData('invites', 'Convites', Icons.mail_outline, active: true),
+  ]),
+  _NavigationSectionData('monitoring', 'Acompanhamento', Icons.fact_check_outlined, [
+    _NavigationDestinationData(
+      'attendance-group',
       'Assiduidade',
       Icons.fact_check_outlined,
-      active: true,
+      children: [
+        _NavigationDestinationData(
+          'attendance',
+          'Chamadas',
+          Icons.fact_check_outlined,
+          active: true,
+          status: _NavigationStatus.implantation,
+        ),
+        _NavigationDestinationData(
+          'attendance-models',
+          'Modelos e configurações',
+          Icons.tune_outlined,
+        ),
+      ],
     ),
     _NavigationDestinationData(
       'daily-routine',
       'Rotina diária',
-      Icons.view_agenda_outlined,
+      Icons.today_outlined,
       active: true,
+      status: _NavigationStatus.implantation,
     ),
-  ]),
-  _NavigationSectionData('access', 'Acessos', Icons.manage_accounts_outlined, [
-    _NavigationDestinationData('people', 'Pessoas', Icons.people_outline, active: true),
     _NavigationDestinationData(
-      'safety',
-      'Segurança da criança',
-      Icons.shield_outlined,
-      active: true,
-    ),
-    _NavigationDestinationData('internal-users', 'Usuários internos', Icons.badge_outlined),
-    _NavigationDestinationData(
-      'profiles',
-      'Perfis e permissões',
-      Icons.admin_panel_settings_outlined,
-      active: true,
-    ),
-  ]),
-  _NavigationSectionData('health-care', 'Saúde e Cuidado', Icons.health_and_safety_outlined, [
-    _NavigationDestinationData(
-      'health-care-profiles',
-      'Perfis de cuidado',
+      'child-protection',
+      'Proteção da criança',
       Icons.child_care_outlined,
-      active: true,
+      children: [
+        _NavigationDestinationData(
+          'safety',
+          'Segurança da criança',
+          Icons.shield_outlined,
+          active: true,
+        ),
+        _NavigationDestinationData(
+          'authorized-people',
+          'Pessoas autorizadas',
+          Icons.person_search_outlined,
+        ),
+        _NavigationDestinationData(
+          'pickup-authorizations',
+          'Autorizações de retirada',
+          Icons.how_to_reg_outlined,
+        ),
+        _NavigationDestinationData(
+          'emergency-contacts',
+          'Contatos de emergência',
+          Icons.contact_phone_outlined,
+        ),
+        _NavigationDestinationData(
+          'restrictions-alerts',
+          'Restrições e alertas',
+          Icons.warning_amber_outlined,
+        ),
+      ],
     ),
     _NavigationDestinationData(
-      'health-medication-plans',
-      'Planos de medicação',
-      Icons.medication_outlined,
-      active: true,
+      'health-care',
+      'Saúde e Cuidado',
+      Icons.health_and_safety_outlined,
+      status: _NavigationStatus.implantation,
+      children: [
+        _NavigationDestinationData(
+          'health-care-profiles',
+          'Perfis de cuidado',
+          Icons.medical_information_outlined,
+          active: true,
+        ),
+        _NavigationDestinationData(
+          'sensitive-incidents',
+          'Ocorrências sensíveis',
+          Icons.report_problem_outlined,
+        ),
+        _NavigationDestinationData(
+          'health-medication-plans',
+          'Planos de medicação',
+          Icons.medication_outlined,
+          active: true,
+        ),
+      ],
     ),
-  ]),
-  _NavigationSectionData('operations', 'Operação', Icons.tune_outlined, [
-    _NavigationDestinationData('plans', 'Planos', Icons.loyalty_outlined),
-    _NavigationDestinationData('import', 'Importações', Icons.upload_file_outlined),
+    _NavigationDestinationData('meal-plans', 'Cardápios', Icons.restaurant_menu_outlined),
+    _NavigationDestinationData(
+      'agenda',
+      'Agenda',
+      Icons.calendar_month_outlined,
+      status: _NavigationStatus.implantation,
+    ),
+    _NavigationDestinationData('forms', 'Formulários', Icons.assignment_outlined),
   ]),
   _NavigationSectionData('communication', 'Comunicação', Icons.forum_outlined, [
     _NavigationDestinationData(
@@ -817,21 +922,187 @@ const _navigationSections = <_NavigationSectionData>[
       Icons.chat_bubble_outline,
       active: true,
     ),
-    _NavigationDestinationData('invites', 'Convites', Icons.mail_outline, active: true),
-    _NavigationDestinationData('notices', 'Avisos', Icons.campaign_outlined, active: true),
+    _NavigationDestinationData(
+      'notices',
+      'Avisos',
+      Icons.campaign_outlined,
+      active: true,
+      status: _NavigationStatus.implantation,
+    ),
+    _NavigationDestinationData('notifications', 'Notificações', Icons.notifications_none_outlined),
   ]),
-  _NavigationSectionData('governance', 'Governança', Icons.verified_user_outlined, [
+  _NavigationSectionData('main-experience', 'Experiência Principal', Icons.auto_awesome_outlined, [
+    _NavigationDestinationData(
+      'experience-overview',
+      'Visão geral',
+      Icons.dashboard_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'happens',
+      'Happens',
+      Icons.photo_camera_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'now',
+      'Now',
+      Icons.bolt_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'moments',
+      'Moments',
+      Icons.auto_awesome_outlined,
+      status: _NavigationStatus.planned,
+    ),
+  ]),
+  _NavigationSectionData('enrollments', 'Matrículas', Icons.how_to_reg_outlined, [
+    _NavigationDestinationData(
+      'enrollments-overview',
+      'Visão geral',
+      Icons.dashboard_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'prospects',
+      'Interessados',
+      Icons.person_add_alt_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'enrollments',
+      'Matrículas',
+      Icons.how_to_reg_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'reenrollments',
+      'Rematrículas',
+      Icons.refresh_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'enrollment-documents',
+      'Documentos e contratos',
+      Icons.description_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'signatures',
+      'Assinaturas',
+      Icons.draw_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'enrollment-pending',
+      'Pendências',
+      Icons.pending_actions_outlined,
+      status: _NavigationStatus.planned,
+    ),
+  ]),
+  _NavigationSectionData(
+    'finance',
+    'Financeiro',
+    Icons.account_balance_outlined,
+    status: _NavigationStatus.implantation,
+    [
+      _NavigationDestinationData('finance-overview', 'Visão geral', Icons.dashboard_outlined),
+      _NavigationDestinationData(
+        'coelo-institutions',
+        'Coelo e instituições',
+        Icons.apartment_outlined,
+        children: [
+          _NavigationDestinationData(
+            'coelo-subscriptions',
+            'Assinaturas do Coelo',
+            Icons.receipt_long_outlined,
+          ),
+          _NavigationDestinationData(
+            'contracted-plans',
+            'Planos contratados',
+            Icons.layers_outlined,
+          ),
+          _NavigationDestinationData('invoices', 'Faturas', Icons.receipt_outlined),
+          _NavigationDestinationData('charges', 'Cobranças', Icons.request_quote_outlined),
+          _NavigationDestinationData('payments', 'Pagamentos', Icons.payments_outlined),
+          _NavigationDestinationData('defaults', 'Inadimplência', Icons.warning_amber_outlined),
+          _NavigationDestinationData(
+            'commercial-exceptions',
+            'Exceções comerciais',
+            Icons.rule_outlined,
+          ),
+        ],
+      ),
+      _NavigationDestinationData(
+        'institutions-families',
+        'Instituições e famílias',
+        Icons.family_restroom_outlined,
+        children: [
+          _NavigationDestinationData(
+            'school-charges',
+            'Cobranças escolares',
+            Icons.request_quote_outlined,
+          ),
+          _NavigationDestinationData('tuition', 'Mensalidades', Icons.payments_outlined),
+          _NavigationDestinationData('bank-slips', 'Boletos', Icons.receipt_long_outlined),
+          _NavigationDestinationData('pix-card', 'Pix e cartão', Icons.credit_card_outlined),
+          _NavigationDestinationData('family-payments', 'Pagamentos', Icons.payments_outlined),
+          _NavigationDestinationData(
+            'discounts-scholarships',
+            'Descontos e bolsas',
+            Icons.discount_outlined,
+          ),
+          _NavigationDestinationData(
+            'family-defaults',
+            'Inadimplência',
+            Icons.warning_amber_outlined,
+          ),
+          _NavigationDestinationData('reconciliation', 'Conciliação', Icons.sync_alt_outlined),
+          _NavigationDestinationData('transfers', 'Repasses', Icons.compare_arrows_outlined),
+          _NavigationDestinationData(
+            'financial-reports',
+            'Relatórios financeiros',
+            Icons.bar_chart_outlined,
+          ),
+        ],
+      ),
+    ],
+  ),
+  _NavigationSectionData('operations', 'Operação Coelo', Icons.settings_outlined, [
+    _NavigationDestinationData('plans', 'Planos e limites', Icons.layers_outlined),
+    _NavigationDestinationData('import', 'Importações e exportações', Icons.file_upload_outlined),
     _NavigationDestinationData(
       'support',
       'Suporte e implantação',
       Icons.support_agent_outlined,
       active: true,
+      status: _NavigationStatus.implantation,
     ),
-    _NavigationDestinationData('audit', 'Auditoria', Icons.security_outlined),
-    _NavigationDestinationData('catalog', 'Catálogo', Icons.widgets_outlined, active: true),
+  ]),
+  _NavigationSectionData('governance', 'Governança', Icons.gavel_outlined, [
+    _NavigationDestinationData('audit', 'Auditoria', Icons.fact_check_outlined),
+    _NavigationDestinationData('catalog', 'Catálogo', Icons.menu_book_outlined, active: true),
+    _NavigationDestinationData(
+      'privacy-lgpd',
+      'Privacidade e LGPD',
+      Icons.privacy_tip_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'integrations-api',
+      'Integrações e API',
+      Icons.api_outlined,
+      status: _NavigationStatus.planned,
+    ),
+    _NavigationDestinationData(
+      'reports-bi',
+      'Relatórios e BI',
+      Icons.bar_chart_outlined,
+      status: _NavigationStatus.planned,
+    ),
   ]),
 ];
-
 const _accountDestinations = <_NavigationDestinationData>[
   _NavigationDestinationData('profile', 'Perfil', Icons.person_outline),
   _NavigationDestinationData('settings', 'Configurações', Icons.settings_outlined),
@@ -852,7 +1123,71 @@ class _NavigationContent extends StatefulWidget {
   State<_NavigationContent> createState() => _NavigationContentState();
 }
 
+class _NavigationSearchResult {
+  const _NavigationSearchResult(this.destination, this.path);
+  final _NavigationDestinationData destination;
+  final String path;
+}
+
+Iterable<_NavigationSearchResult> _flattenNavigationDestinations(
+  List<_NavigationSectionData> sections,
+) sync* {
+  for (final section in sections) {
+    Iterable<_NavigationSearchResult> visit(
+      _NavigationDestinationData destination,
+      String path,
+    ) sync* {
+      final currentPath = '$path > ${destination.label}';
+      yield _NavigationSearchResult(destination, currentPath.substring(3));
+      for (final child in destination.children) {
+        yield* visit(child, currentPath);
+      }
+    }
+
+    for (final destination in section.destinations) {
+      yield* visit(destination, section.label);
+    }
+  }
+}
+
+String _normalizeNavigationSearch(String value) => value
+    .toLowerCase()
+    .replaceAll(RegExp('[áàãâä]'), 'a')
+    .replaceAll(RegExp('[éêë]'), 'e')
+    .replaceAll(RegExp('[íï]'), 'i')
+    .replaceAll(RegExp('[óôõö]'), 'o')
+    .replaceAll(RegExp('[úü]'), 'u')
+    .replaceAll('ç', 'c');
+Iterable<_NavigationDestinationData> _flattenNavigationTree(
+  List<_NavigationDestinationData> destinations,
+) sync* {
+  for (final destination in destinations) {
+    yield destination;
+    yield* _flattenNavigationTree(destination.children);
+  }
+}
+
+String _navigationLabel(_NavigationDestinationData destination) {
+  final status = switch (destination.status) {
+    _NavigationStatus.implantation => 'Em implantação',
+    _NavigationStatus.planned => 'Previsto',
+    _NavigationStatus.none => null,
+  };
+  return status == null ? destination.label : '${destination.label}  ·  $status';
+}
+
+String _navigationSectionLabel(_NavigationSectionData section) {
+  final status = switch (section.status) {
+    _NavigationStatus.implantation => 'Em implantação',
+    _NavigationStatus.planned => 'Previsto',
+    _NavigationStatus.none => null,
+  };
+  return status == null ? section.label : '${section.label}  ·  $status';
+}
+
 class _NavigationContentState extends State<_NavigationContent> {
+  String _menuSearchQuery = '';
+
   late final Set<String> _expandedSections;
 
   @override
@@ -880,6 +1215,41 @@ class _NavigationContentState extends State<_NavigationContent> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (!widget.collapsed)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+            child: TextField(
+              key: const ValueKey('superadmin-navigation-search'),
+              onChanged: (value) => setState(() => _menuSearchQuery = value),
+              decoration: const InputDecoration(
+                hintText: 'Buscar no menu',
+                prefixIcon: Icon(Icons.search),
+                isDense: true,
+              ),
+            ),
+          ),
+        if (_menuSearchQuery.trim().isNotEmpty && !widget.collapsed)
+          ..._flattenNavigationDestinations(_navigationSections)
+              .where(
+                (result) => _normalizeNavigationSearch(
+                  result.path,
+                ).contains(_normalizeNavigationSearch(_menuSearchQuery)),
+              )
+              .take(8)
+              .map(
+                (result) => _NavigationItem(
+                  id: result.destination.id,
+                  icon: result.destination.icon,
+                  label: result.path,
+                  collapsed: false,
+                  isActive: widget.currentDestination == result.destination.id,
+                  onTap: () => _handleDestinationTap(
+                    context,
+                    result.destination,
+                    widget.onDestinationSelected,
+                  ),
+                ),
+              ),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.symmetric(
@@ -890,7 +1260,7 @@ class _NavigationContentState extends State<_NavigationContent> {
               _NavigationItem(
                 id: 'home',
                 icon: Icons.home_outlined,
-                label: 'Home',
+                label: 'Home (Em implantação)',
                 collapsed: widget.collapsed,
                 isActive: widget.currentDestination == 'home',
                 onTap: widget.currentDestination == 'home'
@@ -964,11 +1334,11 @@ class _ExpandedNavigationSection extends StatelessWidget {
             padding: const EdgeInsets.only(left: CoeloSpacing.space3, top: CoeloSpacing.space1),
             child: Column(
               children: [
-                for (final destination in section.destinations)
+                for (final destination in _flattenNavigationTree(section.destinations))
                   _NavigationItem(
                     id: destination.id,
                     icon: destination.icon,
-                    label: destination.label,
+                    label: _navigationLabel(destination),
                     isActive: destination.id == currentDestination,
                     onTap: _destinationAvailable(context, destination)
                         ? () => _handleDestinationTap(context, destination, onDestinationSelected)
@@ -1076,7 +1446,7 @@ class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
                 const SizedBox(width: CoeloSpacing.space3),
                 Expanded(
                   child: Text(
-                    widget.section.label,
+                    _navigationSectionLabel(widget.section),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelLarge?.copyWith(
@@ -1136,10 +1506,10 @@ class _CollapsedNavigationSection extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
       child: CoeloAdminFlyout<String>(
         items: [
-          for (final destination in section.destinations)
+          for (final destination in _flattenNavigationTree(section.destinations))
             CoeloAdminFlyoutItem<String>(
               value: destination.id,
-              label: destination.label,
+              label: _navigationLabel(destination),
               icon: destination.icon,
               semanticLabel: '${section.label}: ${destination.label}',
               selected: destination.id == currentDestination,
@@ -1231,7 +1601,7 @@ String? _prototypeDestinationPath(BuildContext context, String destination) {
     'catalog' => development ? '/dev/catalog' : '/governance/catalog',
     'plans' => '/dev/plans',
     'import' => '/dev/imports',
-    'invites' => development ? '/dev/invites' : '/invites',
+    'invites' => '/dev/invites',
     'notices' => '/notices',
     'audit' => '/dev/audit',
     _ => null,
@@ -2142,7 +2512,7 @@ class _ProfileSummary extends StatelessWidget {
       for (final destination in _accountDestinations)
         CoeloAdminFlyoutItem<String>(
           value: destination.id,
-          label: destination.label,
+          label: _navigationLabel(destination),
           icon: destination.icon,
         ),
       const CoeloAdminFlyoutItem<String>(

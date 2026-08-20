@@ -13,11 +13,6 @@ A proposta separa dados permanentes de cuidado da operação periódica de
 medicamentos. Não aprova nomes físicos, migration, RLS, RPC, grant ou retenção.
 O schema atual não possui tabelas produtivas deste módulo.
 
-A spec 029 e a ADR 0023 substituem esta condição somente para Planos de
-medicação: autorizam a fundação técnica fail-closed e classificam foto do
-medicamento e prescrição no Supabase Storage privado. Perfis de cuidado ainda
-dependem de spec própria.
-
 ## Perfis de cuidado
 
 Entidades candidatas: `child_health_access_grants`,
@@ -49,7 +44,6 @@ Documentos privados referenciam R2; URL pública e segredo não entram no Flutte
 
 ## Gate futuro
 
-Para Planos de medicação, a fundação técnica pode existir com acesso fail-closed;
-a ativação continua proibida até resolver `OQ-003` e `OQ-040` e aprovar o gate
-`legal_basis_and_retention`. Perfis de cuidado ainda exigem spec técnica, threat
-model e revisão humana antes de migration.
+Antes de migration: resolver `OQ-003`, aprovar contrato R2, threat model e
+spec técnica, validar nomes contra o schema vigente e obter revisão humana de
+segurança, LGPD e isolamento multi-tenant.

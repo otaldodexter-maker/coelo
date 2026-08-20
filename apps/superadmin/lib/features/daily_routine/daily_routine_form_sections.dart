@@ -4,29 +4,30 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/activity/superadmin_activity.dart';
+import '../../app/shell/superadmin_notice.dart';
 import '../../app/shell/superadmin_shell.dart';
 import '../../shared/presentation/widgets/superadmin_form_action_footer.dart';
-import '../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../auth/domain/logout_action.dart';
 import 'daily_routine.dart';
-import 'widgets/daily_routine_field_configuration_editor.dart';
-import 'widgets/daily_routine_inheritance_summary.dart';
-import 'widgets/daily_routine_ordered_editor.dart';
+import 'daily_routine_controller.dart';
 
 final class DailyRoutineWizardPage extends StatefulWidget {
   const DailyRoutineWizardPage({
     required this.repository,
+    required this.permissions,
     required this.logout,
-    this.entryId,
-    this.entryKind = RoutineEntryKind.model,
+    this.modelId,
+    this.entryType = DailyRoutineEntryType.model,
     this.activityController,
     super.key,
   });
 
-  final RoutineRepository repository;
+  final InMemoryDailyRoutineRepository repository;
+  final DailyRoutinePermissions permissions;
   final LogoutAction logout;
-  final String? entryId;
-  final RoutineEntryKind entryKind;
+  final String? modelId;
+  final DailyRoutineEntryType entryType;
   final SuperadminActivityController? activityController;
 
   @override
@@ -34,902 +35,1123 @@ final class DailyRoutineWizardPage extends StatefulWidget {
 }
 
 final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
-  final _name = TextEditingController();
-  final _description = TextEditingController();
-  final _modelInstitutionId = TextEditingController();
-  final _modelOriginUnitId = TextEditingController();
-  final _startsAt = TextEditingController();
-  final _endsAt = TextEditingController();
-  final _validFrom = TextEditingController();
-  final _validUntil = TextEditingController();
-  Object? _entry;
-  Object? _error;
-  var _loading = true;
-  var _saving = false;
-  var _sections = <RoutineSection>[];
-  var _modelOriginScope = RoutineModelOriginScope.institution;
-  var _applicationStatus = RoutineApplicationStatus.draft;
-  var _applicationInheritance = RoutineInheritanceMode.inherited;
-  var _applicationVisibility = 'institution';
-  var _canManage = false;
+  static const groups = <String, String>{
+    'group-a': 'Berçário A',
+    'group-b': 'Maternal B',
+    'group-c': 'Jardim C',
+  };
+  static const units = <String, String>{
+    'unit-center': 'Unidade Centro',
+    'unit-north': 'Unidade Norte',
+  };
+  static const activities = <String, List<String>>{
+    'group-a': ['activity-meal', 'activity-sleep'],
+    'group-b': ['activity-playground', 'activity-reading'],
+    'group-c': ['activity-arts', 'activity-music'],
+  };
+
+  late final DailyRoutineFormController controller;
+  late final TextEditingController name;
+  late final TextEditingController description;
+  double footerHeight = 0;
+
+  bool get canManage => widget.permissions.canManage && !controller.isCoeloProvided;
 
   @override
   void initState() {
     super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant DailyRoutineWizardPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.repository != widget.repository ||
-        oldWidget.entryId != widget.entryId ||
-        oldWidget.entryKind != widget.entryKind) {
-      _load();
-    }
+    controller = DailyRoutineFormController(
+      repository: widget.repository,
+      permissions: widget.permissions,
+      modelId: widget.modelId,
+      entryType: widget.entryType,
+    );
+    name = TextEditingController(text: controller.name);
+    description = TextEditingController(text: controller.description);
   }
 
   @override
   void dispose() {
-    _name.dispose();
-    _description.dispose();
-    _modelInstitutionId.dispose();
-    _modelOriginUnitId.dispose();
-    _startsAt.dispose();
-    _endsAt.dispose();
-    _validFrom.dispose();
-    _validUntil.dispose();
+    name.dispose();
+    description.dispose();
+    controller.dispose();
     super.dispose();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final id = widget.entryId;
-      final entry = id == null
-          ? await _newEntry()
-          : switch (widget.entryKind) {
-              RoutineEntryKind.model => await widget.repository.fetchModel(id),
-              RoutineEntryKind.application => await widget.repository.fetchApplication(id),
-              RoutineEntryKind.launch => await widget.repository.fetchLaunch(id),
-            };
-      if (!mounted) return;
-      _bind(entry);
-      setState(() {
-        _entry = entry;
-        _canManage = switch (entry) {
-          RoutineModel value => value.canManage,
-          RoutineApplication value => value.canManage,
-          RoutineLaunch value => value.canManage,
-          _ => false,
-        };
-        _loading = false;
-      });
-    } on Object catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _error = error;
-        _loading = false;
-      });
+  Future<void> requestExit() async {
+    if (!controller.isDirty) {
+      await Navigator.of(context).maybePop();
+      return;
     }
-  }
-
-  Future<Object> _newEntry() async => switch (widget.entryKind) {
-    RoutineEntryKind.model => () async {
-      final capability = await widget.repository.fetchPage(
-        const RoutineDirectoryQuery(kind: RoutineEntryKind.model, pageSize: 1),
-      );
-      return RoutineModel(
-        id: '',
-        name: '',
-        description: '',
-        version: 1,
-        status: RoutineModelStatus.draft,
-        sections: [],
-        expectedVersion: 0,
-        canManage: capability.canManage,
-      );
-    }(),
-    RoutineEntryKind.application => throw const FormatException(
-      'Crie uma rotina aplicada a partir de um contexto autorizado.',
-    ),
-    RoutineEntryKind.launch => throw const FormatException(
-      'Selecione uma rotina aplicada autorizada para criar o lancamento.',
-    ),
-  };
-
-  void _bind(Object entry) {
-    if (entry case final RoutineModel model) {
-      _name.text = model.name;
-      _description.text = model.description;
-      _modelOriginScope = model.originScope;
-      _modelInstitutionId.text = model.institutionId ?? '';
-      _modelOriginUnitId.text = model.originUnitId ?? '';
-      _sections = List.of(model.sections);
-    } else if (entry case final RoutineApplication application) {
-      _validFrom.text = _dateText(application.validFrom);
-      _validUntil.text = _dateText(application.validUntil);
-      _startsAt.text = application.startsAt ?? '';
-      _endsAt.text = application.endsAt ?? '';
-      _applicationStatus = application.status;
-      _applicationInheritance = application.inheritanceMode;
-      _applicationVisibility = application.visibility;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => SuperadminShell(
-    logout: widget.logout,
-    currentDestination: 'daily-routine',
-    title: _title,
-    subtitle: 'Configuracao versionada e validada no servidor.',
-    activityController: widget.activityController,
-    child: ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: SuperadminFormFrame(
-        viewportWidth: MediaQuery.sizeOf(context).width,
-        navigation: const SizedBox.shrink(),
-        scrollKey: const Key('daily-routine-editor-scroll'),
-        body: _body(),
-        footer: _footer(),
-      ),
-    ),
-  );
-
-  String get _title => switch (widget.entryKind) {
-    RoutineEntryKind.model => widget.entryId == null ? 'Criar modelo' : 'Editar modelo',
-    RoutineEntryKind.application => 'Rotina aplicada',
-    RoutineEntryKind.launch => 'Lancamento da rotina',
-  };
-
-  Widget _body() {
-    if (_loading) {
-      return const CoeloStatePanel(
-        key: Key('daily-routine-editor-loading'),
-        title: 'Carregando configuracao',
-        message: 'Aguarde enquanto os dados autorizados sao carregados.',
-        loading: true,
-      );
-    }
-    if (_error != null) {
-      return CoeloStatePanel(
-        key: const Key('daily-routine-editor-error'),
-        title: 'Nao foi possivel abrir esta configuracao',
-        message: _error is FormatException
-            ? (_error! as FormatException).message
-            : 'O recurso nao existe ou nao esta disponivel para este acesso.',
-        icon: Icons.error_outline_rounded,
-        actionLabel: widget.entryId == null ? null : 'Tentar novamente',
-        onAction: widget.entryId == null ? null : _load,
-      );
-    }
-    return switch (_entry) {
-      final RoutineModel model => _modelEditor(model),
-      final RoutineApplication application => _applicationView(application),
-      final RoutineLaunch launch => _launchView(launch),
-      _ => const SizedBox.shrink(),
-    };
-  }
-
-  Widget _modelEditor(RoutineModel model) => Column(
-    key: const Key('daily-routine-model-editor'),
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text('Identificacao', style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        key: const Key('daily-routine-name'),
-        controller: _name,
-        labelText: 'Nome',
-        prefixIcon: Icons.title_rounded,
-        enabled: _canManage && !_saving,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        key: const Key('daily-routine-description'),
-        controller: _description,
-        labelText: 'Descricao',
-        prefixIcon: Icons.notes_rounded,
-        maxLines: 4,
-        enabled: _canManage && !_saving,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminSingleSelectField<RoutineModelOriginScope>(
-        key: const Key('daily-routine-model-origin-scope'),
-        label: 'Origem do modelo',
-        value: _modelOriginScope,
-        options: RoutineModelOriginScope.values,
-        optionLabel: (value) => switch (value) {
-          RoutineModelOriginScope.institution => 'Instituição',
-          RoutineModelOriginScope.unit => 'Unidade',
-        },
-        onChanged: _canManage && !_saving
-            ? (value) => setState(() {
-                _modelOriginScope = value;
-                if (value == RoutineModelOriginScope.institution) {
-                  _modelOriginUnitId.clear();
-                }
-              })
-            : (_) {},
-        enabled: _canManage && !_saving,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        key: const Key('daily-routine-model-institution'),
-        controller: _modelInstitutionId,
-        labelText: 'Instituição de origem',
-        prefixIcon: Icons.account_balance_outlined,
-        enabled: _canManage && !_saving,
-      ),
-
-      if (_modelOriginScope == RoutineModelOriginScope.unit) ...[
-        const SizedBox(height: CoeloSpacing.space4),
-        CoeloFormTextField(
-          key: const Key('daily-routine-model-origin-unit'),
-          controller: _modelOriginUnitId,
-          labelText: 'Unidade de origem',
-          prefixIcon: Icons.apartment_outlined,
-          enabled: _canManage && !_saving,
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CoeloAdminDialogShell(
+        title: 'Descartar alterações?',
+        body: Text(
+          controller.entryType == DailyRoutineEntryType.model
+              ? 'As alterações locais deste modelo ainda não foram salvas.'
+              : 'As alterações locais desta rotina ainda não foram salvas.',
         ),
-      ],
-      const SizedBox(height: CoeloSpacing.space6),
-      DailyRoutineOrderedEditor(
-        sections: _sections,
-        enabled: _canManage && !_saving,
-        onEditSection: _editSection,
-        onDuplicateSection: _duplicateSection,
-        onRemoveSection: _removeSection,
-        onReorderSections: _reorderSections,
-        onAddSection: _addSection,
-        onAddField: _addField,
-        onReorderFields: _reorderFields,
-        onAddChildField: _addChildField,
-        onEditField: _editField,
-        onDuplicateField: _duplicateField,
-        onRemoveField: _removeField,
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.pop(dialogContext, false),
+          child: const Text('Continuar editando'),
+        ),
+        primaryAction: FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+          ),
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: const Text('Descartar'),
+        ),
       ),
-    ],
-  );
-
-  RoutineApplication _applicationDraft(RoutineApplication current) => RoutineApplication(
-    id: current.id,
-    modelVersionId: current.modelVersionId,
-    institutionId: current.institutionId,
-    unitId: current.unitId,
-    groupId: current.groupId,
-    parentApplicationId: current.parentApplicationId,
-    activityId: current.activityId,
-    status: _applicationStatus,
-    inheritanceMode: _applicationInheritance,
-    effectiveVersion: current.effectiveVersion,
-    expectedVersion: current.expectedVersion,
-    validFrom: _parseDate(_validFrom.text, 'inicio da validade'),
-    validUntil: _parseDate(_validUntil.text, 'fim da validade'),
-    startsAt: _optional(_startsAt.text),
-    endsAt: _optional(_endsAt.text),
-    visibility: _applicationVisibility,
-    canManage: current.canManage,
-    assignees: current.assignees,
-  );
-
-  String? _optional(String value) {
-    final trimmed = value.trim();
-    return trimmed.isEmpty ? null : trimmed;
+    );
+    if (leave == true && mounted) await Navigator.of(context).maybePop();
   }
 
-  String _dateText(DateTime? value) => value == null
-      ? ''
-      : '${value.year.toString().padLeft(4, '0')}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
-
-  DateTime? _parseDate(String value, String label) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) return null;
-    final parsed = DateTime.tryParse(normalized);
-    if (parsed == null || _dateText(parsed) != normalized) {
-      throw FormatException('Informe $label no formato AAAA-MM-DD.');
+  Future<void> save({required bool activate, bool finish = false}) async {
+    final model = controller.save(activate: activate);
+    showSuperadminNotice(
+      context,
+      model == null
+          ? 'Revise as etapas indicadas antes de continuar.'
+          : controller.entryType == DailyRoutineEntryType.model
+          ? 'Modelo salvo localmente.'
+          : activate
+          ? 'Rotina ativada localmente.'
+          : 'Rascunho salvo localmente.',
+    );
+    if (model != null && finish && mounted) {
+      await Navigator.of(context).maybePop();
     }
-    return parsed;
   }
 
-  Widget _applicationView(RoutineApplication application) => Column(
-    key: const Key('daily-routine-application-editor'),
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      DailyRoutineInheritanceSummary(
-        application: _applicationDraft(application),
-        originLabel: application.parentApplicationId == null
-            ? 'Configuracao original da instituicao'
-            : 'Rotina de origem vinculada',
-        inheritedLabel: 'Versao ${application.effectiveVersion}',
-        effectiveLabel: 'Versao ${application.effectiveVersion}',
-        enabled: _canManage && !_saving,
-        onModeChanged: _saveApplicationMode,
-        onRevert: _resetInheritance,
+  Future<void> editSection([DailyRoutineSection? section]) async {
+    final textController = TextEditingController(text: section?.name ?? '');
+    String? error;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => CoeloAdminDialogShell(
+          title: section == null ? 'Adicionar seção' : 'Editar seção',
+          body: CoeloFormTextField(
+            fieldKey: const Key('daily-routine-section-name'),
+            controller: textController,
+            labelText: 'Nome da seção',
+            prefixIcon: Icons.view_agenda_outlined,
+            errorText: error,
+            onChanged: (_) {
+              if (error != null) setDialogState(() => error = null);
+            },
+          ),
+          secondaryAction: OutlinedButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          primaryAction: FilledButton(
+            key: const Key('daily-routine-section-save'),
+            onPressed: () {
+              if (textController.text.trim().isEmpty) {
+                setDialogState(() => error = 'Informe o nome da seção.');
+                return;
+              }
+              controller.upsertSection(sectionId: section?.id, name: textController.text);
+              Navigator.pop(dialogContext);
+            },
+            child: const Text('Salvar seção'),
+          ),
+        ),
       ),
-      const SizedBox(height: CoeloSpacing.space6),
-      Text('Aplicacao e escopo', style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: CoeloSpacing.space4),
-      _applicationReferenceSummary(application),
-      const SizedBox(height: CoeloSpacing.space5),
-      Text('Validade e horario', style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: CoeloSpacing.space4),
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final fields = [
-            CoeloFormTextField(
-              key: const Key('daily-routine-application-valid-from'),
-              controller: _validFrom,
-              labelText: 'Inicio da validade (AAAA-MM-DD)',
-              prefixIcon: Icons.event_available_outlined,
-              enabled: _canManage && !_saving,
-            ),
-            CoeloFormTextField(
-              key: const Key('daily-routine-application-valid-until'),
-              controller: _validUntil,
-              labelText: 'Fim da validade (AAAA-MM-DD)',
-              prefixIcon: Icons.event_busy_outlined,
-              enabled: _canManage && !_saving,
-            ),
-            CoeloFormTextField(
-              key: const Key('daily-routine-application-starts-at'),
-              controller: _startsAt,
-              labelText: 'Horario inicial (HH:MM)',
-              prefixIcon: Icons.schedule_outlined,
-              enabled: _canManage && !_saving,
-            ),
-            CoeloFormTextField(
-              key: const Key('daily-routine-application-ends-at'),
-              controller: _endsAt,
-              labelText: 'Horario final (HH:MM)',
-              prefixIcon: Icons.schedule_rounded,
-              enabled: _canManage && !_saving,
-            ),
-          ];
-          if (constraints.maxWidth < 600) {
-            return Column(
+    );
+  }
+
+  Future<void> editField(DailyRoutineSection section, [DailyRoutineField? field]) async {
+    const noInitialValue = '__no_initial_value__';
+    final labelController = TextEditingController(text: field?.label ?? '');
+    final initialController = TextEditingController(
+      text:
+          field?.type == DailyRoutineFieldType.singleChoice ||
+              field?.type == DailyRoutineFieldType.multipleChoice
+          ? ''
+          : field?.initialValue?.toString() ?? '',
+    );
+    final optionsController = TextEditingController(text: field?.options.join(', ') ?? '');
+    var type = field?.type ?? DailyRoutineFieldType.shortText;
+    var required = field?.required ?? false;
+    var selectedChoice = field?.initialValue is String ? field!.initialValue! as String : null;
+    var selectedChoices = field?.initialValue is Iterable
+        ? (field!.initialValue! as Iterable).map((value) => value.toString()).toSet()
+        : <String>{};
+    String? error;
+    String? initialError;
+
+    List<String> registeredOptions() => optionsController.text
+        .split(',')
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList(growable: false);
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final options = registeredOptions();
+          final isSingleChoice = type == DailyRoutineFieldType.singleChoice;
+          final isMultipleChoice = type == DailyRoutineFieldType.multipleChoice;
+          return CoeloAdminDialogShell(
+            title: field == null ? 'Adicionar campo' : 'Editar campo',
+            body: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                for (final field in fields) ...[field, const SizedBox(height: CoeloSpacing.space4)],
+                CoeloFormTextField(
+                  fieldKey: const Key('daily-routine-field-label'),
+                  controller: labelController,
+                  labelText: 'Nome do campo',
+                  prefixIcon: Icons.label_outline_rounded,
+                  errorText: error,
+                  onChanged: (_) {
+                    if (error != null) setDialogState(() => error = null);
+                  },
+                ),
+                const SizedBox(height: CoeloSpacing.space3),
+                CoeloAdminSingleSelectField<DailyRoutineFieldType>(
+                  key: const Key('daily-routine-field-type'),
+                  label: 'Tipo',
+                  value: type,
+                  options: DailyRoutineFieldType.values,
+                  optionLabel: fieldTypeLabel,
+                  onChanged: (value) => setDialogState(() {
+                    type = value;
+                    initialError = null;
+                  }),
+                ),
+                if (isSingleChoice || isMultipleChoice) ...[
+                  const SizedBox(height: CoeloSpacing.space3),
+                  CoeloFormTextField(
+                    fieldKey: const Key('daily-routine-field-options'),
+                    controller: optionsController,
+                    labelText: 'Opções separadas por vírgula',
+                    prefixIcon: Icons.list_alt_rounded,
+                    onChanged: (_) => setDialogState(() {
+                      final currentOptions = registeredOptions();
+                      if (selectedChoice != null && !currentOptions.contains(selectedChoice)) {
+                        selectedChoice = null;
+                        initialError = 'A opção inicial foi removida. Selecione um novo valor.';
+                      }
+                      if (!currentOptions.toSet().containsAll(selectedChoices)) {
+                        selectedChoices = selectedChoices.intersection(currentOptions.toSet());
+                        initialError = 'Uma opção inicial foi removida. Revise a seleção.';
+                      }
+                    }),
+                  ),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  if (options.isEmpty)
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Cadastre ao menos uma opção para escolher o valor inicial.'),
+                    )
+                  else if (isSingleChoice)
+                    CoeloAdminSingleSelectField<String>(
+                      key: const Key('daily-routine-field-initial-choice'),
+                      label: 'Valor inicial',
+                      value: selectedChoice ?? noInitialValue,
+                      options: [noInitialValue, ...options],
+                      optionLabel: (value) => value == noInitialValue ? 'Sem valor inicial' : value,
+                      searchable: false,
+                      onChanged: (value) => setDialogState(() {
+                        selectedChoice = value == noInitialValue ? null : value;
+                        initialError = null;
+                      }),
+                    )
+                  else
+                    CoeloAdminMultiSelectField<String>(
+                      key: const Key('daily-routine-field-initial-choices'),
+                      label: 'Valores iniciais',
+                      options: options,
+                      selectedValues: selectedChoices,
+                      optionLabel: (value) => value,
+                      searchable: false,
+                      onChanged: (values) => setDialogState(() {
+                        selectedChoices = values;
+                        initialError = null;
+                      }),
+                    ),
+                  if (initialError != null) ...[
+                    const SizedBox(height: CoeloSpacing.space2),
+                    Semantics(
+                      liveRegion: true,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          initialError!,
+                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+                const SizedBox(height: CoeloSpacing.space3),
+                CoeloAdminSingleSelectField<bool>(
+                  label: 'Obrigatoriedade',
+                  value: required,
+                  options: const [false, true],
+                  optionLabel: (value) => value ? 'Obrigatório' : 'Opcional',
+                  onChanged: (value) => setDialogState(() => required = value),
+                ),
+                if (!isSingleChoice && !isMultipleChoice) ...[
+                  const SizedBox(height: CoeloSpacing.space3),
+                  CoeloFormTextField(
+                    fieldKey: const Key('daily-routine-field-initial-value'),
+                    controller: initialController,
+                    labelText: 'Valor inicial (opcional)',
+                    prefixIcon: Icons.auto_awesome_outlined,
+                  ),
+                ],
+                const SizedBox(height: CoeloSpacing.space2),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('O valor inicial preenche somente campos vazios.'),
+                ),
               ],
-            );
-          }
-          return Wrap(
-            spacing: CoeloSpacing.space3,
-            runSpacing: CoeloSpacing.space4,
-            children: [
-              for (final field in fields)
-                SizedBox(width: (constraints.maxWidth - CoeloSpacing.space3) / 2, child: field),
-            ],
+            ),
+            secondaryAction: OutlinedButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancelar'),
+            ),
+            primaryAction: FilledButton(
+              key: const Key('daily-routine-field-save'),
+              onPressed: () {
+                if (labelController.text.trim().isEmpty) {
+                  setDialogState(() => error = 'Informe o nome do campo.');
+                  return;
+                }
+                final currentOptions = registeredOptions();
+                if ((isSingleChoice || isMultipleChoice) && currentOptions.isEmpty) {
+                  setDialogState(() => initialError = 'Cadastre ao menos uma opção.');
+                  return;
+                }
+                if (initialError != null) return;
+                controller.upsertField(
+                  sectionId: section.id,
+                  fieldId: field?.id,
+                  label: labelController.text,
+                  type: type,
+                  required: required,
+                  initialValue: isSingleChoice
+                      ? selectedChoice
+                      : isMultipleChoice
+                      ? selectedChoices.isEmpty
+                            ? null
+                            : selectedChoices.toList(growable: false)
+                      : initialController.text.trim().isEmpty
+                      ? null
+                      : initialController.text.trim(),
+                  options: currentOptions,
+                );
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Salvar campo'),
+            ),
           );
         },
       ),
-      const SizedBox(height: CoeloSpacing.space5),
-      CoeloAdminSingleSelectField<RoutineApplicationStatus>(
-        key: const Key('daily-routine-application-status'),
-        label: 'Status da rotina',
-        value: _applicationStatus,
-        options: RoutineApplicationStatus.values,
-        optionLabel: (value) => switch (value) {
-          RoutineApplicationStatus.draft => 'Rascunho',
-          RoutineApplicationStatus.active => 'Ativa',
-          RoutineApplicationStatus.inactive => 'Inativa',
-          RoutineApplicationStatus.archived => 'Arquivada',
-        },
-        prefixIcon: Icons.toggle_on_outlined,
-        enabled: _canManage && !_saving,
-        onChanged: (value) => setState(() => _applicationStatus = value),
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminSingleSelectField<String>(
-        key: const Key('daily-routine-application-visibility'),
-        label: 'Visibilidade',
-        value: _applicationVisibility,
-        options: const ['staff_only', 'authorized_guardians'],
-        optionLabel: (value) => switch (value) {
-          'staff_only' => 'Somente equipe',
-          _ => 'Responsaveis autorizados',
-        },
-        prefixIcon: Icons.visibility_outlined,
-        enabled: _canManage && !_saving,
-        onChanged: (value) => setState(() => _applicationVisibility = value),
-      ),
-    ],
-  );
+    );
+  }
 
-  Widget _applicationReferenceSummary(RoutineApplication application) {
-    final responsibilities = application.assignees
-        .map(
-          (assignee) => switch (assignee.responsibility) {
-            RoutineApplicationResponsibility.record => 'Registro',
-            RoutineApplicationResponsibility.review => 'Revisao',
-            RoutineApplicationResponsibility.publish => 'Publicacao',
-          },
-        )
-        .toSet()
-        .join(' · ');
-    final scope = application.groupId != null
-        ? 'Turma'
-        : application.unitId != null
-        ? 'Unidade'
-        : 'Instituicao';
-    return Semantics(
-      container: true,
-      label:
-          'Modelo e escopo vinculados. Escopo: $scope. ${application.activityId == null ? 'Sem atividade vinculada.' : 'Atividade vinculada.'}',
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Future<void> editVariation(DailyRoutineScope scope) async {
+    final fields = controller.sections.expand((section) => section.fields).toList();
+    if (fields.isEmpty) {
+      showSuperadminNotice(context, 'Adicione campos ao modelo-base antes de criar variações.');
+      return;
+    }
+    var field = fields.first;
+    var required = scope.fieldOverrides[field.id]?.required ?? field.required;
+    final initialController = TextEditingController(
+      text: scope.fieldOverrides[field.id]?.initialValue?.toString() ?? '',
+    );
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => CoeloAdminDialogShell(
+          title: 'Variação de ${groups[scope.groupId] ?? scope.groupId}',
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Modelo vinculado · versao ${application.effectiveVersion}'),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(
-                'Escopo: $scope${application.activityId == null ? '' : ' · Atividade vinculada'}',
+              const Text('Ajuste somente o que difere do modelo-base nesta turma.'),
+              if (scope.fieldOverrides.containsKey(field.id))
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const Key('daily-routine-variation-reset'),
+                    onPressed: () {
+                      controller.removeScopeFieldOverride(scope.groupId, field.id);
+                      Navigator.pop(dialogContext);
+                    },
+                    icon: const Icon(Icons.undo_rounded),
+                    label: const Text('Reverter para o modelo-base'),
+                  ),
+                ),
+              const SizedBox(height: CoeloSpacing.space3),
+              CoeloAdminSingleSelectField<DailyRoutineField>(
+                label: 'Campo do modelo-base',
+                value: field,
+                options: fields,
+                optionLabel: (value) => value.label,
+                onChanged: (value) {
+                  setDialogState(() {
+                    field = value;
+                    required = scope.fieldOverrides[value.id]?.required ?? value.required;
+                    initialController.text =
+                        scope.fieldOverrides[value.id]?.initialValue?.toString() ?? '';
+                  });
+                },
               ),
-              const SizedBox(height: CoeloSpacing.space2),
-              Text(
-                application.assignees.isEmpty
-                    ? 'Sem responsaveis vinculados.'
-                    : 'Responsabilidades vinculadas: $responsibilities',
+              const SizedBox(height: CoeloSpacing.space3),
+              CoeloAdminSingleSelectField<bool>(
+                label: 'Obrigatoriedade nesta turma',
+                value: required,
+                options: const [false, true],
+                optionLabel: (value) => value ? 'Obrigatório' : 'Opcional',
+                onChanged: (value) => setDialogState(() => required = value),
+              ),
+              const SizedBox(height: CoeloSpacing.space3),
+              CoeloFormTextField(
+                fieldKey: const Key('daily-routine-variation-initial-value'),
+                controller: initialController,
+                labelText: 'Valor inicial nesta turma (opcional)',
+                prefixIcon: Icons.tune_rounded,
               ),
             ],
           ),
+          secondaryAction: OutlinedButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          primaryAction: FilledButton(
+            key: const Key('daily-routine-variation-save'),
+            onPressed: () {
+              controller.setScopeFieldOverride(
+                scope.groupId,
+                DailyRoutineFieldOverride(
+                  fieldId: field.id,
+                  required: required,
+                  initialValue: initialController.text.trim().isEmpty
+                      ? null
+                      : initialController.text.trim(),
+                ),
+              );
+              Navigator.pop(dialogContext);
+            },
+            child: const Text('Salvar variação'),
+          ),
         ),
       ),
     );
   }
 
-  Widget _launchView(RoutineLaunch launch) => Column(
-    key: const Key('daily-routine-launch-editor'),
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text('Resumo do lancamento', style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: CoeloSpacing.space4),
-      Text('Data: ${launch.serviceDate.toLocal()}'),
-      Text('Status: ${launch.status.name}'),
-      Text('Versao esperada: ${launch.expectedVersion}'),
-    ],
-  );
-
-  Widget _footer() {
-    if (_loading || _entry == null) return const SizedBox.shrink();
-    return SuperadminFormActionFooter(
-      surfaceKey: const Key('daily-routine-form-footer'),
-      tertiaryAction: const SizedBox.shrink(),
-      continuationActions: [
-        if (_canManage && _entry is RoutineModel)
-          FilledButton(
-            key: const Key('daily-routine-save'),
-            onPressed: _saving ? null : _saveModel,
-            child: Text(_saving ? 'Salvando...' : 'Salvar'),
-          ),
-        if (_canManage && _entry is RoutineApplication)
-          FilledButton(
-            key: const Key('daily-routine-application-save'),
-            onPressed: _saving ? null : _saveApplication,
-            child: Text(_saving ? 'Salvando...' : 'Salvar rotina'),
-          ),
-      ],
-    );
-  }
-
-  Future<void> _editSection(RoutineSection section) async {
-    final controller = TextEditingController(text: section.name);
-    final result = await showDialog<String>(
+  Future<void> addLocalVariationField(DailyRoutineScope scope) async {
+    final labelController = TextEditingController();
+    var type = DailyRoutineFieldType.shortText;
+    var required = false;
+    String? error;
+    await showDialog<void>(
       context: context,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        title: 'Editar secao',
-        body: CoeloFormTextField(
-          controller: controller,
-          labelText: 'Nome da secao',
-          prefixIcon: Icons.view_agenda_outlined,
-        ),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('Cancelar'),
-        ),
-        primaryAction: FilledButton(
-          onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
-          child: const Text('Salvar'),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => CoeloAdminDialogShell(
+          title: 'Adicionar campo desta turma',
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Este campo complementa a base somente nesta turma.'),
+              const SizedBox(height: CoeloSpacing.space3),
+              CoeloFormTextField(
+                fieldKey: const Key('daily-routine-local-field-label'),
+                controller: labelController,
+                labelText: 'Nome do campo',
+                prefixIcon: Icons.label_outline_rounded,
+                errorText: error,
+                onChanged: (_) {
+                  if (error != null) setDialogState(() => error = null);
+                },
+              ),
+              const SizedBox(height: CoeloSpacing.space3),
+              CoeloAdminSingleSelectField<DailyRoutineFieldType>(
+                label: 'Tipo',
+                value: type,
+                options: DailyRoutineFieldType.values,
+                optionLabel: fieldTypeLabel,
+                onChanged: (value) => setDialogState(() => type = value),
+              ),
+              const SizedBox(height: CoeloSpacing.space3),
+              CoeloAdminSingleSelectField<bool>(
+                label: 'Obrigatoriedade',
+                value: required,
+                options: const [false, true],
+                optionLabel: (value) => value ? 'Obrigatório' : 'Opcional',
+                onChanged: (value) => setDialogState(() => required = value),
+              ),
+            ],
+          ),
+          secondaryAction: OutlinedButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          primaryAction: FilledButton(
+            key: const Key('daily-routine-local-field-save'),
+            onPressed: () {
+              if (labelController.text.trim().isEmpty) {
+                setDialogState(() => error = 'Informe o nome do campo.');
+                return;
+              }
+              controller.addScopeLocalField(
+                scope.groupId,
+                label: labelController.text,
+                type: type,
+                required: required,
+              );
+              Navigator.pop(dialogContext);
+            },
+            child: const Text('Adicionar campo'),
+          ),
         ),
       ),
     );
-    controller.dispose();
-    if (!mounted || result == null || result.isEmpty) return;
-    setState(() {
-      _sections = [
-        for (final item in _sections)
-          item.id == section.id
-              ? RoutineSection(
-                  id: item.id,
-                  name: result,
-                  sortOrder: item.sortOrder,
-                  fields: item.fields,
-                )
-              : item,
-      ];
-    });
   }
 
-  Future<void> _editField(RoutineSection section, RoutineField field) async {
-    var draft = field;
-    final parents = _sections
-        .expand((item) => item.fields)
-        .where((item) => item.id != field.id)
-        .toList(growable: false);
-    final result = await showDialog<RoutineField>(
-      context: context,
-      builder: (dialogContext) => CoeloAdminDialogShell(
-        title: 'Configurar campo',
-        body: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 760, maxHeight: 640),
-          child: SingleChildScrollView(
-            child: DailyRoutineFieldConfigurationEditor(
-              field: field,
-              availableParents: parents,
-              enabled: true,
-              onChanged: (value) => draft = value,
+  @override
+  Widget build(BuildContext context) {
+    final creating = widget.modelId == null;
+    return SuperadminShell(
+      logout: widget.logout,
+      currentDestination: 'daily-routine',
+      title: creating
+          ? controller.entryType == DailyRoutineEntryType.model
+                ? 'Criar modelo'
+                : 'Nova rotina'
+          : controller.isCoeloProvided
+          ? 'Visualizar modelo'
+          : controller.entryType == DailyRoutineEntryType.model
+          ? 'Editar modelo'
+          : 'Editar rotina',
+      subtitle: controller.isCoeloProvided
+          ? 'Modelo inicial fornecido pelo Coelo. Duplique para personalizar.'
+          : controller.entryType == DailyRoutineEntryType.model
+          ? 'Configure uma base reutilizável.'
+          : 'Configure o registro cotidiano efetivamente utilizado.',
+      activityController: widget.activityController,
+      chatLauncherBottomInset: footerHeight == 0 ? 0 : footerHeight + CoeloSpacing.space4,
+      child: ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        key: const Key('daily-routine-page-surface'),
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, child) => PopScope<void>(
+            canPop: !controller.isDirty,
+            onPopInvokedWithResult: (didPop, result) {
+              if (!didPop) requestExit();
+            },
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final side = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
+                final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                    ? CoeloSpacing.space10
+                    : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                    ? CoeloSpacing.space6
+                    : CoeloSpacing.space4;
+                final nav = navigation();
+                final content = Expanded(
+                  child: Column(
+                    children: [
+                      if (!side) ...[nav, const SizedBox(height: CoeloSpacing.space4)],
+                      Expanded(
+                        child: SingleChildScrollView(
+                          key: const Key('daily-routine-editor-scroll'),
+                          padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 880),
+                              child: AnimatedSwitcher(
+                                duration: MediaQuery.disableAnimationsOf(context)
+                                    ? Duration.zero
+                                    : CoeloMotion.short,
+                                child: KeyedSubtree(
+                                  key: ValueKey(controller.currentStep),
+                                  child: currentSection(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      footer(),
+                    ],
+                  ),
+                );
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (side) ...[nav, const SizedBox(width: CoeloSpacing.space6)],
+                      content,
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),
-        secondaryAction: OutlinedButton(
-          onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('Cancelar'),
-        ),
-        primaryAction: FilledButton(
-          key: const Key('daily-routine-field-save'),
-          onPressed: () {
-            try {
-              draft.validate();
-              Navigator.pop(dialogContext, draft);
-            } on FormatException catch (error) {
-              ScaffoldMessenger.of(
-                dialogContext,
-              ).showSnackBar(SnackBar(content: Text(error.message)));
-            }
-          },
-          child: const Text('Salvar campo'),
-        ),
       ),
     );
-    if (!mounted || result == null) return;
-    _replaceSection(section, [
-      for (final item in section.fields)
-        if (item.id == field.id) result else item,
-    ]);
   }
 
-  void _addChildField(RoutineSection section, RoutineField parent) {
-    final optionId = parent.kind == RoutineFieldKind.singleChoice && parent.options.isNotEmpty
-        ? parent.options.first.id
-        : null;
-    final booleanValue = parent.kind == RoutineFieldKind.boolean ? true : null;
-    if (optionId == null && booleanValue == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Use Sim/Nao ou escolha unica com opcoes para ramificar.')),
-      );
-      return;
-    }
-    final depth = parent.conditions.fold<int>(
-      1,
-      (value, condition) => condition.depth >= value ? condition.depth + 1 : value,
+  Widget navigation() => SuperadminFormStepNavigation(
+    steps: [
+      for (final step in DailyRoutineFormStep.values)
+        SuperadminFormStep(label: stepLabel(step), status: stepStatus(step)),
+    ],
+    currentIndex: controller.currentStep.index,
+    onStepSelected: (index) => controller.goToStep(DailyRoutineFormStep.values[index]),
+  );
+
+  SuperadminFormStepStatus stepStatus(DailyRoutineFormStep step) {
+    if (controller.stepHasError(step)) return SuperadminFormStepStatus.error;
+    if (step == controller.currentStep) return SuperadminFormStepStatus.current;
+    return step.index < controller.currentStep.index
+        ? SuperadminFormStepStatus.complete
+        : SuperadminFormStepStatus.incomplete;
+  }
+
+  Widget footer() {
+    final last = controller.currentStep == DailyRoutineFormStep.reviewAndActivation;
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('daily-routine-form-footer'),
+      onHeightChanged: (height) {
+        if ((footerHeight - height).abs() >= 0.5) setState(() => footerHeight = height);
+      },
+      tertiaryAction: TextButton(
+        key: const Key('daily-routine-cancel'),
+        onPressed: requestExit,
+        child: const Text('Cancelar'),
+      ),
+      continuationActions: [
+        if (controller.currentStep.index > 0)
+          OutlinedButton(
+            key: const Key('daily-routine-previous'),
+            onPressed: controller.previousStep,
+            child: const Text('Anterior'),
+          ),
+        if (!last)
+          OutlinedButton(
+            key: const Key('daily-routine-continue'),
+            onPressed: canManage ? controller.continueFromCurrentStep : null,
+            child: const Text('Continuar'),
+          ),
+        if (last && widget.modelId == null && controller.entryType == DailyRoutineEntryType.routine)
+          OutlinedButton(
+            key: const Key('daily-routine-save-draft'),
+            onPressed: canManage ? () => save(activate: false) : null,
+            child: const Text('Salvar rascunho'),
+          ),
+        if (last)
+          FilledButton(
+            key: const Key('daily-routine-save'),
+            onPressed:
+                canManage &&
+                    (controller.status == DailyRoutineStatus.draft || controller.canActivate)
+                ? () => save(activate: controller.status == DailyRoutineStatus.active, finish: true)
+                : null,
+            child: Text(
+              widget.modelId != null
+                  ? 'Salvar alterações'
+                  : controller.entryType == DailyRoutineEntryType.model
+                  ? 'Criar modelo'
+                  : controller.status == DailyRoutineStatus.active
+                  ? 'Ativar rotina'
+                  : 'Criar rotina',
+            ),
+          ),
+      ],
     );
-    if (depth > 4) return;
-    final id = 'field-${DateTime.now().microsecondsSinceEpoch}';
-    final child = RoutineField(
-      id: id,
-      label: 'Pergunta dependente',
-      kind: RoutineFieldKind.shortText,
-      sortOrder: section.fields.length,
-      conditions: [
-        RoutineCondition(
-          id: 'condition-$id',
-          parentFieldId: parent.id,
-          targetFieldId: id,
-          depth: depth,
-          optionId: optionId,
-          booleanValue: booleanValue,
+  }
+
+  Widget currentSection() => switch (controller.currentStep) {
+    DailyRoutineFormStep.identity => identitySection(),
+    DailyRoutineFormStep.scope => scopeSection(),
+    DailyRoutineFormStep.sectionsAndFields => fieldsSection(),
+    DailyRoutineFormStep.reviewAndActivation => reviewSection(),
+  };
+
+  Widget header(String title, String text) => Padding(
+    padding: const EdgeInsets.only(bottom: CoeloSpacing.space5),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(text),
+        if (!canManage)
+          Text(
+            controller.isCoeloProvided
+                ? 'Modelo Coelo somente para consulta'
+                : 'Modo somente leitura',
+          ),
+      ],
+    ),
+  );
+
+  Widget identitySection() => Column(
+    key: const Key('daily-routine-step-identity'),
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      header(
+        'Identidade',
+        controller.entryType == DailyRoutineEntryType.model
+            ? 'O modelo define uma base reutilizável para novas rotinas.'
+            : 'A rotina é o objeto utilizado no registro cotidiano.',
+      ),
+      CoeloFormTextField(
+        fieldKey: const Key('daily-routine-name'),
+        controller: name,
+        labelText: 'Nome',
+        prefixIcon: Icons.edit_note_rounded,
+        enabled: canManage,
+        errorText: controller.stepHasError(DailyRoutineFormStep.identity)
+            ? controller.entryType == DailyRoutineEntryType.model
+                  ? 'Informe o nome do modelo.'
+                  : 'Informe o nome da rotina.'
+            : null,
+        onChanged: controller.updateName,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloFormTextField(
+        fieldKey: const Key('daily-routine-description'),
+        controller: description,
+        labelText: 'Descrição',
+        prefixIcon: Icons.notes_rounded,
+        enabled: canManage,
+        maxLines: 3,
+        onChanged: controller.updateDescription,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloAdminSingleSelectField<DailyRoutineOrigin>(
+        label: 'Origem do modelo',
+        value: controller.origin,
+        options: DailyRoutineOrigin.values,
+        optionLabel: originLabel,
+        enabled: canManage,
+        onChanged: controller.updateOrigin,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      if (controller.origin == DailyRoutineOrigin.unit) ...[
+        CoeloAdminSingleSelectField<String>(
+          key: const Key('daily-routine-origin-unit'),
+          label: 'Unidade de origem',
+          value: controller.originUnitId ?? units.keys.first,
+          options: units.keys.toList(),
+          optionLabel: (value) => units[value] ?? value,
+          enabled: canManage,
+          searchable: false,
+          onChanged: controller.updateOriginUnit,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
+      CoeloAdminSingleSelectField<DailyRoutineStatus>(
+        label: 'Estado',
+        value: controller.status,
+        options: DailyRoutineStatus.values,
+        optionLabel: statusLabel,
+        enabled: canManage,
+        onChanged: controller.updateStatus,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      info(
+        'Política do modelo',
+        'Mudanças opcionais preservam variações locais; mudanças obrigatórias seguem as regras existentes.',
+      ),
+    ],
+  );
+
+  Widget scopeSection() => Column(
+    key: const Key('daily-routine-step-scope'),
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      header('Alcance', 'Atividades apenas refinam o contexto dentro de cada turma.'),
+      CoeloAdminMultiSelectField<String>(
+        key: const Key('daily-routine-groups'),
+        label: 'Turmas vinculadas',
+        options: groups.keys.toList(),
+        selectedValues: controller.selectedGroupIds,
+        optionLabel: (id) => groups[id] ?? id,
+        enabled: canManage,
+        searchable: false,
+        onChanged: controller.updateSelectedGroups,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      if (controller.scopes.isEmpty)
+        info(
+          'Nenhuma turma vinculada',
+          'Selecione uma ou mais turmas para distribuir o modelo-base.',
+        )
+      else
+        for (final scope in controller.scopes) ...[
+          CoeloAdminInteractiveCard(
+            child: Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    groups[scope.groupId] ?? scope.groupId,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const Text('Herda a base e mantém ajustes como variação contextual.'),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  CoeloAdminMultiSelectField<String>(
+                    label: 'Atividades que refinam o alcance',
+                    options: activities[scope.groupId] ?? const [],
+                    selectedValues: scope.activityIds,
+                    optionLabel: activityLabel,
+                    enabled: canManage,
+                    searchable: false,
+                    emptyLabel: 'Todas as atividades',
+                    onChanged: (values) => controller.updateGroupActivities(scope.groupId, values),
+                  ),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  Text(
+                    scope.fieldOverrides.isEmpty
+                        ? 'Sem variações locais'
+                        : '${scope.fieldOverrides.length} variação(ões) local(is)',
+                  ),
+                  if (scope.fieldOverrides.isNotEmpty) ...[
+                    const SizedBox(height: CoeloSpacing.space2),
+                    for (final override in scope.fieldOverrides.values)
+                      Text(
+                        '• ${_fieldLabel(override.fieldId)} — ${override.required == true ? 'obrigatório' : 'opcional'}${override.initialValue == null ? '' : ' — inicial: ${override.initialValue}'}',
+                      ),
+                  ],
+                  if (scope.localSections.isNotEmpty) ...[
+                    const SizedBox(height: CoeloSpacing.space2),
+                    for (final localField in scope.localSections.expand(
+                      (section) => section.fields,
+                    ))
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Campo local: ${localField.label} — ${fieldTypeLabel(localField.type)}',
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'Remover campo local ${localField.label}',
+                            onPressed: canManage
+                                ? () =>
+                                      controller.removeScopeLocalField(scope.groupId, localField.id)
+                                : null,
+                            icon: const Icon(Icons.delete_outline_rounded),
+                          ),
+                        ],
+                      ),
+                  ],
+                  const SizedBox(height: CoeloSpacing.space3),
+                  Wrap(
+                    spacing: CoeloSpacing.space2,
+                    runSpacing: CoeloSpacing.space2,
+                    children: [
+                      OutlinedButton.icon(
+                        key: Key('daily-routine-scope-${scope.groupId}-variation'),
+                        onPressed: canManage ? () => editVariation(scope) : null,
+                        icon: const Icon(Icons.tune_rounded),
+                        label: const Text('Configurar variação'),
+                      ),
+                      OutlinedButton.icon(
+                        key: Key('daily-routine-scope-${scope.groupId}-local-field'),
+                        onPressed: canManage ? () => addLocalVariationField(scope) : null,
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text('Adicionar campo local'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+        ],
+    ],
+  );
+
+  String _fieldLabel(String fieldId) {
+    for (final section in controller.sections) {
+      for (final field in section.fields) {
+        if (field.id == fieldId) return field.label;
+      }
+    }
+    return fieldId;
+  }
+
+  Widget fieldsSection() => Column(
+    key: const Key('daily-routine-step-fields'),
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      header('Seções e campos', 'Valores iniciais preenchem somente campos vazios.'),
+      for (var index = 0; index < controller.sections.length; index++) ...[
+        sectionCard(controller.sections[index], index),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
+      if (controller.sections.isEmpty)
+        info('Nenhuma seção configurada', 'Adicione a primeira seção para definir os campos.'),
+      const SizedBox(height: CoeloSpacing.space3),
+      OutlinedButton.icon(
+        key: const Key('daily-routine-add-section'),
+        onPressed: canManage ? editSection : null,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Adicionar seção'),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      Wrap(
+        spacing: CoeloSpacing.space2,
+        runSpacing: CoeloSpacing.space2,
+        children: [
+          for (final type in DailyRoutineFieldType.values) Chip(label: Text(fieldTypeLabel(type))),
+        ],
+      ),
+    ],
+  );
+
+  Widget sectionCard(DailyRoutineSection section, int index) => CoeloAdminInteractiveCard(
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${index + 1}. ${section.name}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              IconButton(
+                tooltip: 'Editar seção',
+                onPressed: canManage ? () => editSection(section) : null,
+                icon: const Icon(Icons.edit_outlined),
+              ),
+              IconButton(
+                tooltip: 'Remover seção',
+                color: Theme.of(context).colorScheme.error,
+                onPressed: canManage ? () => controller.removeSection(section.id) : null,
+                icon: const Icon(Icons.delete_outline_rounded),
+              ),
+            ],
+          ),
+          if (section.fields.isEmpty)
+            const Text('Nenhum campo nesta seção.')
+          else
+            for (var fieldIndex = 0; fieldIndex < section.fields.length; fieldIndex++)
+              Padding(
+                padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${fieldIndex + 1}. ${section.fields[fieldIndex].label} • ${fieldTypeLabel(section.fields[fieldIndex].type)}${section.fields[fieldIndex].required ? ' • Obrigatório' : ' • Opcional'}${section.fields[fieldIndex].initialValue == null ? '' : ' • Inicial: ${section.fields[fieldIndex].initialValue}'}${section.fields[fieldIndex].options.isEmpty ? '' : ' • Opções: ${section.fields[fieldIndex].options.join(', ')}'}',
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Editar campo ${section.fields[fieldIndex].label}',
+                      onPressed: canManage
+                          ? () => editField(section, section.fields[fieldIndex])
+                          : null,
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
+                    IconButton(
+                      tooltip: 'Remover campo ${section.fields[fieldIndex].label}',
+                      color: Theme.of(context).colorScheme.error,
+                      onPressed: canManage
+                          ? () => controller.removeField(section.id, section.fields[fieldIndex].id)
+                          : null,
+                      icon: const Icon(Icons.delete_outline_rounded),
+                    ),
+                  ],
+                ),
+              ),
+          const SizedBox(height: CoeloSpacing.space3),
+          OutlinedButton.icon(
+            key: Key('daily-routine-section-${section.id}-add-field'),
+            onPressed: canManage ? () => editField(section) : null,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Adicionar campo'),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget reviewSection() {
+    final fields = controller.sections.expand((section) => section.fields).toList();
+    final requiredCount = fields.where((field) => field.required).length;
+    final initialCount = fields.where((field) => field.initialValue != null).length;
+    final variationCount = controller.scopes.fold<int>(
+      0,
+      (total, scope) => total + scope.fieldOverrides.length,
+    );
+    final localFieldCount = controller.scopes.fold<int>(
+      0,
+      (total, scope) => total + scope.localSections.expand((section) => section.fields).length,
+    );
+    final activityLines = controller.scopes
+        .where((scope) => scope.activityIds.isNotEmpty)
+        .map(
+          (scope) =>
+              '${groups[scope.groupId] ?? scope.groupId}: ${scope.activityIds.map(activityLabel).join(', ')}',
+        )
+        .toList();
+    return Column(
+      key: const Key('daily-routine-step-review'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        header(
+          'Revisão e ativação',
+          'Confira o modelo e volte à etapa correspondente para ajustar.',
+        ),
+        review('Identidade', [
+          controller.name.isEmpty ? 'Nome não informado' : controller.name,
+          controller.description.trim().isEmpty ? 'Sem descrição' : controller.description,
+          'Origem: ${originLabel(controller.origin)}',
+          if (controller.origin == DailyRoutineOrigin.unit)
+            'Unidade: ${units[controller.originUnitId] ?? controller.originUnitId}',
+          'Estado escolhido: ${statusLabel(controller.status)}',
+          'Política: atualizações opcionais preservam variações locais; mudanças obrigatórias seguem compatibilidade e conflito existentes.',
+        ], DailyRoutineFormStep.identity),
+        review('Alcance', [
+          controller.selectedGroupIds.isEmpty
+              ? 'Nenhuma turma vinculada'
+              : 'Turmas: ${controller.selectedGroupIds.map((id) => groups[id] ?? id).join(', ')}',
+          if (activityLines.isEmpty) 'Sem refinamento por atividade' else ...activityLines,
+          variationCount == 0
+              ? 'Sem variações por turma'
+              : '$variationCount variação(ões) por turma',
+          if (localFieldCount > 0) '$localFieldCount campo(s) adicional(is) por turma',
+          for (final scope in controller.scopes)
+            if (scope.fieldOverrides.isNotEmpty || scope.localSections.isNotEmpty)
+              '${groups[scope.groupId] ?? scope.groupId}: '
+                  '${scope.fieldOverrides.values.map((override) => _fieldLabel(override.fieldId)).join(', ')}'
+                  '${scope.localSections.isEmpty ? '' : '${scope.fieldOverrides.isEmpty ? '' : '; '}locais: ${scope.localSections.expand((section) => section.fields).map((field) => field.label).join(', ')}'}',
+        ], DailyRoutineFormStep.scope),
+        review('Seções e campos', [
+          '${controller.sections.length} seções',
+          '${fields.length} campos',
+          '$requiredCount obrigatórios',
+          '$initialCount com valor inicial',
+          for (final field in fields.where((field) => field.required))
+            'Obrigatório: ${field.label}',
+          for (final field in fields.where((field) => field.initialValue != null))
+            'Inicial: ${field.label} = ${field.initialValue}',
+        ], DailyRoutineFormStep.sectionsAndFields),
+        review(
+          'Pendências e ativação',
+          [
+            if (controller.name.trim().isEmpty)
+              controller.entryType == DailyRoutineEntryType.model
+                  ? 'Informe o nome do modelo'
+                  : 'Informe o nome da rotina',
+            if (controller.scopes.isEmpty) 'Vincule ao menos uma turma',
+            if (!controller.sections.any((section) => section.fields.isNotEmpty))
+              'Adicione ao menos um campo',
+            if (controller.updateAvailable)
+              'Há uma atualização opcional disponível; a variação local foi preservada.',
+            if (widget.repository.archivedConflicts.isNotEmpty)
+              '${widget.repository.archivedConflicts.length} conflito(s) arquivado(s) para revisão.',
+            if (controller.canActivate)
+              controller.status == DailyRoutineStatus.active
+                  ? 'Pronta para permanecer ativa'
+                  : 'Pronta para ativação',
+          ],
+          controller.scopes.isEmpty
+              ? DailyRoutineFormStep.scope
+              : !controller.sections.any((section) => section.fields.isNotEmpty)
+              ? DailyRoutineFormStep.sectionsAndFields
+              : DailyRoutineFormStep.identity,
         ),
       ],
     );
-    _replaceSection(section, [...section.fields, child]);
   }
 
-  void _reorderSections(int oldIndex, int newIndex) {
-    final ordered = [..._sections]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    if (newIndex > oldIndex) newIndex--;
-    final moved = ordered.removeAt(oldIndex);
-    ordered.insert(newIndex, moved);
-    setState(() {
-      _sections = [
-        for (var index = 0; index < ordered.length; index++)
-          RoutineSection(
-            id: ordered[index].id,
-            name: ordered[index].name,
-            sortOrder: index,
-            fields: ordered[index].fields,
-          ),
-      ];
-    });
-  }
-
-  void _reorderFields(RoutineSection section, int oldIndex, int newIndex) {
-    final fields = [...section.fields]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    if (newIndex > oldIndex) newIndex--;
-    final moved = fields.removeAt(oldIndex);
-    fields.insert(newIndex, moved);
-    _replaceSection(section, fields);
-  }
-
-  void _duplicateSection(RoutineSection section) {
-    final id = DateTime.now().microsecondsSinceEpoch;
-    setState(() {
-      _sections = [
-        ..._sections,
-        RoutineSection(
-          id: 'section-$id',
-          name: '${section.name} (copia)',
-          sortOrder: _sections.length,
-          fields: [
-            for (var index = 0; index < section.fields.length; index++)
-              RoutineField(
-                id: 'field-$id-$index',
-                label: section.fields[index].label,
-                kind: section.fields[index].kind,
-                sortOrder: index,
-                isRequired: section.fields[index].isRequired,
-                initialValue: section.fields[index].initialValue,
-                minimumValue: section.fields[index].minimumValue,
-                maximumValue: section.fields[index].maximumValue,
-                options: section.fields[index].options,
-              ),
+  Widget review(String title, List<String> lines, DailyRoutineFormStep destination) => Padding(
+    padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+    child: CoeloAdminInteractiveCard(
+      semanticLabel: 'Revisar $title',
+      onPressed: () => controller.goToStep(destination),
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: CoeloSpacing.space2),
+            for (final line in lines) Text(line),
           ],
         ),
-      ];
-    });
-  }
+      ),
+    ),
+  );
 
-  void _removeSection(RoutineSection section) {
-    setState(() => _sections = _sections.where((item) => item.id != section.id).toList());
-  }
-
-  void _addSection() {
-    final index = _sections.length;
-    setState(() {
-      _sections = [
-        ..._sections,
-        RoutineSection(
-          id: 'section-${DateTime.now().microsecondsSinceEpoch}',
-          name: 'Nova secao',
-          sortOrder: index,
-          fields: const [],
-        ),
-      ];
-    });
-  }
-
-  void _addField(RoutineSection section) {
-    final field = RoutineField(
-      id: 'field-${DateTime.now().microsecondsSinceEpoch}',
-      label: 'Novo campo',
-      kind: RoutineFieldKind.shortText,
-      sortOrder: section.fields.length,
+  Widget info(String title, String text) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(text),
+        ],
+      ),
     );
-    _replaceSection(section, [...section.fields, field]);
-  }
-
-  void _duplicateField(RoutineSection section, RoutineField field) {
-    final copy = RoutineField(
-      id: 'field-${DateTime.now().microsecondsSinceEpoch}',
-      label: '${field.label} (copia)',
-      kind: field.kind,
-      sortOrder: section.fields.length,
-      isRequired: field.isRequired,
-      initialValue: field.initialValue,
-      minimumValue: field.minimumValue,
-      maximumValue: field.maximumValue,
-      options: field.options,
-      conditions: const [],
-    );
-    _replaceSection(section, [...section.fields, copy]);
-  }
-
-  void _removeField(RoutineSection section, RoutineField field) {
-    _replaceSection(section, section.fields.where((item) => item.id != field.id).toList());
-  }
-
-  void _replaceSection(RoutineSection section, List<RoutineField> fields) {
-    setState(() {
-      _sections = [
-        for (final item in _sections)
-          if (item.id == section.id)
-            RoutineSection(
-              id: item.id,
-              name: item.name,
-              sortOrder: item.sortOrder,
-              fields: [
-                for (var index = 0; index < fields.length; index++)
-                  RoutineField(
-                    id: fields[index].id,
-                    label: fields[index].label,
-                    kind: fields[index].kind,
-                    sortOrder: index,
-                    isRequired: fields[index].isRequired,
-                    initialValue: fields[index].initialValue,
-                    minimumValue: fields[index].minimumValue,
-                    maximumValue: fields[index].maximumValue,
-                    options: fields[index].options,
-                    conditions: fields[index].conditions,
-                  ),
-              ],
-            )
-          else
-            item,
-      ];
-    });
-  }
-
-  Future<void> _saveModel() async {
-    final current = _entry! as RoutineModel;
-    final model = RoutineModel(
-      id: current.id,
-      name: _name.text.trim(),
-      description: _description.text.trim(),
-      version: current.version,
-      status: current.status,
-      sections: _sections,
-      expectedVersion: current.expectedVersion,
-      originScope: _modelOriginScope,
-      institutionId: _optional(_modelInstitutionId.text),
-      originUnitId: _modelOriginScope == RoutineModelOriginScope.unit
-          ? _optional(_modelOriginUnitId.text)
-          : null,
-    );
-    try {
-      model.validate();
-      setState(() => _saving = true);
-      final id = await widget.repository.saveModel(
-        model,
-        requestId: 'save-model-${DateTime.now().microsecondsSinceEpoch}',
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Modelo salvo.')));
-      if (current.id.isEmpty) {
-        setState(
-          () => _entry = RoutineModel(
-            id: id,
-            name: model.name,
-            description: model.description,
-            version: model.version,
-            status: model.status,
-            sections: model.sections,
-            expectedVersion: model.expectedVersion,
-            originScope: model.originScope,
-            institutionId: model.institutionId,
-            originUnitId: model.originUnitId,
-            canManage: _canManage,
-          ),
-        );
-      }
-    } on FormatException catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
-      }
-    } on Object {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Nao foi possivel salvar o modelo.')));
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  Future<void> _saveApplication() async {
-    final current = _entry! as RoutineApplication;
-    final application = _applicationDraft(current);
-    if (application.modelVersionId.isEmpty || application.institutionId.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Informe a versao do modelo e a instituicao.')));
-      return;
-    }
-    setState(() => _saving = true);
-    try {
-      final id = await widget.repository.saveApplication(
-        application,
-        requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Rotina aplicada salva.')));
-      if (current.id.isEmpty) {
-        setState(
-          () => _entry = RoutineApplication(
-            id: id,
-            modelVersionId: application.modelVersionId,
-            institutionId: application.institutionId,
-            unitId: application.unitId,
-            groupId: application.groupId,
-            parentApplicationId: application.parentApplicationId,
-            activityId: application.activityId,
-            status: application.status,
-            inheritanceMode: application.inheritanceMode,
-            effectiveVersion: application.effectiveVersion,
-            expectedVersion: application.expectedVersion,
-            validFrom: application.validFrom,
-            validUntil: application.validUntil,
-            startsAt: application.startsAt,
-            endsAt: application.endsAt,
-            visibility: application.visibility,
-            assignees: application.assignees,
-            canManage: application.canManage,
-          ),
-        );
-      }
-    } on Object {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Nao foi possivel salvar a rotina aplicada.')));
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  Future<void> _saveApplicationMode(RoutineInheritanceMode mode) async {
-    final current = _entry! as RoutineApplication;
-    final updated = _applicationDraft(current);
-    setState(() {
-      _applicationInheritance = mode;
-      _saving = true;
-    });
-    try {
-      await widget.repository.saveApplication(
-        updated,
-        requestId: 'save-application-${DateTime.now().microsecondsSinceEpoch}',
-      );
-      await _load();
-    } on Object {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Nao foi possivel alterar a heranca.')));
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  Future<void> _resetInheritance() async {
-    final application = _entry! as RoutineApplication;
-    setState(() => _saving = true);
-    try {
-      await widget.repository.revertApplicationCustomization(
-        applicationId: application.id,
-        expectedVersion: application.expectedVersion,
-        requestId: 'revert-application-${DateTime.now().microsecondsSinceEpoch}',
-      );
-      await _load();
-    } on Object {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nao foi possivel reverter a personalizacao.')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
   }
 }
+
+String stepLabel(DailyRoutineFormStep step) => switch (step) {
+  DailyRoutineFormStep.identity => 'Identidade',
+  DailyRoutineFormStep.scope => 'Alcance',
+  DailyRoutineFormStep.sectionsAndFields => 'Seções e campos',
+  DailyRoutineFormStep.reviewAndActivation => 'Revisão e ativação',
+};
+
+String originLabel(DailyRoutineOrigin value) => switch (value) {
+  DailyRoutineOrigin.institution => 'Instituição',
+  DailyRoutineOrigin.unit => 'Unidade',
+};
+
+String activityLabel(String value) => switch (value) {
+  'activity-meal' => 'Refeição',
+  'activity-sleep' => 'Sono',
+  'activity-playground' => 'Parque',
+  'activity-reading' => 'Leitura',
+  'activity-arts' => 'Artes',
+  'activity-music' => 'Música',
+  _ => value,
+};
+
+String statusLabel(DailyRoutineStatus value) => switch (value) {
+  DailyRoutineStatus.draft => 'Rascunho',
+  DailyRoutineStatus.active => 'Ativo',
+};
+
+String fieldTypeLabel(DailyRoutineFieldType value) => switch (value) {
+  DailyRoutineFieldType.shortText => 'Texto curto',
+  DailyRoutineFieldType.longText => 'Texto longo',
+  DailyRoutineFieldType.singleChoice => 'Escolha única',
+  DailyRoutineFieldType.multipleChoice => 'Escolha múltipla',
+  DailyRoutineFieldType.number => 'Número',
+  DailyRoutineFieldType.boolean => 'Sim/Não',
+};

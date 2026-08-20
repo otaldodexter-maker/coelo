@@ -1,5 +1,5 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import '../support/health_care_fixture_repository.dart';
+import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
@@ -12,7 +12,7 @@ void main() {
   testWidgets('lists medication plans as a sibling directory', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
 
     await tester.pumpWidget(
@@ -64,10 +64,10 @@ void main() {
 
   testWidgets('shows the minimized permission state without leaking plan data', (tester) async {
     final controller = HealthCareController(
-      FixtureHealthCareRepository(),
+      DemoHealthCareRepository(),
       actor: HealthCareActor(
         id: 'minimized-demo',
-        profile: HealthCareAccessProfile.minimized,
+        profile: DemoHealthCareProfile.minimized,
         authorizedChildIds: const {'child-demo-a', 'child-demo-b'},
       ),
     );
@@ -91,10 +91,10 @@ void main() {
 
   testWidgets('loads only medication plans authorized for the active context', (tester) async {
     final controller = HealthCareController(
-      FixtureHealthCareRepository(),
+      DemoHealthCareRepository(),
       actor: HealthCareActor(
         id: 'reader-demo',
-        profile: HealthCareAccessProfile.sensitiveReader,
+        profile: DemoHealthCareProfile.sensitiveReader,
         institutionId: 'institution-demo-a',
         authorizedChildIds: const {'child-demo-a'},
       ),
@@ -121,7 +121,7 @@ void main() {
     testWidgets('medication directory has no overflow at $width with 200% text', (tester) async {
       await tester.binding.setSurfaceSize(Size(width, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      final controller = HealthCareController(FixtureHealthCareRepository());
+      final controller = HealthCareController(DemoHealthCareRepository());
       addTearDown(controller.dispose);
 
       await tester.pumpWidget(

@@ -1,189 +1,168 @@
-import 'dart:async';
-
+import 'package:coelo_superadmin/features/invites/data/fake_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_page.dart';
-import 'package:coelo_superadmin/features/invites/presentation/invite_directory_widgets.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'invite_test_repository.dart';
-
 void main() {
-  testWidgets('loads the authorised server page and renders the aligned canonical table', (
-    tester,
-  ) async {
-    final repository = TestInviteRepository();
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
-    await tester.pumpAndSettle();
+  testWidgets('uses only the canonical resizable table', (tester) async {
+    await _pumpDirectory(tester, size: const Size(375, 800));
 
-    expect(repository.lastQuery?.page, 1);
-    expect(repository.lastQuery?.pageSize, 20);
-    expect(find.byType(InviteDirectoryToolbar), findsOneWidget);
-    expect(find.byType(InviteDirectoryTable), findsOneWidget);
-    expect(find.text('a***@aurora.test'), findsAtLeastNWidgets(1));
-    expect(find.textContaining('Total de'), findsNothing);
-    expect(find.textContaining('fict'), findsNothing);
-
-    final recipient = find.text('a***@aurora.test').first;
-    final align = tester.widget<Align>(
-      find.ancestor(of: recipient, matching: find.byType(Align)).first,
+    expect(find.text('Convites'), findsNothing);
+    expect(find.text('Novo convite'), findsOneWidget);
+    expect(find.byKey(const Key('invite-table')), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((widget) => widget is CoeloAdminResizableTable<PlatformInvite>),
+      findsOneWidget,
     );
-    expect(align.alignment, Alignment.centerLeft);
+    expect(find.byType(CoeloAdminInteractiveCard), findsNothing);
+    expect(find.byType(SegmentedButton<bool>), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('debounces search and sends it to the repository', (tester) async {
-    final repository = TestInviteRepository();
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
-    await tester.pumpAndSettle();
+  testWidgets('sizes compact toolbar controls from the padded content width', (tester) async {
+    await _pumpDirectory(tester, size: const Size(375, 900));
 
-    await tester.enterText(find.byType(TextField).first, 'ana');
-    await tester.pump(const Duration(milliseconds: 301));
-    await tester.pumpAndSettle();
+    final page = tester.getRect(find.byKey(const Key('invite-directory-page-surface')));
+    final search = tester.getRect(find.byType(CoeloSearchField));
+    final status = tester.getRect(find.byType(CoeloAdminMultiSelectFilter<InviteStatus>));
+    final audience = tester.getRect(find.byType(CoeloAdminMultiSelectFilter<InviteAudience>));
+    final availableWidth = page.width - (CoeloSpacing.space4 * 2);
+    final compactFilterWidth = (availableWidth - CoeloSpacing.space3) / 2;
 
-    expect(repository.lastQuery?.search, 'ana');
-    expect(repository.lastQuery?.page, 1);
+    expect(search.width, availableWidth);
+    expect(search.left, page.left + CoeloSpacing.space4);
+    expect(search.right, page.right - CoeloSpacing.space4);
+    expect(status.width, compactFilterWidth);
+    expect(audience.width, compactFilterWidth);
+    expect(status.top, audience.top);
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('fails closed with an unauthorized state', (tester) async {
-    final repository = TestInviteRepository(failure: const InviteUnauthorizedException());
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
-    await tester.pumpAndSettle();
+  testWidgets('uses one vertical page scroll without a nested table scroll', (tester) async {
+    await _pumpDirectory(tester);
 
-    expect(find.text('Acesso não autorizado'), findsOneWidget);
-    expect(find.byType(InviteDirectoryTable), findsNothing);
+    expect(find.byKey(const Key('invite-directory-vertical-scroll')), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('expired row offers resend and exposes the one-time link', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onOpen: (_) {})));
-    await tester.pumpAndSettle();
+  testWidgets('does not expose inert sortable headers', (tester) async {
+    await _pumpDirectory(tester);
 
-    final trigger = find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111'));
-    final dynamic flyout = tester.widget(
-      find
-          .ancestor(
-            of: trigger,
-            matching: find.byWidgetPredicate(
-              (widget) => widget is CoeloAdminFlyout<InviteRowAction>,
-            ),
-          )
-          .first,
+    final table = tester.widget<CoeloAdminResizableTable<PlatformInvite>>(
+      find.byType(CoeloAdminResizableTable<PlatformInvite>),
     );
-    flyout.onSelected(InviteRowAction.resend);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(repository.lastResend?.expectedVersion, 1);
-    expect(find.byKey(const Key('invite-resend-link')), findsOneWidget);
-    expect(find.byKey(const Key('invite-resend-copy-link')), findsOneWidget);
+    expect(table.onSort, isNull);
+    expect(table.pinnedColumn.sortable, isFalse);
+    expect(table.columns.where((column) => column.sortable), isEmpty);
   });
 
-  testWidgets('ignores an older server response after a newer search completes', (tester) async {
-    final repository = _RacingInviteRepository();
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository)));
+  testWidgets('searches only masked recipient and existing context text', (tester) async {
+    await _pumpDirectory(tester);
+
+    await tester.enterText(find.byType(TextField).first, 'o***@aurora.test');
     await tester.pump();
 
-    await tester.enterText(find.byType(TextField).first, 'novo');
-    await tester.pump(const Duration(milliseconds: 301));
-    expect(repository.requests, hasLength(2));
+    expect(find.text('o***@aurora.test'), findsWidgets);
+    expect(find.text('Turma Girassol'), findsNothing);
+    expect(find.text('owner@aurora.test'), findsNothing);
+  });
 
-    repository.requests[1].complete(
-      InviteDirectoryResult(
-        items: [testInvite(recipient: 'novo@coelo.test')],
-        totalCount: 1,
-        page: 1,
-        pageSize: 20,
+  testWidgets('applies a status filter and clears all filters', (tester) async {
+    await _pumpDirectory(tester);
+
+    final statusFilter = tester.widget<CoeloAdminMultiSelectFilter<InviteStatus>>(
+      find.byType(CoeloAdminMultiSelectFilter<InviteStatus>),
+    );
+    statusFilter.onChanged({InviteStatus.pending});
+    await tester.pumpAndSettle();
+
+    expect(find.text('o***@aurora.test'), findsWidgets);
+    expect(find.text('Turma Girassol'), findsNothing);
+    expect(find.byKey(const Key('invite-clear-filters')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('invite-clear-filters')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Turma Girassol'), findsOneWidget);
+    expect(find.byKey(const Key('invite-clear-filters')), findsNothing);
+  });
+
+  testWidgets('offers flyout actions allowed by each invitation state', (tester) async {
+    String? openedInvite;
+    await _pumpDirectory(tester, onOpen: (id) => openedInvite = id);
+
+    dynamic flyoutFor(String inviteId) => tester.widget(
+      find.ancestor(
+        of: find.byKey(Key('invite-actions-$inviteId')),
+        matching: find.byWidgetPredicate((widget) => widget is CoeloAdminFlyout),
       ),
     );
+
+    final dynamic pendingFlyout = flyoutFor('invite-1');
+    expect(pendingFlyout.items.map((dynamic item) => item.label), [
+      'Ver detalhes',
+      'Copiar link',
+      'Reenviar convite',
+      'Revogar convite',
+    ]);
+    expect(pendingFlyout.items.last.startsGroup, isTrue);
+    expect(pendingFlyout.items.last.tone, CoeloAdminFlyoutTone.negative);
+
+    final dynamic acceptedFlyout = flyoutFor('invite-2');
+    expect(acceptedFlyout.items.map((dynamic item) => item.label), ['Ver detalhes', 'Copiar link']);
+    final dynamic expiredFlyout = flyoutFor('invite-3');
+    expect(expiredFlyout.items.map((dynamic item) => item.label), [
+      'Ver detalhes',
+      'Copiar link',
+      'Reenviar convite',
+    ]);
+    final dynamic revokedFlyout = flyoutFor('invite-4');
+    expect(revokedFlyout.items.map((dynamic item) => item.label), ['Ver detalhes', 'Copiar link']);
+    final dynamic failedFlyout = flyoutFor('invite-5');
+    expect(failedFlyout.items.map((dynamic item) => item.label), ['Ver detalhes', 'Copiar link']);
+
+    await tester.tap(find.byKey(const Key('invite-actions-invite-1')));
     await tester.pumpAndSettle();
-    expect(find.text('novo@coelo.test'), findsAtLeastNWidgets(1));
+    expect(find.text('Revogar convite'), findsOneWidget);
 
-    repository.requests[0].complete(
-      InviteDirectoryResult(
-        items: [testInvite(recipient: 'antigo@coelo.test')],
-        totalCount: 1,
-        page: 1,
-        pageSize: 20,
-      ),
-    );
+    await tester.tap(find.text('Ver detalhes'));
     await tester.pumpAndSettle();
+    expect(openedInvite, 'invite-1');
+    expect(find.text('Revogar convite'), findsNothing);
 
-    expect(find.text('novo@coelo.test'), findsAtLeastNWidgets(1));
-    expect(find.text('antigo@coelo.test'), findsNothing);
-  });
-
-  testWidgets('retries an ambiguous resend with the same request id', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = _AmbiguousResendRepository();
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onOpen: (_) {})));
+    await tester.tap(find.byKey(const Key('invite-actions-invite-2')));
     await tester.pumpAndSettle();
+    expect(find.text('Ver detalhes'), findsOneWidget);
+    expect(find.text('Reenviar convite'), findsNothing);
+    expect(find.text('Revogar convite'), findsNothing);
 
-    final trigger = find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111'));
-    dynamic flyout() => tester.widget(
-      find
-          .ancestor(
-            of: trigger,
-            matching: find.byWidgetPredicate(
-              (widget) => widget is CoeloAdminFlyout<InviteRowAction>,
-            ),
-          )
-          .first,
-    );
-
-    flyout().onSelected(InviteRowAction.resend);
-    await tester.pumpAndSettle();
-    flyout().onSelected(InviteRowAction.resend);
+    await tester.tap(find.text('Ver detalhes'));
     await tester.pump();
-
-    expect(repository.commands, hasLength(2));
-    expect(repository.commands[1].requestId, repository.commands[0].requestId);
+    expect(openedInvite, 'invite-2');
   });
 }
 
-final class _AmbiguousResendRepository implements InviteRepository {
-  final invite = testInvite(status: InviteStatus.expired);
-  final List<InviteResendCommand> commands = [];
-
-  @override
-  Future<InviteDirectoryResult> fetchPage(InviteDirectoryQuery query) async =>
-      InviteDirectoryResult(
-        items: [invite],
-        totalCount: 1,
-        page: query.page,
-        pageSize: query.pageSize,
-      );
-
-  @override
-  Future<InviteCommandResult> resend(InviteResendCommand command) async {
-    commands.add(command);
-    if (commands.length == 1) throw Exception('ambiguous transport failure');
-    return InviteCommandResult(invite: invite, replayed: true);
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+Future<void> _pumpDirectory(
+  WidgetTester tester, {
+  Size size = const Size(1440, 900),
+  ValueChanged<String>? onOpen,
+}) async {
+  await tester.binding.setSurfaceSize(size);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(
+        body: InviteDirectoryPage(
+          repository: FakeInviteRepository(now: () => DateTime(2026, 8, 4, 12)),
+          onOpen: onOpen,
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
 }
-
-final class _RacingInviteRepository implements InviteRepository {
-  final List<Completer<InviteDirectoryResult>> requests = [];
-
-  @override
-  Future<InviteDirectoryResult> fetchPage(InviteDirectoryQuery query) {
-    final request = Completer<InviteDirectoryResult>();
-    requests.add(request);
-    return request.future;
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-Widget _app(Widget child) => MaterialApp(
-  theme: CoeloTheme.light,
-  home: Scaffold(body: child),
-);

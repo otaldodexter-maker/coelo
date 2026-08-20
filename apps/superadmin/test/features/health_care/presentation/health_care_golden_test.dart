@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import '../support/health_care_fixture_repository.dart';
+import 'package:coelo_superadmin/features/health_care/data/demo_health_care_repository.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_care_detail_page.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_detail_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,7 @@ void main() {
       ),
     ]) {
       tester.view.physicalSize = configuration.size;
-      final controller = HealthCareController(FixtureHealthCareRepository());
+      final controller = HealthCareController(DemoHealthCareRepository());
       addTearDown(controller.dispose);
 
       final page = configuration.medication
@@ -78,7 +80,7 @@ void main() {
     tester.view.physicalSize = const Size(1440, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
 
     await _pumpOverlayFrame(
@@ -161,7 +163,7 @@ void main() {
     tester.view.physicalSize = const Size(1440, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    final controller = HealthCareController(FixtureHealthCareRepository());
+    final controller = HealthCareController(DemoHealthCareRepository());
     addTearDown(controller.dispose);
 
     await _pumpFrame(
@@ -203,6 +205,99 @@ void main() {
     await expectLater(
       find.byKey(const Key('health-care-golden-frame')),
       matchesGoldenFile('../../../goldens/health_care/profile_directory_table_light_1440.png'),
+    );
+  });
+
+  testWidgets('matches both details on mobile light and desktop dark', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final configuration in [
+      (
+        name: 'profile_detail_mobile_light',
+        size: const Size(375, 1000),
+        dark: false,
+        medication: false,
+      ),
+      (
+        name: 'profile_detail_desktop_dark',
+        size: const Size(1440, 900),
+        dark: true,
+        medication: false,
+      ),
+      (
+        name: 'medication_detail_mobile_light',
+        size: const Size(375, 1000),
+        dark: false,
+        medication: true,
+      ),
+      (
+        name: 'medication_detail_desktop_dark',
+        size: const Size(1440, 900),
+        dark: true,
+        medication: true,
+      ),
+    ]) {
+      tester.view.physicalSize = configuration.size;
+      final repository = DemoHealthCareRepository();
+      final controller = HealthCareController(repository);
+      addTearDown(controller.dispose);
+      final child = await repository.findChild('child-demo-a', actor: controller.actor);
+      final page = configuration.medication
+          ? HealthMedicationPlanDetailPage(
+              controller: controller,
+              medicationId: child!.medications.first.id,
+              logout: unavailableSuperadminLogout,
+              onEdit: () {},
+            )
+          : HealthCareProfileDetailPage(
+              controller: controller,
+              childId: 'child-demo-a',
+              logout: unavailableSuperadminLogout,
+              onEditCareProfile: () {},
+              onMedicationPlans: () {},
+            );
+
+      await _pumpFrame(tester, page, dark: configuration.dark);
+      await expectLater(
+        find.byKey(const Key('health-care-golden-frame')),
+        matchesGoldenFile('../../../goldens/health_care/${configuration.name}.png'),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
+  testWidgets('matches allergy status and episode severity evidence', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final controller = HealthCareController(DemoHealthCareRepository());
+    addTearDown(controller.dispose);
+
+    await _pumpFrame(
+      tester,
+      HealthCareProfileDetailPage(
+        controller: controller,
+        childId: 'child-demo-a',
+        logout: unavailableSuperadminLogout,
+        onMedicationPlans: () {},
+      ),
+      dark: false,
+    );
+    await tester.tap(find.text('Alergias e restrições').first);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Em acompanhamento'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Episódio grave'), findsOneWidget);
+    expect(find.text('Histórico'), findsOneWidget);
+    expect(find.text('Episódio leve'), findsOneWidget);
+    await expectLater(
+      find.byKey(const Key('health-care-golden-frame')),
+      matchesGoldenFile(
+        '../../../goldens/health_care/profile_allergy_status_severity_light_1440.png',
+      ),
     );
   });
 }

@@ -140,6 +140,25 @@ void main() {
       expect(scaffold.backgroundColor, colors.surface, reason: 'width $width');
     }
   });
+  testWidgets('compact header keeps Coelo brand and profile on the semantic surface at 200%', (
+    tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in [375.0, 768.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(_shellApp(textScaler: const TextScaler.linear(2)));
+      await tester.pumpAndSettle();
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      final colors = Theme.of(tester.element(find.byType(AppBar))).colorScheme;
+      expect(appBar.backgroundColor, colors.surface, reason: 'width $width');
+      expect(appBar.surfaceTintColor, Colors.transparent, reason: 'width $width');
+      expect(find.byKey(const Key('superadmin-compact-brand')), findsOneWidget);
+      expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'width $width');
+    }
+  });
+
   testWidgets('mobile drawer uses the semantic surface in light and dark', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -194,7 +213,19 @@ void main() {
     expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-navigation-home')), findsOneWidget);
 
-    for (final label in ['Estrutura', 'Acessos', 'Saúde e Cuidado', 'Operação', 'Comunicação']) {
+    for (final label in [
+      'Estrutura',
+      'Pessoas e acessos',
+      'Acompanhamento',
+      'Operação Coelo',
+      'Comunicação',
+    ]) {
+      await tester.scrollUntilVisible(
+        find.text(label),
+        -400,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.text(label), findsOneWidget);
     }
     for (final label in ['Unidades', 'Turmas']) {
@@ -203,10 +234,16 @@ void main() {
 
     for (final entry in {
       'access': ['Pessoas', 'Usuários internos', 'Perfis e permissões'],
-      'health-care': ['Perfis de cuidado', 'Planos de medicação'],
-      'operations': ['Planos', 'Importações'],
-      'communication': ['Convites', 'Avisos'],
-      'governance': ['Suporte e implantação', 'Auditoria'],
+      'monitoring': [
+        'Chamadas',
+        'Modelos e configurações',
+        'Proteção da criança',
+        'Perfis de cuidado',
+        'Planos de medicação',
+      ],
+      'operations': ['Planos e limites', 'Importações e exportações', 'Suporte e implantação'],
+      'communication': ['Conversas', 'Avisos', 'Notificações'],
+      'governance': ['Auditoria', 'Catálogo'],
     }.entries) {
       if (entry.key == 'governance') {
         await tester.drag(find.byType(ListView).first, const Offset(0, -480));
@@ -806,7 +843,19 @@ void main() {
     expect(find.byKey(const Key('superadmin-report-bug')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
     expect(find.text('Perfis'), findsNothing);
-    for (final label in ['Estrutura', 'Acessos', 'Saúde e Cuidado', 'Operação', 'Comunicação']) {
+    for (final label in [
+      'Estrutura',
+      'Pessoas e acessos',
+      'Acompanhamento',
+      'Operação Coelo',
+      'Comunicação',
+    ]) {
+      await tester.scrollUntilVisible(
+        find.text(label),
+        -400,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.text(label), findsOneWidget);
     }
     expect(find.text('Configurações'), findsNothing);
@@ -893,16 +942,42 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('superadmin-navigation-section-operations')),
+      -500,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.byKey(const Key('superadmin-navigation-section-operations')));
     await tester.pumpAndSettle();
-    expect(find.text('Planos'), findsOneWidget);
+    expect(find.text('Planos e limites'), findsOneWidget);
     expect(find.text('Configurações'), findsNothing);
     expect(find.text('Menu Dev'), findsNothing);
     expect(find.text('Owner Coelo'), findsNothing);
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Planos e limites'));
     await tester.pumpAndSettle();
-    expect(find.text('Planos será implementado em breve.'), findsOneWidget);
+    expect(find.text('Planos e limites será implementado em breve.'), findsOneWidget);
+  });
+
+  testWidgets('exposes Convites as an active production destination', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final destinations = <String>[];
+    await tester.pumpWidget(_shellApp(onDestinationSelected: destinations.add));
+
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-access')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Convites'),
+      -300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Convites'));
+    await tester.pumpAndSettle();
+
+    expect(destinations, ['invites']);
+    expect(find.text('Convites será implementado em breve.'), findsNothing);
   });
 
   testWidgets('keeps the official brand in mobile and tablet drawers', (tester) async {
@@ -1359,8 +1434,8 @@ void main() {
     await tester.pumpAndSettle();
     for (final section in [
       'Estrutura',
-      'Acessos',
-      'Operação',
+      'Pessoas e acessos',
+      'Operação Coelo',
       'Comunicação',
       'Governança',
       'Conta',
@@ -1386,7 +1461,7 @@ void main() {
     expect(idleShape.borderRadius, BorderRadius.circular(CoeloRadius.md));
     expect(idleHoverShape.borderRadius, BorderRadius.zero);
 
-    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Acessos')));
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Pessoas e acessos')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-bug-screen')));
     await tester.pumpAndSettle();

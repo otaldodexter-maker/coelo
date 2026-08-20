@@ -1,320 +1,152 @@
-import 'dart:async';
-
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '../../../app/shell/superadmin_shell.dart';
-import '../../auth/domain/logout_action.dart';
+import '../data/fake_invite_repository.dart';
 import '../domain/platform_invite.dart';
-import 'invite_form_sections.dart';
 import 'invite_presentation_support.dart';
-import 'invite_request_id.dart';
 
-enum _DetailState { loading, ready, notFound, failure, unauthorized }
-
-enum _DetailAction { resend, revoke }
+enum _InviteDetailAction { copyLink, resend, revoke }
 
 final class InviteDetailPage extends StatefulWidget {
-  const InviteDetailPage({
-    required this.repository,
-    required this.inviteId,
-    this.logout = unavailableSuperadminLogout,
-    this.onDestinationSelected,
-    super.key,
-  });
+  const InviteDetailPage({required this.repository, required this.inviteId, super.key});
 
-  final InviteRepository repository;
+  final FakeInviteRepository repository;
   final String inviteId;
-  final LogoutAction logout;
-  final ValueChanged<String>? onDestinationSelected;
 
   @override
   State<InviteDetailPage> createState() => _InviteDetailPageState();
 }
 
 final class _InviteDetailPageState extends State<InviteDetailPage> {
-  _DetailState _state = _DetailState.loading;
-  PlatformInvite? _invite;
-  _DetailAction? _busy;
-  InviteCommandResult? _result;
-  var _requestEpoch = 0;
-  String? _resendRequestId;
-  String? _revokeRequestId;
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_load());
-  }
-
-  @override
-  void didUpdateWidget(covariant InviteDetailPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.inviteId != widget.inviteId ||
-        !identical(oldWidget.repository, widget.repository)) {
-      setState(() {
-        _invite = null;
-        _result = null;
-        _busy = null;
-        _resendRequestId = null;
-        _revokeRequestId = null;
-      });
-      unawaited(_load());
-    }
-  }
-
-  Future<void> _load() async {
-    final epoch = ++_requestEpoch;
-    final inviteId = widget.inviteId;
-    if (mounted) setState(() => _state = _DetailState.loading);
-    try {
-      final invite = await widget.repository.fetchById(inviteId);
-      if (!mounted || epoch != _requestEpoch || inviteId != widget.inviteId) return;
-      setState(() {
-        _invite = invite;
-        _state = invite == null ? _DetailState.notFound : _DetailState.ready;
-      });
-    } on InviteUnauthorizedException {
-      if (mounted && epoch == _requestEpoch) {
-        setState(() => _state = _DetailState.unauthorized);
-      }
-    } on Object {
-      if (mounted && epoch == _requestEpoch) {
-        setState(() => _state = _DetailState.failure);
-      }
-    }
-  }
-
-  Future<void> _resend(PlatformInvite invite) async {
-    final inviteId = widget.inviteId;
-    final requestId = _resendRequestId ??= newInviteRequestId();
-    setState(() => _busy = _DetailAction.resend);
-    try {
-      final result = await widget.repository.resend(
-        InviteResendCommand(
-          inviteId: invite.id,
-          requestId: requestId,
-          expectedVersion: invite.managementVersion,
-        ),
-      );
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
-        setState(() {
-          _invite = result.invite;
-          _result = result;
-          _resendRequestId = null;
-          _busy = null;
-        });
-      }
-    } on InviteConflictException {
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
-        setState(() {
-          _resendRequestId = null;
-          _busy = null;
-        });
-        _feedback('O convite mudou. Atualize e tente novamente.', error: true);
-        await _load();
-      }
-    } on Object {
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
-        _feedback('Não foi possível reenviar o convite.', error: true);
-      }
-    } finally {
-      if (mounted && inviteId == widget.inviteId && _resendRequestId == requestId) {
-        setState(() => _busy = null);
-      }
-    }
-  }
-
-  Future<void> _revoke(PlatformInvite invite) async {
-    final inviteId = widget.inviteId;
-    final confirmed = await showInviteRevokeConfirmation(
-      context,
-      recipientMasked: invite.recipientMasked,
-    );
-    if (!confirmed || !mounted || inviteId != widget.inviteId) return;
-    final requestId = _revokeRequestId ??= newInviteRequestId();
-    setState(() => _busy = _DetailAction.revoke);
-    try {
-      final result = await widget.repository.revoke(
-        InviteRevokeCommand(
-          inviteId: invite.id,
-          requestId: requestId,
-          expectedVersion: invite.managementVersion,
-          reason: 'Revogação administrativa confirmada',
-        ),
-      );
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
-        setState(() {
-          _invite = result.invite;
-          _result = null;
-          _revokeRequestId = null;
-          _busy = null;
-        });
-      }
-    } on InviteConflictException {
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
-        setState(() {
-          _revokeRequestId = null;
-          _busy = null;
-        });
-        _feedback('O convite mudou. Atualize e tente novamente.', error: true);
-        await _load();
-      }
-    } on Object {
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
-        _feedback('Não foi possível revogar o convite.', error: true);
-      }
-    } finally {
-      if (mounted && inviteId == widget.inviteId && _revokeRequestId == requestId) {
-        setState(() => _busy = null);
-      }
-    }
-  }
-
-  void _feedback(String message, {bool error = false}) {
-    final colors = Theme.of(context).colorScheme;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? colors.error : null));
-  }
+  _InviteDetailAction? _busyAction;
 
   @override
   Widget build(BuildContext context) {
+    final invite = widget.repository.find(widget.inviteId);
     final colors = Theme.of(context).colorScheme;
-    final content = ColoredBox(
-      key: const Key('invite-detail-page-surface'),
-      color: colors.surface,
-      child: switch (_state) {
-        _DetailState.loading => const Center(
-          child: CoeloStatePanel(
-            title: 'Carregando convite',
-            message: 'Buscando dados autorizados.',
-            icon: Icons.hourglass_top_rounded,
-          ),
-        ),
-        _DetailState.notFound => const Center(
+    if (invite == null) {
+      return ColoredBox(
+        key: const Key('invite-detail-page-surface'),
+        color: colors.surface,
+        child: const Center(
           child: CoeloStatePanel(
             title: 'Convite não encontrado',
-            message: 'O convite não está disponível neste contexto.',
+            message: 'O convite solicitado não está disponível neste contexto.',
             icon: Icons.mark_email_unread_outlined,
           ),
         ),
-        _DetailState.unauthorized => const Center(
-          child: CoeloStatePanel(
-            title: 'Acesso não autorizado',
-            message: 'Seu contexto atual não permite consultar este convite.',
-            icon: Icons.lock_outline_rounded,
-          ),
-        ),
-        _DetailState.failure => Center(
-          child: CoeloStatePanel(
-            title: 'Convite indisponível',
-            message: 'Não foi possível carregar o convite.',
-            icon: Icons.error_outline_rounded,
-            actionLabel: 'Tentar novamente',
-            onAction: _load,
-          ),
-        ),
-        _DetailState.ready => _content(_invite!),
-      },
-    );
-    return SuperadminShell(
-      logout: widget.logout,
-      title: 'Convite',
-      subtitle: 'Acompanhe status, entrega e ações auditadas.',
-      currentDestination: 'invites',
-      onDestinationSelected: widget.onDestinationSelected,
-      child: content,
-    );
-  }
-
-  Widget _content(PlatformInvite invite) => LayoutBuilder(
-    builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final inset = compact ? CoeloSpacing.space4 : CoeloSpacing.space6;
-      return ListView(
-        key: const Key('invite-detail-scroll'),
-        padding: EdgeInsets.all(inset),
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 880),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text('Detalhe do convite', style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(invite.recipientMasked, style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: InviteStatusChip(status: invite.status),
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _actions(invite),
-                  if (_result case final result?) ...[
-                    const SizedBox(height: CoeloSpacing.space5),
-                    InviteDeliveryResult(
-                      result: result,
-                      onDone: () => setState(() => _result = null),
+      );
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+        return ColoredBox(
+          key: const Key('invite-detail-page-surface'),
+          color: colors.surface,
+          child: Padding(
+            padding: EdgeInsets.all(compact ? CoeloSpacing.space4 : CoeloSpacing.space6),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 960),
+                child: ListView(
+                  key: const Key('invite-detail-scroll'),
+                  children: [
+                    Text('Detalhe do convite', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(
+                      'Informações de leitura e ações disponíveis para o estado atual.',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                     ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    Wrap(
+                      spacing: CoeloSpacing.space3,
+                      runSpacing: CoeloSpacing.space2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(invite.recipientMasked, style: Theme.of(context).textTheme.titleLarge),
+                        InviteStatusChip(status: invite.status),
+                      ],
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    _actions(invite),
+                    const SizedBox(height: CoeloSpacing.space6),
+                    Text('Dados do convite', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: CoeloSpacing.space3),
+                    _details(invite),
+                    const SizedBox(height: CoeloSpacing.space6),
+                    Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: CoeloSpacing.space3),
+                    _timeline(invite),
                   ],
-                  const SizedBox(height: CoeloSpacing.space6),
-                  Text('Dados do convite', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  _details(invite),
-                  const SizedBox(height: CoeloSpacing.space6),
-                  Text('Linha do tempo', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  _timeline(invite),
-                ],
+                ),
               ),
             ),
           ),
-        ],
-      );
-    },
-  );
+        );
+      },
+    );
+  }
 
   Widget _actions(PlatformInvite invite) {
-    final busy = _busy != null;
     final colors = Theme.of(context).colorScheme;
-    return Wrap(
-      spacing: CoeloSpacing.space2,
-      runSpacing: CoeloSpacing.space2,
+    final busy = _busyAction != null;
+    final hasStandardActions = invite.link != null || invite.canResend;
+    return Column(
+      key: const Key('invite-detail-actions'),
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (invite.canResend)
-          if (invite.status == InviteStatus.expired)
-            FilledButton.icon(
-              key: const Key('invite-detail-resend'),
-              onPressed: busy ? null : () => _resend(invite),
-              icon: _actionIcon(_DetailAction.resend, Icons.forward_to_inbox_outlined),
-              label: const Text('Reenviar convite'),
-            )
-          else
-            OutlinedButton.icon(
-              key: const Key('invite-detail-resend'),
-              onPressed: busy ? null : () => _resend(invite),
-              icon: _actionIcon(_DetailAction.resend, Icons.forward_to_inbox_outlined),
-              label: const Text('Reenviar convite'),
-            ),
-        if (invite.canRevoke)
+        if (hasStandardActions)
+          Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              if (invite.link != null)
+                OutlinedButton.icon(
+                  key: const Key('invite-detail-copy'),
+                  onPressed: busy ? null : () => _copyLink(invite),
+                  icon: _actionIcon(_InviteDetailAction.copyLink, Icons.content_copy_rounded),
+                  label: const Text('Copiar link'),
+                ),
+              if (invite.canResend)
+                OutlinedButton.icon(
+                  key: const Key('invite-detail-resend'),
+                  onPressed: busy ? null : () => _resend(invite),
+                  icon: _actionIcon(_InviteDetailAction.resend, Icons.forward_to_inbox_outlined),
+                  label: const Text('Reenviar convite'),
+                ),
+            ],
+          ),
+        if (invite.canRevoke) ...[
+          if (hasStandardActions) const Divider(height: CoeloSpacing.space5),
           TextButton.icon(
             key: const Key('invite-detail-revoke'),
-            style: TextButton.styleFrom(
-              foregroundColor: colors.error,
-              minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
-            ),
+            style:
+                TextButton.styleFrom(
+                  foregroundColor: colors.error,
+                  minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
+                ).copyWith(
+                  backgroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                        ? colors.errorContainer
+                        : Colors.transparent,
+                  ),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                ),
             onPressed: busy ? null : () => _revoke(invite),
-            icon: _actionIcon(_DetailAction.revoke, Icons.block_rounded),
+            icon: _actionIcon(_InviteDetailAction.revoke, Icons.block_rounded),
             label: const Text('Revogar convite'),
           ),
+        ],
       ],
     );
   }
 
-  Widget _actionIcon(_DetailAction action, IconData icon) => _busy == action
+  Widget _actionIcon(_InviteDetailAction action, IconData icon) => _busyAction == action
       ? const SizedBox.square(
           dimension: CoeloSize.iconSm,
           child: CircularProgressIndicator(strokeWidth: 2),
@@ -331,18 +163,19 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
         spacing: CoeloSpacing.space4,
         runSpacing: CoeloSpacing.space4,
         children: [
-          _field('Contexto', invite.scope.label, width),
-          _field('Perfil', invite.profile.label, width),
-          _field('Canais', invite.channels.map((value) => value.label).join(' + '), width),
-          _field('Emissor', invite.issuer.label, width),
-          _field('Criado em', formatInviteDate(invite.createdAt), width),
-          _field('Expira em', formatInviteDate(invite.expiresAt), width),
+          _detailField('Público', invite.audience.label, width),
+          _detailField('Canal', invite.channel.label, width),
+          _detailField('Contexto', invite.scope, width),
+          _detailField('Papel', invite.role, width),
+          _detailField('Status', invite.status.label, width),
+          _detailField('Criado em', formatInviteDate(invite.createdAt), width),
+          _detailField('Expira em', formatInviteDate(invite.expiresAt), width),
         ],
       );
     },
   );
 
-  Widget _field(String label, String value, double width) => SizedBox(
+  Widget _detailField(String label, String value, double width) => SizedBox(
     width: width,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,14 +193,25 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
   );
 
   Widget _timeline(PlatformInvite invite) {
-    if (invite.timeline.isEmpty) return const Text('Nenhum evento registrado.');
+    if (invite.timeline.isEmpty) {
+      return Text(
+        'Nenhum evento registrado.',
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final entry in invite.timeline)
+        for (final indexedEntry in invite.timeline.asMap().entries)
           Semantics(
+            key: Key('invite-timeline-event-${indexedEntry.key}'),
             container: true,
-            label: '${entry.label}, ${formatInviteDate(entry.occurredAt)}',
+            label:
+                '${indexedEntry.value.label}, '
+                '${formatInviteDate(indexedEntry.value.occurredAt)}',
+            excludeSemantics: true,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
               child: Row(
@@ -383,8 +227,17 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(entry.label, style: Theme.of(context).textTheme.titleSmall),
-                        Text(formatInviteDate(entry.occurredAt)),
+                        Text(
+                          indexedEntry.value.label,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: CoeloSpacing.spaceHalf),
+                        Text(
+                          formatInviteDate(indexedEntry.value.occurredAt),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -395,4 +248,56 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
       ],
     );
   }
+
+  Future<void> _copyLink(PlatformInvite invite) async {
+    final link = invite.link;
+    if (link == null) return;
+    await _runAction(_InviteDetailAction.copyLink, () async {
+      await Clipboard.setData(ClipboardData(text: link));
+      return 'Link do convite copiado.';
+    });
+  }
+
+  Future<void> _resend(PlatformInvite invite) async {
+    await _runAction(_InviteDetailAction.resend, () async {
+      await Future<void>.delayed(Duration.zero);
+      widget.repository.resend(invite.id);
+      return 'Convite reenviado com sucesso.';
+    });
+  }
+
+  Future<void> _revoke(PlatformInvite invite) async {
+    final confirmed = await showInviteRevokeConfirmation(
+      context,
+      recipientMasked: invite.recipientMasked,
+    );
+    if (!confirmed || !mounted) return;
+    await _runAction(_InviteDetailAction.revoke, () async {
+      await Future<void>.delayed(Duration.zero);
+      widget.repository.revoke(invite.id);
+      return 'Convite revogado com sucesso.';
+    });
+  }
+
+  Future<void> _runAction(_InviteDetailAction action, Future<String> Function() operation) async {
+    setState(() => _busyAction = action);
+    try {
+      final message = await operation();
+      if (mounted) _showFeedback(message);
+    } on Object catch (error) {
+      if (mounted) _showFeedback(_errorMessage(error), error: true);
+    } finally {
+      if (mounted) setState(() => _busyAction = null);
+    }
+  }
+
+  void _showFeedback(String message, {bool error = false}) {
+    final colors = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: error ? colors.error : null));
+  }
 }
+
+String _errorMessage(Object error) =>
+    error is StateError ? error.message.toString() : 'Não foi possível concluir a ação.';

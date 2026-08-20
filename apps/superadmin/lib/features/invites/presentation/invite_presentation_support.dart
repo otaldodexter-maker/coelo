@@ -12,12 +12,18 @@ final class InviteStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final statusColors =
         Theme.of(context).extension<CoeloStatusColors>() ??
         (Theme.brightnessOf(context) == Brightness.dark
             ? CoeloStatusColors.dark
             : CoeloStatusColors.light);
     final (background, foreground, icon) = switch (status) {
+      InviteStatus.draft => (
+        colors.surfaceContainer,
+        colors.onSurfaceVariant,
+        Icons.edit_note_rounded,
+      ),
       InviteStatus.pending => (
         statusColors.warningContainer,
         statusColors.onWarningContainer,
@@ -37,6 +43,11 @@ final class InviteStatusChip extends StatelessWidget {
         statusColors.errorContainer,
         statusColors.onErrorContainer,
         Icons.block_rounded,
+      ),
+      InviteStatus.failed => (
+        statusColors.errorContainer,
+        statusColors.onErrorContainer,
+        Icons.error_outline_rounded,
       ),
     };
     return CoeloStatusChip(
@@ -62,7 +73,7 @@ Future<bool> showInviteRevokeConfirmation(
           closeButtonKey: const Key('invite-revoke-dialog-close'),
           title: 'Revogar convite?',
           body: Text(
-            'O convite para $recipientMasked deixará de poder ser aceito. Esta ação será registrada na auditoria.',
+            'O convite para $recipientMasked deixará de poder ser aceito. Esta ação será registrada no histórico local.',
           ),
           secondaryAction: OutlinedButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),

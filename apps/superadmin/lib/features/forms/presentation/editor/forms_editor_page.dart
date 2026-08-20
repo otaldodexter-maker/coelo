@@ -300,73 +300,601 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   );
 
   Widget _structure(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      for (final section in _definition.sections)
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(section.title, style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: CoeloSpacing.space3),
-                for (final item in section.items)
-                  Card(
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title: Text(item.label),
-                          subtitle: Text(_itemKind(item.kind)),
-                          onTap: () => setState(() {
-                            _expandedItemId = _expandedItemId == item.id ? null : item.id;
-                          }),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                tooltip: 'Mover item para cima',
-                                onPressed: item.position == 0
-                                    ? null
-                                    : () => _moveItem(section, item, -1),
-                                icon: const Icon(Icons.arrow_upward_rounded),
-                              ),
-                              IconButton(
-                                tooltip: 'Mover item para baixo',
-                                onPressed: item.position == section.items.length - 1
-                                    ? null
-                                    : () => _moveItem(section, item, 1),
-                                icon: const Icon(Icons.arrow_downward_rounded),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (_expandedItemId == item.id)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              CoeloSpacing.space4,
-                              0,
-                              CoeloSpacing.space4,
-                              CoeloSpacing.space4,
-                            ),
-                            child: TextFormField(
-                              initialValue: item.helpText,
-                              decoration: const InputDecoration(labelText: 'Texto de ajuda'),
-                              onChanged: (helpText) => _updateItemHelpText(
-                                sectionId: section.id,
-                                itemId: item.id,
-                                helpText: helpText.trim().isEmpty ? null : helpText,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: OutlinedButton.icon(
+          key: const Key('form-add-section'),
+          onPressed: _definition.sections.length >= FormDefinitionLimits.maxSections
+              ? null
+              : _addSection,
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Adicionar seção'),
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      if (_definition.sections.isEmpty)
+        const CoeloStatePanel(
+          title: 'Estrutura vazia',
+          message: 'Adicione uma seção e inclua ao menos uma pergunta.',
+          icon: Icons.view_agenda_outlined,
+        ),
+      for (var sectionIndex = 0; sectionIndex < _definition.sections.length; sectionIndex++)
+        Padding(
+          padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+          child: _sectionEditor(context, _definition.sections[sectionIndex], sectionIndex),
         ),
     ],
   );
+
+  Widget _sectionEditor(BuildContext context, FormSection section, int sectionIndex) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextFormField(
+                  key: ValueKey('form-section-title-${section.id}'),
+                  initialValue: section.title,
+                  decoration: const InputDecoration(labelText: 'Título da seção *'),
+                  onChanged: (title) => _replaceSection(section, title: title),
+                ),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              IconButton(
+                tooltip: 'Mover seção para cima',
+                onPressed: sectionIndex == 0 ? null : () => _moveSection(sectionIndex, -1),
+                icon: const Icon(Icons.arrow_upward_rounded),
+              ),
+              IconButton(
+                tooltip: 'Mover seção para baixo',
+                onPressed: sectionIndex == _definition.sections.length - 1
+                    ? null
+                    : () => _moveSection(sectionIndex, 1),
+                icon: const Icon(Icons.arrow_downward_rounded),
+              ),
+              IconButton(
+                tooltip: 'Duplicar seção',
+                onPressed: _definition.sections.length >= FormDefinitionLimits.maxSections
+                    ? null
+                    : () => _duplicateSection(section),
+                icon: const Icon(Icons.copy_rounded),
+              ),
+              IconButton(
+                key: ValueKey('form-delete-section-$sectionIndex'),
+                tooltip: 'Excluir seção',
+                onPressed: () => _deleteSection(section.id),
+                style: IconButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                icon: const Icon(Icons.delete_outline_rounded),
+              ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          for (final item in section.items)
+            Padding(
+              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+              child: Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(item.label),
+                      subtitle: Text(_itemKind(item.kind)),
+                      onTap: () => setState(() {
+                        _expandedItemId = _expandedItemId == item.id ? null : item.id;
+                      }),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Mover item para cima',
+                            onPressed: item.position == 0
+                                ? null
+                                : () => _moveItem(section, item, -1),
+                            icon: const Icon(Icons.arrow_upward_rounded),
+                          ),
+                          IconButton(
+                            tooltip: 'Mover item para baixo',
+                            onPressed: item.position == section.items.length - 1
+                                ? null
+                                : () => _moveItem(section, item, 1),
+                            icon: const Icon(Icons.arrow_downward_rounded),
+                          ),
+                          IconButton(
+                            tooltip: 'Duplicar item',
+                            onPressed: _itemCount >= FormDefinitionLimits.maxItems
+                                ? null
+                                : () => _duplicateItem(section, item),
+                            icon: const Icon(Icons.copy_rounded),
+                          ),
+                          IconButton(
+                            key: ValueKey('form-delete-item-$sectionIndex-${item.position}'),
+                            tooltip: 'Excluir item',
+                            onPressed: () => _deleteItem(section.id, item.id),
+                            style: IconButton.styleFrom(
+                              foregroundColor: Theme.of(context).colorScheme.error,
+                            ),
+                            icon: const Icon(Icons.delete_outline_rounded),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_expandedItemId == item.id)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          CoeloSpacing.space4,
+                          0,
+                          CoeloSpacing.space4,
+                          CoeloSpacing.space4,
+                        ),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              key: const Key('form-item-label'),
+                              initialValue: item.label,
+                              decoration: const InputDecoration(
+                                labelText: 'Pergunta ou conteúdo *',
+                              ),
+                              onChanged: (label) => _replaceItem(section.id, item, label: label),
+                            ),
+                            const SizedBox(height: CoeloSpacing.space3),
+                            _itemConfiguration(context, section, item),
+                            const SizedBox(height: CoeloSpacing.space3),
+                            TextFormField(
+                              key: const Key('form-item-help-text'),
+                              initialValue: item.helpText,
+                              decoration: const InputDecoration(labelText: 'Texto de ajuda'),
+                              onChanged: (helpText) => _replaceItem(
+                                section.id,
+                                item,
+                                helpText: helpText.trim().isEmpty ? null : helpText,
+                                replaceHelpText: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: sectionIndex == 0
+                  ? const Key('form-add-item')
+                  : ValueKey('form-add-item-${section.id}'),
+              onPressed: _itemCount >= FormDefinitionLimits.maxItems
+                  ? null
+                  : () => _addItem(section),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Adicionar pergunta'),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _itemConfiguration(BuildContext context, FormSection section, FormItem item) {
+    final sources = _definition.sections
+        .expand((candidate) => candidate.items)
+        .where(
+          (candidate) =>
+              candidate.id != item.id &&
+              (candidate.kind == FormItemKind.yesNo ||
+                  candidate.kind == FormItemKind.singleChoice ||
+                  candidate.kind == FormItemKind.multipleChoice),
+        )
+        .toList();
+    final isChoice =
+        item.kind == FormItemKind.singleChoice || item.kind == FormItemKind.multipleChoice;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloAdminSingleSelectField<FormItemKind>(
+          key: const Key('form-item-kind'),
+          label: 'Tipo do item',
+          value: item.kind,
+          options: FormItemKind.values,
+          optionLabel: _itemKind,
+          onChanged: (kind) => _changeItemKind(section.id, item, kind),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloAdminToggleField(
+          key: const Key('form-item-required'),
+          label: 'Resposta obrigatória',
+          value: item.isRequired,
+          onChanged: item.kind == FormItemKind.information
+              ? null
+              : (value) => _replaceItem(section.id, item, isRequired: value),
+        ),
+        if (isChoice) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          Text('Opções', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: CoeloSpacing.space2),
+          for (var optionIndex = 0; optionIndex < item.options.length; optionIndex++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+              child: TextFormField(
+                key: ValueKey('form-option-label-$optionIndex'),
+                initialValue: item.options[optionIndex].label,
+                decoration: InputDecoration(labelText: 'Opção ${optionIndex + 1}'),
+                onChanged: (label) => _updateOption(section.id, item, optionIndex, label),
+              ),
+            ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: item.options.length >= FormDefinitionLimits.maxOptionsPerItem
+                  ? null
+                  : () => _addOption(section.id, item),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Adicionar opção'),
+            ),
+          ),
+        ],
+        const SizedBox(height: CoeloSpacing.space4),
+        Text('Condições de exibição', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: CoeloSpacing.space2),
+        if (item.conditions.isEmpty)
+          Text(sources.isEmpty ? 'Nenhuma pergunta compatível anterior.' : 'Exibido sempre.'),
+        for (var conditionIndex = 0; conditionIndex < item.conditions.length; conditionIndex++)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              sources
+                      .where(
+                        (candidate) => candidate.id == item.conditions[conditionIndex].sourceItemId,
+                      )
+                      .firstOrNull
+                      ?.label ??
+                  'Pergunta removida',
+            ),
+            subtitle: const Text('Condição ativa'),
+            trailing: IconButton(
+              tooltip: 'Remover condição',
+              onPressed: () => _removeCondition(section.id, item, conditionIndex),
+              style: IconButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+              icon: const Icon(Icons.delete_outline_rounded),
+            ),
+          ),
+        if (sources.isNotEmpty)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: const Key('form-add-condition'),
+              onPressed: () => _addCondition(section.id, item, sources.first),
+              icon: const Icon(Icons.call_split_rounded),
+              label: const Text('Adicionar condição'),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _changeItemKind(String sectionId, FormItem item, FormItemKind kind) {
+    final isChoice = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice;
+    final options = isChoice
+        ? item.options.length >= 2
+              ? item.options
+              : [
+                  FormOption(id: _uuid(), label: 'Opção 1', position: 0),
+                  FormOption(id: _uuid(), label: 'Opção 2', position: 1),
+                ]
+        : const <FormOption>[];
+    final config = switch (kind) {
+      FormItemKind.money => const FormItemConfig(decimalPlaces: 2, currency: 'BRL'),
+      FormItemKind.scale => const FormItemConfig(scaleMin: 1, scaleMax: 5),
+      FormItemKind.photo => const FormItemConfig(
+        allowCamera: true,
+        allowExisting: false,
+        maxImages: 1,
+      ),
+      FormItemKind.gallery => const FormItemConfig(
+        allowCamera: false,
+        allowExisting: true,
+        maxImages: FormDefinitionLimits.maxImagesPerQuestion,
+      ),
+      _ => const FormItemConfig(),
+    };
+    _replaceItem(
+      sectionId,
+      item,
+      kind: kind,
+      isRequired: kind == FormItemKind.information ? false : item.isRequired,
+      config: config,
+      options: options,
+    );
+  }
+
+  void _updateOption(String sectionId, FormItem item, int optionIndex, String label) {
+    _replaceItem(
+      sectionId,
+      item,
+      options: [
+        for (var index = 0; index < item.options.length; index++)
+          FormOption(
+            id: item.options[index].id,
+            label: index == optionIndex ? label : item.options[index].label,
+            position: index,
+          ),
+      ],
+    );
+  }
+
+  void _addOption(String sectionId, FormItem item) {
+    _replaceItem(
+      sectionId,
+      item,
+      options: [
+        ...item.options,
+        FormOption(
+          id: _uuid(),
+          label: 'Opção ${item.options.length + 1}',
+          position: item.options.length,
+        ),
+      ],
+    );
+  }
+
+  void _addCondition(String sectionId, FormItem item, FormItem source) {
+    final condition = source.kind == FormItemKind.yesNo
+        ? FormCondition.yesNo(sourceItemId: source.id, expected: true)
+        : FormCondition.choice(
+            sourceItemId: source.id,
+            optionIds: {if (source.options.isNotEmpty) source.options.first.id},
+          );
+    _replaceItem(sectionId, item, conditions: [...item.conditions, condition]);
+  }
+
+  void _removeCondition(String sectionId, FormItem item, int conditionIndex) {
+    _replaceItem(
+      sectionId,
+      item,
+      conditions: [
+        for (var index = 0; index < item.conditions.length; index++)
+          if (index != conditionIndex) item.conditions[index],
+      ],
+    );
+  }
+
+  int get _itemCount =>
+      _definition.sections.fold(0, (count, section) => count + section.items.length);
+
+  void _addSection() {
+    final section = FormSection(
+      id: _uuid(),
+      title: 'Seção ${_definition.sections.length + 1}',
+      position: _definition.sections.length,
+      items: const [],
+    );
+    _update(_copy(sections: [..._definition.sections, section]));
+  }
+
+  void _replaceSection(FormSection section, {String? title, List<FormItem>? items}) {
+    _update(
+      _copy(
+        sections: [
+          for (final candidate in _definition.sections)
+            if (candidate.id == section.id)
+              FormSection(
+                id: candidate.id,
+                title: title ?? candidate.title,
+                description: candidate.description,
+                position: candidate.position,
+                items: items ?? candidate.items,
+              )
+            else
+              candidate,
+        ],
+      ),
+    );
+  }
+
+  void _moveSection(int from, int delta) {
+    final sections = [..._definition.sections];
+    final moved = sections.removeAt(from);
+    sections.insert(from + delta, moved);
+    _update(
+      _copy(
+        sections: [
+          for (var index = 0; index < sections.length; index++)
+            FormSection(
+              id: sections[index].id,
+              title: sections[index].title,
+              description: sections[index].description,
+              position: index,
+              items: sections[index].items,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _duplicateSection(FormSection source) {
+    final itemIds = {for (final item in source.items) item.id: _uuid()};
+    final duplicate = FormSection(
+      id: _uuid(),
+      title: '${source.title} (cópia)',
+      description: source.description,
+      position: source.position + 1,
+      items: [
+        for (final item in source.items)
+          FormItem(
+            id: itemIds[item.id]!,
+            kind: item.kind,
+            label: item.label,
+            helpText: item.helpText,
+            position: item.position,
+            isRequired: item.isRequired,
+            config: item.config,
+            options: [
+              for (final option in item.options)
+                FormOption(id: _uuid(), label: option.label, position: option.position),
+            ],
+            conditions: [
+              for (final condition in item.conditions)
+                if (condition.kind == FormConditionKind.yesNo)
+                  FormCondition.yesNo(
+                    sourceItemId: itemIds[condition.sourceItemId] ?? condition.sourceItemId,
+                    expected: condition.expectedYesNo!,
+                  )
+                else
+                  FormCondition.choice(
+                    sourceItemId: itemIds[condition.sourceItemId] ?? condition.sourceItemId,
+                    optionIds: condition.optionIds,
+                  ),
+            ],
+          ),
+      ],
+    );
+    final sections = [..._definition.sections]..insert(source.position + 1, duplicate);
+    _update(
+      _copy(
+        sections: [
+          for (var index = 0; index < sections.length; index++)
+            FormSection(
+              id: sections[index].id,
+              title: sections[index].title,
+              description: sections[index].description,
+              position: index,
+              items: sections[index].items,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteSection(String sectionId) {
+    final sections = _definition.sections.where((section) => section.id != sectionId).toList();
+    _update(
+      _copy(
+        sections: [
+          for (var index = 0; index < sections.length; index++)
+            FormSection(
+              id: sections[index].id,
+              title: sections[index].title,
+              description: sections[index].description,
+              position: index,
+              items: sections[index].items,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _addItem(FormSection section) {
+    final item = FormItem(
+      id: _uuid(),
+      kind: FormItemKind.shortText,
+      label: 'Pergunta ${section.items.length + 1}',
+      position: section.items.length,
+    );
+    _expandedItemId = item.id;
+    _replaceSection(section, items: [...section.items, item]);
+  }
+
+  void _duplicateItem(FormSection section, FormItem source) {
+    final duplicate = FormItem(
+      id: _uuid(),
+      kind: source.kind,
+      label: '${source.label} (cópia)',
+      helpText: source.helpText,
+      position: source.position + 1,
+      isRequired: source.isRequired,
+      config: source.config,
+      options: [
+        for (final option in source.options)
+          FormOption(id: _uuid(), label: option.label, position: option.position),
+      ],
+      conditions: source.conditions,
+    );
+    final items = [...section.items]..insert(source.position + 1, duplicate);
+    _replaceSection(
+      section,
+      items: [
+        for (var index = 0; index < items.length; index++) _copyItem(items[index], position: index),
+      ],
+    );
+  }
+
+  void _deleteItem(String sectionId, String itemId) {
+    _update(
+      _copy(
+        sections: [
+          for (final section in _definition.sections)
+            FormSection(
+              id: section.id,
+              title: section.title,
+              description: section.description,
+              position: section.position,
+              items: [
+                for (final item in section.items.where((item) => item.id != itemId).indexed)
+                  _copyItem(
+                    item.$2,
+                    position: item.$1,
+                    conditions: item.$2.conditions
+                        .where((condition) => condition.sourceItemId != itemId)
+                        .toList(),
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
+    if (_expandedItemId == itemId) _expandedItemId = null;
+  }
+
+  void _replaceItem(
+    String sectionId,
+    FormItem item, {
+    String? label,
+    String? helpText,
+    bool replaceHelpText = false,
+    FormItemKind? kind,
+    bool? isRequired,
+    FormItemConfig? config,
+    List<FormOption>? options,
+    List<FormCondition>? conditions,
+  }) {
+    _update(
+      _copy(
+        sections: [
+          for (final section in _definition.sections)
+            if (section.id == sectionId)
+              FormSection(
+                id: section.id,
+                title: section.title,
+                description: section.description,
+                position: section.position,
+                items: [
+                  for (final candidate in section.items)
+                    candidate.id == item.id
+                        ? _copyItem(
+                            candidate,
+                            label: label,
+                            helpText: helpText,
+                            replaceHelpText: replaceHelpText,
+                            kind: kind,
+                            isRequired: isRequired,
+                            config: config,
+                            options: options,
+                            conditions: conditions,
+                          )
+                        : candidate,
+                ],
+              )
+            else
+              section,
+        ],
+      ),
+    );
+  }
 
   void _moveItem(FormSection section, FormItem item, int delta) {
     final items = [...section.items];
@@ -393,50 +921,27 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _update(_copy(sections: sections));
   }
 
-  void _updateItemHelpText({
-    required String sectionId,
-    required String itemId,
-    required String? helpText,
-  }) {
-    _update(
-      _copy(
-        sections: [
-          for (final section in _definition.sections)
-            if (section.id == sectionId)
-              FormSection(
-                id: section.id,
-                title: section.title,
-                description: section.description,
-                position: section.position,
-                items: [
-                  for (final item in section.items)
-                    item.id == itemId
-                        ? _copyItem(item, helpText: helpText, replaceHelpText: true)
-                        : item,
-                ],
-              )
-            else
-              section,
-        ],
-      ),
-    );
-  }
-
   FormItem _copyItem(
     FormItem item, {
     int? position,
+    String? label,
     String? helpText,
     bool replaceHelpText = false,
+    FormItemKind? kind,
+    bool? isRequired,
+    FormItemConfig? config,
+    List<FormOption>? options,
+    List<FormCondition>? conditions,
   }) => FormItem(
     id: item.id,
-    kind: item.kind,
-    label: item.label,
+    kind: kind ?? item.kind,
+    label: label ?? item.label,
     helpText: replaceHelpText ? helpText : item.helpText,
     position: position ?? item.position,
-    isRequired: item.isRequired,
-    config: item.config,
-    options: item.options,
-    conditions: item.conditions,
+    isRequired: isRequired ?? item.isRequired,
+    config: config ?? item.config,
+    options: options ?? item.options,
+    conditions: conditions ?? item.conditions,
   );
 
   Widget _responseRules(BuildContext context) => Column(
@@ -464,7 +969,27 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   Widget _distribution(BuildContext context) {
     final application = _application;
     if (application == null) {
-      return _placeholder('Crie uma aplicação no backend para configurar sua audiência.');
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const CoeloStatePanel(
+            title: 'Nenhuma aplicação configurada',
+            message:
+                'Comece pela instituição atual. Depois de salvar, você poderá configurar os agendamentos.',
+            icon: Icons.hub_outlined,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.icon(
+              key: const Key('form-create-application'),
+              onPressed: _createInstitutionApplication,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Criar aplicação'),
+            ),
+          ),
+        ],
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -482,13 +1007,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           runSpacing: CoeloSpacing.space2,
           children: [
             for (final rule in application.audienceRules)
-              Chip(
-                label: Text(
-                  '${_audienceKind(rule.kind)} · '
-                  '${rule.mode == FormAudienceRuleMode.include ? 'incluir' : 'excluir'} · '
-                  '${rule.targetId}',
-                ),
-              ),
+              Chip(label: Text(_audienceRuleLabel(rule))),
           ],
         ),
         const SizedBox(height: CoeloSpacing.space4),
@@ -688,6 +1207,27 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _editingScheduleId = updated.id;
   }
 
+  void _createInstitutionApplication() {
+    final applicationId = _uuid();
+    setState(() {
+      _application = FormApplication(
+        id: applicationId,
+        formId: _definition.id,
+        institutionId: _definition.institutionId,
+        name: 'Aplicação principal',
+        audienceRules: [
+          FormAudienceRule(
+            id: _uuid(),
+            kind: FormAudienceRuleKind.institution,
+            mode: FormAudienceRuleMode.include,
+            targetId: _definition.institutionId,
+          ),
+        ],
+        managementVersion: 0,
+      );
+    });
+  }
+
   Future<void> _saveApplication() async {
     final application = _application;
     final api = widget.api;
@@ -781,6 +1321,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     } finally {
       if (mounted) setState(() => _savingDistribution = false);
     }
+  }
+
+  String _audienceRuleLabel(FormAudienceRule rule) {
+    final mode = rule.mode == FormAudienceRuleMode.include ? 'incluir' : 'excluir';
+    if (rule.kind == FormAudienceRuleKind.institution &&
+        rule.targetId == _definition.institutionId) {
+      return 'Instituição atual · $mode';
+    }
+    return '${_audienceKind(rule.kind)} · $mode · ${rule.targetId}';
   }
 
   String _audienceKind(FormAudienceRuleKind kind) => switch (kind) {

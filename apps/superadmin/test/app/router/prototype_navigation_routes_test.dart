@@ -33,7 +33,7 @@ void main() {
       ('health-medication-plans', '/dev/health-care/medication-plans'),
       ('plans', '/dev/plans'),
       ('import', '/dev/imports'),
-      ('invites', '/invites'),
+      ('invites', '/dev/invites'),
       ('notices', '/notices'),
       ('audit', '/dev/audit'),
       ('catalog', '/dev/catalog'),
