@@ -17,6 +17,9 @@ final class SupabaseNoticeRepository implements NoticeRepository {
           'list_notices_for_superadmin',
           params: {
             'p_search': _nullable(query.search),
+            'p_types': query.types.isEmpty
+                ? null
+                : query.types.map((value) => value.storageValue).toList(growable: false),
             'p_statuses': query.statuses.isEmpty
                 ? null
                 : query.statuses.map(_statusValue).toList(growable: false),
@@ -187,6 +190,7 @@ final class SupabaseNoticeRepository implements NoticeRepository {
 }
 
 Map<String, Object?> _draftPayload(NoticeDraft draft) => {
+  'type': draft.type.storageValue,
   'title': draft.title.trim(),
   'body': draft.message.trim(),
   'priority': draft.priority.name,
@@ -221,6 +225,7 @@ PlatformNotice _notice(Map<String, dynamic> value) {
     aliases: {'expired': NoticeStatus.ended, 'inactive': NoticeStatus.cancelled},
   );
   return PlatformNotice(
+    type: communicationTypeFromStorage(value['type'] ?? value['notice_type']),
     id: _string(value['id']),
     title: _string(value['title']),
     message: _string(value['body'] ?? value['message']),

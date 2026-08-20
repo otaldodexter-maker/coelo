@@ -21,14 +21,19 @@ void main() {
     });
     addTearDown(client.dispose);
 
-    final page = await SupabaseNoticeRepository(
-      client,
-    ).fetchPage(const NoticeDirectoryQuery(search: 'Rotina', pageSize: 24));
+    final page = await SupabaseNoticeRepository(client).fetchPage(
+      const NoticeDirectoryQuery(
+        search: 'Rotina',
+        types: {CommunicationType.notice, CommunicationType.forYou},
+        pageSize: 24,
+      ),
+    );
 
     expect(captured!.url.path, endsWith('/rpc/list_notices_for_superadmin'));
     final body = jsonDecode(captured!.body) as Map<String, dynamic>;
     expect(body['p_search'], 'Rotina');
     expect(body['p_limit'], 24);
+    expect(body['p_types'], ['popup', 'for_you']);
     expect(page.items.single.title, 'Rotina');
     expect(page.nextCursorId, '20000000-0000-4000-8000-000000000001');
     expect(captured!.body, isNot(contains('service_role')));
@@ -44,6 +49,7 @@ void main() {
 
     await SupabaseNoticeRepository(client).saveDraft(
       NoticeDraft(
+        type: CommunicationType.highlight,
         title: 'Rotina',
         message: 'Mensagem',
         priority: NoticePriority.important,
@@ -80,14 +86,34 @@ void main() {
     expect(body['p_request_id'], '10000000-0000-4000-8000-000000000001');
     expect(body['p_expected_version'], 7);
     final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['type'], 'highlight');
     expect(payload['button_color'], '#D63C00');
-    expect(payload['popup_size'], 'large');
+    expect(payload['popup_size'], 'standard');
+    expect(payload['behavior'], 'dismissible');
     expect(
       ((payload['audience'] as Map<String, dynamic>)['rules'] as List).single,
       containsPair('filters', {
         'search': ['Centro'],
       }),
     );
+  });
+
+  test('maps legacy and current communication types from the RPC', () async {
+    for (final entry in {
+      'popup': CommunicationType.notice,
+      'notice': CommunicationType.notice,
+      'critical_notice': CommunicationType.notice,
+      'content_card': CommunicationType.content,
+      'highlight': CommunicationType.highlight,
+      'for_you': CommunicationType.forYou,
+    }.entries) {
+      final client = _client(
+        (request) async => _json(request, {..._noticeJson(), 'type': entry.key}),
+      );
+      final item = await SupabaseNoticeRepository(client).getById('id');
+      expect(item.type, entry.value, reason: entry.key);
+      client.dispose();
+    }
   });
 
   test('maps forbidden responses without exposing server details', () async {

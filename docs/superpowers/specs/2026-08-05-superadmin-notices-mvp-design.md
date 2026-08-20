@@ -2,22 +2,29 @@
 source: "docs/product/prd-superadmin.md; specs/010-superadmin-completo-v1-technical-spec.md; specs/012-superadmin-mvp.md; docs/design/design-system.md; aprovações do Owner Coelo em 2026-08-05 e 2026-08-11"
 status: "approved-design"
 generated_at: "2026-08-11"
+updated_at: "2026-08-20"
 ---
 
-# Avisos do Superadmin no MVP
+# Comunicações do app no Superadmin
 
 ## Objetivo e problema
 
-Refatorar Avisos como experiência administrativa para criar, revisar, agendar
-e acompanhar popups oficiais do Coelo. A implementação atual mistura diretório
-e formulário, enfraquecendo a hierarquia e a revisão antes da publicação.
+Evoluir Avisos para a experiência administrativa `Comunicações do app`, capaz
+de criar, revisar, agendar e acompanhar Avisos, Conteúdos, Destaques e itens
+Para você. Aviso preserva exclusivamente a semântica de popup e interrupção;
+os demais tipos não podem adquirir comportamento de popup.
 
 O MVP passa a incluir um construtor controlado. Ele não se torna uma plataforma
 genérica de campanhas nem um editor livre de layouts.
 
 ## Escopo aprovado
 
-- Diretório exclusivo, sem formulário aberto junto à listagem.
+- Diretório exclusivo, sem formulário aberto junto à listagem, com categorias
+  `Todos`, `Avisos`, `Conteúdos`, `Destaques` e `Para você`.
+- Enum fechado de tipo: `Aviso`, `Conteúdo`, `Destaque` e `Para você`.
+- Prioridade, público, vigência e recorrência são comuns aos quatro tipos.
+- Comportamento de aceite, tamanho, inset e aparência de popup pertencem
+  somente a `Aviso`.
 - Criar/Editar em rota própria com cinco etapas: Identidade; Conteúdo e
   aparência; Público e dispositivos; Exibição e recorrência; Revisão e
   publicação.
@@ -37,8 +44,9 @@ genérica de campanhas nem um editor livre de layouts.
   nunca impede a saída do app. Conteúdo crítico obrigatório permanece separado
   de conteúdo opcional silenciável.
 - Estados rascunho, agendado, ativo, pausado, expirado e inativo.
-- Prévia responsiva fiel ao popup entregue, inclusive CTA, cor do botão,
-  tamanhos compacto, padrão, expandido e tela cheia e espaçamento externo.
+- Prévia responsiva fiel ao popup entregue para `Aviso`, inclusive CTA, cor do
+  botão, tamanhos e espaçamento externo. Os demais tipos usam card
+  administrativo neutro e tipado, sem antecipar a UI futura do Principal.
 - Dados, alcance, entrega, visualização e aceite vêm do backend; produção não
   usa fixtures, métricas inventadas nem sucesso local.
 
@@ -52,7 +60,7 @@ genérica de campanhas nem um editor livre de layouts.
 
 ## Superfícies e direção visual
 
-- `apps/superadmin`: diretório, criação/edição e prévia de Avisos.
+- `apps/superadmin`: diretório, criação/edição e prévia de Comunicações do app.
 - Instituições é a baseline do diretório: toolbar, busca, filtros,
   `CoeloAdminCreateAction`, `CoeloAdminInteractiveCard`, status expansível,
   `CoeloAdminFlyout` e paginação.
@@ -73,7 +81,8 @@ etapa, erro ou ação. Foco visível, teclado, toque, alvos de 48 px, contraste
 
 ## Entidades, permissões e tenant
 
-`PlatformNotice` e `NoticeDraft` representam conteúdo, prioridade, estado,
+`PlatformNotice` e `NoticeDraft` preservam os contratos existentes e passam a
+representar também o tipo da comunicação, conteúdo, prioridade, estado,
 vigência, audiência, comportamento, destinos, recorrência, orientação, tons e
 aparência tipada. A produção usa contrato assíncrono e adapter Supabase; fake
 fica restrito a testes isolados.
@@ -92,7 +101,7 @@ Salvar e publicar são comandos idempotentes, versionados e transacionais.
 | Localização/contato | Não aplica. |
 | Representantes, admins e profissionais | Aplica somente como vínculos/papéis de audiência. |
 | Pessoas/perfis | Aplica: pessoa global e vínculo contextual pesquisado no servidor. |
-| Tipos/subtipos | Aplica apenas enum fechado de aviso; sem subtipo livre ou `Outros`. |
+| Tipos/subtipos | Enum fechado `Aviso`, `Conteúdo`, `Destaque` e `Para você`; sem subtipo livre ou `Outros`. |
 | Status | Aplica como `Status do aviso`: rascunho, agendado, ativo, pausado, expirado e inativo. |
 | Hierarquia | Aplica: instituição → unidade → turma, validada no servidor. |
 | Plano | Não aplica como edição; eventual filtro é somente regra server-side autorizada. |
@@ -109,8 +118,8 @@ não pertencem ao domínio de Avisos.
 - Formulário: inicial, alterado, erro por etapa, salvando, rascunho salvo,
   agendado/publicado e falha sem perder dados.
 - Controles: default, hover, foco, pressed, selected, open e disabled.
-- Prévia: texto sobre fundo, imagem horizontal, imagem vertical e os três
-  comportamentos de aceite.
+- Prévia: popup para Aviso; card administrativo para os demais tipos. Apenas
+  Aviso oferece os três comportamentos de aceite.
 
 ## Ciclo de vida
 
@@ -141,6 +150,10 @@ protegidos, separados da trilha administrativa append-only.
    reativação, expiração e inativação.
 6. A matriz responsiva, light/dark, teclado, toque e texto a 200% passa.
 7. Cor não é o único indicador e nenhum widget Material cru proibido entra.
+8. Valores legados `popup`, `notice` e `critical_notice` são lidos como Aviso;
+   `content_card` é lido como Conteúdo, sem migração destrutiva.
+9. O tipo pode mudar em rascunho, agendado ou pausado, com revalidação e
+   remoção das configurações exclusivas de popup quando deixar de ser Aviso.
 
 ## Testes exigidos
 

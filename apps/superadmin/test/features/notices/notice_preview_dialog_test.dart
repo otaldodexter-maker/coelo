@@ -6,6 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('uses an administrative card instead of a popup for non-notice types', (
+    tester,
+  ) async {
+    for (final type in [
+      CommunicationType.content,
+      CommunicationType.highlight,
+      CommunicationType.forYou,
+    ]) {
+      await _openPreview(tester, _notice(type: type));
+      expect(find.byKey(const Key('communication-card-preview')), findsOneWidget);
+      expect(find.byKey(const Key('notice-popup-surface')), findsNothing);
+      expect(find.text(type.label), findsOneWidget);
+      await tester.tap(find.text('Fechar'));
+      await tester.pumpAndSettle();
+    }
+  });
+
   testWidgets('renders text background preview without image', (tester) async {
     await _openPreview(tester, _notice());
 
@@ -243,6 +260,7 @@ Future<void> _openPreview(
 }
 
 PlatformNotice _notice({
+  CommunicationType type = CommunicationType.notice,
   NoticeBehavior behavior = NoticeBehavior.confirmation,
   NoticeContentFormat contentFormat = NoticeContentFormat.textBackground,
   NoticeImageOrientation imageOrientation = NoticeImageOrientation.vertical,
@@ -252,6 +270,7 @@ PlatformNotice _notice({
   String? linkLabel,
   String message = 'Read before continuing.',
 }) => PlatformNotice(
+  type: type,
   id: 'notice',
   title: 'Notice preview',
   message: message,

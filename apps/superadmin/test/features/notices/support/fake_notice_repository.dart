@@ -38,6 +38,7 @@ final class FakeNoticeRepository implements NoticeRepository {
           if (query.priorities.isNotEmpty && !query.priorities.contains(notice.priority)) {
             return false;
           }
+          if (query.types.isNotEmpty && !query.types.contains(notice.type)) return false;
           if (query.cursorOccurredAt case final cursor?) {
             final byDate = notice.startsAt.compareTo(cursor);
             if (byDate > 0 || (byDate == 0 && notice.id.compareTo(query.cursorId ?? '') >= 0)) {
@@ -159,6 +160,7 @@ final class FakeNoticeRepository implements NoticeRepository {
     NoticeStatus status = NoticeStatus.draft,
     int version = 0,
   }) => PlatformNotice(
+    type: draft.type,
     id: id,
     title: draft.title,
     message: draft.message,

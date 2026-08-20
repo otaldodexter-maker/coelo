@@ -28,6 +28,7 @@ final class NoticeFormController extends ChangeNotifier {
     intervalDaysController = TextEditingController();
     dayOfMonthController = TextEditingController();
     priority = NoticePriority.important;
+    type = CommunicationType.notice;
     contentFormat = NoticeContentFormat.textBackground;
     audience = NoticeAudience.everyone;
     targetDevice = NoticeTargetDevice.all;
@@ -73,6 +74,7 @@ final class NoticeFormController extends ChangeNotifier {
   String? errorMessage;
   NoticeRepositoryException? loadFailure;
   late NoticePriority priority;
+  late CommunicationType type;
   late NoticeContentFormat contentFormat;
   late NoticeAudience audience;
   late NoticeTargetDevice targetDevice;
@@ -152,6 +154,7 @@ final class NoticeFormController extends ChangeNotifier {
     intervalDaysController.text = notice.intervalDays?.toString() ?? '';
     dayOfMonthController.text = notice.dayOfMonth?.toString() ?? '';
     priority = notice.priority;
+    type = notice.type;
     contentFormat = notice.contentFormat;
     audience = _allowedAudiences.contains(notice.audience)
         ? notice.audience
@@ -288,6 +291,14 @@ final class NoticeFormController extends ChangeNotifier {
   }
 
   void setTargetDevice(NoticeTargetDevice value) => _set(() => targetDevice = value);
+  void setType(CommunicationType value) => _set(() {
+    type = value;
+    if (value != CommunicationType.notice) {
+      behavior = NoticeBehavior.dismissible;
+      popupSize = NoticePopupSize.standard;
+      hasOuterInset = true;
+    }
+  });
   void setBehavior(NoticeBehavior value) => _set(() => behavior = value);
   void setImageOrientation(NoticeImageOrientation value) => _set(() => imageOrientation = value);
   void setStartsAt(DateTime value) => _set(() => startsAt = value);
@@ -442,6 +453,7 @@ final class NoticeFormController extends ChangeNotifier {
 
   NoticeDraft get draft {
     return NoticeDraft(
+      type: type,
       title: titleController.text.trim(),
       message: messageController.text.trim(),
       priority: priority,
@@ -482,6 +494,7 @@ final class NoticeFormController extends ChangeNotifier {
     final saved = savedNotice;
     final value = draft;
     return PlatformNotice(
+      type: value.type,
       id: saved?.id ?? 'notice-preview',
       title: value.title,
       message: value.message,

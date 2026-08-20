@@ -1,3 +1,28 @@
+enum CommunicationType { notice, content, highlight, forYou }
+
+extension CommunicationTypeLabel on CommunicationType {
+  String get label => switch (this) {
+    CommunicationType.notice => 'Aviso',
+    CommunicationType.content => 'Conteúdo',
+    CommunicationType.highlight => 'Destaque',
+    CommunicationType.forYou => 'Para você',
+  };
+
+  String get storageValue => switch (this) {
+    CommunicationType.notice => 'popup',
+    CommunicationType.content => 'content_card',
+    CommunicationType.highlight => 'highlight',
+    CommunicationType.forYou => 'for_you',
+  };
+}
+
+CommunicationType communicationTypeFromStorage(Object? value) => switch (value?.toString()) {
+  'content_card' || 'content' => CommunicationType.content,
+  'highlight' => CommunicationType.highlight,
+  'for_you' => CommunicationType.forYou,
+  _ => CommunicationType.notice,
+};
+
 enum NoticeStatus { draft, scheduled, active, paused, ended, cancelled }
 
 extension NoticeStatusLabel on NoticeStatus {
@@ -212,6 +237,7 @@ String _weekdayNames(List<int> days) {
 
 final class PlatformNotice {
   const PlatformNotice({
+    this.type = CommunicationType.notice,
     required this.id,
     required this.title,
     required this.message,
@@ -221,7 +247,7 @@ final class PlatformNotice {
     required this.endsAt,
     required this.audience,
     required this.audienceLabel,
-    required this.behavior,
+    required NoticeBehavior behavior,
     bool mandatory = false,
     required this.targetDevice,
     required this.reach,
@@ -230,7 +256,7 @@ final class PlatformNotice {
     this.backgroundColorValue,
     this.textColorValue,
     this.buttonColorValue,
-    this.popupSize = NoticePopupSize.standard,
+    NoticePopupSize popupSize = NoticePopupSize.standard,
     bool hasOuterInset = true,
     this.audienceSelection = const NoticeAudienceSelection(),
     this.recurrence = NoticeRecurrence.oneTime,
@@ -247,9 +273,14 @@ final class PlatformNotice {
     this.viewedCount = 0,
     this.acceptedCount = 0,
     this.managementVersion = 0,
-  }) : mandatory = behavior != NoticeBehavior.dismissible,
-       hasOuterInset = popupSize == NoticePopupSize.fullscreen ? false : hasOuterInset;
+  }) : behavior = type == CommunicationType.notice ? behavior : NoticeBehavior.dismissible,
+       mandatory = type == CommunicationType.notice && behavior != NoticeBehavior.dismissible,
+       popupSize = type == CommunicationType.notice ? popupSize : NoticePopupSize.standard,
+       hasOuterInset = type == CommunicationType.notice
+           ? (popupSize == NoticePopupSize.fullscreen ? false : hasOuterInset)
+           : true;
 
+  final CommunicationType type;
   final String id;
   final String title;
   final String message;
@@ -299,6 +330,7 @@ final class PlatformNotice {
       status == NoticeStatus.scheduled ||
       status == NoticeStatus.paused;
   bool get requiresAcceptance => behavior != NoticeBehavior.dismissible;
+  bool get isPopup => type == CommunicationType.notice;
   bool get isRecurring => recurrence != NoticeRecurrence.oneTime;
   String get recurrenceLabel => recurrenceSummaryLabel(
     recurrence: recurrence,
@@ -309,6 +341,7 @@ final class PlatformNotice {
   );
 
   PlatformNotice copyWith({
+    CommunicationType? type,
     String? id,
     String? title,
     String? message,
@@ -347,6 +380,7 @@ final class PlatformNotice {
     int? acceptedCount,
     int? managementVersion,
   }) => PlatformNotice(
+    type: type ?? this.type,
     id: id ?? this.id,
     title: title ?? this.title,
     message: message ?? this.message,
@@ -387,20 +421,21 @@ final class PlatformNotice {
 
 final class NoticeDraft {
   const NoticeDraft({
+    this.type = CommunicationType.notice,
     required this.title,
     required this.message,
     required this.priority,
     required this.audience,
     required this.audienceLabel,
-    required this.behavior,
-    this.mandatory = false,
+    required NoticeBehavior behavior,
+    bool mandatory = false,
     this.targetDevice = NoticeTargetDevice.all,
     this.contentFormat = NoticeContentFormat.textBackground,
     this.audienceRoleLabel,
     this.backgroundColorValue,
     this.textColorValue,
     this.buttonColorValue,
-    this.popupSize = NoticePopupSize.standard,
+    NoticePopupSize popupSize = NoticePopupSize.standard,
     bool hasOuterInset = true,
     this.audienceSelection = const NoticeAudienceSelection(),
     this.buttonLabel = 'Confirmar',
@@ -415,8 +450,14 @@ final class NoticeDraft {
     this.textTone = NoticeVisualTone.light,
     this.startsAt,
     this.endsAt,
-  }) : hasOuterInset = popupSize == NoticePopupSize.fullscreen ? false : hasOuterInset;
+  }) : behavior = type == CommunicationType.notice ? behavior : NoticeBehavior.dismissible,
+       mandatory = type == CommunicationType.notice && behavior != NoticeBehavior.dismissible,
+       popupSize = type == CommunicationType.notice ? popupSize : NoticePopupSize.standard,
+       hasOuterInset = type == CommunicationType.notice
+           ? (popupSize == NoticePopupSize.fullscreen ? false : hasOuterInset)
+           : true;
 
+  final CommunicationType type;
   final String title;
   final String message;
   final NoticePriority priority;
@@ -453,6 +494,8 @@ final class NoticeDraft {
     popupSize: popupSize,
     hasOuterInset: hasOuterInset,
   );
+
+  bool get isPopup => type == CommunicationType.notice;
 }
 
 List<String> _noticeStringList(Object? value) =>

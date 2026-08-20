@@ -79,7 +79,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     if (_controller.isLoading) {
       return const CoeloStatePanel(
         key: Key('notice-form-loading'),
-        title: 'Carregando aviso',
+        title: 'Carregando comunicação',
         message: 'Aguarde enquanto os dados autorizados são carregados.',
         loading: true,
       );
@@ -89,7 +89,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         key: const Key('notice-form-load-failure'),
         title: switch (failure) {
           NoticeUnauthorizedException() => 'Sem permissão',
-          NoticeNotFoundException() => 'Aviso não encontrado',
+          NoticeNotFoundException() => 'Comunicação não encontrada',
           _ => 'Não foi possível carregar',
         },
         message: failure.safeMessage,
@@ -104,7 +104,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          _controller.isEditing ? 'Editar aviso' : 'Novo aviso',
+          _controller.isEditing ? 'Editar comunicação' : 'Nova comunicação',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: CoeloSpacing.space1),
@@ -137,9 +137,19 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   };
 
   Widget _identityStep() => _sectionCard(
-    title: 'Identidade do aviso',
-    description: 'Dê um nome claro para localizar e priorizar este comunicado.',
+    title: 'Identidade da comunicação',
+    description: 'Defina o tipo, um nome claro e a prioridade operacional.',
     children: [
+      CoeloAdminSingleSelectField<CommunicationType>(
+        key: const Key('communication-type'),
+        label: 'Tipo',
+        value: _controller.type,
+        options: CommunicationType.values,
+        optionLabel: (value) => value.label,
+        onChanged: _controller.setType,
+        prefixIcon: Icons.category_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
       CoeloFormTextField(
         key: const Key('notice-title'),
         controller: _controller.titleController,
@@ -160,7 +170,9 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   Widget _contentStep() => _sectionCard(
     title: 'Conteúdo e aparência',
-    description: 'Configure a mensagem, a interação e a apresentação visual do popup.',
+    description: _controller.type == CommunicationType.notice
+        ? 'Configure a mensagem, a interação e a apresentação visual do popup.'
+        : 'Configure o conteúdo. Este tipo não gera popup ou interrupção.',
     children: [
       CoeloFormTextField(
         key: const Key('notice-message'),
@@ -182,7 +194,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
           icon: const Icon(Icons.text_fields_rounded),
           label: const Text('Converter para texto'),
         ),
-      ] else
+      ] else if (_controller.type == CommunicationType.notice)
         _formGrid([
           CoeloAdminSingleSelectField<NoticeContentFormat>(
             label: 'Formato',
@@ -198,57 +210,73 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
             optionLabel: _behaviorLabel,
             onChanged: _controller.setBehavior,
           ),
+        ])
+      else
+        CoeloAdminSingleSelectField<NoticeContentFormat>(
+          label: 'Formato',
+          value: _controller.contentFormat,
+          options: const [NoticeContentFormat.textBackground],
+          optionLabel: _contentFormatLabel,
+          onChanged: _controller.setContentFormat,
+        ),
+      if (_controller.type == CommunicationType.notice) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _formGrid([
+          _colorButton(
+            key: const Key('notice-background-color'),
+            label: 'Cor de fundo',
+            color: _controller.backgroundColor,
+            onPressed: () => _pickColor(background: true),
+          ),
+          _colorButton(
+            key: const Key('notice-text-color'),
+            label: 'Cor do texto',
+            color: _controller.textColor,
+            onPressed: () => _pickColor(background: false),
+          ),
+          _colorButton(
+            key: const Key('notice-button-color'),
+            label: 'Cor do botão',
+            color: _controller.buttonColor,
+            onPressed: () => _pickColor(button: true),
+          ),
         ]),
-      const SizedBox(height: CoeloSpacing.space4),
-      _formGrid([
-        _colorButton(
-          key: const Key('notice-background-color'),
-          label: 'Cor de fundo',
-          color: _controller.backgroundColor,
-          onPressed: () => _pickColor(background: true),
+        const SizedBox(height: CoeloSpacing.space4),
+        _formGrid([
+          CoeloFormTextField(
+            controller: _controller.buttonLabelController,
+            labelText: 'Rótulo do botão principal',
+            hintText: 'Confirmar',
+            prefixIcon: Icons.smart_button_outlined,
+          ),
+          CoeloAdminSingleSelectField<NoticePopupSize>(
+            key: const Key('notice-popup-size'),
+            label: 'Tamanho do popup',
+            value: _controller.popupSize,
+            options: NoticePopupSize.values,
+            optionLabel: _popupSizeLabel,
+            onChanged: _controller.setPopupSize,
+          ),
+        ]),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloAdminToggleField(
+          key: const Key('notice-popup-outer-inset-toggle'),
+          label: 'Espaçamento externo',
+          description: _controller.popupSize == NoticePopupSize.fullscreen
+              ? 'Tela cheia ocupa toda a área disponível.'
+              : 'Mantém respiro entre o popup e as bordas da tela.',
+          value: _controller.hasOuterInset,
+          onChanged: _controller.popupSize == NoticePopupSize.fullscreen
+              ? null
+              : _controller.setHasOuterInset,
         ),
-        _colorButton(
-          key: const Key('notice-text-color'),
-          label: 'Cor do texto',
-          color: _controller.textColor,
-          onPressed: () => _pickColor(background: false),
+      ] else ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _infoBanner(
+          '${_controller.type.label} será distribuído como conteúdo do app. '
+          'A superfície final será definida no Principal e não usa popup.',
         ),
-        _colorButton(
-          key: const Key('notice-button-color'),
-          label: 'Cor do botão',
-          color: _controller.buttonColor,
-          onPressed: () => _pickColor(button: true),
-        ),
-      ]),
-      const SizedBox(height: CoeloSpacing.space4),
-      _formGrid([
-        CoeloFormTextField(
-          controller: _controller.buttonLabelController,
-          labelText: 'Rótulo do botão principal',
-          hintText: 'Confirmar',
-          prefixIcon: Icons.smart_button_outlined,
-        ),
-        CoeloAdminSingleSelectField<NoticePopupSize>(
-          key: const Key('notice-popup-size'),
-          label: 'Tamanho do popup',
-          value: _controller.popupSize,
-          options: NoticePopupSize.values,
-          optionLabel: _popupSizeLabel,
-          onChanged: _controller.setPopupSize,
-        ),
-      ]),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminToggleField(
-        key: const Key('notice-popup-outer-inset-toggle'),
-        label: 'Espaçamento externo',
-        description: _controller.popupSize == NoticePopupSize.fullscreen
-            ? 'Tela cheia ocupa toda a área disponível.'
-            : 'Mantém respiro entre o popup e as bordas da tela.',
-        value: _controller.hasOuterInset,
-        onChanged: _controller.popupSize == NoticePopupSize.fullscreen
-            ? null
-            : _controller.setHasOuterInset,
-      ),
+      ],
     ],
   );
 
@@ -277,11 +305,28 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       if (_controller.audience == NoticeAudience.everyone)
         Semantics(
           label: 'Todos os públicos da plataforma selecionados',
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.public_rounded),
-            title: const Text('Todos'),
-            subtitle: const Text('O aviso será destinado a todo o escopo autorizado.'),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: CoeloSpacing.space1),
+                child: Icon(Icons.public_rounded),
+              ),
+              const SizedBox(width: CoeloSpacing.space3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Todos', style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: CoeloSpacing.space1),
+                    Text(
+                      'A comunicação será destinada a todo o escopo autorizado.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         )
       else
@@ -391,9 +436,10 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
           description: 'Confira o alcance, a configuração e a experiência antes de publicar.',
           children: [
             _reviewLine('Título', notice.title),
+            _reviewLine('Tipo', notice.type.label),
             _reviewLine('Prioridade', _priorityLabel(notice.priority)),
             _reviewLine('Formato', _contentFormatLabel(notice.contentFormat)),
-            _reviewLine('Interação', _behaviorLabel(notice.behavior)),
+            if (notice.isPopup) _reviewLine('Interação', _behaviorLabel(notice.behavior)),
             _reviewLine(
               'Público',
               '${_audienceTypeLabel(notice.audience)} · ${notice.audienceLabel}',
@@ -411,35 +457,40 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
         _metrics(notice),
         const SizedBox(height: CoeloSpacing.space4),
         _sectionCard(
-          title: 'Prévia no dispositivo',
-          description: 'Alterne a largura para conferir o popup final antes de publicar.',
+          title: notice.isPopup ? 'Prévia no dispositivo' : 'Prévia administrativa',
+          description: notice.isPopup
+              ? 'Alterne a largura para conferir o popup final antes de publicar.'
+              : 'Confira a leitura operacional sem antecipar a tela futura do Principal.',
           children: [
-            CoeloAdminSingleSelectField<NoticeTargetDevice>(
-              key: const Key('notice-preview-device'),
-              label: 'Visualizar como',
-              value: _previewDevice,
-              options: const [
-                NoticeTargetDevice.web,
-                NoticeTargetDevice.tablet,
-                NoticeTargetDevice.mobile,
-              ],
-              optionLabel: _deviceLabel,
-              onChanged: (value) => setState(() => _previewDevice = value),
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            NoticePopupPreview(
-              notice: notice,
-              device: _previewDevice,
-              checkboxChecked: _previewCheckboxChecked,
-              onCheckboxChanged: notice.behavior == NoticeBehavior.checkboxConfirmation
-                  ? (value) => setState(() => _previewCheckboxChecked = value)
-                  : null,
-            ),
+            if (notice.isPopup) ...[
+              CoeloAdminSingleSelectField<NoticeTargetDevice>(
+                key: const Key('notice-preview-device'),
+                label: 'Visualizar como',
+                value: _previewDevice,
+                options: const [
+                  NoticeTargetDevice.web,
+                  NoticeTargetDevice.tablet,
+                  NoticeTargetDevice.mobile,
+                ],
+                optionLabel: _deviceLabel,
+                onChanged: (value) => setState(() => _previewDevice = value),
+              ),
+              const SizedBox(height: CoeloSpacing.space4),
+              NoticePopupPreview(
+                notice: notice,
+                device: _previewDevice,
+                checkboxChecked: _previewCheckboxChecked,
+                onCheckboxChanged: notice.behavior == NoticeBehavior.checkboxConfirmation
+                    ? (value) => setState(() => _previewCheckboxChecked = value)
+                    : null,
+              ),
+            ] else
+              CommunicationPreviewCard(notice: notice),
             const SizedBox(height: CoeloSpacing.space3),
             OutlinedButton.icon(
               onPressed: _onPreview,
               icon: const Icon(Icons.open_in_new_rounded),
-              label: const Text('Ver popup final'),
+              label: Text(notice.isPopup ? 'Ver popup final' : 'Abrir prévia'),
             ),
           ],
         ),
@@ -683,6 +734,25 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     ),
   );
 
+  Widget _infoBanner(String message) => Semantics(
+    container: true,
+    child: Container(
+      padding: const EdgeInsets.all(CoeloSpacing.space3),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: CoeloSpacing.space2),
+          Expanded(child: Text(message)),
+        ],
+      ),
+    ),
+  );
+
   Future<void> _pickColor({bool background = false, bool button = false}) async {
     final initialColor = button
         ? _controller.buttonColor
@@ -715,15 +785,17 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   }) async {
     final now = DateTime.now();
     final initial = value ?? now;
-    final selected = await showDatePicker(
+    final selected = await showCoeloDateRangePicker(
       context: context,
-      initialDate: DateTime(initial.year, initial.month, initial.day),
+      value: DateTimeRange(
+        start: DateTime(initial.year, initial.month, initial.day),
+        end: DateTime(initial.year, initial.month, initial.day),
+      ),
       firstDate: DateTime(2020),
       lastDate: DateTime(2060),
-      locale: const Locale('pt', 'BR'),
-      barrierLabel: 'Selecionar data',
+      showQuickRanges: false,
     );
-    if (mounted && selected != null) onChanged(selected);
+    if (mounted && selected != null) onChanged(selected.start);
   }
 
   Future<void> _onSaveDraft() async {

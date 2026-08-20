@@ -7,10 +7,33 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
+import 'communication_type_badge.dart';
+import 'notice_preview_dialog.dart';
 
 enum _NoticeStatusFilter { all, draft, scheduled, active, paused, ended, canceled }
+
+enum _CommunicationTypeFilter { all, notice, content, highlight, forYou }
+
+extension on _CommunicationTypeFilter {
+  String get label => switch (this) {
+    _CommunicationTypeFilter.all => 'Todos',
+    _CommunicationTypeFilter.notice => 'Avisos',
+    _CommunicationTypeFilter.content => 'Conteúdos',
+    _CommunicationTypeFilter.highlight => 'Destaques',
+    _CommunicationTypeFilter.forYou => 'Para você',
+  };
+
+  CommunicationType? get type => switch (this) {
+    _CommunicationTypeFilter.all => null,
+    _CommunicationTypeFilter.notice => CommunicationType.notice,
+    _CommunicationTypeFilter.content => CommunicationType.content,
+    _CommunicationTypeFilter.highlight => CommunicationType.highlight,
+    _CommunicationTypeFilter.forYou => CommunicationType.forYou,
+  };
+}
 
 enum NoticeDirectoryViewState { content, loading, error, forbidden }
 
@@ -36,7 +59,7 @@ extension _NoticeStatusFilterLabel on _NoticeStatusFilter {
   };
 }
 
-enum _NoticeCardAction { edit, publish, pause, resume, cancel }
+enum _NoticeCardAction { preview, edit, publish, pause, resume, cancel }
 
 final class NoticeDirectoryPage extends StatefulWidget {
   const NoticeDirectoryPage({
@@ -59,6 +82,7 @@ final class NoticeDirectoryPage extends StatefulWidget {
 final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   final _search = TextEditingController();
   _NoticeStatusFilter _statusFilter = _NoticeStatusFilter.all;
+  _CommunicationTypeFilter _typeFilter = _CommunicationTypeFilter.all;
   Timer? _searchDebounce;
   int _loadGeneration = 0;
   final Map<String, String> _actionRequestIds = {};
@@ -111,14 +135,26 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Avisos', style: Theme.of(context).textTheme.headlineSmall),
+                    Text('Comunicações do app', style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: CoeloSpacing.space1),
                     Text(
-                      'Gerencie os avisos exibidos nas experi\u00eancias Coelo.',
+                      'Gerencie avisos, conteúdos, destaques e recomendações exibidos no app.',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                     _toolbar(compact: compact),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    SuperadminUnderlineTabs<_CommunicationTypeFilter>(
+                      tabs: [
+                        for (final type in _CommunicationTypeFilter.values)
+                          SuperadminUnderlineTab(value: type, label: type.label),
+                      ],
+                      selected: _typeFilter,
+                      onSelected: (value) {
+                        setState(() => _typeFilter = value);
+                        _load(reset: true);
+                      },
+                    ),
                     const SizedBox(height: CoeloSpacing.space4),
                     Expanded(
                       child: _content(context, compact: compact, all: all, notices: notices),
@@ -158,8 +194,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         height: CoeloSize.touchMin,
         child: CoeloSearchField(
           controller: _search,
-          hintText: 'Buscar aviso',
-          semanticLabel: 'Buscar aviso por t\u00edtulo ou destinat\u00e1rio',
+          hintText: 'Buscar comunicação',
+          semanticLabel: 'Buscar comunicação por título, conteúdo ou contexto',
           onChanged: (_) {
             _searchDebounce?.cancel();
             _searchDebounce = Timer(const Duration(milliseconds: 300), () => _load(reset: true));
@@ -193,29 +229,29 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     required List<PlatformNotice> notices,
   }) => switch (widget.viewState == NoticeDirectoryViewState.content ? _state : widget.viewState) {
     NoticeDirectoryViewState.loading => const CoeloStatePanel(
-      title: 'Carregando avisos',
-      message: 'Aguarde enquanto os avisos s\u00e3o carregados.',
+      title: 'Carregando comunicações',
+      message: 'Aguarde enquanto as comunicações são carregadas.',
       loading: true,
     ),
     NoticeDirectoryViewState.error => _stateWithCreate(
       compact: compact,
       state: CoeloStatePanel(
         title: 'N\u00e3o foi poss\u00edvel carregar',
-        message: _errorMessage ?? 'N\u00e3o foi poss\u00edvel carregar os avisos.',
+        message: _errorMessage ?? 'Não foi possível carregar as comunicações.',
         actionLabel: 'Tentar novamente',
         onAction: () => _load(reset: true),
       ),
     ),
     NoticeDirectoryViewState.forbidden => CoeloStatePanel(
       title: 'Sem permiss\u00e3o',
-      message: _errorMessage ?? 'Voc\u00ea n\u00e3o tem permiss\u00e3o para ver avisos.',
+      message: _errorMessage ?? 'Você não tem permissão para ver comunicações.',
       icon: Icons.lock_outline_rounded,
     ),
     NoticeDirectoryViewState.content when all.isEmpty && !_hasActiveQuery => _stateWithCreate(
       compact: compact,
       state: const CoeloStatePanel(
-        title: 'Nenhum aviso',
-        message: 'Ainda n\u00e3o existem avisos cadastrados.',
+        title: 'Nenhuma comunicação',
+        message: 'Ainda não existem comunicações cadastradas.',
         icon: Icons.campaign_outlined,
       ),
     ),
@@ -223,11 +259,12 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       compact: compact,
       state: const CoeloStatePanel(
         title: 'Nenhum resultado',
-        message: 'Nenhum aviso encontrado com estes filtros.',
+        message: 'Nenhuma comunicação encontrada com estes filtros.',
         icon: Icons.search_off_rounded,
       ),
     ),
-    NoticeDirectoryViewState.content => _cards(context, notices: notices, compact: compact),
+    NoticeDirectoryViewState.content =>
+      compact ? _cards(context, notices: notices, compact: true) : _table(context, notices),
   };
 
   Widget _stateWithCreate({required bool compact, required Widget state}) {
@@ -245,7 +282,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       itemCount: children.length,
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 420,
-        mainAxisExtent: 260,
+        mainAxisExtent: 280,
         mainAxisSpacing: CoeloSpacing.space6,
         crossAxisSpacing: CoeloSpacing.space6,
       ),
@@ -257,8 +294,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     key: const Key('create-notice-card'),
     constraints: const BoxConstraints(minHeight: 216),
     child: CoeloAdminCreateAction(
-      label: 'Novo aviso',
-      description: 'Criar novo aviso.',
+      label: 'Nova comunicação',
+      description: 'Criar aviso, conteúdo, destaque ou item Para você.',
       icon: Icons.post_add_rounded,
       onPressed: widget.onCreate,
     ),
@@ -294,6 +331,108 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     );
   }
 
+  Widget _table(BuildContext context, List<PlatformNotice> notices) => Column(
+    children: [
+      CoeloAdminCreateAction(
+        key: const Key('create-notice-banner'),
+        label: 'Nova comunicação',
+        description: 'Criar aviso, conteúdo, destaque ou item Para você.',
+        icon: Icons.post_add_rounded,
+        variant: CoeloAdminCreateActionVariant.banner,
+        onPressed: widget.onCreate,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      Expanded(
+        child: SingleChildScrollView(
+          child: CoeloAdminResizableTable<PlatformNotice>(
+            key: ValueKey(
+              'communication-directory-table-${_typeFilter.type?.storageValue ?? 'all'}',
+            ),
+            items: notices,
+            rowKey: (notice) => 'communication-row-${notice.id}',
+            pinnedColumn: CoeloAdminTableColumn(
+              id: 'item',
+              label: 'Item',
+              initialWidth: 280,
+              minWidth: 220,
+              maxWidth: 420,
+              cellBuilder: (_, notice) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(notice.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    notice.message,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            columns: [
+              CoeloAdminTableColumn(
+                id: 'type',
+                label: 'Tipo',
+                initialWidth: 150,
+                minWidth: 130,
+                maxWidth: 190,
+                cellBuilder: (_, notice) => CommunicationTypeBadge(type: notice.type),
+              ),
+              _textColumn('priority', 'Prioridade', 130, (notice) => notice.priority.label),
+              _textColumn(
+                'validity',
+                'Vigência',
+                180,
+                (notice) => notice.endsAt == null
+                    ? 'Desde ${_formatDate(notice.startsAt)}'
+                    : '${_formatDate(notice.startsAt)} – ${_formatDate(notice.endsAt!)}',
+              ),
+              _textColumn('recurrence', 'Recorrência', 170, (notice) => notice.recurrenceLabel),
+              _textColumn('context', 'Contexto', 180, (notice) => notice.audienceLabel),
+              CoeloAdminTableColumn(
+                id: 'status',
+                label: 'Status',
+                initialWidth: 140,
+                minWidth: 120,
+                maxWidth: 180,
+                cellBuilder: (context, notice) => Align(
+                  alignment: Alignment.centerLeft,
+                  child: _statusIndicator(context, notice.status),
+                ),
+              ),
+              CoeloAdminTableColumn(
+                id: 'actions',
+                label: 'Ações',
+                initialWidth: 88,
+                minWidth: 80,
+                maxWidth: 104,
+                cellBuilder: (_, notice) => _rowActionMenu(notice),
+              ),
+            ],
+            headerHeight: 56,
+            rowHeight: 72,
+            onRowPressed: widget.onEdit == null ? null : (notice) => widget.onEdit!(notice.id),
+          ),
+        ),
+      ),
+    ],
+  );
+
+  CoeloAdminTableColumn<PlatformNotice> _textColumn(
+    String id,
+    String label,
+    double width,
+    String Function(PlatformNotice) value,
+  ) => CoeloAdminTableColumn(
+    id: id,
+    label: label,
+    initialWidth: width,
+    minWidth: width - 30,
+    maxWidth: width + 100,
+    cellBuilder: (_, notice) => Text(value(notice), maxLines: 2, overflow: TextOverflow.ellipsis),
+  );
+
   Widget _noticeCard(BuildContext context, PlatformNotice notice) {
     final theme = Theme.of(context);
     return CoeloAdminInteractiveCard(
@@ -323,6 +462,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                 _rowActionMenu(notice),
               ],
             ),
+            const SizedBox(height: CoeloSpacing.space2),
+            CommunicationTypeBadge(type: notice.type),
             const SizedBox(height: CoeloSpacing.space2),
             Text(
               '${notice.audienceLabel} \u00b7 ${notice.audience.label}',
@@ -359,6 +500,11 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     final actions = _rowActions(notice);
     return CoeloAdminFlyout<_NoticeCardAction>(
       items: [
+        CoeloAdminFlyoutItem(
+          value: _NoticeCardAction.preview,
+          icon: Icons.visibility_outlined,
+          label: notice.isPopup ? 'Pré-visualizar popup' : 'Prévia administrativa',
+        ),
         if (actions.contains(_NoticeCardAction.edit))
           const CoeloAdminFlyoutItem(
             value: _NoticeCardAction.edit,
@@ -394,7 +540,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       ],
       onSelected: (action) => _runAction(action, notice),
       builder: (context, controller) => IconButton(
-        tooltip: 'A\u00e7\u00f5es do aviso',
+        tooltip: 'Ações da comunicação',
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
         icon: const Icon(Icons.more_horiz_rounded),
       ),
@@ -402,7 +548,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }
 
   Set<_NoticeCardAction> _rowActions(PlatformNotice notice) {
-    final actions = <_NoticeCardAction>{};
+    final actions = <_NoticeCardAction>{_NoticeCardAction.preview};
     if (notice.canEdit) {
       actions
         ..add(_NoticeCardAction.edit)
@@ -433,6 +579,10 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     final requestId = _actionRequestIds.putIfAbsent(requestKey, _requestId);
     try {
       switch (action) {
+        case _NoticeCardAction.preview:
+          _actionRequestIds.remove(requestKey);
+          await showNoticePreview(context, notice);
+          return;
         case _NoticeCardAction.edit:
           _actionRequestIds.remove(requestKey);
           widget.onEdit?.call(notice.id);
@@ -454,7 +604,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             expectedVersion: notice.managementVersion,
           );
           _actionRequestIds.remove(requestKey);
-          _refresh('Aviso pausado: ${updated.title}');
+          _refresh('Comunicação pausada: ${updated.title}');
           return;
         case _NoticeCardAction.resume:
           final updated = await widget.repository.changeStatus(
@@ -475,7 +625,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             reason: cancellationReason,
           );
           _actionRequestIds.remove(requestKey);
-          _refresh('Aviso inativado: ${updated.title}');
+          _refresh('Comunicação inativada: ${updated.title}');
           return;
       }
     } on NoticeRepositoryException catch (error) {
@@ -517,6 +667,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
 
   NoticeDirectoryQuery get _query => NoticeDirectoryQuery(
     search: _search.text.trim().isEmpty ? null : _search.text.trim(),
+    types: _typeFilter.type == null ? const {} : {_typeFilter.type!},
     statuses: _statusFilter.status == null ? const {} : {_statusFilter.status!},
     cursorOccurredAt: _currentCursorOccurredAt,
     cursorId: _currentCursorId,
@@ -524,7 +675,9 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   );
 
   bool get _hasActiveQuery =>
-      _search.text.trim().isNotEmpty || _statusFilter != _NoticeStatusFilter.all;
+      _search.text.trim().isNotEmpty ||
+      _statusFilter != _NoticeStatusFilter.all ||
+      _typeFilter != _CommunicationTypeFilter.all;
 
   Future<String?> _requestCancellationReason() async {
     final controller = TextEditingController();

@@ -1,16 +1,27 @@
 ---
-title: Avisos do Superadmin MVP
+title: Comunicações do app no Superadmin
 knowledge_id: superadmin-notices-mvp
 source: docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md
 status: validated
-generated_at: 2026-08-11
+generated_at: 2026-08-20
 audience: team
 surfaces: [superadmin, notices]
 visibility: internal
 review_owner: Coelo Product
 ---
 
-# Avisos do Superadmin MVP
+# Comunicações do app no Superadmin
+
+O módulo visualmente chamado `Comunicações do app` evolui a tela de Avisos sem
+substituí-la por um CMS. Ele gerencia quatro tipos fechados: `Aviso`,
+`Conteúdo`, `Destaque` e `Para você`. Prioridade, público, vigência e
+recorrência são comuns; comportamento, tamanho, inset e aparência de popup são
+exclusivos de Aviso. Valores legados de popup/notice continuam sendo lidos como
+Aviso e `content_card` como Conteúdo.
+
+O operador pode mudar o tipo enquanto o item estiver editável (rascunho,
+agendado ou pausado). Sair de Aviso remove configurações exclusivas de popup;
+voltar para Aviso exige configuração válida antes da publicação.
 
 Avisos oficiais da plataforma são diferentes dos avisos familiares de
 assiduidade. O módulo permite que equipe Coelo autorizada escolha `Todos` ou
@@ -34,6 +45,10 @@ O aviso pode ser dispensável, exigir confirmação ou exigir checkbox de ciênc
 seguido de confirmação. Aviso obrigatório reaparece até o aceite e pode
 bloquear a navegação, mas nunca impede a saída do app. Conteúdo crítico é
 separado de conteúdo opcional silenciável.
+
+No diretório e na revisão, Aviso mantém a prévia real de popup. Conteúdo,
+Destaque e Para você usam card administrativo neutro e tipado; essa prévia não
+define nem simula a futura superfície do app Principal.
 
 Métricas básicas agregam alcance, entrega, visualização e aceite. Auditoria
 registra apenas resumos minimizados das mutações, sem PII, destinatários, mídia

@@ -8,6 +8,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
+  test('changing away from Aviso removes popup-only configuration', () {
+    final controller = NoticeFormController(repository: FakeNoticeRepository());
+    addTearDown(controller.dispose);
+    controller
+      ..setBehavior(NoticeBehavior.checkboxConfirmation)
+      ..setPopupSize(NoticePopupSize.fullscreen)
+      ..setType(CommunicationType.forYou);
+
+    expect(controller.type, CommunicationType.forYou);
+    expect(controller.behavior, NoticeBehavior.dismissible);
+    expect(controller.popupSize, NoticePopupSize.standard);
+    expect(controller.hasOuterInset, isTrue);
+    expect(controller.draft.isPopup, isFalse);
+  });
+
   test('select-all freezes the normalized audience search', () async {
     final controller = NoticeFormController(repository: FakeNoticeRepository());
     addTearDown(controller.dispose);

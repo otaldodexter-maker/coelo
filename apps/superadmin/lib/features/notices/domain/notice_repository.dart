@@ -3,6 +3,7 @@ import 'platform_notice.dart';
 final class NoticeDirectoryQuery {
   const NoticeDirectoryQuery({
     this.search,
+    this.types = const {},
     this.statuses = const {},
     this.priorities = const {},
     this.cursorOccurredAt,
@@ -11,6 +12,7 @@ final class NoticeDirectoryQuery {
   });
 
   final String? search;
+  final Set<CommunicationType> types;
   final Set<NoticeStatus> statuses;
   final Set<NoticePriority> priorities;
   final DateTime? cursorOccurredAt;
@@ -88,7 +90,7 @@ final class NoticeUnauthorizedException extends NoticeRepositoryException {
 }
 
 final class NoticeNotFoundException extends NoticeRepositoryException {
-  const NoticeNotFoundException() : super('Aviso não encontrado.');
+  const NoticeNotFoundException() : super('Comunicação não encontrada.');
 }
 
 final class NoticeConflictException extends NoticeRepositoryException {

@@ -2,6 +2,32 @@ import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  group('CommunicationType', () {
+    test('keeps the four product types closed and labeled in pt-BR', () {
+      expect(CommunicationType.values, [
+        CommunicationType.notice,
+        CommunicationType.content,
+        CommunicationType.highlight,
+        CommunicationType.forYou,
+      ]);
+      expect(CommunicationType.values.map((type) => type.label), [
+        'Aviso',
+        'Conteúdo',
+        'Destaque',
+        'Para você',
+      ]);
+    });
+
+    test('normalizes legacy database values without losing popup semantics', () {
+      for (final legacy in ['popup', 'notice', 'critical_notice']) {
+        expect(communicationTypeFromStorage(legacy), CommunicationType.notice);
+      }
+      expect(communicationTypeFromStorage('content_card'), CommunicationType.content);
+      expect(communicationTypeFromStorage('highlight'), CommunicationType.highlight);
+      expect(communicationTypeFromStorage('for_you'), CommunicationType.forYou);
+    });
+  });
+
   group('NoticeAudienceSelection', () {
     test('round-trips mixed explicit and select-all rules without losing filters', () {
       const selection = NoticeAudienceSelection(
@@ -93,6 +119,25 @@ void main() {
       expect(draft.popupSize, NoticePopupSize.fullscreen);
       expect(draft.hasOuterInset, isFalse);
       expect(draft.appearance.effectiveHasOuterInset, isFalse);
+    });
+
+    test('non-popup draft strips popup-only configuration', () {
+      const draft = NoticeDraft(
+        type: CommunicationType.content,
+        title: 'Boletim',
+        message: 'Mensagem',
+        priority: NoticePriority.routine,
+        audience: NoticeAudience.everyone,
+        audienceLabel: 'Todos',
+        behavior: NoticeBehavior.checkboxConfirmation,
+        popupSize: NoticePopupSize.fullscreen,
+        hasOuterInset: false,
+      );
+
+      expect(draft.behavior, NoticeBehavior.dismissible);
+      expect(draft.popupSize, NoticePopupSize.standard);
+      expect(draft.hasOuterInset, isTrue);
+      expect(draft.isPopup, isFalse);
     });
 
     test('notice copyWith carries audience and appearance contracts', () {
