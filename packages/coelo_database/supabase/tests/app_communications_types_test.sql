@@ -32,11 +32,11 @@ select ok(
   'save validates the requested type'
 );
 select ok(
-  position("notice_type=case" in replace(pg_get_functiondef('public.save_notice_draft_for_superadmin(uuid,jsonb,uuid,bigint)'::regprocedure),' ','')) > 0,
+  position("notice_type=v_type::public.notice_type" in replace(pg_get_functiondef('public.save_notice_draft_for_superadmin(uuid,jsonb,uuid,bigint)'::regprocedure),' ','')) > 0,
   'save persists the normalized type on updates'
 );
 select ok(
-  position("p_payload->>'type'='popup'" in pg_get_functiondef('public.save_notice_draft_for_superadmin(uuid,jsonb,uuid,bigint)'::regprocedure)) > 0,
+  position("v_type='popup'" in pg_get_functiondef('public.save_notice_draft_for_superadmin(uuid,jsonb,uuid,bigint)'::regprocedure)) > 0,
   'popup-only fields are gated by type'
 );
 select ok(
