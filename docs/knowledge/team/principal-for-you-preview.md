@@ -27,3 +27,8 @@ O conteúdo produtivo usa o contrato compartilhado de Comunicações. Itens
 status, vigência, prioridade e elegibilidade; `popup` permanece Aviso e é
 excluído antes da apresentação. Comportamento obrigatório, tamanho e inset de
 popup não fazem parte do modelo de leitura de `Para você`.
+
+O container de rota consulta `NoticeRepository` pelos tipos produtivos e status
+ativo, aplica a projeção e trata carregamento, ausência de comunicações e falha
+com retry. A ausência de conteúdo editorial não remove os atalhos e o contexto
+útil do hub.
