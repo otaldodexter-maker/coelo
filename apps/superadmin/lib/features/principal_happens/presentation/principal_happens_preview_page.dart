@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../domain/principal_happens_feed_repository.dart';
 import '../domain/principal_happens_preview_data.dart';
 
 final class PrincipalHappensPreviewPage extends StatefulWidget {
@@ -11,6 +12,8 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.feedRepository,
+    this.feedScope,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
   });
@@ -21,6 +24,8 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenNow;
   final VoidCallback? onOpenForYou;
   final VoidCallback? onCreatePost;
+  final PrincipalHappensFeedRepository? feedRepository;
+  final PrincipalHappensFeedScope? feedScope;
   final PrincipalHappensPreviewData data;
 
   @override
@@ -30,6 +35,55 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
 final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPreviewPage> {
   final _likedPosts = <int>{};
   final _savedPosts = <int>{};
+  List<PrincipalPostPreviewItem>? _remotePosts;
+  Object? _feedError;
+  var _feedLoading = false;
+  var _feedRequest = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFeed();
+  }
+
+  @override
+  void didUpdateWidget(covariant PrincipalHappensPreviewPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.feedRepository != widget.feedRepository ||
+        oldWidget.feedScope != widget.feedScope) {
+      _loadFeed();
+    }
+  }
+
+  Future<void> _loadFeed() async {
+    final repository = widget.feedRepository;
+    final scope = widget.feedScope;
+    final request = ++_feedRequest;
+    if (repository == null || scope == null) {
+      _remotePosts = null;
+      _feedError = null;
+      _feedLoading = false;
+      return;
+    }
+    setState(() {
+      _feedLoading = true;
+      _feedError = null;
+    });
+    try {
+      final posts = await repository.listVisiblePosts(scope);
+      if (!mounted || request != _feedRequest) return;
+      setState(() {
+        _remotePosts = posts;
+        _feedLoading = false;
+      });
+    } on Object catch (error) {
+      if (!mounted || request != _feedRequest) return;
+      setState(() {
+        _feedError = error;
+        _feedLoading = false;
+      });
+    }
+  }
 
   void _prototypeMessage(String label) {
     ScaffoldMessenger.of(
@@ -83,6 +137,12 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                   constraints: BoxConstraints(maxWidth: large ? 940 : 780),
                   child: _Feed(
                     data: widget.data,
+                    posts: widget.feedRepository == null
+                        ? widget.data.posts
+                        : (_remotePosts ?? const []),
+                    loading: _feedLoading,
+                    error: _feedError,
+                    onRetry: _loadFeed,
                     compact: compact,
                     onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
                     onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
@@ -201,6 +261,10 @@ final class _HappensAppBar extends StatelessWidget implements PreferredSizeWidge
 final class _Feed extends StatelessWidget {
   const _Feed({
     required this.data,
+    required this.posts,
+    required this.loading,
+    required this.error,
+    required this.onRetry,
     required this.compact,
     required this.onMoments,
     required this.onProfile,
@@ -214,6 +278,10 @@ final class _Feed extends StatelessWidget {
   });
 
   final PrincipalHappensPreviewData data;
+  final List<PrincipalPostPreviewItem> posts;
+  final bool loading;
+  final Object? error;
+  final VoidCallback onRetry;
   final bool compact;
   final VoidCallback onMoments;
   final VoidCallback onProfile;
@@ -264,23 +332,44 @@ final class _Feed extends StatelessWidget {
             ),
           ),
         ),
-        SliverList.separated(
-          itemCount: data.posts.length,
-          separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
-          itemBuilder: (context, index) => Padding(
-            padding: EdgeInsets.symmetric(horizontal: compact ? 0 : horizontal),
-            child: _PostCard(
-              index: index,
-              post: data.posts[index],
-              compact: compact,
-              liked: likedPosts.contains(index),
-              saved: savedPosts.contains(index),
-              onLike: () => onLike(index),
-              onSave: () => onSave(index),
-              onAction: onPrototypeAction,
+        if (loading)
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: horizontal),
+            sliver: const SliverToBoxAdapter(child: _FeedStatePanel.loading()),
+          )
+        else if (error != null)
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: horizontal),
+            sliver: SliverToBoxAdapter(
+              child: _FeedStatePanel.error(
+                unauthorized: error is PrincipalHappensFeedUnauthorized,
+                onRetry: onRetry,
+              ),
+            ),
+          )
+        else if (posts.isEmpty)
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: horizontal),
+            sliver: const SliverToBoxAdapter(child: _FeedStatePanel.empty()),
+          )
+        else
+          SliverList.separated(
+            itemCount: posts.length,
+            separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
+            itemBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: compact ? 0 : horizontal),
+              child: _PostCard(
+                index: index,
+                post: posts[index],
+                compact: compact,
+                liked: likedPosts.contains(index),
+                saved: savedPosts.contains(index),
+                onLike: () => onLike(index),
+                onSave: () => onSave(index),
+                onAction: onPrototypeAction,
+              ),
             ),
           ),
-        ),
         const SliverToBoxAdapter(child: SizedBox(height: CoeloSpacing.space6)),
       ],
     );
@@ -342,6 +431,87 @@ final class _TopTabs extends StatelessWidget {
   );
 }
 
+final class _FeedStatePanel extends StatelessWidget {
+  const _FeedStatePanel._({
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.loading = false,
+    this.onRetry,
+  });
+
+  const _FeedStatePanel.loading()
+    : this._(
+        icon: Icons.dynamic_feed_outlined,
+        title: 'Carregando publicações',
+        message: 'Buscando as novidades deste contexto.',
+        loading: true,
+      );
+
+  const _FeedStatePanel.empty()
+    : this._(
+        icon: Icons.auto_awesome_outlined,
+        title: 'Tudo em dia por aqui',
+        message: 'As próximas publicações aparecerão neste espaço.',
+      );
+
+  factory _FeedStatePanel.error({required bool unauthorized, required VoidCallback onRetry}) =>
+      _FeedStatePanel._(
+        icon: unauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
+        title: unauthorized ? 'Acesso não disponível' : 'Não foi possível carregar o Acontece',
+        message: unauthorized
+            ? 'Este contexto não está disponível para o seu vínculo atual.'
+            : 'Confira sua conexão e tente novamente.',
+        onRetry: unauthorized ? null : onRetry,
+      );
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final bool loading;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    liveRegion: true,
+    child: Container(
+      key: Key(
+        'principal-happens-feed-state-${loading
+            ? 'loading'
+            : onRetry == null
+            ? 'terminal'
+            : 'error'}',
+      ),
+      padding: const EdgeInsets.all(CoeloSpacing.space5),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      ),
+      child: Column(
+        children: [
+          if (loading)
+            const SizedBox.square(dimension: 32, child: CircularProgressIndicator(strokeWidth: 3))
+          else
+            Icon(icon, color: Theme.of(context).colorScheme.primary, size: 32),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(message, textAlign: TextAlign.center),
+          if (onRetry != null) ...[
+            const SizedBox(height: CoeloSpacing.space3),
+            FilledButton.tonal(onPressed: onRetry, child: const Text('Tentar novamente')),
+          ],
+        ],
+      ),
+    ),
+  );
+}
+
 final class _Tab extends StatelessWidget {
   const _Tab({this.tabKey, required this.label, this.selected = false, this.onPressed});
   final Key? tabKey;
@@ -350,12 +520,10 @@ final class _Tab extends StatelessWidget {
   final VoidCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    selected: selected,
-    button: true,
-    child: TextButton(
+  Widget build(BuildContext context) {
+    final button = TextButton(
       key: tabKey,
-      onPressed: selected ? () {} : onPressed,
+      onPressed: selected ? null : onPressed,
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(88, CoeloSize.touchMin)),
         foregroundColor: WidgetStatePropertyAll(
@@ -390,8 +558,14 @@ final class _Tab extends StatelessWidget {
           ),
         ),
       ),
-    ),
-  );
+    );
+    return Semantics(
+      selected: selected,
+      button: !selected,
+      label: selected ? label : null,
+      child: selected ? ExcludeSemantics(child: button) : button,
+    );
+  }
 }
 
 final class _NowSection extends StatelessWidget {
@@ -844,7 +1018,7 @@ final class _DesktopRail extends StatelessWidget {
     ),
     child: Column(
       children: [
-        _RailItem('Acontece', Icons.home_rounded, selected: true, onPressed: () {}),
+        const _RailItem('Acontece', Icons.home_rounded, selected: true),
         _RailItem('Mensagens', Icons.chat_bubble_outline_rounded, onPressed: onMessage),
         _RailItem('Agenda', Icons.calendar_today_outlined, onPressed: onAgenda),
         _RailItem('Atividades', Icons.assignment_outlined, onPressed: () => onItem('Atividades')),
@@ -884,17 +1058,16 @@ final class _DesktopRail extends StatelessWidget {
 }
 
 final class _RailItem extends StatelessWidget {
-  const _RailItem(this.label, this.icon, {required this.onPressed, this.selected = false});
+  const _RailItem(this.label, this.icon, {this.onPressed, this.selected = false});
   final String label;
   final IconData icon;
   final bool selected;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-    child: TextButton.icon(
-      onPressed: onPressed,
+  Widget build(BuildContext context) {
+    final item = TextButton.icon(
+      onPressed: selected ? null : onPressed,
       style: TextButton.styleFrom(
         alignment: Alignment.centerLeft,
         minimumSize: const Size.fromHeight(48),
@@ -905,6 +1078,7 @@ final class _RailItem extends StatelessWidget {
         foregroundColor: selected
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.onSurface,
+        disabledForegroundColor: Theme.of(context).colorScheme.primary,
       ),
       icon: Icon(icon, size: CoeloSize.iconSm),
       label: Text(
@@ -913,8 +1087,18 @@ final class _RailItem extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(fontSize: 11),
       ),
-    ),
-  );
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
+      child: selected
+          ? Semantics(
+              selected: true,
+              label: label,
+              child: ExcludeSemantics(child: item),
+            )
+          : item,
+    );
+  }
 }
 
 final class _ContextColumn extends StatelessWidget {
@@ -1148,28 +1332,31 @@ final class _BottomItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showLabel = MediaQuery.textScalerOf(context).scale(1) <= 1.5;
+    final content = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: CoeloSize.iconSm),
+        if (showLabel) ...[
+          const SizedBox(height: 3),
+          Text(label, style: const TextStyle(fontSize: 9)),
+        ],
+      ],
+    );
+    final button = TextButton(
+      onPressed: selected ? null : onPressed,
+      style: TextButton.styleFrom(
+        minimumSize: const Size(58, 58),
+        padding: EdgeInsets.zero,
+        foregroundColor: selected ? Theme.of(context).colorScheme.primary : null,
+        disabledForegroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      child: content,
+    );
     return Semantics(
       selected: selected,
-      button: true,
+      button: !selected,
       label: label,
-      child: TextButton(
-        onPressed: onPressed ?? () {},
-        style: TextButton.styleFrom(
-          minimumSize: const Size(58, 58),
-          padding: EdgeInsets.zero,
-          foregroundColor: selected ? Theme.of(context).colorScheme.primary : null,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: CoeloSize.iconSm),
-            if (showLabel) ...[
-              const SizedBox(height: 3),
-              Text(label, style: const TextStyle(fontSize: 9)),
-            ],
-          ],
-        ),
-      ),
+      child: selected ? ExcludeSemantics(child: button) : button,
     );
   }
 }
