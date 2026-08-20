@@ -1,5 +1,5 @@
 begin;
-select plan(13);
+select plan(14);
 
 select enum_has_labels(
   'public',
@@ -12,6 +12,11 @@ select has_function(
   'list_notices_for_superadmin',
   array['text[]','text','text[]','text[]','timestamp with time zone','uuid','integer'],
   'typed directory overload exists without removing the legacy RPC'
+);
+select is(
+  (select pronargdefaults from pg_proc where oid='public.list_notices_for_superadmin(text[],text,text[],text[],timestamptz,uuid,int)'::regprocedure),
+  6,
+  'typed overload requires p_types so legacy PostgREST calls remain unambiguous'
 );
 select has_function(
   'public',
