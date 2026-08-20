@@ -382,6 +382,21 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
+# Browser clients call this endpoint with their authenticated user JWT.
+[functions.form-media]
+verify_jwt = true
+
+[functions.now-media]
+verify_jwt = true
+
+# pg_cron dispatches this service-only worker with an opaque server secret.
+# Authorization is enforced again by the handler before any RPC is claimed.
+[functions.form-operations]
+verify_jwt = false
+
+[functions.notice-publication-worker]
+verify_jwt = false
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 

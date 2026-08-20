@@ -91,6 +91,10 @@ Produção exige perfil interno autorizado, audiência resolvida server-side e
 congelada ao publicar, isolamento entre tenants e auditoria minimizada. O
 cliente não amplia audiência nem usa metadados mutáveis como autorização.
 Salvar e publicar são comandos idempotentes, versionados e transacionais.
+A publicação congela a audiência e cria um job. Um cron versionado aciona uma
+Edge Function autenticada por segredo, que materializa a audiência em páginas
+limitadas e só então ativa a comunicação. Jobs obsoletos, pausados ou com lease
+expirada falham fechados ou voltam para retry; o Flutter nunca executa o worker.
 
 ## Matriz de aplicabilidade aprovada em 2026-08-11
 
@@ -124,8 +128,9 @@ não pertencem ao domínio de Avisos.
 ## Ciclo de vida
 
 - Novo aviso nasce em rascunho.
-- Rascunho publicado imediatamente fica ativo; com início futuro, agendado.
-- Agendado fica ativo ao alcançar o início.
+- Publicar move o rascunho para agendado e enfileira a materialização.
+- Ao alcançar o início, o worker cria os recibos de audiência e só ativa a
+  comunicação após concluir todo o job.
 - Ativo pode ser pausado; somente pausado pode ser reativado.
 - Ativo ou agendado expira automaticamente ao alcançar o término.
 - Rascunho, agendado, ativo ou pausado pode ser inativado manualmente.
@@ -137,6 +142,8 @@ Produção registra no backend resumos minimizados para salvar, publicar, pausar
 reativar e inativar. Logs não incluem mensagem integral, mídia, PII ou
 destinatários. Entrega, leitura e aceite ficam em recibos/eventos operacionais
 protegidos, separados da trilha administrativa append-only.
+Criar um receipt materializa o destinatário, mas não preenche `delivered_at`;
+esse timestamp pertence ao runtime que realmente entregar ou exibir o item.
 
 ## Critérios de aceite
 

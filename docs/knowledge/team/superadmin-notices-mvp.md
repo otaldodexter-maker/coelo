@@ -61,3 +61,9 @@ Supabase Storage versus Cloudflare R2; não há placeholder demonstrativo.
 Também não se autoriza editor livre, HTML, carrossel, jornadas, gatilhos
 comportamentais, regras booleanas livres, A/B testing, personalização,
 localização ou analytics avançado.
+
+Publicar não ativa o item diretamente: congela a audiência e cria um job. Um
+cron versionado chama o worker server-side, que resolve destinatários em lotes
+e ativa a comunicação somente após a materialização completa. Leases expiradas
+são recuperáveis; versões obsoletas e itens pausados falham fechados. O receipt
+nasce sem `delivered_at`, preenchido apenas quando houver entrega real.
