@@ -15,3 +15,5 @@ review_owner: "Coelo Product e Segurança"
 O composer do Acontece cria posts com até seis fotos ou vídeos, legenda, contexto institucional, audiência, rascunho, agendamento e prévia. A rota executável atual é `/dev/principal-happens/publish`, integrada ao callback opcional do botão Criar do preview.
 
 Autorização é server-side, deny-by-default, com versão otimista e capabilities `happens.posts.create` e `happens.posts.publish`. A mídia usa temporariamente Supabase Storage privado conforme ADR 0026; bucket público é proibido e a migração ao R2 deve ocorrer antes de piloto/produção.
+
+O feed consome uma projeção mínima autorizada por `happens.posts.read`, sem fabricar contagens ou rótulos ausentes. Mídias chegam como tickets opacos ordenados e são trocadas sob demanda por URL assinada curta; como o ticket é descartável, retry de mídia recarrega o feed para obter um novo ticket.

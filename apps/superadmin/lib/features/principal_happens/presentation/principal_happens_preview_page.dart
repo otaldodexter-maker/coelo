@@ -6,17 +6,29 @@ import '../domain/principal_happens_preview_data.dart';
 
 final class PrincipalHappensPreviewPage extends StatefulWidget {
   const PrincipalHappensPreviewPage({
+    required this.feedRepository,
+    required this.feedScope,
     this.onOpenMoments,
     this.onOpenProfile,
     this.onOpenAgenda,
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
-    this.feedRepository,
-    this.feedScope,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
   });
+
+  const PrincipalHappensPreviewPage.demo({
+    this.onOpenMoments,
+    this.onOpenProfile,
+    this.onOpenAgenda,
+    this.onOpenNow,
+    this.onOpenForYou,
+    this.onCreatePost,
+    this.data = PrincipalHappensPreviewData.demo,
+    super.key,
+  }) : feedRepository = null,
+       feedScope = null;
 
   final VoidCallback? onOpenMoments;
   final VoidCallback? onOpenProfile;
@@ -137,6 +149,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                   constraints: BoxConstraints(maxWidth: large ? 940 : 780),
                   child: _Feed(
                     data: widget.data,
+                    mediaRepository: widget.feedRepository,
                     posts: widget.feedRepository == null
                         ? widget.data.posts
                         : (_remotePosts ?? const []),
@@ -262,6 +275,7 @@ final class _Feed extends StatelessWidget {
   const _Feed({
     required this.data,
     required this.posts,
+    required this.mediaRepository,
     required this.loading,
     required this.error,
     required this.onRetry,
@@ -279,6 +293,7 @@ final class _Feed extends StatelessWidget {
 
   final PrincipalHappensPreviewData data;
   final List<PrincipalPostPreviewItem> posts;
+  final PrincipalHappensFeedRepository? mediaRepository;
   final bool loading;
   final Object? error;
   final VoidCallback onRetry;
@@ -361,6 +376,8 @@ final class _Feed extends StatelessWidget {
               child: _PostCard(
                 index: index,
                 post: posts[index],
+                mediaRepository: mediaRepository,
+                onReloadMedia: onRetry,
                 compact: compact,
                 liked: likedPosts.contains(index),
                 saved: savedPosts.contains(index),
@@ -707,6 +724,8 @@ final class _PostCard extends StatelessWidget {
   const _PostCard({
     required this.index,
     required this.post,
+    required this.mediaRepository,
+    required this.onReloadMedia,
     required this.compact,
     required this.liked,
     required this.saved,
@@ -716,6 +735,8 @@ final class _PostCard extends StatelessWidget {
   });
   final int index;
   final PrincipalPostPreviewItem post;
+  final PrincipalHappensFeedRepository? mediaRepository;
+  final VoidCallback onReloadMedia;
   final bool compact;
   final bool liked;
   final bool saved;
@@ -776,9 +797,15 @@ final class _PostCard extends StatelessWidget {
             ),
             const SizedBox(height: CoeloSpacing.space3),
             Text(post.body, style: Theme.of(context).textTheme.bodyMedium),
-            if (post.mediaIndices.isNotEmpty) ...[
+            if (post.media.isNotEmpty || post.mediaIndices.isNotEmpty) ...[
               const SizedBox(height: CoeloSpacing.space3),
-              _PostMedia(indices: post.mediaIndices, compact: compact),
+              _PostMedia(
+                media: post.media,
+                demoIndices: post.mediaIndices,
+                repository: mediaRepository,
+                onReload: onReloadMedia,
+                compact: compact,
+              ),
             ],
             const SizedBox(height: CoeloSpacing.space2),
             Row(
@@ -788,19 +815,19 @@ final class _PostCard extends StatelessWidget {
                   tooltip: liked ? 'Remover curtida' : 'Curtir',
                   icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                   color: liked ? scheme.primary : null,
-                  label: '${post.likes + (liked ? 1 : 0)}',
+                  label: post.likes == null ? null : '${post.likes! + (liked ? 1 : 0)}',
                   onPressed: onLike,
                 ),
                 _SocialAction(
                   tooltip: 'Comentar',
                   icon: Icons.chat_bubble_outline_rounded,
-                  label: '${post.comments}',
+                  label: post.comments?.toString(),
                   onPressed: () => onAction('Comentários'),
                 ),
                 _SocialAction(
                   tooltip: 'Compartilhar',
                   icon: Icons.ios_share_rounded,
-                  label: '${post.shares}',
+                  label: post.shares?.toString(),
                   onPressed: () => onAction('Compartilhamento'),
                 ),
                 const Spacer(),
@@ -812,13 +839,15 @@ final class _PostCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (index == 0) ...[
+            if (index == 0 && post.likedBy != null) ...[
               const SizedBox(height: CoeloSpacing.space1),
               Row(
                 children: [
                   const _AvatarStack(),
                   const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(child: Text(post.likedBy, style: Theme.of(context).textTheme.bodySmall)),
+                  Expanded(
+                    child: Text(post.likedBy!, style: Theme.of(context).textTheme.bodySmall),
+                  ),
                 ],
               ),
             ],
@@ -830,8 +859,18 @@ final class _PostCard extends StatelessWidget {
 }
 
 final class _PostMedia extends StatelessWidget {
-  const _PostMedia({required this.indices, required this.compact});
-  final List<int> indices;
+  const _PostMedia({
+    required this.media,
+    required this.demoIndices,
+    required this.repository,
+    required this.onReload,
+    required this.compact,
+  });
+
+  final List<PrincipalHappensMediaDescriptor> media;
+  final List<int> demoIndices;
+  final PrincipalHappensFeedRepository? repository;
+  final VoidCallback onReload;
   final bool compact;
 
   @override
@@ -845,13 +884,19 @@ final class _PostMedia extends StatelessWidget {
             children: [
               Expanded(
                 flex: 2,
-                child: _SpriteImage(
-                  asset: 'assets/principal_happens/feed-strip.png',
-                  index: indices.first,
-                  count: 4,
-                ),
+                child: media.isNotEmpty
+                    ? _AuthorizedMedia(
+                        media: media.first,
+                        repository: repository,
+                        onReload: onReload,
+                      )
+                    : _SpriteImage(
+                        asset: 'assets/principal_happens/feed-strip.png',
+                        index: demoIndices.first,
+                        count: 4,
+                      ),
               ),
-              if (!compact) ...[
+              if (media.isEmpty && !compact) ...[
                 const SizedBox(width: 3),
                 Expanded(
                   child: Column(
@@ -859,7 +904,7 @@ final class _PostMedia extends StatelessWidget {
                       Expanded(
                         child: _SpriteImage(
                           asset: 'assets/principal_happens/feed-strip.png',
-                          index: indices[1],
+                          index: demoIndices[1],
                           count: 4,
                         ),
                       ),
@@ -867,7 +912,7 @@ final class _PostMedia extends StatelessWidget {
                       Expanded(
                         child: _SpriteImage(
                           asset: 'assets/principal_happens/feed-strip.png',
-                          index: indices[2],
+                          index: demoIndices[2],
                           count: 4,
                         ),
                       ),
@@ -882,14 +927,17 @@ final class _PostMedia extends StatelessWidget {
             top: CoeloSpacing.space2,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.inverseSurface.withValues(alpha: .88),
                 borderRadius: BorderRadius.circular(CoeloRadius.full),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
-                  '1/${indices.length}',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  '1/${media.isNotEmpty ? media.length : demoIndices.length}',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -897,6 +945,86 @@ final class _PostMedia extends StatelessWidget {
         ],
       ),
     ),
+  );
+}
+
+final class _AuthorizedMedia extends StatefulWidget {
+  const _AuthorizedMedia({required this.media, required this.repository, required this.onReload});
+
+  final PrincipalHappensMediaDescriptor media;
+  final PrincipalHappensFeedRepository? repository;
+  final VoidCallback onReload;
+
+  @override
+  State<_AuthorizedMedia> createState() => _AuthorizedMediaState();
+}
+
+final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
+  late Future<PrincipalHappensMediaRead> _read = _resolve();
+
+  Future<PrincipalHappensMediaRead> _resolve() {
+    final repository = widget.repository;
+    if (repository == null) {
+      return Future.error(const PrincipalHappensFeedUnavailable());
+    }
+    return repository.resolveMedia(widget.media);
+  }
+
+  @override
+  void didUpdateWidget(covariant _AuthorizedMedia oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.repository != widget.repository ||
+        oldWidget.media.readTicket != widget.media.readTicket) {
+      _read = _resolve();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<PrincipalHappensMediaRead>(
+    future: _read,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      }
+      final read = snapshot.data;
+      if (read == null) {
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          child: Center(
+            child: IconButton(
+              tooltip: 'Tentar carregar a mídia novamente',
+              onPressed: widget.onReload,
+              icon: const Icon(Icons.refresh_rounded),
+            ),
+          ),
+        );
+      }
+      if (read.mimeType.startsWith('video/')) {
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          child: const Center(child: Icon(Icons.play_circle_outline_rounded, size: 56)),
+        );
+      }
+      return Image.network(
+        read.signedUrl,
+        key: ValueKey(widget.media.readTicket),
+        fit: BoxFit.cover,
+        semanticLabel: 'Registro da comunidade escolar',
+        errorBuilder: (_, _, _) => ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          child: Center(
+            child: IconButton(
+              tooltip: 'Tentar carregar a mídia novamente',
+              onPressed: widget.onReload,
+              icon: const Icon(Icons.refresh_rounded),
+            ),
+          ),
+        ),
+      );
+    },
   );
 }
 
@@ -941,29 +1069,40 @@ final class _SocialAction extends StatelessWidget {
     this.actionKey,
     required this.tooltip,
     required this.icon,
-    required this.label,
+    this.label,
     required this.onPressed,
     this.color,
   });
   final Key? actionKey;
   final String tooltip;
   final IconData icon;
-  final String label;
+  final String? label;
   final VoidCallback onPressed;
   final Color? color;
 
   @override
-  Widget build(BuildContext context) => TextButton.icon(
-    key: actionKey,
-    onPressed: onPressed,
-    style: TextButton.styleFrom(
-      foregroundColor: color ?? Theme.of(context).colorScheme.onSurface,
-      minimumSize: const Size(48, 48),
-      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
-    ),
-    icon: Icon(icon, size: CoeloSize.iconSm),
-    label: Text(label),
-  );
+  Widget build(BuildContext context) {
+    if (label == null) {
+      return IconButton(
+        key: actionKey,
+        tooltip: tooltip,
+        onPressed: onPressed,
+        color: color ?? Theme.of(context).colorScheme.onSurface,
+        icon: Icon(icon, size: CoeloSize.iconSm),
+      );
+    }
+    return TextButton.icon(
+      key: actionKey,
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: color ?? Theme.of(context).colorScheme.onSurface,
+        minimumSize: const Size(48, 48),
+        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
+      ),
+      icon: Icon(icon, size: CoeloSize.iconSm),
+      label: Text(label!),
+    );
+  }
 }
 
 final class _AvatarStack extends StatelessWidget {

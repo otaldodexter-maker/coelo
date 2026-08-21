@@ -95,22 +95,39 @@ final class PrincipalPostPreviewItem {
     required this.time,
     required this.initials,
     required this.body,
-    required this.mediaIndices,
-    required this.likes,
-    required this.comments,
-    required this.shares,
-    required this.likedBy,
+    this.media = const [],
+    this.mediaIndices = const [],
+    this.likes,
+    this.comments,
+    this.shares,
+    this.likedBy,
   });
   final String author;
   final String context;
   final String time;
   final String initials;
   final String body;
+  final List<PrincipalHappensMediaDescriptor> media;
   final List<int> mediaIndices;
-  final int likes;
-  final int comments;
-  final int shares;
-  final String likedBy;
+  final int? likes;
+  final int? comments;
+  final int? shares;
+  final String? likedBy;
+}
+
+@immutable
+final class PrincipalHappensMediaDescriptor {
+  const PrincipalHappensMediaDescriptor({
+    required this.readTicket,
+    required this.mimeType,
+    required this.displayOrder,
+  });
+
+  final String readTicket;
+  final String mimeType;
+  final int displayOrder;
+
+  bool get isVideo => mimeType.startsWith('video/');
 }
 
 @immutable

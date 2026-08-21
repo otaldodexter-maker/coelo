@@ -17,7 +17,7 @@ void main() {
       await tester.binding.setSurfaceSize(testCase.size);
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
-        MaterialApp(theme: testCase.theme, home: const PrincipalHappensPreviewPage()),
+        MaterialApp(theme: testCase.theme, home: const PrincipalHappensPreviewPage.demo()),
       );
       await tester.pumpAndSettle();
 
@@ -32,7 +32,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
-      MaterialApp(theme: CoeloTheme.light, home: const PrincipalHappensPreviewPage()),
+      MaterialApp(theme: CoeloTheme.light, home: const PrincipalHappensPreviewPage.demo()),
     );
     await tester.pumpAndSettle();
 

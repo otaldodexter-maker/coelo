@@ -18,6 +18,8 @@ A implementação executável fica no preview do Superadmin em `/dev/principal-h
 
 Um post pertence ao tenant e à instituição, pode restringir unidade e turma e guarda autoria global e membership contextual. Audiências permitidas são Famílias, Alunos, Equipe escolar e Somente responsáveis. Rascunho usa versão otimista. Publicação exige `happens.posts.create` e `happens.posts.publish`; RPCs derivam ator e tenant da sessão e mutações diretas ficam revogadas.
 
+O consumo autorizado usa `happens.posts.read` e recebe apenas autor, contexto, legenda, horário e descritores de mídia ordenados. Contagens sociais e rótulos não pertencentes à projeção não são inventados pelo cliente. Cada descritor contém um ticket opaco e descartável, resolvido sob demanda pela Edge Function em URL assinada curta; falhas de mídia recarregam o feed para obter um novo ticket.
+
 Até seis JPG, PNG, WebP ou MP4 podem ser selecionados. O MVP usa a exceção temporária da ADR 0026: Storage privado, gateway server-side, validação de assinatura e sem URL pública.
 
 ## Estados

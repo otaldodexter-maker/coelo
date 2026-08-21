@@ -19,7 +19,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: PrincipalHappensPreviewPage(
+        home: PrincipalHappensPreviewPage.demo(
           onOpenMoments: onOpenMoments,
           onOpenProfile: onOpenProfile,
           onOpenAgenda: onOpenAgenda,
@@ -163,7 +163,7 @@ void main() {
           ).copyWith(textScaler: const TextScaler.linear(2), disableAnimations: true),
           child: child!,
         ),
-        home: const PrincipalHappensPreviewPage(),
+        home: const PrincipalHappensPreviewPage.demo(),
       ),
     );
     await tester.pumpAndSettle();

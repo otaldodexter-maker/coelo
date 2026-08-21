@@ -1,4 +1,3 @@
-import 'package:characters/characters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/principal_happens_feed_repository.dart';
@@ -29,36 +28,75 @@ final class SupabasePrincipalHappensFeedRepository implements PrincipalHappensFe
         throw const PrincipalHappensFeedUnauthorized();
       }
       throw const PrincipalHappensFeedUnavailable();
+    } on FormatException {
+      throw const PrincipalHappensFeedUnavailable();
+    }
+  }
+
+  @override
+  Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) async {
+    try {
+      final response = await _client.functions.invoke(
+        'happens-media',
+        body: {'action': 'read', 'read_ticket': media.readTicket},
+      );
+      if (response.status != 200 || response.data is! Map) {
+        throw const PrincipalHappensFeedUnavailable();
+      }
+      final json = Map<String, dynamic>.from(response.data as Map);
+      final signedUrl = json['signed_url'] as String?;
+      final mimeType = json['mime_type'] as String?;
+      final expiresIn = json['expires_in'] as num?;
+      if (signedUrl == null || mimeType == null || expiresIn == null) {
+        throw const PrincipalHappensFeedUnavailable();
+      }
+      return PrincipalHappensMediaRead(
+        signedUrl: signedUrl,
+        mimeType: mimeType,
+        expiresIn: Duration(seconds: expiresIn.toInt()),
+      );
+    } on PrincipalHappensFeedUnavailable {
+      rethrow;
+    } on Object {
+      throw const PrincipalHappensFeedUnavailable();
     }
   }
 }
 
 PrincipalPostPreviewItem _postFromJson(Map<String, dynamic> json) {
-  final publishedAt = DateTime.tryParse(
-    (json['published_at'] ?? json['publish_at'])?.toString() ?? '',
-  );
-  final author = (json['author_name'] as String?)?.trim();
-  final resolvedAuthor = author == null || author.isEmpty ? 'Comunidade Coelo' : author;
-  final initials = (json['author_initials'] as String?)?.trim();
+  final author = _requiredText(json, 'author_name');
+  final initials = _requiredText(json, 'author_initials');
+  final context = _requiredText(json, 'context_label');
+  final publishedAt = DateTime.tryParse(json['published_at']?.toString() ?? '');
+  if (publishedAt == null) throw const FormatException('invalid_published_at');
+  final media =
+      (json['media'] as List? ?? const [])
+          .map((value) {
+            final item = Map<String, dynamic>.from(value as Map);
+            final displayOrder = item['display_order'] as num?;
+            if (displayOrder == null) throw const FormatException('invalid_media_order');
+            return PrincipalHappensMediaDescriptor(
+              readTicket: _requiredText(item, 'read_ticket'),
+              mimeType: _requiredText(item, 'mime_type'),
+              displayOrder: displayOrder.toInt(),
+            );
+          })
+          .toList(growable: false)
+        ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
   return PrincipalPostPreviewItem(
-    author: resolvedAuthor,
-    context: (json['context_label'] as String?)?.trim().isNotEmpty == true
-        ? (json['context_label'] as String).trim()
-        : 'Acontece · Comunidade escolar',
+    author: author,
+    context: context,
     time: _relativeTime(publishedAt),
-    initials: initials == null || initials.isEmpty ? _initials(resolvedAuthor) : initials,
+    initials: initials,
     body: json['caption'] as String? ?? '',
-    mediaIndices: const [],
-    likes: (json['likes_count'] as num?)?.toInt() ?? 0,
-    comments: (json['comments_count'] as num?)?.toInt() ?? 0,
-    shares: (json['shares_count'] as num?)?.toInt() ?? 0,
-    likedBy: json['liked_by_label'] as String? ?? 'Publicado para a comunidade escolar',
+    media: media,
   );
 }
 
-String _initials(String value) {
-  final words = value.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).take(2);
-  return words.map((word) => word.characters.first.toUpperCase()).join();
+String _requiredText(Map<String, dynamic> json, String key) {
+  final value = (json[key] as String?)?.trim();
+  if (value == null || value.isEmpty) throw FormatException('invalid_$key');
+  return value;
 }
 
 String _relativeTime(DateTime? value) {
