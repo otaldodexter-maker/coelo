@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../domain/principal_now_feed_repository.dart';
 import '../domain/principal_now_preview_data.dart';
 
 final class PrincipalNowPreviewPage extends StatefulWidget {
@@ -12,13 +14,31 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.onClose,
     this.onOpenHappens,
     this.onCreate,
+    this.feedRepository,
+    this.feedScope,
+    this.refreshSignal,
     this.data = PrincipalNowPreviewData.demo,
     super.key,
   });
 
+  const PrincipalNowPreviewPage.authorized({
+    required this.feedRepository,
+    required this.feedScope,
+    this.onClose,
+    this.onOpenHappens,
+    this.onCreate,
+    this.refreshSignal,
+    super.key,
+  }) : assert(feedRepository != null),
+       assert(feedScope != null),
+       data = const PrincipalNowPreviewData(stories: []);
+
   final VoidCallback? onClose;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onCreate;
+  final PrincipalNowFeedRepository? feedRepository;
+  final PrincipalNowFeedScope? feedScope;
+  final PrincipalNowFeedRefreshSignal? refreshSignal;
   final PrincipalNowPreviewData data;
 
   @override
@@ -37,8 +57,36 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   var _holding = false;
   var _focusPaused = false;
   var _overlayPaused = false;
+  var _feedLoading = false;
+  var _feedRequest = 0;
+  PrincipalNowFeedFailure? _feedFailure;
+  List<PrincipalNowFeedItem>? _remoteItems;
+  final _resolvedMedia = <String, PrincipalNowMediaRead>{};
+  final _resolvingMedia = <String>{};
 
-  PrincipalNowPreviewStory get _story => widget.data.stories[_index];
+  bool get _feedConfigurationInvalid =>
+      (widget.feedRepository == null) != (widget.feedScope == null);
+  bool get _usesRemoteFeed => widget.feedRepository != null && widget.feedScope != null;
+  List<PrincipalNowPreviewStory> get _stories => _usesRemoteFeed
+      ? (_remoteItems ?? const [])
+            .map((item) {
+              final media = _resolvedMedia[item.publicationId];
+              return PrincipalNowPreviewStory(
+                author: item.author,
+                timeLabel: item.timeLabel,
+                caption: item.caption,
+                assetPath: '',
+                remoteUrl: media?.signedUrl ?? '',
+                mimeType: media?.mimeType ?? item.media.mimeType,
+                cropScale: item.cropScale,
+                cropX: item.cropX,
+                cropY: item.cropY,
+                coverPosition: item.coverPosition,
+              );
+            })
+            .toList(growable: false)
+      : widget.data.stories;
+  PrincipalNowPreviewStory get _story => _stories[_index];
   bool get _paused => _manuallyPaused || _holding || _focusPaused || _overlayPaused;
 
   @override
@@ -48,6 +96,29 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     _replyController = TextEditingController();
     _progressController = AnimationController(vsync: this)
       ..addStatusListener(_handleProgressStatus);
+    widget.refreshSignal?.addListener(_reloadAfterPublication);
+    if (_usesRemoteFeed) {
+      _feedLoading = true;
+      Future<void>.microtask(_loadFeed);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant PrincipalNowPreviewPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) {
+      oldWidget.refreshSignal?.removeListener(_reloadAfterPublication);
+      widget.refreshSignal?.addListener(_reloadAfterPublication);
+    }
+    if (oldWidget.feedRepository != widget.feedRepository ||
+        oldWidget.feedScope != widget.feedScope) {
+      _feedRequest += 1;
+      _remoteItems = null;
+      _resolvedMedia.clear();
+      _feedFailure = null;
+      _feedLoading = _usesRemoteFeed;
+      if (_usesRemoteFeed) Future<void>.microtask(_loadFeed);
+    }
   }
 
   @override
@@ -57,13 +128,15 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
       _progressController.stop();
       return;
     }
-    if (!_progressController.isAnimating && !_paused) {
+    if (_stories.isNotEmpty && !_progressController.isAnimating && !_paused) {
       _startCurrentStory(from: _progressController.value);
     }
   }
 
   @override
   void dispose() {
+    widget.refreshSignal?.removeListener(_reloadAfterPublication);
+    _feedRequest += 1;
     _progressController
       ..removeStatusListener(_handleProgressStatus)
       ..dispose();
@@ -86,6 +159,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   }
 
   void _startCurrentStory({double from = 0}) {
+    if (_stories.isEmpty) return;
     _progressController.duration = _story.duration;
     unawaited(_progressController.forward(from: from));
   }
@@ -103,7 +177,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   }
 
   void _goTo(int nextIndex) {
-    if (nextIndex < 0 || nextIndex >= widget.data.stories.length) {
+    if (nextIndex < 0 || nextIndex >= _stories.length) {
       return;
     }
     setState(() {
@@ -114,12 +188,13 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     if (!_paused && !MediaQuery.disableAnimationsOf(context)) {
       _startCurrentStory();
     }
+    unawaited(_ensureMediaAround(nextIndex));
   }
 
   void _previous() => _goTo(_index - 1);
 
   void _next() {
-    if (_index == widget.data.stories.length - 1) {
+    if (_index == _stories.length - 1) {
       _close();
     } else {
       _goTo(_index + 1);
@@ -195,30 +270,175 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     ).showSnackBar(const SnackBar(content: Text('Resposta privada preparada.')));
   }
 
+  void _reloadAfterPublication() => _loadFeed();
+
+  Future<void> _loadFeed() async {
+    final repository = widget.feedRepository;
+    final scope = widget.feedScope;
+    if (repository == null || scope == null) return;
+    final request = ++_feedRequest;
+    _progressController.stop();
+    if (mounted) {
+      setState(() {
+        _feedLoading = true;
+        _feedFailure = null;
+      });
+    }
+    try {
+      final items = await repository.listVisibleStories(scope);
+      if (!mounted || request != _feedRequest) return;
+      setState(() {
+        _remoteItems = List.unmodifiable(items);
+        _resolvedMedia.clear();
+        _resolvingMedia.clear();
+        _index = 0;
+        _feedLoading = false;
+      });
+      if (items.isNotEmpty) {
+        await _ensureMediaAround(0);
+        if (mounted &&
+            _feedFailure == null &&
+            !_paused &&
+            !MediaQuery.disableAnimationsOf(context)) {
+          _progressController.reset();
+          _startCurrentStory();
+        }
+      }
+    } on PrincipalNowFeedFailure catch (failure) {
+      if (!mounted || request != _feedRequest) return;
+      setState(() {
+        _feedFailure = failure;
+        _feedLoading = false;
+        _remoteItems = null;
+      });
+    } on Object {
+      if (!mounted || request != _feedRequest) return;
+      setState(() {
+        _feedFailure = const PrincipalNowFeedUnavailable();
+        _feedLoading = false;
+        _remoteItems = null;
+      });
+    }
+  }
+
+  Future<void> _ensureMediaAround(int index) async {
+    final items = _remoteItems;
+    if (items == null || items.isEmpty) return;
+    final indexes = <int>{index};
+    if (index > 0) indexes.add(index - 1);
+    if (index + 1 < items.length) indexes.add(index + 1);
+    await Future.wait(indexes.map(_resolveMediaAt));
+  }
+
+  Future<void> _resolveMediaAt(int index) async {
+    final repository = widget.feedRepository;
+    final items = _remoteItems;
+    if (repository == null || items == null || index < 0 || index >= items.length) return;
+    final item = items[index];
+    if (_resolvedMedia.containsKey(item.publicationId) ||
+        !_resolvingMedia.add(item.publicationId)) {
+      return;
+    }
+    try {
+      final read = await repository.resolveMedia(item.media);
+      if (!mounted || _remoteItems != items) return;
+      setState(() => _resolvedMedia[item.publicationId] = read);
+    } on PrincipalNowFeedUnauthorized catch (failure) {
+      if (mounted && _remoteItems == items) {
+        setState(() => _feedFailure = failure);
+      }
+    } on Object {
+      // The story keeps an explicit unavailable-media placeholder; no demo fallback.
+    } finally {
+      _resolvingMedia.remove(item.publicationId);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => CallbackShortcuts(
-    bindings: {
-      const SingleActivator(LogicalKeyboardKey.arrowLeft): _previous,
-      const SingleActivator(LogicalKeyboardKey.arrowRight): _next,
-      const SingleActivator(LogicalKeyboardKey.space): _togglePause,
-      const SingleActivator(LogicalKeyboardKey.escape): _close,
-    },
-    child: Focus(
-      autofocus: true,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final desktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
-          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-          return Scaffold(
-            backgroundColor: CoeloPalette.neutral950,
-            body: SafeArea(
-              child: desktop ? _buildDesktop(context) : _buildCompact(context, compact: compact),
-            ),
-          );
-        },
+  Widget build(BuildContext context) {
+    if (_feedConfigurationInvalid ||
+        (_usesRemoteFeed && (_feedLoading || _feedFailure != null || _stories.isEmpty))) {
+      return _buildFeedState(context);
+    }
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.arrowLeft): _previous,
+        const SingleActivator(LogicalKeyboardKey.arrowRight): _next,
+        const SingleActivator(LogicalKeyboardKey.space): _togglePause,
+        const SingleActivator(LogicalKeyboardKey.escape): _close,
+      },
+      child: Focus(
+        autofocus: true,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final desktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+            final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+            return Scaffold(
+              backgroundColor: CoeloPalette.neutral950,
+              body: SafeArea(
+                child: desktop ? _buildDesktop(context) : _buildCompact(context, compact: compact),
+              ),
+            );
+          },
+        ),
       ),
-    ),
-  );
+    );
+  }
+
+  Widget _buildFeedState(BuildContext context) {
+    final invalid = _feedConfigurationInvalid;
+    final unauthorized = _feedFailure is PrincipalNowFeedUnauthorized;
+    final empty = !_feedLoading && _feedFailure == null;
+    return Scaffold(
+      backgroundColor: CoeloPalette.neutral950,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Semantics(
+              container: true,
+              liveRegion: true,
+              label: _feedLoading ? 'Carregando Agora' : null,
+              child: CoeloStatePanel(
+                loading: _feedLoading,
+                title: invalid
+                    ? 'Agora indisponível'
+                    : _feedLoading
+                    ? 'Carregando Agora'
+                    : unauthorized
+                    ? 'Agora indisponível'
+                    : empty
+                    ? 'Nada novo no Agora'
+                    : 'Não foi possível carregar',
+                message: invalid
+                    ? 'O contexto necessário para carregar o Agora não está disponível.'
+                    : _feedLoading
+                    ? 'Buscando atualizações disponíveis para você.'
+                    : unauthorized
+                    ? 'Seu vínculo atual não permite acessar estes conteúdos.'
+                    : empty
+                    ? 'Novos registros aparecerão aqui quando forem publicados.'
+                    : 'Confira sua conexão e tente novamente.',
+                icon: invalid
+                    ? Icons.lock_outline_rounded
+                    : _feedLoading
+                    ? null
+                    : unauthorized
+                    ? Icons.lock_outline_rounded
+                    : empty
+                    ? Icons.auto_awesome_outlined
+                    : Icons.cloud_off_outlined,
+                actionLabel: !invalid && !_feedLoading && !unauthorized && !empty
+                    ? 'Tentar novamente'
+                    : null,
+                onAction: !invalid && !_feedLoading && !unauthorized && !empty ? _loadFeed : null,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildCompact(BuildContext context, {required bool compact}) => Center(
     child: ConstrainedBox(
@@ -226,7 +446,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
       child: _StoryCard(
         key: const Key('principal-now-story'),
         story: _story,
-        stories: widget.data.stories,
+        stories: _stories,
         activeIndex: _index,
         progress: _progressController,
         showReply: true,
@@ -306,7 +526,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
           children: [
             _NeighborPreview(
               key: const Key('principal-now-previous-preview'),
-              story: widget.data.stories[(_index - 1).clamp(0, widget.data.stories.length - 1)],
+              story: _stories[(_index - 1).clamp(0, _stories.length - 1)],
               enabled: _index > 0,
               icon: Icons.chevron_left_rounded,
               label: 'Agora anterior',
@@ -319,7 +539,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
               child: _StoryCard(
                 key: const Key('principal-now-story'),
                 story: _story,
-                stories: widget.data.stories,
+                stories: _stories,
                 activeIndex: _index,
                 progress: _progressController,
                 showReply: false,
@@ -344,8 +564,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
             const SizedBox(width: CoeloSpacing.space3),
             _NeighborPreview(
               key: const Key('principal-now-next-preview'),
-              story: widget.data.stories[(_index + 1).clamp(0, widget.data.stories.length - 1)],
-              enabled: _index < widget.data.stories.length - 1,
+              story: _stories[(_index + 1).clamp(0, _stories.length - 1)],
+              enabled: _index < _stories.length - 1,
               icon: Icons.chevron_right_rounded,
               label: 'Próximo Agora',
               onTap: _next,
@@ -739,16 +959,50 @@ final class _StoryImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final alignment = Alignment(-1 + story.imageIndex * .5, 0);
-    return Image.asset(
-      story.assetPath,
-      fit: BoxFit.cover,
-      alignment: alignment,
-      filterQuality: FilterQuality.medium,
-      semanticLabel: story.caption,
-      errorBuilder: (context, error, stackTrace) => ColoredBox(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: const Center(child: Icon(Icons.image_not_supported_outlined, color: Colors.white70)),
+    final unavailable = ColoredBox(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Semantics(
+          key: const Key('principal-now-media-unavailable'),
+          label: 'Mídia do Agora indisponível',
+          child: const Icon(Icons.image_not_supported_outlined, color: Colors.white70),
+        ),
       ),
+    );
+    final remoteUrl = story.remoteUrl;
+    if (remoteUrl != null && remoteUrl.isNotEmpty) {
+      if (!story.mimeType.startsWith('image/')) return unavailable;
+      return _applyCrop(
+        Image.network(
+          remoteUrl,
+          fit: BoxFit.cover,
+          alignment: alignment,
+          filterQuality: FilterQuality.medium,
+          semanticLabel: story.caption,
+          errorBuilder: (context, error, stackTrace) => unavailable,
+        ),
+      );
+    }
+    final assetPath = story.assetPath;
+    if (assetPath.isEmpty) return unavailable;
+    return _applyCrop(
+      Image.asset(
+        assetPath,
+        fit: BoxFit.cover,
+        alignment: alignment,
+        filterQuality: FilterQuality.medium,
+        semanticLabel: story.caption,
+        errorBuilder: (context, error, stackTrace) => unavailable,
+      ),
+    );
+  }
+
+  Widget _applyCrop(Widget media) {
+    if (story.cropScale == 1 && story.cropX == 0 && story.cropY == 0) return media;
+    return Transform.scale(
+      scale: story.cropScale,
+      alignment: Alignment(story.cropX, story.cropY),
+      child: media,
     );
   }
 }

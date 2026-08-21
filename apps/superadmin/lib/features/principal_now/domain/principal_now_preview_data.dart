@@ -54,14 +54,26 @@ final class PrincipalNowPreviewStory {
     required this.timeLabel,
     required this.caption,
     required this.assetPath,
-    required this.imageIndex,
+    this.remoteUrl,
+    this.mimeType = 'image/png',
+    this.imageIndex = 0,
+    this.cropScale = 1,
+    this.cropX = 0,
+    this.cropY = 0,
+    this.coverPosition = 0,
     this.duration = const Duration(seconds: 5),
-  });
+  }) : assert(assetPath != '' || remoteUrl != null);
 
   final String author;
   final String timeLabel;
   final String caption;
   final String assetPath;
+  final String? remoteUrl;
+  final String mimeType;
   final int imageIndex;
+  final double cropScale;
+  final double cropX;
+  final double cropY;
+  final double coverPosition;
   final Duration duration;
 }
