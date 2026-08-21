@@ -505,12 +505,19 @@ final class _MediaPreview extends StatelessWidget {
         else
           Transform.scale(
             scale: media.cropScale,
-            child: Image.memory(
-              media.bytes,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) =>
-                  Image.asset('assets/principal_now/story-strip.png', fit: BoxFit.cover),
-            ),
+            child: media.bytes.isEmpty && media.remoteUrl != null
+                ? Image.network(
+                    media.remoteUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) =>
+                        Image.asset('assets/principal_now/story-strip.png', fit: BoxFit.cover),
+                  )
+                : Image.memory(
+                    media.bytes,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) =>
+                        Image.asset('assets/principal_now/story-strip.png', fit: BoxFit.cover),
+                  ),
           ),
         if (controller.state.draft.overlayText.isNotEmpty)
           Center(

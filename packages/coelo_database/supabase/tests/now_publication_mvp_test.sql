@@ -1,15 +1,20 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(30);
+select plan(67);
 select has_table('public','now_publications','Agora publications exist');
 select has_table('public','now_publication_audiences','Agora audiences exist');
 select has_table('public','now_media_assets','Agora private asset metadata exists');
 select has_table('app_private','now_publication_audit','Agora audit exists');
+select has_table('app_private','now_media_read_tickets','private Agora media read tickets exist');
 select has_function('public','load_now_draft',array['uuid','uuid','uuid'],'draft query exists');
 select has_function('public','save_now_draft',array['uuid','jsonb','uuid','bigint'],'draft command exists');
 select has_function('public','prepare_now_asset_upload',array['uuid','uuid','now_asset_kind','text','text','bigint','numeric','boolean'],'upload preparation exists');
 select has_function('public','finalize_now_asset_upload',array['uuid','text'],'upload finalization exists');
 select has_function('public','publish_now',array['uuid','uuid','bigint','timestamp with time zone'],'publish command exists');
+select has_function('public','list_visible_now_publications',array['uuid','uuid','uuid','integer'],'audience-resolved Agora feed exists');
+select has_function('public','redeem_now_media_read_ticket',array['uuid','uuid'],'service-only Agora ticket redemption exists');
+select has_function('app_private','now_audience_matches_role',array['text','now_audience_kind'],'Agora audience matcher exists');
+select has_function('app_private','now_viewer_has_context',array['uuid','text','uuid','uuid','uuid'],'Agora viewer context guard exists');
 select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.now_publications'::regclass),'publications force RLS');
 select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.now_publication_audiences'::regclass),'audiences force RLS');
 select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid='public.now_media_assets'::regclass),'assets force RLS');
@@ -31,5 +36,41 @@ select ok(position('public.units' in pg_get_functiondef('app_private.now_actor(u
 select ok(position('public.groups' in pg_get_functiondef('app_private.now_actor(uuid,text,uuid,uuid)'::regprocedure))>0,'group context is checked against institution and unit');
 select ok(position('unsupported_cover_type' in pg_get_functiondef('public.prepare_now_asset_upload(uuid,uuid,public.now_asset_kind,text,text,bigint,numeric,boolean)'::regprocedure))>0,'cover accepts image MIME types only');
 select ok(position('p_kind::text' in pg_get_functiondef('public.prepare_now_asset_upload(uuid,uuid,public.now_asset_kind,text,text,bigint,numeric,boolean)'::regprocedure))>0,'asset replacement uses deterministic object key without orphaning prior storage');
+select ok(exists(select 1 from public.institution_permissions where code='now.publications.read' and module_code='now' and screen_code='publications' and action_code='read'),'Agora has a structured read capability');
+select ok(has_function_privilege('authenticated','public.list_visible_now_publications(uuid,uuid,uuid,integer)','execute'),'authenticated callers can request the authorized Agora feed');
+select ok(not has_function_privilege('authenticated','public.redeem_now_media_read_ticket(uuid,uuid)','execute'),'client cannot redeem Agora storage descriptors directly');
+select ok(has_function_privilege('service_role','public.redeem_now_media_read_ticket(uuid,uuid)','execute'),'Agora media worker can redeem a read ticket');
+select ok(position('now.publications.read' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,'Agora feed checks its own read capability');
+select ok(position('now_viewer_has_context' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,'Agora feed validates the viewer link before listing content');
+select ok(position('publication.institution_id=p_institution_id' in replace(pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure),' ',''))>0,'Agora feed remains tenant scoped');
+select ok(position("publication.statusin('scheduled','published')" in replace(pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure),' ',''))>0,'Agora feed accepts published content and due scheduled content only');
+select ok(position('publication.publish_at<=now()' in replace(pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure),' ',''))>0,'Agora feed never exposes scheduled content early');
+select ok(position('publication.expires_at>now()' in replace(pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure),' ',''))>0,'Agora feed enforces the 24-hour expiry boundary');
+select ok(position('now_publication_audiences' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,'Agora feed resolves the persisted audience');
+select ok(position('audience.unit_id is not distinct from publication.unit_id' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,'Agora feed binds audience unit to its publication');
+select ok(position('audience.group_id is not distinct from publication.group_id' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,'Agora feed binds audience group to its publication');
+select ok(position('now_media_read_tickets' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,'Agora feed emits opaque read tickets instead of storage paths');
+select ok(position('ticket.expires_at>now()' in replace(pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure),' ',''))>0,'Agora ticket redemption rejects expired tickets');
+select ok(position('delete from app_private.now_media_read_tickets' in pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure))>0,'Agora read tickets are single use');
+select ok(position('auth_link.auth_user_id=p_viewer_auth_user_id' in replace(pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure),' ',''))>0,'Agora ticket remains bound to its authenticated viewer');
+select ok(position("membership.status='active'" in replace(pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure),' ',''))>0 and position('membership.revoked_at is null' in pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure))>0,'Agora ticket revalidates active institution membership');
+select ok(position('now_publication_audiences' in pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure))>0 and position('now_audience_matches_role' in pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure))>0,'Agora ticket revalidates audience before revealing storage metadata');
+select ok(position('now_viewer_has_context' in pg_get_functiondef('public.redeem_now_media_read_ticket(uuid,uuid)'::regprocedure))>0,'Agora ticket revalidates the viewer institution, unit and group link');
+select ok(position("status='draft'" in replace(pg_get_functiondef('public.authorize_now_asset_read(uuid,uuid)'::regprocedure),' ',''))>0 and position('now.publications.create' in pg_get_functiondef('public.authorize_now_asset_read(uuid,uuid)'::regprocedure))>0,'author preview remains draft-only and create-authorized');
+select ok(position('authorize_now_asset_read' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))=0,'public feed never reuses author preview authorization');
+select ok(
+  pg_get_function_result('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure)
+    = 'TABLE(publication_id uuid, author_name text, author_initials text, context_label text, caption text, overlay_text text, crop_scale numeric, crop_x numeric, crop_y numeric, cover_position numeric, published_at timestamp with time zone, expires_at timestamp with time zone, media jsonb)',
+  'Agora feed exposes only its minimum presentation projection'
+);
+select is(app_private.now_audience_matches_role('guardian','families'),true,'guardian receives family Agora publications');
+select is(app_private.now_audience_matches_role('guardian','guardians_only'),true,'guardian receives guardian-only Agora publications');
+select is(app_private.now_audience_matches_role('guardian','students'),false,'guardian never crosses into student Agora publications');
+select is(app_private.now_audience_matches_role('student','students'),true,'student receives student Agora publications');
+select is(app_private.now_audience_matches_role('student','school_staff'),false,'student never crosses into staff Agora publications');
+select is(app_private.now_audience_matches_role('teacher','school_staff'),true,'staff receives staff Agora publications');
+select ok(position('guardian_context_permissions' in pg_get_functiondef('app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)'::regprocedure))>0,'guardian Agora reads require an explicit active view permission');
+select ok(position('child_unit_links' in pg_get_functiondef('app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)'::regprocedure))>0,'Agora viewer context validates the active unit link');
+select ok(position('child_group_links' in pg_get_functiondef('app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)'::regprocedure))>0,'Agora viewer context validates the active group link');
 select * from finish();
 rollback;

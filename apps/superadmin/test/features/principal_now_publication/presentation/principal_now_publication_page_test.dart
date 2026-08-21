@@ -84,6 +84,39 @@ void main() {
     expect(field.controller?.text, 'Registro da turma');
   });
 
+  testWidgets('preview usa URL assinada do rascunho remoto', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = InMemoryNowPublicationRepository()
+      ..savedDraft = NowPublicationDraft(
+        media: NowMediaDraft(
+          localId: 'asset-1',
+          name: 'foto.png',
+          mimeType: 'image/png',
+          bytes: Uint8List(0),
+          remoteAssetId: 'asset-1',
+          remoteUrl: 'https://signed.test/draft?token=short-lived',
+        ),
+      );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalNowPublicationPage(repository: repository),
+      ),
+    );
+    await tester.pump();
+
+    final images = tester.widgetList<Image>(find.byType(Image));
+    expect(
+      images.any(
+        (image) =>
+            image.image is NetworkImage &&
+            (image.image as NetworkImage).url == 'https://signed.test/draft?token=short-lived',
+      ),
+      isTrue,
+    );
+  });
+
   testWidgets('toggle de agendamento aceita teclado e desabilita durante salvamento', (
     tester,
   ) async {

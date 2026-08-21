@@ -19,7 +19,7 @@ Entregar um composer rápido e leve para publicar uma mídia vertical no Agora. 
 
 ## Fora de escopo
 
-- Viewer ou lista do Agora, timeline, catálogo comercial de músicas, múltiplas mídias, editor profissional e migração para R2.
+- UI do viewer ou lista do Agora, timeline, catálogo comercial de músicas, múltiplas mídias, editor profissional e migração para R2. O contrato backend mínimo de leitura privada faz parte desta entrega para impedir integração futura com dados demonstrativos ou URLs públicas.
 
 ## Superfícies e UX
 
@@ -34,8 +34,10 @@ Entregar um composer rápido e leve para publicar uma mídia vertical no Agora. 
 - O backend resolve ator, tenant, instituição, unidade, grupo, públicos permitidos e capacidade do plano; IDs do cliente são não confiáveis.
 - Bucket privado, RLS deny-by-default, comandos autenticados, versão otimista, idempotência e auditoria são obrigatórios.
 - MIME real, tamanho de até 25 MB no upload transitório do MVP e duração são validados server-side. Áudio próprio exige confirmação de direitos.
+- Upload usa intenção server-side e URL assinada temporária diretamente para o bucket privado; a Edge Function finaliza somente após reler e validar o objeto armazenado. Base64 de mídia pela função é proibido.
 - Unidade e grupo são revalidados contra a instituição; receipts de comando preservam idempotência e retries não reenviam assets já finalizados.
 - Conteúdo publicado expira em 24 horas; URLs públicas permanentes e `service_role` no cliente são proibidos.
+- Preview do próprio rascunho exige capability de criação e URL de 60 segundos. Leitura pública usa capability `now.publications.read`, feed filtrado por tenant, contexto, papel, audiência, vínculo ativo e expiração, seguido de ticket opaco, individual, descartável e trocado server-side por URL de 60 segundos.
 
 ## Estados e critérios de aceite
 

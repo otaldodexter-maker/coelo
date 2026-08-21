@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const BUCKET = "coelo-now-mvp";
-const MAX_BYTES = 25 * 1024 * 1024;
+const DEFAULT_MAX_BYTES = 25 * 1024 * 1024;
 const ALLOWED = new Set([
   "image/jpeg",
   "image/png",
@@ -13,21 +13,38 @@ const ALLOWED = new Set([
   "audio/aac",
 ]);
 type Json = Record<string, unknown>;
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
-function reply(status: number, body: Json) {
+function maxBytes() {
+  const value = Number(
+    Deno.env.get("NOW_MEDIA_MAX_BYTES") ?? DEFAULT_MAX_BYTES,
+  );
+  return Number.isSafeInteger(value) && value > 0 ? value : DEFAULT_MAX_BYTES;
+}
+
+function allowedOrigins() {
+  return new Set(
+    (Deno.env.get("NOW_MEDIA_ALLOWED_ORIGINS") ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+}
+
+function reply(origin: string | null, status: number, body: Json) {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store",
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers":
+      "authorization, apikey, content-type, x-client-info",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+  if (origin !== null && allowedOrigins().has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      ...CORS,
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-    },
+    headers,
   });
 }
 
@@ -37,18 +54,33 @@ function secret() {
   return value;
 }
 
-function decode(value: unknown) {
+function uploadEnvelope(body: Json) {
   if (
-    typeof value !== "string" ||
-    value.length > Math.ceil(MAX_BYTES * 4 / 3) + 16
+    typeof body.request_id !== "string" || body.request_id.length < 1 ||
+    body.request_id.length > 240 ||
+    typeof body.publication_id !== "string" ||
+    typeof body.institution_id !== "string" ||
+    typeof body.kind !== "string" ||
+    !["media", "audio", "cover"].includes(body.kind) ||
+    typeof body.name !== "string" || body.name.length < 1 ||
+    typeof body.mime_type !== "string" || !ALLOWED.has(body.mime_type) ||
+    typeof body.size_bytes !== "number" ||
+    !Number.isSafeInteger(body.size_bytes) ||
+    body.size_bytes < 1 || body.size_bytes > maxBytes()
   ) {
-    throw new Error("invalid_asset_payload");
+    throw new Error("invalid_request");
   }
-  const binary = atob(value);
-  if (!binary.length || binary.length > MAX_BYTES) {
-    throw new Error("invalid_asset_size");
-  }
-  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  return {
+    requestId: body.request_id,
+    publicationId: body.publication_id,
+    institutionId: body.institution_id,
+    kind: body.kind,
+    name: body.name,
+    mimeType: body.mime_type,
+    sizeBytes: body.size_bytes,
+    durationSeconds: body.duration_seconds,
+    rightsConfirmed: body.rights_confirmed === true,
+  };
 }
 
 function text(bytes: Uint8Array, start: number, end: number) {
@@ -90,39 +122,22 @@ async function checksum(bytes: Uint8Array) {
 }
 
 Deno.serve(async (request) => {
+  const origin = request.headers.get("origin");
+  if (origin !== null && !allowedOrigins().has(origin)) {
+    return reply(null, 403, { error: "origin_not_allowed" });
+  }
   if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS });
+    return reply(origin, 200, { ok: true });
   }
   if (request.method !== "POST") {
-    return reply(405, { error: "method_not_allowed" });
+    return reply(origin, 405, { error: "method_not_allowed" });
   }
   const authorization = request.headers.get("authorization");
   if (!authorization?.startsWith("Bearer ")) {
-    return reply(401, { error: "authentication_required" });
+    return reply(origin, 401, { error: "authentication_required" });
   }
-  let uploaded: string | null = null;
-  let preparedAssetId: string | null = null;
   try {
     const body = await request.json() as Json;
-    if (body.action !== "upload") {
-      return reply(400, { error: "invalid_request" });
-    }
-    if (
-      typeof body.publication_id !== "string" ||
-      typeof body.institution_id !== "string" ||
-      typeof body.kind !== "string" ||
-      !["media", "audio", "cover"].includes(body.kind) ||
-      typeof body.name !== "string" || typeof body.mime_type !== "string" ||
-      !ALLOWED.has(body.mime_type)
-    ) return reply(400, { error: "invalid_request" });
-
-    const bytes = decode(body.content_base64);
-    if (
-      body.size_bytes !== bytes.length || !validSignature(bytes, body.mime_type)
-    ) {
-      throw new Error("invalid_asset_signature");
-    }
-
     const url = Deno.env.get("SUPABASE_URL")!;
     const user = createClient(url, Deno.env.get("SUPABASE_ANON_KEY")!, {
       global: { headers: { Authorization: authorization } },
@@ -130,45 +145,152 @@ Deno.serve(async (request) => {
     const admin = createClient(url, secret(), {
       auth: { persistSession: false },
     });
-    const prepared = await user.rpc("prepare_now_asset_upload", {
-      p_institution_id: body.institution_id,
-      p_publication_id: body.publication_id,
-      p_kind: body.kind,
-      p_name: body.name,
-      p_mime_type: body.mime_type,
-      p_byte_size: bytes.length,
-      p_duration_seconds: body.duration_seconds,
-      p_rights_confirmed: body.rights_confirmed === true,
-    });
-    if (prepared.error) throw new Error("asset_prepare_failed");
-    const descriptor = prepared.data as Json;
-    preparedAssetId = String(descriptor.asset_id);
-    uploaded = String(descriptor.object_key);
-    const upload = await admin.storage.from(BUCKET).upload(uploaded, bytes, {
-      contentType: body.mime_type,
-      cacheControl: "no-store",
-      upsert: true,
-    });
-    if (upload.error) throw new Error("asset_upload_failed");
-    const finalized = await user.rpc("finalize_now_asset_upload", {
-      p_asset_id: descriptor.asset_id,
-      p_checksum_sha256: await checksum(bytes),
-    });
-    if (finalized.error) throw new Error("asset_finalize_failed");
-    uploaded = null;
-    preparedAssetId = null;
-    return reply(200, finalized.data as Json);
-  } catch (error) {
-    if (uploaded) {
-      const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), {
-        auth: { persistSession: false },
+
+    if (body.action === "read-draft") {
+      if (
+        typeof body.institution_id !== "string" ||
+        typeof body.asset_id !== "string"
+      ) return reply(origin, 400, { error: "invalid_request" });
+
+      const authorized = await user.rpc("authorize_now_asset_read", {
+        p_institution_id: body.institution_id,
+        p_asset_id: body.asset_id,
       });
-      await admin.storage.from(BUCKET).remove([uploaded]);
-      if (preparedAssetId) {
-        await admin.from("now_media_assets").delete().eq("id", preparedAssetId);
+      if (authorized.error) throw new Error("asset_read_not_authorized");
+      const descriptor = authorized.data as Json;
+      if (
+        descriptor.bucket_id !== BUCKET ||
+        typeof descriptor.object_key !== "string"
+      ) throw new Error("asset_read_not_authorized");
+
+      const signed = await admin.storage.from(BUCKET).createSignedUrl(
+        descriptor.object_key,
+        60,
+      );
+      if (signed.error || !signed.data?.signedUrl) {
+        throw new Error("asset_signing_failed");
       }
+      return reply(origin, 200, {
+        signed_url: signed.data.signedUrl,
+        mime_type: descriptor.mime_type,
+        expires_in: 60,
+      });
     }
-    return reply(422, {
+
+    if (body.action === "read") {
+      if (typeof body.read_ticket !== "string") {
+        return reply(origin, 400, { error: "invalid_request" });
+      }
+      const identity = await user.auth.getUser();
+      if (identity.error || !identity.data.user) {
+        return reply(origin, 401, { error: "authentication_required" });
+      }
+      const redeemed = await admin.rpc("redeem_now_media_read_ticket", {
+        p_ticket: body.read_ticket,
+        p_viewer_auth_user_id: identity.data.user.id,
+      });
+      if (redeemed.error) {
+        return reply(origin, 403, { error: "media_read_denied" });
+      }
+      const descriptor = redeemed.data as Json;
+      if (
+        descriptor.bucket_id !== BUCKET ||
+        typeof descriptor.object_key !== "string"
+      ) throw new Error("media_read_denied");
+      const signed = await admin.storage.from(BUCKET).createSignedUrl(
+        descriptor.object_key,
+        60,
+      );
+      if (signed.error || !signed.data?.signedUrl) {
+        throw new Error("asset_signing_failed");
+      }
+      return reply(origin, 200, {
+        signed_url: signed.data.signedUrl,
+        mime_type: descriptor.mime_type,
+        expires_in: 60,
+      });
+    }
+
+    if (body.action === "prepare") {
+      const input = uploadEnvelope(body);
+      const prepared = await user.rpc("prepare_now_asset_upload", {
+        p_institution_id: input.institutionId,
+        p_publication_id: input.publicationId,
+        p_kind: input.kind,
+        p_name: input.name,
+        p_mime_type: input.mimeType,
+        p_byte_size: input.sizeBytes,
+        p_duration_seconds: input.durationSeconds,
+        p_rights_confirmed: input.rightsConfirmed,
+      });
+      if (prepared.error) throw new Error("asset_prepare_failed");
+      const descriptor = prepared.data as Json;
+      if (
+        descriptor.bucket_id !== BUCKET ||
+        typeof descriptor.asset_id !== "string" ||
+        typeof descriptor.object_key !== "string"
+      ) throw new Error("asset_prepare_failed");
+      const signed = await admin.storage.from(BUCKET).createSignedUploadUrl(
+        descriptor.object_key,
+        { upsert: true },
+      );
+      if (signed.error) throw new Error("asset_signing_failed");
+      return reply(origin, 200, {
+        asset_id: descriptor.asset_id,
+        object_key: descriptor.object_key,
+        upload_token: signed.data.token,
+      });
+    }
+
+    if (body.action === "finalize") {
+      const input = uploadEnvelope(body);
+      if (typeof body.asset_id !== "string") {
+        return reply(origin, 400, { error: "invalid_request" });
+      }
+      const authorized = await user.rpc("prepare_now_asset_upload", {
+        p_institution_id: input.institutionId,
+        p_publication_id: input.publicationId,
+        p_kind: input.kind,
+        p_name: input.name,
+        p_mime_type: input.mimeType,
+        p_byte_size: input.sizeBytes,
+        p_duration_seconds: input.durationSeconds,
+        p_rights_confirmed: input.rightsConfirmed,
+      });
+      if (authorized.error) throw new Error("asset_finalize_denied");
+      const descriptor = authorized.data as Json;
+      if (
+        descriptor.bucket_id !== BUCKET ||
+        descriptor.asset_id !== body.asset_id ||
+        typeof descriptor.object_key !== "string"
+      ) {
+        throw new Error("asset_receipt_mismatch");
+      }
+      const stored = await admin.storage.from(BUCKET).download(
+        descriptor.object_key,
+      );
+      if (stored.error) throw new Error("asset_upload_incomplete");
+      const bytes = new Uint8Array(await stored.data.arrayBuffer());
+      if (
+        bytes.length !== input.sizeBytes ||
+        !validSignature(bytes, String(input.mimeType))
+      ) {
+        await admin.storage.from(BUCKET).remove([
+          descriptor.object_key,
+        ]);
+        throw new Error("invalid_asset_signature");
+      }
+      const finalized = await user.rpc("finalize_now_asset_upload", {
+        p_asset_id: body.asset_id,
+        p_checksum_sha256: await checksum(bytes),
+      });
+      if (finalized.error) throw new Error("asset_finalize_failed");
+      return reply(origin, 200, finalized.data as Json);
+    }
+
+    return reply(origin, 400, { error: "invalid_request" });
+  } catch (error) {
+    return reply(origin, 422, {
       error: error instanceof Error ? error.message : "worker_error",
     });
   }

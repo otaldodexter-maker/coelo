@@ -106,7 +106,21 @@ final class NowPublicationController extends ChangeNotifier {
   Future<void> saveDraft() async {
     _emit(_state.copyWith(phase: NowPublicationPhase.saving, clearMessage: true));
     try {
-      final saved = await repository.saveDraft(context, _state.draft);
+      var saved = await repository.saveDraft(context, _state.draft);
+      final media = saved.media;
+      if (media != null && media.remoteAssetId == null) {
+        final publicationId = saved.id;
+        if (publicationId == null) throw Exception('draft_id_required_for_upload');
+        saved = saved.copyWith(media: await repository.uploadMedia(context, publicationId, media));
+        _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saving));
+      }
+      final audio = saved.audio;
+      if (audio != null && audio.remoteAssetId == null) {
+        final publicationId = saved.id;
+        if (publicationId == null) throw Exception('draft_id_required_for_upload');
+        saved = saved.copyWith(audio: await repository.uploadAudio(context, publicationId, audio));
+        _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saving));
+      }
       _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saved));
     } on NowPublicationConflict {
       _emit(

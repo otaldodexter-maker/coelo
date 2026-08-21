@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -74,11 +73,7 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
   Future<String> _assetUrl(NowPublicationContext context, String assetId) async {
     final response = await _client.functions.invoke(
       'now-media',
-      body: {
-        'action': 'read',
-        'institution_id': context.institutionId,
-        'asset_id': assetId,
-      },
+      body: {'action': 'read-draft', 'institution_id': context.institutionId, 'asset_id': assetId},
     );
     if (response.status < 200 || response.status >= 300) {
       throw Exception('now_media_read_failed');
@@ -170,11 +165,12 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
     required bool rightsConfirmed,
     double? durationSeconds,
   }) async {
-    final response = await _client.functions.invoke(
+    final requestId = _uuid();
+    final prepareResponse = await _client.functions.invoke(
       'now-media',
       body: {
-        'action': 'upload',
-        'request_id': _uuid(),
+        'action': 'prepare',
+        'request_id': requestId,
         'publication_id': publicationId,
         'institution_id': context.institutionId,
         'unit_id': context.unitId,
@@ -185,13 +181,45 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
         'size_bytes': bytes.length,
         'duration_seconds': durationSeconds,
         'rights_confirmed': rightsConfirmed,
-        'content_base64': base64Encode(bytes),
       },
     );
-    if (response.status < 200 || response.status >= 300) {
+    if (prepareResponse.status < 200 || prepareResponse.status >= 300) {
+      throw Exception('now_media_prepare_failed');
+    }
+    final prepared = Map<String, dynamic>.from(prepareResponse.data as Map);
+    final assetId = prepared['asset_id'] as String;
+    final objectKey = prepared['object_key'] as String;
+    final uploadToken = prepared['upload_token'] as String;
+    await _client.storage
+        .from('coelo-now-mvp')
+        .uploadBinaryToSignedUrl(
+          objectKey,
+          uploadToken,
+          Uint8List.fromList(bytes),
+          FileOptions(contentType: mimeType, upsert: true),
+        );
+    final finalizeResponse = await _client.functions.invoke(
+      'now-media',
+      body: {
+        'action': 'finalize',
+        'request_id': requestId,
+        'asset_id': assetId,
+        'publication_id': publicationId,
+        'institution_id': context.institutionId,
+        'unit_id': context.unitId,
+        'group_id': context.groupId,
+        'kind': kind,
+        'name': name,
+        'mime_type': mimeType,
+        'size_bytes': bytes.length,
+        'duration_seconds': durationSeconds,
+        'rights_confirmed': rightsConfirmed,
+      },
+    );
+    if (finalizeResponse.status < 200 || finalizeResponse.status >= 300) {
       throw Exception('now_media_upload_failed');
     }
-    return Map<String, dynamic>.from(response.data as Map);
+    return Map<String, dynamic>.from(finalizeResponse.data as Map);
   }
 
   @override
