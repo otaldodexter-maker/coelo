@@ -48,12 +48,19 @@ final class MomentsPublicationContext {
 
 @immutable
 final class MomentsMediaDraft {
-  const MomentsMediaDraft({
+  MomentsMediaDraft({
     required this.localId,
-    required this.assetPath,
-    required this.durationLabel,
-    required this.cropIndex,
-  });
+    this.assetPath = '',
+    this.durationLabel = '',
+    this.cropIndex = 0,
+    String? name,
+    this.mimeType = 'image/png',
+    Uint8List? bytes,
+    this.durationMilliseconds,
+    this.remoteAssetId,
+    this.remoteUrl,
+  }) : name = name ?? localId,
+       bytes = bytes == null ? Uint8List(0) : Uint8List.fromList(bytes);
 
   factory MomentsMediaDraft.demo(int index) => MomentsMediaDraft(
     localId: 'moment-media-$index',
@@ -62,10 +69,46 @@ final class MomentsMediaDraft {
     cropIndex: index % 5,
   );
 
+  factory MomentsMediaDraft.local({
+    required String localId,
+    required String name,
+    required String mimeType,
+    required Uint8List bytes,
+    int? durationMilliseconds,
+  }) => MomentsMediaDraft(
+    localId: localId,
+    name: name,
+    mimeType: mimeType,
+    bytes: bytes,
+    durationMilliseconds: durationMilliseconds,
+    durationLabel: durationMilliseconds == null
+        ? ''
+        : '0:${(durationMilliseconds / 1000).round().toString().padLeft(2, '0')}',
+  );
+
   final String localId;
   final String assetPath;
   final String durationLabel;
   final int cropIndex;
+  final String name;
+  final String mimeType;
+  final Uint8List bytes;
+  final int? durationMilliseconds;
+  final String? remoteAssetId;
+  final String? remoteUrl;
+
+  MomentsMediaDraft copyWith({String? remoteAssetId, String? remoteUrl}) => MomentsMediaDraft(
+    localId: localId,
+    assetPath: assetPath,
+    durationLabel: durationLabel,
+    cropIndex: cropIndex,
+    name: name,
+    mimeType: mimeType,
+    bytes: bytes,
+    durationMilliseconds: durationMilliseconds,
+    remoteAssetId: remoteAssetId ?? this.remoteAssetId,
+    remoteUrl: remoteUrl ?? this.remoteUrl,
+  );
 }
 
 @immutable
