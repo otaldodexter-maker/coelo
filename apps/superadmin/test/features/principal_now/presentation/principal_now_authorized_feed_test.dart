@@ -110,6 +110,7 @@ void main() {
         return PrincipalNowMediaRead(
           signedUrl: 'https://signed.test/${media.readTicket}',
           mimeType: media.mimeType,
+          kind: media.kind,
           expiresIn: const Duration(seconds: 60),
         );
       },
@@ -117,11 +118,20 @@ void main() {
 
     await pumpAuthorized(tester, repository: repository, refreshSignal: refresh);
     expect(find.text(_story.caption), findsOneWidget);
-    expect(resolved, containsAll(['ticket-1', 'ticket-2']));
+    expect(resolved, containsAll(['ticket-1', 'audio-ticket-1', 'ticket-2']));
+    expect(resolved, isNot(contains('audio-ticket-2')));
+    final progressRow = tester.widget<Row>(
+      find.descendant(
+        of: find.byKey(const Key('principal-now-progress')),
+        matching: find.byType(Row),
+      ),
+    );
+    expect(progressRow.children, hasLength(2));
 
     refresh.markPublished('publication-confirmed');
     await tester.pumpAndSettle();
     expect(loads, 2);
+    expect(find.text(_story.caption), findsOneWidget);
   });
 
   testWidgets('falha fechado quando o resgate da mídia perde autorização', (tester) async {
@@ -143,6 +153,7 @@ void main() {
       resolve: (media) async => PrincipalNowMediaRead(
         signedUrl: 'https://signed.test/video',
         mimeType: media.mimeType,
+        kind: media.kind,
         expiresIn: const Duration(seconds: 60),
       ),
     );
@@ -163,7 +174,16 @@ final _story = PrincipalNowFeedItem(
   caption: 'Ciência em ação',
   publishedAt: _publishedAt,
   expiresAt: _expiresAt,
-  media: PrincipalNowMediaDescriptor(readTicket: 'ticket-1', mimeType: 'image/webp'),
+  media: const PrincipalNowMediaDescriptor(
+    readTicket: 'ticket-1',
+    mimeType: 'image/webp',
+    kind: PrincipalNowMediaKind.media,
+  ),
+  audio: const PrincipalNowMediaDescriptor(
+    readTicket: 'audio-ticket-1',
+    mimeType: 'audio/mpeg',
+    kind: PrincipalNowMediaKind.audio,
+  ),
 );
 
 final _secondStory = PrincipalNowFeedItem(
@@ -175,7 +195,16 @@ final _secondStory = PrincipalNowFeedItem(
   caption: 'Rotina da turma',
   publishedAt: _publishedAt,
   expiresAt: _expiresAt,
-  media: PrincipalNowMediaDescriptor(readTicket: 'ticket-2', mimeType: 'image/webp'),
+  media: const PrincipalNowMediaDescriptor(
+    readTicket: 'ticket-2',
+    mimeType: 'image/webp',
+    kind: PrincipalNowMediaKind.media,
+  ),
+  audio: const PrincipalNowMediaDescriptor(
+    readTicket: 'audio-ticket-2',
+    mimeType: 'audio/mpeg',
+    kind: PrincipalNowMediaKind.audio,
+  ),
 );
 
 final _videoStory = PrincipalNowFeedItem(
@@ -187,7 +216,11 @@ final _videoStory = PrincipalNowFeedItem(
   caption: 'Momento esportivo',
   publishedAt: _publishedAt,
   expiresAt: _expiresAt,
-  media: PrincipalNowMediaDescriptor(readTicket: 'ticket-video', mimeType: 'video/mp4'),
+  media: const PrincipalNowMediaDescriptor(
+    readTicket: 'ticket-video',
+    mimeType: 'video/mp4',
+    kind: PrincipalNowMediaKind.media,
+  ),
 );
 
 final _publishedAt = DateTime.utc(2026, 8, 21, 10);
@@ -203,12 +236,17 @@ final class _FakeNowFeedRepository implements PrincipalNowFeedRepository {
   Future<List<PrincipalNowFeedItem>> listVisibleStories(PrincipalNowFeedScope scope) => list(scope);
 
   @override
-  Future<PrincipalNowMediaRead> resolveMedia(PrincipalNowMediaDescriptor media) =>
+  Future<PrincipalNowMediaRead> resolveMedia({
+    required PrincipalNowFeedScope scope,
+    required String publicationId,
+    required PrincipalNowMediaDescriptor media,
+  }) =>
       resolve?.call(media) ??
       Future.value(
         PrincipalNowMediaRead(
           signedUrl: 'https://signed.test/${media.readTicket}',
           mimeType: media.mimeType,
+          kind: media.kind,
           expiresIn: const Duration(seconds: 60),
         ),
       );

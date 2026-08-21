@@ -38,6 +38,7 @@ final class PrincipalNowFeedItem {
     required this.publishedAt,
     required this.expiresAt,
     required this.media,
+    this.audio,
     this.cropScale = 1,
     this.cropX = 0,
     this.cropY = 0,
@@ -53,18 +54,26 @@ final class PrincipalNowFeedItem {
   final DateTime publishedAt;
   final DateTime expiresAt;
   final PrincipalNowMediaDescriptor media;
+  final PrincipalNowMediaDescriptor? audio;
   final double cropScale;
   final double cropX;
   final double cropY;
   final double coverPosition;
 }
 
+enum PrincipalNowMediaKind { media, audio }
+
 @immutable
 final class PrincipalNowMediaDescriptor {
-  const PrincipalNowMediaDescriptor({required this.readTicket, required this.mimeType});
+  const PrincipalNowMediaDescriptor({
+    required this.readTicket,
+    required this.mimeType,
+    required this.kind,
+  });
 
   final String readTicket;
   final String mimeType;
+  final PrincipalNowMediaKind kind;
 }
 
 @immutable
@@ -72,11 +81,13 @@ final class PrincipalNowMediaRead {
   const PrincipalNowMediaRead({
     required this.signedUrl,
     required this.mimeType,
+    required this.kind,
     required this.expiresIn,
   });
 
   final String signedUrl;
   final String mimeType;
+  final PrincipalNowMediaKind kind;
   final Duration expiresIn;
 }
 
@@ -85,7 +96,11 @@ abstract interface class PrincipalNowFeedRepository {
   Future<List<PrincipalNowFeedItem>> listVisibleStories(PrincipalNowFeedScope scope);
 
   /// Redeems a single-use public viewer ticket. Author draft tickets are not accepted here.
-  Future<PrincipalNowMediaRead> resolveMedia(PrincipalNowMediaDescriptor media);
+  Future<PrincipalNowMediaRead> resolveMedia({
+    required PrincipalNowFeedScope scope,
+    required String publicationId,
+    required PrincipalNowMediaDescriptor media,
+  });
 }
 
 final class PrincipalNowFeedRefreshSignal extends ChangeNotifier {

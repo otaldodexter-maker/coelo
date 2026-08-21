@@ -61,8 +61,9 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   var _feedRequest = 0;
   PrincipalNowFeedFailure? _feedFailure;
   List<PrincipalNowFeedItem>? _remoteItems;
-  final _resolvedMedia = <String, PrincipalNowMediaRead>{};
-  final _resolvingMedia = <String>{};
+  final _resolvedMedia =
+      <({String publicationId, PrincipalNowMediaKind kind}), PrincipalNowMediaRead>{};
+  final _resolvingMedia = <({String publicationId, PrincipalNowMediaKind kind})>{};
 
   bool get _feedConfigurationInvalid =>
       (widget.feedRepository == null) != (widget.feedScope == null);
@@ -70,7 +71,16 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   List<PrincipalNowPreviewStory> get _stories => _usesRemoteFeed
       ? (_remoteItems ?? const [])
             .map((item) {
-              final media = _resolvedMedia[item.publicationId];
+              final media =
+                  _resolvedMedia[(
+                    publicationId: item.publicationId,
+                    kind: PrincipalNowMediaKind.media,
+                  )];
+              final audio =
+                  _resolvedMedia[(
+                    publicationId: item.publicationId,
+                    kind: PrincipalNowMediaKind.audio,
+                  )];
               return PrincipalNowPreviewStory(
                 author: item.author,
                 timeLabel: item.timeLabel,
@@ -78,6 +88,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                 assetPath: '',
                 remoteUrl: media?.signedUrl ?? '',
                 mimeType: media?.mimeType ?? item.media.mimeType,
+                audioUrl: audio?.signedUrl,
+                audioMimeType: audio?.mimeType ?? item.audio?.mimeType,
                 cropScale: item.cropScale,
                 cropX: item.cropX,
                 cropY: item.cropY,
@@ -327,22 +339,32 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     final indexes = <int>{index};
     if (index > 0) indexes.add(index - 1);
     if (index + 1 < items.length) indexes.add(index + 1);
-    await Future.wait(indexes.map(_resolveMediaAt));
+    await Future.wait(indexes.map((value) => _resolveDescriptor(items[value], items[value].media)));
+    final audio = items[index].audio;
+    if (audio != null) await _resolveDescriptor(items[index], audio);
   }
 
-  Future<void> _resolveMediaAt(int index) async {
+  Future<void> _resolveDescriptor(
+    PrincipalNowFeedItem item,
+    PrincipalNowMediaDescriptor descriptor,
+  ) async {
     final repository = widget.feedRepository;
     final items = _remoteItems;
-    if (repository == null || items == null || index < 0 || index >= items.length) return;
-    final item = items[index];
-    if (_resolvedMedia.containsKey(item.publicationId) ||
-        !_resolvingMedia.add(item.publicationId)) {
+    if (repository == null || items == null || !items.contains(item)) return;
+    final key = (publicationId: item.publicationId, kind: descriptor.kind);
+    if (_resolvedMedia.containsKey(key) || !_resolvingMedia.add(key)) {
       return;
     }
     try {
-      final read = await repository.resolveMedia(item.media);
+      final scope = widget.feedScope;
+      if (scope == null) return;
+      final read = await repository.resolveMedia(
+        scope: scope,
+        publicationId: item.publicationId,
+        media: descriptor,
+      );
       if (!mounted || _remoteItems != items) return;
-      setState(() => _resolvedMedia[item.publicationId] = read);
+      setState(() => _resolvedMedia[key] = read);
     } on PrincipalNowFeedUnauthorized catch (failure) {
       if (mounted && _remoteItems == items) {
         setState(() => _feedFailure = failure);
@@ -350,7 +372,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     } on Object {
       // The story keeps an explicit unavailable-media placeholder; no demo fallback.
     } finally {
-      _resolvingMedia.remove(item.publicationId);
+      _resolvingMedia.remove(key);
     }
   }
 

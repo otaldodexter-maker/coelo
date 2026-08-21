@@ -56,6 +56,8 @@ final class PrincipalNowPreviewStory {
     required this.assetPath,
     this.remoteUrl,
     this.mimeType = 'image/png',
+    this.audioUrl,
+    this.audioMimeType,
     this.imageIndex = 0,
     this.cropScale = 1,
     this.cropX = 0,
@@ -70,6 +72,8 @@ final class PrincipalNowPreviewStory {
   final String assetPath;
   final String? remoteUrl;
   final String mimeType;
+  final String? audioUrl;
+  final String? audioMimeType;
   final int imageIndex;
   final double cropScale;
   final double cropX;
