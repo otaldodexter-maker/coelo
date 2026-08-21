@@ -1,0 +1,71 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(60);
+
+select has_table('public', 'circulars', 'Circular aggregate exists');
+select has_table('public', 'circular_revisions', 'Circular revisions exist');
+select has_table('public', 'circular_blocks', 'Ordered blocks exist');
+select has_table('public', 'circular_questions', 'Questions exist');
+select has_table('public', 'circular_question_options', 'Question options exist');
+select has_table('public', 'circular_audience_rules', 'Audience rules exist');
+select has_table('public', 'circular_media_assets', 'Private Supabase Storage metadata exists');
+select has_table('public', 'circular_response_sessions', 'Response sessions exist');
+select has_table('public', 'circular_answers', 'Answers stay separate from comments');
+select has_table('app_private', 'circular_audit', 'Circular audit exists');
+select has_table('app_private', 'circular_command_receipts', 'Idempotency receipts exist');
+
+select has_function('public', 'load_circular_draft', array['uuid','uuid','uuid','uuid'], 'draft query exists');
+select has_function('public', 'save_circular_draft', array['uuid','jsonb','uuid','bigint'], 'draft command exists');
+select has_function('public', 'publish_circular', array['uuid','uuid','bigint','timestamp with time zone'], 'publish command exists');
+select has_function('public', 'close_circular_responses', array['uuid','uuid','bigint'], 'manual close exists');
+select has_function('public', 'delete_circular', array['uuid','uuid','bigint'], 'audited logical delete exists');
+select has_function('public', 'list_visible_profile_circulars', array['uuid','uuid','uuid','uuid','timestamp with time zone','uuid','integer'], 'profile cursor query exists');
+select has_function('public', 'get_visible_circular', array['uuid','uuid'], 'detail query exists');
+select has_function('public', 'save_circular_response_draft', array['uuid','uuid','jsonb','bigint'], 'partial response command exists');
+select has_function('public', 'submit_circular_response', array['uuid','uuid','bigint'], 'response submit command exists');
+select has_function('public', 'list_visible_happens_feed', array['uuid','uuid','uuid','uuid','timestamp with time zone','text','uuid','integer'], 'mixed feed query exists');
+select has_function('public', 'prepare_circular_media_upload', array['uuid','uuid','uuid','text','text','bigint'], 'Private upload preparation exists');
+select has_function('public', 'authorize_circular_media_read', array['uuid'], 'private media read authorization exists');
+select has_function('app_private', 'circular_child_scope_matches', array['uuid','circular_audience_rules'], 'Child scope authorization helper exists');
+select has_function('app_private', 'circular_person_matches_scope', array['uuid','text','circular_audience_rules'], 'Person scope authorization helper exists');
+select has_function('app_private', 'circular_feed_post_media', array['uuid','uuid'], 'Mixed feed preserves private Acontece media tickets');
+select has_function('app_private', 'circular_feed_post_visible', array['posts','uuid','text','uuid','uuid'], 'Mixed feed reauthorizes every Acontece source row');
+select has_function('app_private', 'circular_audience_visible', array['circulars','uuid','text','uuid','uuid','uuid'], 'Circular audience authorization is separate from availability');
+
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid = 'public.circulars'::regclass), 'Circulars force RLS');
+select ok((select relrowsecurity and relforcerowsecurity from pg_class where oid = 'public.circular_response_sessions'::regclass), 'Responses force RLS');
+select ok(not has_table_privilege('authenticated', 'public.circulars', 'insert,update,delete'), 'Client cannot mutate circulars directly');
+select ok(not has_table_privilege('authenticated', 'public.circular_answers', 'insert,update,delete'), 'Client cannot mutate answers directly');
+select ok(exists(select 1 from storage.buckets where id='coelo-circulars-private' and not public), 'Circular media bucket is private');
+select ok(has_function_privilege('authenticated', 'public.save_circular_draft(uuid,jsonb,uuid,bigint)', 'execute'), 'Authenticated saves via RPC');
+select ok(has_function_privilege('authenticated', 'public.submit_circular_response(uuid,uuid,bigint)', 'execute'), 'Authenticated submits via RPC');
+select ok(has_function_privilege('authenticated', 'public.delete_circular(uuid,uuid,bigint)', 'execute'), 'Authenticated deletion remains behind an authorized RPC');
+
+select ok(exists(select 1 from public.institution_permissions where code = 'circulars.circulars.create'), 'Create capability exists');
+select ok(exists(select 1 from public.institution_permissions where code = 'circulars.circulars.publish'), 'Publish capability exists');
+select ok(exists(select 1 from public.institution_permissions where code = 'circulars.circulars.read'), 'Read capability exists');
+select ok(exists(select 1 from public.institution_permissions where code = 'circulars.circulars.respond'), 'Respond capability exists');
+select ok(exists(select 1 from public.institution_permissions where code = 'circulars.circulars.manage'), 'Manage capability exists');
+
+select ok(position('10000' in pg_get_constraintdef((select oid from pg_constraint where conname = 'circular_revisions_body_length_check'))) > 0, 'Body remains limited to 10000');
+select ok(position('120' in pg_get_constraintdef((select oid from pg_constraint where conname = 'circular_revisions_title_length_check'))) > 0, 'Title remains limited to 120');
+select ok(position('2200' in pg_get_constraintdef((select oid from pg_constraint where conrelid = 'public.posts'::regclass and pg_get_constraintdef(oid) like '%caption%'))) > 0, 'Acontece remains limited to 2200');
+select ok(position('union all' in lower(pg_get_functiondef('public.list_visible_happens_feed(uuid,uuid,uuid,uuid,timestamp with time zone,text,uuid,integer)'::regprocedure))) > 0, 'Feed projects posts and circulars without copying content');
+select ok(position('circulars.circulars.read' in pg_get_functiondef('public.get_visible_circular(uuid,uuid)'::regprocedure)) > 0, 'Detail checks read capability');
+select ok(position('expected_version_conflict' in pg_get_functiondef('public.save_circular_response_draft(uuid,uuid,jsonb,bigint)'::regprocedure)) > 0, 'Responses use optimistic concurrency');
+select is(app_private.circular_audience_matches_role('unknown_role','school_staff'), false, 'Unknown roles fail closed');
+select ok(position('guardian_context_permissions' in pg_get_functiondef('app_private.circular_person_matches_scope(uuid,text,circular_audience_rules)'::regprocedure)) > 0, 'Guardian reads require contextual permission');
+select ok(position('circular_validate_scope' in pg_get_functiondef('public.save_circular_draft(uuid,jsonb,uuid,bigint)'::regprocedure)) > 0, 'Audience IDs are validated server-side');
+select ok(position('activity_group_participants' in pg_get_functiondef('app_private.circular_child_scope_matches(uuid,circular_audience_rules)'::regprocedure)) > 0, 'Selected activities require real child participation');
+select ok(position('request_id_conflict' in pg_get_functiondef('public.save_circular_draft(uuid,jsonb,uuid,bigint)'::regprocedure)) > 0, 'Draft retry rejects a reused request ID with another payload');
+select ok(position('request_id_conflict' in pg_get_functiondef('public.publish_circular(uuid,uuid,bigint,timestamp with time zone)'::regprocedure)) > 0, 'Publish retry rejects a reused request ID with another schedule');
+select ok(position('answer_option_count_invalid' in pg_get_functiondef('public.save_circular_response_draft(uuid,uuid,jsonb,bigint)'::regprocedure)) > 0, 'Empty and oversized answer selections are rejected server-side');
+select ok(position('circular_response_unit' in pg_get_functiondef('public.submit_circular_response(uuid,uuid,bigint)'::regprocedure)) > 0, 'Response submission revalidates the actor response unit against BOLA');
+select ok(position('circular_feed_post_media' in pg_get_functiondef('public.list_visible_happens_feed(uuid,uuid,uuid,uuid,timestamp with time zone,text,uuid,integer)'::regprocedure)) > 0, 'Mixed feed does not drop existing Acontece media');
+select ok(position('guardian_context_permissions' in pg_get_functiondef('app_private.circular_feed_post_visible(posts,uuid,text,uuid,uuid)'::regprocedure)) > 0, 'Mixed feed blocks cross-child Acontece reads');
+select ok(position('circular_not_available' in pg_get_functiondef('public.get_visible_circular(uuid,uuid)'::regprocedure)) > 0, 'Authorized scheduled readers receive a distinct unavailable state');
+select ok(position('media_asset_scope_invalid' in pg_get_functiondef('public.save_circular_draft(uuid,jsonb,uuid,bigint)'::regprocedure)) > 0, 'Drafts cannot attach another Circular media asset by ID');
+select ok(position('orphaned' in pg_get_functiondef('public.delete_circular(uuid,uuid,bigint)'::regprocedure)) > 0 and position('deleted_at' in pg_get_functiondef('public.delete_circular(uuid,uuid,bigint)'::regprocedure)) > 0, 'Delete is logical and schedules never-published media cleanup');
+
+select * from finish();
+rollback;
