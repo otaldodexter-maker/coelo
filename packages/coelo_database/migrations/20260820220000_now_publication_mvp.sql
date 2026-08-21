@@ -160,7 +160,10 @@ returns boolean language sql immutable set search_path='' as $$
       then p_audience in ('families','guardians_only')
     when lower(coalesce(p_role_code,'')) in ('student','aluno')
       then p_audience='students'
-    else p_audience='school_staff'
+    when lower(coalesce(p_role_code,'')) in (
+      'professional','institution_admin','unit_admin','teacher','coordinator'
+    ) then p_audience='school_staff'
+    else false
   end
 $$;
 revoke all on function app_private.now_audience_matches_role(text,public.now_audience_kind)
@@ -224,7 +227,10 @@ returns boolean language sql stable security definer set search_path='' as $$
         and (p_unit_id is null or unit_link.unit_id=p_unit_id)
         and (p_group_id is null or group_link.group_id=p_group_id)
     )
-    else true
+    when lower(coalesce(p_role_code,'')) in (
+      'professional','institution_admin','unit_admin','teacher','coordinator'
+    ) then true
+    else false
   end
 $$;
 revoke all on function app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)

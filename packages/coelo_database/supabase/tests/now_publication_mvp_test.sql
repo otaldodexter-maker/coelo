@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(67);
+select plan(69);
 select has_table('public','now_publications','Agora publications exist');
 select has_table('public','now_publication_audiences','Agora audiences exist');
 select has_table('public','now_media_assets','Agora private asset metadata exists');
@@ -69,6 +69,8 @@ select is(app_private.now_audience_matches_role('guardian','students'),false,'gu
 select is(app_private.now_audience_matches_role('student','students'),true,'student receives student Agora publications');
 select is(app_private.now_audience_matches_role('student','school_staff'),false,'student never crosses into staff Agora publications');
 select is(app_private.now_audience_matches_role('teacher','school_staff'),true,'staff receives staff Agora publications');
+select is(app_private.now_audience_matches_role('unexpected_role','school_staff'),false,'unknown roles never inherit staff Agora publications');
+select is(app_private.now_viewer_has_context(gen_random_uuid(),'unexpected_role',gen_random_uuid(),null,null),false,'unknown roles fail closed before Agora context access');
 select ok(position('guardian_context_permissions' in pg_get_functiondef('app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)'::regprocedure))>0,'guardian Agora reads require an explicit active view permission');
 select ok(position('child_unit_links' in pg_get_functiondef('app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)'::regprocedure))>0,'Agora viewer context validates the active unit link');
 select ok(position('child_group_links' in pg_get_functiondef('app_private.now_viewer_has_context(uuid,text,uuid,uuid,uuid)'::regprocedure))>0,'Agora viewer context validates the active group link');
