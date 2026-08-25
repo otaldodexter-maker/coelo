@@ -295,7 +295,7 @@ class _ActivityTile extends StatelessWidget {
                   }
                   showSuperadminNotice(
                     context,
-                    'Download demonstrativo de $fileName preparado.',
+                    'Arquivo $fileName preparado para download.',
                     icon: Icons.file_download_outlined,
                   );
                 }

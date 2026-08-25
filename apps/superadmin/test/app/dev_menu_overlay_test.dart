@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:coelo_superadmin/app/dev_menu/dev_menu_overlay.dart';
-import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
+import 'package:coelo_superadmin/app/navigation/superadmin_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,34 +10,21 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
-  const parentDestinations = <(String, String)>[
-    ('Login', SuperadminRoutes.devLogin),
-    ('Recuperar senha', SuperadminRoutes.devForgotPassword),
-    ('Redefinir senha', SuperadminRoutes.devResetPassword),
-    ('Home', SuperadminRoutes.devHome),
-    ('Instituições', SuperadminRoutes.devInstitutions),
-    ('Unidades', SuperadminRoutes.devUnits),
-    ('Turmas', SuperadminRoutes.devGroups),
-    ('Atividades', SuperadminRoutes.devActivities),
-    ('Assiduidade', SuperadminRoutes.devAttendance),
-    ('Rotina diária', SuperadminRoutes.devDailyRoutine),
-    ('Perfis de cuidado', SuperadminRoutes.devHealthCareProfiles),
-    ('Planos de medicação', SuperadminRoutes.devHealthMedicationPlans),
-    ('Pessoas', SuperadminRoutes.devPeople),
-    ('Usuários internos', SuperadminRoutes.devInternalUsers),
-    ('Perfis e permissões', SuperadminRoutes.devProfiles),
-    ('Planos', SuperadminRoutes.devPlans),
-    ('Agenda', SuperadminRoutes.devAgenda),
-    ('Importações', SuperadminRoutes.devImports),
-    ('Convites', SuperadminRoutes.devInvites),
-    ('Avisos', SuperadminRoutes.devNotices),
-    ('Conversas', SuperadminRoutes.devConversations),
-    ('Auditoria', SuperadminRoutes.devAudit),
-    ('Catálogo', SuperadminRoutes.devCatalog),
-    ('Suporte e implantação', SuperadminRoutes.devSupport),
-    ('Perfil', SuperadminRoutes.devProfile),
-    ('Configurações', SuperadminRoutes.devSettings),
-  ];
+  final parentDestinations = <(String, String)>[];
+  void collect(CoeloNavigationNode node) {
+    if (node.id != 'home' &&
+        node.routeName != null &&
+        node.isAvailable(CoeloNavigationEnvironment.development)) {
+      parentDestinations.add((node.label, node.id));
+    }
+    for (final child in node.children) {
+      collect(child);
+    }
+  }
+
+  for (final node in coeloSuperadminNavigation) {
+    collect(node);
+  }
 
   testWidgets('lists every parent preview route in the approved order', (tester) async {
     final navigations = <String>[];
@@ -54,42 +41,37 @@ void main() {
         .toList();
     expect(menuItems, parentDestinations.map((item) => item.$1).toList());
 
-    final settings = find.widgetWithText(MenuItemButton, 'Configurações');
-    await tester.scrollUntilVisible(
-      settings,
-      300,
-      scrollable: find.descendant(
-        of: find.byKey(const Key('superadmin-dev-preview-scroll')),
-        matching: find.byType(Scrollable),
-      ),
-    );
+    final settings = find.widgetWithText(MenuItemButton, 'Publicar no Agora');
+    await tester.scrollUntilVisible(settings, 300, scrollable: find.byType(Scrollable).last);
     await tester.pumpAndSettle();
     expect(settings.hitTestable(), findsOneWidget);
     await tester.tap(settings.hitTestable());
     await tester.pumpAndSettle();
-    expect(navigations, [SuperadminRoutes.devSettings]);
+    expect(navigations, ['principal-now-publish']);
   });
 
   testWidgets('keeps the complete preview menu usable at supported widths', (tester) async {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
       await tester.pumpWidget(_previewApp((_) {}));
-      await tester.tap(find.byTooltip('Abrir menu de desenvolvimento'));
+      await tester.ensureVisible(find.byTooltip('Abrir menu de desenvolvimento'));
+      await tester.tap(find.byTooltip('Abrir menu de desenvolvimento').hitTestable());
       await tester.pumpAndSettle();
+      expect(find.byType(MenuItemButton), findsWidgets, reason: 'open menu at width $width');
 
       await tester.scrollUntilVisible(
-        find.widgetWithText(MenuItemButton, 'Configurações'),
+        find.widgetWithText(MenuItemButton, 'Publicar no Agora'),
         300,
-        scrollable: find.descendant(
-          of: find.byKey(const Key('superadmin-dev-preview-scroll')),
-          matching: find.byType(Scrollable),
-        ),
+        scrollable: find.byType(Scrollable).last,
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'viewport width $width');
 
-      await tester.tap(find.byTooltip('Abrir menu de desenvolvimento'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await tester.pumpAndSettle();
+      expect(find.byType(MenuItemButton), findsNothing, reason: 'close menu at width $width');
     }
     await tester.binding.setSurfaceSize(null);
   });

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('recognizes all internal-user preview routes', (tester) async {
+  testWidgets('recognizes only implemented internal-user preview routes', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 1000);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -27,17 +27,27 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
 
-    for (final route in [
-      SuperadminRoutes.devInternalUsers,
-      SuperadminRoutes.devInternalUserCreate,
-      '/dev/internal-users/platform-user-1',
-      '/dev/internal-users/platform-user-1/edit',
-    ]) {
-      router.go(route);
+    for (final entry in <String, String>{
+      SuperadminRoutes.devInternalUsers: SuperadminRoutes.devInternalUsers,
+      SuperadminRoutes.devInternalUserCreate: SuperadminRoutes.devInternalUserCreate,
+      '/dev/internal-users/platform-user-1/edit': '/dev/internal-users/platform-user-1/edit',
+    }.entries) {
+      router.go(entry.key);
       await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, route);
+      expect(router.routeInformationProvider.value.uri.path, entry.value);
       expect(find.textContaining('Usuário interno não encontrado'), findsNothing);
     }
+
+    router.go('/dev/internal-users/platform-user-1');
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/dev/internal-users/platform-user-1');
+    expect(find.text('404'), findsOneWidget);
+
+    router.go('/dev/internal-users/platform-user-1/edit');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInternalUsers);
   });
 
   testWidgets('does not expose a production internal-users route or fake repository', (

@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/support/domain/support_ticket.dart';
 import 'package:coelo_superadmin/features/support/presentation/screens/support_page.dart';
@@ -25,7 +26,7 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
   });
 
-  testWidgets('renders authenticated support with the active destination', (tester) async {
+  testWidgets('fails closed when authenticated support has no production backend', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signIn();
@@ -35,8 +36,9 @@ void main() {
     router.go(SuperadminRoutes.support);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(find.byType(SupportPage), findsOneWidget);
-    expect(find.byKey(const Key('support-page-content')), findsOneWidget);
+    expect(find.byType(SuperadminErrorScreen), findsOneWidget);
+    expect(find.byType(SupportPage), findsNothing);
+    expect(find.byKey(const Key('support-page-content')), findsNothing);
     expect(find.byKey(const Key('superadmin-navigation-support')), findsOneWidget);
   });
 
@@ -76,32 +78,16 @@ void main() {
     expect(supportController.tickets, hasLength(1));
     expect(supportController.tickets.single.description, 'Table order is wrong');
 
-    var support = find.byKey(const Key('superadmin-navigation-support'));
-    if (support.evaluate().isEmpty) {
-      final governance = find.byKey(const Key('superadmin-navigation-section-governance'));
-      await Scrollable.ensureVisible(tester.element(governance), alignment: 0.5);
-      await tester.pumpAndSettle();
-      await tester.tap(governance.hitTestable());
-      await tester.pumpAndSettle();
-      support = find.byKey(const Key('superadmin-navigation-support'));
-    }
-    await Scrollable.ensureVisible(tester.element(support), alignment: 0.5);
+    await tester.enterText(find.byKey(const Key('superadmin-navigation-search')), 'Suporte');
     await tester.pumpAndSettle();
+    final support = find.byKey(const Key('superadmin-navigation-support'));
     await tester.tap(support.hitTestable());
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.support);
 
-    var institutions = find.byKey(const Key('superadmin-navigation-institutions'));
-    if (institutions.evaluate().isEmpty) {
-      final structure = find.byKey(const Key('superadmin-navigation-section-structure'));
-      await Scrollable.ensureVisible(tester.element(structure), alignment: 0.5);
-      await tester.pumpAndSettle();
-      await tester.tap(structure.hitTestable());
-      await tester.pumpAndSettle();
-      institutions = find.byKey(const Key('superadmin-navigation-institutions'));
-    }
-    await Scrollable.ensureVisible(tester.element(institutions), alignment: 0.5);
+    await tester.enterText(find.byKey(const Key('superadmin-navigation-search')), 'Instituições');
     await tester.pumpAndSettle();
+    final institutions = find.byKey(const Key('superadmin-navigation-institutions'));
     await tester.tap(institutions.hitTestable());
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.institutions);

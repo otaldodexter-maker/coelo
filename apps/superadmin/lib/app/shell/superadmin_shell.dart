@@ -6,12 +6,11 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
+import '../navigation/superadmin_navigation.dart';
 import '../../features/auth/domain/logout_action.dart';
-import '../../features/chat/data/supabase_chat_repository.dart';
 import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
@@ -42,6 +41,7 @@ class SuperadminShell extends StatefulWidget {
     this.currentDestination = 'institutions',
     this.onDestinationSelected,
     this.onOpenConversations,
+    this.chatUnreadCountLoader,
     this.onBugReportSubmitted,
     this.showChatLauncher = true,
     this.chatLauncherBottomInset = 0,
@@ -56,6 +56,7 @@ class SuperadminShell extends StatefulWidget {
     required this.onDestinationSelected,
     this.activityController,
     this.onBugReportSubmitted,
+    this.chatUnreadCountLoader,
     super.key,
   }) : title = '',
        subtitle = '',
@@ -76,6 +77,7 @@ class SuperadminShell extends StatefulWidget {
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final VoidCallback? onOpenConversations;
+  final Future<int> Function()? chatUnreadCountLoader;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
@@ -91,7 +93,6 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   late final AnimationController _sidebarController;
   late final SuperadminActivityController _activityController;
   late final SuperadminChatLauncherPositionController _chatLauncherPositionController;
-  late final Future<int> Function()? _chatUnreadCountLoader;
   late final bool _ownsActivityController;
   double _embeddedChatLauncherBottomInset = 0;
 
@@ -102,7 +103,6 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     _ownsActivityController = widget.activityController == null;
     _activityController = widget.activityController ?? SuperadminActivityController();
     _chatLauncherPositionController = SuperadminChatLauncherPositionController(persist: true);
-    _chatUnreadCountLoader = _createChatUnreadCountLoader();
   }
 
   @override
@@ -121,17 +121,6 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     }
     _chatLauncherPositionController.dispose();
     super.dispose();
-  }
-
-  Future<int> Function()? _createChatUnreadCountLoader() {
-    try {
-      final repository = SupabaseChatRepository(Supabase.instance.client);
-      return repository.fetchUnreadTotal;
-    } on Object {
-      // Demo and unauthenticated shells do not initialize Supabase. Zero is the
-      // only safe display value until an authorised server response exists.
-      return null;
-    }
   }
 
   bool get _reduceMotion => MediaQuery.maybeOf(context)?.disableAnimations ?? false;
@@ -155,6 +144,32 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   }
 
   Future<void> _handleLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => CoeloAdminDialogShell(
+        dialogKey: const Key('superadmin-logout-dialog'),
+        title: 'Sair do Coelo?',
+        body: const Text('Sua sessão será encerrada neste dispositivo.'),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: const Text('Cancelar'),
+        ),
+        primaryAction: FilledButton(
+          key: const Key('superadmin-logout-confirm'),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+          ),
+          child: const Text('Sair'),
+        ),
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await _performLogout();
+  }
+
+  Future<void> _performLogout() async {
     final result = await widget.logout();
     if (result.isSuccess) {
       _chatLauncherPositionController.reset();
@@ -208,7 +223,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                         ),
                         const _InsetDivider(key: Key('superadmin-brand-divider')),
                         Expanded(
-                          child: _NavigationContent(
+                          child: CoeloNavigationContent(
                             collapsed: false,
                             currentDestination: widget.currentDestination,
                             onDestinationSelected: widget.onDestinationSelected,
@@ -222,6 +237,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               ),
               onDestinationSelected: widget.onDestinationSelected,
               positionController: _chatLauncherPositionController,
+              reservedBottomInset: MediaQuery.paddingOf(context).bottom,
             );
           }
           return _withChatLauncher(
@@ -250,7 +266,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                       ),
                       const _InsetDivider(key: Key('superadmin-brand-divider')),
                       Expanded(
-                        child: _NavigationContent(
+                        child: CoeloNavigationContent(
                           collapsed: false,
                           currentDestination: widget.currentDestination,
                           onDestinationSelected: widget.onDestinationSelected,
@@ -280,6 +296,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 ),
               ),
             ),
+            reservedBottomInset: MediaQuery.paddingOf(context).bottom,
           );
         }
 
@@ -424,6 +441,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     Widget child, {
     ValueChanged<String>? onDestinationSelected,
     SuperadminChatLauncherPositionController? positionController,
+    double reservedBottomInset = 0,
   }) {
     final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
     if (!widget.showChatLauncher || widget.currentDestination == 'conversations') {
@@ -432,9 +450,10 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     final openConversations =
         widget.onOpenConversations ??
         (destinationHandler == null ? () {} : () => destinationHandler('conversations'));
-    final effectiveBottomInset = widget.isHost
+    final pageBottomInset = widget.isHost
         ? _embeddedChatLauncherBottomInset
         : widget.chatLauncherBottomInset;
+    final effectiveBottomInset = pageBottomInset + reservedBottomInset;
     final launcherReservedBottom = effectiveBottomInset > 0
         ? _shellGutter + effectiveBottomInset
         : 0.0;
@@ -451,7 +470,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
               onOpenConversations: openConversations,
               bottomClearance: launcherReservedBottom,
               positionController: positionController ?? _chatLauncherPositionController,
-              loadUnreadCount: _chatUnreadCountLoader,
+              loadUnreadCount: widget.chatUnreadCountLoader,
             ),
           ),
       ],
@@ -546,11 +565,26 @@ class _Sidebar extends StatelessWidget {
         ),
         const _InsetDivider(key: Key('superadmin-brand-divider')),
         Expanded(
-          child: _NavigationContent(
+          child: CoeloNavigationContent(
             collapsed: collapsed,
             currentDestination: currentDestination,
             onDestinationSelected: onDestinationSelected,
           ),
+        ),
+        const _InsetDivider(),
+        Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space2),
+          child: _OnboardingTourButton(collapsed: collapsed),
+        ),
+        const _InsetDivider(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CoeloSpacing.space2,
+            CoeloSpacing.space2,
+            CoeloSpacing.space2,
+            CoeloSpacing.space3,
+          ),
+          child: _ThemeModeControl(collapsed: collapsed),
         ),
       ],
     );
@@ -723,904 +757,18 @@ class _SidebarToggle extends StatelessWidget {
   }
 }
 
-enum _NavigationStatus { none, implantation, planned }
-
 class _NavigationDestinationData {
-  const _NavigationDestinationData(
-    this.id,
-    this.label,
-    this.icon, {
-    this.active = false,
-    this.status = _NavigationStatus.none,
-    this.children = const <_NavigationDestinationData>[],
-  });
+  const _NavigationDestinationData(this.id, this.label, this.icon);
+
   final String id;
   final String label;
   final IconData icon;
-  final bool active;
-  final _NavigationStatus status;
-  final List<_NavigationDestinationData> children;
-  bool containsDestination(String value) =>
-      id == value || children.any((child) => child.containsDestination(value));
 }
 
-class _NavigationSectionData {
-  const _NavigationSectionData(
-    this.id,
-    this.label,
-    this.icon,
-    this.destinations, {
-    this.status = _NavigationStatus.none,
-  });
-  final String id;
-  final String label;
-  final IconData icon;
-  final List<_NavigationDestinationData> destinations;
-  final _NavigationStatus status;
-  bool hasSelectedDestination(String value) =>
-      destinations.any((destination) => destination.containsDestination(value));
-}
-
-const _navigationSections = <_NavigationSectionData>[
-  _NavigationSectionData('platform', 'Plataforma', Icons.dashboard_outlined, [
-    _NavigationDestinationData(
-      'platform-overview',
-      'Visão geral',
-      Icons.dashboard_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'platform-adoption',
-      'Uso e adoção',
-      Icons.trending_up_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'platform-health',
-      'Saúde operacional',
-      Icons.monitor_heart_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'platform-activity',
-      'Atividade da plataforma',
-      Icons.timeline_outlined,
-      status: _NavigationStatus.planned,
-    ),
-  ]),
-  _NavigationSectionData('structure', 'Estrutura', Icons.account_tree_outlined, [
-    _NavigationDestinationData(
-      'institutions',
-      'Instituições',
-      Icons.apartment_outlined,
-      active: true,
-    ),
-    _NavigationDestinationData('units', 'Unidades', Icons.location_city_outlined, active: true),
-    _NavigationDestinationData('groups', 'Turmas', Icons.groups_outlined, active: true),
-    _NavigationDestinationData(
-      'activities',
-      'Atividades',
-      Icons.local_activity_outlined,
-      active: true,
-    ),
-  ]),
-  _NavigationSectionData('access', 'Pessoas e acessos', Icons.people_alt_outlined, [
-    _NavigationDestinationData('people', 'Pessoas', Icons.people_outline, active: true),
-    _NavigationDestinationData(
-      'internal-users',
-      'Usuários internos',
-      Icons.admin_panel_settings_outlined,
-      active: true,
-    ),
-    _NavigationDestinationData(
-      'profiles',
-      'Perfis e permissões',
-      Icons.security_outlined,
-      active: true,
-    ),
-    _NavigationDestinationData('profile-models', 'Modelos de perfil', Icons.badge_outlined),
-    _NavigationDestinationData('invites', 'Convites', Icons.mail_outline, active: true),
-  ]),
-  _NavigationSectionData('monitoring', 'Acompanhamento', Icons.fact_check_outlined, [
-    _NavigationDestinationData(
-      'attendance-group',
-      'Assiduidade',
-      Icons.fact_check_outlined,
-      children: [
-        _NavigationDestinationData(
-          'attendance',
-          'Chamadas',
-          Icons.fact_check_outlined,
-          active: true,
-          status: _NavigationStatus.implantation,
-        ),
-        _NavigationDestinationData(
-          'attendance-models',
-          'Modelos e configurações',
-          Icons.tune_outlined,
-        ),
-      ],
-    ),
-    _NavigationDestinationData(
-      'daily-routine',
-      'Rotina diária',
-      Icons.today_outlined,
-      active: true,
-      status: _NavigationStatus.implantation,
-    ),
-    _NavigationDestinationData(
-      'child-protection',
-      'Proteção da criança',
-      Icons.child_care_outlined,
-      children: [
-        _NavigationDestinationData(
-          'safety',
-          'Segurança da criança',
-          Icons.shield_outlined,
-          active: true,
-        ),
-        _NavigationDestinationData(
-          'authorized-people',
-          'Pessoas autorizadas',
-          Icons.person_search_outlined,
-        ),
-        _NavigationDestinationData(
-          'pickup-authorizations',
-          'Autorizações de retirada',
-          Icons.how_to_reg_outlined,
-        ),
-        _NavigationDestinationData(
-          'emergency-contacts',
-          'Contatos de emergência',
-          Icons.contact_phone_outlined,
-        ),
-        _NavigationDestinationData(
-          'restrictions-alerts',
-          'Restrições e alertas',
-          Icons.warning_amber_outlined,
-        ),
-      ],
-    ),
-    _NavigationDestinationData(
-      'health-care',
-      'Saúde e Cuidado',
-      Icons.health_and_safety_outlined,
-      status: _NavigationStatus.implantation,
-      children: [
-        _NavigationDestinationData(
-          'health-care-profiles',
-          'Perfis de cuidado',
-          Icons.medical_information_outlined,
-          active: true,
-        ),
-        _NavigationDestinationData(
-          'sensitive-incidents',
-          'Ocorrências sensíveis',
-          Icons.report_problem_outlined,
-        ),
-        _NavigationDestinationData(
-          'health-medication-plans',
-          'Planos de medicação',
-          Icons.medication_outlined,
-          active: true,
-        ),
-      ],
-    ),
-    _NavigationDestinationData('meal-plans', 'Cardápios', Icons.restaurant_menu_outlined),
-    _NavigationDestinationData(
-      'agenda',
-      'Agenda',
-      Icons.calendar_month_outlined,
-      status: _NavigationStatus.implantation,
-    ),
-    _NavigationDestinationData('forms', 'Formulários', Icons.assignment_outlined),
-  ]),
-  _NavigationSectionData('communication', 'Comunicação', Icons.forum_outlined, [
-    _NavigationDestinationData(
-      'conversations',
-      'Conversas',
-      Icons.chat_bubble_outline,
-      active: true,
-    ),
-    _NavigationDestinationData(
-      'notices',
-      'Avisos',
-      Icons.campaign_outlined,
-      active: true,
-      status: _NavigationStatus.implantation,
-    ),
-    _NavigationDestinationData('notifications', 'Notificações', Icons.notifications_none_outlined),
-  ]),
-  _NavigationSectionData('main-experience', 'Experiência Principal', Icons.auto_awesome_outlined, [
-    _NavigationDestinationData(
-      'experience-overview',
-      'Visão geral',
-      Icons.dashboard_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'happens',
-      'Happens',
-      Icons.photo_camera_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'now',
-      'Now',
-      Icons.bolt_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'moments',
-      'Moments',
-      Icons.auto_awesome_outlined,
-      status: _NavigationStatus.planned,
-    ),
-  ]),
-  _NavigationSectionData('enrollments', 'Matrículas', Icons.how_to_reg_outlined, [
-    _NavigationDestinationData(
-      'enrollments-overview',
-      'Visão geral',
-      Icons.dashboard_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'prospects',
-      'Interessados',
-      Icons.person_add_alt_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'enrollments',
-      'Matrículas',
-      Icons.how_to_reg_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'reenrollments',
-      'Rematrículas',
-      Icons.refresh_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'enrollment-documents',
-      'Documentos e contratos',
-      Icons.description_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'signatures',
-      'Assinaturas',
-      Icons.draw_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'enrollment-pending',
-      'Pendências',
-      Icons.pending_actions_outlined,
-      status: _NavigationStatus.planned,
-    ),
-  ]),
-  _NavigationSectionData(
-    'finance',
-    'Financeiro',
-    Icons.account_balance_outlined,
-    status: _NavigationStatus.implantation,
-    [
-      _NavigationDestinationData('finance-overview', 'Visão geral', Icons.dashboard_outlined),
-      _NavigationDestinationData(
-        'coelo-institutions',
-        'Coelo e instituições',
-        Icons.apartment_outlined,
-        children: [
-          _NavigationDestinationData(
-            'coelo-subscriptions',
-            'Assinaturas do Coelo',
-            Icons.receipt_long_outlined,
-          ),
-          _NavigationDestinationData(
-            'contracted-plans',
-            'Planos contratados',
-            Icons.layers_outlined,
-          ),
-          _NavigationDestinationData('invoices', 'Faturas', Icons.receipt_outlined),
-          _NavigationDestinationData('charges', 'Cobranças', Icons.request_quote_outlined),
-          _NavigationDestinationData('payments', 'Pagamentos', Icons.payments_outlined),
-          _NavigationDestinationData('defaults', 'Inadimplência', Icons.warning_amber_outlined),
-          _NavigationDestinationData(
-            'commercial-exceptions',
-            'Exceções comerciais',
-            Icons.rule_outlined,
-          ),
-        ],
-      ),
-      _NavigationDestinationData(
-        'institutions-families',
-        'Instituições e famílias',
-        Icons.family_restroom_outlined,
-        children: [
-          _NavigationDestinationData(
-            'school-charges',
-            'Cobranças escolares',
-            Icons.request_quote_outlined,
-          ),
-          _NavigationDestinationData('tuition', 'Mensalidades', Icons.payments_outlined),
-          _NavigationDestinationData('bank-slips', 'Boletos', Icons.receipt_long_outlined),
-          _NavigationDestinationData('pix-card', 'Pix e cartão', Icons.credit_card_outlined),
-          _NavigationDestinationData('family-payments', 'Pagamentos', Icons.payments_outlined),
-          _NavigationDestinationData(
-            'discounts-scholarships',
-            'Descontos e bolsas',
-            Icons.discount_outlined,
-          ),
-          _NavigationDestinationData(
-            'family-defaults',
-            'Inadimplência',
-            Icons.warning_amber_outlined,
-          ),
-          _NavigationDestinationData('reconciliation', 'Conciliação', Icons.sync_alt_outlined),
-          _NavigationDestinationData('transfers', 'Repasses', Icons.compare_arrows_outlined),
-          _NavigationDestinationData(
-            'financial-reports',
-            'Relatórios financeiros',
-            Icons.bar_chart_outlined,
-          ),
-        ],
-      ),
-    ],
-  ),
-  _NavigationSectionData('operations', 'Operação Coelo', Icons.settings_outlined, [
-    _NavigationDestinationData('plans', 'Planos e limites', Icons.layers_outlined),
-    _NavigationDestinationData('import', 'Importações e exportações', Icons.file_upload_outlined),
-    _NavigationDestinationData(
-      'support',
-      'Suporte e implantação',
-      Icons.support_agent_outlined,
-      active: true,
-      status: _NavigationStatus.implantation,
-    ),
-  ]),
-  _NavigationSectionData('governance', 'Governança', Icons.gavel_outlined, [
-    _NavigationDestinationData('audit', 'Auditoria', Icons.fact_check_outlined),
-    _NavigationDestinationData('catalog', 'Catálogo', Icons.menu_book_outlined, active: true),
-    _NavigationDestinationData(
-      'privacy-lgpd',
-      'Privacidade e LGPD',
-      Icons.privacy_tip_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'integrations-api',
-      'Integrações e API',
-      Icons.api_outlined,
-      status: _NavigationStatus.planned,
-    ),
-    _NavigationDestinationData(
-      'reports-bi',
-      'Relatórios e BI',
-      Icons.bar_chart_outlined,
-      status: _NavigationStatus.planned,
-    ),
-  ]),
-];
 const _accountDestinations = <_NavigationDestinationData>[
   _NavigationDestinationData('profile', 'Perfil', Icons.person_outline),
   _NavigationDestinationData('settings', 'Configurações', Icons.settings_outlined),
 ];
-
-class _NavigationContent extends StatefulWidget {
-  const _NavigationContent({
-    required this.collapsed,
-    required this.currentDestination,
-    required this.onDestinationSelected,
-  });
-
-  final bool collapsed;
-  final String currentDestination;
-  final ValueChanged<String>? onDestinationSelected;
-
-  @override
-  State<_NavigationContent> createState() => _NavigationContentState();
-}
-
-class _NavigationSearchResult {
-  const _NavigationSearchResult(this.destination, this.path);
-  final _NavigationDestinationData destination;
-  final String path;
-}
-
-Iterable<_NavigationSearchResult> _flattenNavigationDestinations(
-  List<_NavigationSectionData> sections,
-) sync* {
-  for (final section in sections) {
-    Iterable<_NavigationSearchResult> visit(
-      _NavigationDestinationData destination,
-      String path,
-    ) sync* {
-      final currentPath = '$path > ${destination.label}';
-      yield _NavigationSearchResult(destination, currentPath.substring(3));
-      for (final child in destination.children) {
-        yield* visit(child, currentPath);
-      }
-    }
-
-    for (final destination in section.destinations) {
-      yield* visit(destination, section.label);
-    }
-  }
-}
-
-String _normalizeNavigationSearch(String value) => value
-    .toLowerCase()
-    .replaceAll(RegExp('[áàãâä]'), 'a')
-    .replaceAll(RegExp('[éêë]'), 'e')
-    .replaceAll(RegExp('[íï]'), 'i')
-    .replaceAll(RegExp('[óôõö]'), 'o')
-    .replaceAll(RegExp('[úü]'), 'u')
-    .replaceAll('ç', 'c');
-Iterable<_NavigationDestinationData> _flattenNavigationTree(
-  List<_NavigationDestinationData> destinations,
-) sync* {
-  for (final destination in destinations) {
-    yield destination;
-    yield* _flattenNavigationTree(destination.children);
-  }
-}
-
-String _navigationLabel(_NavigationDestinationData destination) {
-  final status = switch (destination.status) {
-    _NavigationStatus.implantation => 'Em implantação',
-    _NavigationStatus.planned => 'Previsto',
-    _NavigationStatus.none => null,
-  };
-  return status == null ? destination.label : '${destination.label}  ·  $status';
-}
-
-String _navigationSectionLabel(_NavigationSectionData section) {
-  final status = switch (section.status) {
-    _NavigationStatus.implantation => 'Em implantação',
-    _NavigationStatus.planned => 'Previsto',
-    _NavigationStatus.none => null,
-  };
-  return status == null ? section.label : '${section.label}  ·  $status';
-}
-
-class _NavigationContentState extends State<_NavigationContent> {
-  String _menuSearchQuery = '';
-
-  late final Set<String> _expandedSections;
-
-  @override
-  void initState() {
-    super.initState();
-    _expandedSections = {
-      for (final section in _navigationSections)
-        if (section.hasSelectedDestination(widget.currentDestination)) section.id,
-    };
-  }
-
-  @override
-  void didUpdateWidget(covariant _NavigationContent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currentDestination != widget.currentDestination) {
-      for (final section in _navigationSections) {
-        if (section.hasSelectedDestination(widget.currentDestination)) {
-          _expandedSections.add(section.id);
-        }
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (!widget.collapsed)
-          Padding(
-            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-            child: TextField(
-              key: const ValueKey('superadmin-navigation-search'),
-              onChanged: (value) => setState(() => _menuSearchQuery = value),
-              decoration: const InputDecoration(
-                hintText: 'Buscar no menu',
-                prefixIcon: Icon(Icons.search),
-                isDense: true,
-              ),
-            ),
-          ),
-        if (_menuSearchQuery.trim().isNotEmpty && !widget.collapsed)
-          ..._flattenNavigationDestinations(_navigationSections)
-              .where(
-                (result) => _normalizeNavigationSearch(
-                  result.path,
-                ).contains(_normalizeNavigationSearch(_menuSearchQuery)),
-              )
-              .take(8)
-              .map(
-                (result) => _NavigationItem(
-                  id: result.destination.id,
-                  icon: result.destination.icon,
-                  label: result.path,
-                  collapsed: false,
-                  isActive: widget.currentDestination == result.destination.id,
-                  onTap: () => _handleDestinationTap(
-                    context,
-                    result.destination,
-                    widget.onDestinationSelected,
-                  ),
-                ),
-              ),
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CoeloSpacing.space2,
-              vertical: CoeloSpacing.space3,
-            ),
-            children: [
-              _NavigationItem(
-                id: 'home',
-                icon: Icons.home_outlined,
-                label: 'Home (Em implantação)',
-                collapsed: widget.collapsed,
-                isActive: widget.currentDestination == 'home',
-                onTap: widget.currentDestination == 'home'
-                    ? null
-                    : () => widget.onDestinationSelected?.call('home'),
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              for (final section in _navigationSections)
-                if (widget.collapsed)
-                  _CollapsedNavigationSection(
-                    section: section,
-                    currentDestination: widget.currentDestination,
-                    onDestinationSelected: widget.onDestinationSelected,
-                  )
-                else
-                  _ExpandedNavigationSection(
-                    section: section,
-                    currentDestination: widget.currentDestination,
-                    onDestinationSelected: widget.onDestinationSelected,
-                    expanded: _expandedSections.contains(section.id),
-                    onToggle: () => setState(() {
-                      if (!_expandedSections.add(section.id)) {
-                        _expandedSections.remove(section.id);
-                      }
-                    }),
-                  ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space2,
-            vertical: CoeloSpacing.space2,
-          ),
-          child: _OnboardingTourButton(collapsed: widget.collapsed),
-        ),
-        const _InsetDivider(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CoeloSpacing.space2,
-            CoeloSpacing.space2,
-            CoeloSpacing.space2,
-            CoeloSpacing.space3,
-          ),
-          child: _ThemeModeControl(collapsed: widget.collapsed),
-        ),
-      ],
-    );
-  }
-}
-
-class _ExpandedNavigationSection extends StatelessWidget {
-  const _ExpandedNavigationSection({
-    required this.section,
-    required this.currentDestination,
-    required this.onDestinationSelected,
-    required this.expanded,
-    required this.onToggle,
-  });
-
-  final _NavigationSectionData section;
-  final String currentDestination;
-  final ValueChanged<String>? onDestinationSelected;
-  final bool expanded;
-  final VoidCallback onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final expandedContent = expanded
-        ? Padding(
-            padding: const EdgeInsets.only(left: CoeloSpacing.space3, top: CoeloSpacing.space1),
-            child: Column(
-              children: [
-                for (final destination in _flattenNavigationTree(section.destinations))
-                  _NavigationItem(
-                    id: destination.id,
-                    icon: destination.icon,
-                    label: _navigationLabel(destination),
-                    isActive: destination.id == currentDestination,
-                    onTap: _destinationAvailable(context, destination)
-                        ? () => _handleDestinationTap(context, destination, onDestinationSelected)
-                        : null,
-                    collapsed: false,
-                  ),
-              ],
-            ),
-          )
-        : const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-      child: Column(
-        children: [
-          _NavigationSectionHeader(
-            section: section,
-            active: section.hasSelectedDestination(currentDestination),
-            expanded: expanded,
-            onTap: onToggle,
-          ),
-          if (MediaQuery.disableAnimationsOf(context))
-            expandedContent
-          else
-            AnimatedSize(
-              duration: const Duration(milliseconds: 260),
-              curve: Curves.easeOut,
-              alignment: Alignment.topCenter,
-              child: expandedContent,
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavigationSectionHeader extends StatefulWidget {
-  const _NavigationSectionHeader({
-    required this.section,
-    required this.active,
-    required this.expanded,
-    required this.onTap,
-  });
-
-  final _NavigationSectionData section;
-  final bool active;
-  final bool expanded;
-  final VoidCallback onTap;
-
-  @override
-  State<_NavigationSectionHeader> createState() => _NavigationSectionHeaderState();
-}
-
-class _NavigationSectionHeaderState extends State<_NavigationSectionHeader> {
-  bool _highlighted = false;
-
-  Future<void> _handleTap() async {
-    widget.onTap();
-    await Future<void>.delayed(Duration.zero);
-    if (!mounted) return;
-    await Scrollable.ensureVisible(
-      context,
-      alignment: 0.5,
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 260),
-      curve: Curves.easeOut,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>()!;
-    final active = widget.active;
-    final background = active
-        ? _highlighted
-              ? actionColors.primaryHover
-              : actionColors.primaryPressed
-        : _highlighted
-        ? colors.primaryContainer
-        : colors.primaryContainer.withValues(alpha: 0);
-    final foreground = active
-        ? colors.onPrimary
-        : _highlighted
-        ? colors.primary
-        : colors.onSurfaceVariant;
-    final content = Container(
-      key: Key('superadmin-navigation-section-${widget.section.id}'),
-      padding: const EdgeInsets.symmetric(
-        horizontal: CoeloSpacing.space3,
-        vertical: CoeloSpacing.space3,
-      ),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final showDetails = constraints.maxWidth >= 120;
-          return Row(
-            children: [
-              Icon(widget.section.icon, color: foreground, size: CoeloSize.iconMd),
-              if (showDetails) ...[
-                const SizedBox(width: CoeloSpacing.space3),
-                Expanded(
-                  child: Text(
-                    _navigationSectionLabel(widget.section),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Icon(
-                  widget.expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-                  color: foreground,
-                  size: CoeloSize.iconSm,
-                ),
-              ],
-            ],
-          );
-        },
-      ),
-    );
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _highlighted = true),
-      onExit: (_) => setState(() => _highlighted = false),
-      child: FocusableActionDetector(
-        onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: _handleTap,
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-            child: content,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CollapsedNavigationSection extends StatelessWidget {
-  const _CollapsedNavigationSection({
-    required this.section,
-    required this.currentDestination,
-    required this.onDestinationSelected,
-  });
-
-  final _NavigationSectionData section;
-  final String currentDestination;
-  final ValueChanged<String>? onDestinationSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final hoverColor = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-      child: CoeloAdminFlyout<String>(
-        items: [
-          for (final destination in _flattenNavigationTree(section.destinations))
-            CoeloAdminFlyoutItem<String>(
-              value: destination.id,
-              label: _navigationLabel(destination),
-              icon: destination.icon,
-              semanticLabel: '${section.label}: ${destination.label}',
-              selected: destination.id == currentDestination,
-            ),
-        ],
-        onSelected: (destinationId) {
-          final destination = section.destinations.firstWhere(
-            (candidate) => candidate.id == destinationId,
-          );
-          _handleDestinationTap(context, destination, onDestinationSelected);
-        },
-        alignmentOffset: const Offset(
-          CoeloSize.touchMin + (CoeloSpacing.space4 * 2),
-          -CoeloSize.touchMin,
-        ),
-        builder: (context, controller) {
-          final active = section.hasSelectedDestination(currentDestination);
-          return Tooltip(
-            message: section.label,
-            child: IconButton(
-              key: Key('superadmin-navigation-section-${section.id}'),
-              onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-              style:
-                  IconButton.styleFrom(
-                    minimumSize: const Size.square(CoeloSize.touchMin),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(CoeloRadius.md),
-                    ),
-                  ).copyWith(
-                    foregroundColor: WidgetStateProperty.resolveWith((states) {
-                      final highlighted =
-                          states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused);
-                      if (active) {
-                        return colors.onPrimary;
-                      }
-                      return highlighted ? colors.primary : colors.onSurfaceVariant;
-                    }),
-                    backgroundColor: WidgetStateProperty.resolveWith((states) {
-                      final highlighted =
-                          states.contains(WidgetState.hovered) ||
-                          states.contains(WidgetState.focused);
-                      if (active) {
-                        return highlighted ? hoverColor : colors.primary;
-                      }
-                      return highlighted
-                          ? colors.primaryContainer
-                          : colors.primaryContainer.withValues(alpha: 0);
-                    }),
-                    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  ),
-              icon: Icon(section.icon),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-void _handleDestinationTap(
-  BuildContext context,
-  _NavigationDestinationData destination,
-  ValueChanged<String>? onDestinationSelected,
-) {
-  final prototypePath = _prototypeDestinationPath(context, destination.id);
-  if (!_destinationAvailable(context, destination)) {
-    _showMessage(context, '${destination.label} será implementado em breve.');
-  } else if (prototypePath != null && GoRouter.maybeOf(context) != null) {
-    GoRouter.of(context).go(prototypePath);
-  } else if (destination.id == 'internal-users' && _isDevelopmentRoute(context)) {
-    context.go('/dev/internal-users');
-  } else {
-    onDestinationSelected?.call(destination.id);
-  }
-  final scaffold = Scaffold.maybeOf(context);
-  if (scaffold?.isDrawerOpen ?? false) {
-    Navigator.of(context).pop();
-  }
-}
-
-String? _prototypeDestinationPath(BuildContext context, String destination) {
-  final development = _isDevelopmentRoute(context);
-  final prefix = development ? '/dev' : '';
-  return switch (destination) {
-    'health-care-profiles' => '$prefix/health-care/profiles',
-    'health-medication-plans' => '$prefix/health-care/medication-plans',
-    'safety' => '$prefix/safety',
-    'catalog' => development ? '/dev/catalog' : '/governance/catalog',
-    'plans' => '/dev/plans',
-    'import' => '/dev/imports',
-    'invites' => '/dev/invites',
-    'notices' => '/notices',
-    'audit' => '/dev/audit',
-    _ => null,
-  };
-}
-
-bool _destinationAvailable(BuildContext context, _NavigationDestinationData destination) {
-  const previewOnly = {'plans', 'import', 'invites', 'audit', 'internal-users'};
-  return destination.active ||
-      (_isDevelopmentRoute(context) && previewOnly.contains(destination.id));
-}
-
-bool _isDevelopmentRoute(BuildContext context) {
-  try {
-    return GoRouterState.of(context).uri.path.startsWith('/dev/');
-  } on GoError {
-    return false;
-  }
-}
 
 class _OnboardingTourButton extends StatefulWidget {
   const _OnboardingTourButton({required this.collapsed});
@@ -2239,124 +1387,6 @@ class _FlatCarrotPainter extends CustomPainter {
   }
 }
 
-class _NavigationItem extends StatefulWidget {
-  const _NavigationItem({
-    required this.id,
-    required this.icon,
-    required this.label,
-    required this.collapsed,
-    this.onTap,
-    this.isActive = false,
-  });
-
-  final String id;
-  final IconData icon;
-  final String label;
-  final bool collapsed;
-  final bool isActive;
-  final VoidCallback? onTap;
-
-  @override
-  State<_NavigationItem> createState() => _NavigationItemState();
-}
-
-class _NavigationItemState extends State<_NavigationItem> {
-  bool _highlighted = false;
-
-  void _handleTap() {
-    final scaffold = Scaffold.maybeOf(context);
-    if (widget.onTap == null && !widget.isActive) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${widget.label} será implementado em breve.')));
-    } else {
-      widget.onTap?.call();
-    }
-    if (scaffold?.isDrawerOpen ?? false) {
-      Navigator.of(context).pop();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final hoverColor = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
-    final background = widget.isActive
-        ? _highlighted
-              ? hoverColor
-              : colors.primary
-        : _highlighted
-        ? colors.primaryContainer
-        : colors.primaryContainer.withValues(alpha: 0);
-    final foreground = widget.isActive
-        ? colors.onPrimary
-        : _highlighted
-        ? colors.primary
-        : colors.onSurfaceVariant;
-    final content = Container(
-      key: Key('superadmin-navigation-${widget.id}'),
-      margin: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-      ),
-      child: AnimatedPadding(
-        duration: MediaQuery.disableAnimationsOf(context)
-            ? Duration.zero
-            : const Duration(milliseconds: 260),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.symmetric(
-          horizontal: widget.collapsed ? CoeloSpacing.space2 : CoeloSpacing.space3,
-          vertical: CoeloSpacing.space3,
-        ),
-        child: Row(
-          mainAxisAlignment: widget.collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
-          children: [
-            Icon(widget.icon, color: foreground, size: CoeloSize.iconMd),
-            if (!widget.collapsed) ...[
-              const SizedBox(width: CoeloSpacing.space3),
-              Expanded(
-                child: Text(
-                  widget.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: foreground,
-                    fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _highlighted = true),
-      onExit: (_) => setState(() => _highlighted = false),
-      child: FocusableActionDetector(
-        onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-        child: Semantics(
-          button: true,
-          selected: widget.isActive,
-          label: widget.label,
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: _handleTap,
-              borderRadius: BorderRadius.circular(CoeloRadius.md),
-              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              child: widget.collapsed ? Tooltip(message: widget.label, child: content) : content,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _CompactAppBar({
     required this.onLogout,
@@ -2377,7 +1407,10 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return AppBar(
+      backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
       leading: Builder(
         builder: (context) => IconButton(
           key: const Key('superadmin-mobile-menu'),
@@ -2386,6 +1419,8 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.menu),
         ),
       ),
+      titleSpacing: 0,
+      title: Semantics(label: 'Coelo Superadmin', image: true, child: const SuperadminBrandMark()),
       actionsPadding: const EdgeInsetsDirectional.only(
         top: CoeloSpacing.space1,
         end: CoeloSpacing.space5,
@@ -2512,7 +1547,7 @@ class _ProfileSummary extends StatelessWidget {
       for (final destination in _accountDestinations)
         CoeloAdminFlyoutItem<String>(
           value: destination.id,
-          label: _navigationLabel(destination),
+          label: destination.label,
           icon: destination.icon,
         ),
       const CoeloAdminFlyoutItem<String>(
@@ -2603,39 +1638,39 @@ class _HeaderUtilityActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          key: const Key('superadmin-report-bug'),
-          tooltip: 'Reportar bug',
-          onPressed: () async {
-            final draft = await showSuperadminBugReportDialog(
-              context,
-              currentScreen: currentScreen,
-              sections: {
-                for (final section in _navigationSections)
-                  section.label: [
-                    ...section.destinations.map((destination) => destination.label),
-                    'Outro',
+        if (onBugReportSubmitted != null)
+          IconButton(
+            key: const Key('superadmin-report-bug'),
+            tooltip: 'Reportar bug',
+            onPressed: () async {
+              final draft = await showSuperadminBugReportDialog(
+                context,
+                currentScreen: currentScreen,
+                sections: {
+                  for (final section in coeloSuperadminNavigation.where(
+                    (node) => node.children.isNotEmpty,
+                  ))
+                    section.label: [...section.children.map((node) => node.label), 'Outro'],
+                  'Conta': [
+                    ..._accountDestinations.map((destination) => destination.label),
+                    'Outros',
                   ],
-                'Conta': [
-                  ..._accountDestinations.map((destination) => destination.label),
-                  'Outros',
-                ],
-                'Outros': const [],
-              },
-            );
-            if (draft == null || !context.mounted) {
-              return;
-            }
-            onBugReportSubmitted?.call(draft);
-            showSuperadminNotice(
-              context,
-              'Relato enviado com sucesso.',
-              icon: Icons.check_circle_outline_rounded,
-            );
-          },
-          style: _headerUtilityButtonStyle(colors, hoverColor),
-          icon: const Icon(Icons.bug_report_outlined),
-        ),
+                  'Outros': const [],
+                },
+              );
+              if (draft == null || !context.mounted) {
+                return;
+              }
+              onBugReportSubmitted!(draft);
+              showSuperadminNotice(
+                context,
+                'Relato enviado com sucesso.',
+                icon: Icons.check_circle_outline_rounded,
+              );
+            },
+            style: _headerUtilityButtonStyle(colors, hoverColor),
+            icon: const Icon(Icons.bug_report_outlined),
+          ),
         SuperadminActivityCenter(
           controller: activityController,
           buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),

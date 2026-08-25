@@ -59,9 +59,7 @@ void main() {
     router.go(SuperadminRoutes.devInstitutions);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Governança'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+    await tester.enterText(find.byKey(const Key('superadmin-navigation-search')), 'Catálogo');
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-navigation-catalog')));
     await tester.pumpAndSettle();

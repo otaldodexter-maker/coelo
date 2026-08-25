@@ -115,7 +115,7 @@ final class _PersonImportDialogState extends State<_PersonImportDialog> {
           const SizedBox(height: CoeloSpacing.space5),
           if (!_reviewing) ...[
             Text(
-              'Use o modelo CSV ou XLSX de pessoas. Nesta demonstração nenhum arquivo real será enviado.',
+              'Use o modelo CSV ou XLSX de pessoas e revise os dados antes de enviar.',
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
@@ -125,7 +125,7 @@ final class _PersonImportDialogState extends State<_PersonImportDialog> {
               key: const Key('people-import-template-export'),
               onPressed: () => showSuperadminNotice(
                 widget.noticeContext,
-                'Modelo XLSX preparado para download demonstrativo.',
+                'Modelo XLSX preparado para download.',
                 icon: Icons.file_download_outlined,
               ),
               icon: const Icon(Icons.file_download_outlined),
@@ -133,7 +133,7 @@ final class _PersonImportDialogState extends State<_PersonImportDialog> {
             ),
             const SizedBox(height: CoeloSpacing.space2),
             FilledButton.icon(
-              key: const Key('people-demo-file-picker'),
+              key: const Key('people-file-picker'),
               onPressed: () => setState(() => _fileSelected = true),
               icon: const Icon(Icons.file_open_outlined),
               label: Text(_fileSelected ? 'pessoas-julho.xlsx' : 'Importar arquivo'),

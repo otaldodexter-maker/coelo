@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/person_directory.dart';
@@ -13,8 +14,8 @@ import 'person_form_view_model.dart';
 
 const _emptyOption = PersonFilterOption('', 'Selecione');
 
-final class _DemoLinkCandidate {
-  const _DemoLinkCandidate({
+final class _LinkCandidate {
+  const _LinkCandidate({
     required this.id,
     required this.name,
     required this.searchableData,
@@ -28,13 +29,13 @@ final class _DemoLinkCandidate {
 }
 
 const _adultLinkCandidates = [
-  _DemoLinkCandidate(
+  _LinkCandidate(
     id: 'adult-ana',
     name: 'Ana Souza',
     searchableData: 'ana souza @ana.coelo ***.456.***-** a***@exemplo.test (11) 9****-1204',
     summary: '@ana.coelo · CPF ***.456.***-** · a***@exemplo.test · (11) 9****-1204',
   ),
-  _DemoLinkCandidate(
+  _LinkCandidate(
     id: 'adult-caio',
     name: 'Caio Lima',
     searchableData: 'caio lima @caio.lima ***.802.***-** c***@exemplo.test (21) 9****-7712',
@@ -43,13 +44,13 @@ const _adultLinkCandidates = [
 ];
 
 const _childLinkCandidates = [
-  _DemoLinkCandidate(
+  _LinkCandidate(
     id: 'child-lia',
     name: 'Lia Coelo',
     searchableData: 'lia coelo crianca-014 turma girassol unidade centro',
     summary: 'ID criança-014 · Turma Girassol · Unidade Centro',
   ),
-  _DemoLinkCandidate(
+  _LinkCandidate(
     id: 'child-noah',
     name: 'Noah Coelo',
     searchableData: 'noah coelo crianca-027 turma ipê grupo unidade jardins',
@@ -112,14 +113,14 @@ final class _PersonFormSurface extends StatelessWidget {
   }
 }
 
-final class _DemoRelationshipSearch extends StatefulWidget {
-  const _DemoRelationshipSearch();
+final class _RelationshipSearch extends StatefulWidget {
+  const _RelationshipSearch();
 
   @override
-  State<_DemoRelationshipSearch> createState() => _DemoRelationshipSearchState();
+  State<_RelationshipSearch> createState() => _RelationshipSearchState();
 }
 
-final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> {
+final class _RelationshipSearchState extends State<_RelationshipSearch> {
   final _adultController = TextEditingController();
   final _childController = TextEditingController();
   String _adultQuery = '';
@@ -127,7 +128,7 @@ final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> 
   String? _selectedAdultId;
   String? _selectedChildId;
 
-  Iterable<_DemoLinkCandidate> _matches(List<_DemoLinkCandidate> candidates, String query) {
+  Iterable<_LinkCandidate> _matches(List<_LinkCandidate> candidates, String query) {
     final normalized = query.trim().toLowerCase();
     if (normalized.isEmpty) return const [];
     return candidates.where(
@@ -136,9 +137,9 @@ final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> 
   }
 
   Widget _results(
-    Iterable<_DemoLinkCandidate> candidates, {
+    Iterable<_LinkCandidate> candidates, {
     required String? selectedId,
-    required ValueChanged<_DemoLinkCandidate> onSelected,
+    required ValueChanged<_LinkCandidate> onSelected,
     required String keyPrefix,
   }) => Column(
     children: [
@@ -196,7 +197,7 @@ final class _DemoRelationshipSearchState extends State<_DemoRelationshipSearch> 
     key: const Key('person-relationship-search-section'),
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text('Busca demonstrativa de vínculos', style: Theme.of(context).textTheme.titleMedium),
+      Text('Buscar vínculos existentes', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space4),
       Text('Buscar adulto existente', style: Theme.of(context).textTheme.titleSmall),
       const SizedBox(height: CoeloSpacing.space1),
@@ -452,55 +453,12 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     onDestinationSelected: widget.onDestinationSelected,
     child: AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => LayoutBuilder(
-        builder: (context, constraints) {
-          final desktop = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-          final contentInset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-              ? CoeloSpacing.space10
-              : CoeloSpacing.space4;
-          return Padding(
-            padding: EdgeInsets.fromLTRB(
-              contentInset,
-              contentInset,
-              contentInset,
-              CoeloSpacing.space4,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (desktop) ...[_navigation(), const SizedBox(width: CoeloSpacing.space6)],
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Column(
-                        children: [
-                          if (!desktop) ...[
-                            _navigation(),
-                            const SizedBox(height: CoeloSpacing.space4),
-                          ],
-                          Expanded(
-                            child: SingleChildScrollView(
-                              key: const Key('person-form-scroll'),
-                              padding: EdgeInsets.only(bottom: _footerHeight + CoeloSpacing.space6),
-                              child: Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 880),
-                                  child: _section(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Positioned(left: 0, right: 0, bottom: 0, child: _footer()),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+      builder: (context, child) => SuperadminFormFrame(
+        viewportWidth: MediaQuery.sizeOf(context).width,
+        scrollKey: const Key('person-form-scroll'),
+        navigation: _navigation(),
+        body: _section(),
+        footer: _footer(),
       ),
     ),
   );
@@ -534,8 +492,8 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     PersonFormStep.contexts => 'Vínculos contextuais',
     PersonFormStep.review => 'Revisão',
   };
-  Widget _section() => AnimatedSwitcher(
-    duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.short,
+  Widget _section() => KeyedSubtree(
+    key: ValueKey(_viewModel.step),
     child: switch (_viewModel.step) {
       PersonFormStep.identity => _identity(),
       PersonFormStep.contexts => _contexts(),
@@ -629,11 +587,6 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Text('Endereço local', style: Theme.of(context).textTheme.titleMedium),
-      const SizedBox(height: CoeloSpacing.space1),
-      Text(
-        'Informação demonstrativa desta tela; não será persistido nem enviado ao servidor.',
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
       const SizedBox(height: CoeloSpacing.space4),
       _responsiveFields([
         CoeloFormTextField(
@@ -717,7 +670,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           'Busque uma pessoa existente para representar uma relação pessoal separada do acesso institucional.',
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        const _DemoRelationshipSearch(),
+        const _RelationshipSearch(),
         const SizedBox(height: CoeloSpacing.space5),
         Text('Contexto institucional', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space1),

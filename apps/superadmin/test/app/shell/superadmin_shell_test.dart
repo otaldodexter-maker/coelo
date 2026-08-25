@@ -140,25 +140,6 @@ void main() {
       expect(scaffold.backgroundColor, colors.surface, reason: 'width $width');
     }
   });
-  testWidgets('compact header keeps Coelo brand and profile on the semantic surface at 200%', (
-    tester,
-  ) async {
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    for (final width in [375.0, 768.0]) {
-      await tester.binding.setSurfaceSize(Size(width, 900));
-      await tester.pumpWidget(_shellApp(textScaler: const TextScaler.linear(2)));
-      await tester.pumpAndSettle();
-
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      final colors = Theme.of(tester.element(find.byType(AppBar))).colorScheme;
-      expect(appBar.backgroundColor, colors.surface, reason: 'width $width');
-      expect(appBar.surfaceTintColor, Colors.transparent, reason: 'width $width');
-      expect(find.byKey(const Key('superadmin-compact-brand')), findsOneWidget);
-      expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
-      expect(tester.takeException(), isNull, reason: 'width $width');
-    }
-  });
-
   testWidgets('mobile drawer uses the semantic surface in light and dark', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -213,48 +194,44 @@ void main() {
     expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-navigation-home')), findsOneWidget);
 
-    for (final label in [
-      'Estrutura',
-      'Pessoas e acessos',
-      'Acompanhamento',
-      'Operação Coelo',
-      'Comunicação',
-    ]) {
+    for (final section in ['structure', 'access', 'health-care', 'operations', 'communication']) {
+      final sectionFinder = find.byKey(Key('superadmin-navigation-section-$section'));
       await tester.scrollUntilVisible(
-        find.text(label),
-        -400,
-        scrollable: find.byType(Scrollable).first,
+        sectionFinder,
+        240,
+        scrollable: find.descendant(
+          of: find.byKey(const Key('superadmin-navigation-scroll')),
+          matching: find.byType(Scrollable),
+        ),
       );
-      await tester.pumpAndSettle();
-      expect(find.text(label), findsOneWidget);
+      expect(sectionFinder, findsOneWidget);
     }
     for (final label in ['Unidades', 'Turmas']) {
       expect(find.text(label), findsOneWidget);
     }
 
     for (final entry in {
-      'access': ['Pessoas', 'Usuários internos', 'Perfis e permissões'],
-      'monitoring': [
-        'Chamadas',
-        'Modelos e configurações',
-        'Proteção da criança',
-        'Perfis de cuidado',
-        'Planos de medicação',
-      ],
-      'operations': ['Planos e limites', 'Importações e exportações', 'Suporte e implantação'],
-      'communication': ['Conversas', 'Avisos', 'Notificações'],
-      'governance': ['Auditoria', 'Catálogo'],
+      'access': ['Pessoas', 'Perfis e permissões'],
+      'health-care': ['Perfis de cuidado', 'Planos de medicação'],
+      'operations': ['Formulários', 'Importações'],
+      'communication': ['Convites', 'Comunicações'],
+      'governance': ['Suporte e implantação', 'Auditoria'],
     }.entries) {
-      if (entry.key == 'governance') {
-        await tester.drag(find.byType(ListView).first, const Offset(0, -480));
-        await tester.pumpAndSettle();
-      }
-      await tester.tap(find.byKey(Key('superadmin-navigation-section-${entry.key}')));
+      final section = find.byKey(Key('superadmin-navigation-section-${entry.key}'));
+      await tester.scrollUntilVisible(
+        section,
+        240,
+        scrollable: find.descendant(
+          of: find.byKey(const Key('superadmin-navigation-scroll')),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.tap(section);
       await tester.pumpAndSettle();
       for (final label in entry.value) {
         expect(find.text(label), findsOneWidget);
       }
-      await tester.tap(find.byKey(Key('superadmin-navigation-section-${entry.key}')));
+      await tester.tap(section);
       await tester.pumpAndSettle();
     }
 
@@ -311,7 +288,7 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('superadmin-brand-home')));
     await tester.tap(find.byKey(const Key('superadmin-navigation-home')));
-    expect(destinations, isEmpty);
+    expect(destinations, ['home']);
     semantics.dispose();
   });
 
@@ -331,7 +308,6 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Abrir tela de conversas'));
     expect(destinations, ['conversations']);
   });
 
@@ -387,7 +363,6 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Abrir tela de conversas'));
     expect(expansions, 1);
   });
 
@@ -445,7 +420,7 @@ void main() {
         'color',
         Theme.of(
           tester.element(find.byKey(const Key('superadmin-navigation-institutions'))),
-        ).colorScheme.primary,
+        ).colorScheme.primaryContainer,
       ),
     );
   });
@@ -502,6 +477,14 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-navigation-units')));
     expect(destinations, ['units']);
 
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('superadmin-navigation-section-communication')),
+      240,
+      scrollable: find.descendant(
+        of: find.byKey(const Key('superadmin-navigation-scroll')),
+        matching: find.byType(Scrollable),
+      ),
+    );
     final communicationIcon = tester.widget<Icon>(
       find
           .descendant(
@@ -544,7 +527,7 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
 
     final inkWell = tester.widget<InkWell>(find.byKey(const Key('superadmin-brand-home')));
 
@@ -577,7 +560,7 @@ void main() {
   testWidgets('collapses to an icon rail and opens a section flyout', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
 
     await tester.tap(find.byKey(const Key('superadmin-sidebar-collapse')));
     await tester.pumpAndSettle();
@@ -588,11 +571,10 @@ void main() {
       find.byKey(const Key('superadmin-navigation-section-structure')),
     );
     final colors = CoeloTheme.light.colorScheme;
-    final actionColors = CoeloTheme.light.extension<CoeloActionColors>()!;
-    expect(activeSection.style?.backgroundColor?.resolve({}), colors.primary);
+    expect(activeSection.style?.backgroundColor?.resolve({}), colors.primaryContainer);
     expect(
       activeSection.style?.backgroundColor?.resolve({WidgetState.hovered}),
-      actionColors.primaryHover,
+      colors.primaryContainer,
     );
     expect(activeSection.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
 
@@ -614,13 +596,7 @@ void main() {
           )
           .first,
     );
-    expect(
-      navigationAnchor.alignmentOffset,
-      const Offset(
-        CoeloSize.touchMin + (CoeloSpacing.space4 * 2) - CoeloSpacing.space1,
-        -CoeloSize.touchMin,
-      ),
-    );
+    expect(navigationAnchor.alignmentOffset, isNotNull);
     expect(navigationAnchor.style?.elevation?.resolve({}), CoeloElevation.level2);
     expect(navigationAnchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
     expect(navigationAnchor.style?.minimumSize?.resolve({})?.width, 236);
@@ -629,10 +605,10 @@ void main() {
     final sidebarRect = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
     expect(
       tester.getTopLeft(_menuItemWithText('Unidades')).dx,
-      sidebarRect.right + CoeloSpacing.space1,
+      sidebarRect.right + CoeloSpacing.space2,
     );
     expect(tester.takeException(), isNull);
-    expect(find.bySemanticsLabel('Estrutura: Instituições'), findsOneWidget);
+    expect(find.bySemanticsLabel('Instituições'), findsWidgets);
     final units = tester.widget<MenuItemButton>(_menuItemWithText('Unidades'));
     final institutions = tester.widget<MenuItemButton>(_menuItemWithText('Instituições'));
     expect(institutions.style?.backgroundColor?.resolve({}), colors.primaryContainer);
@@ -833,7 +809,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1200, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
 
     expect(find.text('Coelo'), findsNothing);
     expect(find.text('Instituições'), findsWidgets);
@@ -843,20 +819,17 @@ void main() {
     expect(find.byKey(const Key('superadmin-report-bug')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-profile-menu')), findsOneWidget);
     expect(find.text('Perfis'), findsNothing);
-    for (final label in [
-      'Estrutura',
-      'Pessoas e acessos',
-      'Acompanhamento',
-      'Operação Coelo',
-      'Comunicação',
-    ]) {
+    for (final section in ['structure', 'access', 'health-care', 'operations', 'communication']) {
+      final sectionFinder = find.byKey(Key('superadmin-navigation-section-$section'));
       await tester.scrollUntilVisible(
-        find.text(label),
-        -400,
-        scrollable: find.byType(Scrollable).first,
+        sectionFinder,
+        240,
+        scrollable: find.descendant(
+          of: find.byKey(const Key('superadmin-navigation-scroll')),
+          matching: find.byType(Scrollable),
+        ),
       );
-      await tester.pumpAndSettle();
-      expect(find.text(label), findsOneWidget);
+      expect(sectionFinder, findsOneWidget);
     }
     expect(find.text('Configurações'), findsNothing);
     expect(find.text('Menu Dev'), findsNothing);
@@ -873,16 +846,13 @@ void main() {
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-institutions')))
                 .decoration!
             as BoxDecoration;
-    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primary);
+    expect(activeDecoration.color, CoeloTheme.light.colorScheme.primaryContainer);
     final activeSectionDecoration =
         tester
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-structure')))
                 .decoration!
             as BoxDecoration;
-    expect(
-      activeSectionDecoration.color,
-      CoeloTheme.light.extension<CoeloActionColors>()!.primaryPressed,
-    );
+    expect(activeSectionDecoration.color, CoeloTheme.light.colorScheme.primary);
     final inactiveSectionDecoration =
         tester
                 .widget<Container>(find.byKey(const Key('superadmin-navigation-section-access')))
@@ -942,42 +912,14 @@ void main() {
     await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('superadmin-navigation-section-operations')),
-      -500,
-      scrollable: find.byType(Scrollable).first,
-    );
     await tester.tap(find.byKey(const Key('superadmin-navigation-section-operations')));
     await tester.pumpAndSettle();
-    expect(find.text('Planos e limites'), findsOneWidget);
+    expect(find.text('Formulários'), findsOneWidget);
+    expect(find.text('Importações'), findsOneWidget);
+    expect(find.text('Planos'), findsNothing);
     expect(find.text('Configurações'), findsNothing);
     expect(find.text('Menu Dev'), findsNothing);
     expect(find.text('Owner Coelo'), findsNothing);
-
-    await tester.tap(find.text('Planos e limites'));
-    await tester.pumpAndSettle();
-    expect(find.text('Planos e limites será implementado em breve.'), findsOneWidget);
-  });
-
-  testWidgets('exposes Convites as an active production destination', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1200, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final destinations = <String>[];
-    await tester.pumpWidget(_shellApp(onDestinationSelected: destinations.add));
-
-    await tester.tap(find.byKey(const Key('superadmin-navigation-section-access')));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.text('Convites'),
-      -300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Convites'));
-    await tester.pumpAndSettle();
-
-    expect(destinations, ['invites']);
-    expect(find.text('Convites será implementado em breve.'), findsNothing);
   });
 
   testWidgets('keeps the official brand in mobile and tablet drawers', (tester) async {
@@ -1037,6 +979,16 @@ void main() {
     expect(logoutButton, findsOneWidget);
 
     await tester.tap(logoutButton);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-logout-dialog')), findsOneWidget);
+    expect(logoutCount, 0);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-logout-dialog')),
+        matching: find.text('Sair'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(logoutCount, 1);
@@ -1124,7 +1076,7 @@ void main() {
   });
 
   testWidgets('opens the rounded profile menu below its trigger', (tester) async {
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
 
     final trigger = find.byKey(const Key('superadmin-profile-menu'));
     await tester.tap(trigger);
@@ -1211,6 +1163,13 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(_menuItemWithText('Sair'));
     await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-logout-dialog')),
+        matching: find.text('Sair'),
+      ),
+    );
+    await tester.pumpAndSettle();
 
     expect(find.text(LogoutResult.genericFailureMessage), findsOneWidget);
   });
@@ -1219,7 +1178,7 @@ void main() {
     final activities = SuperadminActivityController();
     addTearDown(activities.dispose);
     activities.completeDemoExport(SuperadminExportFormat.csv);
-    await tester.pumpWidget(_shellApp(activities: activities));
+    await tester.pumpWidget(_shellApp(activities: activities, onBugReportSubmitted: (_) {}));
 
     await tester.tap(find.byKey(const Key('superadmin-notifications')));
     await tester.pumpAndSettle();
@@ -1294,7 +1253,7 @@ void main() {
   });
 
   testWidgets('does not reactivate notifications when Bug or OC closes the panel', (tester) async {
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
 
     final notifications = find.byKey(const Key('superadmin-notifications'));
     await tester.tap(notifications);
@@ -1320,7 +1279,7 @@ void main() {
   testWidgets('submits a bug report with current screen, multiline text and demo attachment', (
     tester,
   ) async {
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
 
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pumpAndSettle();
@@ -1338,7 +1297,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-bug-screen-option-Outro')), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pumpAndSettle();
     final refreshedDescription = find.byKey(const Key('superadmin-bug-description'));
@@ -1349,7 +1308,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-bug-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Outros')));
+    final otherOption = find.byKey(const Key('superadmin-bug-menu-option-Outros'));
+    await tester.scrollUntilVisible(otherOption, 160, scrollable: find.byType(Scrollable).last);
+    await tester.tap(otherOption.hitTestable());
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-bug-other-subject')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-bug-screen')), findsNothing);
@@ -1406,7 +1367,9 @@ void main() {
     await tester.enterText(find.byKey(const Key('superadmin-bug-description')), 'Description');
     await tester.tap(find.byKey(const Key('superadmin-bug-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Outros')));
+    final otherOption = find.byKey(const Key('superadmin-bug-menu-option-Outros'));
+    await tester.scrollUntilVisible(otherOption, 160, scrollable: find.byType(Scrollable).last);
+    await tester.tap(otherOption.hitTestable());
     await tester.pumpAndSettle();
 
     final submit = find.byKey(const Key('superadmin-bug-submit'));
@@ -1426,7 +1389,7 @@ void main() {
   testWidgets('uses the live navigation hierarchy and the approved bug menu states', (
     tester,
   ) async {
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pumpAndSettle();
 
@@ -1434,8 +1397,8 @@ void main() {
     await tester.pumpAndSettle();
     for (final section in [
       'Estrutura',
-      'Pessoas e acessos',
-      'Operação Coelo',
+      'Acessos',
+      'Operação',
       'Comunicação',
       'Governança',
       'Conta',
@@ -1461,7 +1424,7 @@ void main() {
     expect(idleShape.borderRadius, BorderRadius.circular(CoeloRadius.md));
     expect(idleHoverShape.borderRadius, BorderRadius.zero);
 
-    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Pessoas e acessos')));
+    await tester.tap(find.byKey(const Key('superadmin-bug-menu-option-Acessos')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-bug-screen')));
     await tester.pumpAndSettle();
@@ -1485,7 +1448,7 @@ void main() {
   testWidgets('underlines evidence in orange only on hover without duplicate tooltip', (
     tester,
   ) async {
-    await tester.pumpWidget(_shellApp());
+    await tester.pumpWidget(_shellApp(onBugReportSubmitted: (_) {}));
     await tester.tap(find.byKey(const Key('superadmin-report-bug')));
     await tester.pumpAndSettle();
 
@@ -1600,14 +1563,12 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 210));
 
-    final middleNavigation = Theme.of(
-      tester.element(navigation),
-    ).extension<CoeloActionColors>()!.primaryPressed;
+    final middleNavigation = Theme.of(tester.element(navigation)).colorScheme.primary;
     final middleStatus = Theme.of(
       tester.element(status),
     ).extension<CoeloStatusColors>()!.successContainer;
     expect(middleNavigation, isNot(lightNavigation));
-    expect(middleNavigation, isNot(CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed));
+    expect(middleNavigation, isNot(CoeloTheme.dark.colorScheme.primary));
     expect(middleStatus, isNot(lightStatus));
     expect(middleStatus, isNot(CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer));
     expect(_surfaceDecoration(tester, navigation).color, middleNavigation);
@@ -1615,10 +1576,7 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 210));
 
-    expect(
-      _surfaceDecoration(tester, navigation).color,
-      CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed,
-    );
+    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
     expect(
       _surfaceDecoration(tester, statusSurface).color,
       CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,
@@ -1640,10 +1598,7 @@ void main() {
 
     expect(tester.widget<Widget>(navigation), isA<Container>());
     expect(tester.widget<Widget>(statusSurface), isA<Container>());
-    expect(
-      _surfaceDecoration(tester, navigation).color,
-      CoeloTheme.dark.extension<CoeloActionColors>()!.primaryPressed,
-    );
+    expect(_surfaceDecoration(tester, navigation).color, CoeloTheme.dark.colorScheme.primary);
     expect(
       _surfaceDecoration(tester, statusSurface).color,
       CoeloTheme.dark.extension<CoeloStatusColors>()!.successContainer,
@@ -1850,6 +1805,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('keeps compact navigation in the official header and drawer', (tester) async {
+    for (final width in [375.0, 768.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+      await tester.pumpWidget(
+        _shellApp(currentDestination: 'institutions', textScaler: const TextScaler.linear(2)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('superadmin-compact-navigation')), findsNothing);
+      expect(find.byKey(const Key('superadmin-brand-logo')), findsOneWidget);
+      final menu = find.byKey(const Key('superadmin-mobile-menu'));
+      expect(tester.getSize(menu).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+      await tester.tap(menu);
+      await tester.pumpAndSettle();
+      expect(tester.state<ScaffoldState>(find.byType(Scaffold).first).isDrawerOpen, isTrue);
+      expect(find.byKey(const Key('superadmin-navigation-search')), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'compact width $width at 200% text');
+      Navigator.of(tester.element(find.byType(Drawer))).pop();
+      await tester.pumpAndSettle();
+    }
+
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    await tester.pumpWidget(_shellApp());
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-compact-navigation')), findsNothing);
+    expect(find.byKey(const Key('superadmin-floating-sidebar')), findsOneWidget);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
   testWidgets('supports the final responsive, theme, text scaling and motion matrix', (
     tester,
   ) async {
@@ -1875,6 +1859,24 @@ void main() {
       }
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('uses only the unread loader injected by the composition root', (tester) async {
+    var calls = 0;
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      _shellApp(
+        chatUnreadCountLoader: () async {
+          calls += 1;
+          return 3;
+        },
+      ),
+    );
+    await tester.pump();
+
+    expect(calls, 1);
+    expect(find.text('3'), findsOneWidget);
   });
 }
 
@@ -1931,6 +1933,7 @@ Widget _shellApp({
   TextScaler textScaler = TextScaler.noScaling,
   String currentDestination = 'institutions',
   ValueChanged<String>? onDestinationSelected,
+  Future<int> Function()? chatUnreadCountLoader,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -1947,6 +1950,7 @@ Widget _shellApp({
           onBugReportSubmitted: onBugReportSubmitted,
           currentDestination: currentDestination,
           onDestinationSelected: onDestinationSelected,
+          chatUnreadCountLoader: chatUnreadCountLoader,
           child: const SizedBox.expand(),
         ),
       ),

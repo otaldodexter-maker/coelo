@@ -1,14 +1,16 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_form_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../support/people/fake_person_directory_repository.dart';
 
 void main() {
   testWidgets('form keeps a local address section out of the persisted identity contract', (
@@ -19,11 +21,19 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pump(const Duration(seconds: 1));
 
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(SuperadminFormFrame),
+        matching: find.byType(AnimatedSwitcher),
+      ),
+      findsNothing,
+    );
     expect(find.text('Endereço local'), findsOneWidget);
     expect(find.byKey(const Key('person-address-postal-code')), findsOneWidget);
     expect(find.byKey(const Key('person-address-street')), findsOneWidget);
     expect(find.byKey(const Key('person-address-city')), findsOneWidget);
-    expect(find.textContaining('não será persistido'), findsOneWidget);
+    expect(find.textContaining('demonstrativ'), findsNothing);
   });
 
   testWidgets('relationship demo searches adults masked and children without contact data', (
@@ -65,7 +75,142 @@ void main() {
     expect(find.textContaining('Turma Girassol'), findsOneWidget);
   });
 
-  testWidgets('uses measured glass footer and reserves scroll content', (tester) async {
+  testWidgets('relationship result is a continuous accessible state row', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
+    for (final entry in const {
+      'person-first-name-field': 'Ana',
+      'person-last-name-field': 'Lima',
+      'person-display-name-field': 'Ana Lima',
+      'person-legal-name-field': 'Ana Lima',
+    }.entries) {
+      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
+    }
+    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.enterText(find.byKey(const Key('person-adult-link-search')), '@ana.coelo');
+    await tester.pump();
+
+    final result = find.byKey(const Key('person-adult-link-result-adult-ana'));
+    expect(tester.widget(result), isA<TextButton>());
+    final button = tester.widget<TextButton>(result);
+    final colors = Theme.of(tester.element(find.byType(PersonFormPage))).colorScheme;
+    expect(button.onPressed, isNotNull);
+    expect(
+      button.style?.minimumSize?.resolve({})?.height,
+      greaterThanOrEqualTo(CoeloSize.touchMin),
+    );
+    expect(button.style?.foregroundColor?.resolve({}), colors.onSurface);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.focused}), colors.primaryContainer);
+    expect(button.style?.overlayColor?.resolve({WidgetState.pressed}), Colors.transparent);
+
+    await tester.tap(result);
+    await tester.pump();
+    final selected = tester.widget<TextButton>(result);
+    expect(selected.style?.backgroundColor?.resolve({}), colors.primaryContainer);
+    expect(find.text('Vínculo selecionado: Ana Souza'), findsOneWidget);
+  });
+
+  testWidgets('relationship search uses the direct form canvas without a redundant surface', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(seconds: 1));
+    for (final entry in const {
+      'person-first-name-field': 'Ana',
+      'person-last-name-field': 'Lima',
+      'person-display-name-field': 'Ana Lima',
+      'person-legal-name-field': 'Ana Lima',
+    }.entries) {
+      await tester.enterText(find.byKey(Key(entry.key)), entry.value);
+    }
+    await tester.tap(find.byKey(const Key('person-form-continue')));
+    await tester.pump(const Duration(seconds: 1));
+
+    final section = find.byKey(const Key('person-relationship-search-section'));
+    expect(section, findsOneWidget);
+    expect(tester.widget(section), isA<Column>());
+  });
+
+  testWidgets('membership cards have tokenized separation', (tester) async {
+    final original = FakePersonDirectoryRepository.samplePeople.firstWhere(
+      (item) => item.type == PersonType.adult && item.isEditable,
+    );
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(original: original));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.text('Vínculos contextuais').first);
+    await tester.pump(const Duration(seconds: 1));
+
+    final first = find.byKey(const Key('person-membership-card-membership-0-a'));
+    final second = find.byKey(const Key('person-membership-card-membership-0-b'));
+    expect(first, findsOneWidget);
+    expect(second, findsOneWidget);
+    expect(tester.getTopLeft(second).dy - tester.getBottomLeft(first).dy, CoeloSpacing.space3);
+  });
+
+  testWidgets('revoke membership is semantically negative at rest hover and focus', (tester) async {
+    final original = FakePersonDirectoryRepository.samplePeople.firstWhere(
+      (item) => item.type == PersonType.adult && item.isEditable,
+    );
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(original: original));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.text('Vínculos contextuais').first);
+    await tester.pump(const Duration(seconds: 1));
+
+    final button = tester.widget<TextButton>(
+      find.ancestor(of: find.text('Revogar vínculo').first, matching: find.byType(TextButton)),
+    );
+    final colors = Theme.of(tester.element(find.byType(PersonFormPage))).colorScheme;
+    expect(button.style?.foregroundColor?.resolve({}), colors.error);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.errorContainer);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.focused}), colors.errorContainer);
+  });
+
+  testWidgets('revoke child context is semantically negative at rest hover and focus', (
+    tester,
+  ) async {
+    final child = FakePersonDirectoryRepository.samplePeople.firstWhere(
+      (item) => item.type == PersonType.child,
+    );
+    final original = child.copyWith(
+      childContexts: const [
+        PersonChildContext(
+          id: 'child-context-test',
+          institutionId: 'institution-0',
+          institutionName: 'Instituição 1',
+          unitId: 'unit-0',
+          unitName: 'Unidade 1',
+          groupId: 'group-0',
+          groupName: 'Turma 1',
+        ),
+      ],
+    );
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(original: original));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.tap(find.text('Vínculos contextuais').first);
+    await tester.pump(const Duration(seconds: 1));
+
+    final button = tester.widget<TextButton>(
+      find.ancestor(of: find.text('Revogar contexto').first, matching: find.byType(TextButton)),
+    );
+    final colors = Theme.of(tester.element(find.byType(PersonFormPage))).colorScheme;
+    expect(button.style?.foregroundColor?.resolve({}), colors.error);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.errorContainer);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.focused}), colors.errorContainer);
+  });
+
+  testWidgets('keeps the canonical footer after the compact scroll region', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app());
@@ -75,7 +220,11 @@ void main() {
     final scroll = tester.widget<SingleChildScrollView>(
       find.byKey(const Key('person-form-scroll')),
     );
-    expect((scroll.padding! as EdgeInsets).bottom, greaterThan(CoeloSpacing.space6));
+    expect((scroll.padding! as EdgeInsets).bottom, CoeloSpacing.space6);
+    expect(
+      tester.getTopLeft(find.byType(SuperadminFormActionFooter)).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(find.byKey(const Key('person-form-scroll'))).dy),
+    );
   });
 
   testWidgets('create form has three responsive steps and no sensitive fields', (tester) async {

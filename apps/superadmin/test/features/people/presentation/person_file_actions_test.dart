@@ -66,13 +66,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Importar pessoas'), findsOneWidget);
     expect(find.text('Etapa 1 de 2 · Arquivo'), findsOneWidget);
-    expect(find.textContaining('nenhum arquivo real será enviado'), findsOneWidget);
+    expect(find.textContaining('revise os dados antes de enviar'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('people-import-template-export')));
     await tester.pump(const Duration(milliseconds: 250));
-    expect(find.text('Modelo XLSX preparado para download demonstrativo.'), findsOneWidget);
+    expect(find.text('Modelo XLSX preparado para download.'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('people-demo-file-picker')));
+    await tester.tap(find.byKey(const Key('people-file-picker')));
     await tester.pumpAndSettle();
     expect(find.text('pessoas-julho.xlsx'), findsOneWidget);
     await tester.tap(find.byKey(const Key('people-import-review')));

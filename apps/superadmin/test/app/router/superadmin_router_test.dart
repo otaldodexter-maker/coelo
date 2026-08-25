@@ -91,7 +91,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-profile-action')));
+    await tester.tap(find.text('Perfil'));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/dev/profile');
 
@@ -99,7 +99,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-settings-action')));
+    await tester.tap(find.text('Configura\u00e7\u00f5es'));
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, '/dev/settings');
   });
@@ -197,7 +197,14 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-profile-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-logout-action')));
+    await tester.tap(find.text('Sair'));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-logout-dialog')),
+        matching: find.text('Sair'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);

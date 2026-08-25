@@ -336,7 +336,7 @@ void main() {
     await tester.tap(exportTile);
     await tester.pump();
 
-    expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsOneWidget);
+    expect(find.text('Arquivo instituicoes.xlsx preparado para download.'), findsOneWidget);
   });
 
   testWidgets('uses the light semantic container for the collapsed status marker', (tester) async {
@@ -437,7 +437,7 @@ void main() {
       expect(statusLabel, findsNothing);
     }
 
-    expect(find.text('Download demonstrativo de instituicoes.xlsx preparado.'), findsNothing);
+    expect(find.text('Arquivo instituicoes.xlsx preparado para download.'), findsNothing);
   });
 
   testWidgets('keeps one exact status label and semantic tap action while expanded', (

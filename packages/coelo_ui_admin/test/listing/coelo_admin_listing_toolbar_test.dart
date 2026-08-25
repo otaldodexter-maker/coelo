@@ -40,6 +40,42 @@ void main() {
     final action = tester.getTopLeft(find.byKey(const ValueKey('action-one')));
     expect(action.dy, greaterThan(search.dy));
   });
+
+  testWidgets('uses the full compact row and equal filter columns', (tester) async {
+    await _pumpToolbar(tester, width: 375);
+
+    expect(tester.getSize(find.byKey(const ValueKey('search'))).width, 375);
+    final first = tester.getSize(find.byKey(const ValueKey('filter-one')));
+    final second = tester.getSize(find.byKey(const ValueKey('filter-two')));
+    expect(first.width, second.width);
+    expect(first.width, greaterThan(170));
+  });
+
+  testWidgets('reduces compact filters to one column at 200 percent text', (tester) async {
+    await _pumpToolbar(tester, width: 375, textScaleFactor: 2);
+
+    final first = tester.getRect(find.byKey(const ValueKey('filter-one')));
+    final second = tester.getRect(find.byKey(const ValueKey('filter-two')));
+    expect(first.width, 375);
+    expect(second.width, 375);
+    expect(second.top, greaterThan(first.top));
+  });
+
+  for (final width in [768.0, 1024.0]) {
+    testWidgets('keeps actions and controls uncompressed at ${width.toInt()} px and 200 percent', (
+      tester,
+    ) async {
+      await _pumpToolbar(tester, width: width, textScaleFactor: 2);
+
+      final search = tester.getRect(find.byKey(const ValueKey('search')));
+      final firstFilter = tester.getRect(find.byKey(const ValueKey('filter-one')));
+      final action = tester.getRect(find.byKey(const ValueKey('action-one')));
+      expect(search.width, width);
+      expect(firstFilter.width, width);
+      expect(action.top, greaterThan(firstFilter.top));
+      expect(tester.takeException(), isNull);
+    });
+  }
 }
 
 bool _isInReadingOrder(List<Offset> positions) {
@@ -53,25 +89,32 @@ bool _isInReadingOrder(List<Offset> positions) {
   return true;
 }
 
-Future<void> _pumpToolbar(WidgetTester tester, {required double width}) async {
+Future<void> _pumpToolbar(
+  WidgetTester tester, {
+  required double width,
+  double textScaleFactor = 1,
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = Size(width, 500);
   addTearDown(tester.view.reset);
 
   await tester.pumpWidget(
-    MaterialApp(
-      theme: CoeloTheme.light,
-      home: Scaffold(
-        body: CoeloAdminListingToolbar(
-          search: const SizedBox(key: ValueKey('search'), width: 180, height: 48),
-          filters: const [
-            SizedBox(key: ValueKey('filter-one'), width: 120, height: 48),
-            SizedBox(key: ValueKey('filter-two'), width: 120, height: 48),
-          ],
-          actions: const [
-            SizedBox(key: ValueKey('action-one'), width: 48, height: 48),
-            SizedBox(key: ValueKey('action-two'), width: 48, height: 48),
-          ],
+    MediaQuery(
+      data: MediaQueryData(textScaler: TextScaler.linear(textScaleFactor)),
+      child: MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: CoeloAdminListingToolbar(
+            search: const SizedBox(key: ValueKey('search'), width: 180, height: 48),
+            filters: const [
+              SizedBox(key: ValueKey('filter-one'), width: 120, height: 48),
+              SizedBox(key: ValueKey('filter-two'), width: 120, height: 48),
+            ],
+            actions: const [
+              SizedBox(key: ValueKey('action-one'), width: 48, height: 48),
+              SizedBox(key: ValueKey('action-two'), width: 48, height: 48),
+            ],
+          ),
         ),
       ),
     ),

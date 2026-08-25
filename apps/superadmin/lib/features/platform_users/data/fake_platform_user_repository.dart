@@ -54,15 +54,10 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
       credential: const SuperadminCredentialSnapshot(status: SuperadminCredentialStatus.noAccess),
       memberships: [_membership(id, draft, now)],
       invitation: _invitation(id, identity.professionalEmail, now),
-      history: [
-        _event(now, 'Acesso interno criado', 'Convite fake preparado; nenhum e-mail foi enviado.'),
-      ],
+      history: [_event(now, 'Acesso interno criado', 'Convite preparado.')],
     );
     _records.add(record);
-    return PlatformUserCreateResult(
-      record: record,
-      message: 'Demonstração local: cadastro salvo; nenhum convite real foi enviado.',
-    );
+    return PlatformUserCreateResult(record: record, message: 'Cadastro salvo.');
   }
 
   @override
@@ -112,7 +107,7 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
             now,
             'Cadastro atualizado',
             emailChanged
-                ? 'Novo convite fake preparado para o e-mail atualizado.'
+                ? 'Novo convite preparado para o e-mail atualizado.'
                 : 'Dados, perfil ou escopo revisados localmente.',
           ),
         ],
@@ -141,7 +136,7 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
         ),
         history: [
           ...current.history,
-          _event(now, 'Convite reenviado', 'Tentativa fake registrada; nenhum e-mail foi enviado.'),
+          _event(now, 'Convite reenviado', 'Solicitação de reenvio registrada.'),
         ],
       ),
     );
@@ -169,10 +164,7 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
           attempts: current.invitation.attempts,
           updatedAt: now,
         ),
-        history: [
-          ...current.history,
-          _event(now, 'Convite revogado', 'Revogação registrada somente nesta demonstração.'),
-        ],
+        history: [...current.history, _event(now, 'Convite revogado', 'Revogação registrada.')],
       ),
     );
   }
@@ -260,7 +252,7 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
           _event(
             now,
             'Novo vínculo criado',
-            'O ciclo revogado foi preservado e um convite fake foi preparado.',
+            'O ciclo revogado foi preservado e um novo convite foi preparado.',
           ),
         ],
       ),
@@ -280,10 +272,7 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
     return _replace(
       current.copyWith(
         memberships: [...current.memberships.take(current.memberships.length - 1), membership],
-        history: [
-          ...current.history,
-          _event(now, title, 'Alteração registrada somente nesta demonstração local.'),
-        ],
+        history: [...current.history, _event(now, title, 'Alteração registrada.')],
       ),
     );
   }
@@ -356,14 +345,14 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
           normalizePlatformUserDigits(identity.cpf)) {
         throw const PlatformUserConflictException(
           'cpf',
-          'Já existe um Usuário Interno com este CPF nesta demonstração local.',
+          'Já existe um Usuário Interno com este CPF.',
         );
       }
       if (normalizePlatformUserEmail(record.email) ==
           normalizePlatformUserEmail(identity.professionalEmail)) {
         throw const PlatformUserConflictException(
           'email',
-          'Já existe um Usuário Interno com este e-mail nesta demonstração local.',
+          'Já existe um Usuário Interno com este e-mail.',
         );
       }
     }
@@ -519,7 +508,7 @@ final class FakePlatformUserRepository implements PlatformUserRepository {
         attempts: 1,
         updatedAt: at,
       ),
-      history: [_event(at, 'Registro demonstrativo criado', 'Identidade exclusiva do Superadmin.')],
+      history: [_event(at, 'Registro criado', 'Identidade exclusiva do Superadmin.')],
     );
   });
 

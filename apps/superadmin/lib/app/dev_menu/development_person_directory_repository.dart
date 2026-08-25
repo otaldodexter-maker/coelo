@@ -1,7 +1,8 @@
-import '../domain/person_directory.dart';
+import '../../features/people/domain/person_directory.dart';
 
-final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
-  FakePersonDirectoryRepository({
+/// Deterministic repository used only by the authenticated development preview.
+final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepository {
+  DevelopmentPersonDirectoryRepository({
     List<PersonDirectoryItem>? seed,
     this.tenantId = 'tenant-coelo',
     this.fail = false,
@@ -234,7 +235,10 @@ final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
   @override
   Future<PersonDirectoryItem> fetchDetail(String personId) async {
     _guard();
-    return _scoped.firstWhere((item) => item.id == personId);
+    return _scoped.firstWhere(
+      (item) => item.id == personId,
+      orElse: () => throw const PersonDirectoryNotFoundException(),
+    );
   }
 
   @override

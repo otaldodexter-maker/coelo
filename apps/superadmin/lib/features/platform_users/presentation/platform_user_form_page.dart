@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker.dart';
@@ -280,73 +281,31 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
           currentDestination: 'internal-users',
           chatLauncherBottomInset: _footerHeight,
           onDestinationSelected: widget.onDestinationSelected,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-                  ? CoeloSpacing.space10
-                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                  ? CoeloSpacing.space6
-                  : CoeloSpacing.space4;
-              return ColoredBox(
-                color: Theme.of(context).colorScheme.surface,
-                child: Form(
-                  key: _formKey,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ListView(
-                        key: const Key('platform-user-form-scroll'),
-                        padding: EdgeInsets.fromLTRB(
-                          inset,
-                          inset,
-                          inset,
-                          inset + _footerHeight + CoeloSpacing.space4,
-                        ),
-                        children: [_formBody(constraints.maxWidth)],
-                      ),
-                      Positioned(left: inset, right: inset, bottom: inset, child: _footer()),
-                    ],
-                  ),
-                ),
-              );
-            },
+          child: ColoredBox(
+            color: Theme.of(context).colorScheme.surface,
+            child: Form(
+              key: _formKey,
+              child: SuperadminFormFrame(
+                viewportWidth: MediaQuery.sizeOf(context).width,
+                scrollKey: const Key('platform-user-form-scroll'),
+                navigation: _navigation(),
+                body: KeyedSubtree(key: ValueKey(_step), child: _flowStep()),
+                footer: _footer(),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _formBody(double width) {
-    final navigation = SuperadminFormStepNavigation(
-      steps: _steps(),
-      currentIndex: _step,
-      onStepSelected: (index) {
-        if (index <= _step) setState(() => _step = index);
-      },
-    );
-    final content = Card(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(padding: const EdgeInsets.all(CoeloSpacing.space6), child: _flowStep()),
-    );
-    if (width < CoeloBreakpoints.medium.minWidth) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          navigation,
-          const SizedBox(height: CoeloSpacing.space4),
-          content,
-        ],
-      );
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        navigation,
-        const SizedBox(width: CoeloSpacing.space6),
-        Expanded(child: content),
-      ],
-    );
-  }
+  Widget _navigation() => SuperadminFormStepNavigation(
+    steps: _steps(),
+    currentIndex: _step,
+    onStepSelected: (index) {
+      if (index <= _step) setState(() => _step = index);
+    },
+  );
 
   List<SuperadminFormStep> _steps() {
     const labels = [
@@ -706,9 +665,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
                 Icon(Icons.visibility_outlined),
                 SizedBox(width: CoeloSpacing.space3),
                 Expanded(
-                  child: Text(
-                    'Demonstração local: o convite será preparado para o e-mail profissional, mas nenhum e-mail real será enviado.',
-                  ),
+                  child: Text('Confira o e-mail profissional antes de confirmar o convite.'),
                 ),
               ],
             ),

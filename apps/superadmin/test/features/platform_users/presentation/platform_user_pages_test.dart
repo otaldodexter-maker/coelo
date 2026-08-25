@@ -1,9 +1,9 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/platform_users/data/fake_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/domain/platform_user.dart';
-import 'package:coelo_superadmin/features/platform_users/presentation/platform_user_detail_page.dart';
 import 'package:coelo_superadmin/features/platform_users/presentation/platform_user_form_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +54,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Revisão'), findsOneWidget);
-    expect(find.textContaining('nenhum e-mail real será enviado'), findsOneWidget);
+    expect(find.textContaining('Confira o e-mail profissional'), findsOneWidget);
     expect(find.text('***.***.***-25'), findsOneWidget);
     expect(find.text('l***@coelo.me'), findsOneWidget);
     await tester.tap(find.text('Criar e preparar convite'));
@@ -65,46 +65,6 @@ void main() {
     expect(saved!.record.invitationStatus, PlatformInvitationStatus.pending);
     expect(saved!.record.credentialStatus, SuperadminCredentialStatus.noAccess);
     expect(saved!.invitationSent, isFalse);
-  });
-
-  testWidgets('detail separates identity, access, states and fake history', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1440, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakePlatformUserRepository();
-    final user = repository.records.first;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.dark,
-        home: PlatformUserDetailPage(
-          repository: repository,
-          internalUserId: user.id,
-          capability: PlatformUserCapability.owner,
-          logout: () async => const LogoutResult.success(),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Identidade'), findsOneWidget);
-    expect(find.text('Último Owner ativo protegido'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('Acesso ao Superadmin'),
-      300,
-      scrollable: find.byType(Scrollable).last,
-    );
-    expect(find.text('Acesso ao Superadmin'), findsOneWidget);
-    expect(find.text('Estados independentes'), findsOneWidget);
-    expect(find.textContaining('Vínculo interno ·'), findsOneWidget);
-    expect(find.textContaining('Convite ·'), findsOneWidget);
-    expect(find.textContaining('Credencial Superadmin ·'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('Histórico demonstrativo'),
-      300,
-      scrollable: find.byType(Scrollable).last,
-    );
-    expect(find.text('Histórico demonstrativo'), findsOneWidget);
-    expect(find.textContaining('MFA'), findsNothing);
   });
 
   testWidgets('compact form has simple surface and no horizontal overflow', (tester) async {
@@ -123,7 +83,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final scroll = tester.widget<ListView>(find.byKey(const Key('platform-user-form-scroll')));
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byKey(const Key('platform-user-form-scroll')),
+    );
     expect((scroll.padding! as EdgeInsets).bottom, greaterThan(CoeloSpacing.space4));
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
     expect(

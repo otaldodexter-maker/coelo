@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../domain/principal_happens_feed_repository.dart';
 import '../domain/principal_happens_preview_data.dart';
+import '../../principal_circulars/domain/circular_repository.dart';
+import '../../principal_circulars/domain/principal_happens_mixed_feed.dart';
+import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 
 final class PrincipalHappensPreviewPage extends StatefulWidget {
   const PrincipalHappensPreviewPage({
@@ -16,7 +19,26 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onCreatePost,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
-  });
+  }) : mixedFeedRepository = null,
+       mixedFeedScope = null,
+       mediaRepository = feedRepository,
+       onOpenCircular = null;
+
+  const PrincipalHappensPreviewPage.mixed({
+    required this.mixedFeedRepository,
+    required this.mixedFeedScope,
+    required this.mediaRepository,
+    required this.onOpenCircular,
+    this.onOpenMoments,
+    this.onOpenProfile,
+    this.onOpenAgenda,
+    this.onOpenNow,
+    this.onOpenForYou,
+    this.onCreatePost,
+    this.data = PrincipalHappensPreviewData.demo,
+    super.key,
+  }) : feedRepository = mediaRepository,
+       feedScope = null;
 
   const PrincipalHappensPreviewPage.demo({
     this.onOpenMoments,
@@ -28,7 +50,11 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
   }) : feedRepository = null,
-       feedScope = null;
+       feedScope = null,
+       mixedFeedRepository = null,
+       mixedFeedScope = null,
+       mediaRepository = null,
+       onOpenCircular = null;
 
   final VoidCallback? onOpenMoments;
   final VoidCallback? onOpenProfile;
@@ -38,6 +64,10 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
   final VoidCallback? onCreatePost;
   final PrincipalHappensFeedRepository? feedRepository;
   final PrincipalHappensFeedScope? feedScope;
+  final PrincipalMixedFeedRepository? mixedFeedRepository;
+  final CircularScope? mixedFeedScope;
+  final PrincipalHappensFeedRepository? mediaRepository;
+  final ValueChanged<String>? onOpenCircular;
   final PrincipalHappensPreviewData data;
 
   @override
@@ -48,6 +78,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   final _likedPosts = <int>{};
   final _savedPosts = <int>{};
   List<PrincipalPostPreviewItem>? _remotePosts;
+  List<PrincipalHappensFeedItem>? _mixedItems;
   Object? _feedError;
   var _feedLoading = false;
   var _feedRequest = 0;
@@ -62,17 +93,43 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   void didUpdateWidget(covariant PrincipalHappensPreviewPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.feedRepository != widget.feedRepository ||
-        oldWidget.feedScope != widget.feedScope) {
+        oldWidget.feedScope != widget.feedScope ||
+        oldWidget.mixedFeedRepository != widget.mixedFeedRepository ||
+        oldWidget.mixedFeedScope != widget.mixedFeedScope) {
       _loadFeed();
     }
   }
 
   Future<void> _loadFeed() async {
+    final mixedRepository = widget.mixedFeedRepository;
+    final mixedScope = widget.mixedFeedScope;
     final repository = widget.feedRepository;
     final scope = widget.feedScope;
     final request = ++_feedRequest;
+    if (mixedRepository != null && mixedScope != null) {
+      setState(() {
+        _feedLoading = true;
+        _feedError = null;
+      });
+      try {
+        final page = await mixedRepository.list(mixedScope);
+        if (!mounted || request != _feedRequest) return;
+        setState(() {
+          _mixedItems = page.items;
+          _feedLoading = false;
+        });
+      } on Object catch (error) {
+        if (!mounted || request != _feedRequest) return;
+        setState(() {
+          _feedError = error;
+          _feedLoading = false;
+        });
+      }
+      return;
+    }
     if (repository == null || scope == null) {
       _remotePosts = null;
+      _mixedItems = null;
       _feedError = null;
       _feedLoading = false;
       return;
@@ -115,67 +172,39 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final expanded = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
       final large = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
-      return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: _HappensAppBar(
-          onBug: () => _prototypeMessage('Reporte de bug'),
-          onNotifications: () => _prototypeMessage('Notificações'),
-          onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-        ),
-        bottomNavigationBar: compact
-            ? _MobileNavigation(
-                onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-                onAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
-                onMessage: () => _prototypeMessage('Mensagens'),
-                onMore: () => _prototypeMessage('Mais opções'),
-                onCreate: () => _invoke(widget.onCreatePost, 'Criar publicação'),
-              )
-            : null,
-        body: Row(
+      return ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (expanded)
-              _DesktopRail(
-                onAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
-                onMessage: () => _prototypeMessage('Mensagens'),
-                onItem: _prototypeMessage,
-              ),
             Expanded(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: large ? 940 : 780),
-                  child: _Feed(
-                    data: widget.data,
-                    mediaRepository: widget.feedRepository,
-                    posts: widget.feedRepository == null
-                        ? widget.data.posts
-                        : (_remotePosts ?? const []),
-                    loading: _feedLoading,
-                    error: _feedError,
-                    onRetry: _loadFeed,
-                    compact: compact,
-                    onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
-                    onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-                    onViewAllNow: () => _invoke(widget.onOpenNow, 'Todos os conteúdos de Agora'),
-                    onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
-                    likedPosts: _likedPosts,
-                    savedPosts: _savedPosts,
-                    onLike: (index) => setState(() {
-                      _likedPosts.contains(index)
-                          ? _likedPosts.remove(index)
-                          : _likedPosts.add(index);
-                    }),
-                    onSave: (index) => setState(() {
-                      _savedPosts.contains(index)
-                          ? _savedPosts.remove(index)
-                          : _savedPosts.add(index);
-                    }),
-                    onPrototypeAction: _prototypeMessage,
-                  ),
-                ),
+              child: _Feed(
+                data: widget.data,
+                mediaRepository: widget.mediaRepository ?? widget.feedRepository,
+                posts: widget.feedRepository == null
+                    ? widget.data.posts
+                    : (_remotePosts ?? const []),
+                mixedItems: _mixedItems,
+                onOpenCircular: widget.onOpenCircular,
+                loading: _feedLoading,
+                error: _feedError,
+                onRetry: _loadFeed,
+                compact: compact,
+                onCreatePost: () => _invoke(widget.onCreatePost, 'Criar publicação'),
+                onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
+                onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
+                onViewAllNow: () => _invoke(widget.onOpenNow, 'Todos os conteúdos de Agora'),
+                onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
+                likedPosts: _likedPosts,
+                savedPosts: _savedPosts,
+                onLike: (index) => setState(() {
+                  _likedPosts.contains(index) ? _likedPosts.remove(index) : _likedPosts.add(index);
+                }),
+                onSave: (index) => setState(() {
+                  _savedPosts.contains(index) ? _savedPosts.remove(index) : _savedPosts.add(index);
+                }),
+                onPrototypeAction: _prototypeMessage,
               ),
             ),
             if (large)
@@ -191,95 +220,18 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   );
 }
 
-final class _HappensAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _HappensAppBar({
-    required this.onBug,
-    required this.onNotifications,
-    required this.onProfile,
-  });
-
-  final VoidCallback onBug;
-  final VoidCallback onNotifications;
-  final VoidCallback onProfile;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(64);
-
-  @override
-  Widget build(BuildContext context) => AppBar(
-    toolbarHeight: 64,
-    elevation: 0,
-    scrolledUnderElevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    titleSpacing: CoeloSpacing.space4,
-    shape: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    title: Image.asset(
-      'assets/brand/logo-coelo-orange-complete.png',
-      key: const Key('principal-happens-logo'),
-      width: 116,
-      height: 36,
-      alignment: Alignment.centerLeft,
-      fit: BoxFit.contain,
-      semanticLabel: 'Coelo',
-    ),
-    actions: [
-      IconButton(
-        key: const Key('principal-happens-bug'),
-        tooltip: 'Reportar bug',
-        onPressed: onBug,
-        icon: const Icon(Icons.bug_report_outlined),
-      ),
-      Stack(
-        children: [
-          IconButton(
-            key: const Key('principal-happens-notifications'),
-            tooltip: 'Notificações',
-            onPressed: onNotifications,
-            icon: const Icon(Icons.notifications_none_rounded),
-          ),
-          Positioned(
-            right: 8,
-            top: 8,
-            child: ExcludeSemantics(
-              child: CircleAvatar(
-                radius: 4,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: CoeloSpacing.space1, right: CoeloSpacing.space3),
-        child: Tooltip(
-          message: 'Abrir Perfil',
-          child: IconButton(
-            key: const Key('principal-happens-context-avatar'),
-            onPressed: onProfile,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints.tightFor(width: 48, height: 48),
-            icon: CircleAvatar(
-              radius: 18,
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              foregroundImage: const AssetImage('assets/principal_profile/institution-crest.png'),
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 final class _Feed extends StatelessWidget {
   const _Feed({
     required this.data,
     required this.posts,
+    required this.mixedItems,
+    required this.onOpenCircular,
     required this.mediaRepository,
     required this.loading,
     required this.error,
     required this.onRetry,
     required this.compact,
+    required this.onCreatePost,
     required this.onMoments,
     required this.onProfile,
     required this.onViewAllNow,
@@ -293,11 +245,14 @@ final class _Feed extends StatelessWidget {
 
   final PrincipalHappensPreviewData data;
   final List<PrincipalPostPreviewItem> posts;
+  final List<PrincipalHappensFeedItem>? mixedItems;
+  final ValueChanged<String>? onOpenCircular;
   final PrincipalHappensFeedRepository? mediaRepository;
   final bool loading;
   final Object? error;
   final VoidCallback onRetry;
   final bool compact;
+  final VoidCallback onCreatePost;
   final VoidCallback onMoments;
   final VoidCallback onProfile;
   final VoidCallback onViewAllNow;
@@ -317,18 +272,42 @@ final class _Feed extends StatelessWidget {
         SliverPadding(
           padding: EdgeInsets.fromLTRB(horizontal, CoeloSpacing.space3, horizontal, 0),
           sliver: SliverToBoxAdapter(
-            child: Text(
-              'Acontece',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Acontece',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                ),
+                if (compact || MediaQuery.textScalerOf(context).scale(1) > 1.5)
+                  IconButton.filled(
+                    key: const Key('principal-happens-create'),
+                    tooltip: 'Publicar no Acontece',
+                    onPressed: onCreatePost,
+                    icon: const Icon(Icons.add_rounded),
+                  )
+                else
+                  FilledButton.icon(
+                    key: const Key('principal-happens-create'),
+                    onPressed: onCreatePost,
+                    icon: const Icon(Icons.add_rounded),
+                    label: const Text('Publicar no Acontece'),
+                  ),
+              ],
             ),
           ),
         ),
         SliverPadding(
           padding: EdgeInsets.symmetric(horizontal: horizontal),
           sliver: SliverToBoxAdapter(
-            child: _TopTabs(onForYou: onForYou, onMoments: onMoments, onProfile: onProfile),
+            child: _TopTabs(
+              onForYou: onForYou,
+              onMoments: onMoments,
+              onProfile: onProfile,
+            ),
           ),
         ),
         SliverPadding(
@@ -362,39 +341,84 @@ final class _Feed extends StatelessWidget {
               ),
             ),
           )
-        else if (posts.isEmpty)
+        else if ((mixedItems ?? posts).isEmpty)
           SliverPadding(
             padding: EdgeInsets.symmetric(horizontal: horizontal),
             sliver: const SliverToBoxAdapter(child: _FeedStatePanel.empty()),
           )
         else
           SliverList.separated(
-            itemCount: posts.length,
+            itemCount: mixedItems?.length ?? posts.length,
             separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.symmetric(horizontal: compact ? 0 : horizontal),
-              child: _PostCard(
-                index: index,
-                post: posts[index],
-                mediaRepository: mediaRepository,
-                onReloadMedia: onRetry,
-                compact: compact,
-                liked: likedPosts.contains(index),
-                saved: savedPosts.contains(index),
-                onLike: () => onLike(index),
-                onSave: () => onSave(index),
-                onAction: onPrototypeAction,
-              ),
+              child: _feedItem(index),
             ),
           ),
         const SliverToBoxAdapter(child: SizedBox(height: CoeloSpacing.space6)),
       ],
     );
   }
+
+  Widget _feedItem(int index) {
+    final mixed = mixedItems;
+    if (mixed == null) return _post(index, posts[index]);
+    return switch (mixed[index]) {
+      PrincipalHappensPostItem item => _post(index, _postPreview(item)),
+      PrincipalHappensCircularItem item => PrincipalCircularFeedCard(
+        key: Key('principal-happens-circular-${item.id}'),
+        item: item.summary,
+        onOpen: () => onOpenCircular?.call(item.id),
+      ),
+    };
+  }
+
+  Widget _post(int index, PrincipalPostPreviewItem post) => _PostCard(
+    key: Key('principal-happens-post-$index'),
+    index: index,
+    post: post,
+    mediaRepository: mediaRepository,
+    onReloadMedia: onRetry,
+    compact: compact,
+    liked: likedPosts.contains(index),
+    saved: savedPosts.contains(index),
+    onLike: () => onLike(index),
+    onSave: () => onSave(index),
+    onAction: onPrototypeAction,
+  );
+}
+
+PrincipalPostPreviewItem _postPreview(PrincipalHappensPostItem item) => PrincipalPostPreviewItem(
+  author: item.authorName,
+  context: item.contextLabel,
+  time: _relativeTime(item.publishedAt),
+  initials: _initials(item.authorName),
+  body: item.caption,
+  media: item.media,
+);
+
+String _initials(String value) => value
+    .trim()
+    .split(RegExp(r'\s+'))
+    .where((part) => part.isNotEmpty)
+    .take(2)
+    .map((part) => part[0].toUpperCase())
+    .join();
+
+String _relativeTime(DateTime value) {
+  final difference = DateTime.now().toUtc().difference(value.toUtc());
+  if (difference.inMinutes < 1) return 'Agora';
+  if (difference.inHours < 1) return '${difference.inMinutes} min';
+  if (difference.inDays < 1) return '${difference.inHours} h';
+  return '${difference.inDays} d';
 }
 
 final class _TopTabs extends StatelessWidget {
-  const _TopTabs({required this.onForYou, required this.onMoments, required this.onProfile});
+  const _TopTabs({
+    required this.onForYou,
+    required this.onMoments,
+    required this.onProfile,
+  });
   final VoidCallback onForYou;
   final VoidCallback onMoments;
   final VoidCallback onProfile;
@@ -530,16 +554,24 @@ final class _FeedStatePanel extends StatelessWidget {
 }
 
 final class _Tab extends StatelessWidget {
-  const _Tab({this.tabKey, required this.label, this.selected = false, this.onPressed});
+  const _Tab({
+    this.tabKey,
+    required this.label,
+    this.selected = false,
+    this.autofocus = false,
+    this.onPressed,
+  });
   final Key? tabKey;
   final String label;
   final bool selected;
+  final bool autofocus;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     final button = TextButton(
       key: tabKey,
+      autofocus: autofocus,
       onPressed: selected ? null : onPressed,
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(88, CoeloSize.touchMin)),
@@ -609,7 +641,10 @@ final class _NowSection extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
           ),
-          TextButton(onPressed: onViewAll, child: const Text('Ver tudo')),
+          TextButton(
+            onPressed: onViewAll,
+            child: const Text('Ver tudo'),
+          ),
         ],
       ),
       const SizedBox(height: CoeloSpacing.space2),
@@ -732,6 +767,7 @@ final class _PostCard extends StatelessWidget {
     required this.onLike,
     required this.onSave,
     required this.onAction,
+    super.key,
   });
   final int index;
   final PrincipalPostPreviewItem post;
@@ -1135,111 +1171,6 @@ final class _AvatarStack extends StatelessWidget {
   );
 }
 
-final class _DesktopRail extends StatelessWidget {
-  const _DesktopRail({required this.onAgenda, required this.onMessage, required this.onItem});
-  final VoidCallback onAgenda;
-  final VoidCallback onMessage;
-  final ValueChanged<String> onItem;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    key: const Key('principal-happens-desktop-rail'),
-    width: 142,
-    padding: const EdgeInsets.fromLTRB(
-      CoeloSpacing.space2,
-      CoeloSpacing.space3,
-      CoeloSpacing.space2,
-      CoeloSpacing.space3,
-    ),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      border: Border(right: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Column(
-      children: [
-        const _RailItem('Acontece', Icons.home_rounded, selected: true),
-        _RailItem('Mensagens', Icons.chat_bubble_outline_rounded, onPressed: onMessage),
-        _RailItem('Agenda', Icons.calendar_today_outlined, onPressed: onAgenda),
-        _RailItem('Atividades', Icons.assignment_outlined, onPressed: () => onItem('Atividades')),
-        _RailItem('Desempenho', Icons.bar_chart_rounded, onPressed: () => onItem('Desempenho')),
-        _RailItem(
-          'Financeiro',
-          Icons.monetization_on_outlined,
-          onPressed: () => onItem('Financeiro'),
-        ),
-        _RailItem('Documentos', Icons.folder_outlined, onPressed: () => onItem('Documentos')),
-        _RailItem('Comunidade', Icons.groups_outlined, onPressed: () => onItem('Comunidade')),
-        _RailItem('Mais', Icons.more_horiz_rounded, onPressed: () => onItem('Mais opções')),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.all(CoeloSpacing.space3),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .35),
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Colégio Coelo', style: TextStyle(fontWeight: FontWeight.w800)),
-              const SizedBox(height: 6),
-              const Text('Ensino que inspira para a vida.', style: TextStyle(fontSize: 11)),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Icon(Icons.circle, color: Theme.of(context).colorScheme.primary),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-final class _RailItem extends StatelessWidget {
-  const _RailItem(this.label, this.icon, {this.onPressed, this.selected = false});
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final item = TextButton.icon(
-      onPressed: selected ? null : onPressed,
-      style: TextButton.styleFrom(
-        alignment: Alignment.centerLeft,
-        minimumSize: const Size.fromHeight(48),
-        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-        backgroundColor: selected
-            ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .35)
-            : Colors.transparent,
-        foregroundColor: selected
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.onSurface,
-        disabledForegroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      icon: Icon(icon, size: CoeloSize.iconSm),
-      label: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 11),
-      ),
-    );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-      child: selected
-          ? Semantics(
-              selected: true,
-              label: label,
-              child: ExcludeSemantics(child: item),
-            )
-          : item,
-    );
-  }
-}
-
 final class _ContextColumn extends StatelessWidget {
   const _ContextColumn({required this.data, required this.onOpenAgenda, required this.onAction});
   final PrincipalHappensPreviewData data;
@@ -1420,93 +1351,5 @@ final class _BirthdayRow extends StatelessWidget {
         Text(item.date, style: Theme.of(context).textTheme.bodySmall),
       ],
     ),
-  );
-}
-
-final class _MobileNavigation extends StatelessWidget {
-  const _MobileNavigation({
-    required this.onProfile,
-    required this.onAgenda,
-    required this.onMessage,
-    required this.onMore,
-    required this.onCreate,
-  });
-  final VoidCallback onProfile;
-  final VoidCallback onAgenda;
-  final VoidCallback onMessage;
-  final VoidCallback onMore;
-  final VoidCallback onCreate;
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    top: false,
-    child: Container(
-      key: const Key('principal-happens-mobile-nav'),
-      height: 70,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const _BottomItem('Acontece', Icons.home_rounded, selected: true),
-          _BottomItem('Mensagens', Icons.chat_bubble_outline_rounded, onPressed: onMessage),
-          _CreateButton(onPressed: onCreate),
-          _BottomItem('Agenda', Icons.calendar_today_outlined, onPressed: onAgenda),
-          _BottomItem('Mais', Icons.menu_rounded, onPressed: onMore),
-        ],
-      ),
-    ),
-  );
-}
-
-final class _BottomItem extends StatelessWidget {
-  const _BottomItem(this.label, this.icon, {this.selected = false, this.onPressed});
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final showLabel = MediaQuery.textScalerOf(context).scale(1) <= 1.5;
-    final content = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: CoeloSize.iconSm),
-        if (showLabel) ...[
-          const SizedBox(height: 3),
-          Text(label, style: const TextStyle(fontSize: 9)),
-        ],
-      ],
-    );
-    final button = TextButton(
-      onPressed: selected ? null : onPressed,
-      style: TextButton.styleFrom(
-        minimumSize: const Size(58, 58),
-        padding: EdgeInsets.zero,
-        foregroundColor: selected ? Theme.of(context).colorScheme.primary : null,
-        disabledForegroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      child: content,
-    );
-    return Semantics(
-      selected: selected,
-      button: !selected,
-      label: label,
-      child: selected ? ExcludeSemantics(child: button) : button,
-    );
-  }
-}
-
-final class _CreateButton extends StatelessWidget {
-  const _CreateButton({required this.onPressed});
-  final VoidCallback onPressed;
-  @override
-  Widget build(BuildContext context) => IconButton.filled(
-    tooltip: 'Criar',
-    onPressed: onPressed,
-    icon: const Icon(Icons.add_rounded),
   );
 }

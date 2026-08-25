@@ -456,7 +456,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             columns: _tableColumns(),
             headerHeight: 56,
             rowHeight: 64,
-            onRowPressed: (item) => widget.onView?.call(item.id),
+            onRowPressed: widget.onView == null ? null : (item) => widget.onView!(item.id),
           ),
         ),
       ],
@@ -585,8 +585,10 @@ final class _PlatformUserCard extends StatelessWidget {
       key: Key('platform-user-card-${item.id}'),
       surfaceKey: Key('platform-user-card-surface-${item.id}'),
       minHeight: 216,
-      semanticLabel: 'Abrir usuário interno ${item.fullName}',
-      onPressed: () => onView?.call(item.id),
+      semanticLabel: onView == null
+          ? 'Usuário interno ${item.fullName}'
+          : 'Abrir usuário interno ${item.fullName}',
+      onPressed: onView == null ? null : () => onView!(item.id),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: CoeloSpacing.space6,

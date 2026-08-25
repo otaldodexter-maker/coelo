@@ -2,76 +2,132 @@
   "status": "synchronized",
   "diagnostics": [],
   "fingerprints": {
+    "pattern.rejected-visual-patterns": {
+      "source": "811c9dc5",
+      "example": "49778068"
+    },
+    "pattern.directory-linear-tabs": {
+      "source": "811c9dc5",
+      "example": "d680b48b"
+    },
     "core.avatar": {
       "source": "7a7a59a2",
       "example": "5e27be7b"
     },
+    "superadmin.avatar-crop-dialog": {
+      "source": "40139167",
+      "example": "8849a86b"
+    },
+    "pattern.media-adjustment": {
+      "source": "811c9dc5",
+      "example": "ca84d94a"
+    },
+    "superadmin.advanced-color-picker": {
+      "source": "809a17b1",
+      "example": "6beb0228"
+    },
+    "pattern.form-step-navigation": {
+      "source": "811c9dc5",
+      "example": "0de5a950"
+    },
+    "pattern.directory-pagination": {
+      "source": "811c9dc5",
+      "example": "31845da4"
+    },
     "core.search-field": {
-      "source": "f3e1d2ff",
+      "source": "ab8f7272",
       "example": "877182a0"
     },
+    "superadmin.cover-crop-dialog": {
+      "source": "683bbcb0",
+      "example": "97ecace9"
+    },
+    "superadmin.form-step-navigation": {
+      "source": "2866ecf7",
+      "example": "061fc252"
+    },
     "core.form-text-field": {
-      "source": "00078807",
-      "example": "46fce9e0"
+      "source": "96122827",
+      "example": "6ed47c9c"
+    },
+    "core.brazilian-phone-input-formatter": {
+      "source": "161de343",
+      "example": "33b6e97e"
     },
     "core.status-chip": {
-      "source": "ad8b1f60",
+      "source": "2867d817",
       "example": "2a511e0d"
     },
     "core.state-panel": {
-      "source": "8d9e515a",
+      "source": "6ed8ee18",
       "example": "161283a9"
     },
     "admin.listing-toolbar": {
-      "source": "5d58d361",
-      "example": "662f920e"
+      "source": "c0609c20",
+      "example": "82aded08"
     },
     "admin.multi-select-filter": {
-      "source": "03aab2d6",
+      "source": "c2e4fdfb",
       "example": "6a280730"
     },
+    "admin.multi-select-field": {
+      "source": "a614b9aa",
+      "example": "8787e241"
+    },
     "admin.single-select-field": {
-      "source": "24e2f6a5",
+      "source": "000b2f9c",
       "example": "d2d36330"
     },
+    "admin.toggle-field": {
+      "source": "526bf1d4",
+      "example": "b196e0b0"
+    },
     "admin.dialog-shell": {
-      "source": "62ab780e",
-      "example": "1b037637"
+      "source": "53965a05",
+      "example": "efe7b835"
     },
     "admin.pagination": {
-      "source": "819ecd93",
+      "source": "6838b2d5",
       "example": "3f55595e"
     },
     "admin.create-action": {
-      "source": "153b6846",
+      "source": "b111e24a",
       "example": "07a3c792"
     },
     "admin.file-actions": {
       "source": "6b3f3794",
       "example": "a5c70196"
     },
+    "admin.interactive-card": {
+      "source": "507170d8",
+      "example": "9972bb4f"
+    },
+    "admin.expandable-status-indicator": {
+      "source": "1b498e2d",
+      "example": "d2cad7fe"
+    },
     "admin.flyout": {
-      "source": "a46bc4fa",
-      "example": "90e01a37"
+      "source": "5892290f",
+      "example": "b775df6c"
     },
     "admin.resizable-table": {
-      "source": "eeab67fc",
-      "example": "d0121529"
+      "source": "5852fe51",
+      "example": "0619dcfe"
     },
     "admin.kanban-board": {
-      "source": "d2203df9",
-      "example": "c8184dc9"
+      "source": "282f5882",
+      "example": "50ca844c"
     },
     "admin.work-item-card": {
-      "source": "b7177345",
+      "source": "d631c210",
       "example": "4be821ae"
     },
     "admin.assignee-stack": {
-      "source": "5730ecaf",
+      "source": "9e95f129",
       "example": "3ca7b1d6"
     },
     "admin.workspace-layout": {
-      "source": "36a8631a",
+      "source": "b1bf9b78",
       "example": "6cb119f6"
     },
     "pattern.action-hierarchy": {
@@ -80,7 +136,11 @@
     },
     "pattern.form-controls": {
       "source": "811c9dc5",
-      "example": "d4c1be1c"
+      "example": "61f43c0c"
+    },
+    "superadmin.form-action-footer": {
+      "source": "c6754bd3",
+      "example": "ec86a8bc"
     },
     "pattern.selection-controls": {
       "source": "811c9dc5",
@@ -92,15 +152,19 @@
     },
     "pattern.admin-directory": {
       "source": "811c9dc5",
-      "example": "1273c2c5"
+      "example": "9c3dd6be"
+    },
+    "pattern.institution-card-status": {
+      "source": "811c9dc5",
+      "example": "ba17d7a2"
     },
     "pattern.flyout-actions": {
       "source": "811c9dc5",
-      "example": "1afc96f8"
+      "example": "515afe80"
     },
     "pattern.negative-actions": {
       "source": "811c9dc5",
-      "example": "bf88ccb3"
+      "example": "48a5b02b"
     },
     "pattern.dialog-actions": {
       "source": "811c9dc5",
@@ -108,7 +172,7 @@
     },
     "pattern.approved-superadmin-surfaces": {
       "source": "811c9dc5",
-      "example": "07b14b53"
+      "example": "944d6aa8"
     },
     "pattern.overlay-surfaces": {
       "source": "811c9dc5",
@@ -145,6 +209,110 @@
     "product.superadmin-access-profiles": {
       "source": "811c9dc5",
       "example": "6e88055d"
+    },
+    "pattern.interactive-state-evidence": {
+      "source": "811c9dc5",
+      "example": "b4354d54"
+    },
+    "foundation.mobile-surface-hierarchy": {
+      "source": "811c9dc5",
+      "example": "20b16f19"
+    },
+    "pattern.file-processing-operational-composition": {
+      "source": "811c9dc5",
+      "example": "0dd89c00"
+    },
+    "pattern.rejected-attendance-call-list": {
+      "source": "811c9dc5",
+      "example": "4df82883"
+    },
+    "governance.ui-review-with-fixes": {
+      "source": "811c9dc5",
+      "example": "f285a190"
+    },
+    "governance.deep-review-prompt-brief": {
+      "source": "811c9dc5",
+      "example": "da5df95f"
+    },
+    "pattern.form-frame-geometry": {
+      "source": "811c9dc5",
+      "example": "f0578add"
+    },
+    "pattern.responsive-directory-filters": {
+      "source": "811c9dc5",
+      "example": "21b13fda"
+    },
+    "pattern.compact-directory-cards": {
+      "source": "811c9dc5",
+      "example": "9347c65b"
+    },
+    "pattern.directory-linear-tabs-overflow": {
+      "source": "811c9dc5",
+      "example": "4308fa90"
+    },
+    "pattern.flyout-viewport-safety": {
+      "source": "811c9dc5",
+      "example": "7d5bc59d"
+    },
+    "pattern.hidden-demo-fixtures": {
+      "source": "811c9dc5",
+      "example": "35ab2a58"
+    },
+    "product.attendance-new-call-landing": {
+      "source": "811c9dc5",
+      "example": "58617791"
+    },
+    "governance.family-release-checkpoints": {
+      "source": "811c9dc5",
+      "example": "c306fb6e"
+    },
+    "pattern.stable-route-content-transition": {
+      "source": "811c9dc5",
+      "example": "9c2f5815"
+    },
+    "foundation.compact-shell-header-chat": {
+      "source": "811c9dc5",
+      "example": "e96f7d81"
+    },
+    "pattern.compact-directory-pagination": {
+      "source": "811c9dc5",
+      "example": "12156850"
+    },
+    "pattern.operational-metrics-grid": {
+      "source": "811c9dc5",
+      "example": "a7abe632"
+    },
+    "pattern.sticky-filter-summary": {
+      "source": "811c9dc5",
+      "example": "e0850afe"
+    },
+    "pattern.calendar-date-picker": {
+      "source": "811c9dc5",
+      "example": "6d08642d"
+    },
+    "core.date-range-picker": {
+      "source": "ef47c8ae",
+      "example": "a8eab2a3"
+    },
+    "core.date-range-field": {
+      "source": "ef47c8ae",
+      "example": "8f1f93a4"
+    },
+    "core.date-time-field": {
+      "source": "df92bb72",
+      "example": "1e39b4d3"
+    },
+    "superadmin.forms-editor": {
+      "source": "813daad3",
+      "example": "49f13ee9"
+    },
+    "superadmin.forms-response": {
+      "source": "73f53fd0",
+      "example": "6c4218e3"
+    },
+    "core.calendar-month": {
+      "source": "cc058f2c",
+      "example": "e648f413"
     }
   }
 }

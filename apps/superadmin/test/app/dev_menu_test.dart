@@ -14,7 +14,7 @@ void main() {
       await tester.tap(find.byTooltip('Abrir menu de desenvolvimento'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Pré-visualizações'), findsOneWidget);
+      expect(find.text('Instituições'), findsOneWidget);
       await tester.tap(find.text('Instituições'));
       await tester.pumpAndSettle();
 

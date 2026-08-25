@@ -36,7 +36,7 @@ void main() {
       expect(result.record.credentialStatus, SuperadminCredentialStatus.noAccess);
       expect(result.record.maskedEmail, 'l***@coelo.me');
       expect(result.invitationSent, isFalse);
-      expect(result.message, contains('nenhum convite real'));
+      expect(result.message, 'Cadastro salvo.');
     });
 
     test('normalizes and rejects duplicate CPF', () async {
