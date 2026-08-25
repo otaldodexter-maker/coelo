@@ -2,7 +2,6 @@ import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
-import 'package:coelo_superadmin/features/access_profiles/data/fake_access_profile_repository.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
@@ -11,11 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('declares production and development access profile routes', () {
+  test('declares only production access profile routes', () {
     expect(SuperadminRoutes.profiles, '/profiles');
     expect(SuperadminRoutes.profileCreate, '/profiles/new/:domain');
     expect(SuperadminRoutes.profileDetail, '/profiles/:domain/:profileId');
-    expect(SuperadminRoutes.devProfiles, '/dev/profiles');
+    expect(SuperadminRoutes.profileModels, '/profile-models');
   });
 
   testWidgets('exposes Profiles as an active navigation destination', (tester) async {
@@ -41,33 +40,42 @@ void main() {
     expect(selected, 'profiles');
   });
 
-  testWidgets('production is protected and dev uses demonstration fixtures', (tester) async {
-    final session = SuperadminSession();
+  testWidgets('deep-link creation selects visible profile parents', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      accessProfileRepository: FakeAccessProfileRepository(),
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    router.go(SuperadminRoutes.profiles);
-    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-    await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
+    for (final entry in <String, String>{
+      '/profiles/new/platform': 'profiles',
+      '/profile-models/new/platform': 'profile-models',
+    }.entries) {
+      router.go(entry.key);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
-    router.go(SuperadminRoutes.devProfiles);
-    await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devProfiles);
-    expect(find.text('Perfis e permissões'), findsWidgets);
-    expect(find.byKey(const Key('access-profile-demo-notice')), findsOneWidget);
+      final destination = find.byKey(Key('superadmin-navigation-${entry.value}'));
+      expect(destination, findsOneWidget, reason: entry.key);
+      final container = tester.widget<Container>(destination);
+      expect(
+        (container.decoration! as BoxDecoration).color,
+        Theme.of(tester.element(destination)).colorScheme.primaryContainer,
+        reason: entry.key,
+      );
+    }
   });
 
   testWidgets('invalid or Principal write domains render not found', (tester) async {
-    final session = SuperadminSession();
+    final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -78,7 +86,7 @@ void main() {
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    router.go('/dev/profiles/principal/profile-id');
+    router.go('/profiles/principal/profile-id');
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 

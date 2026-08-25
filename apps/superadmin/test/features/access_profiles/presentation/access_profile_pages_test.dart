@@ -1,4 +1,4 @@
-import 'package:coelo_superadmin/features/access_profiles/data/fake_access_profile_repository.dart';
+import '../../../support/access_profiles/test_access_profile_repository.dart';
 import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_detail_page.dart';
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_directory_page.dart';
@@ -24,7 +24,6 @@ void main() {
     expect(find.byKey(const Key('access-profile-card-grid')), findsOneWidget);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(find.byKey(const Key('access-profile-pagination-footer')), findsOneWidget);
-    expect(find.byKey(const Key('access-profile-demo-notice')), findsOneWidget);
     expect(find.text('Perfil define teto; atribuição define contexto efetivo'), findsOneWidget);
     expect(find.text('Predefinido'), findsWidgets);
     expect(find.byType(SuperadminUnderlineTabs<AccessProfileDomain>), findsOneWidget);
@@ -41,7 +40,11 @@ void main() {
     );
     expect(
       tester.getSize(find.byKey(const Key('create-access-profile-card'))).height,
-      tester.getSize(find.byKey(const Key('access-profile-card-demo-owner'))).height,
+      tester
+          .getSize(
+            find.byKey(const Key('access-profile-card-10000000-0000-4000-8000-000000000001')),
+          )
+          .height,
     );
 
     await tester.tap(find.byKey(const Key('access-profile-view-table')));
@@ -74,10 +77,10 @@ void main() {
     await tester.tap(find.text('Principal'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Catálogo somente leitura'), findsOneWidget);
+    expect(find.text('Catálogo somente leitura'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
     expect(find.byKey(const Key('access-profile-status-tabs')), findsNothing);
-    expect(find.textContaining('contextos'), findsWidgets);
+    expect(find.byType(ListTile), findsNothing);
   });
 
   testWidgets('compact layout and text at 200 percent do not overflow', (tester) async {
@@ -91,7 +94,7 @@ void main() {
           child: child!,
         ),
         home: AccessProfileDirectoryPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
         ),
       ),
@@ -130,10 +133,10 @@ void main() {
 
     await tester.tap(find.text('Principal'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.bySemanticsLabel('Buscar capacidade do Principal'), 'conversar');
+    await tester.enterText(find.bySemanticsLabel('Buscar capacidade do Principal'), 'Comunicação');
     await tester.pump();
 
-    expect(find.text('Conversar'), findsOneWidget);
+    expect(find.text('Comunicação'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
   });
 
@@ -145,7 +148,7 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileDirectoryPage(
-          repository: FakeAccessProfileRepository(profiles: const []),
+          repository: TestAccessProfileRepository(profiles: const []),
           logout: _logout,
         ),
       ),
@@ -190,10 +193,10 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.platform,
-          profileId: 'demo-owner',
+          profileId: '10000000-0000-4000-8000-000000000001',
           onCancel: () {},
           onSaved: (_) {},
         ),
@@ -212,15 +215,14 @@ void main() {
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('access-profile-permission-matrix')), findsOneWidget);
-    expect(find.text('Plataforma'), findsWidgets);
+    expect(find.text('Pessoas'), findsWidgets);
     expect(find.text('Ver'), findsWidgets);
-    expect(find.byKey(const Key('permission-support.manage')), findsOneWidget);
+    expect(find.byKey(const Key('capability-people.manage')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('access-profile-membership-table')), findsOneWidget);
-    expect(find.text('Pessoa'), findsWidgets);
-    expect(find.text('Escopo efetivo'), findsOneWidget);
+    expect(find.text('Pessoas vinculadas'), findsWidgets);
+    expect(find.text('Nenhuma pessoa vinculada'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
@@ -238,10 +240,10 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.platform,
-          profileId: 'demo-owner',
+          profileId: '10000000-0000-4000-8000-000000000001',
           onCancel: () {},
           onSaved: (_) {},
         ),
@@ -271,10 +273,10 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.platform,
-          profileId: 'demo-owner',
+          profileId: '10000000-0000-4000-8000-000000000001',
           onCancel: () {},
           onSaved: (_) => saved = true,
         ),
@@ -307,10 +309,10 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.platform,
-          profileId: 'demo-owner',
+          profileId: '10000000-0000-4000-8000-000000000001',
           onCancel: () {},
           onSaved: (_) {},
         ),
@@ -320,18 +322,21 @@ void main() {
 
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(EditableText), 'support');
+    await tester.enterText(
+      find.bySemanticsLabel('Buscar permissão por módulo, tela ou ação'),
+      'gerenciar',
+    );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('permission-support.manage')), findsOneWidget);
-    expect(find.byKey(const Key('permission-platform.read')), findsNothing);
+    expect(find.byKey(const Key('capability-people.manage')), findsOneWidget);
+    expect(find.byKey(const Key('capability-people.read')), findsNothing);
 
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('access-profile-previous')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('permission-support.manage')), findsOneWidget);
-    expect(find.byKey(const Key('permission-platform.read')), findsNothing);
+    expect(find.byKey(const Key('capability-people.manage')), findsOneWidget);
+    expect(find.byKey(const Key('capability-people.read')), findsNothing);
   });
 
   testWidgets('create uses three steps and only exposes save on review', (tester) async {
@@ -341,7 +346,7 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.institution,
           onCancel: () {},
@@ -371,10 +376,10 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.platform,
-          profileId: 'demo-owner',
+          profileId: '10000000-0000-4000-8000-000000000001',
           onCancel: () {},
           onSaved: (_) {},
         ),
@@ -384,22 +389,61 @@ void main() {
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
 
-    final focusTarget = find.byKey(const Key('permission-focus-platform.read'));
-    final checkbox = find.descendant(
-      of: find.byKey(const Key('permission-platform.read')),
-      matching: find.byType(Checkbox),
+    final focusTarget = find.byKey(const Key('capability-focus-people.read'));
+    final permissionSemantics = find.byKey(const Key('capability-people.read'));
+    bool selected() => tester.widget<Semantics>(permissionSemantics).properties.checked ?? false;
+    final initialValue = selected();
+    final focusDetector = find.descendant(
+      of: focusTarget,
+      matching: find.byType(FocusableActionDetector),
     );
-    final initialValue = tester.widget<Checkbox>(checkbox).value;
-    tester.widget<FocusableActionDetector>(focusTarget).focusNode!.requestFocus();
+    final focusNode = tester.widget<FocusableActionDetector>(focusDetector).focusNode!;
+    focusNode.requestFocus();
     await tester.pump();
+    expect(focusNode.hasFocus, isTrue);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.space);
     await tester.pumpAndSettle();
-    expect(tester.widget<Checkbox>(checkbox).value, isNot(initialValue));
+    expect(selected(), isNot(initialValue));
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
-    expect(tester.widget<Checkbox>(checkbox).value, initialValue);
+    expect(selected(), initialValue);
+  });
+  testWidgets('permission matrix only renders catalog capabilities and explains restrictions', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: TestAccessProfileRepository(profiles: const [_restrictedProfile]),
+          logout: _logout,
+          domain: AccessProfileDomain.platform,
+          profileId: _restrictedProfile.id,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('capability-people.read')), findsOneWidget);
+    expect(find.byKey(const Key('capability-attendance.manage')), findsOneWidget);
+    expect(find.text('—'), findsNothing);
+    expect(find.byType(Checkbox), findsNothing);
+
+    final inheritedSemantics = tester.getSemantics(find.byKey(const Key('capability-people.read')));
+    expect(inheritedSemantics.label, contains('Origem: herdada'));
+    expect(inheritedSemantics.label, contains('Efetiva: permitida'));
+    final unavailableSemantics = tester.getSemantics(
+      find.byKey(const Key('capability-attendance.manage')),
+    );
+    expect(unavailableSemantics.label, contains('Autoridade insuficiente'));
   });
 
   testWidgets('form remains usable at the 768px tablet breakpoint', (tester) async {
@@ -409,7 +453,7 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.institution,
           onCancel: () {},
@@ -436,10 +480,10 @@ void main() {
           child: child!,
         ),
         home: AccessProfileFormPage(
-          repository: FakeAccessProfileRepository(),
+          repository: TestAccessProfileRepository(),
           logout: _logout,
           domain: AccessProfileDomain.platform,
-          profileId: 'demo-owner',
+          profileId: '10000000-0000-4000-8000-000000000001',
           onCancel: () {},
           onSaved: (_) {},
         ),
@@ -451,14 +495,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('access-profile-permission-matrix')), findsOneWidget);
-    expect(find.text('Plataforma'), findsWidgets);
+    expect(find.text('Pessoas'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('detail shows effective links, audit and guarded deletion', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeAccessProfileRepository(profiles: [_detailProfile]);
+    final repository = TestAccessProfileRepository(profiles: [_detailProfile]);
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -475,9 +519,22 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Pessoa de demonstração'), findsOneWidget);
+    expect(find.text('Pessoa vinculada'), findsOneWidget);
     expect(find.text('Escopo efetivo: Plataforma'), findsOneWidget);
     expect(find.text('Permissões Superadmin alteradas'), findsOneWidget);
+    expect(find.byType(ExpansionTile), findsNothing);
+    expect(find.byType(ListTile), findsNothing);
+
+    final deleteButton = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Excluir'),
+    );
+    final colors = CoeloTheme.light.colorScheme;
+    expect(deleteButton.style?.foregroundColor?.resolve({}), colors.error);
+    expect(
+      deleteButton.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      colors.errorContainer,
+    );
+    expect(deleteButton.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
 
     await tester.tap(find.text('Excluir'));
     await tester.pumpAndSettle();
@@ -492,7 +549,7 @@ void main() {
 Widget _directoryApp() => MaterialApp(
   theme: CoeloTheme.light,
   darkTheme: CoeloTheme.dark,
-  home: AccessProfileDirectoryPage(repository: FakeAccessProfileRepository(), logout: _logout),
+  home: AccessProfileDirectoryPage(repository: TestAccessProfileRepository(), logout: _logout),
 );
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
@@ -502,20 +559,50 @@ final _detailProfile = AccessProfile(
   domain: AccessProfileDomain.platform,
   code: 'detail.profile',
   name: 'Perfil detalhado',
-  description: 'Perfil de demonstração.',
+  description: 'Perfil de teste isolado.',
   status: AccessProfileStatus.active,
   maxScope: AccessProfileScope.platform,
   version: 1,
   membershipCount: 1,
-  links: const [
-    AccessProfileLink(id: 'link', personName: 'Pessoa de demonstração', scope: 'Plataforma'),
-  ],
+  links: const [AccessProfileLink(id: 'link', personName: 'Pessoa vinculada', scope: 'Plataforma')],
   auditAvailable: true,
   auditEvents: [
     AccessAuditEvent(
       action: 'platform_permission_changed',
       occurredAt: DateTime.utc(2026, 7, 29, 12),
       reason: 'Revisão de acesso.',
+    ),
+  ],
+);
+
+const _restrictedProfile = AccessProfile(
+  id: 'restricted-profile',
+  domain: AccessProfileDomain.platform,
+  code: 'restricted.profile',
+  name: 'Perfil restrito',
+  description: 'Catálogo com restrições.',
+  status: AccessProfileStatus.active,
+  maxScope: AccessProfileScope.platform,
+  version: 1,
+  membershipCount: 0,
+  permissions: [
+    AccessPermission(
+      code: 'people.read',
+      module: 'Pessoas',
+      screenCode: 'people',
+      actionCode: 'read',
+      name: 'Visualizar pessoas',
+      selected: true,
+      inherited: true,
+    ),
+    AccessPermission(
+      code: 'attendance.manage',
+      module: 'Pessoas',
+      screenCode: 'attendance',
+      actionCode: 'manage',
+      name: 'Gerenciar frequência',
+      grantable: false,
+      unavailableReason: 'Autoridade insuficiente para attendance.manage.',
     ),
   ],
 );
@@ -528,9 +615,6 @@ final class _ThrowingRepository implements AccessProfileRepository {
   Never _throw() => unauthorized
       ? throw const AccessProfileUnauthorizedException()
       : throw const AccessProfileUnavailableException();
-
-  @override
-  bool get isDemo => false;
 
   @override
   Future<AccessProfilePage> fetchProfiles(AccessProfileQuery query) async => _throw();

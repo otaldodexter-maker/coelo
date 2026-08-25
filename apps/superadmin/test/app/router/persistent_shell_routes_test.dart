@@ -7,6 +7,9 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_superadmin/features/support/presentation/view_models/support_prototype_controller.dart';
+
+import '../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +95,7 @@ void main() {
       SuperadminApp(
         session: session,
         institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+        activityDirectoryRepository: FakeActivityDirectoryRepository(),
         userPreferencesRepository: InMemoryUserPreferencesRepository(),
       ),
     );
@@ -131,9 +135,9 @@ void main() {
     addTearDown(session.dispose);
     router.go(SuperadminRoutes.devActivityCreate);
     await tester.pumpWidget(_app(router));
-    await tester.pumpAndSettle();
-    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
     final footer = find.byKey(const Key('activity-form-footer-surface'));
+    await _pumpUntilFound(tester, footer);
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
     expect(launcher, findsOneWidget);
     expect(
       tester.getBottomLeft(launcher).dy,
@@ -151,9 +155,9 @@ void main() {
     addTearDown(session.dispose);
     router.go(SuperadminRoutes.devActivityCreate);
     await tester.pumpWidget(_app(router));
-    await tester.pumpAndSettle();
-    final surface = find.byKey(const Key('superadmin-floating-content'));
     final navigation = find.byType(SuperadminFormStepNavigation);
+    await _pumpUntilFound(tester, navigation);
+    final surface = find.byKey(const Key('superadmin-floating-content'));
     expect(surface, findsOneWidget);
     expect(navigation, findsOneWidget);
     final surfaceRect = tester.getRect(surface);
@@ -240,6 +244,37 @@ void main() {
     expect(find.byTooltip('Abrir menu de desenvolvimento'), findsOneWidget);
   });
 
+  testWidgets('keeps the development preview trigger available on login in development', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.login);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsOneWidget);
+  });
+
+  testWidgets('hides the development preview trigger in production', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signIn();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.institutions);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
+  });
+
   testWidgets('routes Support and Catalog consistently from the persistent navigation', (
     tester,
   ) async {
@@ -253,26 +288,21 @@ void main() {
     await tester.pumpWidget(_app(router));
     await tester.pumpAndSettle();
 
-    Future<void> selectDestination({required String section, required String destination}) async {
-      var destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
-      if (destinationFinder.evaluate().isEmpty) {
-        final sectionFinder = find.byKey(Key('superadmin-navigation-section-$section'));
-        await Scrollable.ensureVisible(tester.element(sectionFinder), alignment: 0.5);
-        await tester.pumpAndSettle();
-        await tester.tap(sectionFinder.hitTestable());
-        await tester.pumpAndSettle();
-        destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
-      }
+    Future<void> selectDestination({required String query, required String destination}) async {
+      final search = find.byKey(const Key('superadmin-navigation-search'));
+      await tester.enterText(search, query);
+      await tester.pumpAndSettle();
+      final destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
       await Scrollable.ensureVisible(tester.element(destinationFinder), alignment: 0.5);
       await tester.pumpAndSettle();
       await tester.tap(destinationFinder.hitTestable());
       await tester.pumpAndSettle();
     }
 
-    await selectDestination(section: 'governance', destination: 'support');
+    await selectDestination(query: 'Suporte', destination: 'support');
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.support);
 
-    await selectDestination(section: 'structure', destination: 'catalog');
+    await selectDestination(query: 'Catálogo', destination: 'catalog');
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.governanceCatalog);
   });
 }
@@ -283,8 +313,19 @@ GoRouter _router(SuperadminSession session) => createSuperadminRouter(
   logout: unavailableSuperadminLogout,
   requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
   institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+  activityDirectoryRepository: FakeActivityDirectoryRepository(),
+  supportController: SupportPrototypeController(),
   onThemeModeChanged: (_) {},
 );
+
+Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
+  for (var attempt = 0; attempt < 400 && finder.evaluate().isEmpty; attempt++) {
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 25)));
+    await tester.pump(const Duration(milliseconds: 25));
+  }
+  await tester.pumpAndSettle();
+  expect(finder, findsOneWidget);
+}
 
 Widget _app(GoRouter router, {bool disableAnimations = false}) {
   return MaterialApp.router(
