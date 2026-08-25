@@ -38,6 +38,7 @@ class AttendanceDashboardPage extends StatefulWidget {
 
 class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
   late final AttendanceDashboardController? _controller;
+  late final DateTime _today;
   final _searchController = TextEditingController();
 
   @override
@@ -48,14 +49,14 @@ class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
         (widget.repository is AttendanceDashboardRepository
             ? widget.repository as AttendanceDashboardRepository
             : null);
-    final today = DateUtils.dateOnly(DateTime.now());
+    _today = DateUtils.dateOnly(DateTime.now());
     _controller = repository == null
         ? null
         : AttendanceDashboardController(
             repository: repository,
             initialQuery: AttendanceDashboardQuery(
-              periodStart: DateTime(today.year, today.month),
-              periodEnd: today,
+              periodStart: DateTime(_today.year, _today.month),
+              periodEnd: _today,
             ),
           );
     _controller?.load();
@@ -100,6 +101,7 @@ class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
             builder: (context, _) => _DashboardStateView(
               controller: controller,
               searchController: _searchController,
+              today: _today,
               maxWidth: constraints.maxWidth,
               inset: inset,
               onCreate: widget.onCreate,
@@ -116,6 +118,7 @@ class _DashboardStateView extends StatelessWidget {
   const _DashboardStateView({
     required this.controller,
     required this.searchController,
+    required this.today,
     required this.maxWidth,
     required this.inset,
     required this.onCreate,
@@ -124,6 +127,7 @@ class _DashboardStateView extends StatelessWidget {
 
   final AttendanceDashboardController controller;
   final TextEditingController searchController;
+  final DateTime today;
   final double maxWidth;
   final double inset;
   final VoidCallback onCreate;
@@ -146,6 +150,7 @@ class _DashboardStateView extends StatelessWidget {
             snapshot: snapshot,
             controller: controller,
             searchController: searchController,
+            today: today,
             maxWidth: maxWidth,
             inset: inset,
             onCreate: onCreate,
@@ -220,6 +225,7 @@ class _DashboardContent extends StatelessWidget {
     required this.snapshot,
     required this.controller,
     required this.searchController,
+    required this.today,
     required this.maxWidth,
     required this.inset,
     required this.onCreate,
@@ -229,6 +235,7 @@ class _DashboardContent extends StatelessWidget {
   final AttendanceDashboardSnapshot snapshot;
   final AttendanceDashboardController controller;
   final TextEditingController searchController;
+  final DateTime today;
   final double maxWidth;
   final double inset;
   final VoidCallback onCreate;
@@ -245,9 +252,9 @@ class _DashboardContent extends StatelessWidget {
       children: [
         _DashboardHeader(access: snapshot.access, onCreate: onCreate),
         const SizedBox(height: CoeloSpacing.space6),
-        _Filters(query: snapshot.query, controller: controller),
+        _Filters(query: snapshot.query, controller: controller, today: today),
         const SizedBox(height: CoeloSpacing.space4),
-        _TopBand(snapshot: snapshot, wide: _wide, controller: controller),
+        _TopBand(snapshot: snapshot, wide: _wide, controller: controller, today: today),
         const SizedBox(height: CoeloSpacing.space4),
         _SectionSurface(
           title: 'Desempenho por contexto',
@@ -306,13 +313,13 @@ class _DashboardHeader extends StatelessWidget {
 }
 
 class _Filters extends StatelessWidget {
-  const _Filters({required this.query, required this.controller});
+  const _Filters({required this.query, required this.controller, required this.today});
   final AttendanceDashboardQuery query;
   final AttendanceDashboardController controller;
+  final DateTime today;
 
   @override
   Widget build(BuildContext context) {
-    final today = DateUtils.dateOnly(DateTime.now());
     return Wrap(
       spacing: CoeloSpacing.space3,
       runSpacing: CoeloSpacing.space3,
@@ -355,14 +362,19 @@ class _Filters extends StatelessWidget {
 }
 
 class _TopBand extends StatelessWidget {
-  const _TopBand({required this.snapshot, required this.wide, required this.controller});
+  const _TopBand({
+    required this.snapshot,
+    required this.wide,
+    required this.controller,
+    required this.today,
+  });
   final AttendanceDashboardSnapshot snapshot;
   final bool wide;
   final AttendanceDashboardController controller;
+  final DateTime today;
 
   @override
   Widget build(BuildContext context) {
-    final today = DateUtils.dateOnly(DateTime.now());
     final calendar = _SectionSurface(
       title: 'Período',
       child: CoeloDateRangePicker(
@@ -408,12 +420,18 @@ class _KpiGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final width = math.max(0, (constraints.maxWidth - CoeloSpacing.space3) / 2).toDouble();
+      final oneColumn =
+          constraints.maxWidth < CoeloBreakpoints.medium.minWidth ||
+          MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+      final width = oneColumn
+          ? constraints.maxWidth
+          : math.max(0, (constraints.maxWidth - CoeloSpacing.space3) / 2).toDouble();
       return Wrap(
         spacing: CoeloSpacing.space3,
         runSpacing: CoeloSpacing.space3,
         children: [
           _KpiTile(
+            key: const Key('attendance-kpi-presence'),
             width: width,
             icon: Icons.groups_2_outlined,
             value: _rateLabel(kpis.presence),
@@ -423,6 +441,7 @@ class _KpiGrid extends StatelessWidget {
                 : 'Dados insuficientes: nenhum registro oficial válido.',
           ),
           _KpiTile(
+            key: const Key('attendance-kpi-pending'),
             width: width,
             icon: Icons.schedule_outlined,
             value: '${kpis.pendingCalls}',
@@ -430,6 +449,7 @@ class _KpiGrid extends StatelessWidget {
             helper: 'Aguardando conclusão',
           ),
           _KpiTile(
+            key: const Key('attendance-kpi-absences'),
             width: width,
             icon: Icons.person_off_outlined,
             value: '${kpis.absences}',
@@ -437,6 +457,7 @@ class _KpiGrid extends StatelessWidget {
             helper: 'Em registros oficiais válidos',
           ),
           _KpiTile(
+            key: const Key('attendance-kpi-review'),
             width: width,
             icon: Icons.fact_check_outlined,
             value: '${kpis.inReview}',
@@ -451,6 +472,7 @@ class _KpiGrid extends StatelessWidget {
 
 class _KpiTile extends StatelessWidget {
   const _KpiTile({
+    super.key,
     required this.width,
     required this.icon,
     required this.value,
@@ -790,25 +812,79 @@ class _AttendanceChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (points.isEmpty) return const Text('Dados insuficientes para traçar o período.');
-    final description = points
+    final colors = Theme.of(context).colorScheme;
+    final currentDescription = points
         .map((point) => '${point.label}: ${_rateLabel(point.current)}')
         .join('; ');
+    final previousDescription = points
+        .where((point) => point.previous != null)
+        .map((point) => '${point.label}: ${_rateLabel(point.previous!)}')
+        .join('; ');
+    final hasPrevious = previousDescription.isNotEmpty;
     return Semantics(
-      label: 'Gráfico de presença. $description',
-      child: SizedBox(
-        height: 220,
-        child: CustomPaint(
-          painter: _AttendanceSeriesPainter(
-            points: points.map((item) => item.current.percent).toList(growable: false),
-            previous: points.map((item) => item.previous?.percent).toList(growable: false),
-            currentColor: Theme.of(context).colorScheme.primary,
-            previousColor: Theme.of(context).colorScheme.outline,
-            gridColor: Theme.of(context).colorScheme.outlineVariant,
+      key: const Key('attendance-series-chart'),
+      excludeSemantics: true,
+      label:
+          'Gráfico de presença. Período atual: $currentDescription.'
+          '${hasPrevious ? ' Período anterior, linha tracejada com marcadores quadrados: $previousDescription.' : ''}',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: CoeloSpacing.space4,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              _SeriesLegendItem(label: 'Período atual', color: colors.primary),
+              if (hasPrevious)
+                _SeriesLegendItem(label: 'Período anterior', color: colors.outline, dashed: true),
+            ],
           ),
-        ),
+          const SizedBox(height: CoeloSpacing.space3),
+          SizedBox(
+            height: 220,
+            child: CustomPaint(
+              painter: _AttendanceSeriesPainter(
+                points: points.map((item) => item.current.percent).toList(growable: false),
+                previous: points.map((item) => item.previous?.percent).toList(growable: false),
+                currentColor: colors.primary,
+                previousColor: colors.outline,
+                gridColor: colors.outlineVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _SeriesLegendItem extends StatelessWidget {
+  const _SeriesLegendItem({required this.label, required this.color, this.dashed = false});
+
+  final String label;
+  final Color color;
+  final bool dashed;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      SizedBox(
+        width: CoeloSize.touchMin / 2,
+        child: dashed
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(
+                  3,
+                  (_) => ColoredBox(color: color, child: const SizedBox(width: 5, height: 2)),
+                ),
+              )
+            : ColoredBox(color: color, child: const SizedBox(height: 2)),
+      ),
+      const SizedBox(width: CoeloSpacing.space2),
+      Flexible(child: Text(label)),
+    ],
+  );
 }
 
 class _AttendanceSeriesPainter extends CustomPainter {
@@ -848,11 +924,36 @@ class _AttendanceSeriesPainter extends CustomPainter {
       ..color = color
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
+    final geometry = _seriesGeometry(size, values);
+    for (final point in geometry.markers) {
+      final marker = Paint()..color = color;
+      if (dashed) {
+        canvas.drawRect(Rect.fromCenter(center: point, width: 6, height: 6), marker);
+      } else {
+        canvas.drawCircle(point, 3, marker);
+      }
+    }
+    if (dashed) {
+      _drawDashedPath(canvas, geometry.path, paint);
+    } else {
+      canvas.drawPath(geometry.path, paint);
+    }
+  }
+
+  ({Path path, List<Offset> markers, int segmentCount}) _seriesGeometry(
+    Size size,
+    List<double?> values,
+  ) {
     final path = Path();
+    final markers = <Offset>[];
     var started = false;
+    var segmentCount = 0;
     for (var index = 0; index < values.length; index++) {
       final value = values[index];
-      if (value == null) continue;
+      if (value == null) {
+        started = false;
+        continue;
+      }
       final point = Offset(
         size.width * index / (values.length - 1),
         size.height * (1 - value.clamp(0, 100) / 100),
@@ -862,13 +963,32 @@ class _AttendanceSeriesPainter extends CustomPainter {
         started = true;
       } else {
         path.lineTo(point.dx, point.dy);
+        segmentCount++;
       }
-      canvas.drawCircle(point, 3, Paint()..color = color);
+      markers.add(point);
     }
-    if (dashed) {
-      paint.strokeWidth = 1;
+    return (path: path, markers: markers, segmentCount: segmentCount);
+  }
+
+  @visibleForTesting
+  ({int markerCount, int segmentCount}) debugSeriesTopology(Size size, List<double?> values) {
+    final geometry = _seriesGeometry(size, values);
+    return (markerCount: geometry.markers.length, segmentCount: geometry.segmentCount);
+  }
+
+  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
+    const dashLength = 8.0;
+    const gapLength = 5.0;
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        canvas.drawPath(
+          metric.extractPath(distance, math.min(distance + dashLength, metric.length)),
+          paint,
+        );
+        distance += dashLength + gapLength;
+      }
     }
-    canvas.drawPath(path, paint);
   }
 
   @override
@@ -876,7 +996,8 @@ class _AttendanceSeriesPainter extends CustomPainter {
       oldDelegate.points != points ||
       oldDelegate.previous != previous ||
       oldDelegate.currentColor != currentColor ||
-      oldDelegate.previousColor != previousColor;
+      oldDelegate.previousColor != previousColor ||
+      oldDelegate.gridColor != gridColor;
 }
 
 class _CallsSection extends StatelessWidget {

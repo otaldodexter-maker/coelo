@@ -1,8 +1,10 @@
 import '../../features/attendance/attendance.dart';
+import 'package:coelo_domain/coelo_domain.dart';
 import 'package:flutter/foundation.dart';
 
 /// Stateful attendance fixture used only by the local development preview.
-final class DevelopmentAttendanceRepository extends ChangeNotifier implements AttendanceRepository {
+final class DevelopmentAttendanceRepository extends ChangeNotifier
+    implements AttendanceRepository, AttendanceDashboardRepository {
   DevelopmentAttendanceRepository.content()
     : _mode = _DevelopmentAttendanceMode.content,
       _calls = _seedCalls(),
@@ -48,6 +50,13 @@ final class DevelopmentAttendanceRepository extends ChangeNotifier implements At
   List<AttendanceNotice> get notices => List.unmodifiable(_notices);
   int get pendingNoticeCount => _notices.where((item) => item.pending).length;
 
+  AttendanceDashboardAccess get _dashboardAccess => const AttendanceDashboardAccess(
+    scope: AttendanceDashboardScope.platform,
+    canRead: true,
+    canCreateCall: true,
+    canExport: false,
+  );
+
   AttendanceMetrics get metrics {
     final official = _calls
         .where((call) => call.status == AttendanceCallStatus.completed)
@@ -79,6 +88,85 @@ final class DevelopmentAttendanceRepository extends ChangeNotifier implements At
   }
 
   @override
+  Future<AttendanceDashboardAccess> fetchAccess() async {
+    _guardDashboard();
+    return _dashboardAccess;
+  }
+
+  @override
+  Future<AttendanceDashboardSnapshot> fetchDashboard(AttendanceDashboardQuery query) async {
+    _guardDashboard();
+    if (_mode == _DevelopmentAttendanceMode.empty) {
+      return _emptyDashboard(query);
+    }
+    final rate = _dashboardRate(present: 5, late: 1, absent: 1);
+    return AttendanceDashboardSnapshot(
+      access: _dashboardAccess,
+      query: query,
+      kpis: AttendanceDashboardKpis(
+        presence: rate,
+        pendingCalls: _calls.where((call) => call.status != AttendanceCallStatus.completed).length,
+        absences: 2,
+        inReview: 0,
+      ),
+      attention: const [
+        AttendanceAttentionItem(
+          id: 'pending-calls',
+          label: 'chamadas pendentes',
+          detail: 'Aguardando conclusão',
+          count: 2,
+          callId: 'call-progress',
+        ),
+      ],
+      rankings: [_dashboardRanking(AttendanceRankingKind.institutions, query)],
+      series: _dashboardSeries(),
+      calls: AttendanceDashboardCallPage(
+        items: _calls.map(_dashboardCallRow).toList(growable: false),
+        page: query.page,
+        pageSize: query.pageSize,
+        totalItems: _calls.length,
+      ),
+      contextLabel: 'Todas as instituições',
+    );
+  }
+
+  @override
+  Future<AttendanceRanking> fetchRanking({
+    required AttendanceDashboardQuery query,
+    required AttendanceRankingKind kind,
+    required int page,
+    required int pageSize,
+  }) async {
+    _guardDashboard();
+    if (_mode == _DevelopmentAttendanceMode.empty) {
+      return AttendanceRanking(
+        kind: kind,
+        total: 0,
+        direction: query.rankingDirection,
+        items: const [],
+      );
+    }
+    return _dashboardRanking(kind, query);
+  }
+
+  @override
+  Future<AttendanceDashboardExportJob> requestExport({
+    required AttendanceDashboardQuery query,
+    required AttendanceDashboardExportKind kind,
+    required AttendanceDashboardExportFormat format,
+    required String idempotencyKey,
+  }) async {
+    _guardDashboard();
+    throw const AttendanceUnavailableException();
+  }
+
+  @override
+  Future<AttendanceDashboardExportJob> fetchExportJob(String id) async {
+    _guardDashboard();
+    throw const AttendanceUnavailableException();
+  }
+
+  @override
   Future<AttendanceOverview> fetchOverview({DateTime? date}) async {
     _guard();
     final calls = date == null
@@ -88,52 +176,58 @@ final class DevelopmentAttendanceRepository extends ChangeNotifier implements At
   }
 
   @override
-  Future<AttendanceContextOptions> fetchContextOptions({
-    required DateTime date,
-  }) async {
+  Future<AttendanceContextOptions> fetchContextOptions({required DateTime date}) async {
     _guard();
     return const AttendanceContextOptions(
-    institutions: [
-      AttendanceContextOption(id: 'institution-1', name: 'Instituto Horizonte'),
-      AttendanceContextOption(id: 'institution-2', name: 'Colégio Aurora'),
-      AttendanceContextOption(id: 'institution-3', name: 'Espaço Ipê'),
-    ],
-    units: [
-      AttendanceContextOption(id: 'unit-1', name: 'Unidade Centro', institutionId: 'institution-1'),
-      AttendanceContextOption(id: 'unit-2', name: 'Unidade Norte', institutionId: 'institution-2'),
-    ],
-    groups: [
-      AttendanceContextOption(
-        id: 'group-sun',
-        name: 'Turma Sol',
-        institutionId: 'institution-1',
-        unitId: 'unit-1',
-      ),
-      AttendanceContextOption(
-        id: 'group-moon',
-        name: 'Turma Lua',
-        institutionId: 'institution-2',
-        unitId: 'unit-2',
-      ),
-    ],
-    canManage: true,
-    activities: [
-      AttendanceContextOption(
-        id: 'activity-music-group-sun',
-        name: 'Música',
-        institutionId: 'institution-1',
-        unitId: 'unit-1',
-        groupId: 'group-sun',
-      ),
-      AttendanceContextOption(
-        id: 'activity-art-group-sun',
-        name: 'Arte',
-        institutionId: 'institution-1',
-        unitId: 'unit-1',
-        groupId: 'group-sun',
-        attendanceRequired: false,
-      ),
-    ],
+      institutions: [
+        AttendanceContextOption(id: 'institution-1', name: 'Instituto Horizonte'),
+        AttendanceContextOption(id: 'institution-2', name: 'Colégio Aurora'),
+        AttendanceContextOption(id: 'institution-3', name: 'Espaço Ipê'),
+      ],
+      units: [
+        AttendanceContextOption(
+          id: 'unit-1',
+          name: 'Unidade Centro',
+          institutionId: 'institution-1',
+        ),
+        AttendanceContextOption(
+          id: 'unit-2',
+          name: 'Unidade Norte',
+          institutionId: 'institution-2',
+        ),
+      ],
+      groups: [
+        AttendanceContextOption(
+          id: 'group-sun',
+          name: 'Turma Sol',
+          institutionId: 'institution-1',
+          unitId: 'unit-1',
+        ),
+        AttendanceContextOption(
+          id: 'group-moon',
+          name: 'Turma Lua',
+          institutionId: 'institution-2',
+          unitId: 'unit-2',
+        ),
+      ],
+      canManage: true,
+      activities: [
+        AttendanceContextOption(
+          id: 'activity-music-group-sun',
+          name: 'Música',
+          institutionId: 'institution-1',
+          unitId: 'unit-1',
+          groupId: 'group-sun',
+        ),
+        AttendanceContextOption(
+          id: 'activity-art-group-sun',
+          name: 'Arte',
+          institutionId: 'institution-1',
+          unitId: 'unit-1',
+          groupId: 'group-sun',
+          attendanceRequired: false,
+        ),
+      ],
     );
   }
 
@@ -376,7 +470,150 @@ final class DevelopmentAttendanceRepository extends ChangeNotifier implements At
         throw const AttendanceUnauthorizedException();
     }
   }
+
+  void _guardDashboard() {
+    switch (_mode) {
+      case _DevelopmentAttendanceMode.content || _DevelopmentAttendanceMode.empty:
+        return;
+      case _DevelopmentAttendanceMode.failure:
+        throw const AttendanceUnavailableException();
+      case _DevelopmentAttendanceMode.unauthorized:
+        throw const AttendanceDashboardUnauthorized();
+    }
+  }
+
+  AttendanceDashboardSnapshot _emptyDashboard(AttendanceDashboardQuery query) =>
+      AttendanceDashboardSnapshot(
+        access: _dashboardAccess,
+        query: query,
+        kpis: AttendanceDashboardKpis(
+          presence: _dashboardRate(present: 0, absent: 0),
+          pendingCalls: 0,
+          absences: 0,
+          inReview: 0,
+        ),
+        attention: const [],
+        rankings: const [],
+        series: const [],
+        calls: AttendanceDashboardCallPage(
+          items: const [],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalItems: 0,
+        ),
+        contextLabel: 'Todas as instituições',
+      );
+
+  AttendanceRanking _dashboardRanking(AttendanceRankingKind kind, AttendanceDashboardQuery query) {
+    final items = _calls
+        .map(
+          (call) => AttendanceRankingItem(
+            id: switch (kind) {
+              AttendanceRankingKind.institutions => call.institutionId,
+              AttendanceRankingKind.units => call.unitId,
+              AttendanceRankingKind.groups => call.groupId,
+              AttendanceRankingKind.activities => call.activityContextId ?? call.groupId,
+              AttendanceRankingKind.students => call.participants.first.id,
+              AttendanceRankingKind.teachers => call.responsible,
+            },
+            label: switch (kind) {
+              AttendanceRankingKind.institutions => call.institutionName,
+              AttendanceRankingKind.units => call.unitName,
+              AttendanceRankingKind.groups => call.groupName,
+              AttendanceRankingKind.activities => call.activityName ?? call.groupName,
+              AttendanceRankingKind.students => call.participants.first.name,
+              AttendanceRankingKind.teachers => call.responsible,
+            },
+            rate: _callRate(call),
+          ),
+        )
+        .toList(growable: false);
+    return AttendanceRanking(
+      kind: kind,
+      total: items.length,
+      direction: query.rankingDirection,
+      items: items,
+    );
+  }
 }
+
+AttendanceRate _dashboardRate({
+  required int present,
+  required int absent,
+  int late = 0,
+  int earlyDeparture = 0,
+  int lateAndEarly = 0,
+}) => AttendanceRate.fromCounts(
+  present: present,
+  late: late,
+  earlyDeparture: earlyDeparture,
+  lateAndEarly: lateAndEarly,
+  absent: absent,
+);
+
+List<AttendanceSeriesPoint> _dashboardSeries() => [
+  AttendanceSeriesPoint(
+    start: DateTime(2026, 8),
+    label: '01/08',
+    current: _dashboardRate(present: 7, late: 1, absent: 1),
+    previous: _dashboardRate(present: 6, late: 1, absent: 2),
+    absences: 1,
+    late: 1,
+  ),
+  AttendanceSeriesPoint(
+    start: DateTime(2026, 8, 2),
+    label: '02/08',
+    current: _dashboardRate(present: 8, absent: 1),
+    previous: _dashboardRate(present: 7, absent: 2),
+    absences: 1,
+    late: 0,
+  ),
+  AttendanceSeriesPoint(
+    start: DevelopmentAttendanceRepository.today,
+    label: '03/08',
+    current: _dashboardRate(present: 7, late: 1, absent: 1),
+    previous: _dashboardRate(present: 7, absent: 2),
+    absences: 1,
+    late: 1,
+  ),
+];
+
+AttendanceDashboardCallRow _dashboardCallRow(AttendanceCall call) => AttendanceDashboardCallRow(
+  id: call.id,
+  context: '${call.institutionName} · ${call.unitName} · ${call.groupName}',
+  date: call.date,
+  responsible: call.responsible,
+  present: _callStateCount(call, const {
+    AttendancePresenceState.present,
+    AttendancePresenceState.late,
+    AttendancePresenceState.earlyDeparture,
+    AttendancePresenceState.lateAndEarly,
+  }),
+  absent: _callStateCount(call, const {AttendancePresenceState.absent}),
+  late: _callStateCount(call, const {
+    AttendancePresenceState.late,
+    AttendancePresenceState.lateAndEarly,
+  }),
+  presence: _callRate(call),
+  status: switch (call.status) {
+    AttendanceCallStatus.notStarted ||
+    AttendanceCallStatus.inProgress => AttendanceDashboardCallStatus.pending,
+    AttendanceCallStatus.completed => AttendanceDashboardCallStatus.completed,
+    AttendanceCallStatus.reopened => AttendanceDashboardCallStatus.inReview,
+  },
+  canOpen: true,
+);
+
+AttendanceRate _callRate(AttendanceCall call) => _dashboardRate(
+  present: _callStateCount(call, const {AttendancePresenceState.present}),
+  late: _callStateCount(call, const {AttendancePresenceState.late}),
+  earlyDeparture: _callStateCount(call, const {AttendancePresenceState.earlyDeparture}),
+  lateAndEarly: _callStateCount(call, const {AttendancePresenceState.lateAndEarly}),
+  absent: _callStateCount(call, const {AttendancePresenceState.absent}),
+);
+
+int _callStateCount(AttendanceCall call, Set<AttendancePresenceState> states) =>
+    call.participants.where((participant) => states.contains(participant.state)).length;
 
 enum _DevelopmentAttendanceMode { content, empty, failure, unauthorized }
 

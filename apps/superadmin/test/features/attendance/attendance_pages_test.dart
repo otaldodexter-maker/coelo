@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/attendance/attendance.dart';
 import 'package:coelo_superadmin/features/attendance/attendance_pages.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
@@ -126,6 +129,62 @@ void main() {
 
     expect(createdCallId, isNotNull);
     expect(await repository.fetchCall(createdCallId!), isNotNull);
+  });
+
+  testWidgets('new call prevents duplicate submission and ignores completion after dispose', (
+    tester,
+  ) async {
+    final repository = FakeAttendanceRepository.seeded()..createGate = Completer<void>();
+    addTearDown(repository.dispose);
+    var created = false;
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onCreated: (_) => created = true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.text('Chamada'));
+    await tester.pump();
+
+    expect(repository.createCallCount, 1);
+    await tester.pumpWidget(const SizedBox());
+    repository.createGate!.complete();
+    await tester.pumpAndSettle();
+    expect(created, isFalse);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('new call keeps the form and exposes retryable command failure', (tester) async {
+    final repository = FakeAttendanceRepository.seeded()
+      ..createCallError = const AttendanceUnavailableException();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onCreated: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Chamada'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Contexto da chamada'), findsOneWidget);
+    expect(find.text('Não foi possível criar a chamada.'), findsOneWidget);
+    expect(find.byType(SuperadminShell), findsOneWidget);
   });
 
   testWidgets('new call accepts a prefilled activity context', (tester) async {
@@ -423,7 +482,7 @@ void main() {
       tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Concluir chamada')).onPressed,
       isNotNull,
     );
-    final clearMarked = find.text('Desmarcar todos');
+    final clearMarked = find.text('Desfazer último lote');
     expect(clearMarked, findsOneWidget);
     await tester.tap(clearMarked);
     await tester.pumpAndSettle();
@@ -436,6 +495,209 @@ void main() {
       tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Concluir chamada')).onPressed,
       isNull,
     );
+  });
+
+  testWidgets('call loading failure and not found remain inside the shell with retry', (
+    tester,
+  ) async {
+    final repository = FakeAttendanceRepository.seeded()
+      ..fetchCallError = const AttendanceUnavailableException();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(SuperadminShell), findsOneWidget);
+    expect(find.text('Não foi possível carregar a chamada.'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+
+    repository.fetchCallError = null;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(find.text('Alunos de Turma Sol'), findsOneWidget);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          key: const ValueKey('missing-call'),
+          repository: repository,
+          callId: 'missing',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(SuperadminShell), findsOneWidget);
+    expect(find.text('Chamada não encontrada.'), findsOneWidget);
+  });
+
+  testWidgets('command failure preserves the call snapshot and reloads safely', (tester) async {
+    final repository = FakeAttendanceRepository.seeded()
+      ..commandError = const AttendanceVersionConflictException();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final action = find.widgetWithText(OutlinedButton, 'Presente').first;
+    await tester.ensureVisible(action);
+    await tester.tap(action);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alunos de Turma Sol'), findsOneWidget);
+    expect(find.text('A chamada foi atualizada em outro acesso.'), findsOneWidget);
+    repository.commandError = null;
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Recarregar chamada'));
+    await tester.pumpAndSettle();
+    expect(find.text('A chamada foi atualizada em outro acesso.'), findsNothing);
+  });
+
+  testWidgets('one in-flight command disables every mutation and prevents duplicate bulk', (
+    tester,
+  ) async {
+    final repository = FakeAttendanceRepository.seeded()..commandGate = Completer<void>();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final bulk = find.widgetWithText(OutlinedButton, 'Marcar todos restantes como presentes');
+    await tester.ensureVisible(bulk);
+    await tester.tap(bulk);
+    await tester.tap(bulk);
+    await tester.pump();
+
+    expect(repository.markRemainingCount, 1);
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Presente').first)
+          .onPressed,
+      isNull,
+    );
+    repository.commandGate!.complete();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('bulk failure keeps snapshot and reload never clears manual marks', (tester) async {
+    final repository = FakeAttendanceRepository.seeded()
+      ..commandError = const AttendanceUnavailableException();
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repository,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final bulk = find.widgetWithText(OutlinedButton, 'Marcar todos restantes como presentes');
+    await tester.ensureVisible(bulk);
+    await tester.tap(bulk);
+    await tester.pumpAndSettle();
+    expect(find.text('Não foi possível salvar a alteração.'), findsOneWidget);
+    expect(find.text('Alunos de Turma Sol'), findsOneWidget);
+
+    repository.commandError = null;
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          key: const ValueKey('completed-call-after-reload'),
+          repository: repository,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final undo = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Desfazer último lote'),
+    );
+    expect(undo.onPressed, isNull);
+    expect(repository.clearPresenceMarksCount, 0);
+  });
+
+  testWidgets('dashboard uses one KPI column at 200 percent and describes both series', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+    final dashboard = _DashboardRepository(canCreate: true, includePreviousSeries: true);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceDashboardPage(
+          repository: repository,
+          dashboardRepository: dashboard,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCreate: () {},
+          onOpenCall: (_) {},
+        ),
+        textScaler: const TextScaler.linear(2),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final first = tester.getRect(find.byKey(const Key('attendance-kpi-presence')));
+    final second = tester.getRect(find.byKey(const Key('attendance-kpi-pending')));
+    expect(first.bottom, lessThanOrEqualTo(second.top));
+    expect(find.text('Período atual'), findsOneWidget);
+    expect(find.text('Período anterior'), findsOneWidget);
+    final semantics = tester.getSemantics(find.byKey(const Key('attendance-series-chart')));
+    expect(semantics.label, contains('Período atual'));
+    expect(semantics.label, contains('Período anterior'));
+    expect(semantics.label, contains('linha tracejada'));
+    expect(semantics.label, contains('marcadores quadrados'));
+    final customPaint = tester.widget<CustomPaint>(
+      find.descendant(
+        of: find.byKey(const Key('attendance-series-chart')),
+        matching: find.byType(CustomPaint),
+      ),
+    );
+    final topology = (customPaint.painter as dynamic).debugSeriesTopology(
+      const Size(200, 100),
+      const <double?>[80, null, 60],
+    );
+    expect(topology.markerCount, 2);
+    expect(topology.segmentCount, 0);
   });
 
   testWidgets('call page marks one participant across every individual state', (tester) async {
@@ -678,8 +940,9 @@ Widget _app(Widget child, {TextScaler textScaler = TextScaler.noScaling}) => Mat
 );
 
 final class _DashboardRepository implements AttendanceDashboardRepository {
-  _DashboardRepository({required this.canCreate});
+  _DashboardRepository({required this.canCreate, this.includePreviousSeries = false});
   final bool canCreate;
+  final bool includePreviousSeries;
   bool failNext = false;
 
   AttendanceDashboardAccess get _access => AttendanceDashboardAccess(
@@ -728,6 +991,15 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
           start: query.periodStart,
           label: 'Início',
           current: rate,
+          previous: includePreviousSeries
+              ? AttendanceRate.fromCounts(
+                  present: 17,
+                  late: 1,
+                  earlyDeparture: 0,
+                  lateAndEarly: 0,
+                  absent: 2,
+                )
+              : null,
           absences: 1,
           late: 1,
         ),
@@ -735,6 +1007,15 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
           start: query.periodEnd,
           label: 'Fim',
           current: rate,
+          previous: includePreviousSeries
+              ? AttendanceRate.fromCounts(
+                  present: 16,
+                  late: 1,
+                  earlyDeparture: 0,
+                  lateAndEarly: 0,
+                  absent: 3,
+                )
+              : null,
           absences: 0,
           late: 0,
         ),
