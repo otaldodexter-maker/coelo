@@ -168,7 +168,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
 
   Widget _content() {
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_failed)
+    if (_failed) {
       return CoeloStatePanel(
         title: 'Importações indisponíveis',
         message: 'Não foi possível consultar o histórico autorizado.',
@@ -176,7 +176,8 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
         actionLabel: 'Tentar novamente',
         onAction: _load,
       );
-    if (_page.items.isEmpty)
+    }
+    if (_page.items.isEmpty) {
       return Column(
         children: [
           _create(),
@@ -194,6 +195,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
           ),
         ],
       );
+    }
     return Column(
       children: [
         _create(),
@@ -303,33 +305,36 @@ String _date(DateTime value) =>
 final class _ImportDialog extends StatelessWidget {
   const _ImportDialog();
   @override
-  Widget build(BuildContext context) => CoeloAdminDialogShell(
-    dialogKey: const Key('import-new-dialog'),
-    closeButtonKey: const Key('import-new-close'),
-    title: 'Nova importação',
-    body: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final preset in ImportCreationPreset.values)
-          Padding(
-            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-            child: CoeloAdminInteractiveCard(
-              onPressed: () => Navigator.of(context).pop(preset),
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space3),
-                child: Align(alignment: Alignment.centerLeft, child: Text(preset.label)),
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return CoeloAdminDialogShell(
+      dialogKey: const Key('import-new-dialog'),
+      closeButtonKey: const Key('import-new-close'),
+      title: 'Nova importação',
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final preset in ImportCreationPreset.values)
+            Padding(
+              padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+              child: CoeloAdminInteractiveCard(
+                onPressed: () => Navigator.of(context).pop(preset),
+                child: Padding(
+                  padding: const EdgeInsets.all(CoeloSpacing.space3),
+                  child: Align(alignment: Alignment.centerLeft, child: Text(preset.label)),
+                ),
               ),
             ),
-          ),
-      ],
-    ),
-    primaryAction: FilledButton(
-      onPressed: () => Navigator.of(context).pop(),
-      child: const Text('Cancelar'),
-    ),
-    secondaryAction: OutlinedButton(
-      onPressed: () => Navigator.of(context).pop(),
-      child: const Text('Fechar'),
-    ),
-  );
+        ],
+      ),
+      primaryAction: FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: colors.errorContainer,
+          foregroundColor: colors.error,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Cancelar'),
+      ),
+    );
+  }
 }
