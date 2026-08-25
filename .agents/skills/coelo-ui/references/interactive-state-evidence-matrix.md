@@ -1,8 +1,7 @@
 ---
-source: "Aprovações visuais do Owner Coelo; arbitragem visual de 2026-08-24; implementação, testes e goldens do Superadmin"
+source: "Aprovações visuais do Owner Coelo; implementação, testes e goldens do Superadmin"
 status: "active"
 generated_at: "2026-08-04"
-updated_at: "2026-08-24"
 ---
 
 # Matriz de evidência dos estados interativos
@@ -54,12 +53,6 @@ são gerados por `institution_directory_page_golden_test.dart`.
 | Criar compacto light | `institution_form_page.dart`; navegação e seções | `CoeloFormTextField`; `CoeloAdminSingleSelectField`; `SuperadminFormActionFooter` | `institution_form_page_test.dart` | `institution_form_create_light_375.png` |
 | Editar desktop dark com menu atual e chat | mesmos arquivos | mesmos componentes | `institution_form_page_test.dart` | `institution_form_edit_dark_1440.png` |
 | Ajustar foto institucional | `institution_form_sections.dart` | `AvatarCropDialog`; `pattern.media-adjustment` | `institution_form_page_test.dart` | `institution_form_avatar_crop_open_light_1440.png` |
-
-## Importações
-
-| Estado | Implementação real | Componente/contrato | Teste | Evidência visual canônica |
-| --- | --- | --- | --- | --- |
-| Diálogo `Nova importação` aberto em 1440 light, com `X` preservado, uma única ação textual `Cancelar` negativa e sem ação textual `Fechar` | `_ImportDialog` em `import_directory_page.dart` | `CoeloAdminDialogShell`; `CoeloAdminInteractiveCard`; `pattern.negative-actions` | `import_hub_golden_test.dart` | `import_hub_new_dialog_light_1440.png`; `docs/design/coelo-ui-deep-review-confirmations-2026-08-06.md` |
 
 ## Lacunas controladas
 

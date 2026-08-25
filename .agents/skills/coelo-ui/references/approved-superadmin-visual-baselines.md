@@ -1,8 +1,7 @@
 ---
-source: "Aprovação visual do Owner Coelo em 2026-07-29 e confirmação em 2026-08-04; arbitragem visual de 2026-08-24; docs/design/design-system.md; goldens e testes do Superadmin"
+source: "Aprovação visual do Owner Coelo em 2026-07-29 e confirmação em 2026-08-04; docs/design/design-system.md; goldens e testes do Superadmin"
 status: "active"
 generated_at: "2026-08-04"
-updated_at: "2026-08-24"
 ---
 
 # Baselines visuais aprovadas do Superadmin
@@ -28,7 +27,6 @@ estado ao código real, componente, teste e golden exato.
 | --- | --- | --- |
 | 1–7 | Login: campo em repouso e foco, senha, checkbox, botão padrão/hover, link e aviso de acesso restrito | `apps/superadmin/test/features/auth/presentation/screens/goldens/superadmin_login_light.png`; `superadmin_login_golden_test.dart`; `superadmin_login_screen_test.dart` |
 | 8–18 | Instituições: paginação, criar card, card/hover, grid, arquivos, filtros, busca/foco, toggle, tabela e seus espaçamentos | `apps/superadmin/test/features/institutions/presentation/screens/goldens/`; `institution_directory_page_golden_test.dart`; `institution_directory_page_test.dart` |
-| Aprovação 2026-08-10 | Toolbar de diretório: Instituições, Unidades, Turmas e Atividades compartilham a baseline de busca/filtros à esquerda e toggle/Arquivos à direita, com quebra por constraints e uma coluna a 200% quando necessário | `pattern.responsive-directory-filters`; código e testes reais das quatro famílias |
 | 19 | Home/Central de ajuda: conversas à esquerda, ajuda central, sugestões e compositor inferior | `apps/superadmin/test/features/help_center/presentation/screens/goldens/help_center_empty_light_1440.png`; `help_center_page_golden_test.dart` |
 | 20–24 | Menu expandido e rail compacto; níveis, seleção, hover e flyouts de Tour/Acessos | `apps/superadmin/test/app/shell/superadmin_shell_test.dart`; `apps/superadmin/test/features/institutions/presentation/screens/goldens/institution_directory_collapsed_flyout_hover_light_1024.png` |
 | 25–26 | Flyout da conta: Perfil, Configurações, divisor e Sair negativo, incluindo hover | `apps/superadmin/test/app/shell/superadmin_shell_test.dart`; contrato `pattern.flyout-actions` |
@@ -42,9 +40,6 @@ estado ao código real, componente, teste e golden exato.
 | Aprovação 2026-08-04 | Mídia e marca: ajuste circular de foto, ajuste retangular de capa e seletor avançado de cores | `AvatarCropDialog`; `CoverCropDialog`; `showSuperadminAdvancedColorPicker`; `pattern.media-adjustment`; `pattern.advanced-color-picker` |
 | Aprovação 2026-08-04 | Navegação paginada de qualquer fluxo sequencial: concluída, atual tonal e pendente; paginação de registros permanece um contrato distinto | `SuperadminFormStepNavigation`; `pattern.form-step-navigation`; `pattern.directory-pagination` |
 | Aprovação 2026-08-04 | Saúde e Cuidado: Perfis de cuidado e Planos de medicação como áreas irmãs; múltipla escolha de formulário e status Histórico | `CoeloAdminMultiSelectField`; `CoeloStatusColors.historyContainer`; `specs/020-superadmin-health-care.md` |
-| Aprovação 2026-08-10 | Frame de Criar/Editar Instituição: eixos, rail lateral, gap, conteúdo central e rodapé formam uma única geometria canônica para qualquer criação/edição | `pattern.form-controls`; `form-layout-contracts.md`; testes e goldens de `InstitutionFormPage` |
-| Aprovação 2026-08-10 | Distribuição responsiva de filtros: busca em linha útil e filtros em colunas equivalentes, reduzidas por constraints; Suporte e implantação é referência de distribuição, Instituições continua a referência de componente/estado | `pattern.admin-directory`; `admin-directory-flyout-contracts.md`; código e testes reais de Suporte |
-| Arbitragem 2026-08-24 | Importações: diálogo `Nova importação` íntegro em 1440 light, com `X` canônico e uma única ação textual `Cancelar` negativa, sem ação textual `Fechar` | `apps/superadmin/test/features/imports/goldens/import_hub_new_dialog_light_1440.png`; `import_hub_golden_test.dart`; `CoeloAdminDialogShell`; `docs/design/coelo-ui-deep-review-confirmations-2026-08-06.md` |
 
 ## Regras que os anexos tornam explícitas
 
@@ -77,19 +72,6 @@ estado ao código real, componente, teste e golden exato.
   `Aplicar` preenchido em 50/50.
 - A tabela preserva cabeçalho tonal neutro, divisores, linhas contínuas e
   distância `space4` da faixa de criação. Linha hovered não vira card.
-- Instituições é também a baseline integral de Criar/Editar entidade: frame,
-  rail, canvas, seções, campos, rodapé, ações, representantes,
-  administradores, localização/contato, mídias, preview, plano e anatomia de
-  tabelas, cards, filtros e arquivos. Unidades reutiliza essa anatomia por
-  composição e acrescenta somente os controles de herança do seu domínio.
-- As toolbars aprovadas de Instituições, Unidades, Turmas e Atividades formam
-  uma referência conjunta; nenhuma família pode criar uma toolbar paralela.
-- Quando Instituição e Unidade aparecem juntas, `Tipo da instituição` e
-  `Tipo da unidade` são informações independentes e explícitas. Tipo principal
-  e subtipos complementares também são conceitos distintos.
-- Status sempre nomeia seu domínio (`Status da instituição`, `Status da
-  unidade`, `Status da turma`, `Status da atividade`, `Status do convite` ou
-  `Status do plano`); não usar `Tipo` ou `Status` genérico em contexto ambíguo.
 
 ### Navegação, flyouts e ações negativas
 
@@ -102,10 +84,6 @@ estado ao código real, componente, teste e golden exato.
 - `X`, Sair, Desligar, Encerrar, Fechar, Remover, Deletar e Excluir usam
   `error` em repouso e `errorContainer` no hover/foco. Ações terminais ficam em
   grupo inferior separado por divisor.
-- `Cancelar` usa esse padrão vermelho somente quando confirma abandono
-  destrutivo, descarte ou interrupção irreversível. Cancelamento de navegação
-  neutra continua secundário/terciário; não tornar todo botão secundário
-  vermelho. Overlay e splash adicionais permanecem transparentes.
 - Em `Acessos > Pessoas`, categorias irmãs usam tabs lineares sem cápsula:
   linha-base neutra, label e underline laranja somente na seleção, hover/foco
   tonal primário sutil e `space4` separando toolbar, tabs e conteúdo. Esse
@@ -132,9 +110,6 @@ estado ao código real, componente, teste e golden exato.
 - Qualquer divergência de composição ou identidade deve ser proposta ao Owner
   antes do código, com comparação, componentes, estados, tokens,
   responsividade e testes. Sem aprovação explícita, preservar esta baseline.
-- Um preview público novo de Instituição ou Unidade exige protótipo/golden
-  isolado em web, tablet e mobile e aprovação explícita antes de ser integrado
-  ao formulário aprovado.
 - Em dialogs: uma ação ocupa 100%, duas dividem 50/50 e três dividem em terços.
   Em tela ampla: usar extremos; não aplicar a regra 50/50 do dialog ao rodapé.
 
