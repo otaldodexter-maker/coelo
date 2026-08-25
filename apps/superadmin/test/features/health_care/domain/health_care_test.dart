@@ -162,7 +162,7 @@ void main() {
   group('permissions and contextual visibility', () {
     test('owner can correct, create/edit and inactivate but cannot review, claim or result', () {
       expect(
-        DemoHealthCareProfile.owner.capabilities,
+        HealthCareAccessProfile.owner.capabilities,
         containsAll(<HealthCareCapability>[
           HealthCareCapability.sensitiveRead,
           HealthCareCapability.auditRead,
@@ -171,11 +171,11 @@ void main() {
           HealthCareCapability.recordInactivate,
         ]),
       );
-      expect(DemoHealthCareProfile.owner.can(HealthCareCapability.clinicalReview), isFalse);
-      expect(DemoHealthCareProfile.owner.can(HealthCareCapability.medicationClaim), isFalse);
-      expect(DemoHealthCareProfile.owner.can(HealthCareCapability.administrationResult), isFalse);
+      expect(HealthCareAccessProfile.owner.can(HealthCareCapability.clinicalReview), isFalse);
+      expect(HealthCareAccessProfile.owner.can(HealthCareCapability.medicationClaim), isFalse);
+      expect(HealthCareAccessProfile.owner.can(HealthCareCapability.administrationResult), isFalse);
       expect(
-        DemoHealthCareProfile.sensitiveReader.capabilities,
+        HealthCareAccessProfile.sensitiveReader.capabilities,
         equals({HealthCareCapability.sensitiveRead}),
       );
     });
@@ -183,7 +183,7 @@ void main() {
     test('actor requires active authorized child context even for global sensitive reading', () {
       final actor = HealthCareActor(
         id: 'reader-a',
-        profile: DemoHealthCareProfile.sensitiveReader,
+        profile: HealthCareAccessProfile.sensitiveReader,
         authorizedChildIds: {'child-a'},
       );
       final child = HealthCareChild(
@@ -211,7 +211,7 @@ void main() {
     test('institutional actor must match an active authorized institution context', () {
       final actor = HealthCareActor(
         id: 'reader-a',
-        profile: DemoHealthCareProfile.sensitiveReader,
+        profile: HealthCareAccessProfile.sensitiveReader,
         institutionId: 'institution-b',
         authorizedChildIds: {'child-a'},
       );
@@ -228,7 +228,7 @@ void main() {
     test('contextual capabilities can never grant Owner-only mutations', () {
       final actor = HealthCareActor(
         id: 'institution-operator',
-        profile: DemoHealthCareProfile.minimized,
+        profile: HealthCareAccessProfile.minimized,
         contextualCapabilities: const {
           HealthCareCapability.exceptionalCorrection,
           HealthCareCapability.recordCreateEdit,

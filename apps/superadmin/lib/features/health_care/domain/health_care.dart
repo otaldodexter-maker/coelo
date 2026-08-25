@@ -1,4 +1,3 @@
-/// Local-only Health and Care demonstration domain. It has no backend contract.
 enum HealthCareCapability {
   sensitiveRead,
   clinicalReview,
@@ -12,19 +11,19 @@ enum HealthCareCapability {
   recordInactivate,
 }
 
-enum DemoHealthCareProfile { owner, sensitiveReader, minimized }
+enum HealthCareAccessProfile { owner, sensitiveReader, minimized }
 
-extension DemoHealthCareProfileCapabilities on DemoHealthCareProfile {
+extension HealthCareAccessProfileCapabilities on HealthCareAccessProfile {
   Set<HealthCareCapability> get capabilities => switch (this) {
-    DemoHealthCareProfile.owner => const {
+    HealthCareAccessProfile.owner => const {
       HealthCareCapability.sensitiveRead,
       HealthCareCapability.auditRead,
       HealthCareCapability.exceptionalCorrection,
       HealthCareCapability.recordCreateEdit,
       HealthCareCapability.recordInactivate,
     },
-    DemoHealthCareProfile.sensitiveReader => const {HealthCareCapability.sensitiveRead},
-    DemoHealthCareProfile.minimized => const {},
+    HealthCareAccessProfile.sensitiveReader => const {HealthCareCapability.sensitiveRead},
+    HealthCareAccessProfile.minimized => const {},
   };
 
   bool can(HealthCareCapability capability) => capabilities.contains(capability);
@@ -74,23 +73,6 @@ enum HealthMedicationPolicyPhase {
   escalated,
 }
 
-enum HealthCareFixtureScenario {
-  multiInstitutionChild,
-  prescriptionAndDispensing,
-  multipleRecipients,
-  multipleProfessionals,
-  claimConflict,
-  lateDose,
-  refusedDose,
-  activeMedicationAllergy,
-  inactiveAllergy,
-  pendingAcknowledgement,
-  completedAcknowledgement,
-  minimizedUser,
-  ownerAudit,
-  remindersAndEscalation,
-}
-
 final class HealthCareTimeOfDay {
   HealthCareTimeOfDay(this.hour, this.minute) {
     if (hour < 0 || hour > 23) throw ArgumentError.value(hour, 'hour');
@@ -128,7 +110,7 @@ final class HealthCareActor {
        contextualCapabilities = Set.unmodifiable(contextualCapabilities);
 
   final String id;
-  final DemoHealthCareProfile profile;
+  final HealthCareAccessProfile profile;
   final String? institutionId;
   final Set<String> authorizedChildIds;
   final Set<String> responsibleInstitutionIds;
@@ -140,7 +122,7 @@ final class HealthCareActor {
       HealthCareCapability.recordCreateEdit,
       HealthCareCapability.recordInactivate,
     };
-    if (ownerOnly.contains(capability)) return profile == DemoHealthCareProfile.owner;
+    if (ownerOnly.contains(capability)) return profile == HealthCareAccessProfile.owner;
     return profile.can(capability) || contextualCapabilities.contains(capability);
   }
 
@@ -233,9 +215,9 @@ final class HealthCareChildSummary {
 
   factory HealthCareChildSummary.fromChild(
     HealthCareChild child, {
-    required DemoHealthCareProfile profile,
+    required HealthCareAccessProfile profile,
   }) {
-    final minimized = profile == DemoHealthCareProfile.minimized;
+    final minimized = profile == HealthCareAccessProfile.minimized;
     return HealthCareChildSummary(
       id: child.id,
       personId: minimized ? null : child.personId,

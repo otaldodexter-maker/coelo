@@ -1,14 +1,40 @@
-import '../domain/health_care.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care_repository.dart';
 
-final class DemoHealthCareRepository {
-  DemoHealthCareRepository() : _children = _demoChildren();
+enum HealthCareFixtureScenario {
+  multiInstitutionChild,
+  prescriptionAndDispensing,
+  multipleRecipients,
+  multipleProfessionals,
+  claimConflict,
+  lateDose,
+  refusedDose,
+  activeMedicationAllergy,
+  inactiveAllergy,
+  pendingAcknowledgement,
+  completedAcknowledgement,
+  minimizedUser,
+  ownerAudit,
+  remindersAndEscalation,
+}
+
+final class FixtureHealthCareRepository implements HealthCareRepository {
+  FixtureHealthCareRepository() : _children = _fixtureChildren();
 
   static final DateTime fixedClock = DateTime.utc(2026, 8, 3, 12);
   final List<HealthCareChild> _children;
   DateTime get clock => fixedClock;
+  @override
+  HealthCareActor get defaultActor => HealthCareActor(
+    id: 'owner-demo',
+    profile: HealthCareAccessProfile.owner,
+    authorizedChildIds: const {'child-demo-a', 'child-demo-b'},
+  );
+
   Set<HealthCareFixtureScenario> get fixtureScenarios =>
       Set.unmodifiable(HealthCareFixtureScenario.values);
 
+  @override
   Future<HealthCareDirectoryPage> fetchDirectory(
     HealthCareDirectoryQuery query, {
     required HealthCareActor actor,
@@ -42,12 +68,14 @@ final class DemoHealthCareRepository {
     );
   }
 
+  @override
   Future<HealthCareChild?> findChild(String childId, {required HealthCareActor actor}) async {
     final child = _children[_childIndex(childId)];
     if (!actor.canReadDetail(child)) throw StateError('Sensitive detail access denied.');
     return child;
   }
 
+  @override
   Future<HealthMedication> createMedication({
     required String childId,
     required String name,
@@ -108,6 +136,7 @@ final class DemoHealthCareRepository {
     return medication;
   }
 
+  @override
   Future<HealthCareAllergy> createAllergy({
     required String childId,
     required String label,
@@ -146,6 +175,7 @@ final class DemoHealthCareRepository {
     return allergy;
   }
 
+  @override
   Future<HealthMedicationChangeResult> changeMedicationRelevant({
     required String childId,
     required String medicationId,
@@ -379,6 +409,7 @@ final class DemoHealthCareRepository {
     return recorded;
   }
 
+  @override
   Future<HealthCareAcknowledgement> deactivateAllergy({
     required String childId,
     required String allergyId,
@@ -426,6 +457,7 @@ final class DemoHealthCareRepository {
     return receipt;
   }
 
+  @override
   Future<HealthCareAcknowledgement> updateCareProfile({
     required String childId,
     required List<HealthCareProfileItem> items,
@@ -631,7 +663,7 @@ extension<T> on Iterable<T> {
   }
 }
 
-List<HealthCareChild> _demoChildren() {
+List<HealthCareChild> _fixtureChildren() {
   final policy = HealthMedicationAdministrationPolicy(
     earlyReminder: const Duration(minutes: 30),
     tolerance: const Duration(minutes: 10),
@@ -680,7 +712,7 @@ List<HealthCareChild> _demoChildren() {
         reason: 'Recusa demonstrativa anterior',
       ),
     ],
-    approvedAt: DemoHealthCareRepository.fixedClock,
+    approvedAt: FixtureHealthCareRepository.fixedClock,
     prescriptionReference: 'prescription-demo.pdf',
     dispensedBy: 'guardian-demo-a',
     policy: policy,
@@ -819,7 +851,7 @@ List<HealthCareChild> _demoChildren() {
           type: HealthCareAllergyType.medication,
           active: true,
           status: HealthCareAllergyStatus.monitoring,
-          lastEpisodeAt: DemoHealthCareRepository.fixedClock.subtract(const Duration(days: 30)),
+          lastEpisodeAt: FixtureHealthCareRepository.fixedClock.subtract(const Duration(days: 30)),
           episodeSeverity: HealthCareEpisodeSeverity.severe,
           observedReaction: 'Edema e dificuldade respiratória no episódio registrado.',
           guidance: 'Seguir o plano familiar e acionar o protocolo de emergência.',
@@ -831,11 +863,11 @@ List<HealthCareChild> _demoChildren() {
           type: HealthCareAllergyType.restriction,
           active: false,
           status: HealthCareAllergyStatus.history,
-          lastEpisodeAt: DemoHealthCareRepository.fixedClock.subtract(const Duration(days: 180)),
+          lastEpisodeAt: FixtureHealthCareRepository.fixedClock.subtract(const Duration(days: 180)),
           episodeSeverity: HealthCareEpisodeSeverity.mild,
           observedReaction: 'Vermelhidão localizada no episódio registrado.',
           guidance: 'Manter como referência histórica.',
-          inactivatedAt: DemoHealthCareRepository.fixedClock,
+          inactivatedAt: FixtureHealthCareRepository.fixedClock,
         ),
       ],
       careProfile: [HealthCareProfileItem(catalogItemId: 'autism')],
@@ -844,7 +876,7 @@ List<HealthCareChild> _demoChildren() {
           id: 'ack-pending',
           childId: 'child-demo-a',
           subject: HealthCareAcknowledgementSubject.careProfile,
-          createdAt: DemoHealthCareRepository.fixedClock,
+          createdAt: FixtureHealthCareRepository.fixedClock,
         ),
         HealthCareAcknowledgement(
           id: 'ack-completed',
@@ -862,7 +894,7 @@ List<HealthCareChild> _demoChildren() {
           itemId: 'dose-demo-future',
           recipientId: 'professional-demo-professor',
           receiptId: 'ack-pending',
-          createdAt: DemoHealthCareRepository.fixedClock,
+          createdAt: FixtureHealthCareRepository.fixedClock,
         ),
         HealthCareNotification(
           id: 'notification-nurse',
@@ -871,8 +903,8 @@ List<HealthCareChild> _demoChildren() {
           itemId: 'dose-demo-future',
           recipientId: 'professional-demo-nurse',
           receiptId: 'ack-completed',
-          createdAt: DemoHealthCareRepository.fixedClock,
-          acknowledgedAt: DemoHealthCareRepository.fixedClock,
+          createdAt: FixtureHealthCareRepository.fixedClock,
+          acknowledgedAt: FixtureHealthCareRepository.fixedClock,
         ),
       ],
       auditEvents: [
@@ -882,7 +914,7 @@ List<HealthCareChild> _demoChildren() {
           justification: 'Correção demonstrativa anterior',
           before: const {'status': 'before'},
           after: const {'status': 'after'},
-          createdAt: DemoHealthCareRepository.fixedClock,
+          createdAt: FixtureHealthCareRepository.fixedClock,
         ),
       ],
     ),

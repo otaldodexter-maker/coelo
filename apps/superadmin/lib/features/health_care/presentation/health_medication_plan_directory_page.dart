@@ -535,18 +535,9 @@ String _administrationContextLabel(HealthMedicationVersion version) {
   return '$contextLabel • $responsibleLabel';
 }
 
-String _institutionLabel(String value) => switch (value) {
-  'institution-demo-a' => 'Instituição Demo A',
-  'institution-demo-b' => 'Instituição Demo B',
-  _ => value,
-};
+String _institutionLabel(String _) => 'Contexto institucional indisponível';
 
-String _responsibleLabel(String value) => switch (value) {
-  'professional-demo-professor' => 'Professor Demo',
-  'professional-demo-nurse' => 'Enfermagem Demo',
-  'coordinator-demo-a' => 'Coordenação Demo',
-  _ => value,
-};
+String _responsibleLabel(String _) => 'Responsável indisponível';
 String _periodLabel(HealthMedicationVersion version) =>
     '${_dateLabel(version.startsAt)} \u2014 ${_dateLabel(version.endsAt)}';
 
