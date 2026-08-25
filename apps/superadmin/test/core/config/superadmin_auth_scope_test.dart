@@ -10,6 +10,7 @@ import 'package:coelo_superadmin/features/health_care/domain/medication_plan_rep
 import 'package:coelo_superadmin/features/invites/data/supabase_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
+import 'package:coelo_superadmin/features/student_tracking/domain/student_tracking.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -46,6 +47,7 @@ void main() {
     expect(scope.personDirectoryRepository, isA<UnavailablePersonDirectoryRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.attendanceRepository, isA<UnavailableAttendanceRepository>());
+    expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.auditRepository, isA<UnavailableAuditRepository>());
   });
@@ -74,6 +76,7 @@ void main() {
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
     expect(scope.inviteRepository, isA<SupabaseInviteRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
+    expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());

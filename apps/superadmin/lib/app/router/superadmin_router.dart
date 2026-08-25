@@ -136,10 +136,8 @@ import '../../features/forms/presentation/responses/form_response_detail_page.da
 import '../../features/forms/presentation/responses/forms_responses_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
-import '../../features/student_tracking/data/supabase_student_tracking_repository.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../../features/student_tracking/presentation/student_tracking_page.dart';
-import '../../features/student_tracking/presentation/student_tracking_manage_page.dart';
 import '../../features/units/data/fake_unit_directory_repository.dart';
 import '../../features/units/data/supabase_unit_directory_repository.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
@@ -998,22 +996,14 @@ GoRouter createSuperadminRouter({
               logout: logout,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
-              onManage: (childContextId) => context.goNamed(
-                SuperadminRoutes.studentManageName,
-                pathParameters: {'childContextId': childContextId},
-              ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.studentManage,
             name: SuperadminRoutes.studentManageName,
-            builder: (context, state) => StudentTrackingManagePage(
-              childContextId: state.pathParameters['childContextId']!,
-              repository: studentTrackingRepository,
-              logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.studentsName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
+            builder: (context, state) => SuperadminErrorScreen(
+              kind: SuperadminErrorKind.unavailable,
+              onAction: () => context.goNamed(SuperadminRoutes.homeName),
             ),
           ),
           GoRoute(
@@ -2332,26 +2322,18 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devStudents,
             name: SuperadminRoutes.devStudentsName,
             builder: (context, state) => StudentTrackingPage(
-              repository: studentTrackingRepository,
+              repository: const UnavailableStudentTrackingRepository(),
               logout: _previewLogout,
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
-              onManage: (childContextId) => context.goNamed(
-                SuperadminRoutes.devStudentManageName,
-                pathParameters: {'childContextId': childContextId},
-              ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.devStudentManage,
             name: SuperadminRoutes.devStudentManageName,
-            builder: (context, state) => StudentTrackingManagePage(
-              childContextId: state.pathParameters['childContextId']!,
-              repository: studentTrackingRepository,
-              logout: _previewLogout,
-              onCancel: () => context.goNamed(SuperadminRoutes.devStudentsName),
-              onDestinationSelected: (destination) =>
-                  _navigateFromDevelopmentShell(context, destination),
+            builder: (context, state) => SuperadminErrorScreen(
+              kind: SuperadminErrorKind.unavailable,
+              onAction: () => context.goNamed(SuperadminRoutes.devHomeName),
             ),
           ),
           GoRoute(

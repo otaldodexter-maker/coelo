@@ -55,7 +55,6 @@ import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
 import '../../features/safety/data/supabase_child_safety_repository.dart';
 import '../../features/safety/domain/child_safety_contract.dart';
-import '../../features/student_tracking/data/supabase_student_tracking_repository.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../guards/superadmin_session.dart';
 import 'superadmin_app_config.dart';
@@ -184,7 +183,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       inviteRepository: SupabaseInviteRepository(client),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
-      studentTrackingRepository: SupabaseStudentTrackingRepository(client),
+      studentTrackingRepository: const UnavailableStudentTrackingRepository(),
       attendancePermissions: const AttendancePermissions.backend(),
       routineRepository: SupabaseRoutineRepository(client),
       auditRepository: SupabaseAuditRepository(client),
