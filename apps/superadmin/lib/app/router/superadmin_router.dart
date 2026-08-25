@@ -3261,10 +3261,10 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devPrincipalHappensName,
             builder: (context, state) => PrincipalHappensPreviewPage.demo(
               onOpenForYou: () => context.goNamed(SuperadminRoutes.devPrincipalForYouName),
-              onOpenMoments: () => context.goNamed(SuperadminRoutes.devPrincipalMomentsName),
+              onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
               onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
               onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
-              onOpenNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowName),
+              onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
               onCreatePost: () => context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
             ),
           ),
@@ -3292,7 +3292,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devPrincipalMoments,
             name: SuperadminRoutes.devPrincipalMomentsName,
             builder: (context, state) => PrincipalMomentsPreviewPage(
-              onOpenHappens: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+              onOpenHappens: () => _closePrincipalViewer(context),
               onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
               onCreateMoment: () =>
                   context.goNamed(SuperadminRoutes.devPrincipalMomentsPublishName),
@@ -3309,8 +3309,8 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devPrincipalNow,
             name: SuperadminRoutes.devPrincipalNowName,
             builder: (context, state) => PrincipalNowPreviewPage(
-              onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-              onOpenHappens: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
+              onClose: () => _closePrincipalViewer(context),
+              onOpenHappens: () => _closePrincipalViewer(context),
               onCreate: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
             ),
           ),
@@ -3612,6 +3612,14 @@ bool _usesPersistentShell(String location) {
       location != SuperadminRoutes.devForgotPassword &&
       location != SuperadminRoutes.devResetPassword &&
       !location.startsWith('/dev/errors/');
+}
+
+void _closePrincipalViewer(BuildContext context) {
+  if (context.canPop()) {
+    context.pop();
+    return;
+  }
+  context.goNamed(SuperadminRoutes.devPrincipalHappensName);
 }
 
 String _destinationForLocation(String location) {

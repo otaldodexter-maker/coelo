@@ -7,6 +7,8 @@ import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 
+const _principalHappensNowCardKey = Key('principal-happens-now-card');
+
 final class PrincipalHappensPreviewPage extends StatefulWidget {
   const PrincipalHappensPreviewPage({
     required this.feedRepository,
@@ -303,11 +305,7 @@ final class _Feed extends StatelessWidget {
         SliverPadding(
           padding: EdgeInsets.symmetric(horizontal: horizontal),
           sliver: SliverToBoxAdapter(
-            child: _TopTabs(
-              onForYou: onForYou,
-              onMoments: onMoments,
-              onProfile: onProfile,
-            ),
+            child: _TopTabs(onForYou: onForYou, onMoments: onMoments, onProfile: onProfile),
           ),
         ),
         SliverPadding(
@@ -414,11 +412,7 @@ String _relativeTime(DateTime value) {
 }
 
 final class _TopTabs extends StatelessWidget {
-  const _TopTabs({
-    required this.onForYou,
-    required this.onMoments,
-    required this.onProfile,
-  });
+  const _TopTabs({required this.onForYou, required this.onMoments, required this.onProfile});
   final VoidCallback onForYou;
   final VoidCallback onMoments;
   final VoidCallback onProfile;
@@ -641,10 +635,7 @@ final class _NowSection extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
           ),
-          TextButton(
-            onPressed: onViewAll,
-            child: const Text('Ver tudo'),
-          ),
+          TextButton(onPressed: onViewAll, child: const Text('Ver tudo')),
         ],
       ),
       const SizedBox(height: CoeloSpacing.space2),
@@ -654,8 +645,12 @@ final class _NowSection extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: items.length,
           separatorBuilder: (_, _) => const SizedBox(width: CoeloSpacing.space2),
-          itemBuilder: (context, index) =>
-              _NowCard(item: items[index], width: compact ? 106 : 120, onPressed: onOpenItem),
+          itemBuilder: (context, index) => _NowCard(
+            key: index == 0 ? _principalHappensNowCardKey : null,
+            item: items[index],
+            width: compact ? 106 : 120,
+            onPressed: onOpenItem,
+          ),
         ),
       ),
     ],
@@ -663,7 +658,7 @@ final class _NowSection extends StatelessWidget {
 }
 
 final class _NowCard extends StatelessWidget {
-  const _NowCard({required this.item, required this.width, required this.onPressed});
+  const _NowCard({required this.item, required this.width, required this.onPressed, super.key});
   final PrincipalNowPreviewItem item;
   final double width;
   final VoidCallback onPressed;
