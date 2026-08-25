@@ -386,6 +386,9 @@ deno_version = 2
 [functions.form-media]
 verify_jwt = true
 
+[functions.form-export-download]
+verify_jwt = true
+
 [functions.now-media]
 verify_jwt = true
 

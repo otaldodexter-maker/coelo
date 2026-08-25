@@ -11,6 +11,10 @@ Deno.test("registers the authenticated media endpoint and service-only operation
   );
   assertMatch(
     config,
+    /\[functions\.form-export-download\]\s+verify_jwt\s*=\s*true/m,
+  );
+  assertMatch(
+    config,
     /\[functions\.form-operations\]\s+verify_jwt\s*=\s*false/m,
   );
 });
