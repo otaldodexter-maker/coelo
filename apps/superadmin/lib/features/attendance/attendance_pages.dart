@@ -23,6 +23,7 @@ class AttendanceNewCallPage extends StatefulWidget {
     this.initialUnitId,
     this.initialGroupId,
     this.initialActivityId,
+    this.today,
     this.activityController,
     super.key,
   });
@@ -36,6 +37,7 @@ class AttendanceNewCallPage extends StatefulWidget {
   final String? initialUnitId;
   final String? initialGroupId;
   final String? initialActivityId;
+  final DateTime? today;
   final SuperadminActivityController? activityController;
 
   @override
@@ -53,12 +55,16 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   String? _activity;
   late DateTime _date;
   var _currentStep = 0;
+  var _submitting = false;
+  Object? _commandError;
+
+  DateTime get _today => DateUtils.dateOnly(widget.today ?? DateTime.now());
 
   @override
   void initState() {
     super.initState();
     _context = widget.initialActivityId == null ? 'group' : 'activity';
-    _date = DateUtils.dateOnly(DateTime.now());
+    _date = _today;
     _loadOptions(useInitialValues: true);
   }
 
@@ -143,7 +149,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                 ],
                 onStepSelected: (index) {
                   if (index < 2) setState(() => _currentStep = index);
-                  if (index == 2 && _canCreate) _create();
+                  if (index == 2 && _canCreate && !_submitting) _create();
                 },
               );
               final content = Expanded(
@@ -253,7 +259,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                   ),
                                 ],
                                 const SizedBox(height: CoeloSpacing.space5),
-                                _AttendanceContextFacts(date: _date),
+                                _AttendanceContextFacts(date: _date, today: _today),
                                 if (_notRequired) ...[
                                   const SizedBox(height: CoeloSpacing.space4),
                                   const _AttendanceRequirementNotice(),
@@ -264,6 +270,12 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                         ),
                       ),
                     ),
+                    if (_commandError != null) ...[
+                      const SizedBox(height: CoeloSpacing.space3),
+                      const _AttendanceCommandErrorBanner(
+                        message: 'Não foi possível criar a chamada.',
+                      ),
+                    ],
                     SuperadminFormActionFooter(
                       surfaceKey: const Key('attendance-context-footer'),
                       tertiaryAction: TextButton(
@@ -274,7 +286,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                       continuationActions: [
                         FilledButton(
                           key: const Key('attendance-context-continue'),
-                          onPressed: !_canCreate
+                          onPressed: !_canCreate || _submitting
                               ? null
                               : _currentStep == 0
                               ? () => setState(() => _currentStep = 1)
@@ -301,7 +313,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   );
 
   Future<void> _pickDate() async {
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = _today;
     final selected = await showCoeloDateRangePicker(
       context: context,
       value: DateTimeRange(start: _date, end: _date),
@@ -427,27 +439,39 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
       options.firstWhere((item) => item.id == id).name;
 
   Future<void> _create() async {
-    final call = await widget.repository.createCall(
-      AttendanceCallDraft(
-        institutionId: _institution!,
-        unitId: _unit!,
-        groupId: _group!,
-        activityContextId: _context == 'activity' ? _activity : null,
-        date: _date,
-      ),
-    );
-    widget.onCreated(call.id);
+    if (_submitting) return;
+    setState(() {
+      _submitting = true;
+      _commandError = null;
+    });
+    try {
+      final call = await widget.repository.createCall(
+        AttendanceCallDraft(
+          institutionId: _institution!,
+          unitId: _unit!,
+          groupId: _group!,
+          activityContextId: _context == 'activity' ? _activity : null,
+          date: _date,
+        ),
+      );
+      if (!mounted) return;
+      widget.onCreated(call.id);
+    } catch (error) {
+      if (mounted) setState(() => _commandError = error);
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 }
 
 class _AttendanceContextFacts extends StatelessWidget {
-  const _AttendanceContextFacts({required this.date});
+  const _AttendanceContextFacts({required this.date, required this.today});
 
   final DateTime date;
+  final DateTime today;
 
   @override
   Widget build(BuildContext context) {
-    final today = DateUtils.dateOnly(DateTime.now());
     final facts = [
       _AttendanceFact(
         icon: Icons.calendar_today_outlined,
@@ -582,8 +606,10 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   AttendanceBulkReceipt? _lastBulkReceipt;
 
   AttendanceCall? _call;
-  Object? _loadError;
+  Object? _initialLoadError;
+  Object? _commandError;
   var _loading = true;
+  var _commandInFlight = false;
 
   @override
   void initState() {
@@ -592,18 +618,26 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   }
 
   Future<void> _loadCall() async {
+    if (mounted) {
+      setState(() {
+        _loading = _call == null;
+        _initialLoadError = null;
+        _commandError = null;
+      });
+    }
     try {
       final call = await widget.repository.fetchCall(widget.callId);
       if (mounted) {
         setState(() {
           _call = call;
           _loading = false;
+          _initialLoadError = null;
         });
       }
     } catch (error) {
       if (mounted) {
         setState(() {
-          _loadError = error;
+          _initialLoadError = error;
           _loading = false;
         });
       }
@@ -621,16 +655,42 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return _shell(
+        child: const CoeloStatePanel(
+          title: 'Carregando chamada',
+          message: 'Buscando o registro no escopo autorizado.',
+          loading: true,
+        ),
+      );
     }
-    if (_loadError != null) {
-      return const Center(child: Text('Não foi possível carregar a chamada.'));
+    if (_initialLoadError != null) {
+      final unauthorized = _initialLoadError is AttendanceUnauthorizedException;
+      return _shell(
+        child: CoeloStatePanel(
+          title: unauthorized ? 'Acesso não autorizado' : 'Não foi possível carregar a chamada.',
+          message: unauthorized
+              ? 'Você não possui acesso a este registro.'
+              : 'Confira a conexão e tente novamente.',
+          icon: unauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
+          actionLabel: unauthorized ? 'Voltar para Assiduidade' : 'Tentar novamente',
+          onAction: unauthorized ? widget.onBack : _loadCall,
+        ),
+      );
     }
     final call = _call;
     if (call == null) {
-      return const Center(child: Text('Chamada não encontrada.'));
+      return _shell(
+        child: CoeloStatePanel(
+          title: 'Chamada não encontrada.',
+          message: 'O registro não existe ou não está mais disponível.',
+          icon: Icons.search_off_rounded,
+          actionLabel: 'Voltar para Assiduidade',
+          onAction: widget.onBack,
+        ),
+      );
     }
-    final writable = call.canManage && widget.permissions.canOperate(call);
+    final canWrite = call.canManage && widget.permissions.canOperate(call);
+    final writable = canWrite && !_commandInFlight;
     final concluded = call.status == AttendanceCallStatus.completed;
     final firstPendingRoutine = call.participants
         .where((item) => widget.routinePendingParticipantIds.contains(item.id))
@@ -665,6 +725,17 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
             child: Column(
               children: [
                 if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
+                if (_commandError != null) ...[
+                  _AttendanceCommandErrorBanner(
+                    message: _commandError is AttendanceVersionConflictException
+                        ? 'A chamada foi atualizada em outro acesso.'
+                        : 'Não foi possível salvar a alteração.',
+                    actionLabel: 'Recarregar chamada',
+                    onAction: _loadCall,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space3),
+                ],
+                if (_commandInFlight) const LinearProgressIndicator(),
                 Expanded(
                   child: SingleChildScrollView(
                     key: const Key('attendance-call-scroll'),
@@ -725,6 +796,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                       child: _AttendanceCallToolbar(
                                         call: call,
                                         writable: writable && !concluded,
+                                        canUndo: _lastBulkReceipt != null,
                                         onMarkRemaining: () => _toggleBulk(call),
                                       ),
                                     ),
@@ -765,7 +837,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                             ),
                                             onStateChanged: (state) {
                                               _applyCall(
-                                                widget.repository.setParticipantState(
+                                                () => widget.repository.setParticipantState(
                                                   call.id,
                                                   participant.id,
                                                   state,
@@ -776,7 +848,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                             onConfirmNotice:
                                                 notice != null && notice.pending && writable
                                                 ? () => _applyCall(
-                                                    widget.repository.confirmNotice(
+                                                    () => widget.repository.confirmNotice(
                                                       notice.id,
                                                       expectedVersion: call.version,
                                                     ),
@@ -807,7 +879,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                     ),
                   ),
                 ),
-                if (writable)
+                if (canWrite)
                   SuperadminFormActionFooter(
                     surfaceKey: const Key('attendance-call-footer'),
                     tertiaryAction: TextButton(
@@ -828,7 +900,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                               call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
                               ? null
                               : () => _applyCall(
-                                  widget.repository.completeCall(
+                                  () => widget.repository.completeCall(
                                     call.id,
                                     expectedVersion: call.version,
                                   ),
@@ -855,40 +927,66 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     );
   }
 
-  Future<void> _applyCall(Future<AttendanceCall> operation) async {
+  Widget _shell({required Widget child}) => SuperadminShell(
+    logout: widget.logout,
+    title: 'Lançar chamada',
+    subtitle: 'Consulte o registro autorizado da chamada.',
+    currentDestination: 'attendance',
+    activityController: widget.activityController,
+    child: child,
+  );
+
+  Future<bool> _applyCall(Future<AttendanceCall> Function() operation) async {
+    if (_commandInFlight) return false;
+    setState(() {
+      _commandInFlight = true;
+      _commandError = null;
+    });
     try {
-      final updated = await operation;
-      if (mounted) setState(() => _call = updated);
+      final updated = await operation();
+      if (!mounted) return true;
+      setState(() {
+        _call = updated;
+        _lastBulkReceipt = null;
+      });
+      return true;
     } catch (error) {
-      if (mounted) setState(() => _loadError = error);
+      if (mounted) setState(() => _commandError = error);
+      return false;
+    } finally {
+      if (mounted) setState(() => _commandInFlight = false);
     }
   }
 
   Future<void> _toggleBulk(AttendanceCall call) async {
-    if (!call.hasUnmarked) {
-      final receipt = _lastBulkReceipt;
-      if (receipt != null) {
+    if (_commandInFlight) return;
+    setState(() {
+      _commandInFlight = true;
+      _commandError = null;
+    });
+    try {
+      if (!call.hasUnmarked) {
+        final receipt = _lastBulkReceipt;
+        if (receipt == null) return;
         final updated = await widget.repository.undoBulk(receipt);
         if (mounted) setState(() => _call = updated);
-      } else {
-        final result = await widget.repository.clearPresenceMarks(
-          call.id,
-          expectedVersion: call.version,
-        );
-        if (mounted) setState(() => _call = result.call);
+        if (mounted) setState(() => _lastBulkReceipt = null);
+        return;
       }
-      if (mounted) setState(() => _lastBulkReceipt = null);
-      return;
-    }
-    final result = await widget.repository.markRemainingPresent(
-      call.id,
-      expectedVersion: call.version,
-    );
-    if (mounted) {
-      setState(() {
-        _call = result.call;
-        _lastBulkReceipt = result.receipt;
-      });
+      final result = await widget.repository.markRemainingPresent(
+        call.id,
+        expectedVersion: call.version,
+      );
+      if (mounted) {
+        setState(() {
+          _call = result.call;
+          _lastBulkReceipt = result.receipt;
+        });
+      }
+    } catch (error) {
+      if (mounted) setState(() => _commandError = error);
+    } finally {
+      if (mounted) setState(() => _commandInFlight = false);
     }
   }
 
@@ -927,8 +1025,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
           primaryAction: FilledButton(
             onPressed: () async {
               if (reason.text.trim().isEmpty) return;
-              await _applyCall(
-                widget.repository.correctParticipant(
+              final succeeded = await _applyCall(
+                () => widget.repository.correctParticipant(
                   callId: call.id,
                   participantId: call.participants.first.id,
                   state: state,
@@ -936,7 +1034,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                   expectedVersion: call.version,
                 ),
               );
-              if (dialogContext.mounted && _loadError == null) {
+              if (dialogContext.mounted && succeeded) {
                 Navigator.of(dialogContext).pop();
               }
             },
@@ -949,15 +1047,50 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   }
 }
 
+class _AttendanceCommandErrorBanner extends StatelessWidget {
+  const _AttendanceCommandErrorBanner({required this.message, this.actionLabel, this.onAction});
+
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        padding: const EdgeInsets.all(CoeloSpacing.space3),
+        decoration: BoxDecoration(
+          color: colors.errorContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          border: Border.all(color: colors.error),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline_rounded, color: colors.error),
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(child: Text(message)),
+            if (actionLabel != null && onAction != null)
+              OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _AttendanceCallToolbar extends StatelessWidget {
   const _AttendanceCallToolbar({
     required this.call,
     required this.writable,
+    required this.canUndo,
     required this.onMarkRemaining,
   });
 
   final AttendanceCall call;
   final bool writable;
+  final bool canUndo;
   final VoidCallback onMarkRemaining;
 
   @override
@@ -977,9 +1110,11 @@ class _AttendanceCallToolbar extends StatelessWidget {
         ],
       );
       final action = OutlinedButton.icon(
-        onPressed: writable ? onMarkRemaining : null,
+        onPressed: writable && (call.hasUnmarked || canUndo) ? onMarkRemaining : null,
         icon: Icon(call.hasUnmarked ? Icons.done_all_rounded : Icons.remove_done_rounded),
-        label: Text(call.hasUnmarked ? 'Marcar todos restantes como presentes' : 'Desmarcar todos'),
+        label: Text(
+          call.hasUnmarked ? 'Marcar todos restantes como presentes' : 'Desfazer último lote',
+        ),
       );
       final textScale = MediaQuery.textScalerOf(context).scale(1);
       if (constraints.maxWidth < 900 || textScale >= 1.5) {
