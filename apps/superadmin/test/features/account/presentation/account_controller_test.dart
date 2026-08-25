@@ -105,7 +105,7 @@ void main() {
     expect(failingController.profile!.firstName, 'Owner');
     expect(failingController.profile!.emailChange, isNull);
     expect(failingActivities.activities, isEmpty);
-    expect(failingController.message, 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
+    expect(failingController.message, 'Não foi possível salvar o perfil. Tente novamente.');
 
     await saveDraft();
 
@@ -150,7 +150,7 @@ void main() {
     );
 
     expect(failingController.profile!.firstName, 'Maria');
-    expect(failingController.message, 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
+    expect(failingController.message, 'Não foi possível salvar o perfil. Tente novamente.');
   });
 
   test('approval applies the pending email and updates the activity', () async {
@@ -184,18 +184,18 @@ void main() {
     expect(activities.activities, isEmpty);
   });
 
-  test('password change validates current password and confirmation locally', () async {
+  test('password change validates input and remains fail-closed without backend', () async {
     expect(
       await controller.changePassword(
-        currentPassword: 'incorreta',
+        currentPassword: '',
         newPassword: 'NovaSenha123!',
         confirmation: 'NovaSenha123!',
       ),
-      'A senha atual não confere.',
+      'Informe a senha atual.',
     );
     expect(
       await controller.changePassword(
-        currentPassword: 'coelo-demo',
+        currentPassword: 'senha-atual-local',
         newPassword: 'NovaSenha123!',
         confirmation: 'diferente',
       ),
@@ -203,11 +203,11 @@ void main() {
     );
     expect(
       await controller.changePassword(
-        currentPassword: 'coelo-demo',
+        currentPassword: 'senha-atual-local',
         newPassword: 'NovaSenha123!',
         confirmation: 'NovaSenha123!',
       ),
-      isNull,
+      'Troca de senha indisponível nesta versão.',
     );
   });
 }

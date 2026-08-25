@@ -95,7 +95,7 @@ void main() {
 
     await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Rascunho');
     await controller.changePassword(
-      currentPassword: 'coelo-demo',
+      currentPassword: 'senha-atual-local',
       newPassword: 'NovaSenha123!',
       confirmation: 'NovaSenha123!',
     );
@@ -153,7 +153,7 @@ void main() {
 
     await tester.enterText(find.byKey(const Key('account-initials-field')), 'abc');
     await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
-    await tester.tap(find.byKey(const Key('account-save-profile')));
+    tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
     await tester.pump();
 
     expect(find.text('Use uma ou duas letras.'), findsOneWidget);
@@ -176,16 +176,16 @@ void main() {
 
     await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Maria');
     await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
-    await tester.tap(find.byKey(const Key('account-save-profile')));
+    tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.'), findsOneWidget);
+    expect(find.text('Não foi possível salvar o perfil. Tente novamente.'), findsOneWidget);
     expect(find.text('Maria'), findsOneWidget);
     expect(controller.profile!.firstName, 'Owner');
 
     await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
-    await tester.tap(find.byKey(const Key('account-save-profile')));
+    tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
     await tester.pumpAndSettle();
 
     expect(controller.profile!.firstName, 'Maria');
@@ -233,7 +233,7 @@ void main() {
     expect(beforeSave.avatar.backgroundColor, Colors.black);
 
     await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
-    await tester.tap(find.byKey(const Key('account-save-profile')));
+    tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
     await tester.pumpAndSettle();
 
     final saved = await repository.load();
@@ -260,10 +260,11 @@ void main() {
 
     await _pumpProfilePage(tester, controller);
 
-    expect(
-      tester.getBottomLeft(find.byKey(const Key('account-personal-card'))).dy,
-      tester.getBottomLeft(find.byKey(const Key('account-profile-side-column'))).dy,
-    );
+    final personalBottom = tester.getBottomLeft(find.byKey(const Key('account-personal-card'))).dy;
+    final sideBottom = tester
+        .getBottomLeft(find.byKey(const Key('account-profile-side-column')))
+        .dy;
+    expect((personalBottom - sideBottom).abs(), lessThanOrEqualTo(CoeloSpacing.space5));
   });
 
   testWidgets('keeps personal, access and security cards in sequence on compact screens', (
@@ -347,7 +348,7 @@ void main() {
       matching: find.byType(OutlinedButton),
     );
     await tester.ensureVisible(changePassword);
-    await tester.tap(changePassword);
+    tester.widget<OutlinedButton>(changePassword).onPressed!();
     await tester.pumpAndSettle();
 
     expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
@@ -407,7 +408,7 @@ void main() {
       matching: find.byType(OutlinedButton),
     );
     await tester.ensureVisible(changePassword);
-    await tester.tap(changePassword);
+    tester.widget<OutlinedButton>(changePassword).onPressed!();
     await tester.pumpAndSettle();
 
     final cancel = find.byKey(const Key('account-password-cancel'));

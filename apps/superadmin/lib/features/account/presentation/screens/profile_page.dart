@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (mounted) setState(() => _saveError = null);
     } catch (_) {
       if (mounted) {
-        setState(() => _saveError = 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.');
+        setState(() => _saveError = 'Não foi possível salvar o perfil. Tente novamente.');
       }
     }
   }
@@ -707,8 +707,6 @@ class _PasswordDialogState extends State<_PasswordDialog> {
               obscureText: true,
               errorText: error,
             ),
-            const SizedBox(height: CoeloSpacing.space2),
-            const Text('Senha atual do protótipo: coelo-demo'),
           ],
         ),
       ),

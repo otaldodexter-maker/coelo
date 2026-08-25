@@ -105,18 +105,16 @@ select function_returns(
   'jsonb',
   'profile detail returns a stable JSON contract'
 );
-select like(
+select ok(
   pg_get_functiondef(
     'public.superadmin_access_profile_detail(text,uuid)'::regprocedure
-  ),
-  '%if p_domain = ''platform'' then%''screen_code'', permission_record.screen_code%elsif p_domain = ''institution'' then%''screen_code'', permission_record.screen_code%',
+  ) like '%if p_domain = ''platform'' then%''screen_code'', permission_record.screen_code%elsif p_domain = ''institution'' then%''screen_code'', permission_record.screen_code%',
   'profile detail exposes explicit screen metadata in both writable domains'
 );
-select like(
+select ok(
   pg_get_functiondef(
     'public.superadmin_access_profile_detail(text,uuid)'::regprocedure
-  ),
-  '%if p_domain = ''platform'' then%''action_code'', permission_record.action_code%elsif p_domain = ''institution'' then%''action_code'', permission_record.action_code%',
+  ) like '%if p_domain = ''platform'' then%''action_code'', permission_record.action_code%elsif p_domain = ''institution'' then%''action_code'', permission_record.action_code%',
   'profile detail exposes explicit action metadata in both writable domains'
 );
 select ok(
@@ -178,32 +176,28 @@ select is(
   0,
   'platform authorization no longer contains an implicit Owner bypass'
 );
-select like(
+select ok(
   pg_get_functiondef(
     'app_private.has_platform_permission(text)'::regprocedure
-  ),
-  '%effect=''deny''%',
+  ) like '%effect=''deny''%',
   'platform authorization evaluates explicit denies'
 );
-select like(
+select ok(
   pg_get_functiondef(
     'app_private.has_platform_permission(text)'::regprocedure
-  ),
-  '%not exists%',
+  ) like '%not exists%',
   'platform authorization gives deny precedence'
 );
-select like(
+select ok(
   pg_get_functiondef(
     'app_private.has_platform_permission(text)'::regprocedure
-  ),
-  '%scope_kind=''platform''%',
+  ) like '%scope_kind=''platform''%',
   'platform profile authority requires a global platform membership'
 );
-select like(
+select ok(
   pg_get_functiondef(
     'public.superadmin_access_profile_save(uuid,bigint,text,jsonb)'::regprocedure
-  ),
-  '%explicit deny cannot be replaced%',
+  ) like '%explicit deny cannot be replaced%',
   'profile save preserves explicit denies'
 );
 

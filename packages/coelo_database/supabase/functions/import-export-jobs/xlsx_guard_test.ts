@@ -7,7 +7,7 @@ function u32(value: number) { return [value & 0xff, (value >>> 8) & 0xff, (value
 
 function archive({ entries = 1, compressed = 1, expanded = 1 }: { entries?: number; compressed?: number; expanded?: number }) {
   const name = [120];
-  const central = [0x50, 0x4b, 0x01, 0x02, 20, 0, 20, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(compressed), ...u32(expanded), ...u16(name.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...name];
+  const central = [0x50, 0x4b, 0x01, 0x02, 20, 0, 20, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(compressed), ...u32(expanded), ...u16(name.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...name];
   const eocd = [0x50, 0x4b, 0x05, 0x06, 0, 0, 0, 0, ...u16(entries), ...u16(entries), ...u32(central.length), ...u32(0), 0, 0];
   return new Uint8Array([...central, ...eocd]);
 }

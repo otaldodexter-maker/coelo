@@ -58,7 +58,7 @@ final class AccountController extends ChangeNotifier {
         _message = 'Perfil atualizado.';
       }
     } catch (_) {
-      _message = 'NÃ£o foi possÃ­vel salvar o perfil. Tente novamente.';
+      _message = 'Não foi possível salvar o perfil. Tente novamente.';
     } finally {
       _setBusy(false);
     }
@@ -92,12 +92,10 @@ final class AccountController extends ChangeNotifier {
     required String newPassword,
     required String confirmation,
   }) async {
-    if (currentPassword != 'coelo-demo') return 'A senha atual não confere.';
+    if (currentPassword.trim().isEmpty) return 'Informe a senha atual.';
     if (newPassword != confirmation) return 'As senhas não coincidem.';
     if (newPassword.length < 8) return 'Use pelo menos 8 caracteres.';
-    _message = 'Senha alterada neste protótipo.';
-    notifyListeners();
-    return null;
+    return 'Troca de senha indisponível nesta versão.';
   }
 
   void _setBusy(bool value) {

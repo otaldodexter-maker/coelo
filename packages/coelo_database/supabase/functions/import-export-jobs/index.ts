@@ -68,7 +68,7 @@ function xlsx(bytes: Uint8Array) {
 }
 
 async function checksum(bytes: Uint8Array) {
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes).buffer);
   return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
 }
 
@@ -144,7 +144,16 @@ Deno.serve(async (request) => {
   } catch (error) {
     const code = error instanceof Error ? error.message.split(":")[0] : "worker_error";
     if (jobId) {
-      try { const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), { auth: { persistSession: false } }); await admin.rpc("superadmin_fail_unit_file_job", { p_import_job_id: jobId, p_error_code: code.slice(0, 80) }); } catch { /* job remains auditable if failure recording is unavailable */ }
+      try {
+        const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), { auth: { persistSession: false } });
+        const scope = await admin.from("import_jobs").select("request_id").eq("id", jobId).single();
+        if (scope.error || !scope.data?.request_id) throw new Error("job_scope_unavailable");
+        await admin.rpc("superadmin_fail_unit_file_job", {
+          p_import_job_id: jobId,
+          p_error_code: code.slice(0, 80),
+          p_expected_request_id: scope.data.request_id,
+        });
+      } catch { /* job remains auditable if failure recording is unavailable */ }
     }
     return response(origin, 422, { error: code });
   }

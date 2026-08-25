@@ -32,12 +32,18 @@ select ok(not has_function_privilege('authenticated', 'app_private.assert_import
 select ok(not has_function_privilege('authenticated', 'app_private.import_export_job_payload(uuid)', 'EXECUTE'),
   'browser callers cannot invoke the private job payload helper');
 
-select row_security_is_enabled('public', 'import_jobs');
-select row_security_is_enabled('public', 'import_files');
-select row_security_is_enabled('public', 'import_mappings');
-select row_security_is_enabled('public', 'import_rows');
-select row_security_is_enabled('public', 'import_errors');
-select row_security_is_enabled('public', 'import_results');
+select ok((select relrowsecurity from pg_class where oid = 'public.import_jobs'::regclass),
+  'RLS is enabled on import_jobs');
+select ok((select relrowsecurity from pg_class where oid = 'public.import_files'::regclass),
+  'RLS is enabled on import_files');
+select ok((select relrowsecurity from pg_class where oid = 'public.import_mappings'::regclass),
+  'RLS is enabled on import_mappings');
+select ok((select relrowsecurity from pg_class where oid = 'public.import_rows'::regclass),
+  'RLS is enabled on import_rows');
+select ok((select relrowsecurity from pg_class where oid = 'public.import_errors'::regclass),
+  'RLS is enabled on import_errors');
+select ok((select relrowsecurity from pg_class where oid = 'public.import_results'::regclass),
+  'RLS is enabled on import_results');
 
 select table_privs_are('public', 'import_jobs', 'authenticated', array[]::text[]);
 select table_privs_are('public', 'import_files', 'authenticated', array[]::text[]);

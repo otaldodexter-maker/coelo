@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 abstract final class SuperadminAppConfig {
   static const appName = 'Superadmin Coelo';
   static const appSubtitle = 'Operacao interna';
@@ -7,6 +9,10 @@ abstract final class SuperadminAppConfig {
   static const supabaseUrl = String.fromEnvironment('COELO_SUPABASE_URL');
   static const supabasePublishableKey = String.fromEnvironment('COELO_SUPABASE_PUBLISHABLE_KEY');
   static const isDevMfaEnabled = bool.fromEnvironment('COELO_DEV_MFA');
+  static const allowDevelopmentPreview = !kReleaseMode && environment == 'local';
 
   static bool get hasSupabaseConfig => supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
 }
+
+bool canEnableDevelopmentPreview({required bool isReleaseMode, required String environment}) =>
+    !isReleaseMode && environment == 'local';
