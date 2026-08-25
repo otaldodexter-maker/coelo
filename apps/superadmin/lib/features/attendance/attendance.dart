@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 
-import '../../app/activity/superadmin_activity.dart';
+part 'attendance_contract.dart';
 
-enum AttendancePresenceState { unmarked, present, absent, late, earlyDeparture }
+enum AttendancePresenceState { unmarked, present, absent, late, earlyDeparture, lateAndEarly }
 
 enum AttendanceJustificationState { pending, accepted, rejected }
 
-enum AttendanceCallStatus { notStarted, inProgress, completed, corrected }
+enum AttendanceCallStatus { notStarted, inProgress, completed, reopened }
 
 enum AttendanceExpectationState {
   notRequired,
@@ -23,27 +23,48 @@ enum AttendanceNoticeIntent { absence, expectedPresence, lateArrival, earlyDepar
 class AttendancePermissions {
   const AttendancePermissions.owner()
     : canManage = true,
+      backendResolved = false,
+      assignedGroupIds = const {},
+      assignedActivityContextIds = const {};
+
+  const AttendancePermissions.manager()
+    : canManage = true,
+      backendResolved = false,
       assignedGroupIds = const {},
       assignedActivityContextIds = const {};
 
   const AttendancePermissions.readOnly()
     : canManage = false,
+      backendResolved = false,
       assignedGroupIds = const {},
       assignedActivityContextIds = const {};
 
   const AttendancePermissions.teacher({
     this.assignedGroupIds = const {},
     this.assignedActivityContextIds = const {},
-  }) : canManage = false;
+  }) : canManage = false,
+       backendResolved = false;
+
+  const AttendancePermissions.backend()
+    : canManage = false,
+      backendResolved = true,
+      assignedGroupIds = const {},
+      assignedActivityContextIds = const {};
 
   final bool canManage;
+  final bool backendResolved;
   final Set<String> assignedGroupIds;
   final Set<String> assignedActivityContextIds;
 
   bool canOperate(AttendanceCall call) =>
+      canManage ||
+      (backendResolved && call.canManage) ||
       assignedGroupIds.contains(call.groupId) ||
       (call.activityContextId != null &&
           assignedActivityContextIds.contains(call.activityContextId));
+
+  bool canCreate({required bool backendCanManage}) =>
+      backendResolved ? backendCanManage : canManage;
 }
 
 class AttendanceParticipant {
@@ -53,6 +74,7 @@ class AttendanceParticipant {
     this.state = AttendancePresenceState.unmarked,
     this.note = '',
     this.justification,
+    this.notice,
   });
 
   final String id;
@@ -60,6 +82,7 @@ class AttendanceParticipant {
   AttendancePresenceState state;
   String note;
   AttendanceJustificationState? justification;
+  final AttendanceNotice? notice;
 }
 
 @immutable
@@ -96,6 +119,8 @@ class AttendanceCall {
     this.activityContextId,
     this.activityName,
     this.responsible = 'Equipe Coelo',
+    this.canManage = false,
+    this.version = 1,
     DateTime? updatedAt,
     List<AttendanceRevision>? revisions,
   }) : revisions = revisions ?? [],
@@ -114,6 +139,8 @@ class AttendanceCall {
   AttendanceCallStatus status;
   final List<AttendanceParticipant> participants;
   final String responsible;
+  final bool canManage;
+  final int version;
   DateTime updatedAt;
   final List<AttendanceRevision> revisions;
 
@@ -147,6 +174,43 @@ class AttendanceNotice {
   final DateTime? endDate;
   final String note;
   bool pending;
+}
+
+@immutable
+class AttendanceContextOption {
+  const AttendanceContextOption({
+    required this.id,
+    required this.name,
+    this.institutionId,
+    this.unitId,
+    this.groupId,
+    this.attendanceRequired = true,
+  });
+
+  final String id;
+  final String name;
+  final String? institutionId;
+  final String? unitId;
+  final String? groupId;
+  final bool attendanceRequired;
+}
+
+@immutable
+class AttendanceContextOptions {
+  const AttendanceContextOptions({
+    required this.institutions,
+    required this.units,
+    required this.groups,
+    required this.activities,
+    this.canManage = false,
+  });
+
+  final List<AttendanceContextOption> institutions;
+  final List<AttendanceContextOption> units;
+  final List<AttendanceContextOption> groups;
+  final List<AttendanceContextOption> activities;
+  final bool canManage;
+  bool get isEmpty => institutions.isEmpty || units.isEmpty || groups.isEmpty;
 }
 
 @immutable
@@ -184,287 +248,31 @@ class AttendanceMetrics {
 }
 
 abstract interface class AttendanceRepository {
-  List<AttendanceCall> get calls;
-  List<AttendanceNotice> get notices;
-  AttendanceMetrics get metrics;
-  AttendanceCall? callById(String id);
-  AttendanceCall createCall(AttendanceCallDraft draft);
-  void markRemainingPresent(String callId);
-  void setParticipantState(String callId, String participantId, AttendancePresenceState state);
-  void completeCall(String callId);
-  void confirmNotice(String noticeId);
-  void correctParticipant({
-    required String callId,
-    required String participantId,
-    required AttendancePresenceState state,
+  Future<AttendanceOverview> fetchOverview({DateTime? date});
+  Future<AttendanceContextOptions> fetchContextOptions({required DateTime date});
+  Future<AttendanceCall?> fetchCall(String id);
+  Future<AttendanceCall> createCall(AttendanceCallDraft draft);
+  Future<AttendanceBulkResult> markRemainingPresent(String callId, {required int expectedVersion});
+  Future<AttendanceBulkResult> clearPresenceMarks(String callId, {required int expectedVersion});
+  Future<AttendanceCall> undoBulk(AttendanceBulkReceipt receipt);
+  Future<AttendanceCall> setParticipantState(
+    String callId,
+    String participantId,
+    AttendancePresenceState state, {
+    required int expectedVersion,
+  });
+  Future<AttendanceCall> completeCall(String callId, {required int expectedVersion});
+  Future<AttendanceCall> reopenCall(
+    String callId, {
+    required int expectedVersion,
     required String reason,
   });
-}
-
-abstract final class AttendanceFixtures {
-  static final today = DateTime(2026, 8, 3);
-}
-
-final class InMemoryAttendanceRepository extends ChangeNotifier implements AttendanceRepository {
-  InMemoryAttendanceRepository.seeded({SuperadminActivityController? activities})
-    : _calls = _seedCalls(),
-      _notices = [
-        AttendanceNotice(
-          id: 'notice-1',
-          callId: 'call-progress',
-          participantId: 'participant-1',
-          participantName: 'Lia Horizonte',
-          intent: AttendanceNoticeIntent.lateArrival,
-          reason: 'Consulta marcada',
-          startDate: AttendanceFixtures.today,
-          note: 'Chegada prevista para 9h.',
-        ),
-      ] {
-    activities?.addActivity(
-      SuperadminActivity.attendanceNotice(
-        id: 'attendance-notice-1',
-        subject: 'Lia Horizonte',
-        summary: 'Chegada atrasada · aguardando confirmação',
-        destination: '/attendance/calls/call-progress?participant=participant-1',
-        createdAt: DateTime(2026, 8, 3, 8, 15),
-      ),
-    );
-  }
-
-  final List<AttendanceCall> _calls;
-  final List<AttendanceNotice> _notices;
-  var _nextCall = 1;
-  var _nextNotice = 1;
-
-  @override
-  List<AttendanceCall> get calls => List.unmodifiable(_calls);
-
-  @override
-  List<AttendanceNotice> get notices => List.unmodifiable(_notices);
-
-  int get pendingNoticeCount => _notices.where((item) => item.pending).length;
-
-  @override
-  AttendanceCall? callById(String id) => _calls.where((item) => item.id == id).firstOrNull;
-
-  @override
-  AttendanceMetrics get metrics {
-    final official = _calls
-        .where(
-          (call) =>
-              call.status == AttendanceCallStatus.completed ||
-              call.status == AttendanceCallStatus.corrected,
-        )
-        .expand((call) => call.participants)
-        .where((item) => item.state != AttendancePresenceState.unmarked)
-        .toList();
-    final present = official.where(
-      (item) => const {
-        AttendancePresenceState.present,
-        AttendancePresenceState.late,
-        AttendancePresenceState.earlyDeparture,
-      }.contains(item.state),
-    );
-    final absent = official.where((item) => item.state == AttendancePresenceState.absent);
-    return AttendanceMetrics(
-      presencePercent: official.isEmpty ? 0 : present.length / official.length * 100,
-      justifiedAbsences: absent
-          .where((item) => item.justification == AttendanceJustificationState.accepted)
-          .length,
-      unjustifiedAbsences: absent
-          .where((item) => item.justification != AttendanceJustificationState.accepted)
-          .length,
-      late: official.where((item) => item.state == AttendancePresenceState.late).length,
-      earlyDepartures: official
-          .where((item) => item.state == AttendancePresenceState.earlyDeparture)
-          .length,
-    );
-  }
-
-  @override
-  AttendanceCall createCall(AttendanceCallDraft draft) {
-    if (draft.activityContextId == 'activity-art-group-sun') {
-      throw StateError('Chamada não exigida para esta atividade.');
-    }
-    final call = AttendanceCall(
-      id: 'call-created-${_nextCall++}',
-      institutionId: draft.institutionId,
-      institutionName: _institutionName(draft.institutionId),
-      unitId: draft.unitId,
-      unitName: draft.unitId == 'unit-1' ? 'Unidade Centro' : 'Unidade Norte',
-      groupId: draft.groupId,
-      groupName: draft.groupId == 'group-sun' ? 'Turma Sol' : 'Turma Lua',
-      activityContextId: draft.activityContextId,
-      activityName: draft.activityContextId == null ? null : 'Música',
-      date: draft.date,
-      status: AttendanceCallStatus.inProgress,
-      participants: _participants(),
-    );
-    _calls.insert(0, call);
-    notifyListeners();
-    return call;
-  }
-
-  @override
-  void markRemainingPresent(String callId) {
-    final call = _requiredCall(callId);
-    for (final participant in call.participants) {
-      if (participant.state == AttendancePresenceState.unmarked) {
-        participant.state = AttendancePresenceState.present;
-      }
-    }
-    call.status = AttendanceCallStatus.inProgress;
-    call.updatedAt = DateTime(2026, 8, 3, 9, 10);
-    notifyListeners();
-  }
-
-  @override
-  void setParticipantState(String callId, String participantId, AttendancePresenceState state) {
-    final call = _requiredCall(callId);
-    _requiredParticipant(call, participantId).state = state;
-    call.status = AttendanceCallStatus.inProgress;
-    notifyListeners();
-  }
-
-  @override
-  void completeCall(String callId) {
-    final call = _requiredCall(callId);
-    if (call.hasUnmarked) throw StateError('Marque todos os participantes antes de concluir.');
-    call.status = AttendanceCallStatus.completed;
-    call.updatedAt = DateTime(2026, 8, 3, 9, 20);
-    notifyListeners();
-  }
-
-  @override
-  void confirmNotice(String noticeId) {
-    final notice = _notices.where((item) => item.id == noticeId).firstOrNull;
-    if (notice == null) throw StateError('Aviso não encontrado.');
-    if (!notice.pending) return;
-    final call = _requiredCall(notice.callId);
-    final participant = _requiredParticipant(call, notice.participantId);
-    participant.state = switch (notice.intent) {
-      AttendanceNoticeIntent.absence => AttendancePresenceState.absent,
-      AttendanceNoticeIntent.expectedPresence => AttendancePresenceState.present,
-      AttendanceNoticeIntent.lateArrival => AttendancePresenceState.late,
-      AttendanceNoticeIntent.earlyDeparture => AttendancePresenceState.earlyDeparture,
-    };
-    notice.pending = false;
-    call.status = AttendanceCallStatus.inProgress;
-    notifyListeners();
-  }
-
-  @override
-  void correctParticipant({
+  Future<AttendanceCall> confirmNotice(String noticeId, {required int expectedVersion});
+  Future<AttendanceCall> correctParticipant({
     required String callId,
     required String participantId,
     required AttendancePresenceState state,
     required String reason,
-  }) {
-    if (reason.trim().isEmpty) throw ArgumentError.value(reason, 'reason');
-    final call = _requiredCall(callId);
-    if (call.status != AttendanceCallStatus.completed &&
-        call.status != AttendanceCallStatus.corrected) {
-      throw StateError('Somente chamadas concluídas podem ser corrigidas.');
-    }
-    final participant = _requiredParticipant(call, participantId);
-    final previous = participant.state;
-    participant.state = state;
-    call.status = AttendanceCallStatus.corrected;
-    call.revisions.add(
-      AttendanceRevision(
-        participantId: participantId,
-        previous: previous,
-        current: state,
-        reason: reason.trim(),
-        author: 'Owner Coelo',
-        changedAt: DateTime(2026, 8, 3, 10, 30),
-      ),
-    );
-    notifyListeners();
-  }
-
-  void addPendingNoticeForTest(String callId) {
-    _notices.add(
-      AttendanceNotice(
-        id: 'notice-test-${_nextNotice++}',
-        callId: callId,
-        participantId: 'participant-3',
-        participantName: 'Noa Vale',
-        intent: AttendanceNoticeIntent.absence,
-        reason: 'Aviso familiar',
-        startDate: AttendanceFixtures.today,
-      ),
-    );
-    notifyListeners();
-  }
-
-  AttendanceCall _requiredCall(String id) =>
-      callById(id) ?? (throw StateError('Chamada não encontrada.'));
-
-  AttendanceParticipant _requiredParticipant(AttendanceCall call, String id) =>
-      call.participants.where((item) => item.id == id).firstOrNull ??
-      (throw StateError('Participante não encontrado.'));
+    required int expectedVersion,
+  });
 }
-
-List<AttendanceCall> _seedCalls() => [
-  AttendanceCall(
-    id: 'call-progress',
-    institutionId: 'institution-1',
-    institutionName: 'Instituto Horizonte',
-    unitId: 'unit-1',
-    unitName: 'Unidade Centro',
-    groupId: 'group-sun',
-    groupName: 'Turma Sol',
-    activityContextId: 'activity-music-group-sun',
-    activityName: 'Música · Turma Sol',
-    date: AttendanceFixtures.today,
-    status: AttendanceCallStatus.inProgress,
-    participants: _participants(secondState: AttendancePresenceState.absent),
-    responsible: 'Prof. Marina',
-  ),
-  AttendanceCall(
-    id: 'call-completed',
-    institutionId: 'institution-2',
-    institutionName: 'Colégio Aurora',
-    unitId: 'unit-2',
-    unitName: 'Unidade Norte',
-    groupId: 'group-moon',
-    groupName: 'Turma Lua',
-    date: DateTime(2026, 8, 2),
-    status: AttendanceCallStatus.completed,
-    participants: _participants(
-      firstState: AttendancePresenceState.present,
-      secondState: AttendancePresenceState.absent,
-      thirdState: AttendancePresenceState.late,
-    )..[1].justification = AttendanceJustificationState.accepted,
-    responsible: 'Prof. Caio',
-  ),
-  AttendanceCall(
-    id: 'call-other-group',
-    institutionId: 'institution-3',
-    institutionName: 'Espaço Ipê',
-    unitId: 'unit-3',
-    unitName: 'Unidade Jardim',
-    groupId: 'group-ipe',
-    groupName: 'Turma Ipê',
-    date: AttendanceFixtures.today,
-    status: AttendanceCallStatus.notStarted,
-    participants: _participants(),
-  ),
-];
-
-List<AttendanceParticipant> _participants({
-  AttendancePresenceState firstState = AttendancePresenceState.unmarked,
-  AttendancePresenceState secondState = AttendancePresenceState.unmarked,
-  AttendancePresenceState thirdState = AttendancePresenceState.unmarked,
-}) => [
-  AttendanceParticipant(id: 'participant-1', name: 'Lia Horizonte', state: firstState),
-  AttendanceParticipant(id: 'participant-2', name: 'Tom Vale', state: secondState),
-  AttendanceParticipant(id: 'participant-3', name: 'Noa Jardim', state: thirdState),
-];
-
-String _institutionName(String id) => switch (id) {
-  'institution-2' => 'Colégio Aurora',
-  'institution-3' => 'Espaço Ipê',
-  _ => 'Instituto Horizonte',
-};

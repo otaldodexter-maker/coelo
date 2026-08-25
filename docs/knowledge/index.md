@@ -27,7 +27,7 @@ review_owner: Coelo Owner
 | team | Superadmin / Perfis e permissões | [Perfis e Permissões do Superadmin](team/superadmin-access-profiles.md) | validated | `specs/018-profiles-permissions-superadmin.md`; `decisions/0017-access-profile-governance.md` |
 | team | Superadmin / Avisos | [Avisos do Superadmin MVP](team/superadmin-notices-mvp.md) | validated | `docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md` |
 | team | Superadmin / Convites | [Convites produtivos do Superadmin](team/superadmin-invites-production.md) | validated | `specs/026-superadmin-invites-production.md` |
-| team | Superadmin / Assiduidade e Rotina Diária | [Assiduidade e Rotina Diária produtivas](team/superadmin-attendance-daily-routine.md) | validated | specs/024-superadmin-attendance-daily-routine-production.md |
+| team | Superadmin / Assiduidade e Rotina Diária | [Assiduidade e Rotina Diária produtivas](team/superadmin-attendance-daily-routine.md) | validated | specs/024-superadmin-attendance-daily-routine-production.md; specs/038-attendance-responsive-dashboard.md |
 | team | Superadmin / Auditoria | [Auditoria produtiva do Superadmin](team/superadmin-audit-production.md) | validated | `specs/027-superadmin-audit-production.md` |
 | team | Superadmin / Conversas | [Conversas produtivas do Superadmin](team/superadmin-conversations-production.md) | validated | specs/028-superadmin-conversations-production.md |
 | team | Suporte / Benchmark externo | [Benchmark de suporte e stories do ClassDojo](team/classdojo-support-benchmark.md) | validated | `docs/product/competitive-map.md` |

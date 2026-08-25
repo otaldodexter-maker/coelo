@@ -2,7 +2,12 @@ import 'dart:async';
 
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
+import 'package:coelo_superadmin/features/attendance/data/supabase_attendance_repository.dart';
+import 'package:coelo_superadmin/features/audit/data/supabase_audit_repository.dart';
+import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
+import 'package:coelo_superadmin/features/invites/data/supabase_invite_repository.dart';
+import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,6 +43,10 @@ void main() {
     expect(recoveryResult.isSuccess, isFalse);
     expect(recoveryResult.message, UnavailableCoeloAuthGateway.defaultMessage);
     expect(scope.personDirectoryRepository, isA<UnavailablePersonDirectoryRepository>());
+    expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
+    expect(scope.attendanceRepository, isA<UnavailableAttendanceRepository>());
+    expect(scope.attendancePermissions.canManage, isFalse);
+    expect(scope.auditRepository, isA<UnavailableAuditRepository>());
   });
 
   test('initializes Supabase with public config and conditional local storage', () async {
@@ -62,6 +71,11 @@ void main() {
     expect(initializedStorage, isA<ConditionalSupabaseLocalStorage>());
     expect(scope.session.isAuthenticated, isFalse);
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
+    expect(scope.inviteRepository, isA<SupabaseInviteRepository>());
+    expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
+    expect(scope.attendancePermissions.canManage, isFalse);
+    expect(scope.attendancePermissions.backendResolved, isTrue);
+    expect(scope.auditRepository, isA<SupabaseAuditRepository>());
   });
 
   test('starts authenticated from a restored session and mirrors later auth changes', () async {

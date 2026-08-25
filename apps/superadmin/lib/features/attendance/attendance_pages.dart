@@ -10,104 +10,7 @@ import '../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../auth/domain/logout_action.dart';
 import 'attendance.dart';
 
-class AttendanceDashboardPage extends StatefulWidget {
-  const AttendanceDashboardPage({
-    required this.repository,
-    required this.permissions,
-    required this.logout,
-    required this.onCreate,
-    required this.onOpenCall,
-    this.activityController,
-    super.key,
-  });
-
-  final InMemoryAttendanceRepository repository;
-  final AttendancePermissions permissions;
-  final LogoutAction logout;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onOpenCall;
-  final SuperadminActivityController? activityController;
-
-  @override
-  State<AttendanceDashboardPage> createState() => _AttendanceDashboardPageState();
-}
-
-class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
-  String? _institutionId;
-
-  @override
-  Widget build(BuildContext context) => SuperadminShell(
-    logout: widget.logout,
-    title: 'Assiduidade',
-    subtitle: 'Lance chamadas e acompanhe o histórico de cada contexto.',
-    currentDestination: 'attendance',
-    activityController: widget.activityController,
-    child: ListenableBuilder(
-      listenable: widget.repository,
-      builder: (context, _) {
-        final calls = widget.repository.calls
-            .where((call) => _institutionId == null || call.institutionId == _institutionId)
-            .toList();
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(CoeloSpacing.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _LocalDataNotice(readOnly: !widget.permissions.canManage),
-              if (widget.permissions.canManage) ...[
-                const SizedBox(height: CoeloSpacing.space6),
-                LayoutBuilder(
-                  builder: (context, constraints) => Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: SizedBox(
-                      width: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                          ? 340
-                          : constraints.maxWidth,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 216),
-                        child: CoeloAdminCreateAction(
-                          label: 'Nova chamada',
-                          icon: Icons.how_to_reg_outlined,
-                          onPressed: widget.onCreate,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: CoeloSpacing.space8),
-              Text('Histórico de chamadas', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: CoeloSpacing.space3),
-              Wrap(
-                spacing: CoeloSpacing.space2,
-                runSpacing: CoeloSpacing.space2,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () => setState(() => _institutionId = null),
-                    child: const Text('Todas as instituições'),
-                  ),
-                  if (_institutionId != null) ...[
-                    const Icon(Icons.chevron_right_rounded),
-                    Text(calls.firstOrNull?.institutionName ?? 'Instituição'),
-                  ],
-                ],
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              _AttendanceCallList(
-                calls: calls,
-                onOpenCall: widget.onOpenCall,
-                onInstitutionSelected: (id) => setState(() => _institutionId = id),
-              ),
-              const SizedBox(height: CoeloSpacing.space6),
-              const _ExpectationLegend(),
-            ],
-          ),
-        );
-      },
-    ),
-  );
-}
+export 'attendance_dashboard_page.dart';
 
 class AttendanceNewCallPage extends StatefulWidget {
   const AttendanceNewCallPage({
@@ -124,7 +27,7 @@ class AttendanceNewCallPage extends StatefulWidget {
     super.key,
   });
 
-  final InMemoryAttendanceRepository repository;
+  final AttendanceRepository repository;
   final AttendancePermissions permissions;
   final LogoutAction logout;
   final VoidCallback onCancel;
@@ -140,29 +43,64 @@ class AttendanceNewCallPage extends StatefulWidget {
 }
 
 class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
-  static const _institutions = ['institution-1', 'institution-2', 'institution-3'];
-  static const _units = ['unit-1', 'unit-2'];
-  static const _groups = ['group-sun', 'group-moon'];
-  static const _activities = ['activity-music-group-sun', 'activity-art-group-sun'];
-
-  late String _institution;
-  late String _unit;
-  late String _group;
+  final _dateFocusNode = FocusNode(debugLabel: 'attendance-date-picker');
+  AttendanceContextOptions? _options;
+  Object? _loadError;
+  String? _institution;
+  String? _unit;
+  String? _group;
   late String _context;
-  late String _activity;
+  String? _activity;
+  late DateTime _date;
+  var _currentStep = 0;
 
   @override
   void initState() {
     super.initState();
-    _institution = _initialValue(widget.initialInstitutionId, _institutions);
-    _unit = _initialValue(widget.initialUnitId, _units);
-    _group = _initialValue(widget.initialGroupId, _groups);
-    _activity = _initialValue(widget.initialActivityId, _activities);
     _context = widget.initialActivityId == null ? 'group' : 'activity';
+    _date = DateUtils.dateOnly(DateTime.now());
+    _loadOptions(useInitialValues: true);
   }
 
-  bool get _notRequired => _context == 'activity' && _activity == 'activity-art-group-sun';
-  bool get _canCreate => widget.permissions.canManage && !_notRequired;
+  @override
+  void dispose() {
+    _dateFocusNode.dispose();
+    super.dispose();
+  }
+
+  List<AttendanceContextOption> get _institutions => _options?.institutions ?? const [];
+  List<AttendanceContextOption> get _units => (_options?.units ?? const [])
+      .where((item) => item.institutionId == null || item.institutionId == _institution)
+      .toList(growable: false);
+  List<AttendanceContextOption> get _groups => (_options?.groups ?? const [])
+      .where(
+        (item) =>
+            (item.institutionId == null || item.institutionId == _institution) &&
+            (item.unitId == null || item.unitId == _unit),
+      )
+      .toList(growable: false);
+  List<AttendanceContextOption> get _activities => (_options?.activities ?? const [])
+      .where(
+        (item) =>
+            (item.institutionId == null || item.institutionId == _institution) &&
+            (item.unitId == null || item.unitId == _unit) &&
+            (item.groupId == null || item.groupId == _group),
+      )
+      .toList(growable: false);
+
+  AttendanceContextOption? get _selectedActivity =>
+      _activities.where((item) => item.id == _activity).firstOrNull;
+  bool get _notRequired => _context == 'activity' && _selectedActivity?.attendanceRequired == false;
+  bool get _hasSelection =>
+      _institution != null &&
+      _unit != null &&
+      _group != null &&
+      (_context == 'group' || _selectedActivity != null);
+  bool get _canCreate =>
+      widget.permissions.canCreate(backendCanManage: _options!.canManage) &&
+      (_options?.canManage ?? false) &&
+      _hasSelection &&
+      !_notRequired;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
@@ -171,210 +109,355 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
     subtitle: 'Selecione o contexto antes de registrar a presença.',
     currentDestination: 'attendance',
     activityController: widget.activityController,
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-        final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-            ? CoeloSpacing.space10
-            : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-            ? CoeloSpacing.space6
-            : CoeloSpacing.space4;
-        final navigation = SuperadminFormStepNavigation(
-          currentIndex: 0,
-          steps: [
-            SuperadminFormStep(label: 'Contexto', status: SuperadminFormStepStatus.current),
-            SuperadminFormStep(
-              label: 'Chamada',
-              status: SuperadminFormStepStatus.incomplete,
-              enabled: _canCreate,
-            ),
-          ],
-          onStepSelected: (index) {
-            if (index == 1 && _canCreate) _create();
-          },
-        );
-        final content = Expanded(
-          child: Column(
-            children: [
-              if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
-              Expanded(
-                child: SingleChildScrollView(
-                  key: const Key('attendance-context-scroll'),
-                  padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 880),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            'Contexto da chamada',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: CoeloSpacing.space2),
-                          Text(
-                            'A data é hoje. Escolha a turma e, quando necessário, a atividade.',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: CoeloSpacing.space5),
-                          const _AttendanceInlineNotice(),
-                          const SizedBox(height: CoeloSpacing.space5),
-                          CoeloAdminSingleSelectField<String>(
-                            label: 'Instituição',
-                            value: _institution,
-                            options: _institutions,
-                            optionLabel: _institutionLabel,
-                            onChanged: (value) => setState(() => _institution = value),
-                            prefixIcon: Icons.account_balance_outlined,
-                          ),
-                          const SizedBox(height: CoeloSpacing.space4),
-                          CoeloAdminSingleSelectField<String>(
-                            label: 'Unidade',
-                            value: _unit,
-                            options: _units,
-                            optionLabel: _unitLabel,
-                            onChanged: (value) => setState(() => _unit = value),
-                            prefixIcon: Icons.apartment_outlined,
-                          ),
-                          const SizedBox(height: CoeloSpacing.space4),
-                          CoeloAdminSingleSelectField<String>(
-                            label: 'Turma',
-                            value: _group,
-                            options: _groups,
-                            optionLabel: _groupLabel,
-                            onChanged: (value) => setState(() => _group = value),
-                            prefixIcon: Icons.groups_outlined,
-                          ),
-                          const SizedBox(height: CoeloSpacing.space4),
-                          CoeloAdminSingleSelectField<String>(
-                            label: 'Contexto',
-                            value: _context,
-                            options: const ['group', 'activity'],
-                            optionLabel: (value) => value == 'group' ? 'Turma' : 'Atividade',
-                            onChanged: (value) => setState(() => _context = value),
-                            prefixIcon: Icons.account_tree_outlined,
-                          ),
-                          if (_context == 'activity') ...[
-                            const SizedBox(height: CoeloSpacing.space4),
-                            CoeloAdminSingleSelectField<String>(
-                              label: 'Atividade na turma',
-                              value: _activity,
-                              options: _activities,
-                              optionLabel: _activityLabel,
-                              onChanged: (value) => setState(() => _activity = value),
-                              prefixIcon: Icons.local_activity_outlined,
-                            ),
-                          ],
-                          const SizedBox(height: CoeloSpacing.space5),
-                          const _AttendanceContextFacts(),
-                          if (_notRequired) ...[
-                            const SizedBox(height: CoeloSpacing.space4),
-                            const _AttendanceRequirementNotice(),
-                          ],
-                        ],
-                      ),
-                    ),
+    child: _options == null
+        ? _loadingOrFailure()
+        : !_hasSelection
+        ? _emptyState()
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
+              final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                  ? CoeloSpacing.space10
+                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                  ? CoeloSpacing.space6
+                  : CoeloSpacing.space4;
+              final navigation = SuperadminFormStepNavigation(
+                currentIndex: _currentStep,
+                steps: [
+                  SuperadminFormStep(
+                    label: 'Contexto',
+                    status: _currentStep == 0
+                        ? SuperadminFormStepStatus.current
+                        : SuperadminFormStepStatus.complete,
                   ),
-                ),
-              ),
-              SuperadminFormActionFooter(
-                surfaceKey: const Key('attendance-context-footer'),
-                tertiaryAction: TextButton(
-                  key: const Key('attendance-context-cancel'),
-                  onPressed: widget.onCancel,
-                  child: const Text('Cancelar'),
-                ),
-                continuationActions: [
-                  FilledButton(
-                    key: const Key('attendance-context-continue'),
-                    onPressed: _canCreate ? _create : null,
-                    child: const Text('Continuar'),
+                  SuperadminFormStep(
+                    label: 'Rotina diária',
+                    status: _currentStep == 1
+                        ? SuperadminFormStepStatus.current
+                        : SuperadminFormStepStatus.incomplete,
+                  ),
+                  const SuperadminFormStep(
+                    label: 'Chamada',
+                    status: SuperadminFormStepStatus.incomplete,
                   ),
                 ],
-              ),
-            ],
+                onStepSelected: (index) {
+                  if (index < 2) setState(() => _currentStep = index);
+                  if (index == 2 && _canCreate) _create();
+                },
+              );
+              final content = Expanded(
+                child: Column(
+                  children: [
+                    if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
+                    Expanded(
+                      child: SingleChildScrollView(
+                        key: const Key('attendance-context-scroll'),
+                        padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 880),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  _currentStep == 0
+                                      ? 'Contexto da chamada'
+                                      : 'Rotina diária vinculada',
+                                  style: Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                const SizedBox(height: CoeloSpacing.space2),
+                                Text(
+                                  _currentStep == 0
+                                      ? 'Escolha a data, a turma e, quando necessário, a atividade.'
+                                      : 'Confira a rotina efetiva antes de lançar a chamada.',
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(height: CoeloSpacing.space5),
+                                OutlinedButton.icon(
+                                  key: const Key('attendance-date-picker'),
+                                  focusNode: _dateFocusNode,
+                                  onPressed:
+                                      widget.permissions.canCreate(
+                                        backendCanManage: _options!.canManage,
+                                      )
+                                      ? _pickDate
+                                      : null,
+                                  icon: const Icon(Icons.calendar_today_outlined),
+                                  label: Text('Data da chamada · ${_attendanceDate(_date)}'),
+                                ),
+                                if (_currentStep == 1) ...[
+                                  const SizedBox(height: CoeloSpacing.space4),
+                                  const Text(
+                                    'A rotina aplicável será resolvida pelo contexto autorizado.',
+                                  ),
+                                ],
+                                const SizedBox(height: CoeloSpacing.space5),
+                                CoeloAdminSingleSelectField<String>(
+                                  label: 'Instituição',
+                                  value: _institution!,
+                                  options: _institutions
+                                      .map((item) => item.id)
+                                      .toList(growable: false),
+                                  optionLabel: (id) => _labelFor(_institutions, id),
+                                  onChanged: _selectInstitution,
+                                  prefixIcon: Icons.account_balance_outlined,
+                                ),
+                                const SizedBox(height: CoeloSpacing.space4),
+                                CoeloAdminSingleSelectField<String>(
+                                  label: 'Unidade',
+                                  value: _unit!,
+                                  options: _units.map((item) => item.id).toList(growable: false),
+                                  optionLabel: (id) => _labelFor(_units, id),
+                                  onChanged: _selectUnit,
+                                  prefixIcon: Icons.apartment_outlined,
+                                ),
+                                const SizedBox(height: CoeloSpacing.space4),
+                                CoeloAdminSingleSelectField<String>(
+                                  label: 'Turma',
+                                  value: _group!,
+                                  options: _groups.map((item) => item.id).toList(growable: false),
+                                  optionLabel: (id) => _labelFor(_groups, id),
+                                  onChanged: _selectGroup,
+                                  prefixIcon: Icons.groups_outlined,
+                                ),
+                                const SizedBox(height: CoeloSpacing.space4),
+                                CoeloAdminSingleSelectField<String>(
+                                  label: 'Contexto',
+                                  value: _context,
+                                  options: _activities.isEmpty
+                                      ? const ['group']
+                                      : const ['group', 'activity'],
+                                  optionLabel: (value) => value == 'group' ? 'Turma' : 'Atividade',
+                                  onChanged: (value) => setState(() {
+                                    _context = value;
+                                    if (value == 'activity') {
+                                      _activity = _validId(_activity, _activities);
+                                    }
+                                  }),
+                                  prefixIcon: Icons.account_tree_outlined,
+                                ),
+                                if (_context == 'activity' && _activities.isNotEmpty) ...[
+                                  const SizedBox(height: CoeloSpacing.space4),
+                                  CoeloAdminSingleSelectField<String>(
+                                    label: 'Atividade na turma',
+                                    value: _activity!,
+                                    options: _activities
+                                        .map((item) => item.id)
+                                        .toList(growable: false),
+                                    optionLabel: (id) => _labelFor(_activities, id),
+                                    onChanged: (value) => setState(() => _activity = value),
+                                    prefixIcon: Icons.local_activity_outlined,
+                                  ),
+                                ],
+                                const SizedBox(height: CoeloSpacing.space5),
+                                _AttendanceContextFacts(date: _date),
+                                if (_notRequired) ...[
+                                  const SizedBox(height: CoeloSpacing.space4),
+                                  const _AttendanceRequirementNotice(),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SuperadminFormActionFooter(
+                      surfaceKey: const Key('attendance-context-footer'),
+                      tertiaryAction: TextButton(
+                        key: const Key('attendance-context-cancel'),
+                        onPressed: widget.onCancel,
+                        child: const Text('Cancelar'),
+                      ),
+                      continuationActions: [
+                        FilledButton(
+                          key: const Key('attendance-context-continue'),
+                          onPressed: !_canCreate
+                              ? null
+                              : _currentStep == 0
+                              ? () => setState(() => _currentStep = 1)
+                              : _create,
+                          child: Text(_currentStep == 0 ? 'Continuar' : 'Lançar chamada'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+              return Padding(
+                padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (wide) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
+                    content,
+                  ],
+                ),
+              );
+            },
           ),
-        );
-        return Padding(
-          padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (wide) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-              content,
-            ],
-          ),
-        );
-      },
-    ),
   );
 
-  void _create() {
-    final call = widget.repository.createCall(
+  Future<void> _pickDate() async {
+    final today = DateUtils.dateOnly(DateTime.now());
+    final selected = await showCoeloDateRangePicker(
+      context: context,
+      value: DateTimeRange(start: _date, end: _date),
+      firstDate: DateTime(1970),
+      lastDate: today,
+      currentDate: today,
+      showQuickRanges: false,
+      selectionMode: CoeloDateSelectionMode.single,
+    );
+    if (!mounted) return;
+    _dateFocusNode.requestFocus();
+    if (selected == null) return;
+    _date = DateUtils.dateOnly(selected.start);
+    await _loadOptions();
+  }
+
+  Future<void> _loadOptions({bool useInitialValues = false}) async {
+    if (mounted) {
+      setState(() {
+        _options = null;
+        _loadError = null;
+      });
+    }
+    try {
+      final options = await widget.repository.fetchContextOptions(date: _date);
+      if (!mounted) return;
+      final preferredInstitution = useInitialValues ? widget.initialInstitutionId : _institution;
+      final institution = _validId(preferredInstitution, options.institutions);
+      final units = options.units
+          .where((item) => item.institutionId == null || item.institutionId == institution)
+          .toList(growable: false);
+      final preferredUnit = useInitialValues ? widget.initialUnitId : _unit;
+      final unit = _validId(preferredUnit, units);
+      final groups = options.groups
+          .where(
+            (item) =>
+                (item.institutionId == null || item.institutionId == institution) &&
+                (item.unitId == null || item.unitId == unit),
+          )
+          .toList(growable: false);
+      final preferredGroup = useInitialValues ? widget.initialGroupId : _group;
+      final group = _validId(preferredGroup, groups);
+      final activities = options.activities
+          .where(
+            (item) =>
+                (item.institutionId == null || item.institutionId == institution) &&
+                (item.unitId == null || item.unitId == unit) &&
+                (item.groupId == null || item.groupId == group),
+          )
+          .toList(growable: false);
+      final preferredActivity = useInitialValues ? widget.initialActivityId : _activity;
+      final activity = _validId(preferredActivity, activities);
+      setState(() {
+        _options = options;
+        _institution = institution;
+        _unit = unit;
+        _group = group;
+        _activity = activity;
+        if (_context == 'activity' && activity == null) _context = 'group';
+      });
+    } catch (error) {
+      if (mounted) setState(() => _loadError = error);
+    }
+  }
+
+  Widget _loadingOrFailure() {
+    final error = _loadError;
+    if (error == null) {
+      return const Center(
+        key: Key('attendance-context-loading'),
+        child: CircularProgressIndicator(),
+      );
+    }
+    final unauthorized = error is AttendanceUnauthorizedException;
+    return CoeloStatePanel(
+      key: Key(unauthorized ? 'attendance-context-unauthorized' : 'attendance-context-failure'),
+      title: unauthorized ? 'Acesso n\u00e3o autorizado' : 'N\u00e3o foi poss\u00edvel carregar',
+      message: unauthorized
+          ? 'Voc\u00ea n\u00e3o tem acesso aos contextos desta chamada.'
+          : 'Verifique sua conex\u00e3o e tente novamente.',
+      icon: unauthorized ? Icons.lock_outline_rounded : Icons.cloud_off_outlined,
+      actionLabel: unauthorized ? 'Voltar para Assiduidade' : 'Tentar novamente',
+      onAction: unauthorized ? widget.onCancel : _loadOptions,
+    );
+  }
+
+  Widget _emptyState() => CoeloStatePanel(
+    key: const Key('attendance-context-empty'),
+    title: 'Nenhum contexto dispon\u00edvel',
+    message: 'N\u00e3o h\u00e1 institui\u00e7\u00e3o, unidade e turma autorizadas para esta data.',
+    icon: Icons.event_busy_outlined,
+    actionLabel: 'Escolher outra data',
+    onAction: _pickDate,
+  );
+
+  void _selectInstitution(String value) => setState(() {
+    _institution = value;
+    _unit = _validId(null, _units);
+    _group = _validId(null, _groups);
+    _activity = _validId(null, _activities);
+    if (_context == 'activity' && _activity == null) _context = 'group';
+  });
+
+  void _selectUnit(String value) => setState(() {
+    _unit = value;
+    _group = _validId(null, _groups);
+    _activity = _validId(null, _activities);
+    if (_context == 'activity' && _activity == null) _context = 'group';
+  });
+
+  void _selectGroup(String value) => setState(() {
+    _group = value;
+    _activity = _validId(null, _activities);
+    if (_context == 'activity' && _activity == null) _context = 'group';
+  });
+
+  static String? _validId(String? preferred, List<AttendanceContextOption> options) {
+    if (preferred != null && options.any((item) => item.id == preferred)) return preferred;
+    return options.firstOrNull?.id;
+  }
+
+  static String _labelFor(List<AttendanceContextOption> options, String id) =>
+      options.firstWhere((item) => item.id == id).name;
+
+  Future<void> _create() async {
+    final call = await widget.repository.createCall(
       AttendanceCallDraft(
-        institutionId: _institution,
-        unitId: _unit,
-        groupId: _group,
+        institutionId: _institution!,
+        unitId: _unit!,
+        groupId: _group!,
         activityContextId: _context == 'activity' ? _activity : null,
-        date: AttendanceFixtures.today,
+        date: _date,
       ),
     );
     widget.onCreated(call.id);
   }
-
-  static String _initialValue(String? value, List<String> options) =>
-      value != null && options.contains(value) ? value : options.first;
-}
-
-class _AttendanceInlineNotice extends StatelessWidget {
-  const _AttendanceInlineNotice({this.readOnly = false});
-
-  final bool readOnly;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(CoeloRadius.lg),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Row(
-        children: [
-          const Icon(Icons.memory_outlined),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: Text(
-              readOnly
-                  ? 'Modo somente leitura · Dados locais de demonstração; recarregar restaura o estado inicial.'
-                  : 'Dados locais de demonstração · As alterações não persistem após recarregar.',
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
 class _AttendanceContextFacts extends StatelessWidget {
-  const _AttendanceContextFacts();
+  const _AttendanceContextFacts({required this.date});
+
+  final DateTime date;
 
   @override
   Widget build(BuildContext context) {
-    final date = AttendanceFixtures.today;
+    final today = DateUtils.dateOnly(DateTime.now());
     final facts = [
       _AttendanceFact(
         icon: Icons.calendar_today_outlined,
         label: 'Data',
-        value: 'Hoje · ${_attendanceDate(date)}',
+        value: '${DateUtils.isSameDay(date, today) ? 'Hoje · ' : ''}${_attendanceDate(date)}',
       ),
       const _AttendanceFact(
         icon: Icons.people_outline,
         label: 'Participantes esperados',
-        value: '3 participantes',
+        value: 'Definidos pelo contexto autorizado',
       ),
     ];
     return DecoratedBox(
@@ -465,12 +548,6 @@ class _AttendanceRequirementNotice extends StatelessWidget {
   );
 }
 
-String _unitLabel(String value) => value == 'unit-1' ? 'Unidade Centro' : 'Unidade Norte';
-String _groupLabel(String value) => value == 'group-sun' ? 'Turma Sol' : 'Turma Lua';
-String _activityLabel(String value) => value == 'activity-music-group-sun'
-    ? 'Música · Chamada exigida'
-    : 'Artes · Chamada não exigida';
-
 class AttendanceCallPage extends StatefulWidget {
   const AttendanceCallPage({
     required this.repository,
@@ -485,7 +562,7 @@ class AttendanceCallPage extends StatefulWidget {
     super.key,
   });
 
-  final InMemoryAttendanceRepository repository;
+  final AttendanceRepository repository;
   final String callId;
   final AttendancePermissions permissions;
   final LogoutAction logout;
@@ -502,6 +579,36 @@ class AttendanceCallPage extends StatefulWidget {
 
 class _AttendanceCallPageState extends State<AttendanceCallPage> {
   final _notes = <String, TextEditingController>{};
+  AttendanceBulkReceipt? _lastBulkReceipt;
+
+  AttendanceCall? _call;
+  Object? _loadError;
+  var _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCall();
+  }
+
+  Future<void> _loadCall() async {
+    try {
+      final call = await widget.repository.fetchCall(widget.callId);
+      if (mounted) {
+        setState(() {
+          _call = call;
+          _loading = false;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _loadError = error;
+          _loading = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -513,12 +620,18 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
 
   @override
   Widget build(BuildContext context) {
-    final call = widget.repository.callById(widget.callId);
-    if (call == null) return const Center(child: Text('Chamada não encontrada.'));
-    final writable = widget.permissions.canManage || widget.permissions.canOperate(call);
-    final concluded =
-        call.status == AttendanceCallStatus.completed ||
-        call.status == AttendanceCallStatus.corrected;
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_loadError != null) {
+      return const Center(child: Text('Não foi possível carregar a chamada.'));
+    }
+    final call = _call;
+    if (call == null) {
+      return const Center(child: Text('Chamada não encontrada.'));
+    }
+    final writable = call.canManage && widget.permissions.canOperate(call);
+    final concluded = call.status == AttendanceCallStatus.completed;
     final firstPendingRoutine = call.participants
         .where((item) => widget.routinePendingParticipantIds.contains(item.id))
         .firstOrNull;
@@ -528,215 +641,255 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       subtitle: '${call.institutionName} · ${call.unitName} · ${call.groupName}',
       currentDestination: 'attendance',
       activityController: widget.activityController,
-      child: ListenableBuilder(
-        listenable: widget.repository,
-        builder: (context, _) => LayoutBuilder(
-          builder: (context, constraints) {
-            final wide = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
-            final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-                ? CoeloSpacing.space10
-                : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-                ? CoeloSpacing.space6
-                : CoeloSpacing.space4;
-            final navigation = SuperadminFormStepNavigation(
-              currentIndex: 1,
-              steps: const [
-                SuperadminFormStep(label: 'Contexto', status: SuperadminFormStepStatus.complete),
-                SuperadminFormStep(label: 'Chamada', status: SuperadminFormStepStatus.current),
-              ],
-              onStepSelected: (index) {
-                if (index == 0) widget.onBack();
-              },
-            );
-            final colors = Theme.of(context).colorScheme;
-            final content = Expanded(
-              child: Column(
-                children: [
-                  if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
-                  Expanded(
-                    child: SingleChildScrollView(
-                      key: const Key('attendance-call-scroll'),
-                      padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 980),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _AttendanceInlineNotice(readOnly: !writable),
-                              const SizedBox(height: CoeloSpacing.space4),
-                              DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: colors.surface,
-                                  border: Border.all(color: colors.outlineVariant),
-                                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(CoeloSpacing.space4),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Hoje · ${_attendanceDate(call.date)}',
-                                        style: Theme.of(context).textTheme.labelMedium,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
+          final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+              ? CoeloSpacing.space10
+              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              ? CoeloSpacing.space6
+              : CoeloSpacing.space4;
+          final navigation = SuperadminFormStepNavigation(
+            currentIndex: 2,
+            steps: const [
+              SuperadminFormStep(label: 'Contexto', status: SuperadminFormStepStatus.complete),
+              SuperadminFormStep(label: 'Rotina diária', status: SuperadminFormStepStatus.complete),
+              SuperadminFormStep(label: 'Chamada', status: SuperadminFormStepStatus.current),
+            ],
+            onStepSelected: (index) {
+              if (index == 0) widget.onBack();
+            },
+          );
+          final colors = Theme.of(context).colorScheme;
+          final content = Expanded(
+            child: Column(
+              children: [
+                if (!wide) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
+                Expanded(
+                  child: SingleChildScrollView(
+                    key: const Key('attendance-call-scroll'),
+                    padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 880),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                border: Border.all(color: colors.outlineVariant),
+                                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(CoeloSpacing.space4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${DateUtils.isSameDay(call.date, DateTime.now()) ? 'Hoje · ' : ''}'
+                                      '${_attendanceDate(call.date)}',
+                                      style: Theme.of(context).textTheme.labelMedium,
+                                    ),
+                                    const SizedBox(height: CoeloSpacing.spaceHalf),
+                                    Text(
+                                      '${call.groupName} · ${call.contextName}',
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                    ),
+                                    Text(
+                                      '${call.institutionName} · ${call.unitName} · '
+                                      '${call.participants.length} participantes',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: colors.onSurfaceVariant,
                                       ),
-                                      const SizedBox(height: CoeloSpacing.spaceHalf),
-                                      Text(
-                                        '${call.groupName} · ${call.contextName}',
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
-                                      Text(
-                                        '${call.institutionName} · ${call.unitName} · '
-                                        '${call.participants.length} participantes',
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: colors.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: CoeloSpacing.space4),
-                              DecoratedBox(
-                                key: const Key('attendance-participant-list'),
-                                decoration: BoxDecoration(
-                                  color: colors.surface,
-                                  border: Border.all(color: colors.outlineVariant),
-                                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(CoeloSpacing.space4),
-                                        child: _AttendanceCallToolbar(
-                                          call: call,
-                                          writable: writable && !concluded,
-                                          onMarkRemaining: () =>
-                                              widget.repository.markRemainingPresent(call.id),
-                                        ),
+                            ),
+                            const SizedBox(height: CoeloSpacing.space4),
+                            DecoratedBox(
+                              key: const Key('attendance-participant-list'),
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                border: Border.all(color: colors.outlineVariant),
+                                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(CoeloSpacing.space4),
+                                      child: _AttendanceCallToolbar(
+                                        call: call,
+                                        writable: writable && !concluded,
+                                        onMarkRemaining: () => _toggleBulk(call),
                                       ),
-                                      Divider(height: 1, color: colors.outlineVariant),
-                                      if (call.participants.isEmpty)
-                                        const Padding(
-                                          padding: EdgeInsets.all(CoeloSpacing.space6),
-                                          child: Text(
-                                            'Nenhum participante encontrado para este contexto.',
-                                          ),
-                                        )
-                                      else
-                                        ListView.separated(
-                                          shrinkWrap: true,
-                                          physics: const NeverScrollableScrollPhysics(),
-                                          itemCount: call.participants.length,
-                                          separatorBuilder: (context, index) =>
-                                              Divider(height: 1, color: colors.outlineVariant),
-                                          itemBuilder: (context, index) {
-                                            final participant = call.participants[index];
-                                            final notice = widget.repository.notices
-                                                .where(
-                                                  (item) =>
-                                                      item.participantId == participant.id &&
-                                                      item.callId == call.id,
-                                                )
-                                                .firstOrNull;
-                                            return _ParticipantCard(
-                                              participant: participant,
-                                              notice: notice,
-                                              focused:
-                                                  participant.id == widget.focusedParticipantId,
-                                              writable: writable && !concluded,
-                                              routine: widget.participantRoutineBuilder?.call(
-                                                context,
-                                                participant,
-                                              ),
-                                              routinePending: widget.routinePendingParticipantIds
-                                                  .contains(participant.id),
-                                              routineInitiallyExpanded:
-                                                  firstPendingRoutine?.id == participant.id,
-                                              noteController: _notes.putIfAbsent(
-                                                participant.id,
-                                                () => TextEditingController(text: participant.note),
-                                              ),
-                                              onStateChanged: (state) =>
-                                                  widget.repository.setParticipantState(
-                                                    call.id,
-                                                    participant.id,
-                                                    state,
-                                                  ),
-                                              onConfirmNotice:
-                                                  notice != null && notice.pending && writable
-                                                  ? () => widget.repository.confirmNotice(notice.id)
-                                                  : null,
-                                            );
-                                          },
+                                    ),
+                                    Divider(height: 1, color: colors.outlineVariant),
+                                    if (call.participants.isEmpty)
+                                      const Padding(
+                                        padding: EdgeInsets.all(CoeloSpacing.space6),
+                                        child: Text(
+                                          'Nenhum participante encontrado para este contexto.',
                                         ),
-                                    ],
-                                  ),
+                                      )
+                                    else
+                                      ListView.separated(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: call.participants.length,
+                                        separatorBuilder: (context, index) =>
+                                            Divider(height: 1, color: colors.outlineVariant),
+                                        itemBuilder: (context, index) {
+                                          final participant = call.participants[index];
+                                          final notice = participant.notice;
+                                          return _ParticipantCard(
+                                            participant: participant,
+                                            notice: notice,
+                                            focused: participant.id == widget.focusedParticipantId,
+                                            writable: writable && !concluded,
+                                            routine: widget.participantRoutineBuilder?.call(
+                                              context,
+                                              participant,
+                                            ),
+                                            routinePending: widget.routinePendingParticipantIds
+                                                .contains(participant.id),
+                                            routineInitiallyExpanded:
+                                                firstPendingRoutine?.id == participant.id,
+                                            noteController: _notes.putIfAbsent(
+                                              participant.id,
+                                              () => TextEditingController(text: participant.note),
+                                            ),
+                                            onStateChanged: (state) {
+                                              _applyCall(
+                                                widget.repository.setParticipantState(
+                                                  call.id,
+                                                  participant.id,
+                                                  state,
+                                                  expectedVersion: call.version,
+                                                ),
+                                              );
+                                            },
+                                            onConfirmNotice:
+                                                notice != null && notice.pending && writable
+                                                ? () => _applyCall(
+                                                    widget.repository.confirmNotice(
+                                                      notice.id,
+                                                      expectedVersion: call.version,
+                                                    ),
+                                                  )
+                                                : null,
+                                          );
+                                        },
+                                      ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: CoeloSpacing.space4),
-                              _AttendanceCompletionHint(
-                                call: call,
-                                requiredRoutineCount: widget.routinePendingParticipantIds.length,
+                            ),
+                            const SizedBox(height: CoeloSpacing.space4),
+                            _AttendanceCompletionHint(
+                              call: call,
+                              requiredRoutineCount: widget.routinePendingParticipantIds.length,
+                            ),
+                            if (!writable) ...[
+                              const SizedBox(height: CoeloSpacing.space3),
+                              TextButton(
+                                onPressed: widget.onBack,
+                                child: const Text('Voltar para Assiduidade'),
                               ),
-                              if (!writable) ...[
-                                const SizedBox(height: CoeloSpacing.space3),
-                                TextButton(
-                                  onPressed: widget.onBack,
-                                  child: const Text('Voltar para Assiduidade'),
-                                ),
-                              ],
                             ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  if (writable)
-                    SuperadminFormActionFooter(
-                      surfaceKey: const Key('attendance-call-footer'),
-                      tertiaryAction: TextButton(
-                        onPressed: widget.onBack,
-                        child: const Text('Voltar para Assiduidade'),
-                      ),
-                      continuationActions: [
-                        if (concluded)
-                          OutlinedButton.icon(
-                            onPressed: () => _showCorrection(context, call),
-                            icon: const Icon(Icons.history_rounded),
-                            label: const Text('Corrigir chamada'),
-                          )
-                        else
-                          FilledButton(
-                            key: const Key('attendance-call-complete'),
-                            onPressed:
-                                call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
-                                ? null
-                                : () => widget.repository.completeCall(call.id),
-                            child: const Text('Concluir chamada'),
-                          ),
-                      ],
+                ),
+                if (writable)
+                  SuperadminFormActionFooter(
+                    surfaceKey: const Key('attendance-call-footer'),
+                    tertiaryAction: TextButton(
+                      onPressed: widget.onBack,
+                      child: const Text('Voltar para Assiduidade'),
                     ),
-                ],
-              ),
-            );
-            return Padding(
-              padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (wide) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
-                  content,
-                ],
-              ),
-            );
-          },
-        ),
+                    continuationActions: [
+                      if (concluded)
+                        OutlinedButton.icon(
+                          onPressed: () => _showCorrection(context, call),
+                          icon: const Icon(Icons.history_rounded),
+                          label: const Text('Corrigir chamada'),
+                        )
+                      else
+                        FilledButton(
+                          key: const Key('attendance-call-complete'),
+                          onPressed:
+                              call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
+                              ? null
+                              : () => _applyCall(
+                                  widget.repository.completeCall(
+                                    call.id,
+                                    expectedVersion: call.version,
+                                  ),
+                                ),
+                          child: const Text('Concluir chamada'),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
+          );
+          return Padding(
+            padding: EdgeInsets.fromLTRB(inset, inset, inset, CoeloSpacing.space4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (wide) ...[navigation, const SizedBox(width: CoeloSpacing.space6)],
+                content,
+              ],
+            ),
+          );
+        },
       ),
     );
+  }
+
+  Future<void> _applyCall(Future<AttendanceCall> operation) async {
+    try {
+      final updated = await operation;
+      if (mounted) setState(() => _call = updated);
+    } catch (error) {
+      if (mounted) setState(() => _loadError = error);
+    }
+  }
+
+  Future<void> _toggleBulk(AttendanceCall call) async {
+    if (!call.hasUnmarked) {
+      final receipt = _lastBulkReceipt;
+      if (receipt != null) {
+        final updated = await widget.repository.undoBulk(receipt);
+        if (mounted) setState(() => _call = updated);
+      } else {
+        final result = await widget.repository.clearPresenceMarks(
+          call.id,
+          expectedVersion: call.version,
+        );
+        if (mounted) setState(() => _call = result.call);
+      }
+      if (mounted) setState(() => _lastBulkReceipt = null);
+      return;
+    }
+    final result = await widget.repository.markRemainingPresent(
+      call.id,
+      expectedVersion: call.version,
+    );
+    if (mounted) {
+      setState(() {
+        _call = result.call;
+        _lastBulkReceipt = result.receipt;
+      });
+    }
   }
 
   Future<void> _showCorrection(BuildContext context, AttendanceCall call) async {
@@ -772,15 +925,20 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
             child: const Text('Cancelar'),
           ),
           primaryAction: FilledButton(
-            onPressed: () {
+            onPressed: () async {
               if (reason.text.trim().isEmpty) return;
-              widget.repository.correctParticipant(
-                callId: call.id,
-                participantId: call.participants.first.id,
-                state: state,
-                reason: reason.text,
+              await _applyCall(
+                widget.repository.correctParticipant(
+                  callId: call.id,
+                  participantId: call.participants.first.id,
+                  state: state,
+                  reason: reason.text.trim(),
+                  expectedVersion: call.version,
+                ),
               );
-              Navigator.of(dialogContext).pop();
+              if (dialogContext.mounted && _loadError == null) {
+                Navigator.of(dialogContext).pop();
+              }
             },
             child: const Text('Registrar correção'),
           ),
@@ -789,81 +947,6 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     );
     reason.dispose();
   }
-}
-
-class _LocalDataNotice extends StatelessWidget {
-  const _LocalDataNotice({this.readOnly = false});
-
-  final bool readOnly;
-
-  @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      child: Row(
-        children: [
-          const Icon(Icons.memory_outlined),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(
-            child: Text(
-              readOnly
-                  ? 'Modo somente leitura · Dados locais de demonstração; recarregar restaura o estado inicial.'
-                  : 'Dados locais de demonstração · As alterações não persistem após recarregar.',
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class _AttendanceCallList extends StatelessWidget {
-  const _AttendanceCallList({
-    required this.calls,
-    required this.onOpenCall,
-    required this.onInstitutionSelected,
-  });
-  final List<AttendanceCall> calls;
-  final ValueChanged<String> onOpenCall;
-  final ValueChanged<String> onInstitutionSelected;
-
-  @override
-  Widget build(BuildContext context) => Card(
-    clipBehavior: Clip.antiAlias,
-    child: Column(
-      children: [
-        for (final call in calls)
-          ListTile(
-            onTap: () => onOpenCall(call.id),
-            leading: Icon(call.status.icon),
-            title: Text(call.contextName),
-            subtitle: Text(
-              '${call.institutionName} · ${call.responsible}\n${call.markedCount}/${call.participants.length} preenchidos · ${call.status.label}',
-            ),
-            isThreeLine: true,
-            trailing: IconButton(
-              tooltip: 'Filtrar por ${call.institutionName}',
-              onPressed: () => onInstitutionSelected(call.institutionId),
-              icon: const Icon(Icons.account_tree_outlined),
-            ),
-          ),
-      ],
-    ),
-  );
-}
-
-class _ExpectationLegend extends StatelessWidget {
-  const _ExpectationLegend();
-  @override
-  Widget build(BuildContext context) => const Wrap(
-    spacing: CoeloSpacing.space3,
-    runSpacing: CoeloSpacing.space2,
-    children: [
-      Chip(avatar: Icon(Icons.block_outlined), label: Text('Chamada não exigida')),
-      Chip(avatar: Icon(Icons.event_busy_outlined), label: Text('Nenhuma chamada prevista')),
-      Chip(avatar: Icon(Icons.pending_actions_outlined), label: Text('Chamada não iniciada')),
-    ],
-  );
 }
 
 class _AttendanceCallToolbar extends StatelessWidget {
@@ -895,10 +978,11 @@ class _AttendanceCallToolbar extends StatelessWidget {
       );
       final action = OutlinedButton.icon(
         onPressed: writable ? onMarkRemaining : null,
-        icon: const Icon(Icons.done_all_rounded),
-        label: const Text('Marcar restantes como presentes'),
+        icon: Icon(call.hasUnmarked ? Icons.done_all_rounded : Icons.remove_done_rounded),
+        label: Text(call.hasUnmarked ? 'Marcar todos restantes como presentes' : 'Desmarcar todos'),
       );
-      if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
+      final textScale = MediaQuery.textScalerOf(context).scale(1);
+      if (constraints.maxWidth < 900 || textScale >= 1.5) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -965,18 +1049,52 @@ class _AttendanceStateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+    final isNegative = state == AttendancePresenceState.absent;
+    final isAttention =
+        state == AttendancePresenceState.late || state == AttendancePresenceState.lateAndEarly;
+    final usesSemanticTone = isNegative || isAttention;
+    final semanticForeground = isNegative ? colors.error : statusColors.warning;
+    final semanticContainer = isNegative ? colors.errorContainer : statusColors.warningContainer;
     return Semantics(
       selected: selected,
       button: true,
       label: '$label para presença',
       child: OutlinedButton(
         onPressed: enabled ? () => onSelected(state) : null,
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
-          foregroundColor: selected ? colors.primary : colors.onSurface,
-          backgroundColor: selected ? colors.primaryContainer : colors.surface,
-          side: BorderSide(color: selected ? colors.primary : colors.outlineVariant),
+        style: ButtonStyle(
+          minimumSize: const WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
+          foregroundColor: WidgetStatePropertyAll(
+            usesSemanticTone
+                ? semanticForeground
+                : selected
+                ? colors.primary
+                : colors.onSurface,
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            final highlighted =
+                selected ||
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused);
+            if (usesSemanticTone && highlighted) {
+              return semanticContainer;
+            }
+            return highlighted ? colors.primaryContainer : colors.surface;
+          }),
+          side: WidgetStatePropertyAll(
+            BorderSide(
+              color: usesSemanticTone
+                  ? semanticForeground
+                  : selected
+                  ? colors.primary
+                  : colors.outlineVariant,
+            ),
+          ),
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         ),
         child: Text(label),
       ),
@@ -991,15 +1109,28 @@ class _AttendanceStatusLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     final label = state == AttendancePresenceState.absent ? 'Falta' : state.label;
+    final (backgroundColor, foregroundColor) = switch (state) {
+      AttendancePresenceState.unmarked => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
+      AttendancePresenceState.absent => (colors.errorContainer, colors.error),
+      AttendancePresenceState.late || AttendancePresenceState.lateAndEarly => (
+        statusColors.warningContainer,
+        statusColors.onWarningContainer,
+      ),
+      AttendancePresenceState.present ||
+      AttendancePresenceState.earlyDeparture => (colors.primaryContainer, colors.primary),
+    };
     return Semantics(
       label: 'Estado de presença: $label',
       child: DecoratedBox(
+        key: Key('attendance-status-${state.name}'),
         decoration: BoxDecoration(
-          color: state == AttendancePresenceState.unmarked
-              ? colors.surfaceContainerHighest
-              : colors.primaryContainer,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(CoeloRadius.full),
         ),
         child: Padding(
@@ -1007,14 +1138,7 @@ class _AttendanceStatusLabel extends StatelessWidget {
             horizontal: CoeloSpacing.space3,
             vertical: CoeloSpacing.space2,
           ),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: state == AttendancePresenceState.unmarked
-                  ? colors.onSurfaceVariant
-                  : colors.primary,
-            ),
-          ),
+          child: Text(label, style: theme.textTheme.labelMedium?.copyWith(color: foregroundColor)),
         ),
       ),
     );
@@ -1107,7 +1231,9 @@ class _ParticipantCardState extends State<_ParticipantCard> {
                 final identity = _identity(context);
                 final status = _AttendanceStatusLabel(state: widget.participant.state);
                 final actions = _actions();
-                if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
+                final textScale = MediaQuery.textScalerOf(context).scale(1);
+                final stacked = constraints.maxWidth < 900 || textScale >= 1.5;
+                if (stacked) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -1153,6 +1279,7 @@ class _ParticipantCardState extends State<_ParticipantCard> {
         .map((part) => part[0])
         .join();
     return Row(
+      key: Key('attendance-participant-identity-${widget.participant.id}'),
       children: [
         ExcludeSemantics(
           child: CircleAvatar(
@@ -1185,6 +1312,7 @@ class _ParticipantCardState extends State<_ParticipantCard> {
   }
 
   Widget _actions() => Wrap(
+    key: Key('attendance-participant-actions-${widget.participant.id}'),
     alignment: WrapAlignment.end,
     spacing: CoeloSpacing.space2,
     runSpacing: CoeloSpacing.space2,
@@ -1214,6 +1342,13 @@ class _ParticipantCardState extends State<_ParticipantCard> {
         label: 'Saída antecipada',
         state: AttendancePresenceState.earlyDeparture,
         selected: widget.participant.state == AttendancePresenceState.earlyDeparture,
+        enabled: widget.writable,
+        onSelected: widget.onStateChanged,
+      ),
+      _AttendanceStateButton(
+        label: 'Atraso + sa\u00edda',
+        state: AttendancePresenceState.lateAndEarly,
+        selected: widget.participant.state == AttendancePresenceState.lateAndEarly,
         enabled: widget.writable,
         onSelected: widget.onStateChanged,
       ),
@@ -1281,22 +1416,7 @@ extension AttendancePresencePresentation on AttendancePresenceState {
     AttendancePresenceState.absent => 'Ausente',
     AttendancePresenceState.late => 'Atraso',
     AttendancePresenceState.earlyDeparture => 'Saída antecipada',
-  };
-}
-
-extension on AttendanceCallStatus {
-  String get label => switch (this) {
-    AttendanceCallStatus.notStarted => 'Não iniciada',
-    AttendanceCallStatus.inProgress => 'Em andamento',
-    AttendanceCallStatus.completed => 'Concluída',
-    AttendanceCallStatus.corrected => 'Corrigida',
-  };
-
-  IconData get icon => switch (this) {
-    AttendanceCallStatus.notStarted => Icons.pending_actions_outlined,
-    AttendanceCallStatus.inProgress => Icons.play_circle_outline,
-    AttendanceCallStatus.completed => Icons.task_alt_rounded,
-    AttendanceCallStatus.corrected => Icons.history_rounded,
+    AttendancePresenceState.lateAndEarly => 'Atraso + saída',
   };
 }
 
@@ -1308,9 +1428,3 @@ extension on AttendanceNoticeIntent {
     AttendanceNoticeIntent.earlyDeparture => 'Saída antecipada',
   };
 }
-
-String _institutionLabel(String id) => switch (id) {
-  'institution-2' => 'Colégio Aurora · meta 90%',
-  'institution-3' => 'Espaço Ipê · meta 95%',
-  _ => 'Instituto Horizonte · meta 92%',
-};
