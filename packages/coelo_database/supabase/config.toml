@@ -392,6 +392,10 @@ verify_jwt = true
 [functions.now-media]
 verify_jwt = true
 
+# The handler authenticates user requests and the cleanup worker independently.
+[functions.circular-media]
+verify_jwt = false
+
 # pg_cron dispatches this service-only worker with an opaque server secret.
 # Authorization is enforced again by the handler before any RPC is claimed.
 [functions.form-operations]

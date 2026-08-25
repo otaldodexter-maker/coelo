@@ -3,30 +3,48 @@ import { createClient } from "@supabase/supabase-js";
 import { validateCircularMediaEnvelope } from "./media_contract.ts";
 
 type Json = Record<string, unknown>;
+const maximumRequestBytes = 32_768;
 
-function requiredSecret(name: string) {
-  const value = Deno.env.get(name)?.trim();
+export type CircularMediaDependencies = Readonly<{
+  envGet: (name: string) => string | undefined;
+  createClient: typeof createClient;
+}>;
+
+const productionDependencies: CircularMediaDependencies = {
+  envGet: (name) => Deno.env.get(name),
+  createClient,
+};
+
+function requiredSecret(
+  dependencies: CircularMediaDependencies,
+  name: string,
+) {
+  const value = dependencies.envGet(name)?.trim();
   if (!value) throw new Error("server_secret_unavailable");
   return value;
 }
 
-function allowedOrigins() {
+function allowedOrigins(dependencies: CircularMediaDependencies) {
   return new Set(
-    (Deno.env.get("CIRCULAR_MEDIA_ALLOWED_ORIGINS") ?? "")
+    (dependencies.envGet("CIRCULAR_MEDIA_ALLOWED_ORIGINS") ?? "")
       .split(",").map((value) => value.trim()).filter(Boolean),
   );
 }
 
-function reply(origin: string | null, status: number, body: Json) {
+function reply(
+  origins: ReadonlySet<string>,
+  origin: string | null,
+  status: number,
+  body: Json,
+) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "Cache-Control": "no-store",
     "Vary": "Origin",
-    "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-worker-secret",
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
-  if (origin !== null && allowedOrigins().has(origin)) {
+  if (origin !== null && origins.has(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
   return new Response(JSON.stringify(body), { status, headers });
@@ -83,32 +101,98 @@ function validateExtension(name: string, mimeType: string) {
   }
 }
 
-Deno.serve(async (request) => {
+export async function handleCircularMediaRequest(
+  request: Request,
+  dependencies: CircularMediaDependencies = productionDependencies,
+) {
+  const origins = allowedOrigins(dependencies);
+  const respond = (origin: string | null, status: number, body: Json) =>
+    reply(origins, origin, status, body);
   const origin = request.headers.get("origin");
-  if (origin !== null && !allowedOrigins().has(origin)) {
-    return reply(null, 403, { error: "origin_not_allowed" });
+  if (origin !== null && !origins.has(origin)) {
+    return respond(null, 403, { error: "origin_not_allowed" });
   }
-  if (request.method === "OPTIONS") return reply(origin, 200, { ok: true });
+  if (request.method === "OPTIONS") return respond(origin, 200, { ok: true });
   if (request.method !== "POST") {
-    return reply(origin, 405, { error: "method_not_allowed" });
+    return respond(origin, 405, { error: "method_not_allowed" });
   }
 
   try {
-    const body = await request.json() as Json;
-    const url = requiredSecret("SUPABASE_URL");
-    const admin = createClient(
-      url,
-      requiredSecret("SUPABASE_SERVICE_ROLE_KEY"),
-      {
-        auth: { persistSession: false },
-      },
-    );
+    const declaredLength = request.headers.get("content-length");
+    if (declaredLength !== null) {
+      const parsedLength = Number(declaredLength);
+      if (
+        !Number.isSafeInteger(parsedLength) || parsedLength < 0 ||
+        parsedLength > maximumRequestBytes
+      ) {
+        return respond(origin, 413, { error: "request_too_large" });
+      }
+    }
+    const contentType = request.headers.get("content-type")
+      ?.split(";", 1)[0].trim().toLowerCase();
+    if (contentType !== "application/json") {
+      return respond(origin, 415, { error: "unsupported_media_type" });
+    }
+
+    const workerSecret = request.headers.get("x-worker-secret");
+    const workerAuthenticated = workerSecret !== null;
+    const authorization = request.headers.get("authorization");
+    if (workerAuthenticated) {
+      if (
+        workerSecret !==
+          requiredSecret(dependencies, "CIRCULAR_MEDIA_WORKER_SECRET")
+      ) return respond(origin, 401, { error: "authentication_required" });
+    } else if (!authorization?.startsWith("Bearer ")) {
+      return respond(origin, 401, { error: "authentication_required" });
+    }
+
+    const rawBody = await request.text();
+    if (new TextEncoder().encode(rawBody).length > maximumRequestBytes) {
+      return respond(origin, 413, { error: "request_too_large" });
+    }
+
+    const userSession = workerAuthenticated ? null : await (async () => {
+      const authenticatedUrl = requiredSecret(dependencies, "SUPABASE_URL");
+      const client = dependencies.createClient(
+        authenticatedUrl,
+        requiredSecret(dependencies, "SUPABASE_ANON_KEY"),
+        {
+          global: { headers: { Authorization: authorization! } },
+          auth: { persistSession: false },
+        },
+      );
+      return {
+        client,
+        identity: await client.auth.getUser(),
+        url: authenticatedUrl,
+      };
+    })();
+    if (
+      userSession !== null &&
+      (userSession.identity.error || !userSession.identity.data.user)
+    ) {
+      return respond(origin, 401, { error: "authentication_required" });
+    }
+    const user = userSession?.client ?? null;
+    let url = userSession?.url ?? null;
+
+    let body: Json;
+    try {
+      body = JSON.parse(rawBody) as Json;
+    } catch {
+      throw new Error("invalid_request");
+    }
 
     if (body.action === "cleanup") {
-      if (
-        request.headers.get("x-worker-secret") !==
-          requiredSecret("CIRCULAR_MEDIA_WORKER_SECRET")
-      ) return reply(origin, 401, { error: "authentication_required" });
+      if (!workerAuthenticated) {
+        return respond(origin, 401, { error: "authentication_required" });
+      }
+      url ??= requiredSecret(dependencies, "SUPABASE_URL");
+      const admin = dependencies.createClient(
+        url,
+        requiredSecret(dependencies, "SUPABASE_SERVICE_ROLE_KEY"),
+        { auth: { persistSession: false } },
+      );
       const claimed = await admin.rpc("claim_stale_circular_media", {
         p_limit: 50,
       });
@@ -124,21 +208,17 @@ Deno.serve(async (request) => {
         if (marked.error) throw new Error("cleanup_finalize_failed");
         deleted++;
       }
-      return reply(origin, 200, { deleted });
+      return respond(origin, 200, { deleted });
     }
 
-    const authorization = request.headers.get("authorization");
-    if (!authorization?.startsWith("Bearer ")) {
-      return reply(origin, 401, { error: "authentication_required" });
+    if (workerAuthenticated || user === null || url === null) {
+      return respond(origin, 400, { error: "invalid_request" });
     }
-    const user = createClient(url, requiredSecret("SUPABASE_ANON_KEY"), {
-      global: { headers: { Authorization: authorization } },
-      auth: { persistSession: false },
-    });
-    const identity = await user.auth.getUser();
-    if (identity.error || !identity.data.user) {
-      return reply(origin, 401, { error: "authentication_required" });
-    }
+    const admin = dependencies.createClient(
+      url,
+      requiredSecret(dependencies, "SUPABASE_SERVICE_ROLE_KEY"),
+      { auth: { persistSession: false } },
+    );
 
     if (body.action === "read") {
       if (typeof body.asset_id !== "string") throw new Error("invalid_request");
@@ -146,13 +226,13 @@ Deno.serve(async (request) => {
         p_asset_id: body.asset_id,
       });
       if (authorized.error) {
-        return reply(origin, 403, { error: "media_read_denied" });
+        return respond(origin, 403, { error: "media_read_denied" });
       }
       const descriptor = authorized.data as Json;
       const signed = await admin.storage.from(String(descriptor.bucket_id))
         .createSignedUrl(String(descriptor.object_key), 120);
       if (signed.error) throw new Error("media_sign_failed");
-      return reply(origin, 200, {
+      return respond(origin, 200, {
         signed_url: signed.data.signedUrl,
         mime_type: descriptor.mime_type,
         expires_in: 120,
@@ -165,7 +245,7 @@ Deno.serve(async (request) => {
         p_asset_id: body.asset_id,
       });
       if (removed.error) {
-        return reply(origin, 403, { error: "media_delete_denied" });
+        return respond(origin, 403, { error: "media_delete_denied" });
       }
       const descriptor = removed.data as Json;
       const deletion = await admin.storage.from(String(descriptor.bucket_id))
@@ -175,7 +255,7 @@ Deno.serve(async (request) => {
         p_asset_id: body.asset_id,
       });
       if (marked.error) throw new Error("media_delete_finalize_failed");
-      return reply(origin, 200, { asset_id: body.asset_id, deleted: true });
+      return respond(origin, 200, { asset_id: body.asset_id, deleted: true });
     }
 
     const input = validateCircularMediaEnvelope(body);
@@ -189,13 +269,13 @@ Deno.serve(async (request) => {
       p_byte_size: input.sizeBytes,
     });
     if (prepared.error) {
-      return reply(origin, 403, { error: "media_prepare_denied" });
+      return respond(origin, 403, { error: "media_prepare_denied" });
     }
     const descriptor = prepared.data as Json;
 
     if (body.action === "prepare") {
       if (descriptor.status === "ready") {
-        return reply(origin, 200, {
+        return respond(origin, 200, {
           asset_id: descriptor.asset_id,
           already_uploaded: true,
         });
@@ -205,7 +285,7 @@ Deno.serve(async (request) => {
           upsert: false,
         });
       if (signed.error) throw new Error("media_sign_failed");
-      return reply(origin, 200, {
+      return respond(origin, 200, {
         asset_id: descriptor.asset_id,
         upload_url: signed.data.signedUrl,
         upload_token: signed.data.token,
@@ -219,7 +299,7 @@ Deno.serve(async (request) => {
         throw new Error("media_receipt_mismatch");
       }
       if (descriptor.status === "ready") {
-        return reply(origin, 200, {
+        return respond(origin, 200, {
           asset_id: descriptor.asset_id,
           status: "ready",
         });
@@ -240,7 +320,7 @@ Deno.serve(async (request) => {
         p_asset_id: descriptor.asset_id,
       });
       if (ticket.error) {
-        return reply(origin, 403, { error: "media_finalize_denied" });
+        return respond(origin, 403, { error: "media_finalize_denied" });
       }
       const finalized = await admin.rpc("finalize_circular_media_upload", {
         p_asset_id: descriptor.asset_id,
@@ -251,12 +331,16 @@ Deno.serve(async (request) => {
         p_etag: null,
       });
       if (finalized.error) throw new Error("media_finalize_failed");
-      return reply(origin, 200, finalized.data as Json);
+      return respond(origin, 200, finalized.data as Json);
     }
-    return reply(origin, 400, { error: "invalid_request" });
+    return respond(origin, 400, { error: "invalid_request" });
   } catch (error) {
-    return reply(origin, 422, {
+    return respond(origin, 422, {
       error: error instanceof Error ? error.message : "media_gateway_failure",
     });
   }
-});
+}
+
+if (import.meta.main) {
+  Deno.serve((request) => handleCircularMediaRequest(request));
+}
