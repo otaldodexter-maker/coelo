@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(42);
+select plan(43);
 
 select has_table('public','activity_assessment_settings','activity assessment periodicity exists');
 select has_table('public','activity_assessment_periods','activity assessment periods exist');
@@ -38,6 +38,40 @@ select ok((select bool_and(c.relrowsecurity and c.relforcerowsecurity)
 select ok(not exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
  where n.nspname='public' and (p.proname like 'student_tracking_%' or p.proname like 'superadmin_student_tracking_%')
  and has_function_privilege('anon',p.oid,'EXECUTE')),'anonymous cannot execute tracking RPCs');
+
+select ok(
+  has_function_privilege(
+    'authenticated',
+    'app_private.student_tracking_children(text,text,uuid,integer)',
+    'EXECUTE'
+  )
+  and has_function_privilege(
+    'authenticated',
+    'app_private.student_tracking_snapshot(uuid,uuid,uuid,timestamp with time zone,uuid,integer)',
+    'EXECUTE'
+  )
+  and not has_function_privilege(
+    'anon',
+    'app_private.student_tracking_children(text,text,uuid,integer)',
+    'EXECUTE'
+  )
+  and not has_function_privilege(
+    'anon',
+    'app_private.student_tracking_snapshot(uuid,uuid,uuid,timestamp with time zone,uuid,integer)',
+    'EXECUTE'
+  )
+  and not has_function_privilege(
+    'service_role',
+    'app_private.student_tracking_children(text,text,uuid,integer)',
+    'EXECUTE'
+  )
+  and not has_function_privilege(
+    'service_role',
+    'app_private.student_tracking_snapshot(uuid,uuid,uuid,timestamp with time zone,uuid,integer)',
+    'EXECUTE'
+  ),
+  'private tracking reads grant only the authenticated wrapper caller'
+);
 
 select ok(not has_function_privilege(
   'authenticated',
