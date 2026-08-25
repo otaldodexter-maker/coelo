@@ -1292,42 +1292,22 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlans,
             name: SuperadminRoutes.healthMedicationPlansName,
-            builder: (context, state) => HealthMedicationPlanDirectoryPage(
-              controller: HealthCareController(blockedCareProfilesRepository),
-              logout: logout,
-              onCreate: () => context.goNamed(SuperadminRoutes.healthMedicationPlanCreateName),
-              onPlanSelected: (medicationId) => context.pushNamed(
-                SuperadminRoutes.healthMedicationPlanDetailName,
-                pathParameters: {'medicationId': medicationId},
-              ),
-            ),
+            builder: (context, state) => _unavailableMedicationPlans(context),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlanCreate,
             name: SuperadminRoutes.healthMedicationPlanCreateName,
-            builder: (context, state) => HealthMedicationPlanFormPage(
-              logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
-              onSaved: () async => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
-            ),
+            builder: (context, state) => _unavailableMedicationPlans(context),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlanDetail,
             name: SuperadminRoutes.healthMedicationPlanDetailName,
-            redirect: (context, state) => context.namedLocation(
-              SuperadminRoutes.healthMedicationPlanEditName,
-              pathParameters: {'medicationId': state.pathParameters['medicationId']!},
-            ),
+            builder: (context, state) => _unavailableMedicationPlans(context),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlanEdit,
             name: SuperadminRoutes.healthMedicationPlanEditName,
-            builder: (context, state) => HealthMedicationPlanFormPage(
-              logout: logout,
-              medicationId: state.pathParameters['medicationId']!,
-              onCancel: () => context.pop(),
-              onSaved: () async => context.pop(),
-            ),
+            builder: (context, state) => _unavailableMedicationPlans(context),
           ),
           GoRoute(
             path: SuperadminRoutes.people,
@@ -4080,6 +4060,12 @@ Widget _invalidAccessProfileRoute(BuildContext context, String destination) =>
       kind: SuperadminErrorKind.notFound,
       onAction: () => context.goNamed(destination),
     );
+
+Widget _unavailableMedicationPlans(BuildContext context) => SuperadminErrorScreen(
+  kind: SuperadminErrorKind.unavailable,
+  onAction: () => context.goNamed(SuperadminRoutes.homeName),
+);
+
 Future<LogoutResult> _previewLogout() async => const LogoutResult.success();
 
 ActivitySaveCommand _activitySaveCommand(
