@@ -1,17 +1,20 @@
 import 'package:coelo_superadmin/features/attendance/attendance.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../support/fake_attendance_repository.dart';
+
 void main() {
-  group('InMemoryAttendanceRepository', () {
-    late InMemoryAttendanceRepository repository;
+  group('FakeAttendanceRepository', () {
+    late FakeAttendanceRepository repository;
 
-    setUp(() => repository = InMemoryAttendanceRepository.seeded());
+    setUp(() => repository = FakeAttendanceRepository.seeded());
+    tearDown(() => repository.dispose());
 
-    test('marks only unmarked participants as present', () {
-      final call = repository.callById('call-progress')!;
+    test('marks only unmarked participants as present', () async {
+      final call = (await repository.fetchCall('call-progress'))!;
       final absent = call.participants.firstWhere((item) => item.id == 'participant-2');
 
-      repository.markRemainingPresent(call.id);
+      await repository.markRemainingPresent(call.id, expectedVersion: call.version);
 
       expect(absent.state, AttendancePresenceState.absent);
       expect(
@@ -20,8 +23,30 @@ void main() {
       );
     });
 
-    test('does not complete while a participant is unmarked', () {
-      expect(() => repository.completeCall('call-progress'), throwsStateError);
+    test('undoes only participants affected by the recorded bulk operation', () async {
+      final call = (await repository.fetchCall('call-progress'))!;
+      final result = await repository.markRemainingPresent(call.id, expectedVersion: call.version);
+
+      await repository.setParticipantState(
+        call.id,
+        'participant-1',
+        AttendancePresenceState.absent,
+        expectedVersion: call.version,
+      );
+      await repository.undoBulk(result.receipt);
+
+      expect(call.participants[0].state, AttendancePresenceState.absent);
+      expect(call.participants[1].state, AttendancePresenceState.absent);
+      expect(call.participants[2].state, AttendancePresenceState.unmarked);
+    });
+
+    test('does not complete while a participant is unmarked', () async {
+      final call = (await repository.fetchCall('call-progress'))!;
+
+      await expectLater(
+        repository.completeCall(call.id, expectedVersion: call.version),
+        throwsStateError,
+      );
     });
 
     test('pending family notice does not affect presence percentage', () {
@@ -33,61 +58,65 @@ void main() {
       expect(repository.pendingNoticeCount, greaterThan(0));
     });
 
-    test('professional confirmation creates the official attendance state', () {
+    test('professional confirmation creates the official attendance state', () async {
       final before = repository.metrics.presencePercent;
+      final call = (await repository.fetchCall('call-progress'))!;
 
-      repository.confirmNotice('notice-1');
+      await repository.confirmNotice('notice-1', expectedVersion: call.version);
 
-      final call = repository.callById('call-progress')!;
       expect(call.participants.first.state, AttendancePresenceState.late);
       expect(repository.notices.first.pending, isFalse);
       expect(repository.metrics.presencePercent, before);
     });
 
-    test('teacher can only access assigned context', () {
+    test('teacher can only access assigned context', () async {
       const permissions = AttendancePermissions.teacher(
         assignedGroupIds: {'group-sun'},
         assignedActivityContextIds: {'activity-music-group-sun'},
       );
+      final assigned = (await repository.fetchCall('call-progress'))!;
+      final other = (await repository.fetchCall('call-other-group'))!;
 
-      expect(permissions.canOperate(repository.callById('call-progress')!), isTrue);
-      expect(permissions.canOperate(repository.callById('call-other-group')!), isFalse);
+      expect(permissions.canOperate(assigned), isTrue);
+      expect(permissions.canOperate(other), isFalse);
     });
 
-    test('correction requires a reason and preserves a revision', () {
-      expect(
-        () => repository.correctParticipant(
-          callId: 'call-completed',
+    test('correction requires a reason and preserves a revision', () async {
+      final call = (await repository.fetchCall('call-completed'))!;
+      await expectLater(
+        repository.correctParticipant(
+          callId: call.id,
           participantId: 'participant-1',
           state: AttendancePresenceState.absent,
           reason: ' ',
+          expectedVersion: call.version,
         ),
         throwsArgumentError,
       );
 
-      repository.correctParticipant(
-        callId: 'call-completed',
+      final corrected = await repository.correctParticipant(
+        callId: call.id,
         participantId: 'participant-1',
         state: AttendancePresenceState.absent,
         reason: 'Correção conferida pelo Owner',
+        expectedVersion: call.version,
       );
 
-      final corrected = repository.callById('call-completed')!;
-      expect(corrected.status, AttendanceCallStatus.corrected);
+      expect(corrected.status, AttendanceCallStatus.completed);
       expect(corrected.revisions, hasLength(1));
       expect(corrected.revisions.single.previous, AttendancePresenceState.present);
       expect(corrected.revisions.single.current, AttendancePresenceState.absent);
     });
 
-    test('activity without required attendance cannot create a call', () {
-      expect(
-        () => repository.createCall(
+    test('activity without required attendance cannot create a call', () async {
+      await expectLater(
+        repository.createCall(
           AttendanceCallDraft(
             institutionId: 'institution-1',
             unitId: 'unit-1',
             groupId: 'group-sun',
             activityContextId: 'activity-art-group-sun',
-            date: AttendanceFixtures.today,
+            date: FakeAttendanceRepository.today,
           ),
         ),
         throwsStateError,
