@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/attendance/data/supabase_attendance_re
 import 'package:coelo_superadmin/features/audit/data/supabase_audit_repository.dart';
 import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
+import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/invites/data/supabase_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
@@ -76,6 +77,7 @@ void main() {
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());
+    expect(scope.medicationPlanRepository, isA<UnavailableMedicationPlanRepository>());
   });
 
   test('starts authenticated from a restored session and mirrors later auth changes', () async {
