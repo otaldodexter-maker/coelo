@@ -1297,6 +1297,25 @@ void main() {
     expect(find.text('Tentar novamente'), findsNothing);
   });
 
+  testWidgets('retries a failed directory load through the visible action', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _FailOnceDirectoryRepository(demoInstitutionDirectoryItems.first);
+
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(repository.fetchCount, 1);
+
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tentar novamente'), findsNothing);
+    expect(find.text(demoInstitutionDirectoryItems.first.publicName), findsWidgets);
+    expect(repository.fetchCount, 2);
+  });
+
   testWidgets('hides pagination when a successful page reports zero total count', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -1650,6 +1669,36 @@ final class _UnauthorizedDirectoryRepository implements InstitutionDirectoryRepo
   }) async {
     return InstitutionDirectoryFilterOptions.empty;
   }
+}
+
+final class _FailOnceDirectoryRepository implements InstitutionDirectoryRepository {
+  _FailOnceDirectoryRepository(this.item);
+
+  final InstitutionDirectoryItem item;
+  int fetchCount = 0;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
+    fetchCount += 1;
+    if (fetchCount == 1) {
+      throw const InstitutionDirectoryUnavailableException();
+    }
+    return domain.InstitutionDirectoryPage(
+      items: [item],
+      totalCount: 1,
+      page: query.page,
+      pageSize: query.pageSize,
+    );
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) async => InstitutionDirectoryFilterOptions.empty;
 }
 
 final class _PendingFilterOptionsRepository implements InstitutionDirectoryRepository {

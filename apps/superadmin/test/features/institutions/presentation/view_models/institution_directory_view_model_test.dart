@@ -226,6 +226,59 @@ void main() {
     expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.none);
   });
 
+  test('surfaces a page failure without waiting for pending filter options', () async {
+    final pendingFilterOptions = Completer<InstitutionDirectoryFilterOptions>();
+    addTearDown(() {
+      if (!pendingFilterOptions.isCompleted) {
+        pendingFilterOptions.complete(InstitutionDirectoryFilterOptions.empty);
+      }
+    });
+    final repository = _StubRepository(
+      onFetch: (_) =>
+          Future<InstitutionDirectoryPage>.error(const InstitutionDirectoryUnavailableException()),
+      onFetchFilterOptions: (_, _) => pendingFilterOptions.future,
+    );
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load().timeout(const Duration(milliseconds: 250));
+
+    expect(viewModel.state, InstitutionDirectoryLoadState.failure);
+    expect(viewModel.failureKind, InstitutionDirectoryLoadFailureKind.unavailable);
+    expect(viewModel.isLoading, isFalse);
+  });
+
+  test('reload preserves filters and page without duplicating rows', () async {
+    var shouldFail = false;
+    final repository = _StubRepository(
+      onFetch: (query) async {
+        if (shouldFail) {
+          throw const InstitutionDirectoryUnavailableException();
+        }
+        return _page(query);
+      },
+    );
+    final viewModel = InstitutionDirectoryViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.setStates({'SP'});
+    await viewModel.goToPage(1);
+    final expectedQuery = viewModel.query;
+
+    shouldFail = true;
+    await viewModel.load();
+    shouldFail = false;
+    await viewModel.retry();
+
+    expect(repository.queries.sublist(repository.queries.length - 2), [
+      expectedQuery,
+      expectedQuery,
+    ]);
+    expect(viewModel.query, expectedQuery);
+    expect(viewModel.page.items, hasLength(1));
+    expect(viewModel.page.items.single.id, 'institution-1');
+  });
+
   test('mapeia falha de indisponibilidade sem vazar detalhe do backend', () async {
     final repository = _StubRepository(
       onFetch: (_) =>

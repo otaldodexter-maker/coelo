@@ -175,7 +175,7 @@ final class InstitutionDirectoryViewModel extends ChangeNotifier {
       final results = await Future.wait<Object>([
         _repository.fetchPage(value),
         _repository.fetchFilterOptions(states: value.states, cities: value.cities),
-      ]);
+      ], eagerError: true);
       if (requestVersion != _requestVersion) {
         return;
       }
