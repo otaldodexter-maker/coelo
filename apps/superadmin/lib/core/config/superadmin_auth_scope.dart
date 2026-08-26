@@ -26,7 +26,6 @@ import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/auth/domain/login_request.dart';
 import '../../features/auth/domain/logout_action.dart';
 import '../../features/auth/domain/password_recovery.dart';
-import '../../features/daily_routine/data/supabase_routine_repository.dart';
 import '../../features/daily_routine/domain/routine_contract.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/meal_plans/data/supabase_meal_plan_repository.dart';
@@ -183,7 +182,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       attendanceRepository: SupabaseAttendanceRepository(client),
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),
       attendancePermissions: const AttendancePermissions.backend(),
-      routineRepository: SupabaseRoutineRepository(client),
+      routineRepository: const UnavailableRoutineRepository(),
       auditRepository: SupabaseAuditRepository(client),
       childSafetyRepository: SupabaseChildSafetyRepository(client),
       medicationPlanRepository: const UnavailableMedicationPlanRepository(),

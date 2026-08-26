@@ -9,6 +9,7 @@ import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanIm
 import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_attendance_repository.dart';
+import '../dev_menu/development_routine_repository.dart';
 import '../activity/superadmin_activity.dart';
 import '../prototype/superadmin_prototype_store.dart';
 import '../../features/activities/data/supabase_activity_command_repository.dart';
@@ -284,6 +285,9 @@ GoRouter createSuperadminRouter({
       cachedAttendancePreviewRepository ??= DevelopmentAttendanceRepository.content();
   final attendanceActivities = SuperadminActivityController();
   final dailyRoutineRepository = routineRepository;
+  DevelopmentRoutineRepository? cachedRoutinePreviewRepository;
+  DevelopmentRoutineRepository routinePreviewRepository() =>
+      cachedRoutinePreviewRepository ??= DevelopmentRoutineRepository.content();
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
@@ -2344,7 +2348,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devDailyRoutine,
             name: SuperadminRoutes.devDailyRoutineName,
             builder: (context, state) => DailyRoutineDirectoryPage(
-              repository: dailyRoutineRepository,
+              repository: routinePreviewRepository(),
               logout: _previewLogout,
               activityController: attendanceActivities,
               onCreateEntry: (type) =>
@@ -2360,7 +2364,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devDailyRoutineCreate,
             name: SuperadminRoutes.devDailyRoutineCreateName,
             builder: (context, state) => DailyRoutineEditorPage(
-              repository: dailyRoutineRepository,
+              repository: routinePreviewRepository(),
               logout: _previewLogout,
               activityController: attendanceActivities,
               entryType: state.extra is RoutineEntryKind
@@ -2372,7 +2376,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devDailyRoutineEdit,
             name: SuperadminRoutes.devDailyRoutineEditName,
             builder: (context, state) => DailyRoutineEditorPage(
-              repository: dailyRoutineRepository,
+              repository: routinePreviewRepository(),
               logout: _previewLogout,
               modelId: state.pathParameters['modelId'],
               entryType: _routineEntryKind(state.uri.queryParameters['kind']),

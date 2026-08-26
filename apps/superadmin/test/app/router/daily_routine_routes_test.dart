@@ -1,9 +1,12 @@
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
+import 'package:coelo_superadmin/app/dev_menu/development_routine_repository.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/daily_routine/daily_routine_pages.dart';
+import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,32 +19,114 @@ void main() {
     expect(SuperadminRoutes.devDailyRoutine, '/dev/daily-routine');
   });
 
-  testWidgets('opens daily routine and preserves contextual create type', (tester) async {
+  testWidgets('development routes use one local fixture and never call production', (tester) async {
     final session = SuperadminSession()..signIn();
+    final repository = _TrackingRoutineRepository();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       onThemeModeChanged: (_) {},
+      routineRepository: repository,
+      allowDevelopmentPreview: true,
     );
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    router.go('/daily-routine');
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-    await tester.pumpAndSettle();
-    expect(find.text('Modelos'), findsOneWidget);
-    expect(find.text('Criar modelo'), findsWidgets);
 
-    await tester.tap(find.text('Rotinas'));
+    router.go('/dev/daily-routine');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Nova rotina').first);
-    await tester.pumpAndSettle();
-    expect(find.text('Nova rotina'), findsWidgets);
+    final directory = tester.widget<DailyRoutineDirectoryPage>(
+      find.byType(DailyRoutineDirectoryPage),
+    );
+    expect(directory.repository, isA<DevelopmentRoutineRepository>());
+    expect(find.text('Modelos'), findsOneWidget);
+    expect(repository.calls, isEmpty);
 
     router.go('/dev/daily-routine/new');
     await tester.pumpAndSettle();
-    expect(find.text('Criar modelo'), findsWidgets);
+    final create = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
+    expect(create.repository, same(directory.repository));
+    expect(find.byKey(const Key('daily-routine-model-editor')), findsOneWidget);
+    expect(repository.calls, isEmpty);
+
+    router.go('/dev/daily-routine/application-1/edit?kind=application');
+    await tester.pumpAndSettle();
+    final edit = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
+    expect(edit.repository, same(directory.repository));
+    expect(find.byKey(const Key('daily-routine-application-editor')), findsOneWidget);
+    expect(repository.calls, isEmpty);
   });
+
+  testWidgets('production routes preserve the injected repository', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final repository = _TrackingRoutineRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+      routineRepository: repository,
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    router.go('/daily-routine');
+    await tester.pumpAndSettle();
+    final directory = tester.widget<DailyRoutineDirectoryPage>(
+      find.byType(DailyRoutineDirectoryPage),
+    );
+    expect(directory.repository, same(repository));
+    expect(repository.calls, contains('fetchPage:model'));
+
+    repository.calls.clear();
+    router.go('/daily-routine/new');
+    await tester.pumpAndSettle();
+    final create = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
+    expect(create.repository, same(repository));
+
+    repository.calls.clear();
+    router.go('/daily-routine/application-1/edit?kind=application');
+    await tester.pumpAndSettle();
+    final edit = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
+    expect(edit.repository, same(repository));
+    expect(repository.calls, ['fetchApplication:application-1']);
+  });
+}
+
+final class _TrackingRoutineRepository implements RoutineRepository {
+  final _delegate = DevelopmentRoutineRepository.content();
+  final calls = <String>[];
+
+  @override
+  Future<RoutineDirectoryPage> fetchPage(RoutineDirectoryQuery query) {
+    calls.add('fetchPage:${query.kind.name}');
+    return _delegate.fetchPage(query);
+  }
+
+  @override
+  Future<RoutineModel> fetchModel(String id) {
+    calls.add('fetchModel:$id');
+    return _delegate.fetchModel(id);
+  }
+
+  @override
+  Future<RoutineApplication> fetchApplication(String id) {
+    calls.add('fetchApplication:$id');
+    return _delegate.fetchApplication(id);
+  }
+
+  @override
+  Future<RoutineLaunch> fetchLaunch(String id) {
+    calls.add('fetchLaunch:$id');
+    return _delegate.fetchLaunch(id);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
