@@ -1353,7 +1353,9 @@ void main() {
     expect(find.byKey(const Key('institution-step-branding-error')), findsOneWidget);
   });
 
-  testWidgets('status uses the administrative continuous single-select menu', (tester) async {
+  testWidgets('keeps operational status fail-closed while transition rules are undecided', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _app(
         InstitutionFormPage(
@@ -1369,26 +1371,13 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-form-continue')));
     await tester.pumpAndSettle();
     expect(find.byType(DropdownButtonFormField), findsNothing);
-
-    await tester.scrollUntilVisible(
-      find.text('Rascunho'),
-      180,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('institution-form-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.tap(find.text('Rascunho'));
-    await tester.pumpAndSettle();
-    expect(find.text('Em implantação'), findsOneWidget);
-    expect(find.text('Ativa'), findsOneWidget);
-    final selected = tester.widget<MenuItemButton>(find.widgetWithText(MenuItemButton, 'Rascunho'));
+    final dynamic status = tester.widget(find.byKey(const Key('institution-operational-status')));
+    expect(status.enabled, isFalse);
     expect(
-      selected.style!.backgroundColor!.resolve({}),
-      CoeloTheme.light.colorScheme.primaryContainer,
+      find.text('Alteração de status indisponível até a definição das transições permitidas.'),
+      findsOneWidget,
     );
+    expect(find.text('Em implantação'), findsNothing);
   });
 
   testWidgets('dirty exit dialog follows the neutral popup and red close contract', (tester) async {
