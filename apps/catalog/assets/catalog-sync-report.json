@@ -4,48 +4,6 @@
     {
       "code": "source-example-fingerprint-mismatch",
       "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "superadmin.avatar-crop-dialog",
-      "path": "apps/superadmin/lib/shared/presentation/widgets/avatar_crop_dialog.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "superadmin.advanced-color-picker",
-      "path": "apps/superadmin/lib/app/widgets/superadmin_advanced_color_picker_dialog.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "superadmin.cover-crop-dialog",
-      "path": "apps/superadmin/lib/shared/presentation/widgets/cover_crop_dialog.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.dialog-shell",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.interactive-card",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "admin.kanban-board",
-      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
-      "id": "superadmin.forms-editor",
-      "path": "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart"
-    },
-    {
-      "code": "source-example-fingerprint-mismatch",
-      "message": "A fonte mudou sem atualização do exemplo.",
       "id": "superadmin.forms-response",
       "path": "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart"
     }
@@ -72,8 +30,8 @@
       "example": "ca84d94a"
     },
     "superadmin.advanced-color-picker": {
-      "source": "809a17b1",
-      "example": "6beb0228"
+      "source": "873b6896",
+      "example": "5a294017"
     },
     "pattern.form-step-navigation": {
       "source": "811c9dc5",
@@ -136,8 +94,8 @@
       "example": "efe7b835"
     },
     "admin.pagination": {
-      "source": "471a9dcf",
-      "example": "6af44495"
+      "source": "6838b2d5",
+      "example": "3f55595e"
     },
     "admin.create-action": {
       "source": "b111e24a",
