@@ -6,6 +6,12 @@
 !.agents/skills/coelo-ui/**
 !.agents/skills/coelo-knowledge/
 !.agents/skills/coelo-knowledge/**
+!.agents/skills/coelo-supabase/
+!.agents/skills/coelo-supabase/**
+!.agents/skills/coelo-flutter-review/
+!.agents/skills/coelo-flutter-review/**
+!.agents/skills/coelo-flutter-supabase-review/
+!.agents/skills/coelo-flutter-supabase-review/**
 .codex/
 .worktrees/
 
