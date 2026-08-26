@@ -121,11 +121,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                     for (final value in ChildSafetyDirectorySegment.values)
                       SuperadminUnderlineTab(
                         value: value,
-                        label:
-                            value.label +
-                            ' (' +
-                            widget.controller.segmentCounts[value].toString() +
-                            ')',
+                        label: '${value.label} (${widget.controller.segmentCounts[value]})',
                       ),
                   ],
                   selected: widget.controller.query.segment,
@@ -162,7 +158,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
   };
   Widget _ready() {
     final c = widget.controller;
-    if (c.records.isEmpty && !c.canCreate)
+    if (c.records.isEmpty && !c.canCreate) {
       return CoeloStatePanel(
         title: c.query.hasActiveFilters
             ? 'Nenhuma criança encontrada'
@@ -170,6 +166,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
         message: 'Revise a busca ou a segmentação.',
         icon: Icons.search_off_rounded,
       );
+    }
     return Column(
       children: [
         if (c.query.view == ChildSafetyDirectoryView.cards)
@@ -265,7 +262,7 @@ final class SafetyChildDirectoryCard extends StatelessWidget {
     final colors = _statusPair(context, status);
     final active = record.authorizationCount;
     return CoeloAdminInteractiveCard(
-      semanticLabel: 'Abrir segurança de ' + record.childName + '. ' + status.label,
+      semanticLabel: 'Abrir segurança de ${record.childName}. ${status.label}',
       onPressed: onPressed,
       child: Padding(
         padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -276,7 +273,7 @@ final class SafetyChildDirectoryCard extends StatelessWidget {
               children: [
                 CoeloAvatar(
                   initials: _initials(record.childName),
-                  semanticLabel: 'Avatar de ' + record.childName,
+                  semanticLabel: 'Avatar de ${record.childName}',
                   size: CoeloAvatarSize.medium,
                 ),
                 const SizedBox(width: CoeloSpacing.space3),
@@ -290,9 +287,9 @@ final class SafetyChildDirectoryCard extends StatelessWidget {
                   ),
                 ),
                 CoeloAdminExpandableStatusIndicator(
-                  key: Key('safety-child-status-' + record.childId),
+                  key: Key('safety-child-status-${record.childId}'),
                   label: statusLabel,
-                  semanticLabel: 'Status de ' + record.childName + ': ' + statusLabel,
+                  semanticLabel: 'Status de ${record.childName}: $statusLabel',
                   backgroundColor: colors.$1,
                   foregroundColor: colors.$2,
                 ),
@@ -300,13 +297,13 @@ final class SafetyChildDirectoryCard extends StatelessWidget {
             ),
             const SizedBox(height: CoeloSpacing.space4),
             Divider(color: Theme.of(context).colorScheme.outlineVariant),
-            Text(record.institutionName, key: Key('safety-child-institution-' + record.childId)),
-            Text(record.unitName, key: Key('safety-child-unit-' + record.childId)),
+            Text(record.institutionName, key: Key('safety-child-institution-${record.childId}')),
+            Text(record.unitName, key: Key('safety-child-unit-${record.childId}')),
             const SizedBox(height: CoeloSpacing.space3),
             Row(
               children: [
-                Expanded(child: Text('Autorizações\n' + active.toString())),
-                Expanded(child: Text('Em análise\n' + record.pendingCount.toString())),
+                Expanded(child: Text('Autorizações\n$active')),
+                Expanded(child: Text('Em análise\n${record.pendingCount}')),
               ],
             ),
           ],
@@ -330,7 +327,7 @@ final class _SafetyTable extends StatelessWidget {
       : CoeloAdminResizableTable<ChildSafetyRecord>(
           key: const Key('safety-children-table'),
           items: records,
-          rowKey: (r) => 'safety-child-row-' + r.childId,
+          rowKey: (r) => 'safety-child-row-${r.childId}',
           headerHeight: 56,
           rowHeight: 64,
           onRowPressed: (r) => onOpen(r.childId),
@@ -413,7 +410,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
       future: record,
       builder: (context, snapshot) => LayoutBuilder(
         builder: (context, constraints) {
-          if (snapshot.connectionState != ConnectionState.done)
+          if (snapshot.connectionState != ConnectionState.done) {
             return const Center(
               child: CoeloStatePanel(
                 title: 'Carregando contexto',
@@ -421,7 +418,8 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                 loading: true,
               ),
             );
-          if (snapshot.hasError)
+          }
+          if (snapshot.hasError) {
             return Center(
               child: CoeloStatePanel(
                 title: 'Contexto indisponível',
@@ -431,8 +429,9 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                 onAction: widget.onBack,
               ),
             );
+          }
           final child = snapshot.data;
-          if (child == null)
+          if (child == null) {
             return Center(
               child: CoeloStatePanel(
                 title: 'Registro não encontrado',
@@ -442,6 +441,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                 onAction: widget.onBack,
               ),
             );
+          }
           final inset = constraints.maxWidth >= 1200 ? CoeloSpacing.space10 : CoeloSpacing.space4;
           return ListView(
             padding: EdgeInsets.all(inset),
@@ -463,9 +463,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(child.childName, style: Theme.of(context).textTheme.headlineSmall),
-                        Text(
-                          child.institutionName + ' · ' + child.unitName + ' · ' + child.internalId,
-                        ),
+                        Text('${child.institutionName} · ${child.unitName} · ${child.internalId}'),
                       ],
                     ),
                   ),
@@ -533,8 +531,7 @@ final class _PendingNotice extends StatelessWidget {
         borderRadius: BorderRadius.circular(CoeloRadius.lg),
       ),
       child: Text(
-        count.toString() +
-            ' solicitação(ões) aguardando aprovação. A retirada permanece bloqueada.',
+        '$count solicitação(ões) aguardando aprovação. A retirada permanece bloqueada.',
         style: TextStyle(color: colors.onWarningContainer),
       ),
     );
@@ -550,7 +547,7 @@ final class _AuthorizedTable extends StatelessWidget {
   Widget build(BuildContext context) => CoeloAdminResizableTable<PickupAuthorization>(
     key: const Key('authorized-persons-table'),
     items: record.authorizations,
-    rowKey: (a) => 'authorized-person-row-' + a.id,
+    rowKey: (a) => 'authorized-person-row-${a.id}',
     headerHeight: 56,
     rowHeight: 72,
     pinnedColumn: _column('name', 'Nome', (a) => a.name, 220),
@@ -600,7 +597,7 @@ final class AuthorizedPersonCard extends StatelessWidget {
   final VoidCallback? onEdit;
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
-    semanticLabel: authorization.name + ', ' + authorization.status.label,
+    semanticLabel: '${authorization.name}, ${authorization.status.label}',
     onPressed: () => _manage(
       context,
       record,
@@ -617,7 +614,7 @@ final class AuthorizedPersonCard extends StatelessWidget {
             children: [
               CoeloAvatar(
                 initials: _initials(authorization.name),
-                semanticLabel: 'Avatar de ' + authorization.name,
+                semanticLabel: 'Avatar de ${authorization.name}',
                 size: CoeloAvatarSize.medium,
               ),
               const SizedBox(width: CoeloSpacing.space3),
@@ -646,7 +643,7 @@ final class AuthorizationValiditySummary extends StatelessWidget {
   final PickupAuthorization authorization;
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Validade da autorização: ' + _period(authorization),
+    label: 'Validade da autorização: ${_period(authorization)}',
     child: Row(
       children: [
         const Icon(Icons.event_available_outlined, size: CoeloSize.iconSm),
@@ -843,7 +840,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       const SizedBox(height: CoeloSpacing.space4),
       for (final option in options) ...[
         CoeloAdminInteractiveCard(
-          semanticLabel: 'Selecionar ' + option.name,
+          semanticLabel: 'Selecionar ${option.name}',
           onPressed: () => setState(() => child = option),
           child: Padding(
             padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -861,7 +858,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(option.name, style: Theme.of(context).textTheme.titleMedium),
-                      Text(option.institutionName + ' · ' + option.unitName),
+                      Text('${option.institutionName} · ${option.unitName}'),
                     ],
                   ),
                 ),
@@ -949,7 +946,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       _Review(label: 'Criança', value: child?.name ?? 'Não selecionada'),
       _Review(
         label: 'Contexto',
-        value: (child?.institutionName ?? '—') + ' · ' + (child?.unitName ?? '—'),
+        value: '${child?.institutionName ?? '—'} · ${child?.unitName ?? '—'}',
       ),
       _Review(label: 'Pessoa global', value: personId.text.trim()),
       _Review(label: 'Capacidades', value: _capabilities().join(', ')),
@@ -1047,10 +1044,11 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       ),
     );
     if (!mounted) return;
-    if (saved)
+    if (saved) {
       widget.onSaved();
-    else
+    } else {
       setState(() => error = widget.controller.errorMessage);
+    }
   }
 
   Set<String> _capabilities() => {
@@ -1112,7 +1110,7 @@ Future<void> _manage(
 ) => showDialog<void>(
   context: context,
   builder: (dialogContext) => CoeloAdminDialogShell(
-    title: 'Gerenciar ' + authorization.name,
+    title: 'Gerenciar ${authorization.name}',
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1206,19 +1204,15 @@ CoeloStatusColors _statusColors(BuildContext context) =>
 
 String _period(PickupAuthorization value) {
   final from = _date(value.startsAt);
-  if (value.lifetime) return from.isEmpty ? 'Até revogação' : 'Desde ' + from + ' · até revogação';
-  return (from.isEmpty ? 'Início não informado' : from) +
-      ' até ' +
-      (_date(value.endsAt).isEmpty ? 'data não informada' : _date(value.endsAt));
+  if (value.lifetime) return from.isEmpty ? 'Até revogação' : 'Desde $from · até revogação';
+  return '${from.isEmpty ? 'Início não informado' : from} até '
+      '${_date(value.endsAt).isEmpty ? 'data não informada' : _date(value.endsAt)}';
 }
 
 String _date(DateTime? value) => value == null
     ? ''
-    : value.day.toString().padLeft(2, '0') +
-          '/' +
-          value.month.toString().padLeft(2, '0') +
-          '/' +
-          value.year.toString();
+    : '${value.day.toString().padLeft(2, '0')}/'
+          '${value.month.toString().padLeft(2, '0')}/${value.year}';
 DateTime? _parseDate(String raw) {
   if (raw.trim().isEmpty) return null;
   final parts = raw.trim().split('/');
@@ -1240,13 +1234,6 @@ String _uuid() {
   bytes[6] = (bytes[6] & 15) | 64;
   bytes[8] = (bytes[8] & 63) | 128;
   final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
-  return hex.substring(0, 8) +
-      '-' +
-      hex.substring(8, 12) +
-      '-' +
-      hex.substring(12, 16) +
-      '-' +
-      hex.substring(16, 20) +
-      '-' +
-      hex.substring(20);
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-'
+      '${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
 }
