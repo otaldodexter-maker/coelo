@@ -315,6 +315,20 @@ void main() {
               'summary': {'phase': 'complete'},
             });
           }
+          if (body['action'] == 'status') {
+            expect(body['job_id'], '22222222-2222-4222-8222-222222222222');
+            return _jsonResponse(request, {
+              'job_id': '22222222-2222-4222-8222-222222222222',
+              'domain': 'units',
+              'direction': 'export',
+              'format': 'xlsx',
+              'state': 'SUCESSO',
+              'created_at': '2026-08-11T12:00:00Z',
+              'started_at': '2026-08-11T12:00:05Z',
+              'finished_at': '2026-08-11T12:00:30Z',
+              'summary': {'phase': 'complete'},
+            });
+          }
           if (body['action'] == 'download') {
             expect(body['job_id'], '22222222-2222-4222-8222-222222222222');
             return _jsonResponse(request, {
@@ -424,7 +438,7 @@ void main() {
     expect(download.job.status, UnitFileJobStatus.success);
     expect(download.url.host, 'example.supabase.co');
 
-    expect(requests.where((request) => request.url.pathSegments.contains('functions')).length, 7);
+    expect(requests.where((request) => request.url.pathSegments.contains('functions')).length, 8);
   });
 
   test('uploads a unit import through canonical create and binary Edge calls', () async {
@@ -604,7 +618,7 @@ void main() {
 
       final download = await gateway.generateExport(_exportRequest());
 
-      expect(captured, hasLength(2));
+      expect(captured, hasLength(3));
       expect(
         captured.map((request) => request.url.path),
         everyElement('/functions/v1/import-export-jobs'),
@@ -631,6 +645,10 @@ void main() {
       );
       expect(jsonEncode(requestBody), isNot(contains('storage_path')));
       expect(jsonEncode(requestBody), isNot(contains('checksum')));
+      expect(jsonDecode(captured[1].body), {
+        'action': 'status',
+        'job_id': '22222222-2222-4222-8222-222222222222',
+      });
       expect(jsonDecode(captured.last.body), {
         'action': 'download',
         'job_id': '22222222-2222-4222-8222-222222222222',
@@ -780,6 +798,61 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('rejects a status response for a different job before download', () async {
+      final captured = <Request>[];
+
+      await expectLater(
+        _exportGateway(
+          statusJobId: '99999999-9999-4999-8999-999999999999',
+          onRequest: captured.add,
+        ).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.invalidResponse,
+          ),
+        ),
+      );
+
+      expect(captured, hasLength(2));
+      expect(jsonDecode(captured.last.body), containsPair('action', 'status'));
+    });
+
+    test('rejects a download artifact leaked by the status response', () async {
+      await expectLater(
+        _exportGateway(statusIncludesArtifact: true).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.invalidResponse,
+          ),
+        ),
+      );
+    });
+
+    test('does not download while the status response is not ready', () async {
+      final captured = <Request>[];
+
+      await expectLater(
+        _exportGateway(
+          statusState: 'PROCESSANDO',
+          onRequest: captured.add,
+        ).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.notReady,
+          ),
+        ),
+      );
+
+      expect(captured, hasLength(2));
+      expect(jsonDecode(captured.last.body), containsPair('action', 'status'));
     });
 
     test('requires export TTL to be an exact integer from 1 to 300 seconds', () async {
@@ -993,13 +1066,16 @@ SupabaseUnitBackendCommandsGateway _exportGateway({
       'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
   Object? expiresIn = 300,
   String state = 'SUCESSO',
+  String? statusState,
   String jobId = '22222222-2222-4222-8222-222222222222',
+  String? statusJobId,
   String domain = 'units',
   String direction = 'export',
   String format = 'csv',
   Object? createdAt = '2026-08-11T12:00:00Z',
   Map<String, Object?> responseOverrides = const {},
   bool requestIncludesArtifact = false,
+  bool statusIncludesArtifact = false,
   String? downloadJobId,
   void Function(Request request)? onRequest,
 }) {
@@ -1010,21 +1086,29 @@ SupabaseUnitBackendCommandsGateway _exportGateway({
       onRequest?.call(request);
       final requestBody = jsonDecode(request.body) as Map<String, dynamic>;
       final isDownload = requestBody['action'] == 'download';
+      final isStatus = requestBody['action'] == 'status';
+      final responseState = isStatus ? (statusState ?? state) : state;
       final payload = <String, Object?>{
-        'job_id': isDownload ? (downloadJobId ?? jobId) : jobId,
+        'job_id': isDownload
+            ? (downloadJobId ?? jobId)
+            : isStatus
+            ? (statusJobId ?? jobId)
+            : jobId,
         'domain': domain,
         'direction': direction,
         'format': format,
-        'state': state,
+        'state': responseState,
         'summary': const {'phase': 'complete'},
         'created_at': createdAt,
         'started_at': '2026-08-11T12:00:05Z',
-        'finished_at': state == 'PENDENTE' || state == 'PROCESSANDO'
+        'finished_at': responseState == 'PENDENTE' || responseState == 'PROCESSANDO'
             ? null
             : '2026-08-11T12:00:30Z',
         ...responseOverrides,
       };
-      if (isDownload || requestIncludesArtifact) {
+      if (isDownload ||
+          (!isStatus && requestIncludesArtifact) ||
+          (isStatus && statusIncludesArtifact)) {
         payload['download_url'] = downloadUrl;
         if (expiresIn != null) payload['expires_in'] = expiresIn;
       }

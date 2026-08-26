@@ -86,6 +86,17 @@ final class _UnitFileActionsState extends State<UnitFileActions> {
         final result = await gateway.generateExport(attempt.request);
         if (!mounted) return;
         _retryAttempt = null;
+        if (_exportSignature(format) != signature) {
+          _pendingDownload = null;
+          if (context.mounted) {
+            showSuperadminNotice(
+              context,
+              'Os filtros ou a visão mudaram durante a exportação. Gere um novo arquivo.',
+              icon: Icons.info_outline,
+            );
+          }
+          return;
+        }
         if (!result.expiresAt.toUtc().isAfter(DateTime.now().toUtc())) {
           throw const UnitExportException(
             code: UnitExportFailureCode.expired,

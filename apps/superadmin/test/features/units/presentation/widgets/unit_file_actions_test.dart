@@ -128,6 +128,43 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('does not open a stale export after the directory query changes', (tester) async {
+    final pending = Completer<UnitExportDownload>();
+    final gateway = _ExportGateway((request) => pending.future);
+    final opened = <String>[];
+    final controller = SuperadminActivityController();
+    addTearDown(controller.dispose);
+
+    Widget actions(UnitDirectoryQuery query) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(
+        body: UnitFileActions(
+          activityController: controller,
+          backendCommands: gateway,
+          query: query,
+          requestIdFactory: () => '11111111-1111-4111-8111-111111111111',
+          groupByInstitution: false,
+          openUrl: (url) async {
+            opened.add(url);
+            return true;
+          },
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(actions(UnitDirectoryQuery()));
+    await _openExportMenu(tester);
+    await tester.tap(find.text('Exportar CSV'));
+    await tester.pump();
+
+    await tester.pumpWidget(actions(UnitDirectoryQuery(search: 'outra unidade')));
+    pending.complete(_download());
+    await tester.pumpAndSettle();
+
+    expect(opened, isEmpty);
+    expect(find.textContaining('filtros ou a visão mudaram'), findsOne);
+  });
+
   testWidgets('retriable failure reuses the same request snapshot and idempotency key', (
     tester,
   ) async {

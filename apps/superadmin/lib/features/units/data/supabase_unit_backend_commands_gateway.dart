@@ -261,14 +261,25 @@ final class SupabaseUnitBackendCommandsGateway implements UnitBackendCommandsGat
       allowDownloadArtifact: false,
     );
     _requireSuccessfulExportJob(requestedJob);
+    final statusPayload = await _invokeExportEdge('status', {
+      'action': 'status',
+      'job_id': requestedJob.id,
+    });
+    final statusJob = _exportFileJob(
+      statusPayload,
+      expectedFormat: request.format,
+      expectedJobId: requestedJob.id,
+      allowDownloadArtifact: false,
+    );
+    _requireSuccessfulExportJob(statusJob);
     final downloadPayload = await _invokeExportEdge('download', {
       'action': 'download',
-      'job_id': requestedJob.id,
+      'job_id': statusJob.id,
     });
     final job = _exportFileJob(
       downloadPayload,
       expectedFormat: request.format,
-      expectedJobId: requestedJob.id,
+      expectedJobId: statusJob.id,
       allowDownloadArtifact: true,
     );
     _requireSuccessfulExportJob(job);
