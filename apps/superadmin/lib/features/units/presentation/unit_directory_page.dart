@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +10,7 @@ import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
+import '../domain/unit_backend_commands.dart';
 import '../domain/unit_directory.dart';
 import 'unit_directory_table_view.dart';
 import 'unit_directory_view_model.dart';
@@ -19,10 +22,21 @@ import 'widgets/unit_directory_toolbar.dart';
 
 enum _UnitStatusSegment { all, active, onboarding, inactive }
 
+String _newUnitRequestId() {
+  final random = math.Random.secure();
+  final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final value = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  return '${value.substring(0, 8)}-${value.substring(8, 12)}-${value.substring(12, 16)}-${value.substring(16, 20)}-${value.substring(20)}';
+}
+
 final class UnitDirectoryPage extends StatefulWidget {
   const UnitDirectoryPage({
     required this.repository,
     required this.logout,
+    this.backendCommands,
+    this.requestIdFactory,
     this.onCreate,
     this.onEdit,
     this.onDestinationSelected,
@@ -33,6 +47,8 @@ final class UnitDirectoryPage extends StatefulWidget {
   });
 
   final UnitDirectoryRepository repository;
+  final UnitBackendCommandsGateway? backendCommands;
+  final String Function()? requestIdFactory;
   final LogoutAction logout;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
@@ -138,6 +154,8 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
             return _UnitDirectoryContent(
               viewModel: _viewModel,
               activityController: _activityController,
+              backendCommands: widget.backendCommands,
+              requestIdFactory: widget.requestIdFactory ?? _newUnitRequestId,
               searchController: _searchController,
               display: _display,
               tableView: _tableView,
@@ -162,6 +180,8 @@ final class _UnitDirectoryContent extends StatefulWidget {
   const _UnitDirectoryContent({
     required this.viewModel,
     required this.activityController,
+    required this.backendCommands,
+    required this.requestIdFactory,
     required this.searchController,
     required this.display,
     required this.tableView,
@@ -175,6 +195,8 @@ final class _UnitDirectoryContent extends StatefulWidget {
 
   final UnitDirectoryViewModel viewModel;
   final SuperadminActivityController activityController;
+  final UnitBackendCommandsGateway? backendCommands;
+  final String Function() requestIdFactory;
   final TextEditingController searchController;
   final UnitDirectoryDisplay display;
   final UnitDirectoryTableView tableView;
@@ -250,6 +272,8 @@ final class _UnitDirectoryContentState extends State<_UnitDirectoryContent> {
                     UnitDirectoryToolbar(
                       viewModel: widget.viewModel,
                       activityController: widget.activityController,
+                      backendCommands: widget.backendCommands,
+                      requestIdFactory: widget.requestIdFactory,
                       searchController: widget.searchController,
                       display: widget.display,
                       tableView: widget.tableView,

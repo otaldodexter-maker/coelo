@@ -140,7 +140,7 @@ import '../../features/support/presentation/view_models/support_prototype_contro
 import '../../features/student_tracking/domain/student_tracking.dart';
 import '../../features/student_tracking/presentation/student_tracking_page.dart';
 import '../../features/units/data/fake_unit_directory_repository.dart';
-import '../../features/units/data/supabase_unit_directory_repository.dart';
+import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart' hide UnitDirectoryPage;
 import '../../features/units/presentation/unit_directory_page.dart';
@@ -214,7 +214,7 @@ GoRouter createSuperadminRouter({
       const UnavailablePersonDirectoryRepository(),
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
-  UnitBackendCommandsGateway? unitBackendCommands,
+  UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
   AccessProfileExtendedRepository accessProfileExtendedRepository =
       const UnavailableAccessProfileExtendedRepository(),
@@ -274,7 +274,7 @@ GoRouter createSuperadminRouter({
   final unitRepository = unitDirectoryRepository;
   FakeUnitDirectoryRepository? cachedUnitPreviewRepository;
   UnitDirectoryRepository unitPreviewRepository() =>
-      cachedUnitPreviewRepository ??= FakeUnitDirectoryRepository();
+      cachedUnitPreviewRepository ??= FakeUnitDirectoryRepository(institutionPreviewRepository());
   final groupRepository = groupDirectoryRepository;
   FakeGroupDirectoryRepository? cachedGroupPreviewRepository;
   FakeGroupDirectoryRepository groupPreviewRepository() =>
@@ -649,7 +649,6 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.unitCreateName,
             builder: (context, state) => UnitFormPage(
               repository: unitRepository,
-              backendCommands: unitBackendCommands,
               logout: logout,
               onCreateGroup: (institutionId, unitId) => context.goNamed(
                 SuperadminRoutes.groupCreateName,
@@ -1898,6 +1897,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devUnitsName,
             builder: (context, state) => UnitDirectoryPage(
               repository: unitPreviewRepository(),
+              backendCommands: null,
               logout: _previewLogout,
               successMessage: unitSuccessMessage(state.extra),
               onCreate: () => context.goNamed(SuperadminRoutes.devUnitCreateName),

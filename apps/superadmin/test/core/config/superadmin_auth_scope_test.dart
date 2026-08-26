@@ -11,6 +11,7 @@ import 'package:coelo_superadmin/features/invites/data/supabase_invite_repositor
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/student_tracking/domain/student_tracking.dart';
+import 'package:coelo_superadmin/features/units/data/unavailable_unit_composition.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -48,6 +49,8 @@ void main() {
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.attendanceRepository, isA<UnavailableAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
+    expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
+    expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.auditRepository, isA<UnavailableAuditRepository>());
   });
@@ -77,6 +80,8 @@ void main() {
     expect(scope.inviteRepository, isA<SupabaseInviteRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
+    expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
+    expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(scope.attendancePermissions.canManage, isFalse);
     expect(scope.attendancePermissions.backendResolved, isTrue);
     expect(scope.auditRepository, isA<SupabaseAuditRepository>());
@@ -152,6 +157,8 @@ void main() {
     );
 
     expect(reportedErrors, hasLength(1));
+    expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
+    expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(result.isSuccess, isFalse);
     expect(result.message, 'Não foi possível inicializar a autenticação deste ambiente.');
   });

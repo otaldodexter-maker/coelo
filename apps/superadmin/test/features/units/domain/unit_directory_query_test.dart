@@ -24,4 +24,18 @@ void main() {
       'archived',
     ]);
   });
+
+  test('keeps institution and unit type filters independent', () {
+    final query = UnitDirectoryQuery(institutionTypeIds: {'school'}, typeIds: {'campus'});
+
+    expect(query.institutionTypeIds, {'school'});
+    expect(query.unitTypeIds, {'campus'});
+    expect(query.typeIds, same(query.unitTypeIds));
+    expect(query.hasActiveFilters, isTrue);
+
+    final explicitUnitTypes = UnitDirectoryQuery(unitTypeIds: {'support'});
+    expect(explicitUnitTypes.institutionTypeIds, isEmpty);
+    expect(explicitUnitTypes.typeIds, {'support'});
+    expect(explicitUnitTypes.hasActiveFilters, isTrue);
+  });
 }

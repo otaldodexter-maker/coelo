@@ -169,6 +169,9 @@ int _compareRecords(UnitRecord first, UnitRecord second, UnitDirectorySortColumn
     UnitDirectorySortColumn.institutionName => first.institutionName.compareTo(
       second.institutionName,
     ),
+    UnitDirectorySortColumn.institutionTypeName => first.institution.typeName.compareTo(
+      second.institution.typeName,
+    ),
     UnitDirectorySortColumn.typeName => first.typeName.compareTo(second.typeName),
     UnitDirectorySortColumn.groupsCount => first.groupsCount.compareTo(second.groupsCount),
     UnitDirectorySortColumn.activitiesCount => first.activitiesCount.compareTo(

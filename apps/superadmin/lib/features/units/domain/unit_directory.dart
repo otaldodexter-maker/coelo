@@ -151,6 +151,7 @@ final class UnitDirectoryItem {
 enum UnitDirectorySortColumn {
   name,
   institutionName,
+  institutionTypeName,
   typeName,
   groupsCount,
   activitiesCount,
@@ -172,6 +173,8 @@ final class UnitDirectoryQuery {
   UnitDirectoryQuery({
     this.search = '',
     Set<String> institutionIds = const {},
+    Set<String> institutionTypeIds = const {},
+    Set<String> unitTypeIds = const {},
     Set<String> typeIds = const {},
     Set<UnitStatus> statuses = const {},
     Set<String> planIds = const {},
@@ -185,7 +188,8 @@ final class UnitDirectoryQuery {
   }) : assert(page >= 0),
        assert(allowedPageSizes.contains(pageSize)),
        institutionIds = Set.unmodifiable(institutionIds),
-       typeIds = Set.unmodifiable(typeIds),
+       institutionTypeIds = Set.unmodifiable(institutionTypeIds),
+       unitTypeIds = Set.unmodifiable(unitTypeIds.isEmpty ? typeIds : unitTypeIds),
        statuses = Set.unmodifiable(statuses),
        planIds = Set.unmodifiable(planIds),
        states = Set.unmodifiable(states),
@@ -197,7 +201,9 @@ final class UnitDirectoryQuery {
 
   final String search;
   final Set<String> institutionIds;
-  final Set<String> typeIds;
+  final Set<String> institutionTypeIds;
+  final Set<String> unitTypeIds;
+  Set<String> get typeIds => unitTypeIds;
   final Set<UnitStatus> statuses;
   final Set<String> planIds;
   final Set<String> states;
@@ -212,7 +218,8 @@ final class UnitDirectoryQuery {
   bool get hasActiveFilters =>
       search.trim().isNotEmpty ||
       institutionIds.isNotEmpty ||
-      typeIds.isNotEmpty ||
+      institutionTypeIds.isNotEmpty ||
+      unitTypeIds.isNotEmpty ||
       statuses.isNotEmpty ||
       planIds.isNotEmpty ||
       states.isNotEmpty ||

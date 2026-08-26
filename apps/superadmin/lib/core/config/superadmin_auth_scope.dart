@@ -49,8 +49,7 @@ import '../../features/access_profiles/data/supabase_access_profile_repository.d
 import '../../features/access_profiles/data/supabase_access_profile_extended_repository.dart';
 import '../../features/access_profiles/data/unavailable_access_profile_extended_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
-import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
-import '../../features/units/data/supabase_unit_directory_repository.dart';
+import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
 import '../../features/units/domain/unit_directory.dart';
 import '../../features/safety/data/supabase_child_safety_repository.dart';
@@ -88,7 +87,7 @@ final class SuperadminAuthScope {
     required this.accessProfileExtendedRepository,
     required this.groupDirectoryRepository,
     required this.unitDirectoryRepository,
-    this.unitBackendCommands,
+    required this.unitBackendCommands,
     required this.importRepository,
     required this.inviteRepository,
     required this.noticeRepository,
@@ -120,7 +119,7 @@ final class SuperadminAuthScope {
   final AccessProfileExtendedRepository accessProfileExtendedRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
-  final UnitBackendCommandsGateway? unitBackendCommands;
+  final UnitBackendCommandsGateway unitBackendCommands;
   final ImportRepository importRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
@@ -177,8 +176,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       accessProfileExtendedRepository: SupabaseAccessProfileExtendedRepository(client),
       groupDirectoryRepository: SupabaseGroupDirectoryRepository(client),
-      unitDirectoryRepository: SupabaseUnitDirectoryRepository(client),
-      unitBackendCommands: SupabaseUnitBackendCommandsGateway(client),
+      unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
+      unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
       inviteRepository: SupabaseInviteRepository(client),
       noticeRepository: SupabaseNoticeRepository(client),
@@ -232,6 +231,7 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     accessProfileExtendedRepository: const UnavailableAccessProfileExtendedRepository(),
     groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
     unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
+    unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
     importRepository: const UnavailableImportRepository(),
     inviteRepository: const UnavailableInviteRepository(),
     noticeRepository: const UnavailableNoticeRepository(),

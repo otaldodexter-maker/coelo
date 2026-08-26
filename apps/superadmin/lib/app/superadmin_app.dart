@@ -19,7 +19,7 @@ import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
-import '../features/units/data/supabase_unit_directory_repository.dart';
+import '../features/units/data/unavailable_unit_composition.dart';
 import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
@@ -87,7 +87,7 @@ class SuperadminApp extends StatefulWidget {
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
-    this.unitBackendCommands,
+    this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.accessProfileExtendedRepository = const UnavailableAccessProfileExtendedRepository(),
     this.importRepository = const UnavailableImportRepository(),
@@ -114,7 +114,7 @@ class SuperadminApp extends StatefulWidget {
   final ActivityCommandRepository activityCommandRepository;
   final PersonDirectoryRepository personDirectoryRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
-  final UnitBackendCommandsGateway? unitBackendCommands;
+  final UnitBackendCommandsGateway unitBackendCommands;
   final AccessProfileRepository accessProfileRepository;
   final AccessProfileExtendedRepository accessProfileExtendedRepository;
   final ImportRepository importRepository;

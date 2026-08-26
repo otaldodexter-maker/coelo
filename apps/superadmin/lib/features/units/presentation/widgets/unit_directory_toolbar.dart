@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/activity/superadmin_activity.dart';
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../domain/unit_backend_commands.dart';
 import '../../domain/unit_directory.dart';
 import '../unit_directory_table_view.dart';
 import '../unit_directory_view_model.dart';
@@ -16,6 +17,8 @@ final class UnitDirectoryToolbar extends StatelessWidget {
   const UnitDirectoryToolbar({
     required this.viewModel,
     required this.activityController,
+    required this.backendCommands,
+    required this.requestIdFactory,
     required this.searchController,
     required this.display,
     required this.tableView,
@@ -27,6 +30,8 @@ final class UnitDirectoryToolbar extends StatelessWidget {
 
   final UnitDirectoryViewModel viewModel;
   final SuperadminActivityController activityController;
+  final UnitBackendCommandsGateway? backendCommands;
+  final String Function() requestIdFactory;
   final TextEditingController searchController;
   final UnitDirectoryDisplay display;
   final UnitDirectoryTableView tableView;
@@ -212,6 +217,12 @@ final class UnitDirectoryToolbar extends StatelessWidget {
               const SizedBox(width: CoeloSpacing.space2),
               UnitFileActions(
                 activityController: activityController,
+                backendCommands: backendCommands,
+                query: viewModel.query,
+                requestIdFactory: requestIdFactory,
+                groupByInstitution:
+                    display == UnitDirectoryDisplay.table &&
+                    tableView == UnitDirectoryTableView.grouped,
                 compact: compactFiles,
                 viewLabel: display == UnitDirectoryDisplay.cards ? 'Cards' : tableView.label,
               ),
