@@ -8,6 +8,7 @@ import '../../core/config/superadmin_app_config.dart';
 import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanImageRepository;
 import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
+import '../dev_menu/development_attendance_repository.dart';
 import '../activity/superadmin_activity.dart';
 import '../prototype/superadmin_prototype_store.dart';
 import '../../features/activities/data/supabase_activity_command_repository.dart';
@@ -278,6 +279,9 @@ GoRouter createSuperadminRouter({
   FakeGroupDirectoryRepository? cachedGroupPreviewRepository;
   FakeGroupDirectoryRepository groupPreviewRepository() =>
       cachedGroupPreviewRepository ??= FakeGroupDirectoryRepository(institutionPreviewRepository());
+  DevelopmentAttendanceRepository? cachedAttendancePreviewRepository;
+  DevelopmentAttendanceRepository attendancePreviewRepository() =>
+      cachedAttendancePreviewRepository ??= DevelopmentAttendanceRepository.content();
   final attendanceActivities = SuperadminActivityController();
   final dailyRoutineRepository = routineRepository;
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
@@ -2275,7 +2279,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devAttendance,
             name: SuperadminRoutes.devAttendanceName,
             builder: (context, state) => AttendanceDashboardPage(
-              repository: attendanceRepository,
+              repository: attendancePreviewRepository(),
               permissions: attendancePermissions,
               logout: _previewLogout,
               onCreate: () => context.goNamed(SuperadminRoutes.devAttendanceCreateName),
@@ -2290,7 +2294,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devAttendanceCreate,
             name: SuperadminRoutes.devAttendanceCreateName,
             builder: (context, state) => AttendanceNewCallPage(
-              repository: attendanceRepository,
+              repository: attendancePreviewRepository(),
               permissions: attendancePermissions,
               logout: _previewLogout,
               onCancel: () => context.goNamed(SuperadminRoutes.devAttendanceName),
@@ -2309,7 +2313,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devAttendanceCall,
             name: SuperadminRoutes.devAttendanceCallName,
             builder: (context, state) => AttendanceCallPage(
-              repository: attendanceRepository,
+              repository: attendancePreviewRepository(),
               callId: state.pathParameters['callId']!,
               focusedParticipantId: state.uri.queryParameters['participant'],
               permissions: attendancePermissions,
