@@ -39,16 +39,20 @@ void main() {
     expect(find.text('Gerencie as turmas da plataforma.'), findsOneWidget);
     expect(find.textContaining('Instituição:'), findsWidgets);
     expect(find.textContaining('Unidade:'), findsWidgets);
-    expect(find.text('Tipos'), findsWidgets);
+    expect(find.text('Tipo da turma'), findsWidgets);
     expect(find.byType(CoeloAdminCreateAction), findsOneWidget);
     expect(
       find.byWidgetPredicate((widget) => widget is SuperadminDirectoryViewToggle),
       findsOneWidget,
     );
-    expect(find.text('Equipe institucional'), findsWidgets);
-    expect(find.text('Atividades'), findsWidgets);
-    expect(find.text('Responsáveis'), findsWidgets);
-    expect(find.text('Crianças'), findsWidgets);
+    final firstCard = find.byKey(Key('group-card-${first.id}'));
+    expect(
+      find.descendant(of: firstCard, matching: find.text('Equipe institucional')),
+      findsNothing,
+    );
+    expect(find.descendant(of: firstCard, matching: find.text('Atividades')), findsNothing);
+    expect(find.descendant(of: firstCard, matching: find.text('Responsáveis')), findsNothing);
+    expect(find.descendant(of: firstCard, matching: find.text('Crianças')), findsNothing);
 
     expect(
       tester.getSize(find.byType(CoeloAdminCreateAction)).height,
@@ -63,16 +67,8 @@ void main() {
     expect(find.byKey(const Key('group-directory-table')), findsOneWidget);
     expect(find.text('Turma'), findsWidgets);
 
-    await tester.longPress(find.byKey(const Key('group-view-table')));
-    await tester.pumpAndSettle();
-    expect(find.text('Agrupado'), findsOneWidget);
-    expect(find.text('Detalhado por Atividades'), findsOneWidget);
-    await tester.tap(find.text('Detalhado por Atividades'));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('group-activity-directory-table')), findsOneWidget);
-    expect(find.text('Atividade'), findsWidgets);
-    expect(find.text('Equipe institucional'), findsWidgets);
-    expect(find.byKey(const Key('coelo-admin-table-header-status')), findsOneWidget);
+    expect(find.text('Detalhado por Atividades'), findsNothing);
+    expect(find.byKey(const Key('group-activity-directory-table')), findsNothing);
   });
 
   testWidgets('uses the canonical expandable status indicator on group cards', (tester) async {
@@ -174,7 +170,7 @@ void main() {
     }
   });
 
-  testWidgets('does not expose fixture or demonstration labels in file actions', (tester) async {
+  testWidgets('does not expose file actions without a canonical backend contract', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -187,19 +183,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final forbidden = RegExp(r'fake|demo|dev|catálogo|teste', caseSensitive: false);
-
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Importar turmas'));
-    await tester.pump();
-    expect(find.textContaining(forbidden), findsNothing);
-
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Exportar turmas'));
-    await tester.pump();
-    expect(find.textContaining(forbidden), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
+    expect(find.text('Importar turmas'), findsNothing);
+    expect(find.text('Exportar turmas'), findsNothing);
   });
 
   testWidgets('uses only dependent units after selecting an institution', (tester) async {
@@ -225,10 +211,9 @@ void main() {
     expect(find.text('Ativos'), findsOneWidget);
   });
 
-  testWidgets('offers explicit import and export actions', (tester) async {
+  testWidgets('never exposes demo import or export actions', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -240,25 +225,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    expect(find.text('Importar turmas'), findsOneWidget);
-    expect(find.text('Exportar turmas'), findsOneWidget);
-
-    await tester.tap(find.text('Exportar turmas'));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('visão: Cards'), findsOneWidget);
-
-    final toggle = tester.widget<SuperadminDirectoryViewToggle<GroupDirectoryTableView>>(
-      find.byType(SuperadminDirectoryViewToggle<GroupDirectoryTableView>),
-    );
-    toggle.onTableViewSelected(GroupDirectoryTableView.activities);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Exportar turmas'));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('visão: Detalhado por Atividades'), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
+    expect(find.text('Importar turmas'), findsNothing);
+    expect(find.text('Exportar turmas'), findsNothing);
   });
 
   testWidgets('inherits the approved Bug, profile and tour overlays from the shell', (
@@ -348,9 +317,6 @@ final class _ScenarioRepository implements domain.GroupDirectoryRepository {
   final _Scenario scenario;
 
   @override
-  List<domain.GroupRecord> get records => const [];
-
-  @override
   String createId(String institutionId, String unitId, String name) => 'unused';
 
   @override
@@ -373,8 +339,24 @@ final class _ScenarioRepository implements domain.GroupDirectoryRepository {
   }
 
   @override
-  domain.GroupRecord? findById(String id) => null;
+  Future<domain.GroupRecord?> findById(String id) async => null;
 
   @override
   Future<void> upsert(domain.GroupRecord record) async {}
+
+  @override
+  Future<domain.GroupDirectoryExportResult> requestExport(domain.GroupDirectoryQuery query) async =>
+      const domain.GroupDirectoryExportResult(
+        jobId: 'scenario-export',
+        downloadUrl: 'https://example.invalid/scenario-export.xlsx',
+      );
+
+  @override
+  Future<domain.GroupDirectorySaveResult> saveComposition(
+    domain.GroupDirectorySaveRequest request,
+  ) async => domain.GroupDirectorySaveResult(requestId: request.requestId, steps: const []);
+
+  @override
+  Future<domain.GroupDirectoryFormContext> fetchFormContext({String? institutionId}) async =>
+      const domain.GroupDirectoryFormContext(institutions: [], units: []);
 }

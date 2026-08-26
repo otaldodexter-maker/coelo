@@ -35,7 +35,6 @@ import '../features/safety/application/child_safety_controller.dart';
 import '../features/safety/domain/child_safety_contract.dart';
 
 import '../features/access_profiles/domain/access_profile.dart';
-import '../features/groups/data/supabase_group_directory_repository.dart';
 import '../features/groups/domain/group_directory.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
 import 'router/superadmin_router.dart';

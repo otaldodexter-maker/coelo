@@ -5,6 +5,11 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
+import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
+import 'package:coelo_superadmin/features/groups/presentation/group_directory_page.dart'
+    as presentation;
+import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -48,28 +53,139 @@ void main() {
     expect(selectedDestination, 'groups');
   });
 
-  testWidgets('protects production and exposes the development group directory', (tester) async {
-    final session = SuperadminSession();
+  testWidgets('development routes share one local fake and never call production', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final production = _TrackingGroupDirectoryRepository();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      institutionDirectoryRepository: FakeInstitutionDirectoryRepository(),
+      groupDirectoryRepository: production,
+      allowDevelopmentPreview: true,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
     addTearDown(session.dispose);
 
-    router.go(SuperadminRoutes.groups);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-    await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.login);
 
     router.go(SuperadminRoutes.devGroups);
     await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devGroups);
-    expect(find.text('Gerencie as turmas da plataforma.'), findsOneWidget);
-    expect(find.text('Criar turma'), findsWidgets);
+    final directory = tester.widget<presentation.GroupDirectoryPage>(
+      find.byType(presentation.GroupDirectoryPage),
+    );
+    expect(directory.repository, isA<FakeGroupDirectoryRepository>());
+    expect(production.calls, isEmpty);
+
+    router.go(SuperadminRoutes.devGroupCreate);
+    await tester.pumpAndSettle();
+    final create = tester.widget<GroupFormPage>(find.byType(GroupFormPage));
+    expect(create.repository, same(directory.repository));
+    expect(production.calls, isEmpty);
+
+    final preview = directory.repository as FakeGroupDirectoryRepository;
+    router.go('/dev/groups/${preview.records.first.id}/edit');
+    await tester.pumpAndSettle();
+    final edit = tester.widget<GroupFormPage>(find.byType(GroupFormPage));
+    expect(edit.repository, same(directory.repository));
+    expect(production.calls, isEmpty);
   });
+
+  testWidgets('production routes preserve and call the injected repository', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final repository = _TrackingGroupDirectoryRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      groupDirectoryRepository: repository,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    router.go(SuperadminRoutes.groups);
+    await tester.pumpAndSettle();
+    final directory = tester.widget<presentation.GroupDirectoryPage>(
+      find.byType(presentation.GroupDirectoryPage),
+    );
+    expect(directory.repository, same(repository));
+    expect(repository.calls, containsAll(['fetchPage', 'fetchFilterOptions']));
+
+    repository.calls.clear();
+    router.go(SuperadminRoutes.groupCreate);
+    await tester.pumpAndSettle();
+    final create = tester.widget<GroupFormPage>(find.byType(GroupFormPage));
+    expect(create.repository, same(repository));
+    expect(repository.calls, contains('fetchFormContext'));
+
+    repository.calls.clear();
+    router.go('/groups/${repository.firstId}/edit');
+    await tester.pumpAndSettle();
+    final edit = tester.widget<GroupFormPage>(find.byType(GroupFormPage));
+    expect(edit.repository, same(repository));
+    expect(repository.calls, containsAll(['findById:${repository.firstId}', 'fetchFormContext']));
+  });
+}
+
+final class _TrackingGroupDirectoryRepository implements GroupDirectoryRepository {
+  _TrackingGroupDirectoryRepository()
+    : _delegate = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+
+  final FakeGroupDirectoryRepository _delegate;
+  final calls = <String>[];
+
+  String get firstId => _delegate.records.first.id;
+
+  @override
+  Future<GroupRecord?> findById(String id) {
+    calls.add('findById:$id');
+    return _delegate.findById(id);
+  }
+
+  @override
+  String createId(String institutionId, String unitId, String name) {
+    calls.add('createId');
+    return _delegate.createId(institutionId, unitId, name);
+  }
+
+  @override
+  Future<void> upsert(GroupRecord record) {
+    calls.add('upsert');
+    return _delegate.upsert(record);
+  }
+
+  @override
+  Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) {
+    calls.add('saveComposition');
+    return _delegate.saveComposition(request);
+  }
+
+  @override
+  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) {
+    calls.add('fetchPage');
+    return _delegate.fetchPage(query);
+  }
+
+  @override
+  Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) {
+    calls.add('fetchFilterOptions');
+    return _delegate.fetchFilterOptions(institutionIds: institutionIds);
+  }
+
+  @override
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) {
+    calls.add('fetchFormContext');
+    return _delegate.fetchFormContext(institutionId: institutionId);
+  }
+
+  @override
+  Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) {
+    calls.add('requestExport');
+    return _delegate.requestExport(query);
+  }
 }

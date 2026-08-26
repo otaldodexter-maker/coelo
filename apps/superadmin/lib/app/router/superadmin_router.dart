@@ -68,7 +68,6 @@ import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
 import '../../features/groups/data/fake_group_directory_repository.dart';
-import '../../features/groups/data/supabase_group_directory_repository.dart';
 import '../../features/groups/domain/group_directory.dart' hide GroupDirectoryPage;
 import '../../features/groups/presentation/group_directory_page.dart';
 import '../../features/groups/presentation/group_form_page.dart';
@@ -736,10 +735,6 @@ GoRouter createSuperadminRouter({
               logout: logout,
               successMessage: groupSuccessMessage(state.extra),
               onCreate: () => context.goNamed(SuperadminRoutes.groupCreateName),
-              onImport: () => context.goNamed(
-                SuperadminRoutes.importCreateName,
-                extra: ImportCreationPreset.groups,
-              ),
               onEdit: (id) =>
                   context.goNamed(SuperadminRoutes.groupEditName, pathParameters: {'groupId': id}),
               onBugReportSubmitted: productionSupportController?.submitReport,
@@ -1932,10 +1927,6 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               successMessage: groupSuccessMessage(state.extra),
               onCreate: () => context.goNamed(SuperadminRoutes.devGroupCreateName),
-              onImport: () => context.goNamed(
-                SuperadminRoutes.importCreateName,
-                extra: ImportCreationPreset.groups,
-              ),
               onEdit: (id) => context.goNamed(
                 SuperadminRoutes.devGroupEditName,
                 pathParameters: {'groupId': id},

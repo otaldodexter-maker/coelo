@@ -1,35 +1,42 @@
 import '../../institutions/data/fake_institution_directory_repository.dart';
 import '../domain/group_directory.dart';
 
+/// Deterministic repository restricted to tests, previews, and goldens.
 final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
-  FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository institutions)
-    : _institutions = institutions,
-      _records = [
-        for (final institution in institutions.records)
-          for (final unit in institution.units)
-            for (var index = 0; index < unit.groups.length; index++)
-              GroupRecord(
-                id: unit.groups[index].id,
-                institutionId: institution.id,
-                institutionName: institution.publicName,
-                unitId: unit.id,
-                unitName: unit.name,
-                name: unit.groups[index].name,
-                groupType: index.isEven ? 'class' : 'Atividade',
-                status: GroupStatus.values[index % GroupStatus.values.length],
-                createdAt: DateTime(2026, 1, 1).add(Duration(days: index)),
-                updatedAt: DateTime(2026, 7, 29),
-              ),
-      ];
+  FakeGroupDirectoryRepository(this._institutions, {List<GroupRecord>? records})
+    : _records = [...?records] {
+    if (records == null) {
+      final now = DateTime(2026, 7, 29);
+      var index = 0;
+      for (final institution in _institutions.records) {
+        for (final unit in institution.units.take(2)) {
+          _records.add(
+            GroupRecord(
+              id: 'fixture-group-${index + 1}',
+              institutionId: institution.id,
+              institutionName: institution.publicName,
+              unitId: unit.id,
+              unitName: unit.name,
+              name: 'Turma ${index + 1}',
+              groupType: index.isEven ? 'class' : 'workshop',
+              status: index % 3 == 0 ? GroupStatus.draft : GroupStatus.active,
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+          index += 1;
+        }
+      }
+    }
+  }
 
   final FakeInstitutionDirectoryRepository _institutions;
   final List<GroupRecord> _records;
 
-  @override
   List<GroupRecord> get records => List.unmodifiable(_records);
 
   @override
-  GroupRecord? findById(String id) {
+  Future<GroupRecord?> findById(String id) async {
     for (final record in _records) {
       if (record.id == id) return record;
     }
@@ -38,11 +45,15 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
 
   @override
   String createId(String institutionId, String unitId, String name) {
-    final normalized = name.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
-    final base = '$institutionId-$unitId-group-${normalized.isEmpty ? 'novo' : normalized}';
+    final slug = name
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-|-$'), '');
+    final base = 'fixture-$institutionId-$unitId-${slug.isEmpty ? 'turma' : slug}';
     var candidate = base;
     var suffix = 2;
-    while (findById(candidate) != null) {
+    while (_records.any((record) => record.id == candidate)) {
       candidate = '$base-${suffix++}';
     }
     return candidate;
@@ -55,12 +66,12 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
       throw ArgumentError('Group must belong to a unit in its institution.');
     }
     final index = _records.indexWhere((candidate) => candidate.id == record.id);
-    if (index != -1 &&
+    if (index >= 0 &&
         (_records[index].institutionId != record.institutionId ||
             _records[index].unitId != record.unitId)) {
       throw ArgumentError('Changing an existing group hierarchy is not supported.');
     }
-    if (index == -1) {
+    if (index < 0) {
       _records.add(record);
     } else {
       _records[index] = record;
@@ -68,28 +79,59 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
   }
 
   @override
+  Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) async {
+    await upsert(request.record);
+    return GroupDirectorySaveResult(
+      requestId: request.requestId,
+      steps: [
+        for (final stage in GroupDirectorySaveStage.values)
+          GroupDirectorySaveStepResult.success(stage: stage),
+      ],
+    );
+  }
+
+  @override
   Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) async {
     final search = query.search.trim().toLowerCase();
-    final filtered =
-        _records.where((record) {
-          return (search.isEmpty || record.name.toLowerCase().contains(search)) &&
-              (query.institutionIds.isEmpty ||
-                  query.institutionIds.contains(record.institutionId)) &&
-              (query.unitIds.isEmpty || query.unitIds.contains(record.unitId)) &&
-              (query.typeIds.isEmpty || query.typeIds.contains(record.groupType)) &&
-              (query.statuses.isEmpty || query.statuses.contains(record.status));
-        }).toList()..sort((first, second) {
-          final comparison = _compare(first, second, query.sortColumn);
-          return comparison == 0
-              ? first.id.compareTo(second.id)
-              : query.sortAscending
-              ? comparison
-              : -comparison;
-        });
+    final filtered = _records.where((record) {
+      if (search.isNotEmpty &&
+          !record.name.toLowerCase().contains(search) &&
+          !record.institutionName.toLowerCase().contains(search) &&
+          !record.unitName.toLowerCase().contains(search)) {
+        return false;
+      }
+      if (query.institutionIds.isNotEmpty && !query.institutionIds.contains(record.institutionId)) {
+        return false;
+      }
+      if (query.unitIds.isNotEmpty && !query.unitIds.contains(record.unitId)) {
+        return false;
+      }
+      if (query.typeIds.isNotEmpty && !query.typeIds.contains(record.groupType)) {
+        return false;
+      }
+      return query.statuses.isEmpty || query.statuses.contains(record.status);
+    }).toList();
+
+    int compare(GroupRecord first, GroupRecord second) {
+      final result = switch (query.sortColumn) {
+        GroupDirectorySortColumn.name => first.name.compareTo(second.name),
+        GroupDirectorySortColumn.institutionName => first.institutionName.compareTo(
+          second.institutionName,
+        ),
+        GroupDirectorySortColumn.unitName => first.unitName.compareTo(second.unitName),
+        GroupDirectorySortColumn.groupType => first.groupType.compareTo(second.groupType),
+        GroupDirectorySortColumn.status => first.statusDatabaseValue.compareTo(
+          second.statusDatabaseValue,
+        ),
+      };
+      return query.sortAscending ? result : -result;
+    }
+
+    filtered.sort(compare);
     final start = query.offset.clamp(0, filtered.length);
     final end = (start + query.pageSize).clamp(start, filtered.length);
     return GroupDirectoryPage(
-      items: List.unmodifiable(filtered.sublist(start, end).map(GroupDirectoryItem.new)),
+      items: filtered.sublist(start, end).map(GroupDirectoryItem.new).toList(),
       totalCount: filtered.length,
       page: query.page,
       pageSize: query.pageSize,
@@ -100,47 +142,49 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
   Future<GroupDirectoryFilterOptions> fetchFilterOptions({
     Set<String> institutionIds = const {},
   }) async {
-    List<GroupDirectoryFilterOption> options(Map<String, GroupDirectoryFilterOption> values) {
-      return values.values.toList()..sort((first, second) => first.label.compareTo(second.label));
-    }
+    final institutions =
+        _institutions.records
+            .map((record) => GroupDirectoryFilterOption(id: record.id, label: record.publicName))
+            .toList()
+          ..sort((first, second) => first.label.compareTo(second.label));
+    final units = [
+      for (final institution in _institutions.records)
+        if (institutionIds.isEmpty || institutionIds.contains(institution.id))
+          for (final unit in institution.units)
+            GroupDirectoryFilterOption(
+              id: unit.id,
+              label: unit.name,
+              institutionId: institution.id,
+            ),
+    ]..sort((first, second) => first.label.compareTo(second.label));
+    final types =
+        _records
+            .map((record) => record.groupType)
+            .toSet()
+            .map(
+              (type) =>
+                  GroupDirectoryFilterOption(id: type, label: GroupRecord.groupTypeLabelFor(type)),
+            )
+            .toList()
+          ..sort((first, second) => first.label.compareTo(second.label));
+    return GroupDirectoryFilterOptions(institutions: institutions, units: units, types: types);
+  }
 
-    final institutions = <String, GroupDirectoryFilterOption>{};
-    final units = <String, GroupDirectoryFilterOption>{};
-    final types = <String, GroupDirectoryFilterOption>{};
-    for (final record in _records) {
-      institutions[record.institutionId] = GroupDirectoryFilterOption(
-        id: record.institutionId,
-        label: record.institutionName,
+  @override
+  Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) async =>
+      GroupDirectoryExportResult(
+        jobId: 'fixture-export-${query.offset}',
+        downloadUrl: 'https://example.invalid/fixture-export-${query.offset}.xlsx',
       );
-      if (institutionIds.isEmpty || institutionIds.contains(record.institutionId)) {
-        units[record.unitId] = GroupDirectoryFilterOption(
-          id: record.unitId,
-          label: record.unitName,
-          institutionId: record.institutionId,
-        );
-      }
-      types[record.groupType] = GroupDirectoryFilterOption(
-        id: record.groupType,
-        label: record.groupTypeLabel,
-      );
-    }
-    return GroupDirectoryFilterOptions(
-      institutions: options(institutions),
-      units: options(units),
-      types: options(types),
+  @override
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) async {
+    final options = await fetchFilterOptions(
+      institutionIds: institutionId == null ? const {} : {institutionId},
+    );
+    return GroupDirectoryFormContext(
+      institutions: options.institutions,
+      units: options.units,
+      types: options.types,
     );
   }
 }
-
-int _compare(GroupRecord first, GroupRecord second, GroupDirectorySortColumn column) =>
-    switch (column) {
-      GroupDirectorySortColumn.name => first.name.compareTo(second.name),
-      GroupDirectorySortColumn.institutionName => first.institutionName.compareTo(
-        second.institutionName,
-      ),
-      GroupDirectorySortColumn.unitName => first.unitName.compareTo(second.unitName),
-      GroupDirectorySortColumn.groupType => first.groupType.compareTo(second.groupType),
-      GroupDirectorySortColumn.status => first.status.databaseValue.compareTo(
-        second.status.databaseValue,
-      ),
-    };

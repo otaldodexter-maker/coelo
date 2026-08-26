@@ -47,7 +47,8 @@ void main() {
   });
 
   test('creates and edits local groups without allowing hierarchy moves', () async {
-    final repository = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeGroupDirectoryRepository(institutions);
     final source = repository.records.first;
     final id = repository.createId(source.institutionId, source.unitId, 'nova-turma');
     final created = GroupRecord(
@@ -66,7 +67,42 @@ void main() {
     await repository.upsert(created);
     await repository.upsert(created.copyWith(name: 'Turma atualizada'));
 
-    expect(repository.findById(id)!.name, 'Turma atualizada');
-    expect(() => created.copyWith(unitId: 'other-unit'), throwsArgumentError);
+    expect((await repository.findById(id))!.name, 'Turma atualizada');
+    final otherUnit = institutions.records
+        .expand((institution) => institution.units)
+        .firstWhere((unit) => unit.id != created.unitId);
+    final moved = GroupRecord(
+      id: created.id,
+      institutionId: institutions.records
+          .firstWhere((institution) => institution.units.any((unit) => unit.id == otherUnit.id))
+          .id,
+      institutionName: created.institutionName,
+      unitId: otherUnit.id,
+      unitName: otherUnit.name,
+      name: created.name,
+      groupType: created.groupType,
+      status: created.status,
+      createdAt: created.createdAt,
+      updatedAt: created.updatedAt,
+    );
+
+    await expectLater(repository.upsert(moved), throwsArgumentError);
+    await expectLater(
+      repository.upsert(
+        GroupRecord(
+          id: 'invalid-group',
+          institutionId: 'missing-institution',
+          institutionName: 'Unknown',
+          unitId: 'missing-unit',
+          unitName: 'Unknown',
+          name: 'Invalid',
+          groupType: 'class',
+          status: GroupStatus.active,
+          createdAt: created.createdAt,
+          updatedAt: created.updatedAt,
+        ),
+      ),
+      throwsArgumentError,
+    );
   });
 }

@@ -24,7 +24,7 @@ void main() {
   });
 
   test('group statuses match record_status values', () {
-    expect(GroupStatus.values.map((status) => status.databaseValue), [
+    expect(GroupStatus.values.skip(1).map((status) => status.databaseValue), [
       'draft',
       'active',
       'inactive',

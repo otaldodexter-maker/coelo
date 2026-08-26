@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -5,8 +6,6 @@ import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
-import '../../institutions/data/fake_institution_directory_repository.dart';
-import '../../institutions/domain/institution_record.dart';
 import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
@@ -28,23 +27,30 @@ extension on _GroupFormStep {
   };
 }
 
-enum _GroupRoleType { aluno, responsavel, profissional, coordinator }
+enum _GroupRoleType { aluno, responsavel, profissional, administrador }
 
 final class _GroupRoleLabel {
   const _GroupRoleLabel._();
 
   static String label(_GroupRoleType value) => switch (value) {
+    _GroupRoleType.aluno => 'student',
+    _GroupRoleType.responsavel => 'guardian',
+    _GroupRoleType.profissional => 'professional',
+    _GroupRoleType.administrador => 'admin',
+  };
+
+  static String visualLabel(_GroupRoleType value) => switch (value) {
     _GroupRoleType.aluno => 'Aluno',
     _GroupRoleType.responsavel => 'Responsável',
     _GroupRoleType.profissional => 'Profissional',
-    _GroupRoleType.coordinator => 'Administrador',
+    _GroupRoleType.administrador => 'Administrador',
   };
 
   static IconData icon(_GroupRoleType value) => switch (value) {
     _GroupRoleType.aluno => Icons.child_care_rounded,
     _GroupRoleType.responsavel => Icons.family_restroom_rounded,
     _GroupRoleType.profissional => Icons.school_rounded,
-    _GroupRoleType.coordinator => Icons.admin_panel_settings_rounded,
+    _GroupRoleType.administrador => Icons.admin_panel_settings_rounded,
   };
 }
 
@@ -104,7 +110,6 @@ final class _GroupInviteBinding {
 
 final class GroupFormPage extends StatefulWidget {
   const GroupFormPage({
-    required this.institutions,
     required this.repository,
     required this.logout,
     required this.onCancel,
@@ -117,7 +122,6 @@ final class GroupFormPage extends StatefulWidget {
     super.key,
   });
 
-  final FakeInstitutionDirectoryRepository institutions;
   final GroupDirectoryRepository repository;
   final LogoutAction logout;
   final VoidCallback onCancel;
@@ -136,23 +140,30 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _typeController;
-  late final TextEditingController _handleController;
+  late final TextEditingController _typeOtherController;
   late final TextEditingController _primaryColorController;
   late final TextEditingController _secondaryColorController;
   late final TextEditingController _surfaceColorController;
-  late InstitutionRecord _institution;
-  late InstitutionUnit _unit;
+  List<GroupDirectoryFilterOption> _institutionOptions = const [];
+  List<GroupDirectoryFilterOption> _unitOptions = const [];
+  List<GroupDirectoryFilterOption> _typeOptions = const [];
+  GroupDirectoryFilterOption? _selectedInstitution;
+  GroupDirectoryFilterOption? _selectedUnit;
   late GroupStatus _status;
-  late final String _identitySeed;
+  bool _inheritAppearance = true;
+  bool _inheritAccess = true;
+  bool _inheritActivities = true;
   GroupRecord? _original;
   bool _dirty = false;
+  bool _loading = true;
+  String? _loadingError;
   bool _saving = false;
   String? _saveError;
   _GroupFormStep _currentStep = _GroupFormStep.hierarchy;
   final Set<_GroupFormStep> _completedSteps = {};
   final Set<_GroupFormStep> _errorSteps = {};
-  final Set<String> _selectedActivities = {'Matemática', 'Leitura'};
-  final Set<String> _mandatoryActivities = {'Matemática'};
+  final Set<String> _selectedActivities = {};
+  final Set<String> _mandatoryActivities = {};
   final List<_GroupActivityBinding> _activityByStudentLinks = const [];
   final List<_GroupPersonBinding> _people = [];
   final List<_GroupPersonBinding> _professionals = [];
@@ -161,106 +172,182 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   bool get _editing => widget.groupId != null;
 
-  static const _activityCatalog = [
-    'Matemática',
-    'Leitura',
-    'Português',
-    'Artes',
-    'Horta',
-    'Música',
-    'Movimento',
-  ];
-
-  static const _profileCatalog = [
-    'Observador',
-    'Intermediário',
-    'Admin local',
-    'Coordenador pedagógico',
-    'Diretor',
-  ];
+  static const _activityCatalog = <String>[];
+  static const _profileCatalog = <String>[];
 
   @override
   void initState() {
     super.initState();
-    _original = widget.groupId == null ? null : widget.repository.findById(widget.groupId!);
-    final record = _original;
-    _identitySeed = widget.groupId == null
-        ? DateTime.now().millisecondsSinceEpoch.toString()
-        : widget.groupId!;
-    _institution = record == null
-        ? widget.institutions.findById(widget.initialInstitutionId ?? '') ??
-              widget.institutions.records.first
-        : widget.institutions.findById(record.institutionId)!;
-    _unit = record == null
-        ? _institution.units.firstWhere(
-            (unit) => unit.id == widget.initialUnitId,
-            orElse: () => _institution.units.first,
-          )
-        : _institution.units.firstWhere((unit) => unit.id == record.unitId);
-    _status = record?.status ?? GroupStatus.active;
-    _nameController = TextEditingController(text: record?.name ?? '');
-    _typeController = TextEditingController(text: record?.groupType ?? 'class');
-    _handleController = TextEditingController(
-      text: record == null ? '' : '@${record.name.toLowerCase().replaceAll(' ', '.')}',
-    );
+    _status = GroupStatus.active;
+    _nameController = TextEditingController();
+    _typeController = TextEditingController();
+    _typeOtherController = TextEditingController();
     _primaryColorController = TextEditingController(text: '#D63C00');
     _secondaryColorController = TextEditingController(text: '#3F4549');
     _surfaceColorController = TextEditingController(text: '#FFFFFF');
-    _seedLocalLists();
+    unawaited(_loadContext());
   }
 
-  void _seedLocalLists() {
-    if (_original == null) {
-      _people.add(
-        _GroupPersonBinding(
-          id: 'person-$_identitySeed-a',
-          name: 'Escola & Família',
-          identifier: 'familia@coelo.me',
-          role: _GroupRoleType.responsavel,
-        ),
+  Future<void> _loadContext() async {
+    try {
+      final initialRecord = widget.groupId == null
+          ? null
+          : await widget.repository.findById(widget.groupId!);
+      final context = await widget.repository.fetchFormContext(
+        institutionId: widget.initialInstitutionId ?? initialRecord?.institutionId,
       );
-      _professionals.add(
-        _GroupPersonBinding(
-          id: 'prof-$_identitySeed-a',
-          name: 'Coordenação Pedagógica',
-          identifier: 'coordenador@coelo.me',
-          role: _GroupRoleType.coordinator,
-          note: 'Libera/publica/solicita transição',
-        ),
+      if (!mounted) return;
+
+      _institutionOptions = context.institutions;
+      _unitOptions = context.units;
+      _typeOptions = [
+        ...context.types,
+        if (!context.types.any((option) => option.id == 'class'))
+          const GroupDirectoryFilterOption(id: 'class', label: 'Turma'),
+        if (!context.types.any((option) => option.id == 'other'))
+          const GroupDirectoryFilterOption(id: 'other', label: 'Outros'),
+      ];
+      _status = initialRecord?.status ?? GroupStatus.active;
+      _original = initialRecord;
+      _nameController.text = initialRecord?.name ?? '';
+      _typeController.text = initialRecord?.groupType ?? 'class';
+      _typeOtherController.text = initialRecord?.groupTypeOtherText ?? '';
+      if (!_typeOptions.any((option) => option.id == _typeController.text)) {
+        _typeOptions = [
+          ..._typeOptions,
+          GroupDirectoryFilterOption(
+            id: _typeController.text,
+            label: GroupRecord.groupTypeLabelFor(_typeController.text),
+          ),
+        ];
+      }
+      _inheritAppearance = initialRecord?.inheritAppearance ?? true;
+      _inheritAccess = initialRecord?.inheritAccess ?? true;
+      _inheritActivities = initialRecord?.inheritActivities ?? true;
+      _selectedActivities
+        ..clear()
+        ..addAll(initialRecord?.activityIds ?? const []);
+      final appearance = initialRecord?.effectiveAppearance ?? const <String, String?>{};
+      _primaryColorController.text = appearance['accent_color'] ?? '#D63C00';
+      _secondaryColorController.text = appearance['secondary_color'] ?? '#3F4549';
+      _surfaceColorController.text = appearance['surface_color'] ?? '#FFFFFF';
+
+      _selectedInstitution =
+          _resolveInstitution(widget.initialInstitutionId ?? initialRecord?.institutionId) ??
+          (context.institutions.isNotEmpty ? context.institutions.first : null);
+      _selectedUnit = _resolveUnitForInstitution(
+        widget.initialUnitId ?? initialRecord?.unitId,
+        _selectedInstitution?.id,
       );
-      return;
+      if (_selectedUnit == null) {
+        final units = _unitsForInstitution(_selectedInstitution?.id);
+        _selectedUnit = units.isEmpty ? null : units.first;
+      }
+      _hydrateLocalAccess(initialRecord);
+      setState(() {
+        _loading = false;
+      });
+    } on GroupDirectoryUnauthorizedException {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadingError = 'Sem permissão para carregar os dados desta tela.';
+      });
+    } on Exception {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadingError = 'Não foi possível carregar as opções de turma.';
+      });
     }
-    if (_original == null) return;
-    _people.addAll(const [
-      _GroupPersonBinding(
-        id: 'person-existing-1',
-        name: 'Responsável de turma',
-        identifier: 'responsavel@coelo.me',
-        role: _GroupRoleType.responsavel,
-      ),
-      _GroupPersonBinding(
-        id: 'person-existing-2',
-        name: 'Ana de Souza',
-        identifier: '11999990000',
-        role: _GroupRoleType.aluno,
-      ),
-    ]);
-    _professionals.add(
-      _GroupPersonBinding(
-        id: 'prof-existing-1',
-        name: 'Equipe pedagógica',
-        identifier: '@equipe-${_identitySeed.substring(0, 4)}',
-        role: _GroupRoleType.coordinator,
-        note: 'Admin da turma por padrão',
-      ),
-    );
+  }
+
+  List<GroupDirectoryFilterOption> _unitsForInstitution(String? institutionId) =>
+      institutionId == null
+      ? const []
+      : [
+          for (final unit in _unitOptions)
+            if (unit.institutionId == institutionId) unit,
+        ];
+
+  GroupDirectoryFilterOption? _resolveInstitution(String? institutionId) {
+    for (final institution in _institutionOptions) {
+      if (institution.id == institutionId) return institution;
+    }
+    return null;
+  }
+
+  GroupDirectoryFilterOption? _resolveUnitForInstitution(String? unitId, String? institutionId) {
+    if (unitId == null || institutionId == null) return null;
+    for (final unit in _unitOptions) {
+      if (unit.id == unitId && unit.institutionId == institutionId) return unit;
+    }
+    return null;
+  }
+
+  void _onSelectInstitution(GroupDirectoryFilterOption institution) => setState(() {
+    _selectedInstitution = institution;
+    _selectedUnit = null;
+    final units = _unitsForInstitution(institution.id);
+    _selectedUnit = units.isEmpty ? null : units.first;
+    _markDirty();
+  });
+
+  void _onSelectUnit(GroupDirectoryFilterOption unit) => setState(() {
+    _selectedUnit = unit;
+    _markDirty();
+  });
+
+  void _hydrateLocalAccess(GroupRecord? record) {
+    if (record == null) return;
+    for (final access in record.effectiveAccess.where((entry) => !entry.inherited)) {
+      final role = switch (access.profileCode) {
+        'student' => _GroupRoleType.aluno,
+        'guardian' => _GroupRoleType.responsavel,
+        'professional' => _GroupRoleType.profissional,
+        'admin' => _GroupRoleType.administrador,
+        _ => null,
+      };
+      if (role == null) continue;
+      final binding = _GroupPersonBinding(
+        id: access.personId,
+        name: access.displayName,
+        identifier: access.personId,
+        role: role,
+        note: access.profileName,
+      );
+      if (role == _GroupRoleType.profissional || role == _GroupRoleType.administrador) {
+        _professionals.add(binding);
+      } else {
+        _people.add(binding);
+      }
+    }
+    for (final invite in record.invites) {
+      final role = switch (invite.role) {
+        'student' => _GroupRoleType.aluno,
+        'guardian' => _GroupRoleType.responsavel,
+        'professional' => _GroupRoleType.profissional,
+        'admin' => _GroupRoleType.administrador,
+        _ => null,
+      };
+      if (role == null) continue;
+      _invites.add(
+        _GroupInviteBinding(
+          id: invite.id,
+          identifier: invite.identifier,
+          role: role,
+          profile: invite.profile,
+          status: invite.status,
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _typeController.dispose();
-    _handleController.dispose();
+    _typeOtherController.dispose();
     _primaryColorController.dispose();
     _secondaryColorController.dispose();
     _surfaceColorController.dispose();
@@ -301,7 +388,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   bool get _identityValid =>
-      _nameController.text.trim().isNotEmpty && _typeController.text.trim().isNotEmpty;
+      _nameController.text.trim().isNotEmpty &&
+      _typeController.text.trim().isNotEmpty &&
+      (_typeController.text != 'other' || _typeOtherController.text.trim().isNotEmpty);
 
   SuperadminFormStepStatus _stepStatus(_GroupFormStep step) {
     if (_errorSteps.contains(step)) return SuperadminFormStepStatus.error;
@@ -369,22 +458,30 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     }
     setState(() => _saving = true);
     try {
+      if (_selectedInstitution == null || _selectedUnit == null) {
+        setState(() {
+          _saving = false;
+          _saveError = 'Selecione uma instituição e uma unidade para salvar a turma.';
+        });
+        return;
+      }
       final now = DateTime.now();
       final original = _original;
+      final institution = _selectedInstitution!;
+      final unit = _selectedUnit!;
       final record = original == null
           ? GroupRecord(
-              id: widget.repository.createId(
-                _institution.id,
-                _unit.id,
-                _nameController.text.trim(),
-              ),
-              institutionId: _institution.id,
-              institutionName: _institution.publicName,
-              unitId: _unit.id,
-              unitName: _unit.name,
+              id: widget.repository.createId(institution.id, unit.id, _nameController.text.trim()),
+              institutionId: institution.id,
+              institutionName: institution.label,
+              unitId: unit.id,
+              unitName: unit.label,
               name: _nameController.text.trim(),
               groupType: _typeController.text.trim(),
               status: _status,
+              inheritAppearance: _inheritAppearance,
+              inheritAccess: _inheritAccess,
+              inheritActivities: _inheritActivities,
               createdAt: now,
               updatedAt: now,
             )
@@ -392,11 +489,92 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               name: _nameController.text.trim(),
               groupType: _typeController.text.trim(),
               status: _status,
+              inheritAppearance: _inheritAppearance,
+              inheritAccess: _inheritAccess,
+              inheritActivities: _inheritActivities,
               updatedAt: now,
             );
-      await widget.repository.upsert(record);
+      final result = await widget.repository.saveComposition(
+        GroupDirectorySaveRequest(
+          requestId:
+              'group-save-${_editing ? 'edit' : 'create'}-${DateTime.now().millisecondsSinceEpoch}',
+          record: record,
+          branding: {
+            'accent_color': _primaryColorController.text.trim(),
+            'secondary_color': _secondaryColorController.text.trim(),
+            'surface_color': _surfaceColorController.text.trim(),
+          },
+          people: [
+            for (final person in _people)
+              GroupDirectoryPersonBinding(
+                id: person.id,
+                name: person.name,
+                identifier: person.identifier,
+                role: _GroupRoleLabel.label(person.role),
+                profile: person.note,
+              ),
+          ],
+          professionals: [
+            for (final professional in _professionals)
+              GroupDirectoryPersonBinding(
+                id: professional.id,
+                name: professional.name,
+                identifier: professional.identifier,
+                role: _GroupRoleLabel.label(professional.role),
+                profile: professional.note,
+              ),
+          ],
+          activityIds: _inheritActivities ? const [] : _selectedActivities.toList(growable: false),
+          typeRequestLabel: _typeController.text == 'other'
+              ? _typeOtherController.text.trim()
+              : null,
+          typeRequestJustification: _typeController.text == 'other'
+              ? 'Solicitado no formulário de Turma'
+              : null,
+          invites: [
+            for (final invite in _invites)
+              GroupDirectoryInviteBinding(
+                id: invite.id,
+                identifier: invite.identifier,
+                role: _GroupRoleLabel.label(invite.role),
+                profile: invite.profile,
+                status: invite.status,
+              ),
+          ],
+        ),
+      );
       if (!mounted) return;
+      if (result.hasFailure) {
+        final failedSteps = <_GroupFormStep>{};
+        final lines = <String>[];
+        for (final step in result.steps) {
+          if (!step.isFailure) continue;
+          failedSteps.add(switch (step.stage) {
+            GroupDirectorySaveStage.group => _GroupFormStep.hierarchy,
+            GroupDirectorySaveStage.people => _GroupFormStep.people,
+            GroupDirectorySaveStage.professionals => _GroupFormStep.professionals,
+            GroupDirectorySaveStage.activityLinks => _GroupFormStep.links,
+            GroupDirectorySaveStage.invites => _GroupFormStep.invites,
+          });
+          lines.add('${step.stage.label}: ${step.message ?? 'falhou'}');
+        }
+        _errorSteps
+          ..clear()
+          ..addAll(failedSteps);
+        for (final step in _GroupFormStep.values) {
+          if (_errorSteps.contains(step)) {
+            _currentStep = step;
+            break;
+          }
+        }
+        setState(() {
+          _saving = false;
+          _saveError = 'Não foi possível concluir o salvamento da turma:\n${lines.join('\n')}';
+        });
+        return;
+      }
       setState(() {
+        _errorSteps.clear();
         _dirty = false;
         _saving = false;
       });
@@ -424,7 +602,18 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         onDestinationSelected: _selectDestination,
         onBugReportSubmitted: widget.onBugReportSubmitted,
         chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,
-        child: _editing && _original == null
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _loadingError != null
+            ? CoeloStatePanel(
+                key: const Key('group-form-load-error'),
+                title: 'Não foi possível carregar',
+                message: _loadingError!,
+                icon: Icons.error_outline_outlined,
+                actionLabel: 'Voltar às turmas',
+                onAction: widget.onCancel,
+              )
+            : (_editing && _original == null)
             ? CoeloStatePanel(
                 key: const Key('group-form-not-found'),
                 title: 'Turma não encontrada',
@@ -459,7 +648,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _GroupFormStep.hierarchy => _formSection(
         key: const Key('group-hierarchy-section'),
         title: 'Hierarquia',
-        description: 'Instituição → Unidade → Turma.',
+        description: 'Instituição · Unidade · Turma.',
         child: _fieldGrid(_hierarchyFields()),
       ),
       _GroupFormStep.identity => _formSection(
@@ -520,7 +709,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         key: const Key('group-invites-section'),
         title: 'Convites',
         description:
-            'Convites para quem ainda não está vinculado, com busca por @, CPF, e-mail e celular.',
+            'Convites referenciam uma identidade global existente; novos cadastros usam o fluxo aprovado de Pessoas.',
         child: _invitesSection(),
       ),
     };
@@ -548,24 +737,33 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   List<Widget> _hierarchyFields() {
     final locked = _editing;
+    const emptyInstitution = GroupDirectoryFilterOption(id: '', label: 'Selecione uma Instituição');
+    const emptyUnit = GroupDirectoryFilterOption(id: '', label: 'Selecione uma Unidade');
+    final institutionValue = _selectedInstitution ?? emptyInstitution;
+    final institutionOptions = _selectedInstitution == null
+        ? [emptyInstitution, ..._institutionOptions]
+        : _institutionOptions;
+    final unitOptions = _selectedInstitution == null
+        ? const <GroupDirectoryFilterOption>[]
+        : _unitsForInstitution(_selectedInstitution!.id);
+    final unitValue = _selectedUnit ?? emptyUnit;
+    final displayedUnitOptions = _selectedUnit == null ? [emptyUnit, ...unitOptions] : unitOptions;
     return [
       IgnorePointer(
         ignoring: locked,
         child: Opacity(
           opacity: locked ? .65 : 1,
-          child: CoeloAdminSingleSelectField<InstitutionRecord>(
+          child: CoeloAdminSingleSelectField<GroupDirectoryFilterOption>(
             key: const Key('group-institution-field'),
             label: 'Instituição',
-            value: _institution,
-            options: widget.institutions.records,
-            optionLabel: (value) => value.publicName,
+            value: institutionValue,
+            options: institutionOptions,
+            optionLabel: (value) => value.label,
             enabled: !locked,
             prefixIcon: Icons.account_balance_outlined,
-            onChanged: (value) => setState(() {
-              _institution = value;
-              _unit = value.units.first;
-              _markDirty();
-            }),
+            onChanged: (value) {
+              if (value.id.isNotEmpty) _onSelectInstitution(value);
+            },
           ),
         ),
       ),
@@ -573,18 +771,17 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         ignoring: locked,
         child: Opacity(
           opacity: locked ? .65 : 1,
-          child: CoeloAdminSingleSelectField<InstitutionUnit>(
+          child: CoeloAdminSingleSelectField<GroupDirectoryFilterOption>(
             key: const Key('group-unit-field'),
             label: 'Unidade',
-            value: _unit,
-            options: _institution.units,
-            optionLabel: (value) => value.name,
+            value: unitValue,
+            options: displayedUnitOptions,
+            optionLabel: (value) => value.label,
             enabled: !locked,
             prefixIcon: Icons.apartment_outlined,
-            onChanged: (value) => setState(() {
-              _unit = value;
-              _markDirty();
-            }),
+            onChanged: (value) {
+              if (value.id.isNotEmpty) _onSelectUnit(value);
+            },
           ),
         ),
       ),
@@ -601,19 +798,30 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       validator: _required('Informe o nome da turma.'),
       onChanged: (_) => _markDirty(),
     ),
-    CoeloFormTextField(
-      fieldKey: const Key('group-type-field'),
-      controller: _typeController,
-      labelText: 'Tipo da turma',
-      hintText: 'Ex.: class',
+    CoeloAdminSingleSelectField<String>(
+      key: const Key('group-type-field'),
+      label: 'Tipo da turma',
+      value: _typeController.text,
+      options: _typeOptions.map((option) => option.id).toList(growable: false),
+      optionLabel: (value) => _typeOptions.firstWhere((option) => option.id == value).label,
       prefixIcon: Icons.category_outlined,
-      textInputAction: TextInputAction.next,
-      validator: _required('Informe o tipo da turma.'),
-      onChanged: (_) => _markDirty(),
+      onChanged: (value) => setState(() {
+        _typeController.text = value;
+        _dirty = true;
+      }),
     ),
+    if (_typeController.text == 'other')
+      CoeloFormTextField(
+        fieldKey: const Key('group-type-other-field'),
+        controller: _typeOtherController,
+        labelText: 'Qual tipo de turma?',
+        prefixIcon: Icons.edit_note_outlined,
+        validator: _required('Informe o tipo de turma em Outros.'),
+        onChanged: (_) => _markDirty(),
+      ),
     CoeloAdminSingleSelectField<GroupStatus>(
       key: const Key('group-status-field'),
-      label: 'Status',
+      label: 'Status da turma',
       value: _status,
       options: GroupStatus.values,
       optionLabel: (value) => value.label,
@@ -626,36 +834,78 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   ];
 
   List<Widget> _prototypeFields() => [
-    CoeloFormTextField(
-      fieldKey: const Key('group-handle-field'),
-      controller: _handleController,
-      labelText: 'Arroba da turma',
-      hintText: '@turma',
-      prefixIcon: Icons.alternate_email_rounded,
-      onChanged: (_) => _markDirty(),
+    SwitchListTile.adaptive(
+      key: const Key('group-inherit-appearance'),
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Herdar aparência da Unidade'),
+      subtitle: Text(
+        _inheritAppearance
+            ? 'Origem efetiva: ${_appearanceOriginLabel(_original?.appearanceOrigin ?? 'unit')}'
+            : 'Personalização local da Turma',
+      ),
+      value: _inheritAppearance,
+      onChanged: (value) => setState(() {
+        _inheritAppearance = value;
+        _dirty = true;
+        if (value) {
+          final inherited = _original?.effectiveAppearance ?? const <String, String?>{};
+          _primaryColorController.text = inherited['accent_color'] ?? '#D63C00';
+          _secondaryColorController.text = inherited['secondary_color'] ?? '#3F4549';
+          _surfaceColorController.text = inherited['surface_color'] ?? '#FFFFFF';
+        }
+      }),
     ),
-    CoeloFormTextField(
-      fieldKey: const Key('group-primary-color-field'),
-      controller: _primaryColorController,
-      labelText: 'Cor principal',
-      prefixIcon: Icons.palette_outlined,
-      onChanged: (_) => _markDirty(),
+    SwitchListTile.adaptive(
+      key: const Key('group-inherit-access'),
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Herdar acessos da Instituição e Unidade'),
+      subtitle: const Text('A remoção local não revoga acessos válidos de escopos superiores.'),
+      value: _inheritAccess,
+      onChanged: (value) => setState(() {
+        _inheritAccess = value;
+        _dirty = true;
+      }),
     ),
-    CoeloFormTextField(
-      fieldKey: const Key('group-secondary-color-field'),
-      controller: _secondaryColorController,
-      labelText: 'Cor de apoio',
-      prefixIcon: Icons.color_lens_outlined,
-      onChanged: (_) => _markDirty(),
+    SwitchListTile.adaptive(
+      key: const Key('group-inherit-activities'),
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Herdar atividades disponíveis da Unidade'),
+      value: _inheritActivities,
+      onChanged: (value) => setState(() {
+        _inheritActivities = value;
+        _dirty = true;
+      }),
     ),
-    CoeloFormTextField(
-      fieldKey: const Key('group-surface-color-field'),
-      controller: _surfaceColorController,
-      labelText: 'Cor de superfície',
-      prefixIcon: Icons.layers_outlined,
-      onChanged: (_) => _markDirty(),
-    ),
+    if (!_inheritAppearance) ...[
+      CoeloFormTextField(
+        fieldKey: const Key('group-primary-color-field'),
+        controller: _primaryColorController,
+        labelText: 'Cor principal',
+        prefixIcon: Icons.palette_outlined,
+        onChanged: (_) => _markDirty(),
+      ),
+      CoeloFormTextField(
+        fieldKey: const Key('group-secondary-color-field'),
+        controller: _secondaryColorController,
+        labelText: 'Cor de apoio',
+        prefixIcon: Icons.color_lens_outlined,
+        onChanged: (_) => _markDirty(),
+      ),
+      CoeloFormTextField(
+        fieldKey: const Key('group-surface-color-field'),
+        controller: _surfaceColorController,
+        labelText: 'Cor de superfície',
+        prefixIcon: Icons.layers_outlined,
+        onChanged: (_) => _markDirty(),
+      ),
+    ],
   ];
+
+  String _appearanceOriginLabel(String origin) => switch (origin) {
+    'institution' => 'Instituição',
+    'group_local' => 'Turma',
+    _ => 'Unidade',
+  };
 
   Widget _activitySection() {
     final accent = _parseColor(_primaryColorController.text);
@@ -819,9 +1069,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    _handleController.text.trim().isEmpty
-                        ? '@turma'
-                        : _handleController.text.trim(),
+                    _inheritAppearance
+                        ? 'Aparência herdada de ${_appearanceOriginLabel(_original?.appearanceOrigin ?? 'unit')}'
+                        : 'Aparência personalizada na Turma',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -835,6 +1085,52 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     );
   }
 
+  Widget _effectiveAccessSummary() {
+    final inherited =
+        _original?.effectiveAccess.where((entry) => entry.inherited).toList(growable: false) ??
+        const <GroupEffectiveAccess>[];
+    if (inherited.isEmpty) {
+      return const Text('Nenhum acesso herdado disponível.');
+    }
+    return Column(
+      key: const Key('group-inherited-access-summary'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Pessoas herdadas', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: CoeloSpacing.space2),
+        for (final access in inherited)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.account_tree_outlined),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(access.displayName, style: Theme.of(context).textTheme.titleSmall),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        '${access.profileName} · origem: ${_appearanceOriginLabel(access.origin)}\n'
+                        'Capacidades: ${access.capabilities.isEmpty ? 'nenhuma' : access.capabilities.join(', ')}'
+                        '${access.restrictions.isEmpty ? '' : '\nRestrições: ${access.restrictions.join(', ')}'}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const Divider(),
+      ],
+    );
+  }
+
   Widget _peopleSection({
     required List<_GroupPersonBinding> entries,
     required String sectionTitle,
@@ -845,6 +1141,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      if (allowProfile) _effectiveAccessSummary(),
       Text(sectionTitle, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space3),
       _entryTable(entries: entries, allowProfile: allowProfile, onEdit: onEdit, onRemove: onRemove),
@@ -947,7 +1244,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           Text(
-                            _GroupRoleLabel.label(entries[index].role),
+                            _GroupRoleLabel.visualLabel(entries[index].role),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           if (allowProfile && entries[index].note != null)
@@ -996,7 +1293,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                           ),
                         ),
                         Expanded(
-                          child: Text(_GroupRoleLabel.label(entries[index].role), maxLines: 2),
+                          child: Text(
+                            _GroupRoleLabel.visualLabel(entries[index].role),
+                            maxLines: 2,
+                          ),
                         ),
                         if (allowProfile)
                           Expanded(
@@ -1100,7 +1400,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                                 const SizedBox(height: CoeloSpacing.space1),
-                                Text(_GroupRoleLabel.label(_invites[index].role)),
+                                Text(_GroupRoleLabel.visualLabel(_invites[index].role)),
                                 Text(_invites[index].profile),
                                 Row(
                                   children: [
@@ -1124,7 +1424,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                               key: Key('group-invite-wide-$index'),
                               children: [
                                 Expanded(child: Text(_invites[index].identifier)),
-                                Expanded(child: Text(_GroupRoleLabel.label(_invites[index].role))),
+                                Expanded(
+                                  child: Text(_GroupRoleLabel.visualLabel(_invites[index].role)),
+                                ),
                                 Expanded(child: Text(_invites[index].profile)),
                                 Expanded(child: Text(_invites[index].status)),
                                 IconButton(
@@ -1193,7 +1495,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       if (person == null) {
         _people.add(
           _GroupPersonBinding(
-            id: 'person-$_identitySeed-${DateTime.now().millisecondsSinceEpoch}',
+            id: 'person-pending-${DateTime.now().millisecondsSinceEpoch}',
             name: result.name,
             identifier: result.identifier,
             role: result.role,
@@ -1227,7 +1529,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       if (item == null) {
         _professionals.add(
           _GroupPersonBinding(
-            id: 'professional-$_identitySeed-${DateTime.now().millisecondsSinceEpoch}',
+            id: 'professional-pending-${DateTime.now().millisecondsSinceEpoch}',
             name: result.name,
             identifier: result.identifier,
             role: result.role,
@@ -1257,7 +1559,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     setState(() {
       _people.add(
         _GroupPersonBinding(
-          id: 'person-$_identitySeed-${DateTime.now().millisecondsSinceEpoch}-found',
+          id: 'person-pending-${DateTime.now().millisecondsSinceEpoch}-found',
           name: result.name,
           identifier: result.identifier,
           role: result.role,
@@ -1279,10 +1581,19 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   Future<void> _resendInvite(int index) async {
     final invite = _invites[index];
-    final messenger = ScaffoldMessenger.of(context);
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('Convite para ${invite.identifier} reenviado.')));
+    setState(() {
+      _invites[index] = _GroupInviteBinding(
+        id: invite.id,
+        identifier: invite.identifier,
+        role: invite.role,
+        profile: invite.profile,
+        status: 'Reenviar ao salvar',
+      );
+      _markDirty();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('O reenvio será executado e auditado ao salvar a Turma.')),
+    );
   }
 
   Future<void> _cancelInvite(int index) async {
@@ -1290,7 +1601,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _invites.removeAt(index);
       _markDirty();
     });
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Convite removido.')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('A revogação será executada e auditada ao salvar a Turma.')),
+    );
   }
 
   Future<_GroupPersonBinding?> _showPersonDialog({
@@ -1382,7 +1695,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.save_outlined),
-            label: Text(_saving ? 'Salvando…' : 'Salvar turma'),
+            label: Text(_saving ? 'Salvando...' : 'Salvar turma'),
           )
         : _editing
         ? OutlinedButton(
@@ -1494,7 +1807,7 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
             CoeloFormTextField(
               fieldKey: const Key('group-person-identifier-field'),
               controller: _identifierController,
-              labelText: '@, CPF, e-mail ou celular',
+              labelText: 'ID da pessoa global existente',
               prefixIcon: Icons.badge_outlined,
             ),
           const SizedBox(height: CoeloSpacing.space4),
@@ -1502,7 +1815,7 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
             label: 'Papel',
             value: _role,
             options: _GroupRoleType.values,
-            optionLabel: _GroupRoleLabel.label,
+            optionLabel: _GroupRoleLabel.visualLabel,
             prefixIcon: Icons.manage_accounts_rounded,
             onChanged: (value) => setState(() => _role = value),
           ),
@@ -1572,7 +1885,7 @@ final class _GroupInviteDialogState extends State<_GroupInviteDialog> {
   void initState() {
     super.initState();
     _role = _GroupRoleType.responsavel;
-    _profile = widget.profiles.first;
+    _profile = widget.profiles.isEmpty ? _GroupRoleLabel.label(_role) : widget.profiles.first;
   }
 
   @override
@@ -1592,7 +1905,7 @@ final class _GroupInviteDialogState extends State<_GroupInviteDialog> {
           CoeloFormTextField(
             fieldKey: const Key('group-invite-identifier-field'),
             controller: _identifierController,
-            labelText: '@, CPF, e-mail ou celular',
+            labelText: 'ID da pessoa global existente',
             prefixIcon: Icons.search_rounded,
           ),
           const SizedBox(height: CoeloSpacing.space4),
@@ -1610,7 +1923,7 @@ final class _GroupInviteDialogState extends State<_GroupInviteDialog> {
             label: 'Função na turma',
             value: _role,
             options: widget.roles,
-            optionLabel: _GroupRoleLabel.label,
+            optionLabel: _GroupRoleLabel.visualLabel,
             prefixIcon: Icons.groups_2_outlined,
             onChanged: (value) => setState(() => _role = value),
           ),

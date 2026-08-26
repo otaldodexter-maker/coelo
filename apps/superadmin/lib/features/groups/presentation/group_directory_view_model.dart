@@ -52,10 +52,12 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setInstitutions(Set<String> value) {
+  Future<void> setInstitutions(Set<String> value) async {
+    final options = await _repository.fetchFilterOptions(institutionIds: value);
     final allowedUnits = {
-      for (final record in _repository.records)
-        if (value.isEmpty || value.contains(record.institutionId)) record.unitId,
+      for (final unit in options.units)
+        if (value.isEmpty || unit.institutionId == null || value.contains(unit.institutionId!))
+          unit.id,
     };
     return _replace(
       _copy(institutionIds: value, unitIds: _query.unitIds.intersection(allowedUnits)),

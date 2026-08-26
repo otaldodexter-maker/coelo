@@ -33,7 +33,6 @@ import '../../features/forms/data/forms_backend_gateway.dart';
 import '../../features/forms/data/supabase_forms_api.dart';
 import 'package:coelo_api/coelo_api.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
-import '../../features/groups/data/supabase_group_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../../features/people/domain/person_directory.dart';
@@ -162,7 +161,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
-      groupDirectoryRepository: SupabaseGroupDirectoryRepository(client),
+      groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),

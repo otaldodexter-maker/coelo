@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
+import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
@@ -10,7 +11,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('uses six responsive steps and the canonical continuation footer', (tester) async {
+  testWidgets('renders inherited access without a raw Material ListTile', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+    final institution = institutions.records.first;
+    final unit = institution.units.first;
+    final now = DateTime(2026, 8, 24);
+    final record = GroupRecord(
+      id: 'group-inherited-access',
+      institutionId: institution.id,
+      institutionName: institution.publicName,
+      unitId: unit.id,
+      unitName: unit.name,
+      name: 'Turma com acesso herdado',
+      groupType: 'class',
+      status: GroupStatus.active,
+      createdAt: now,
+      updatedAt: now,
+      effectiveAccess: const [
+        GroupEffectiveAccess(
+          personId: 'person-1',
+          displayName: 'Responsável herdado',
+          origin: 'unit',
+          inherited: true,
+          profileId: 'profile-1',
+          profileCode: 'guardian',
+          profileName: 'Responsável',
+          capabilities: ['visualizar'],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: FakeGroupDirectoryRepository(institutions, records: [record]),
+          groupId: record.id,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Profissionais e admins'));
+    await tester.pumpAndSettle();
+
+    final summary = find.byKey(const Key('group-inherited-access-summary'));
+    expect(summary, findsOneWidget);
+    expect(find.descendant(of: summary, matching: find.byType(ListTile)), findsNothing);
+    expect(find.text('Responsável herdado'), findsOneWidget);
+  });
+
+  testWidgets('uses six external-free steps and the canonical continuation footer', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final institutions = FakeInstitutionDirectoryRepository();
@@ -19,7 +74,6 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: GroupFormPage(
-          institutions: institutions,
           repository: FakeGroupDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
@@ -50,6 +104,7 @@ void main() {
     ]) {
       expect(find.text(label), findsWidgets);
     }
+    expect(find.text('Sobre do perfil'), findsNothing);
     final forbidden = RegExp(r'fake|demo|dev|catálogo|teste', caseSensitive: false);
     for (final label in ['Vínculos e aparência', 'Profissionais e admins', 'Convites']) {
       await tester.tap(find.widgetWithText(TextButton, label));
@@ -94,7 +149,6 @@ void main() {
           ),
           home: GroupFormPage(
             key: ValueKey(width),
-            institutions: institutions,
             repository: FakeGroupDirectoryRepository(institutions),
             logout: () async => const LogoutResult.success(),
             onCancel: () {},
@@ -124,7 +178,6 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: GroupFormPage(
-          institutions: institutions,
           repository: FakeGroupDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
@@ -164,7 +217,6 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: GroupFormPage(
-          institutions: institutions,
           repository: repository,
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
@@ -182,15 +234,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Ativo'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
-    await tester.enterText(find.byKey(const Key('group-type-field')), 'class');
 
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('group-handle-field')), findsOneWidget);
-    expect(find.byKey(const Key('group-primary-color-field')), findsOneWidget);
-    expect(find.byKey(const Key('group-secondary-color-field')), findsOneWidget);
+    expect(find.byKey(const Key('group-handle-field')), findsNothing);
+    expect(find.byKey(const Key('group-primary-color-field')), findsNothing);
+    expect(find.byKey(const Key('group-secondary-color-field')), findsNothing);
     expect(find.byKey(const Key('group-activity-links')), findsOneWidget);
-    await tester.enterText(find.byKey(const Key('group-handle-field')), '@girassol');
+    expect(
+      tester.widget<SwitchListTile>(find.byKey(const Key('group-inherit-appearance'))).value,
+      isTrue,
+    );
+    await tester.tap(find.byKey(const Key('group-inherit-appearance')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-primary-color-field')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('group-primary-color-field')), '#112233');
+    await tester.tap(find.byKey(const Key('group-inherit-appearance')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-primary-color-field')), findsNothing);
+    expect(find.textContaining('Aparência herdada de'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('step-convites')));
     await tester.pumpAndSettle();
@@ -212,7 +274,6 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.dark,
         home: GroupFormPage(
-          institutions: institutions,
           repository: repository,
           groupId: repository.records.first.id,
           logout: () async => const LogoutResult.success(),
@@ -271,7 +332,6 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: GroupFormPage(
-          institutions: institutions,
           repository: FakeGroupDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
@@ -313,7 +373,6 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: GroupFormPage(
-          institutions: institutions,
           repository: FakeGroupDirectoryRepository(institutions),
           groupId: 'missing-group',
           logout: () async => const LogoutResult.success(),
