@@ -1,6 +1,7 @@
-import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/people/fake_person_directory_repository.dart';
 
 void main() {
   test('segments classify institutional team, guardians, children and dual profiles', () {

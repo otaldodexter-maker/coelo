@@ -1,11 +1,12 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_edit_route_page.dart';
 import 'package:coelo_superadmin/features/people/presentation/person_form_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../support/people/fake_person_directory_repository.dart';
 
 void main() {
   testWidgets('loads detail once and composes the edit form', (tester) async {

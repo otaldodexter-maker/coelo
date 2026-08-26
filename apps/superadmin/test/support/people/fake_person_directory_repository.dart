@@ -1,8 +1,8 @@
-import '../../features/people/domain/person_directory.dart';
+import 'package:coelo_superadmin/features/people/domain/person_directory.dart';
 
-/// Deterministic repository used only by the authenticated development preview.
-final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepository {
-  DevelopmentPersonDirectoryRepository({
+/// Deterministic repository used only by isolated People tests and goldens.
+final class FakePersonDirectoryRepository implements PersonDirectoryRepository {
+  FakePersonDirectoryRepository({
     List<PersonDirectoryItem>? seed,
     this.tenantId = 'tenant-coelo',
     this.fail = false,
@@ -237,7 +237,7 @@ final class DevelopmentPersonDirectoryRepository implements PersonDirectoryRepos
     _guard();
     return _scoped.firstWhere(
       (item) => item.id == personId,
-      orElse: () => throw StateError('Person detail not found in development repository.'),
+      orElse: () => throw StateError('Person detail not found in test repository.'),
     );
   }
 

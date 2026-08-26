@@ -1,7 +1,6 @@
 import 'dart:ui' show PointerDeviceKind, SemanticsAction;
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/features/people/data/fake_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart'
     show PersonDirectorySegment, PersonDirectoryTableView, PersonFilterOption;
 import 'package:coelo_superadmin/features/people/presentation/person_directory_page.dart';
@@ -13,6 +12,8 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/people/fake_person_directory_repository.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
