@@ -141,13 +141,33 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       subtitle: 'Comunicacao institucional privada e contextual.',
       currentDestination: 'conversations',
       onDestinationSelected: widget.onDestinationSelected,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(CoeloRadius.lg),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-        child: _body(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.onBack != null) ...[
+            IconButton(
+              key: const Key('superadmin-chat-back'),
+              tooltip: 'Voltar',
+              onPressed: widget.onBack,
+              constraints: const BoxConstraints.tightFor(
+                width: CoeloSize.touchMin,
+                height: CoeloSize.touchMin,
+              ),
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+          ],
+          Expanded(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              ),
+              child: _body(),
+            ),
+          ),
+        ],
       ),
     );
   }
