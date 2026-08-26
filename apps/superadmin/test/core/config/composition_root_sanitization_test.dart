@@ -43,9 +43,31 @@ void main() {
     expect(app, contains('this.inviteRepository = const UnavailableInviteRepository()'));
   });
 
-  test('basic Access wiring stays present without extended composition', () {
-    expect(router, contains('AccessProfileDirectoryPage('));
-    expect(router, contains('AccessProfileFormPage('));
+  test('basic Access routes stay statically unavailable without page composition', () {
+    for (final page in const [
+      'AccessProfileDirectoryPage',
+      'AccessProfileFormPage',
+      'AccessProfileDetailPage',
+    ]) {
+      expect(router, isNot(contains(page)), reason: page);
+    }
+    for (final route in const {
+      'profiles': 'profilesName',
+      'profileCreate': 'profileCreateName',
+      'profileDetail': 'profileDetailName',
+      'profileEdit': 'profileEditName',
+    }.entries) {
+      expect(
+        RegExp(
+          'path:\\s*SuperadminRoutes\\.${route.key},\\s*'
+          'name:\\s*SuperadminRoutes\\.${route.value},\\s*'
+          'builder:\\s*\\(context, state\\) =>\\s*'
+          '_unavailableCompositionRootRoute\\(context\\)',
+        ).hasMatch(router),
+        isTrue,
+        reason: route.key,
+      );
+    }
     expect(router, isNot(contains('extendedRepository:')));
     expect(router, contains('GroupDirectoryRepository groupDirectoryRepository'));
   });

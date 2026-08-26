@@ -160,7 +160,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       assessmentRepository: SupabaseAssessmentRepository(client),
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
-      accessProfileRepository: SupabaseAccessProfileRepository(client),
+      accessProfileRepository: const UnavailableAccessProfileRepository(),
       groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),

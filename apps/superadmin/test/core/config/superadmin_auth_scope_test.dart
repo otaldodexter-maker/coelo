@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
+import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_profile_repository.dart';
 import 'package:coelo_superadmin/features/attendance/data/supabase_attendance_repository.dart';
 import 'package:coelo_superadmin/features/audit/data/supabase_audit_repository.dart';
 import 'package:coelo_superadmin/features/audit/domain/audit.dart';
@@ -49,6 +50,7 @@ void main() {
     expect(recoveryResult.message, UnavailableCoeloAuthGateway.defaultMessage);
     expect(scope.personDirectoryRepository, isA<UnavailablePersonDirectoryRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
+    expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.attendanceRepository, isA<UnavailableAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
@@ -83,6 +85,7 @@ void main() {
     expect(scope.session.isAuthenticated, isFalse);
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
+    expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
@@ -168,6 +171,7 @@ void main() {
     expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
     expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
+    expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.routineRepository, isA<UnavailableRoutineRepository>());
     expect(scope.groupDirectoryRepository, isA<UnavailableGroupDirectoryRepository>());
     expect(result.isSuccess, isFalse);
