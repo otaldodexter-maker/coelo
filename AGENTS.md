@@ -97,6 +97,33 @@ Cada spec deve conter:
 
 Antes de criar algo novo, procurar primeiro em `docs/`, `specs/`, `decisions/` e `packages/`. Se uma regra ja existir em documento oficial, preserve-a. Se houver divergencia entre fonte oficial e decisao recente, registre o conflito e peca aprovacao antes de implementar.
 
+## Revisoes Flutter E Supabase
+
+Toda atividade de code review, revisao, auditoria, correcao profunda ou
+verificacao de conclusao deve comecar listando as pendencias conhecidas e
+confirmando o recorte antes de alterar codigo ou backend. O contrato inicial deve
+registrar: objetivo, incluido, fora de escopo, ordem, criterio de parada,
+evidencias esperadas e tempo estimado. O recorte pode ser todas as pendencias,
+todas as telas, um macrotema, macrotema mais telas, telas especificas ou acoes
+especificas. Concluir o recorte nunca autoriza declarar concluido o que ficou
+fora dele.
+
+Escolha a skill e os rastreadores conforme o pedido:
+
+- Flutter/Dart: use `.agents/skills/coelo-flutter-review/SKILL.md` e leia
+  integralmente `docs/reviews/coelo-flutter-pendencias.md`.
+- Supabase/backend: use `.agents/skills/coelo-supabase/SKILL.md` e leia
+  integralmente `docs/reviews/coelo-supabase-pendencias.md`.
+- Flutter integrado ao Supabase ou conclusao ponta a ponta: use
+  `.agents/skills/coelo-flutter-supabase-review/SKILL.md` e leia integralmente os
+  tres rastreadores, terminando por
+  `docs/reviews/coelo-flutter-integrado-supabase-pendencias.md`.
+
+`coelo-ui` permanece a autoridade visual em qualquer revisao Flutter. Atualize
+os rastreadores afetados no mesmo turno de cada correcao, regressao, bloqueio ou
+mudanca de estimativa. Tela aberta, `fail-closed`, `local-green`, rota `/dev`,
+mock ou teste isolado nunca deve ser declarada concluida ponta a ponta.
+
 ## Memoria De Conhecimento
 
 Use `.agents/skills/coelo-knowledge/SKILL.md` sempre que uma tarefa Coelo

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coelo Flutter + Supabase Review"
+  short_description: "Comprova Flutter e Supabase ponta a ponta."
+  default_prompt: "Use $coelo-flutter-supabase-review para listar as pendências, confirmar o recorte e revisar o Coelo ponta a ponta."
