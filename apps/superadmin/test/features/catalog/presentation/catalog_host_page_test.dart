@@ -57,7 +57,6 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Abrir tela de conversas'));
 
     expect(conversationsOpened, 1);
   });
