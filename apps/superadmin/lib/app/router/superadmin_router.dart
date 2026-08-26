@@ -8,15 +8,18 @@ import '../../core/config/superadmin_app_config.dart';
 import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanImageRepository;
 import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
+import '../dev_menu/development_activity_fixture_repository.dart';
 import '../dev_menu/development_attendance_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
 import '../dev_menu/development_routine_repository.dart';
 import '../activity/superadmin_activity.dart';
 import '../prototype/superadmin_prototype_store.dart';
-import '../../features/activities/data/supabase_activity_command_repository.dart';
-import '../../features/activities/data/supabase_activity_directory_repository.dart';
+import '../../features/activities/data/dev/dev_activity_command_repository.dart';
+import '../../features/activities/data/dev/dev_activity_directory_repository.dart';
+import '../../features/activities/data/dev/dev_activity_session_store.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
+import '../../features/activities/domain/activity_profile_about_repository.dart';
 import '../../features/activities/presentation/activity_detail_page.dart';
 import '../../features/activities/presentation/activity_directory_page.dart';
 import '../../features/activities/presentation/activity_form_controller.dart';
@@ -240,6 +243,15 @@ GoRouter createSuperadminRouter({
   DevelopmentInviteRepository? cachedInvitePreviewRepository;
   DevelopmentInviteRepository invitePreviewRepository() =>
       cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
+  const productionActivityAboutRepository = UnavailableActivityProfileAboutRepository();
+  final developmentActivityStore = DevActivitySessionStore.content();
+  final developmentActivityDirectoryRepository = DevActivityDirectoryRepository(
+    store: developmentActivityStore,
+  );
+  final developmentActivityCommandRepository = DevActivityCommandRepository(
+    store: developmentActivityStore,
+  );
+  final developmentActivityAboutRepository = DevelopmentActivityProfileAboutRepository();
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
@@ -306,28 +318,45 @@ GoRouter createSuperadminRouter({
     ActivityFormDraft draft, {
     required ActivityCommandIntent intent,
     String? activityId,
+    required ActivityCommandRepository commandRepository,
+    required ActivityProfileAboutRepository aboutRepository,
   }) async {
-    await activityCommandRepository.save(
+    final aboutPage = draft.aboutPage;
+    if (aboutPage != null && !aboutRepository.isAvailable) {
+      throw const ActivityProfileAboutUnavailableException();
+    }
+    final result = await commandRepository.save(
       _activitySaveCommand(draft, intent: intent, activityId: activityId),
     );
+    if (aboutPage != null) {
+      await aboutRepository.save(
+        page: aboutPage,
+        institutionId: draft.institutionId,
+        activityId: result.activityId,
+        requestId: _activityRequestId(),
+      );
+    }
   }
 
-  Future<void> createActivityTemplate(ActivityTemplateCreateDraft draft) =>
-      activityCommandRepository.createTemplate(
-        ActivityTemplateCreateCommand(
-          requestId: _activityRequestId(),
-          institutionId: draft.institutionId,
-          name: draft.name,
-          description: draft.description,
-          taxonomyId: draft.taxonomyId,
-          governance: draft.governance,
-        ),
-      );
+  Future<void> createActivityTemplate(
+    ActivityTemplateCreateDraft draft,
+    ActivityCommandRepository repository,
+  ) => repository.createTemplate(
+    ActivityTemplateCreateCommand(
+      requestId: _activityRequestId(),
+      institutionId: draft.institutionId,
+      name: draft.name,
+      description: draft.description,
+      taxonomyId: draft.taxonomyId,
+      governance: draft.governance,
+    ),
+  );
 
   Future<List<ActivityFormLocationOption>> createActivityLocations(
     ActivityLocationDraft draft,
+    ActivityCommandRepository repository,
   ) async {
-    final locations = await activityCommandRepository.createLocations(
+    final locations = await repository.createLocations(
       ActivityLocationCommand(
         requestId: _activityRequestId(),
         institutionId: draft.institutionId,
@@ -348,8 +377,9 @@ GoRouter createSuperadminRouter({
 
   Future<ActivityDirectoryExportResult> exportActivities(
     ActivityDirectoryExportRequest request,
+    ActivityCommandRepository repository,
   ) async {
-    final result = await activityCommandRepository.requestExport(
+    final result = await repository.requestExport(
       request.query,
       format: request.format == ActivityDirectoryExportFormat.csv
           ? ActivityCommandExportFormat.csv
@@ -770,7 +800,7 @@ GoRouter createSuperadminRouter({
                   ),
                 );
               },
-              onCreateTemplate: createActivityTemplate,
+              onCreateTemplate: (draft) => createActivityTemplate(draft, activityCommandRepository),
               onEdit: (id) => context.goNamed(
                 SuperadminRoutes.activityEditName,
                 pathParameters: {'activityId': id},
@@ -779,7 +809,7 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.activityDetailName,
                 pathParameters: {'activityId': id},
               ),
-              onExportRequested: exportActivities,
+              onExportRequested: (request) => exportActivities(request, activityCommandRepository),
               onImportRequested: () async => context.goNamed(
                 SuperadminRoutes.importCreateName,
                 extra: ImportCreationPreset.activities,
@@ -797,16 +827,28 @@ GoRouter createSuperadminRouter({
               initialTemplateId: state.uri.queryParameters['templateId'],
               initialInstitutionId: state.uri.queryParameters['institutionId'],
               initialUnitId: state.uri.queryParameters['unitId'],
+              aboutRepository: productionActivityAboutRepository,
               logout: logout,
               onCancel: () => _returnToOr(context, state, SuperadminRoutes.activitiesName),
-              onSaveDraft: (draft) => saveActivity(draft, intent: ActivityCommandIntent.saveDraft),
+              onSaveDraft: (draft) => saveActivity(
+                draft,
+                intent: ActivityCommandIntent.saveDraft,
+                commandRepository: activityCommandRepository,
+                aboutRepository: productionActivityAboutRepository,
+              ),
               onSubmit: (draft) async {
-                await saveActivity(draft, intent: ActivityCommandIntent.publish);
+                await saveActivity(
+                  draft,
+                  intent: ActivityCommandIntent.publish,
+                  commandRepository: activityCommandRepository,
+                  aboutRepository: productionActivityAboutRepository,
+                );
                 if (context.mounted) {
                   _returnToOr(context, state, SuperadminRoutes.activitiesName);
                 }
               },
-              onCreateLocation: createActivityLocations,
+              onCreateLocation: (draft) =>
+                  createActivityLocations(draft, activityCommandRepository),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: productionSupportController?.submitReport,
@@ -860,6 +902,7 @@ GoRouter createSuperadminRouter({
                   ? ActivityFormStep.pedagogical
                   : null,
               repository: activityDirectoryRepository,
+              aboutRepository: productionActivityAboutRepository,
               logout: logout,
               onCancel: () => state.uri.queryParameters.containsKey('returnTo')
                   ? _returnToOr(context, state, SuperadminRoutes.activitiesName)
@@ -871,12 +914,16 @@ GoRouter createSuperadminRouter({
                 draft,
                 intent: ActivityCommandIntent.saveDraft,
                 activityId: state.pathParameters['activityId']!,
+                commandRepository: activityCommandRepository,
+                aboutRepository: productionActivityAboutRepository,
               ),
               onSubmit: (draft) async {
                 await saveActivity(
                   draft,
                   intent: ActivityCommandIntent.publish,
                   activityId: state.pathParameters['activityId']!,
+                  commandRepository: activityCommandRepository,
+                  aboutRepository: productionActivityAboutRepository,
                 );
                 if (!context.mounted) return;
                 state.uri.queryParameters.containsKey('returnTo')
@@ -886,7 +933,8 @@ GoRouter createSuperadminRouter({
                         pathParameters: {'activityId': state.pathParameters['activityId']!},
                       );
               },
-              onCreateLocation: createActivityLocations,
+              onCreateLocation: (draft) =>
+                  createActivityLocations(draft, activityCommandRepository),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
               onBugReportSubmitted: productionSupportController?.submitReport,
@@ -1794,7 +1842,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devActivities,
             name: SuperadminRoutes.devActivitiesName,
             builder: (context, state) => ActivityDirectoryPage(
-              repository: activityDirectoryRepository,
+              repository: developmentActivityDirectoryRepository,
               logout: _previewLogout,
               onCreate: () => context.goNamed(SuperadminRoutes.devActivityCreateName),
               onCreateFromTemplate: (template) => context.goNamed(
@@ -1807,7 +1855,7 @@ GoRouter createSuperadminRouter({
                 },
               ),
               onDuplicateTemplate: (template, institutionId) async {
-                await activityCommandRepository.copyTemplate(
+                await developmentActivityCommandRepository.copyTemplate(
                   ActivityTemplateCopyCommand(
                     requestId: _activityRequestId(),
                     templateId: template.id,
@@ -1815,7 +1863,8 @@ GoRouter createSuperadminRouter({
                   ),
                 );
               },
-              onCreateTemplate: createActivityTemplate,
+              onCreateTemplate: (draft) =>
+                  createActivityTemplate(draft, developmentActivityCommandRepository),
               onEdit: (id) => context.goNamed(
                 SuperadminRoutes.devActivityEditName,
                 pathParameters: {'activityId': id},
@@ -1824,7 +1873,8 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devActivityDetailName,
                 pathParameters: {'activityId': id},
               ),
-              onExportRequested: exportActivities,
+              onExportRequested: (request) =>
+                  exportActivities(request, developmentActivityCommandRepository),
               onImportRequested: () async => context.goNamed(
                 SuperadminRoutes.importCreateName,
                 extra: ImportCreationPreset.activities,
@@ -1838,20 +1888,32 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devActivityCreate,
             name: SuperadminRoutes.devActivityCreateName,
             builder: (context, state) => ActivityFormPage(
-              repository: activityDirectoryRepository,
+              repository: developmentActivityDirectoryRepository,
+              aboutRepository: developmentActivityAboutRepository,
               initialTemplateId: state.uri.queryParameters['templateId'],
               initialInstitutionId: state.uri.queryParameters['institutionId'],
               initialUnitId: state.uri.queryParameters['unitId'],
               logout: _previewLogout,
               onCancel: () => _returnToOr(context, state, SuperadminRoutes.devActivitiesName),
-              onSaveDraft: (draft) => saveActivity(draft, intent: ActivityCommandIntent.saveDraft),
+              onSaveDraft: (draft) => saveActivity(
+                draft,
+                intent: ActivityCommandIntent.saveDraft,
+                commandRepository: developmentActivityCommandRepository,
+                aboutRepository: developmentActivityAboutRepository,
+              ),
               onSubmit: (draft) async {
-                await saveActivity(draft, intent: ActivityCommandIntent.publish);
+                await saveActivity(
+                  draft,
+                  intent: ActivityCommandIntent.publish,
+                  commandRepository: developmentActivityCommandRepository,
+                  aboutRepository: developmentActivityAboutRepository,
+                );
                 if (context.mounted) {
                   _returnToOr(context, state, SuperadminRoutes.devActivitiesName);
                 }
               },
-              onCreateLocation: createActivityLocations,
+              onCreateLocation: (draft) =>
+                  createActivityLocations(draft, developmentActivityCommandRepository),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: developmentSupportController.submitReport,
@@ -1862,7 +1924,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devActivityDetailName,
             builder: (context, state) => ActivityDetailPage(
               activityId: state.pathParameters['activityId']!,
-              repository: activityDirectoryRepository,
+              repository: developmentActivityDirectoryRepository,
               logout: _previewLogout,
               onBack: () => context.goNamed(SuperadminRoutes.devActivitiesName),
               onEdit: () => context.goNamed(
@@ -1887,7 +1949,8 @@ GoRouter createSuperadminRouter({
               initialStep: state.uri.queryParameters['step'] == 'pedagogical'
                   ? ActivityFormStep.pedagogical
                   : null,
-              repository: activityDirectoryRepository,
+              repository: developmentActivityDirectoryRepository,
+              aboutRepository: developmentActivityAboutRepository,
               logout: _previewLogout,
               onCancel: () => context.goNamed(
                 SuperadminRoutes.devActivityDetailName,
@@ -1897,12 +1960,16 @@ GoRouter createSuperadminRouter({
                 draft,
                 intent: ActivityCommandIntent.saveDraft,
                 activityId: state.pathParameters['activityId']!,
+                commandRepository: developmentActivityCommandRepository,
+                aboutRepository: developmentActivityAboutRepository,
               ),
               onSubmit: (draft) async {
                 await saveActivity(
                   draft,
                   intent: ActivityCommandIntent.publish,
                   activityId: state.pathParameters['activityId']!,
+                  commandRepository: developmentActivityCommandRepository,
+                  aboutRepository: developmentActivityAboutRepository,
                 );
                 if (context.mounted) {
                   context.goNamed(
@@ -1911,7 +1978,8 @@ GoRouter createSuperadminRouter({
                   );
                 }
               },
-              onCreateLocation: createActivityLocations,
+              onCreateLocation: (draft) =>
+                  createActivityLocations(draft, developmentActivityCommandRepository),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: developmentSupportController.submitReport,

@@ -12,16 +12,21 @@ import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker_stub.dart'
     if (dart.library.html) '../../institutions/presentation/widgets/institution_logo_picker_web.dart';
 import '../domain/activity_directory.dart';
+import '../domain/activity_profile_about_repository.dart';
 import 'activity_form_controller.dart';
 import 'activity_form_draft.dart';
 import 'activity_form_page.dart';
+import 'activity_pedagogical_configuration_draft.dart';
+import 'activity_profile_about_section.dart';
 
-final class ActivityFormSection extends StatelessWidget {
+final class ActivityFormSection extends StatefulWidget {
   const ActivityFormSection({
     required this.controller,
     required this.onCreateLocation,
     required this.onRetryCatalogOptions,
     required this.imagePicker,
+    required this.aboutRepository,
+    required this.activityId,
     super.key,
   });
 
@@ -29,44 +34,62 @@ final class ActivityFormSection extends StatelessWidget {
   final ActivityLocationCreator onCreateLocation;
   final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
+  final ActivityProfileAboutRepository aboutRepository;
+  final String? activityId;
 
   @override
-  Widget build(BuildContext context) => KeyedSubtree(
-    key: ValueKey(controller.currentStep),
-    child:
-        (controller.currentStep == ActivityFormStep.links ||
-                controller.currentStep == ActivityFormStep.professionals) &&
-            !controller.scopedOptionsAvailable
-        ? CoeloStatePanel(
-            title: controller.scopedOptionsLoading
-                ? 'Carregando dados da instituição'
-                : controller.scopedOptionsError != null
-                ? 'Não foi possível carregar os vínculos'
-                : 'Selecione uma instituição',
-            message: controller.scopedOptionsLoading
-                ? 'Aguarde para configurar estrutura e vínculos.'
-                : controller.scopedOptionsError ??
-                      'Volte à identidade e escolha a instituição da atividade.',
-            icon: controller.scopedOptionsLoading
-                ? Icons.hourglass_top_rounded
-                : Icons.cloud_off_outlined,
-            actionLabel: controller.scopedOptionsError == null ? null : 'Tentar novamente',
-            onAction: controller.scopedOptionsError == null ? null : controller.retryScopedOptions,
-          )
-        : switch (controller.currentStep) {
-            ActivityFormStep.identity => _IdentitySection(
-              controller: controller,
-              imagePicker: imagePicker,
-              onRetryCatalogOptions: onRetryCatalogOptions,
-            ),
-            ActivityFormStep.structure => _StructureSection(
-              controller: controller,
-              onCreateLocation: onCreateLocation,
-            ),
-            ActivityFormStep.links => _LinksSection(controller: controller),
-            ActivityFormStep.professionals => _ProfessionalsSection(controller: controller),
-          },
-  );
+  State<ActivityFormSection> createState() => _ActivityFormSectionState();
+}
+
+final class _ActivityFormSectionState extends State<ActivityFormSection> {
+  @override
+  Widget build(BuildContext context) {
+    final controller = widget.controller;
+    return KeyedSubtree(
+      key: ValueKey(controller.currentStep),
+      child:
+          (controller.currentStep == ActivityFormStep.links ||
+                  controller.currentStep == ActivityFormStep.professionals) &&
+              !controller.scopedOptionsAvailable
+          ? CoeloStatePanel(
+              title: controller.scopedOptionsLoading
+                  ? 'Carregando dados da instituição'
+                  : controller.scopedOptionsError != null
+                  ? 'Não foi possível carregar os vínculos'
+                  : 'Selecione uma instituição',
+              message: controller.scopedOptionsLoading
+                  ? 'Aguarde para configurar estrutura e vínculos.'
+                  : controller.scopedOptionsError ??
+                        'Volte à identidade e escolha a instituição da atividade.',
+              icon: controller.scopedOptionsLoading
+                  ? Icons.hourglass_top_rounded
+                  : Icons.cloud_off_outlined,
+              actionLabel: controller.scopedOptionsError == null ? null : 'Tentar novamente',
+              onAction: controller.scopedOptionsError == null
+                  ? null
+                  : controller.retryScopedOptions,
+            )
+          : switch (controller.currentStep) {
+              ActivityFormStep.identity => _IdentitySection(
+                controller: controller,
+                imagePicker: widget.imagePicker,
+                onRetryCatalogOptions: widget.onRetryCatalogOptions,
+              ),
+              ActivityFormStep.structure => _StructureSection(
+                controller: controller,
+                onCreateLocation: widget.onCreateLocation,
+              ),
+              ActivityFormStep.pedagogical => _PedagogicalSection(controller: controller),
+              ActivityFormStep.links => _LinksSection(controller: controller),
+              ActivityFormStep.about => ActivityProfileAboutSection(
+                controller: controller,
+                repository: widget.aboutRepository,
+                activityId: widget.activityId,
+              ),
+              ActivityFormStep.professionals => _ProfessionalsSection(controller: controller),
+            },
+    );
+  }
 }
 
 final class _IdentitySection extends StatelessWidget {
@@ -438,6 +461,873 @@ final class _StructureSection extends StatelessWidget {
     ],
   );
 }
+
+final class _PedagogicalSection extends StatefulWidget {
+  const _PedagogicalSection({required this.controller});
+
+  final ActivityFormController controller;
+
+  @override
+  State<_PedagogicalSection> createState() => _PedagogicalSectionState();
+}
+
+final class _PedagogicalSectionState extends State<_PedagogicalSection> {
+  final Map<String, TextEditingController> _textControllers = {};
+
+  ActivityPedagogicalConfigurationDraft get value => widget.controller.pedagogicalConfiguration;
+
+  @override
+  void dispose() {
+    for (final controller in _textControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  TextEditingController _text(String key, String text) {
+    final controller = _textControllers.putIfAbsent(key, () => TextEditingController(text: text));
+    if (controller.text != text && !controller.selection.isValid) {
+      controller.text = text;
+    }
+    return controller;
+  }
+
+  void _set(ActivityPedagogicalConfigurationDraft next) {
+    widget.controller.setPedagogicalConfiguration(next);
+  }
+
+  void _toggleEnabled(bool enabled) {
+    if (!enabled) {
+      _set(const ActivityPedagogicalConfigurationDraft.disabled());
+      return;
+    }
+    final now = DateTime.now();
+    final start = DateTime(now.year, 1, 1);
+    final end = DateTime(now.year, 12, 31);
+    _set(
+      ActivityPedagogicalConfigurationDraft(
+        enabled: true,
+        model: ActivityAssessmentModel.gradeOnly,
+        periodicity: ActivityAssessmentPeriodicity.bimonthly,
+        validityStart: start,
+        validityEnd: end,
+        gradeScale: ActivityGradeScale.numeric0To10,
+        periods: ActivityPedagogicalConfigurationDraft.suggestPeriods(
+          periodicity: ActivityAssessmentPeriodicity.bimonthly,
+          validityStart: start,
+          validityEnd: end,
+          timezone: 'America/Sao_Paulo',
+        ),
+        instruments: const [
+          ActivityAssessmentInstrumentDraft(
+            clientId: 'instrument-1',
+            name: 'Prova',
+            kind: ActivityAssessmentInstrumentKind.exam,
+            weight: 100,
+            order: 1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _setModel(ActivityAssessmentModel model) {
+    final usesGrades =
+        model == ActivityAssessmentModel.gradeOnly ||
+        model == ActivityAssessmentModel.gradeAndCompetencies;
+    final usesCompetencies =
+        model == ActivityAssessmentModel.competenciesOnly ||
+        model == ActivityAssessmentModel.gradeAndCompetencies;
+    _set(
+      value.copyWith(
+        model: model,
+        gradeScale: usesGrades ? value.gradeScale ?? ActivityGradeScale.numeric0To10 : null,
+        competencyScale: usesCompetencies ? ActivityCompetencyScale.oneToFive : null,
+        instruments: usesGrades && value.instruments.isEmpty
+            ? const [
+                ActivityAssessmentInstrumentDraft(
+                  clientId: 'instrument-1',
+                  name: 'Prova',
+                  kind: ActivityAssessmentInstrumentKind.exam,
+                  weight: 100,
+                  order: 1,
+                ),
+              ]
+            : value.instruments,
+        taxonomyVersionId: usesCompetencies
+            ? value.taxonomyVersionId ?? _communicationTaxonomyVersionId
+            : null,
+        categories: usesCompetencies && value.categories.isEmpty
+            ? const [
+                ActivityAssessmentCategoryDraft(
+                  clientId: 'communication',
+                  name: 'Comunicação',
+                  order: 1,
+                  taxonomyVersionId: _communicationTaxonomyVersionId,
+                  competencies: [
+                    ActivityAssessmentCompetencyDraft(
+                      clientId: 'speech',
+                      name: 'Fala',
+                      order: 1,
+                      taxonomyVersionId: _communicationTaxonomyVersionId,
+                    ),
+                  ],
+                ),
+              ]
+            : value.categories,
+        recoveryRule: usesGrades ? value.recoveryRule : ActivityRecoveryRule.none,
+      ),
+    );
+  }
+
+  void _applyPreset(String templateId) {
+    final preset = _assessmentPresets.firstWhere((item) => item.id == templateId);
+    final start = value.validityStart ?? DateTime(DateTime.now().year, 1, 1);
+    final end = value.validityEnd ?? DateTime(DateTime.now().year, 12, 31);
+    final usesGrades = preset.model != ActivityAssessmentModel.competenciesOnly;
+    final usesCompetencies = preset.model != ActivityAssessmentModel.gradeOnly;
+    final taxonomyId = usesCompetencies ? preset.taxonomyVersionId : null;
+    _set(
+      ActivityPedagogicalConfigurationDraft(
+        enabled: true,
+        model: preset.model,
+        periodicity: preset.periodicity,
+        validityStart: start,
+        validityEnd: end,
+        timezone: value.timezone,
+        gradeScale: preset.gradeScale,
+        competencyScale: usesCompetencies ? ActivityCompetencyScale.oneToFive : null,
+        conceptLevels: preset.gradeScale == ActivityGradeScale.concepts
+            ? const ['Em desenvolvimento', 'Atendeu', 'Superou']
+            : const [],
+        periods: ActivityPedagogicalConfigurationDraft.suggestPeriods(
+          periodicity: preset.periodicity,
+          validityStart: start,
+          validityEnd: end,
+          timezone: value.timezone,
+        ),
+        instruments: usesGrades
+            ? const [
+                ActivityAssessmentInstrumentDraft(
+                  clientId: 'preset-instrument-1',
+                  name: 'Avaliação',
+                  kind: ActivityAssessmentInstrumentKind.exam,
+                  weight: 100,
+                  order: 1,
+                ),
+              ]
+            : const [],
+        taxonomyVersionId: taxonomyId,
+        categories: usesCompetencies
+            ? [
+                ActivityAssessmentCategoryDraft(
+                  clientId: 'preset-category-1',
+                  name: preset.category,
+                  order: 1,
+                  taxonomyVersionId: taxonomyId!,
+                  competencies: [
+                    ActivityAssessmentCompetencyDraft(
+                      clientId: 'preset-competency-1',
+                      name: preset.competency,
+                      order: 1,
+                      taxonomyVersionId: taxonomyId,
+                    ),
+                  ],
+                ),
+              ]
+            : const [],
+        recoveryRule: ActivityRecoveryRule.none,
+        templateId: templateId,
+        templateVersion: 1,
+        expectedVersion: value.expectedVersion,
+        usedByResults: value.usedByResults,
+        changeJustification: value.changeJustification,
+      ),
+    );
+  }
+
+  void _setPeriodicity(ActivityAssessmentPeriodicity periodicity) {
+    final start = value.validityStart;
+    final end = value.validityEnd;
+    _set(
+      value.copyWith(
+        periodicity: periodicity,
+        periods: start == null || end == null
+            ? const []
+            : ActivityPedagogicalConfigurationDraft.suggestPeriods(
+                periodicity: periodicity,
+                validityStart: start,
+                validityEnd: end,
+                timezone: value.timezone,
+              ),
+      ),
+    );
+  }
+
+  void _setValidity(DateTimeRange? range) {
+    if (range == null) return;
+    final periodicity = value.periodicity ?? ActivityAssessmentPeriodicity.bimonthly;
+    _set(
+      value.copyWith(
+        validityStart: range.start,
+        validityEnd: range.end,
+        periodicity: periodicity,
+        periods: ActivityPedagogicalConfigurationDraft.suggestPeriods(
+          periodicity: periodicity,
+          validityStart: range.start,
+          validityEnd: range.end,
+          timezone: value.timezone,
+        ),
+      ),
+    );
+  }
+
+  void _updatePeriod(int index, ActivityAssessmentPeriodDraft period) {
+    final periods = [...value.periods]..[index] = period;
+    _set(value.copyWith(periods: periods));
+  }
+
+  void _updateInstrument(int index, ActivityAssessmentInstrumentDraft instrument) {
+    final instruments = [...value.instruments]..[index] = instrument;
+    _set(value.copyWith(instruments: instruments));
+  }
+
+  void _moveInstrument(int index, int offset) {
+    final target = index + offset;
+    if (target < 0 || target >= value.instruments.length) return;
+    final instruments = [...value.instruments];
+    final item = instruments.removeAt(index);
+    instruments.insert(target, item);
+    _set(
+      value.copyWith(
+        instruments: [
+          for (var position = 0; position < instruments.length; position++)
+            instruments[position].copyWith(order: position + 1),
+        ],
+      ),
+    );
+  }
+
+  void _removeInstrument(int index) {
+    final instruments = [...value.instruments]..removeAt(index);
+    _set(
+      value.copyWith(
+        instruments: [
+          for (var position = 0; position < instruments.length; position++)
+            instruments[position].copyWith(order: position + 1),
+        ],
+      ),
+    );
+  }
+
+  void _addInstrument() {
+    final order = value.instruments.length + 1;
+    _set(
+      value.copyWith(
+        instruments: [
+          ...value.instruments,
+          ActivityAssessmentInstrumentDraft(
+            clientId: 'instrument-$order',
+            name: 'Novo instrumento',
+            kind: ActivityAssessmentInstrumentKind.custom,
+            weight: 0,
+            order: order,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final firstDate = DateTime(DateTime.now().year - 1);
+    final lastDate = DateTime(DateTime.now().year + 10, 12, 31);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SectionHeader(
+          title: 'Configuração pedagógica',
+          description:
+              'Defina avaliação, períodos, datas e horas, instrumentos, competências e recuperação.',
+        ),
+        const SizedBox(height: CoeloSpacing.space5),
+        CoeloAdminToggleField(
+          key: const Key('activity-assessment-enabled'),
+          label: 'Habilitar avaliação',
+          description: value.enabled
+              ? 'A atividade terá acompanhamento avaliativo versionado.'
+              : 'A atividade será salva explicitamente sem avaliação.',
+          value: value.enabled,
+          onChanged: _toggleEnabled,
+        ),
+        if (!value.enabled) ...[
+          const SizedBox(height: CoeloSpacing.space5),
+          CoeloStatePanel(
+            title: 'Atividade sem avaliação',
+            message:
+                'Nenhum período, instrumento, competência ou regra de recuperação será criado.',
+            icon: Icons.do_not_disturb_alt_outlined,
+          ),
+        ] else ...[
+          const SizedBox(height: CoeloSpacing.space5),
+          CoeloAdminSingleSelectField<String>(
+            key: const Key('activity-assessment-preset'),
+            label: 'Modelo Coelo (opcional)',
+            value: value.templateId ?? '',
+            options: ['', ..._assessmentPresets.map((item) => item.id)],
+            optionLabel: (id) => id.isEmpty
+                ? 'Configuração personalizada'
+                : _assessmentPresets.firstWhere((item) => item.id == id).label,
+            onChanged: (id) {
+              if (id.isNotEmpty) _applyPreset(id);
+            },
+            prefixIcon: Icons.auto_awesome_outlined,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          _ResponsiveGrid(
+            children: [
+              CoeloAdminSingleSelectField<ActivityAssessmentModel>(
+                key: const Key('activity-assessment-model'),
+                label: 'Modelo de acompanhamento',
+                value: value.model,
+                options: const [
+                  ActivityAssessmentModel.gradeOnly,
+                  ActivityAssessmentModel.competenciesOnly,
+                  ActivityAssessmentModel.gradeAndCompetencies,
+                ],
+                optionLabel: _assessmentModelLabel,
+                onChanged: _setModel,
+                prefixIcon: Icons.fact_check_outlined,
+              ),
+              CoeloAdminSingleSelectField<ActivityAssessmentPeriodicity>(
+                key: const Key('activity-assessment-periodicity'),
+                label: 'Periodicidade',
+                value: value.periodicity ?? ActivityAssessmentPeriodicity.bimonthly,
+                options: ActivityAssessmentPeriodicity.values,
+                optionLabel: _periodicityLabel,
+                onChanged: _setPeriodicity,
+                prefixIcon: Icons.event_repeat_outlined,
+              ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloDateRangeField(
+            key: const Key('activity-assessment-validity'),
+            value: value.validityStart == null || value.validityEnd == null
+                ? null
+                : DateTimeRange(start: value.validityStart!, end: value.validityEnd!),
+            onChanged: _setValidity,
+            firstDate: firstDate,
+            lastDate: lastDate,
+            labelText: 'Vigência da configuração',
+            errorText: value.validationErrors.contains('assessment_validity_required')
+                ? 'Defina a vigência.'
+                : null,
+          ),
+          if (value.usesGrades) ...[const SizedBox(height: CoeloSpacing.space5), _gradeSection()],
+          if (value.usesCompetencies) ...[
+            const SizedBox(height: CoeloSpacing.space5),
+            _competencySection(),
+          ],
+          const SizedBox(height: CoeloSpacing.space5),
+          _periodsSection(firstDate: firstDate, lastDate: lastDate),
+          if (value.usedByResults) ...[
+            const SizedBox(height: CoeloSpacing.space5),
+            CoeloFormTextField(
+              controller: _text('assessment-justification', value.changeJustification),
+              labelText: 'Justificativa da nova versão',
+              prefixIcon: Icons.history_edu_outlined,
+              maxLines: 3,
+              errorText: value.validationErrors.contains('change_justification_required')
+                  ? 'Informe a justificativa porque já existem lançamentos.'
+                  : null,
+              onChanged: (text) => _set(value.copyWith(changeJustification: text)),
+            ),
+          ],
+          if (widget.controller.pedagogicalError case final error?) ...[
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloStatePanel(
+              title: 'Revise a configuração',
+              message: error,
+              icon: Icons.error_outline,
+            ),
+          ],
+          const SizedBox(height: CoeloSpacing.space5),
+          _reviewSection(),
+        ],
+      ],
+    );
+  }
+
+  Widget _gradeSection() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const _SectionHeader(
+        title: 'Notas, instrumentos e pesos',
+        description: 'Os pesos ativos precisam totalizar exatamente 100%.',
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloAdminSingleSelectField<ActivityGradeScale>(
+        key: const Key('activity-assessment-grade-scale'),
+        label: 'Escala de notas',
+        value: value.gradeScale ?? ActivityGradeScale.numeric0To10,
+        options: ActivityGradeScale.values,
+        optionLabel: _gradeScaleLabel,
+        onChanged: (scale) => _set(
+          value.copyWith(
+            gradeScale: scale,
+            recoveryRule:
+                scale == ActivityGradeScale.numeric0To10 ||
+                    scale == ActivityGradeScale.numeric0To100
+                ? value.recoveryRule
+                : ActivityRecoveryRule.none,
+          ),
+        ),
+        prefixIcon: Icons.straighten_outlined,
+      ),
+      if (value.gradeScale == ActivityGradeScale.concepts) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloFormTextField(
+          controller: _text('assessment-concepts', value.conceptLevels.join(', ')),
+          labelText: 'Conceitos',
+          hintText: 'A, B, C, D',
+          prefixIcon: Icons.format_list_bulleted_outlined,
+          errorText: value.validationErrors.contains('concept_levels_required')
+              ? 'Informe os conceitos manualmente.'
+              : null,
+          onChanged: (text) => _set(
+            value.copyWith(
+              conceptLevels: text
+                  .split(',')
+                  .map((item) => item.trim())
+                  .where((item) => item.isNotEmpty)
+                  .toList(growable: false),
+            ),
+          ),
+        ),
+      ],
+      const SizedBox(height: CoeloSpacing.space4),
+      for (var index = 0; index < value.instruments.length; index++) ...[
+        _instrumentCard(index),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
+      Text(
+        'Total: ${value.totalInstrumentWeight.toStringAsFixed(0)}%',
+        key: const Key('activity-assessment-weight-total'),
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: value.validationErrors.contains('instrument_weights_total')
+              ? Theme.of(context).colorScheme.error
+              : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: OutlinedButton.icon(
+          key: const Key('activity-assessment-add-instrument'),
+          onPressed: _addInstrument,
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Adicionar instrumento'),
+        ),
+      ),
+      if (value.hasNumericGradeScale) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloAdminSingleSelectField<ActivityRecoveryRule>(
+          key: const Key('activity-assessment-recovery'),
+          label: 'Recuperação',
+          value: value.recoveryRule,
+          options: ActivityRecoveryRule.values,
+          optionLabel: _recoveryLabel,
+          onChanged: (rule) => _set(value.copyWith(recoveryRule: rule)),
+          prefixIcon: Icons.replay_outlined,
+        ),
+      ],
+    ],
+  );
+
+  Widget _instrumentCard(int index) {
+    final instrument = value.instruments[index];
+    return CoeloAdminInteractiveCard(
+      semanticLabel: 'Instrumento ${instrument.name}',
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _ResponsiveGrid(
+              children: [
+                CoeloFormTextField(
+                  controller: _text('instrument-name-${instrument.clientId}', instrument.name),
+                  labelText: 'Instrumento ${index + 1}',
+                  prefixIcon: Icons.assignment_outlined,
+                  onChanged: (text) => _updateInstrument(index, instrument.copyWith(name: text)),
+                ),
+                CoeloAdminSingleSelectField<ActivityAssessmentInstrumentKind>(
+                  label: 'Tipo',
+                  value: instrument.kind,
+                  options: ActivityAssessmentInstrumentKind.values,
+                  optionLabel: _instrumentKindLabel,
+                  onChanged: (kind) => _updateInstrument(index, instrument.copyWith(kind: kind)),
+                  prefixIcon: Icons.category_outlined,
+                ),
+                CoeloFormTextField(
+                  controller: _text(
+                    'instrument-weight-${instrument.clientId}',
+                    instrument.weight.toStringAsFixed(0),
+                  ),
+                  labelText: 'Peso',
+                  prefixIcon: Icons.percent_outlined,
+                  keyboardType: TextInputType.number,
+                  errorText: instrument.weight <= 0 || instrument.weight > 100
+                      ? 'Use um peso entre 0 e 100.'
+                      : null,
+                  onChanged: (text) => _updateInstrument(
+                    index,
+                    instrument.copyWith(weight: double.tryParse(text.replaceAll(',', '.')) ?? 0),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                IconButton(
+                  tooltip: 'Mover para cima',
+                  onPressed: index == 0 ? null : () => _moveInstrument(index, -1),
+                  icon: const Icon(Icons.arrow_upward_rounded),
+                ),
+                IconButton(
+                  tooltip: 'Mover para baixo',
+                  onPressed: index == value.instruments.length - 1
+                      ? null
+                      : () => _moveInstrument(index, 1),
+                  icon: const Icon(Icons.arrow_downward_rounded),
+                ),
+                IconButton(
+                  tooltip: 'Remover instrumento',
+                  color: Theme.of(context).colorScheme.error,
+                  onPressed: () => _removeInstrument(index),
+                  icon: const Icon(Icons.delete_outline_rounded),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _competencySection() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const _SectionHeader(
+        title: 'Categorias e competências',
+        description: 'A visão geral usa a média das categorias; cada categoria tem o mesmo peso.',
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      CoeloAdminSingleSelectField<ActivityCompetencyScale>(
+        key: const Key('activity-assessment-competency-scale'),
+        label: 'Escala de competências',
+        value: ActivityCompetencyScale.oneToFive,
+        options: ActivityCompetencyScale.values,
+        optionLabel: (_) => 'Competências 1–5',
+        onChanged: (scale) => _set(value.copyWith(competencyScale: scale)),
+        prefixIcon: Icons.insights_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      for (var index = 0; index < value.categories.length; index++) ...[
+        _categoryCard(index),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
+    ],
+  );
+
+  Widget _categoryCard(int index) {
+    final category = value.categories[index];
+    return CoeloAdminInteractiveCard(
+      semanticLabel: 'Categoria ${category.name}',
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: _ResponsiveGrid(
+          children: [
+            CoeloFormTextField(
+              controller: _text('category-name-${category.clientId}', category.name),
+              labelText: 'Categoria ${index + 1}',
+              prefixIcon: Icons.account_tree_outlined,
+              onChanged: (text) {
+                final categories = [...value.categories]..[index] = category.copyWith(name: text);
+                _set(value.copyWith(categories: categories));
+              },
+            ),
+            CoeloFormTextField(
+              controller: _text(
+                'category-competencies-${category.clientId}',
+                category.competencies.map((item) => item.name).join(', '),
+              ),
+              labelText: 'Competências',
+              hintText: 'Fala, Audição, Leitura',
+              prefixIcon: Icons.checklist_rtl_outlined,
+              onChanged: (text) {
+                final names = text
+                    .split(',')
+                    .map((item) => item.trim())
+                    .where((item) => item.isNotEmpty)
+                    .toList(growable: false);
+                final categories = [...value.categories]
+                  ..[index] = category.copyWith(
+                    competencies: [
+                      for (var position = 0; position < names.length; position++)
+                        ActivityAssessmentCompetencyDraft(
+                          clientId: '${category.clientId}-${position + 1}',
+                          name: names[position],
+                          order: position + 1,
+                          taxonomyVersionId: category.taxonomyVersionId,
+                        ),
+                    ],
+                  );
+                _set(value.copyWith(categories: categories));
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _periodsSection({required DateTime firstDate, required DateTime lastDate}) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const _SectionHeader(
+        title: 'Períodos avaliativos',
+        description:
+            'Ajuste as datas sugeridas e defina prazo de lançamento e liberação para a família com hora.',
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      for (var index = 0; index < value.periods.length; index++) ...[
+        _periodCard(index, firstDate: firstDate, lastDate: lastDate),
+        const SizedBox(height: CoeloSpacing.space3),
+      ],
+    ],
+  );
+
+  Widget _periodCard(int index, {required DateTime firstDate, required DateTime lastDate}) {
+    final period = value.periods[index];
+    return CoeloAdminInteractiveCard(
+      semanticLabel: period.name,
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CoeloFormTextField(
+              controller: _text('period-name-$index', period.name),
+              labelText: 'Nome do período',
+              prefixIcon: Icons.label_outline,
+              onChanged: (text) => _updatePeriod(index, period.copyWith(name: text)),
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            CoeloDateRangeField(
+              value: DateTimeRange(start: period.startsOn, end: period.endsOn),
+              onChanged: (range) {
+                if (range != null) {
+                  _updatePeriod(index, period.copyWith(startsOn: range.start, endsOn: range.end));
+                }
+              },
+              firstDate: firstDate,
+              lastDate: lastDate,
+              labelText: 'Início e término',
+              showQuickRanges: false,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            _ResponsiveGrid(
+              children: [
+                CoeloDateTimeField(
+                  value: period.entryDeadlineAt,
+                  onChanged: (date) => _updatePeriod(index, period.copyWith(entryDeadlineAt: date)),
+                  firstDate: firstDate,
+                  lastDate: lastDate,
+                  labelText: 'Prazo de lançamento',
+                ),
+                CoeloDateTimeField(
+                  value: period.familyReleaseAt,
+                  onChanged: (date) => _updatePeriod(index, period.copyWith(familyReleaseAt: date)),
+                  firstDate: firstDate,
+                  lastDate: lastDate,
+                  labelText: 'Liberação para a família',
+                ),
+              ],
+            ),
+            if (period.validationErrors.isNotEmpty) ...[
+              const SizedBox(height: CoeloSpacing.space3),
+              Text(
+                'Defina início, término, prazo e liberação na ordem correta.',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _reviewSection() => CoeloAdminInteractiveCard(
+    semanticLabel: 'Revisão da configuração pedagógica',
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Revisão da configuração', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(
+            '${_assessmentModelLabel(value.model)} · ${_periodicityLabel(value.periodicity ?? ActivityAssessmentPeriodicity.bimonthly)} · ${value.periods.length} período(s)',
+          ),
+          if (value.usesGrades)
+            Text(
+              'Instrumentos: ${value.instruments.length} · Pesos: ${value.totalInstrumentWeight.toStringAsFixed(0)}%',
+            ),
+          if (value.usesCompetencies) Text('Categorias: ${value.categories.length} · escala 1–5'),
+          Text('Timezone: ${value.timezone}'),
+        ],
+      ),
+    ),
+  );
+}
+
+final class _AssessmentPreset {
+  const _AssessmentPreset({
+    required this.id,
+    required this.label,
+    required this.model,
+    required this.periodicity,
+    required this.gradeScale,
+    required this.taxonomyVersionId,
+    required this.category,
+    required this.competency,
+  });
+
+  final String id;
+  final String label;
+  final ActivityAssessmentModel model;
+  final ActivityAssessmentPeriodicity periodicity;
+  final ActivityGradeScale? gradeScale;
+  final String taxonomyVersionId;
+  final String category;
+  final String competency;
+}
+
+const _communicationTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000001';
+const _childhoodTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000002';
+const _fundamentalTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000003';
+const _languagesTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000004';
+const _sportsTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000005';
+const _balletTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000006';
+const _culturalTaxonomyVersionId = 'c0e10000-0000-4000-8000-000000000007';
+
+const _assessmentPresets = [
+  _AssessmentPreset(
+    id: 'a5500000-0000-4000-8000-000000000001',
+    label: 'Educação infantil',
+    model: ActivityAssessmentModel.competenciesOnly,
+    periodicity: ActivityAssessmentPeriodicity.semester,
+    gradeScale: null,
+    taxonomyVersionId: _childhoodTaxonomyVersionId,
+    category: 'Desenvolvimento socioemocional',
+    competency: 'Interação',
+  ),
+  _AssessmentPreset(
+    id: 'a5500000-0000-4000-8000-000000000002',
+    label: 'Ensino fundamental',
+    model: ActivityAssessmentModel.gradeAndCompetencies,
+    periodicity: ActivityAssessmentPeriodicity.bimonthly,
+    gradeScale: ActivityGradeScale.numeric0To10,
+    taxonomyVersionId: _fundamentalTaxonomyVersionId,
+    category: 'Desenvolvimento cognitivo',
+    competency: 'Leitura',
+  ),
+  _AssessmentPreset(
+    id: 'a5500000-0000-4000-8000-000000000003',
+    label: 'Idiomas',
+    model: ActivityAssessmentModel.gradeAndCompetencies,
+    periodicity: ActivityAssessmentPeriodicity.trimester,
+    gradeScale: ActivityGradeScale.numeric0To100,
+    taxonomyVersionId: _languagesTaxonomyVersionId,
+    category: 'Comunicação',
+    competency: 'Fala',
+  ),
+  _AssessmentPreset(
+    id: 'a5500000-0000-4000-8000-000000000004',
+    label: 'Esportes',
+    model: ActivityAssessmentModel.competenciesOnly,
+    periodicity: ActivityAssessmentPeriodicity.semester,
+    gradeScale: null,
+    taxonomyVersionId: _sportsTaxonomyVersionId,
+    category: 'Desenvolvimento motor',
+    competency: 'Coordenação',
+  ),
+  _AssessmentPreset(
+    id: 'a5500000-0000-4000-8000-000000000005',
+    label: 'Dança/Ballet',
+    model: ActivityAssessmentModel.competenciesOnly,
+    periodicity: ActivityAssessmentPeriodicity.semester,
+    gradeScale: null,
+    taxonomyVersionId: _balletTaxonomyVersionId,
+    category: 'Técnica',
+    competency: 'Postura',
+  ),
+  _AssessmentPreset(
+    id: 'a5500000-0000-4000-8000-000000000006',
+    label: 'Atividades culturais',
+    model: ActivityAssessmentModel.gradeAndCompetencies,
+    periodicity: ActivityAssessmentPeriodicity.semester,
+    gradeScale: ActivityGradeScale.concepts,
+    taxonomyVersionId: _culturalTaxonomyVersionId,
+    category: 'Participação',
+    competency: 'Expressão',
+  ),
+];
+
+String _assessmentModelLabel(ActivityAssessmentModel value) => switch (value) {
+  ActivityAssessmentModel.none => 'Sem avaliação',
+  ActivityAssessmentModel.gradeOnly => 'Somente nota',
+  ActivityAssessmentModel.competenciesOnly => 'Somente competências',
+  ActivityAssessmentModel.gradeAndCompetencies => 'Nota + competências',
+};
+
+String _periodicityLabel(ActivityAssessmentPeriodicity value) => switch (value) {
+  ActivityAssessmentPeriodicity.bimonthly => 'Bimestral',
+  ActivityAssessmentPeriodicity.trimester => 'Trimestral',
+  ActivityAssessmentPeriodicity.semester => 'Semestral',
+  ActivityAssessmentPeriodicity.annual => 'Anual',
+};
+
+String _gradeScaleLabel(ActivityGradeScale value) => switch (value) {
+  ActivityGradeScale.numeric0To10 => 'Numérica 0–10',
+  ActivityGradeScale.numeric0To100 => 'Numérica 0–100',
+  ActivityGradeScale.concepts => 'Conceitos',
+  ActivityGradeScale.binary => 'Binária',
+  ActivityGradeScale.stars0To5 => 'Estrelas 0–5',
+};
+
+String _recoveryLabel(ActivityRecoveryRule value) => switch (value) {
+  ActivityRecoveryRule.none => 'Sem recuperação',
+  ActivityRecoveryRule.replaceLowestInstrument => 'Substituir menor nota',
+  ActivityRecoveryRule.keepHigher => 'Manter maior resultado',
+  ActivityRecoveryRule.averageOriginalAndRecovery => 'Média entre original e recuperação',
+};
+
+String _instrumentKindLabel(ActivityAssessmentInstrumentKind value) => switch (value) {
+  ActivityAssessmentInstrumentKind.exam => 'Prova',
+  ActivityAssessmentInstrumentKind.project => 'Projeto',
+  ActivityAssessmentInstrumentKind.participation => 'Participação',
+  ActivityAssessmentInstrumentKind.presentation => 'Apresentação',
+  ActivityAssessmentInstrumentKind.assignment => 'Trabalho',
+  ActivityAssessmentInstrumentKind.custom => 'Personalizado',
+};
 
 final class _LinksSection extends StatelessWidget {
   const _LinksSection({required this.controller});

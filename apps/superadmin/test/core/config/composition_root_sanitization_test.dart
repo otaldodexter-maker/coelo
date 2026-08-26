@@ -49,6 +49,31 @@ void main() {
     expect(RegExp(r'repository:\s*invitePreviewRepository\(\),').allMatches(router), hasLength(3));
   });
 
+  test('Activities roots are fail-closed and never construct Supabase adapters', () {
+    for (final source in [authScope, app, mainSource, router]) {
+      expect(source, isNot(contains('SupabaseActivityDirectoryRepository')));
+      expect(source, isNot(contains('SupabaseActivityCommandRepository')));
+      expect(source, isNot(contains('supabase_activity_directory_repository.dart')));
+      expect(source, isNot(contains('supabase_activity_command_repository.dart')));
+    }
+    expect(
+      RegExp(
+        r'activityDirectoryRepository:\s*const UnavailableActivityDirectoryRepository\(\)',
+      ).allMatches(authScope),
+      hasLength(2),
+    );
+    expect(
+      RegExp(
+        r'activityCommandRepository:\s*const UnavailableActivityCommandRepository\(\)',
+      ).allMatches(authScope),
+      hasLength(2),
+    );
+    expect(router, contains('DevActivitySessionStore.content()'));
+    expect(router, contains('DevActivityDirectoryRepository'));
+    expect(router, contains('DevActivityCommandRepository'));
+    expect(router, contains('DevelopmentActivityProfileAboutRepository'));
+  });
+
   test('basic Access routes stay statically unavailable without page composition', () {
     for (final page in const [
       'AccessProfileDirectoryPage',

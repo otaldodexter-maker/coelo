@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
-import '../features/activities/data/supabase_activity_directory_repository.dart';
-import '../features/activities/data/supabase_activity_command_repository.dart';
 import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
 import '../features/auth/domain/login_request.dart';

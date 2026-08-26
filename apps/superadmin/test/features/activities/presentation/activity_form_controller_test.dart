@@ -4,9 +4,46 @@ import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_controller.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_pedagogical_configuration_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('wizard exposes the six canonical activity steps in order', () {
+    expect(ActivityFormStep.values, [
+      ActivityFormStep.identity,
+      ActivityFormStep.structure,
+      ActivityFormStep.pedagogical,
+      ActivityFormStep.links,
+      ActivityFormStep.about,
+      ActivityFormStep.professionals,
+    ]);
+  });
+
+  test('pedagogical step validates conditionally and is preserved in the draft', () async {
+    final options = await FakeActivityDirectoryRepository().fetchFormOptions(
+      institutionId: 'institution-1',
+    );
+    final controller = ActivityFormController.create(options);
+    addTearDown(controller.dispose);
+    controller.name.text = 'Robótica';
+    await controller.selectInstitution('institution-1');
+    controller.toggleUnit('institution-1-unit-1');
+    controller.goToStep(ActivityFormStep.pedagogical.index);
+
+    expect(controller.continueFromCurrentStep(), isTrue);
+    controller.goToStep(ActivityFormStep.pedagogical.index);
+    controller.setPedagogicalConfiguration(
+      const ActivityPedagogicalConfigurationDraft(
+        enabled: true,
+        model: ActivityAssessmentModel.gradeOnly,
+      ),
+    );
+
+    expect(controller.continueFromCurrentStep(), isFalse);
+    expect(controller.pedagogicalError, isNotNull);
+    expect(controller.toDraft().pedagogicalConfiguration.enabled, isTrue);
+  });
+
   test(
     'draft requires name institution and one unit while completion also requires a group',
     () async {
@@ -447,6 +484,19 @@ void main() {
           capabilities: {'chat': 'both'},
         ),
       ],
+      pedagogicalConfiguration: {
+        'enabled': false,
+        'model': 'none',
+        'timezone': 'America/Sao_Paulo',
+        'concept_levels': <Object?>[],
+        'periods': <Object?>[],
+        'instruments': <Object?>[],
+        'categories': <Object?>[],
+        'recovery_rule': 'none',
+        'expected_version': 4,
+        'used_by_results': false,
+        'change_justification': '',
+      },
     );
 
     final controller = ActivityFormController.edit(options, detail);
@@ -480,6 +530,7 @@ void main() {
     expect(draft.identityStorageRef, detail.identity.storageRef);
     expect(draft.studentSelections, hasLength(1));
     expect(draft.assignments, hasLength(2));
+    expect(draft.pedagogicalConfiguration.expectedVersion, 4);
     expect(controller.isDirty, isFalse);
   });
 

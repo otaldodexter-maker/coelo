@@ -13,6 +13,7 @@ import '../../institutions/presentation/widgets/institution_logo_picker_stub.dar
     if (dart.library.html) '../../institutions/presentation/widgets/institution_logo_picker_web.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/activity_directory.dart';
+import '../domain/activity_profile_about_repository.dart';
 import 'activity_form_controller.dart';
 import 'activity_form_draft.dart';
 import 'activity_form_sections.dart';
@@ -36,9 +37,11 @@ final class ActivityFormPage extends StatefulWidget {
     this.initialUnitId,
     this.initialTemplateId,
     this.initialDraft,
+    this.initialStep,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.imagePicker,
+    this.aboutRepository = const UnavailableActivityProfileAboutRepository(),
     super.key,
   });
 
@@ -47,6 +50,7 @@ final class ActivityFormPage extends StatefulWidget {
   final String? initialUnitId;
   final String? initialTemplateId;
   final ActivityFormDraft? initialDraft;
+  final ActivityFormStep? initialStep;
   final ActivityDirectoryRepository repository;
   final LogoutAction logout;
   final VoidCallback onCancel;
@@ -56,6 +60,7 @@ final class ActivityFormPage extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final InstitutionLogoPicker? imagePicker;
+  final ActivityProfileAboutRepository aboutRepository;
 
   @override
   State<ActivityFormPage> createState() => _ActivityFormPageState();
@@ -121,28 +126,33 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       }
       if (!mounted) return;
       _controller?.dispose();
+      final nextController = _isEditing
+          ? ActivityFormController.edit(
+              options,
+              detail!,
+              initialDraft: widget.initialDraft,
+              professionalSearcher: (institutionId, query) =>
+                  widget.repository.searchProfessionals(institutionId: institutionId, query: query),
+            )
+          : ActivityFormController.create(
+              options,
+              initialInstitutionId: widget.initialInstitutionId,
+              initialUnitId: widget.initialUnitId,
+              initialTemplateId: widget.initialTemplateId,
+              loadScopedOptions: (institutionId) =>
+                  widget.repository.fetchFormOptions(institutionId: institutionId),
+              loadTemplateOptions: (institutionId) =>
+                  widget.repository.fetchTemplateOptions(institutionId: institutionId),
+              initialCatalogError: initialCatalogError,
+              professionalSearcher: (institutionId, query) =>
+                  widget.repository.searchProfessionals(institutionId: institutionId, query: query),
+            );
+      if (widget.initialStep case final step?) {
+        nextController.goToStep(step.index);
+      }
+      if (!mounted) return;
       setState(() {
-        _controller = _isEditing
-            ? ActivityFormController.edit(
-                options,
-                detail!,
-                initialDraft: widget.initialDraft,
-                professionalSearcher: (institutionId, query) => widget.repository
-                    .searchProfessionals(institutionId: institutionId, query: query),
-              )
-            : ActivityFormController.create(
-                options,
-                initialInstitutionId: widget.initialInstitutionId,
-                initialUnitId: widget.initialUnitId,
-                initialTemplateId: widget.initialTemplateId,
-                loadScopedOptions: (institutionId) =>
-                    widget.repository.fetchFormOptions(institutionId: institutionId),
-                loadTemplateOptions: (institutionId) =>
-                    widget.repository.fetchTemplateOptions(institutionId: institutionId),
-                initialCatalogError: initialCatalogError,
-                professionalSearcher: (institutionId, query) => widget.repository
-                    .searchProfessionals(institutionId: institutionId, query: query),
-              );
+        _controller = nextController;
         _state = _ActivityFormLoadState.ready;
       });
     } on ActivityDirectoryUnauthorizedException {
@@ -268,6 +278,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       onCreateLocation: widget.onCreateLocation,
       onRetryCatalogOptions: _retryCatalogOptions,
       imagePicker: widget.imagePicker ?? pickInstitutionLogo,
+      aboutRepository: widget.aboutRepository,
+      activityId: widget.activityId,
     ),
   };
 }
@@ -290,6 +302,8 @@ final class _ActivityFormBody extends StatelessWidget {
     required this.onCreateLocation,
     required this.onRetryCatalogOptions,
     required this.imagePicker,
+    required this.aboutRepository,
+    required this.activityId,
   });
 
   final ActivityFormController controller;
@@ -301,6 +315,8 @@ final class _ActivityFormBody extends StatelessWidget {
   final ActivityLocationCreator onCreateLocation;
   final Future<void> Function() onRetryCatalogOptions;
   final InstitutionLogoPicker imagePicker;
+  final ActivityProfileAboutRepository aboutRepository;
+  final String? activityId;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -319,7 +335,9 @@ final class _ActivityFormBody extends StatelessWidget {
                   label: switch (step) {
                     ActivityFormStep.identity => 'Identidade',
                     ActivityFormStep.structure => 'Estrutura e locais',
+                    ActivityFormStep.pedagogical => 'Configuração pedagógica',
                     ActivityFormStep.links => 'Vínculos',
+                    ActivityFormStep.about => 'Sobre do perfil',
                     ActivityFormStep.professionals => 'Profissionais e revisão',
                   },
                   status: step == controller.currentStep
@@ -341,6 +359,8 @@ final class _ActivityFormBody extends StatelessWidget {
               onCreateLocation: onCreateLocation,
               onRetryCatalogOptions: onRetryCatalogOptions,
               imagePicker: imagePicker,
+              aboutRepository: aboutRepository,
+              activityId: activityId,
             ),
             footer: _ActivityFormFooter(
               controller: controller,

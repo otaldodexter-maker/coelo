@@ -268,6 +268,7 @@ final class ActivityDetail {
     this.identity = const ActivityDetailIdentity.initials(),
     this.participants = const [],
     this.professionalAssignments = const [],
+    this.pedagogicalConfiguration,
     this.originUnitName,
     this.archivedAt,
   });
@@ -285,6 +286,7 @@ final class ActivityDetail {
   final ActivityDetailIdentity identity;
   final List<ActivityDetailParticipant> participants;
   final List<ActivityDetailProfessionalAssignment> professionalAssignments;
+  final Map<String, dynamic>? pedagogicalConfiguration;
 }
 
 enum ActivityDirectorySortColumn { name }
@@ -579,6 +581,34 @@ abstract interface class ActivityDirectoryRepository {
     int limit = 20,
   });
   Future<ActivityDetail?> fetchById(String activityId);
+}
+
+final class UnavailableActivityDirectoryRepository implements ActivityDirectoryRepository {
+  const UnavailableActivityDirectoryRepository();
+
+  Future<T> _unavailable<T>() => Future.error(const ActivityDirectoryUnavailableException());
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) => _unavailable();
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() => _unavailable();
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) => _unavailable();
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) => _unavailable();
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) => _unavailable();
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) => _unavailable();
 }
 
 final class ActivityDirectoryUnauthorizedException implements Exception {

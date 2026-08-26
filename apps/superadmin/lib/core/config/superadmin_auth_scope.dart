@@ -7,8 +7,6 @@ import '../../features/attendance/attendance.dart';
 import '../../features/attendance/data/supabase_attendance_repository.dart';
 import '../../features/audit/data/supabase_audit_repository.dart';
 import '../../features/audit/domain/audit.dart';
-import '../../features/activities/data/supabase_activity_directory_repository.dart';
-import '../../features/activities/data/supabase_activity_command_repository.dart';
 import '../../features/activities/domain/activity_command.dart';
 import '../../features/activities/domain/activity_directory.dart';
 import '../../features/assessments/assessment.dart';
@@ -155,8 +153,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       logout: createCoeloAuthLogoutAction(auth: auth, session: session),
       requestPasswordRecovery: createCoeloAuthPasswordRecoveryAction(auth: auth),
       institutionDirectoryRepository: SupabaseInstitutionDirectoryRepository(client),
-      activityDirectoryRepository: SupabaseActivityDirectoryRepository(client),
-      activityCommandRepository: SupabaseActivityCommandRepository(client),
+      activityDirectoryRepository: const UnavailableActivityDirectoryRepository(),
+      activityCommandRepository: const UnavailableActivityCommandRepository(),
       assessmentRepository: SupabaseAssessmentRepository(client),
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),

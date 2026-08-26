@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:coelo_domain/profile_about.dart';
+
 import '../domain/activity_directory.dart';
+import 'activity_pedagogical_configuration_draft.dart';
 
 enum ActivityIdentityIcon { activity, sports, music, science, arts }
 
@@ -111,6 +114,9 @@ final class ActivityFormDraft {
     this.identityStorageRef,
     this.groupParticipation = const {},
     this.studentSelections = const [],
+    this.aboutPage,
+    this.pedagogicalConfiguration = const ActivityPedagogicalConfigurationDraft.disabled(),
+    this.expectedManagementVersion = 0,
   });
 
   final String name;
@@ -134,4 +140,7 @@ final class ActivityFormDraft {
   final ActivityIdentityStorageRef? identityStorageRef;
   final Map<String, ActivityParticipation> groupParticipation;
   final List<ActivityStudentSelection> studentSelections;
+  final ProfileAboutPage? aboutPage;
+  final ActivityPedagogicalConfigurationDraft pedagogicalConfiguration;
+  final int expectedManagementVersion;
 }

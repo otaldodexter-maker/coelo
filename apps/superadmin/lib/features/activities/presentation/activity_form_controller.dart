@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
+import 'package:coelo_domain/profile_about.dart';
 
 import '../domain/activity_directory.dart';
 import 'activity_form_draft.dart';
+import 'activity_pedagogical_configuration_draft.dart';
 
-enum ActivityFormStep { identity, structure, links, professionals }
+enum ActivityFormStep { identity, structure, pedagogical, links, about, professionals }
 
 typedef ActivityScopedOptionsLoader = Future<ActivityFormOptions> Function(String institutionId);
 typedef ActivityTemplateOptionsLoader =
@@ -25,6 +27,7 @@ final class ActivityFormController extends ChangeNotifier {
     this.professionalSearcher,
   }) : isEditing = false,
        detail = null,
+       expectedManagementVersion = 0,
        name = TextEditingController(),
        handleStem = TextEditingController(),
        description = TextEditingController(),
@@ -64,6 +67,8 @@ final class ActivityFormController extends ChangeNotifier {
        loadScopedOptions = null,
        loadTemplateOptions = null,
        detail = source,
+       expectedManagementVersion =
+           initialDraft?.expectedManagementVersion ?? source.item.managementVersion,
        name = TextEditingController(text: initialDraft?.name ?? source.item.name),
        handleStem = TextEditingController(text: initialDraft?.handleStem ?? source.item.handleStem),
        description = TextEditingController(
@@ -86,6 +91,7 @@ final class ActivityFormController extends ChangeNotifier {
   final ActivityProfessionalSearcher? professionalSearcher;
   final ActivityDetail? detail;
   final bool isEditing;
+  final int expectedManagementVersion;
   final TextEditingController name;
   final TextEditingController handleStem;
   final TextEditingController description;
@@ -93,6 +99,17 @@ final class ActivityFormController extends ChangeNotifier {
   final TextEditingController otherActivity;
 
   ActivityFormStep currentStep = ActivityFormStep.identity;
+  ProfileAboutPage? aboutPage;
+  ActivityPedagogicalConfigurationDraft pedagogicalConfiguration =
+      const ActivityPedagogicalConfigurationDraft.disabled();
+  bool _aboutDirty = false;
+
+  void setAboutPage(ProfileAboutPage page, {bool markDirty = true}) {
+    aboutPage = page;
+    if (markDirty) _aboutDirty = true;
+    notifyListeners();
+  }
+
   ActivityTaxonomyOption? taxonomy;
   ActivityTaxonomySubtypeOption? subtype;
   ActivityTemplateOption? template;
@@ -115,6 +132,7 @@ final class ActivityFormController extends ChangeNotifier {
   String? institutionError;
   String? unitsError;
   String? groupsError;
+  String? pedagogicalError;
   bool scopedOptionsLoading = false;
   String? scopedOptionsError;
   bool catalogOptionsLoading = false;
@@ -128,7 +146,7 @@ final class ActivityFormController extends ChangeNotifier {
 
   bool get institutionLocked => isEditing;
   bool get governanceLocked => isEditing && governance == ActivityGovernance.fixed;
-  bool get isDirty => _signature != _baseline;
+  bool get isDirty => _aboutDirty || _signature != _baseline;
   bool get isFirstStep => currentStep == ActivityFormStep.identity;
   bool get isLastStep => currentStep == ActivityFormStep.professionals;
   bool get canSaveDraft => _draftValid(setErrors: false);
@@ -295,6 +313,7 @@ final class ActivityFormController extends ChangeNotifier {
     (studentSelection.entries.toList()..sort((a, b) => a.key.compareTo(b.key)))
         .map((entry) => '${entry.key}:${entry.value}')
         .join(','),
+    pedagogicalConfiguration.toJson().toString(),
   ].join('|');
 
   void _hydrateEdit(ActivityDetail source, ActivityFormDraft? initialDraft) {
@@ -312,6 +331,7 @@ final class ActivityFormController extends ChangeNotifier {
     String normalized(String value) => value.trim().toLowerCase();
 
     if (initialDraft != null) {
+      pedagogicalConfiguration = initialDraft.pedagogicalConfiguration;
       taxonomy = initialDraft.taxonomy;
       subtype = initialDraft.subtype;
       template = initialDraft.template;
@@ -371,6 +391,9 @@ final class ActivityFormController extends ChangeNotifier {
     }
 
     taxonomy = options.taxonomy.where((item) => item.id == source.taxonomyId).firstOrNull;
+    if (source.pedagogicalConfiguration case final configuration?) {
+      pedagogicalConfiguration = ActivityPedagogicalConfigurationDraft.fromJson(configuration);
+    }
     subtype = taxonomy?.subtypes.where((item) => item.id == source.subtypeId).firstOrNull;
     template = options.templates.where((item) => item.id == source.templateId).firstOrNull;
     otherActivity.text = source.taxonomyOtherDescription;
@@ -679,13 +702,21 @@ final class ActivityFormController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPedagogicalConfiguration(ActivityPedagogicalConfigurationDraft value) {
+    pedagogicalConfiguration = value;
+    pedagogicalError = null;
+    notifyListeners();
+  }
+
   void previousStep() => goToStep(currentStep.index - 1);
 
   bool continueFromCurrentStep() {
     final valid = switch (currentStep) {
       ActivityFormStep.identity => _identityValid(setErrors: true),
       ActivityFormStep.structure => _draftValid(setErrors: true),
+      ActivityFormStep.pedagogical => _pedagogicalValid(setErrors: true),
       ActivityFormStep.links => _completionValid(setErrors: true),
+      ActivityFormStep.about => true,
       ActivityFormStep.professionals => _completionValid(setErrors: true),
     };
     if (valid && !isLastStep) goToStep(currentStep.index + 1);
@@ -733,9 +764,20 @@ final class ActivityFormController extends ChangeNotifier {
 
   bool _completionValid({required bool setErrors}) {
     final draftValid = _draftValid(setErrors: setErrors);
+    final pedagogicalValid = _pedagogicalValid(setErrors: setErrors);
     final validGroups = selectedGroupIds.isNotEmpty;
     if (setErrors) groupsError = validGroups ? null : 'Selecione ao menos uma turma.';
-    return draftValid && validGroups;
+    return draftValid && pedagogicalValid && validGroups;
+  }
+
+  bool _pedagogicalValid({required bool setErrors}) {
+    final valid = pedagogicalConfiguration.isValid;
+    if (setErrors) {
+      pedagogicalError = valid
+          ? null
+          : 'Revise a configuração pedagógica, as datas, os horários e os pesos.';
+    }
+    return valid;
   }
 
   ActivityFormDraft toDraft() => ActivityFormDraft(
@@ -774,6 +816,9 @@ final class ActivityFormController extends ChangeNotifier {
             ),
           ),
     ),
+    aboutPage: aboutPage,
+    pedagogicalConfiguration: pedagogicalConfiguration,
+    expectedManagementVersion: expectedManagementVersion,
   );
 
   void setSubmitting(bool value) {
@@ -783,6 +828,7 @@ final class ActivityFormController extends ChangeNotifier {
 
   void markSubmitted() {
     _baseline = _signature;
+    _aboutDirty = false;
     notifyListeners();
   }
 

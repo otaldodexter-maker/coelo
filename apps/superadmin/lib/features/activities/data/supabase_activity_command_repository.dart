@@ -154,33 +154,6 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
   }
 }
 
-final class UnavailableActivityCommandRepository implements ActivityCommandRepository {
-  const UnavailableActivityCommandRepository();
-
-  Future<T> _unavailable<T>() => Future<T>.error(const ActivityCommandUnavailableException());
-
-  @override
-  Future<ActivityTemplateCreateResult> createTemplate(ActivityTemplateCreateCommand command) =>
-      _unavailable();
-
-  @override
-  Future<List<ActivityLocationResult>> createLocations(ActivityLocationCommand command) =>
-      _unavailable();
-
-  @override
-  Future<ActivityExportResult> requestExport(
-    ActivityDirectoryQuery query, {
-    required ActivityCommandExportFormat format,
-  }) => _unavailable();
-
-  @override
-  Future<ActivitySaveResult> save(ActivitySaveCommand command) => _unavailable();
-
-  @override
-  Future<ActivityTemplateCopyResult> copyTemplate(ActivityTemplateCopyCommand command) =>
-      _unavailable();
-}
-
 ActivitySaveResult _saveResult(Map<String, dynamic> response) {
   final payload = response['activity'] is Map ? _asMap(response['activity']) : response;
   return ActivitySaveResult(

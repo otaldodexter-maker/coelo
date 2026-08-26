@@ -91,6 +91,9 @@ final class ActivitySaveCommand {
     this.templateId,
     this.activityId,
     this.expectedVersion = 0,
+    this.pedagogicalConfiguration = const {'enabled': false},
+    this.expectedAssessmentVersion,
+    this.assessmentChangeJustification = '',
   });
 
   final String requestId;
@@ -98,6 +101,9 @@ final class ActivitySaveCommand {
   final String? activityId;
   final String? templateId;
   final int expectedVersion;
+  final Map<String, Object?> pedagogicalConfiguration;
+  final int? expectedAssessmentVersion;
+  final String assessmentChangeJustification;
   final String name;
   final String description;
   final String? handleStem;
@@ -220,6 +226,33 @@ abstract interface class ActivityCommandRepository {
     ActivityDirectoryQuery query, {
     required ActivityCommandExportFormat format,
   });
+}
+
+final class UnavailableActivityCommandRepository implements ActivityCommandRepository {
+  const UnavailableActivityCommandRepository();
+
+  Future<T> _unavailable<T>() => Future.error(const ActivityCommandUnavailableException());
+
+  @override
+  Future<ActivitySaveResult> save(ActivitySaveCommand command) => _unavailable();
+
+  @override
+  Future<ActivityTemplateCreateResult> createTemplate(ActivityTemplateCreateCommand command) =>
+      _unavailable();
+
+  @override
+  Future<ActivityTemplateCopyResult> copyTemplate(ActivityTemplateCopyCommand command) =>
+      _unavailable();
+
+  @override
+  Future<List<ActivityLocationResult>> createLocations(ActivityLocationCommand command) =>
+      _unavailable();
+
+  @override
+  Future<ActivityExportResult> requestExport(
+    ActivityDirectoryQuery query, {
+    required ActivityCommandExportFormat format,
+  }) => _unavailable();
 }
 
 final class ActivityCommandUnauthorizedException implements Exception {

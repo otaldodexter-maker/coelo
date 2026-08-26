@@ -1,5 +1,9 @@
 import '../../../support/activities/fake_activity_directory_repository.dart';
+import 'package:coelo_domain/profile_about.dart';
+import 'package:coelo_superadmin/app/dev_menu/development_activity_fixture_repository.dart';
 import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_profile_about_repository.dart';
+import 'package:coelo_superadmin/features/activities/presentation/activity_form_controller.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -8,11 +12,12 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_fra
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('uses the four-step institution baseline and chained categories', (tester) async {
+  testWidgets('uses the six-step institution baseline and chained categories', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -30,7 +35,9 @@ void main() {
     for (final label in [
       'Identidade',
       'Estrutura e locais',
+      'Configuração pedagógica',
       'Vínculos',
+      'Sobre do perfil',
       'Profissionais e revisão',
     ]) {
       expect(find.text(label), findsWidgets);
@@ -73,9 +80,10 @@ void main() {
     expect(find.byKey(const Key('activity-catalog-options-state')), findsOneWidget);
     expect(find.text('Não foi possível carregar o formulário'), findsNothing);
     await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
-    await tester.ensureVisible(find.byKey(const Key('activity-catalog-options-retry')));
-    await tester.pump();
-    await tester.tap(find.byKey(const Key('activity-catalog-options-retry')));
+    final retryCatalog = find.byKey(const Key('activity-catalog-options-retry'));
+    await Scrollable.ensureVisible(tester.element(retryCatalog), alignment: 0.5);
+    await tester.pumpAndSettle();
+    tester.widget<TextButton>(retryCatalog).onPressed!();
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('activity-catalog-options-state')), findsNothing);
@@ -147,6 +155,8 @@ void main() {
     await tester.pump();
     tester.widget<FilledButton>(find.byKey(const Key('activity-form-continue'))).onPressed!();
     await tester.pumpAndSettle();
+    tester.widget<FilledButton>(find.byKey(const Key('activity-form-continue'))).onPressed!();
+    await tester.pumpAndSettle();
 
     expect(find.text('Vínculo Aluno'), findsOneWidget);
     expect(find.byKey(const Key('activity-groups-search')), findsOneWidget);
@@ -179,6 +189,8 @@ void main() {
     belongs.onChanged!(false);
     await tester.pump();
 
+    tester.widget<FilledButton>(find.byKey(const Key('activity-form-continue'))).onPressed!();
+    await tester.pumpAndSettle();
     tester.widget<FilledButton>(find.byKey(const Key('activity-form-continue'))).onPressed!();
     await tester.pumpAndSettle();
     expect(find.text('Vínculos Profissionais'), findsOneWidget);
@@ -236,8 +248,17 @@ void main() {
 
     await tester.tap(find.byKey(const Key('activity-form-continue')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-group-institution-1-group-1')));
     await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('activity-about-objective')),
+      'Desenvolver raciocínio lógico',
+    );
     await tester.tap(find.byKey(const Key('activity-form-continue')));
     await tester.pumpAndSettle();
 
@@ -281,6 +302,12 @@ void main() {
     expect(submittedDraft?.groupIds, {'institution-1-group-1'});
     expect(submittedDraft?.assignments, hasLength(2));
     final submitted = submittedDraft!;
+    expect(
+      submitted.aboutPage?.fields
+          .singleWhere((field) => field.key == ProfileAboutFieldKey.objective)
+          .value,
+      'Desenvolver raciocínio lógico',
+    );
     final submittedInstructor = submitted.assignments.firstWhere(
       (item) => item.role == ActivityAssignmentRole.instructor,
     );
@@ -447,11 +474,93 @@ void main() {
       await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
       await tester.pumpAndSettle();
       if (width < 768) {
-        expect(find.text('Etapa 1 de 4'), findsOneWidget);
+        expect(find.text('Etapa 1 de 6'), findsOneWidget);
       } else {
-        expect(find.text('Etapa 1 de 4'), findsNothing);
+        expect(find.text('Etapa 1 de 6'), findsNothing);
         expect(tester.getSize(find.byType(SuperadminFormStepNavigation)).width, 248);
       }
+      expect(tester.takeException(), isNull, reason: '$width overflow');
+    }
+  });
+
+  testWidgets('integrates the pedagogical configuration as step 3 of the activity wizard', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(375, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    tester
+        .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+        .onStepSelected(2);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Etapa 3 de 6'), findsOneWidget);
+    expect(find.byKey(const Key('activity-assessment-enabled')), findsOneWidget);
+    expect(find.text('Configuração pedagógica'), findsWidgets);
+    expect(find.byType(CoeloDateRangeField), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Profile About is fail-closed without an approved production repository', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        initialInstitutionId: 'institution-1',
+        initialStep: ActivityFormStep.about,
+        aboutRepository: const UnavailableActivityProfileAboutRepository(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('activity-about-unavailable')), findsOneWidget);
+    expect(find.byKey(const Key('activity-about-editor')), findsNothing);
+    expect(find.text('Sobre indisponível'), findsOneWidget);
+  });
+
+  testWidgets('pedagogical step uses canonical date and time fields without overflow', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1800);
+      await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
+      await tester.pumpAndSettle();
+      tester
+          .widget<SuperadminFormStepNavigation>(find.byType(SuperadminFormStepNavigation))
+          .onStepSelected(2);
+      await tester.pumpAndSettle();
+      tester
+          .widget<CoeloAdminToggleField>(find.byKey(const Key('activity-assessment-enabled')))
+          .onChanged!(true);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CoeloDateRangeField), findsAtLeastNWidgets(1));
+      expect(find.byType(CoeloDateTimeField), findsAtLeastNWidgets(2));
+      final preset = tester.widget<CoeloAdminSingleSelectField<String>>(
+        find.byKey(const Key('activity-assessment-preset')),
+      );
+      expect(preset.options, hasLength(7));
+      expect(
+        preset.options.skip(1).map(preset.optionLabel),
+        containsAll([
+          'Educação infantil',
+          'Ensino fundamental',
+          'Idiomas',
+          'Esportes',
+          'Dança/Ballet',
+          'Atividades culturais',
+        ]),
+      );
+      expect(find.byKey(const Key('activity-assessment-grade-scale')), findsOneWidget);
+      expect(find.byKey(const Key('activity-assessment-weight-total')), findsOneWidget);
       expect(tester.takeException(), isNull, reason: '$width overflow');
     }
   });
@@ -461,6 +570,9 @@ Widget _app({
   String? activityId,
   ActivityFormDraft? initialDraft,
   ActivityDirectoryRepository? repository,
+  String? initialInstitutionId,
+  ActivityFormStep? initialStep,
+  ActivityProfileAboutRepository? aboutRepository,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
   TextScaler textScaler = TextScaler.noScaling,
@@ -472,7 +584,9 @@ Widget _app({
   ),
   home: ActivityFormPage(
     activityId: activityId,
+    initialInstitutionId: initialInstitutionId,
     initialDraft: initialDraft,
+    initialStep: initialStep,
     repository: repository ?? _TaxonomyOptionsRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},
@@ -487,6 +601,7 @@ Widget _app({
         ),
     ],
     imagePicker: () async => null,
+    aboutRepository: aboutRepository ?? DevelopmentActivityProfileAboutRepository(),
   ),
 );
 

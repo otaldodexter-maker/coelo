@@ -17,6 +17,7 @@ final class ActivityDetailPage extends StatefulWidget {
     required this.logout,
     required this.onBack,
     this.onEdit,
+    this.onAssessmentSettings,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     super.key,
@@ -27,6 +28,7 @@ final class ActivityDetailPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback onBack;
   final VoidCallback? onEdit;
+  final ValueChanged<ActivityDetail>? onAssessmentSettings;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
@@ -131,27 +133,49 @@ final class _ActivityDetailPageState extends State<ActivityDetailPage> {
       actionLabel: 'Tentar novamente',
       onAction: _load,
     ),
-    _ActivityDetailState.success => _ActivityDetailContent(detail: _detail!, onEdit: widget.onEdit),
+    _ActivityDetailState.success => _ActivityDetailContent(
+      detail: _detail!,
+      onEdit: widget.onEdit,
+      onAssessmentSettings: widget.onAssessmentSettings,
+    ),
   };
 }
 
 final class _ActivityDetailContent extends StatelessWidget {
-  const _ActivityDetailContent({required this.detail, required this.onEdit});
+  const _ActivityDetailContent({
+    required this.detail,
+    required this.onEdit,
+    required this.onAssessmentSettings,
+  });
 
   final ActivityDetail detail;
   final VoidCallback? onEdit;
+  final ValueChanged<ActivityDetail>? onAssessmentSettings;
 
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      if (onEdit != null) ...[
+      if (onEdit != null || onAssessmentSettings != null) ...[
         Align(
           alignment: Alignment.centerRight,
-          child: FilledButton.icon(
-            onPressed: onEdit,
-            icon: const Icon(Icons.edit_outlined),
-            label: const Text('Editar atividade'),
+          child: Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              if (onAssessmentSettings != null)
+                OutlinedButton.icon(
+                  onPressed: () => onAssessmentSettings!(detail),
+                  icon: const Icon(Icons.fact_check_outlined),
+                  label: const Text('Configuração avaliativa'),
+                ),
+              if (onEdit != null)
+                FilledButton.icon(
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text('Editar atividade'),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: CoeloSpacing.space4),

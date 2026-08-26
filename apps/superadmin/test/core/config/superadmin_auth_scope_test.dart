@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
 import 'package:coelo_superadmin/features/access_profiles/data/supabase_access_profile_repository.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_command.dart';
+import 'package:coelo_superadmin/features/activities/domain/activity_directory.dart';
 import 'package:coelo_superadmin/features/attendance/data/supabase_attendance_repository.dart';
 import 'package:coelo_superadmin/features/audit/data/supabase_audit_repository.dart';
 import 'package:coelo_superadmin/features/audit/domain/audit.dart';
@@ -49,6 +51,8 @@ void main() {
     expect(recoveryResult.isSuccess, isFalse);
     expect(recoveryResult.message, UnavailableCoeloAuthGateway.defaultMessage);
     expect(scope.personDirectoryRepository, isA<UnavailablePersonDirectoryRepository>());
+    expect(scope.activityDirectoryRepository, isA<UnavailableActivityDirectoryRepository>());
+    expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
@@ -84,6 +88,8 @@ void main() {
     expect(initializedStorage, isA<ConditionalSupabaseLocalStorage>());
     expect(scope.session.isAuthenticated, isFalse);
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
+    expect(scope.activityDirectoryRepository, isA<UnavailableActivityDirectoryRepository>());
+    expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<UnavailableAccessProfileRepository>());
     expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
@@ -91,6 +97,8 @@ void main() {
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
     expect(scope.routineRepository, isA<UnavailableRoutineRepository>());
     expect(scope.groupDirectoryRepository, isA<UnavailableGroupDirectoryRepository>());
+    expect(scope.activityDirectoryRepository, isA<UnavailableActivityDirectoryRepository>());
+    expect(scope.activityCommandRepository, isA<UnavailableActivityCommandRepository>());
     expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
     expect(scope.unitBackendCommands, isA<UnavailableUnitBackendCommandsGateway>());
     expect(scope.attendancePermissions.canManage, isFalse);

@@ -209,34 +209,6 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
   }
 }
 
-final class UnavailableActivityDirectoryRepository implements ActivityDirectoryRepository {
-  const UnavailableActivityDirectoryRepository();
-
-  Future<T> _unavailable<T>() => Future<T>.error(const ActivityDirectoryUnavailableException());
-
-  @override
-  Future<ActivityDetail?> fetchById(String activityId) => _unavailable();
-
-  @override
-  Future<ActivityFilterOptions> fetchFilterOptions() => _unavailable();
-
-  @override
-  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) => _unavailable();
-
-  @override
-  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) => _unavailable();
-
-  @override
-  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
-    required String institutionId,
-    required String query,
-    int limit = 20,
-  }) => _unavailable();
-
-  @override
-  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) => _unavailable();
-}
-
 ActivityDetail _detailFromJson(Map<String, dynamic> json) {
   final unitRows = _rows(json['activity_unit_links']);
   final groupRows = _rows(json['activity_group_links']);
