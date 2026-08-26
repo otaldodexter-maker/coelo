@@ -6,6 +6,6 @@ generated_at: "2026-06-22"
 
 # Content
 
-Configuracoes e operacao de Happens, comunicados, Now, Moments e agenda.
+Configuracoes e operacao de Acontece, comunicados, Agora, Momentos e agenda.
 
 Comentarios ficam fora do MVP; reacoes simples entram conforme spec futura.

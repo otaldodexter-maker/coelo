@@ -4,7 +4,7 @@ status: "planning-context"
 generated_at: "2026-06-22"
 ---
 
-# Now
+# Agora
 
 Conteudo temporario de 24 horas, visualmente familiar, mas privado e
 institucional.

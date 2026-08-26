@@ -4,7 +4,7 @@ status: "planning-context"
 generated_at: "2026-06-22"
 ---
 
-# Happens
+# Acontece
 
 Feed privado do Coelo: posts, comunicados, midia, confirmacao de leitura e
 reacoes simples.

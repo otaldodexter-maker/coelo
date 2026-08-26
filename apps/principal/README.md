@@ -29,7 +29,7 @@ pacote, spec ou contexto.
 - Componentizar telas por feature: `presentation/screens`,
   `presentation/widgets` e `presentation/view_models`.
 - Usar `const`, builders/slivers para listas grandes e layout por constraints.
-- Happens, Now e Moments devem carregar thumbnails/variantes adequadas, com
+- Acontece, Agora e Momentos devem carregar thumbnails/variantes adequadas, com
   dimensoes explicitas, placeholder/erro e cache definido pela spec de midia.
 - Animacoes devem ser curtas, discretas e respeitar reduced motion.
 
