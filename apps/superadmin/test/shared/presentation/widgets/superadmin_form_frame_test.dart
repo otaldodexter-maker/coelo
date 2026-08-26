@@ -4,22 +4,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 
 void main() {
-  testWidgets('keeps a 248 px rail at 768 and 1024 with the canonical gap', (tester) async {
+  testWidgets('keeps a 248 px rail from the 600 px breakpoint with the canonical gap', (
+    tester,
+  ) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    for (final width in [768.0, 1024.0]) {
+    for (final width in [600.0, 768.0, 1024.0]) {
       await tester.binding.setSurfaceSize(Size(width, 800));
       await tester.pumpWidget(_app(width));
 
       final rail = tester.getRect(find.byKey(const Key('test-form-rail')));
       final body = tester.getRect(find.byKey(const Key('test-form-body')));
       expect(rail.width, 248, reason: 'viewport $width');
-      expect(rail.left, CoeloSpacing.space6, reason: 'medium inset at $width');
+      expect(
+        rail.left,
+        width >= CoeloBreakpoints.expanded.minWidth ? CoeloSpacing.space10 : CoeloSpacing.space6,
+        reason: 'local inset at $width',
+      );
       expect(body.left - rail.right, CoeloSpacing.space6, reason: 'viewport $width');
     }
   });
 
-  testWidgets('uses the compact summary below 768 without reserving a rail', (tester) async {
+  testWidgets('uses the compact summary below 600 without reserving a rail', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(_app(375));
@@ -41,20 +47,21 @@ void main() {
     expect(tester.getRect(find.byKey(const Key('test-form-rail'))).left, CoeloSpacing.space10);
   });
 
-  testWidgets('keeps the rail at 768 even under narrower local constraints', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(768, 800));
+  testWidgets('uses local constraints instead of the external viewport', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       Align(
         alignment: Alignment.topLeft,
-        child: SizedBox(width: 620, height: 800, child: _app(768)),
+        child: SizedBox(width: 599, height: 800, child: _app(1440)),
       ),
     );
 
     final navigation = tester.getRect(find.byKey(const Key('test-form-rail')));
     final body = tester.getRect(find.byKey(const Key('test-form-body')));
-    expect(navigation.width, 248);
-    expect(body.left - navigation.right, CoeloSpacing.space6);
+    expect(navigation.width, body.width);
+    expect(navigation.left, CoeloSpacing.space4);
+    expect(navigation.bottom, lessThanOrEqualTo(body.top));
   });
 }
 

@@ -22,8 +22,9 @@ final class SuperadminFormFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final showRail = viewportWidth >= 768;
-        final inset = showRail && viewportWidth >= CoeloBreakpoints.large.minWidth
+        final localWidth = constraints.maxWidth;
+        final showRail = localWidth >= CoeloBreakpoints.medium.minWidth;
+        final inset = showRail && localWidth >= CoeloBreakpoints.expanded.minWidth
             ? CoeloSpacing.space10
             : showRail
             ? CoeloSpacing.space6
