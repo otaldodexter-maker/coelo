@@ -1,9 +1,5 @@
 import '../../features/daily_routine/domain/routine_contract.dart';
 
-final class DevelopmentRoutineNotFoundException implements Exception {
-  const DevelopmentRoutineNotFoundException();
-}
-
 final class DevelopmentRoutineRepository implements RoutineRepository {
   DevelopmentRoutineRepository.content()
     : _mode = _DevelopmentRoutineMode.content,
@@ -61,68 +57,24 @@ final class DevelopmentRoutineRepository implements RoutineRepository {
   }
 
   @override
-  Future<RoutineFormOptions> fetchFormOptions(RoutineFormOptionsQuery query) async {
-    _guard();
-    return const RoutineFormOptions(
-      canManage: true,
-      institutions: [RoutineInstitutionOption(id: 'institution-1', label: 'Instituto Horizonte')],
-      units: [
-        RoutineUnitOption(
-          id: 'unit-1',
-          institutionId: 'institution-1',
-          label: 'Unidade Centro',
-        ),
-      ],
-      groups: [
-        RoutineGroupOption(
-          id: 'group-1',
-          institutionId: 'institution-1',
-          unitId: 'unit-1',
-          label: 'Turma Sol',
-        ),
-      ],
-      memberships: [
-        RoutineMembershipOption(
-          id: 'membership-1',
-          institutionId: 'institution-1',
-          label: 'Prof. Marina',
-        ),
-      ],
-      models: [
-        RoutineModelOption(id: 'model-1', institutionId: 'institution-1', label: 'Rotina diária'),
-      ],
-      modelVersions: [
-        RoutineModelVersionOption(id: 'model-version-1', modelId: 'model-1', version: 1, label: 'v1'),
-      ],
-      applications: [
-        RoutineApplicationOption(
-          id: 'application-1',
-          revisionId: 'revision-1',
-          institutionId: 'institution-1',
-          unitId: 'unit-1',
-          groupId: 'group-1',
-          label: 'Rotina · Turma Sol',
-        ),
-      ],
-    );
-  }
-
-  @override
   Future<RoutineModel> fetchModel(String id) async {
     _guard();
-    return _models[id] ?? (throw const DevelopmentRoutineNotFoundException());
+    return _models[id] ??
+        (throw const RoutineRepositoryException(RoutineRepositoryFailureKind.notFound));
   }
 
   @override
   Future<RoutineApplication> fetchApplication(String id) async {
     _guard();
-    return _applications[id] ?? (throw const DevelopmentRoutineNotFoundException());
+    return _applications[id] ??
+        (throw const RoutineRepositoryException(RoutineRepositoryFailureKind.notFound));
   }
 
   @override
   Future<RoutineLaunch> fetchLaunch(String id) async {
     _guard();
-    return _launches[id] ?? (throw const DevelopmentRoutineNotFoundException());
+    return _launches[id] ??
+        (throw const RoutineRepositoryException(RoutineRepositoryFailureKind.notFound));
   }
 
   @override
@@ -193,9 +145,9 @@ final class DevelopmentRoutineRepository implements RoutineRepository {
       case _DevelopmentRoutineMode.content || _DevelopmentRoutineMode.empty:
         return;
       case _DevelopmentRoutineMode.failure:
-        throw StateError('Rotina diária indisponível na fixture local.');
+        throw const RoutineRepositoryException(RoutineRepositoryFailureKind.unavailable);
       case _DevelopmentRoutineMode.unauthorized:
-        throw StateError('Rotina diária não autorizada na fixture local.');
+        throw const RoutineRepositoryException(RoutineRepositoryFailureKind.unauthorized);
     }
   }
 }

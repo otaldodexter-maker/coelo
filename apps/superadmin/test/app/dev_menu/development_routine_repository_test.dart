@@ -5,23 +5,31 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('content supports list, create and edit with instance reset', () async {
     final repository = DevelopmentRoutineRepository.content();
-    final createdId = await repository.saveModel(_model('new-model', 'Rotina criada'), requestId: '1');
+    final createdId = await repository.saveModel(
+      _model('new-model', 'Rotina criada'),
+      requestId: '1',
+    );
     expect((await repository.fetchModel(createdId)).name, 'Rotina criada');
 
     await repository.saveModel(_model(createdId, 'Rotina editada'), requestId: '2');
     expect((await repository.fetchModel(createdId)).name, 'Rotina editada');
     expect(
-      (await repository.fetchPage(const RoutineDirectoryQuery(kind: RoutineEntryKind.model)))
-          .items
-          .first
-          .name,
+      (await repository.fetchPage(
+        const RoutineDirectoryQuery(kind: RoutineEntryKind.model),
+      )).items.first.name,
       'Rotina editada',
     );
 
     final reset = DevelopmentRoutineRepository.content();
     await expectLater(
       reset.fetchModel(createdId),
-      throwsA(isA<DevelopmentRoutineNotFoundException>()),
+      throwsA(
+        isA<RoutineRepositoryException>().having(
+          (error) => error.kind,
+          'kind',
+          RoutineRepositoryFailureKind.notFound,
+        ),
+      ),
     );
   });
 
@@ -55,13 +63,25 @@ void main() {
       DevelopmentRoutineRepository.failure().fetchPage(
         const RoutineDirectoryQuery(kind: RoutineEntryKind.model),
       ),
-      throwsA(isA<StateError>()),
+      throwsA(
+        isA<RoutineRepositoryException>().having(
+          (error) => error.kind,
+          'kind',
+          RoutineRepositoryFailureKind.unavailable,
+        ),
+      ),
     );
     await expectLater(
-      DevelopmentRoutineRepository.unauthorized().fetchFormOptions(
-        const RoutineFormOptionsQuery(kind: RoutineEntryKind.model),
+      DevelopmentRoutineRepository.unauthorized().fetchPage(
+        const RoutineDirectoryQuery(kind: RoutineEntryKind.model),
       ),
-      throwsA(isA<StateError>()),
+      throwsA(
+        isA<RoutineRepositoryException>().having(
+          (error) => error.kind,
+          'kind',
+          RoutineRepositoryFailureKind.unauthorized,
+        ),
+      ),
     );
   });
 }
