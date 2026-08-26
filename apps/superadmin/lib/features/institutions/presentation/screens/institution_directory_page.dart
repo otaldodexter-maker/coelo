@@ -259,6 +259,20 @@ class _InstitutionDirectoryContentState extends State<_InstitutionDirectoryConte
         return AnimatedBuilder(
           animation: widget.viewModel,
           builder: (context, child) {
+            if (widget.viewModel.state == InstitutionDirectoryLoadState.unauthorized) {
+              _scheduleFooterMeasurement(false);
+              return ListView(
+                key: const Key('institution-directory-content-scroll'),
+                padding: EdgeInsets.all(horizontalPadding),
+                children: [
+                  InstitutionDirectoryStates(
+                    viewModel: widget.viewModel,
+                    createAction: const SizedBox.shrink(),
+                    successContent: const SizedBox.shrink(),
+                  ),
+                ],
+              );
+            }
             final showPagination =
                 widget.viewModel.state == InstitutionDirectoryLoadState.success &&
                 widget.viewModel.page.totalCount > 0;

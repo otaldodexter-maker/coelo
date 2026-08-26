@@ -1278,6 +1278,25 @@ void main() {
     expect(find.byKey(const Key('create-institution-banner')), findsOneWidget);
   });
 
+  testWidgets('hides directory controls and content after access is denied', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app(repository: const _UnauthorizedDirectoryRepository()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Você não tem permissão para ver as instituições.'), findsOneWidget);
+    expect(find.byKey(const Key('institution-filter-toolbar')), findsNothing);
+    expect(find.byKey(const Key('institution-status-tabs')), findsNothing);
+    expect(find.byKey(const Key('institution-display-toggle')), findsNothing);
+    expect(find.byKey(const Key('create-institution-card')), findsNothing);
+    expect(find.byKey(const Key('create-institution-banner')), findsNothing);
+    expect(find.byKey(const Key('institution-directory-pagination-footer')), findsNothing);
+    expect(_institutionCards(), findsNothing);
+    expect(_institutionTableRows(), findsNothing);
+    expect(find.text('Tentar novamente'), findsNothing);
+  });
+
   testWidgets('hides pagination when a successful page reports zero total count', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -1602,6 +1621,26 @@ final class _FailingDirectoryRepository implements InstitutionDirectoryRepositor
   @override
   Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
     throw Exception('offline');
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) async {
+    return InstitutionDirectoryFilterOptions.empty;
+  }
+}
+
+final class _UnauthorizedDirectoryRepository implements InstitutionDirectoryRepository {
+  const _UnauthorizedDirectoryRepository();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
+    throw const InstitutionDirectoryUnauthorizedException();
   }
 
   @override
