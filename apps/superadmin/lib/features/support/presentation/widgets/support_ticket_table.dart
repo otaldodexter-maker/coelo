@@ -1,4 +1,5 @@
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/support_team_member.dart';
@@ -45,6 +46,9 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
 
   @override
   Widget build(BuildContext context) {
+    final rowHeight = (MediaQuery.textScalerOf(context).scale(32) + CoeloSpacing.space4)
+        .clamp(64, double.infinity)
+        .toDouble();
     final ticketColumn = CoeloAdminTableColumn<SupportTicket>(
       id: 'ticket',
       label: 'Chamado',
@@ -125,7 +129,7 @@ final class _SupportTicketTableState extends State<SupportTicketTable> {
       items: widget.tickets,
       rowKey: (ticket) => ticket.id,
       headerHeight: 56,
-      rowHeight: 64,
+      rowHeight: rowHeight,
       pinnedColumn: ticketColumn,
       columns: columns,
       controller: _tableController,

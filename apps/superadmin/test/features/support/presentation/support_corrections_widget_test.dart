@@ -16,7 +16,7 @@ void main() {
 
     expect(find.byKey(const Key('support-create-kanban')), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Exibir como tabela'));
+    await tester.tap(find.byKey(const Key('support-view-toggle-table')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('support-create-table')), findsOneWidget);
@@ -140,6 +140,53 @@ void main() {
 
     expect(find.text('Suporte e implantação'), findsWidgets);
   });
+
+  testWidgets('keeps Support accessible across scale, viewport, theme and reduced motion', (
+    tester,
+  ) async {
+    await _expectResponsiveSupportMatrix(tester, textScaler: const TextScaler.linear(1.5));
+    await _expectResponsiveSupportMatrix(tester, textScaler: const TextScaler.linear(2));
+
+    final controller = SupportPrototypeController(initialTickets: _tickets(12));
+    addTearDown(controller.dispose);
+    await _pump(
+      tester,
+      controller,
+      size: const Size(375, 900),
+      textScaler: const TextScaler.linear(2),
+      disableAnimations: true,
+    );
+
+    await tester.tap(find.byKey(const Key('support-view-toggle-table')));
+    await tester.pumpAndSettle();
+
+    final verticalTableScroll = find.ancestor(
+      of: find.byKey(const Key('support-ticket-table')),
+      matching: find.byWidgetPredicate(
+        (widget) => widget is SingleChildScrollView && widget.scrollDirection == Axis.vertical,
+      ),
+    );
+    expect(verticalTableScroll, findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byKey(const Key('support-create-table')),
+        matching: verticalTableScroll,
+      ),
+      findsNothing,
+    );
+    expect(
+      find.ancestor(of: find.byKey(const Key('support-pagination')), matching: verticalTableScroll),
+      findsNothing,
+    );
+
+    final previous = find.byKey(const Key('coelo-admin-pagination-previous'));
+    final next = find.byKey(const Key('coelo-admin-pagination-next'));
+    expect(tester.getSemantics(previous).label, contains('Página anterior'));
+    expect(tester.getSemantics(next).label, contains('Próxima página'));
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-1')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 List<SupportTicket> _tickets(int count) {
@@ -160,14 +207,59 @@ List<SupportTicket> _tickets(int count) {
   ];
 }
 
-Future<void> _pump(WidgetTester tester, SupportPrototypeController controller) async {
+Future<void> _expectResponsiveSupportMatrix(
+  WidgetTester tester, {
+  required TextScaler textScaler,
+}) async {
+  const widths = [375.0, 768.0, 1024.0, 1440.0];
+  final themes = [CoeloTheme.light, CoeloTheme.dark];
+
+  for (final theme in themes) {
+    for (final width in widths) {
+      final controller = SupportPrototypeController(initialTickets: _tickets(12));
+      addTearDown(controller.dispose);
+      await _pump(tester, controller, size: Size(width, 900), theme: theme, textScaler: textScaler);
+      expect(
+        tester.takeException(),
+        isNull,
+        reason: '${theme.brightness} at $width px and ${textScaler.scale(10) / 10}x text',
+      );
+
+      await tester.tap(find.byKey(const Key('support-view-toggle-table')));
+      await tester.pumpAndSettle();
+      expect(
+        tester.takeException(),
+        isNull,
+        reason: 'table ${theme.brightness} at $width px and ${textScaler.scale(10) / 10}x text',
+      );
+      expect(find.byKey(const Key('support-create-table')), findsOneWidget);
+      expect(find.byKey(const Key('support-pagination')), findsOneWidget);
+    }
+  }
+}
+
+Future<void> _pump(
+  WidgetTester tester,
+  SupportPrototypeController controller, {
+  Size size = const Size(1440, 900),
+  ThemeData? theme,
+  TextScaler textScaler = TextScaler.noScaling,
+  bool disableAnimations = false,
+}) async {
+  await tester.pumpWidget(const SizedBox.shrink());
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = const Size(1440, 900);
+  tester.view.physicalSize = size;
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   await tester.pumpWidget(
     MaterialApp(
-      theme: CoeloTheme.light,
+      theme: theme ?? CoeloTheme.light,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: textScaler, disableAnimations: disableAnimations),
+        child: child!,
+      ),
       home: SupportPage(
         controller: controller,
         logout: () async => const LogoutResult.success(),

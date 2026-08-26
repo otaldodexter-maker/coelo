@@ -93,9 +93,9 @@ final class _SupportKanbanState extends State<SupportKanban> {
       itemBuilder: (context, ticket) => _ticketCard(ticket),
       onItemAccepted: (ticket, status) => widget.onStatusChanged(ticket, status),
       leadingBuilder: (context, status) => status == SupportTicketStatus.newRequest
-          ? SizedBox(
+          ? ConstrainedBox(
               key: const Key('support-create-kanban'),
-              height: 152,
+              constraints: const BoxConstraints(minHeight: 152),
               child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: widget.onCreate),
             )
           : null,

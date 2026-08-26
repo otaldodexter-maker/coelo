@@ -235,7 +235,7 @@ void main() {
     controller.assignOwner('SUP-001', 'member-support');
     await _pump(tester, controller, const Size(1280, 900));
 
-    await tester.tap(find.byTooltip('Exibir como tabela'));
+    await tester.tap(find.byKey(const Key('support-view-toggle-table')));
     await tester.pumpAndSettle();
     for (final label in [
       'Chamado',
@@ -300,7 +300,7 @@ void main() {
     addTearDown(controller.dispose);
     await _pump(tester, controller, const Size(1280, 900));
 
-    await tester.tap(find.byTooltip('Exibir como tabela'));
+    await tester.tap(find.byKey(const Key('support-view-toggle-table')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('coelo-admin-table-row-background-SUP-001')).first);
     await tester.pumpAndSettle();

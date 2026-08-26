@@ -96,63 +96,108 @@ class _CoeloAdminPaginationContentState extends State<_CoeloAdminPaginationConte
             nextCallback();
           };
 
-    return Wrap(
-      key: const Key('coelo-admin-pagination-content'),
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: CoeloSpacing.space2,
-      runSpacing: CoeloSpacing.space2,
-      children: [
-        if (widget.pageSize case final pageSize?)
-          _PageSizeSelector(
-            value: pageSize,
-            options: widget.pageSizeOptions,
-            onChanged: widget.onPageSizeChanged,
-          ),
-        Semantics(
-          label: 'Página anterior',
-          button: true,
-          enabled: previousCallback != null,
-          onTap: previousAction,
-          excludeSemantics: true,
-          child: OutlinedButton.icon(
-            focusNode: _previousFocusNode,
-            onPressed: previousAction,
-            icon: const Icon(Icons.chevron_left),
-            label: const Text('Anterior'),
-          ),
-        ),
-        Text('Página ${widget.currentPage} de ${widget.totalPages}'),
-        ..._visiblePages(widget.currentPage, widget.totalPages).map(
-          (page) => page == null
-              ? const Text('…')
-              : Semantics(
-                  label: 'Ir para a página $page',
-                  button: true,
-                  selected: page == widget.currentPage,
-                  child: OutlinedButton(
-                    key: Key('coelo-admin-pagination-page-$page'),
-                    onPressed: page == widget.currentPage || widget.onPageSelected == null
-                        ? null
-                        : () => widget.onPageSelected!(page),
-                    child: Text('$page'),
-                  ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= CoeloBreakpoints.compact.maxWidth) {
+          return Row(
+            key: const Key('coelo-admin-pagination-content'),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Semantics(
+                label: 'Página anterior',
+                button: true,
+                enabled: previousCallback != null,
+                onTap: previousAction,
+                excludeSemantics: true,
+                child: IconButton(
+                  key: const Key('coelo-admin-pagination-previous'),
+                  focusNode: _previousFocusNode,
+                  onPressed: previousAction,
+                  icon: const Icon(Icons.chevron_left),
                 ),
-        ),
-        Semantics(
-          label: 'Próxima página',
-          button: true,
-          enabled: nextCallback != null,
-          onTap: nextAction,
-          excludeSemantics: true,
-          child: OutlinedButton.icon(
-            focusNode: _nextFocusNode,
-            onPressed: nextAction,
-            icon: const Icon(Icons.chevron_right),
-            label: const Text('Próxima'),
-          ),
-        ),
-      ],
+              ),
+              Flexible(
+                child: Text(
+                  'Página ${widget.currentPage} de ${widget.totalPages}',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Semantics(
+                label: 'Próxima página',
+                button: true,
+                enabled: nextCallback != null,
+                onTap: nextAction,
+                excludeSemantics: true,
+                child: IconButton(
+                  key: const Key('coelo-admin-pagination-next'),
+                  focusNode: _nextFocusNode,
+                  onPressed: nextAction,
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ),
+            ],
+          );
+        }
+
+        return Wrap(
+          key: const Key('coelo-admin-pagination-content'),
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            if (widget.pageSize case final pageSize?)
+              _PageSizeSelector(
+                value: pageSize,
+                options: widget.pageSizeOptions,
+                onChanged: widget.onPageSizeChanged,
+              ),
+            Semantics(
+              label: 'Página anterior',
+              button: true,
+              enabled: previousCallback != null,
+              onTap: previousAction,
+              excludeSemantics: true,
+              child: OutlinedButton.icon(
+                focusNode: _previousFocusNode,
+                onPressed: previousAction,
+                icon: const Icon(Icons.chevron_left),
+                label: const Text('Anterior'),
+              ),
+            ),
+            Text('Página ${widget.currentPage} de ${widget.totalPages}'),
+            ..._visiblePages(widget.currentPage, widget.totalPages).map(
+              (page) => page == null
+                  ? const Text('…')
+                  : Semantics(
+                      label: 'Ir para a página $page',
+                      button: true,
+                      selected: page == widget.currentPage,
+                      child: OutlinedButton(
+                        key: Key('coelo-admin-pagination-page-$page'),
+                        onPressed: page == widget.currentPage || widget.onPageSelected == null
+                            ? null
+                            : () => widget.onPageSelected!(page),
+                        child: Text('$page'),
+                      ),
+                    ),
+            ),
+            Semantics(
+              label: 'Próxima página',
+              button: true,
+              enabled: nextCallback != null,
+              onTap: nextAction,
+              excludeSemantics: true,
+              child: OutlinedButton.icon(
+                focusNode: _nextFocusNode,
+                onPressed: nextAction,
+                icon: const Icon(Icons.chevron_right),
+                label: const Text('Próxima'),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

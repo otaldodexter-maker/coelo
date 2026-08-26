@@ -120,7 +120,7 @@ void main() {
   });
 
   testWidgets('centers the pagination content and wrapped runs', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(520, 220));
+    await tester.binding.setSurfaceSize(const Size(768, 220));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
@@ -171,21 +171,31 @@ void main() {
 
         expect(tester.takeException(), isNull, reason: '\${theme.brightness} at \$width px');
         final content = find.byKey(const Key('coelo-admin-pagination-content'));
-        expect(tester.widget<Wrap>(content).alignment, WrapAlignment.center);
-        final contentCenter = tester.getRect(content).center.dx;
+        if (width <= CoeloBreakpoints.compact.maxWidth) {
+          expect(tester.widget<Row>(content).mainAxisAlignment, MainAxisAlignment.center);
+          expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+          expect(find.byKey(const Key('coelo-admin-pagination-page-5')), findsNothing);
+          expect(find.byKey(const Key('coelo-admin-pagination-previous')), findsOneWidget);
+          expect(find.byKey(const Key('coelo-admin-pagination-next')), findsOneWidget);
+        } else {
+          expect(tester.widget<Wrap>(content).alignment, WrapAlignment.center);
+          final contentCenter = tester.getRect(content).center.dx;
 
-        for (final bounds in _paginationRunBounds(tester)) {
-          expect(
-            bounds.center.dx,
-            moreOrLessEquals(contentCenter, epsilon: 1),
-            reason: 'centered run at \$width px',
-          );
+          for (final bounds in _paginationRunBounds(tester)) {
+            expect(
+              bounds.center.dx,
+              moreOrLessEquals(contentCenter, epsilon: 1),
+              reason: 'centered run at \$width px',
+            );
+          }
         }
       }
     }
   });
 
-  testWidgets('supports 200 percent text on the compact approved viewport', (tester) async {
+  testWidgets('keeps only chevrons and page position at 200 percent compact text', (tester) async {
+    var previousCalls = 0;
+    var nextCalls = 0;
     await tester.binding.setSurfaceSize(const Size(375, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -195,12 +205,12 @@ void main() {
           data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
           child: child!,
         ),
-        home: const Scaffold(
+        home: Scaffold(
           body: CoeloAdminPagination(
             currentPage: 5,
             totalPages: 10,
-            onPrevious: _noop,
-            onNext: _noop,
+            onPrevious: () => previousCalls += 1,
+            onNext: () => nextCalls += 1,
             pageSize: 20,
             pageSizeOptions: [8, 20, 50, 100],
           ),
@@ -209,8 +219,23 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Itens por p\u00e1gina'), findsOneWidget);
-    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+    expect(find.text('Itens por p\u00e1gina'), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-5')), findsNothing);
+    expect(find.text('Página 5 de 10'), findsOneWidget);
+
+    final previous = find.byKey(const Key('coelo-admin-pagination-previous'));
+    final next = find.byKey(const Key('coelo-admin-pagination-next'));
+    expect(tester.getSemantics(previous).label, contains('Página anterior'));
+    expect(tester.getSemantics(next).label, contains('Próxima página'));
+
+    await tester.tap(previous);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.tap(next);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+
+    expect(previousCalls, 2);
+    expect(nextCalls, 2);
   });
 
   testWidgets('uses the approved compact single-select surface', (tester) async {

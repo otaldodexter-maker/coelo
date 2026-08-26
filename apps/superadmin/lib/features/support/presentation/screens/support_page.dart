@@ -107,9 +107,9 @@ class _SupportPageState extends State<SupportPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
+          ConstrainedBox(
             key: const Key('support-create-table'),
-            height: 128,
+            constraints: const BoxConstraints(minHeight: 128),
             child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: _createSupport),
           ),
           const SizedBox(height: CoeloSpacing.space4),
@@ -119,15 +119,17 @@ class _SupportPageState extends State<SupportPage> {
                 alignment: Alignment.topCenter,
                 child: SizedBox(
                   width: constraints.maxWidth,
-                  child: SupportTicketTable(
-                    tickets: tickets,
-                    teamMembers: widget.controller.teamMembers,
-                    selectedTicketId: widget.controller.selectedTicket?.id,
-                    onTicketPressed: _open,
-                    statusBuilder: _statusMenu,
-                    sortColumn: widget.controller.sortColumn,
-                    sortAscending: widget.controller.sortAscending,
-                    onSort: widget.controller.setSort,
+                  child: SingleChildScrollView(
+                    child: SupportTicketTable(
+                      tickets: tickets,
+                      teamMembers: widget.controller.teamMembers,
+                      selectedTicketId: widget.controller.selectedTicket?.id,
+                      onTicketPressed: _open,
+                      statusBuilder: _statusMenu,
+                      sortColumn: widget.controller.sortColumn,
+                      sortAscending: widget.controller.sortAscending,
+                      onSort: widget.controller.setSort,
+                    ),
                   ),
                 ),
               ),
