@@ -9,6 +9,7 @@ import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../data/supabase_chat_repository.dart';
 import '../../domain/chat_repository.dart';
+import '../widgets/superadmin_chat_attachment_tile.dart';
 import '../widgets/superadmin_chat_composer.dart';
 
 final class SuperadminChatPage extends StatefulWidget {
@@ -273,6 +274,14 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             Text(
+                              '${_conversationKindLabel(item.kind)} · ${item.contextLabel}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                            ),
+                            Text(
                               item.preview,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -389,6 +398,26 @@ final class _MessageBubble extends StatelessWidget {
               Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
               const SizedBox(height: CoeloSpacing.space1),
               Text(message.body),
+              for (final attachment in message.attachments) ...[
+                const SizedBox(height: CoeloSpacing.space2),
+                SuperadminChatAttachmentTile(
+                  attachment: attachment,
+                  state: SuperadminChatAttachmentState.ready,
+                ),
+              ],
+              const SizedBox(height: CoeloSpacing.space1),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  MaterialLocalizations.of(context).formatTimeOfDay(
+                    TimeOfDay.fromDateTime(message.sentAt),
+                    alwaysUse24HourFormat: true,
+                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ),
             ],
           ),
         ),
@@ -426,6 +455,13 @@ String _initials(String value) => value
     .map((part) => part[0])
     .join()
     .toUpperCase();
+
+String _conversationKindLabel(String kind) => switch (kind) {
+  'direct' => 'Direta',
+  'group' => 'Grupo',
+  'support' => 'Suporte',
+  _ => 'Conversa',
+};
 
 String _requestId() {
   final random = math.Random.secure();

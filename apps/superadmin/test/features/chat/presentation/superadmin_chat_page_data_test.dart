@@ -49,6 +49,14 @@ void main() {
             sentAt: DateTime.utc(2026, 8, 11),
             isMine: false,
             kind: 'text',
+            attachments: const [
+              ChatAttachment(
+                id: 'attachment-1',
+                fileName: 'comunicado.pdf',
+                mediaType: 'application/pdf',
+                byteSize: 2048,
+              ),
+            ],
           ),
         ],
       ),
@@ -61,7 +69,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.textContaining('Unidade CambuÃ­'), findsOneWidget);
+    expect(find.textContaining('Grupo'), findsOneWidget);
     expect(find.text('OlÃ¡'), findsWidgets);
+    expect(find.byKey(const Key('superadmin-chat-attachment-attachment-1')), findsOneWidget);
+    expect(find.text('00:00'), findsOneWidget);
     expect(repository.markedConversationIds, ['conversation-1']);
 
     await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Tudo bem?');
