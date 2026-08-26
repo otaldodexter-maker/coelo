@@ -5,6 +5,8 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
+import 'crop_rasterizer.dart';
+
 final class CoverCropResult {
   const CoverCropResult({required this.bytes, required this.scale, required this.offset});
 
@@ -15,18 +17,21 @@ final class CoverCropResult {
 
 /// Rectangular counterpart to [AvatarCropDialog]'s approved interaction.
 final class CoverCropDialog extends StatefulWidget {
-  const CoverCropDialog({required this.bytes, super.key});
+  const CoverCropDialog({required this.bytes, this.rasterizer = rasterizeCoeloCrop, super.key});
 
   final Uint8List bytes;
+  final CoeloCropRasterizer rasterizer;
 
-  /// Approved Coelo cover ratio. New ratios require a design-system decision.
-  static const aspectRatio = 16 / 9;
+  static const outputWidth = 851;
+  static const outputHeight = 315;
+  static const aspectRatio = outputWidth / outputHeight;
 
   @override
   State<CoverCropDialog> createState() => _CoverCropDialogState();
 }
 
 final class _CoverCropDialogState extends State<CoverCropDialog> {
+  final _previewKey = GlobalKey();
   final _transformation = TransformationController();
   var _zoom = 1.0;
 
@@ -46,11 +51,23 @@ final class _CoverCropDialogState extends State<CoverCropDialog> {
     _transformation.value = Matrix4.diagonal3Values(value, value, 1);
   }
 
-  void _apply() {
+  Future<void> _apply() async {
     final matrix = _transformation.value;
+    final viewportSize = _previewKey.currentContext?.size;
+    if (viewportSize == null || viewportSize.isEmpty) return;
+
+    final data = await widget.rasterizer(
+      bytes: widget.bytes,
+      viewportSize: viewportSize,
+      transform: matrix,
+      outputWidth: CoverCropDialog.outputWidth,
+      outputHeight: CoverCropDialog.outputHeight,
+    );
+    if (!mounted || data == null) return;
+
     Navigator.of(context).pop(
       CoverCropResult(
-        bytes: widget.bytes,
+        bytes: data,
         scale: matrix.entry(0, 0),
         offset: Offset(matrix.entry(0, 3), matrix.entry(1, 3)),
       ),
@@ -100,19 +117,22 @@ final class _CoverCropDialogState extends State<CoverCropDialog> {
             const SizedBox(height: CoeloSpacing.space4),
             ClipRRect(
               borderRadius: BorderRadius.circular(CoeloRadius.md),
-              child: SizedBox(
-                width: width,
-                height: height,
-                child: ColoredBox(
-                  color: Theme.of(context).colorScheme.scrim,
-                  child: InteractiveViewer(
-                    key: const Key('coelo-cover-crop-view'),
-                    transformationController: _transformation,
-                    minScale: 1,
-                    maxScale: 4,
-                    boundaryMargin: EdgeInsets.zero,
-                    constrained: true,
-                    child: Image.memory(widget.bytes, fit: BoxFit.cover),
+              child: RepaintBoundary(
+                key: _previewKey,
+                child: SizedBox(
+                  width: width,
+                  height: height,
+                  child: ColoredBox(
+                    color: Theme.of(context).colorScheme.scrim,
+                    child: InteractiveViewer(
+                      key: const Key('coelo-cover-crop-view'),
+                      transformationController: _transformation,
+                      minScale: 1,
+                      maxScale: 4,
+                      boundaryMargin: EdgeInsets.zero,
+                      constrained: true,
+                      child: Image.memory(widget.bytes, fit: BoxFit.cover),
+                    ),
                   ),
                 ),
               ),

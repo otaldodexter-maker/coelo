@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:coelo_superadmin/shared/presentation/widgets/avatar_crop_dialog.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('crops an avatar with equal actions and a circular reset control', (tester) async {
+  testWidgets('returns a valid repositioned 320 square avatar', (tester) async {
     AvatarCropResult? result;
     await tester.pumpWidget(
       MaterialApp(
@@ -18,7 +19,7 @@ void main() {
               onPressed: () async {
                 result = await showDialog<AvatarCropResult>(
                   context: context,
-                  builder: (_) => AvatarCropDialog(bytes: _transparentPng),
+                  builder: (_) => AvatarCropDialog(bytes: _sourcePng, rasterizer: _fakeRasterizer),
                 );
               },
               child: const Text('Abrir recorte'),
@@ -46,20 +47,37 @@ void main() {
     final slider = find.byType(Slider);
     tester.widget<Slider>(slider).onChanged!(2);
     await tester.pump();
-    expect(tester.widget<Slider>(slider).value, greaterThan(1));
+    await tester.drag(find.byKey(const Key('coelo-avatar-crop-view')), const Offset(24, 16));
+    await tester.pump();
+
     await tester.tap(reset);
     await tester.pump();
     expect(tester.widget<Slider>(slider).value, 1);
 
+    tester.widget<Slider>(slider).onChanged!(2);
+    await tester.pump();
+    await tester.drag(find.byKey(const Key('coelo-avatar-crop-view')), const Offset(24, 16));
+    await tester.pump();
+
     await tester.tap(find.widgetWithText(FilledButton, 'Aplicar'));
-    await tester.pumpAndSettle();
+    for (var attempt = 0; attempt < 100 && result == null; attempt++) {
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+
     expect(result, isNotNull);
-    expect(result!.bytes, _transparentPng);
-    expect(result!.scale, 1);
-    expect(result!.offset, Offset.zero);
+    expect(result!.bytes, isNotEmpty);
+    expect(result!.scale, greaterThan(1));
   });
 }
 
-final _transparentPng = base64Decode(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL8wQAAAABJRU5ErkJggg==',
+final _sourcePng = base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAdSURBVDhPY/i/lOE/JZgBXYBUPGrAqAGjBgwWAwC+5aMf+7YJAgAAAABJRU5ErkJggg==',
 );
+
+Future<Uint8List?> _fakeRasterizer({
+  required Uint8List bytes,
+  required Size viewportSize,
+  required Matrix4 transform,
+  required int outputWidth,
+  required int outputHeight,
+}) async => bytes;

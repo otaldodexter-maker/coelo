@@ -5,6 +5,8 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
+import 'crop_rasterizer.dart';
+
 final class AvatarCropResult {
   const AvatarCropResult({required this.bytes, required this.scale, required this.offset});
 
@@ -14,15 +16,19 @@ final class AvatarCropResult {
 }
 
 final class AvatarCropDialog extends StatefulWidget {
-  const AvatarCropDialog({required this.bytes, super.key});
+  const AvatarCropDialog({required this.bytes, this.rasterizer = rasterizeCoeloCrop, super.key});
 
   final Uint8List bytes;
+  final CoeloCropRasterizer rasterizer;
+
+  static const outputSize = 320;
 
   @override
   State<AvatarCropDialog> createState() => _AvatarCropDialogState();
 }
 
 final class _AvatarCropDialogState extends State<AvatarCropDialog> {
+  final _previewKey = GlobalKey();
   final _transformation = TransformationController();
   var _zoom = 1.0;
 
@@ -42,11 +48,23 @@ final class _AvatarCropDialogState extends State<AvatarCropDialog> {
     _transformation.value = Matrix4.diagonal3Values(value, value, 1);
   }
 
-  void _apply() {
+  Future<void> _apply() async {
     final matrix = _transformation.value;
+    final viewportSize = _previewKey.currentContext?.size;
+    if (viewportSize == null || viewportSize.isEmpty) return;
+
+    final data = await widget.rasterizer(
+      bytes: widget.bytes,
+      viewportSize: viewportSize,
+      transform: matrix,
+      outputWidth: AvatarCropDialog.outputSize,
+      outputHeight: AvatarCropDialog.outputSize,
+    );
+    if (!mounted || data == null) return;
+
     Navigator.of(context).pop(
       AvatarCropResult(
-        bytes: widget.bytes,
+        bytes: data,
         scale: matrix.entry(0, 0),
         offset: Offset(matrix.entry(0, 3), matrix.entry(1, 3)),
       ),
@@ -94,18 +112,21 @@ final class _AvatarCropDialogState extends State<AvatarCropDialog> {
             ),
             const SizedBox(height: CoeloSpacing.space4),
             ClipOval(
-              child: SizedBox.square(
-                dimension: dimension,
-                child: ColoredBox(
-                  color: Theme.of(context).colorScheme.scrim,
-                  child: InteractiveViewer(
-                    key: const Key('coelo-avatar-crop-view'),
-                    transformationController: _transformation,
-                    minScale: 1,
-                    maxScale: 4,
-                    boundaryMargin: EdgeInsets.zero,
-                    constrained: true,
-                    child: Image.memory(widget.bytes, fit: BoxFit.cover),
+              child: RepaintBoundary(
+                key: _previewKey,
+                child: SizedBox.square(
+                  dimension: dimension,
+                  child: ColoredBox(
+                    color: Theme.of(context).colorScheme.scrim,
+                    child: InteractiveViewer(
+                      key: const Key('coelo-avatar-crop-view'),
+                      transformationController: _transformation,
+                      minScale: 1,
+                      maxScale: 4,
+                      boundaryMargin: EdgeInsets.zero,
+                      constrained: true,
+                      child: Image.memory(widget.bytes, fit: BoxFit.cover),
+                    ),
                   ),
                 ),
               ),
