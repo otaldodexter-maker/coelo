@@ -42,7 +42,7 @@ final class _CatalogWebHostState extends State<_CatalogWebHost> {
         ..style.border = '0'
         ..style.width = '100%'
         ..style.height = '100%';
-      for (final permission in const ['allow-forms', 'allow-same-origin', 'allow-scripts']) {
+      for (final permission in const ['allow-same-origin', 'allow-scripts']) {
         frame.sandbox?.add(permission);
       }
       return frame;

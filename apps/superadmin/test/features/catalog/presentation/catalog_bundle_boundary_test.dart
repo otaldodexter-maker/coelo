@@ -33,7 +33,7 @@ void main() {
 
     expect(source, contains("..title = 'Catálogo Coelo'"));
     expect(source, contains("..referrerPolicy = 'no-referrer'"));
-    expect(source, contains("const ['allow-forms', 'allow-same-origin', 'allow-scripts']"));
+    expect(source, contains("const ['allow-same-origin', 'allow-scripts']"));
     expect(source, isNot(contains('allow-top-navigation')));
     expect(source, contains("html.window.open(uri.toString(), '_blank', 'noopener,noreferrer')"));
   });
