@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,6 +39,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('advanced-color-picker-dialog')), findsOneWidget);
+    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
+    expect(find.byKey(const Key('advanced-color-picker-close')), findsOneWidget);
     expect(find.byKey(const Key('advanced-color-picker-cancel')), findsOneWidget);
     expect(find.byKey(const Key('advanced-color-picker-apply')), findsOneWidget);
     expect(
@@ -88,14 +91,14 @@ void main() {
     expect(tester.getSize(area).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     expect(tester.getSize(hue).height, greaterThanOrEqualTo(CoeloSize.touchMin));
 
-    final saturationValueSemantics = find.bySemanticsLabel(RegExp('SaturaÃ§Ã£o e valor'));
+    final saturationValueSemantics = find.bySemanticsLabel(RegExp('Saturação e valor'));
     final hueSemantics = find.bySemanticsLabel(RegExp('Matiz'));
     expect(saturationValueSemantics, findsOneWidget);
     expect(hueSemantics, findsOneWidget);
     expect(
       tester.getSemantics(saturationValueSemantics),
       isSemantics(
-        label: 'SaturaÃ§Ã£o e valor',
+        label: 'Saturação e valor',
         hasEnabledState: true,
         isEnabled: true,
         isSlider: true,

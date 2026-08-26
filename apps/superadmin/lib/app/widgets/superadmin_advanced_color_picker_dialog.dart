@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -55,13 +56,23 @@ final class _SuperadminAdvancedColorPickerDialogState
   @override
   Widget build(BuildContext context) {
     final selectedColor = color.toColor();
-    final colors = Theme.of(context).colorScheme;
-    return AlertDialog(
-      key: const Key('advanced-color-picker-dialog'),
-      backgroundColor: colors.surface,
-      surfaceTintColor: Colors.transparent,
-      title: Text(widget.title),
-      content: SizedBox(
+    return CoeloAdminDialogShell(
+      dialogKey: const Key('advanced-color-picker-dialog'),
+      closeButtonKey: const Key('advanced-color-picker-close'),
+      closeTooltip: 'Fechar seletor de cor',
+      title: widget.title,
+      maxWidth: 680,
+      primaryAction: FilledButton(
+        key: const Key('advanced-color-picker-apply'),
+        onPressed: () => Navigator.of(context).pop(selectedColor),
+        child: const Text('Usar cor'),
+      ),
+      secondaryAction: OutlinedButton(
+        key: const Key('advanced-color-picker-cancel'),
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Cancelar'),
+      ),
+      body: SizedBox(
         width: 620,
         child: SingleChildScrollView(
           child: LayoutBuilder(
@@ -113,27 +124,6 @@ final class _SuperadminAdvancedColorPickerDialogState
           ),
         ),
       ),
-      actions: [
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                key: const Key('advanced-color-picker-cancel'),
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancelar'),
-              ),
-            ),
-            const SizedBox(width: CoeloSpacing.space3),
-            Expanded(
-              child: FilledButton(
-                key: const Key('advanced-color-picker-apply'),
-                onPressed: () => Navigator.of(context).pop(selectedColor),
-                child: const Text('Usar cor'),
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
@@ -164,7 +154,7 @@ final class _ColorVisualPickerState extends State<_ColorVisualPicker> {
   @override
   void initState() {
     super.initState();
-    _areaFocusNode = FocusNode(debugLabel: 'SaturaÃ§Ã£o e valor');
+    _areaFocusNode = FocusNode(debugLabel: 'Saturação e valor');
     _hueFocusNode = FocusNode(debugLabel: 'Matiz');
   }
 
@@ -243,13 +233,13 @@ final class _ColorVisualPickerState extends State<_ColorVisualPicker> {
               key: const Key('advanced-color-picker-area-focus-ring'),
               focusNode: _areaFocusNode,
               child: Semantics(
-                label: 'SaturaÃ§Ã£o e valor',
+                label: 'Saturação e valor',
                 value:
-                    'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${(widget.color.value * 100).round()}%',
+                    'Saturação ${(widget.color.saturation * 100).round()}%, valor ${(widget.color.value * 100).round()}%',
                 increasedValue:
-                    'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value + _keyboardStep).clamp(0, 1) * 100).round()}%',
+                    'Saturação ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value + _keyboardStep).clamp(0, 1) * 100).round()}%',
                 decreasedValue:
-                    'SaturaÃ§Ã£o ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value - _keyboardStep).clamp(0, 1) * 100).round()}%',
+                    'Saturação ${(widget.color.saturation * 100).round()}%, valor ${((widget.color.value - _keyboardStep).clamp(0, 1) * 100).round()}%',
                 slider: true,
                 enabled: true,
                 onIncrease: () => widget.onSaturationValueAdjusted(0, _keyboardStep),
