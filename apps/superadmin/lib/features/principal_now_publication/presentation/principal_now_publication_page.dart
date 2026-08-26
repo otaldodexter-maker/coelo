@@ -128,6 +128,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
+        final stackContent =
+            compact ||
+            (MediaQuery.textScalerOf(context).scale(1) > 1.5 &&
+                constraints.maxWidth < CoeloBreakpoints.large.minWidth);
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           body: SafeArea(
@@ -137,9 +141,9 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.fromLTRB(
-                      compact ? CoeloSpacing.space4 : CoeloSpacing.space8,
+                      stackContent ? CoeloSpacing.space4 : CoeloSpacing.space8,
                       CoeloSpacing.space5,
-                      compact ? CoeloSpacing.space4 : CoeloSpacing.space8,
+                      stackContent ? CoeloSpacing.space4 : CoeloSpacing.space8,
                       CoeloSpacing.space8,
                     ),
                     child: ConstrainedBox(
@@ -154,9 +158,9 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
                             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: CoeloSpacing.space3),
-                          _ProgressLine(compact: compact),
+                          _ProgressLine(compact: stackContent),
                           const SizedBox(height: CoeloSpacing.space5),
-                          if (compact)
+                          if (stackContent)
                             Column(
                               children: [
                                 _MediaAndTools(
@@ -209,7 +213,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
                   ),
                 ),
                 _ActionFooter(
-                  compact: compact,
+                  compact: stackContent,
                   controller: controller,
                   onCompleted: widget.onCompleted,
                 ),
@@ -351,12 +355,21 @@ final class _Header extends StatelessWidget {
     child: Row(
       children: [
         IconButton(
+          key: const Key('now-publication-close'),
           tooltip: 'Fechar publicação',
-          color: Theme.of(context).colorScheme.error,
-          hoverColor: Theme.of(context).colorScheme.errorContainer,
-          focusColor: Theme.of(context).colorScheme.errorContainer,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
+          style: ButtonStyle(
+            minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
+            foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.error),
+            backgroundColor: WidgetStateProperty.resolveWith(
+              (states) =>
+                  states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused) ||
+                      states.contains(WidgetState.pressed)
+                  ? Theme.of(context).colorScheme.errorContainer
+                  : Theme.of(context).colorScheme.surface,
+            ),
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          ),
           onPressed: onClose ?? () => Navigator.maybePop(context),
           icon: const Icon(Icons.close_rounded),
         ),
@@ -421,11 +434,11 @@ final class _MediaAndTools extends StatelessWidget {
   final VoidCallback onCover;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      SizedBox(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+      final stackTools = enlargedText || constraints.maxWidth < width + 120;
+      final stage = SizedBox(
         key: const Key('now-media-stage'),
         width: width,
         child: AspectRatio(
@@ -441,18 +454,32 @@ final class _MediaAndTools extends StatelessWidget {
             ),
           ),
         ),
-      ),
-      const SizedBox(width: CoeloSpacing.space3),
-      Column(
-        mainAxisSize: MainAxisSize.min,
+      );
+      final tools = <Widget>[
+        _Tool(icon: Icons.text_fields_rounded, label: 'Texto', onPressed: onText),
+        _Tool(icon: Icons.music_note_rounded, label: 'Música', onPressed: onMusic),
+        _Tool(icon: Icons.crop_rounded, label: 'Cortar', onPressed: onCrop),
+        _Tool(icon: Icons.image_outlined, label: 'Capa', onPressed: onCover),
+      ];
+      if (stackTools) {
+        return Column(
+          children: [
+            stage,
+            const SizedBox(height: CoeloSpacing.space2),
+            Wrap(alignment: WrapAlignment.center, spacing: CoeloSpacing.space2, children: tools),
+          ],
+        );
+      }
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _Tool(icon: Icons.text_fields_rounded, label: 'Texto', onPressed: onText),
-          _Tool(icon: Icons.music_note_rounded, label: 'Música', onPressed: onMusic),
-          _Tool(icon: Icons.crop_rounded, label: 'Cortar', onPressed: onCrop),
-          _Tool(icon: Icons.image_outlined, label: 'Capa', onPressed: onCover),
+          stage,
+          const SizedBox(width: CoeloSpacing.space3),
+          Column(mainAxisSize: MainAxisSize.min, children: tools),
         ],
-      ),
-    ],
+      );
+    },
   );
 }
 
@@ -464,6 +491,7 @@ final class _MediaPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final media = controller.state.draft.media;
     if (media == null) {
+      final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
       return _PrincipalInteractiveSurface(
         semanticLabel: 'Adicionar mídia ao Agora',
         onPressed: onPick,
@@ -473,10 +501,10 @@ final class _MediaPreview extends StatelessWidget {
             children: [
               Icon(
                 Icons.add_photo_alternate_outlined,
-                size: 42,
+                size: enlargedText ? 32 : 42,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(height: CoeloSpacing.space2),
+              SizedBox(height: enlargedText ? CoeloSpacing.space1 : CoeloSpacing.space2),
               Text(
                 'Adicionar mídia',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -1058,16 +1086,6 @@ final class _NowDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final actionRow = actions.length == 1
-        ? actions.single
-        : Row(
-            children: [
-              for (var index = 0; index < actions.length; index++) ...[
-                if (index > 0) const SizedBox(width: CoeloSpacing.space3),
-                Expanded(child: actions[index]),
-              ],
-            ],
-          );
     return Dialog(
       backgroundColor: colors.surface,
       surfaceTintColor: Colors.transparent,
@@ -1084,12 +1102,21 @@ final class _NowDialog extends StatelessWidget {
                 children: [
                   Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
                   IconButton(
+                    key: const Key('now-dialog-close'),
                     tooltip: 'Fechar',
-                    color: colors.error,
-                    hoverColor: colors.errorContainer,
-                    focusColor: colors.errorContainer,
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
+                    style: ButtonStyle(
+                      minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
+                      foregroundColor: WidgetStatePropertyAll(colors.error),
+                      backgroundColor: WidgetStateProperty.resolveWith(
+                        (states) =>
+                            states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.focused) ||
+                                states.contains(WidgetState.pressed)
+                            ? colors.errorContainer
+                            : colors.surface,
+                      ),
+                      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                    ),
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close_rounded),
                   ),
@@ -1098,7 +1125,41 @@ final class _NowDialog extends StatelessWidget {
               const SizedBox(height: CoeloSpacing.space4),
               Flexible(child: body),
               const SizedBox(height: CoeloSpacing.space5),
-              actionRow,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (actions.length == 1) {
+                    return SizedBox(width: double.infinity, child: actions.single);
+                  }
+                  final minimumActionWidth = actions.length == 2 ? 160.0 : 144.0;
+                  final requiredWidth =
+                      (minimumActionWidth * actions.length) +
+                      (CoeloSpacing.space3 * (actions.length - 1));
+                  final stackActions =
+                      constraints.maxWidth < requiredWidth ||
+                      MediaQuery.textScalerOf(context).scale(1) > 1.5;
+                  if (stackActions) {
+                    return Column(
+                      key: const Key('now-dialog-actions-stacked'),
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var index = 0; index < actions.length; index++) ...[
+                          if (index > 0) const SizedBox(height: CoeloSpacing.space2),
+                          SizedBox(width: double.infinity, child: actions[index]),
+                        ],
+                      ],
+                    );
+                  }
+                  return Row(
+                    key: const Key('now-dialog-actions-row'),
+                    children: [
+                      for (var index = 0; index < actions.length; index++) ...[
+                        if (index > 0) const SizedBox(width: CoeloSpacing.space3),
+                        Expanded(child: actions[index]),
+                      ],
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),

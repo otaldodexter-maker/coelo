@@ -45,6 +45,31 @@ void main() {
     });
   }
 
+  for (final size in <Size>[
+    const Size(375, 900),
+    const Size(768, 1024),
+    const Size(1024, 1000),
+    const Size(1440, 1000),
+  ]) {
+    testWidgets('suporta texto a 200% e reduced motion em ${size.width}', (tester) async {
+      await tester.binding.setSurfaceSize(size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2), disableAnimations: true),
+            child: PrincipalNowPublicationPage(repository: InMemoryNowPublicationRepository()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('seleciona mídia e abre ferramenta de texto', (tester) async {
     await pumpPage(tester, const Size(375, 900));
     await tester.tap(find.text('Adicionar mídia'));
@@ -55,6 +80,68 @@ void main() {
 
     expect(find.text('Texto sobre a mídia'), findsWidgets);
     expect(find.byKey(const Key('now-overlay-field')), findsOneWidget);
+  });
+
+  testWidgets('fechar publicação permanece na família semântica negativa', (tester) async {
+    await pumpPage(tester, const Size(768, 1024));
+
+    final button = tester.widget<IconButton>(find.byKey(const Key('now-publication-close')));
+    final colors = CoeloTheme.light.colorScheme;
+    expect(button.style?.backgroundColor?.resolve(<WidgetState>{}), colors.surface);
+    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.errorContainer);
+    expect(button.style?.foregroundColor?.resolve(<WidgetState>{}), colors.error);
+    expect(button.style?.foregroundColor?.resolve({WidgetState.focused}), colors.error);
+  });
+
+  testWidgets('dialog privado usa surface e empilha todas as ações quando não cabem', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: PrincipalNowPublicationPage(
+            repository: InMemoryNowPublicationRepository(),
+            audioPicker: () async => NowAudioDraft(
+              localId: 'audio-test',
+              name: 'audio.mp3',
+              mimeType: 'audio/mpeg',
+              bytes: Uint8List.fromList([1]),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Música'));
+    await tester.tap(find.byTooltip('Música'));
+    await tester.pumpAndSettle();
+
+    final dialog = tester.widget<Dialog>(find.byType(Dialog));
+    expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
+    final dismiss = tester.widget<IconButton>(find.byKey(const Key('now-dialog-close')));
+    expect(
+      dismiss.style?.backgroundColor?.resolve(<WidgetState>{}),
+      CoeloTheme.light.colorScheme.surface,
+    );
+    expect(
+      dismiss.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      CoeloTheme.light.colorScheme.errorContainer,
+    );
+    expect(
+      dismiss.style?.foregroundColor?.resolve(<WidgetState>{}),
+      CoeloTheme.light.colorScheme.error,
+    );
+    expect(
+      dismiss.style?.foregroundColor?.resolve({WidgetState.focused}),
+      CoeloTheme.light.colorScheme.error,
+    );
+    expect(find.byKey(const Key('now-dialog-actions-stacked')), findsOneWidget);
+    expect(find.byKey(const Key('now-dialog-actions-row')), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('agendamento aplica uma data futura sem date picker Material', (tester) async {
