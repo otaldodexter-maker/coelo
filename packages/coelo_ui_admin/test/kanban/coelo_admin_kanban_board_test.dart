@@ -115,6 +115,23 @@ void main() {
       }),
     );
   });
+
+  testWidgets('scrolls lane content when a leading control exceeds the available height', (
+    tester,
+  ) async {
+    await _pumpBoard(
+      tester,
+      width: 800,
+      height: 220,
+      leadingBuilder: (context, status) => status == _Status.todo
+          ? const SizedBox(height: 120, child: Text('Filtros da coluna'))
+          : null,
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Filtros da coluna'), findsOneWidget);
+    expect(find.text('Ticket 1'), findsOneWidget);
+  });
 }
 
 enum _Status { todo, doing, review, done }
@@ -125,6 +142,7 @@ Finder _laneFinder(_Status status) =>
 Future<void> _pumpBoard(
   WidgetTester tester, {
   required double width,
+  double height = 500,
   Widget Function(BuildContext context, String item)? itemBuilder,
   void Function(String item, _Status status)? onItemAccepted,
   _Status? selectedStatus,
@@ -133,7 +151,7 @@ Future<void> _pumpBoard(
   Widget? Function(BuildContext context, _Status status)? leadingBuilder,
 }) async {
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = Size(width, 600);
+  tester.view.physicalSize = Size(width, height + 100);
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
@@ -142,7 +160,7 @@ Future<void> _pumpBoard(
       home: Scaffold(
         body: SizedBox(
           width: width,
-          height: 500,
+          height: height,
           child: CoeloAdminKanbanBoard<String, _Status>(
             statuses: _Status.values,
             statusLabel: (status) => switch (status) {

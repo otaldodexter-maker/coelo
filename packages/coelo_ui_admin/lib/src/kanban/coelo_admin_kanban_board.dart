@@ -132,6 +132,7 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
 
   Widget _lane(BuildContext context, S status, double width) {
     final items = widget.itemsForStatus(status);
+    final leading = widget.leadingBuilder?.call(context, status);
     final colors = Theme.of(context).colorScheme;
     return DragTarget<T>(
       onAcceptWithDetails: (details) => widget.onItemAccepted(details.data, status),
@@ -184,28 +185,31 @@ final class _CoeloAdminKanbanBoardState<T extends Object, S>
                     ),
                   ),
                   const SizedBox(height: CoeloSpacing.space3),
-                  if (widget.leadingBuilder?.call(context, status) case final leading?) ...[
-                    leading,
-                    const SizedBox(height: CoeloSpacing.space3),
-                  ],
                   Expanded(
-                    child: items.isEmpty
-                        ? widget.emptyLaneBuilder?.call(context, status) ??
-                              Center(
+                    child: ListView.separated(
+                      padding: EdgeInsets.zero,
+                      itemCount: (leading == null ? 0 : 1) + (items.isEmpty ? 1 : items.length),
+                      separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
+                      itemBuilder: (context, index) {
+                        if (leading != null && index == 0) return leading;
+                        final itemIndex = index - (leading == null ? 0 : 1);
+                        if (items.isNotEmpty) {
+                          return widget.itemBuilder(context, items[itemIndex]);
+                        }
+                        return widget.emptyLaneBuilder?.call(context, status) ??
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(minHeight: CoeloSize.touchMin * 2),
+                              child: Center(
                                 child: Text(
                                   'Nenhum item',
                                   style: Theme.of(
                                     context,
                                   ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                                 ),
-                              )
-                        : ListView.separated(
-                            padding: EdgeInsets.zero,
-                            itemCount: items.length,
-                            separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
-                            itemBuilder: (context, index) =>
-                                widget.itemBuilder(context, items[index]),
-                          ),
+                              ),
+                            );
+                      },
+                    ),
                   ),
                 ],
               ),
