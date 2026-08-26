@@ -707,6 +707,27 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
               onPressed: reason.length >= 3 && reason.length <= 500
                   ? () => Navigator.of(dialogContext).pop(reason)
                   : null,
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.disabled)) return null;
+                  if (states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused) ||
+                      states.contains(WidgetState.pressed)) {
+                    return Theme.of(context).colorScheme.errorContainer;
+                  }
+                  return Theme.of(context).colorScheme.error;
+                }),
+                foregroundColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.disabled)) return null;
+                  if (states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused) ||
+                      states.contains(WidgetState.pressed)) {
+                    return Theme.of(context).colorScheme.error;
+                  }
+                  return Theme.of(context).colorScheme.onError;
+                }),
+                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+              ),
               child: const Text('Inativar aviso'),
             ),
           );

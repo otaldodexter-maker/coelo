@@ -102,10 +102,21 @@ void main() {
       'Conteúdo substituído por comunicado vigente.',
     );
     await tester.pump();
-    expect(
-      tester.widget<FilledButton>(find.byKey(const Key('notice-inactivate-confirm'))).onPressed,
-      isNotNull,
+    final enabledConfirm = tester.widget<FilledButton>(
+      find.byKey(const Key('notice-inactivate-confirm')),
     );
+    expect(enabledConfirm.onPressed, isNotNull);
+    final colors = Theme.of(
+      tester.element(find.byKey(const Key('notice-inactivate-confirm'))),
+    ).colorScheme;
+    expect(enabledConfirm.style?.backgroundColor?.resolve({}), colors.error);
+    expect(enabledConfirm.style?.foregroundColor?.resolve({}), colors.onError);
+    expect(
+      enabledConfirm.style?.backgroundColor?.resolve({WidgetState.hovered}),
+      colors.errorContainer,
+    );
+    expect(enabledConfirm.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.error);
+    expect(enabledConfirm.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
   });
 
   testWidgets('keeps Nova comunicação visible in empty and no-results states', (tester) async {

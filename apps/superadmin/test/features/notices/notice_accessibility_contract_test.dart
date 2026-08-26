@@ -126,6 +126,25 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('close action uses semantic error hover and focus states', (tester) async {
+      await _pumpPreview(
+        tester,
+        _notice(popupSize: NoticePopupSize.standard, hasOuterInset: true),
+        onClose: () {},
+      );
+
+      final close = tester.widget<IconButton>(find.byKey(const Key('notice-popup-close')));
+      final colors = Theme.of(
+        tester.element(find.byKey(const Key('notice-popup-close'))),
+      ).colorScheme;
+      expect(close.style?.foregroundColor?.resolve({}), colors.error);
+      for (final state in [WidgetState.hovered, WidgetState.focused]) {
+        expect(close.style?.backgroundColor?.resolve({state}), colors.errorContainer);
+        expect(close.style?.foregroundColor?.resolve({state}), colors.error);
+        expect(close.style?.overlayColor?.resolve({state}), Colors.transparent);
+      }
+    });
+
     testWidgets('dialog closes with Escape', (tester) async {
       await tester.pumpWidget(
         _app(
@@ -176,6 +195,7 @@ Future<void> _pumpPreview(
   NoticeTargetDevice device = NoticeTargetDevice.web,
   double textScale = 1,
   bool disableAnimations = false,
+  VoidCallback? onClose,
 }) async {
   await tester.pumpWidget(
     _app(
@@ -184,6 +204,7 @@ Future<void> _pumpPreview(
         device: device,
         checkboxChecked: false,
         onCheckboxChanged: null,
+        onClose: onClose,
       ),
       textScale: textScale,
       disableAnimations: disableAnimations,

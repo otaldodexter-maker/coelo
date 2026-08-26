@@ -793,6 +793,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       ),
       firstDate: DateTime(2020),
       lastDate: DateTime(2060),
+      selectionMode: CoeloDateSelectionMode.single,
       showQuickRanges: false,
     );
     if (mounted && selected != null) onChanged(selected.start);

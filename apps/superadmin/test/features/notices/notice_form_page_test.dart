@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,6 +41,25 @@ void main() {
     expect(find.byType(Card), findsNothing);
     expect(find.byKey(const Key('notice-metrics-summary')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uses the single-date mode for notice schedule fields', (tester) async {
+    await _pumpForm(tester, const Size(375, 812));
+
+    await tester.enterText(_fieldIn(const Key('notice-title')), 'Manutenção programada');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.enterText(_fieldIn(const Key('notice-message')), 'O serviço ficará indisponível.');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('notice-date-Data de início')));
+    await tester.pumpAndSettle();
+
+    final picker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
+    expect(picker.selectionMode, CoeloDateSelectionMode.single);
   });
 
   testWidgets('has no layout exception at mobile and desktop widths', (tester) async {

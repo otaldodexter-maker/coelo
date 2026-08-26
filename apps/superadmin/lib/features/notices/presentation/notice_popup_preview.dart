@@ -121,10 +121,21 @@ final class _PopupSurface extends StatelessWidget {
                   key: const Key('notice-popup-close'),
                   tooltip: notice.mandatory ? 'Sair da simulação' : 'Fechar aviso',
                   onPressed: onClose,
-                  style: IconButton.styleFrom(
-                    foregroundColor: colors.error,
-                    minimumSize: const Size.square(CoeloSize.touchMin),
-                  ),
+                  style:
+                      IconButton.styleFrom(
+                        foregroundColor: colors.error,
+                        minimumSize: const Size.square(CoeloSize.touchMin),
+                      ).copyWith(
+                        backgroundColor: WidgetStateProperty.resolveWith(
+                          (states) =>
+                              states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.focused) ||
+                                  states.contains(WidgetState.pressed)
+                              ? colors.errorContainer
+                              : Colors.transparent,
+                        ),
+                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                      ),
                   icon: const Icon(Icons.close_rounded),
                 ),
               ),
