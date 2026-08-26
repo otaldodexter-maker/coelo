@@ -26,8 +26,15 @@ final class CoeloAdminInteractiveCard extends StatefulWidget {
 }
 
 final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveCard> {
+  final FocusNode _focusNode = FocusNode(debugLabel: 'CoeloAdminInteractiveCard');
   bool _hovered = false;
   bool _focused = false;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +71,7 @@ final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveC
         borderRadius: radius,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
+          focusNode: _focusNode,
           onTap: widget.onPressed,
           onFocusChange: (value) => setState(() => _focused = value),
           borderRadius: radius,
