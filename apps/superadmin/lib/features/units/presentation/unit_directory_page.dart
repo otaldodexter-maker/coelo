@@ -255,6 +255,8 @@ final class _UnitDirectoryContentState extends State<_UnitDirectoryContent> {
           animation: widget.viewModel,
           builder: (context, child) {
             final showPagination = widget.viewModel.state == UnitDirectoryLoadState.success;
+            final showDirectoryControls =
+                widget.viewModel.state != UnitDirectoryLoadState.unauthorized;
             _scheduleFooterMeasurement(showPagination);
             final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
             return Stack(
@@ -269,37 +271,40 @@ final class _UnitDirectoryContentState extends State<_UnitDirectoryContent> {
                     horizontalPadding + footerInset,
                   ),
                   children: [
-                    UnitDirectoryToolbar(
-                      viewModel: widget.viewModel,
-                      activityController: widget.activityController,
-                      backendCommands: widget.backendCommands,
-                      requestIdFactory: widget.requestIdFactory,
-                      searchController: widget.searchController,
-                      display: widget.display,
-                      tableView: widget.tableView,
-                      onDisplayChanged: widget.onDisplayChanged,
-                      onTableViewChanged: widget.onTableViewChanged,
-                      onClearFilters: widget.onClearFilters,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
-                    SuperadminUnderlineTabs<_UnitStatusSegment>(
-                      key: const Key('unit-status-tabs'),
-                      tabs: const [
-                        SuperadminUnderlineTab(value: _UnitStatusSegment.all, label: 'Todos'),
-                        SuperadminUnderlineTab(value: _UnitStatusSegment.active, label: 'Ativos'),
-                        SuperadminUnderlineTab(
-                          value: _UnitStatusSegment.onboarding,
-                          label: 'Em Implantação',
-                        ),
-                        SuperadminUnderlineTab(
-                          value: _UnitStatusSegment.inactive,
-                          label: 'Inativos',
-                        ),
-                      ],
-                      selected: _segmentFor(widget.viewModel.query.statuses),
-                      onSelected: (segment) => widget.viewModel.setStatuses(_statusesFor(segment)),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
+                    if (showDirectoryControls) ...[
+                      UnitDirectoryToolbar(
+                        viewModel: widget.viewModel,
+                        activityController: widget.activityController,
+                        backendCommands: widget.backendCommands,
+                        requestIdFactory: widget.requestIdFactory,
+                        searchController: widget.searchController,
+                        display: widget.display,
+                        tableView: widget.tableView,
+                        onDisplayChanged: widget.onDisplayChanged,
+                        onTableViewChanged: widget.onTableViewChanged,
+                        onClearFilters: widget.onClearFilters,
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      SuperadminUnderlineTabs<_UnitStatusSegment>(
+                        key: const Key('unit-status-tabs'),
+                        tabs: const [
+                          SuperadminUnderlineTab(value: _UnitStatusSegment.all, label: 'Todos'),
+                          SuperadminUnderlineTab(value: _UnitStatusSegment.active, label: 'Ativos'),
+                          SuperadminUnderlineTab(
+                            value: _UnitStatusSegment.onboarding,
+                            label: 'Em Implantação',
+                          ),
+                          SuperadminUnderlineTab(
+                            value: _UnitStatusSegment.inactive,
+                            label: 'Inativos',
+                          ),
+                        ],
+                        selected: _segmentFor(widget.viewModel.query.statuses),
+                        onSelected: (segment) =>
+                            widget.viewModel.setStatuses(_statusesFor(segment)),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                    ],
                     _UnitDirectoryResults(
                       viewModel: widget.viewModel,
                       display: widget.display,
@@ -392,6 +397,7 @@ final class _UnitDirectoryResults extends StatelessWidget {
         if (viewModel.isLoading) const SizedBox(height: CoeloSpacing.space4),
         UnitDirectoryStates(
           viewModel: viewModel,
+          createAction: UnitCreateBanner(onPressed: onCreate),
           successContent: display == UnitDirectoryDisplay.table
               ? UnitDirectoryTable(
                   items: viewModel.page.items,
