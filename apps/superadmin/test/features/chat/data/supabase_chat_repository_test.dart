@@ -65,7 +65,7 @@ void main() {
 
     expect(await SupabaseChatRepository(client).fetchUnreadTotal(), 12);
     expect(captured!.url.path, endsWith('/rpc/chat_unread_total'));
-    expect(captured!.body, anyOf(isNull, isEmpty));
+    expect(jsonDecode(captured!.body), isNull);
   });
   test(
     'loads a thread and re-fetches the authorised full message after an idempotent send',
