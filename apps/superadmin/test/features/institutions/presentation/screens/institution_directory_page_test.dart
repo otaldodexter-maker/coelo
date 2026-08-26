@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_page.dart'
@@ -892,32 +891,7 @@ void main() {
     await gesture.removePointer();
   });
 
-  testWidgets('places the files action in the toolbar on compact layouts', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(375, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    final filesAction = find.byKey(const Key('institution-files-action'));
-    expect(filesAction, findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('institution-filter-toolbar')),
-        matching: filesAction,
-      ),
-      findsOneWidget,
-    );
-    final shell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
-    expect(shell.actions, isEmpty);
-    expect(shell.compactActions, isEmpty);
-    expect(find.byKey(const Key('institution-import-action')), findsNothing);
-    expect(find.byKey(const Key('institution-export-action')), findsNothing);
-  });
-
-  testWidgets('keeps view and file controls grouped at the responsive trailing edge', (
-    tester,
-  ) async {
+  testWidgets('keeps unavailable file actions hidden at every supported width', (tester) async {
     for (final width in [375.0, 1024.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -927,70 +901,14 @@ void main() {
 
       final actions = find.byKey(const Key('institution-toolbar-actions'));
       final view = find.byKey(const Key('institution-display-toggle'));
-      final files = find.byKey(const Key('institution-files-action'));
       expect(actions, findsOneWidget);
       expect(tester.getSize(view).height, CoeloSize.touchMin);
-      expect(tester.getTopRight(files).dx, lessThanOrEqualTo(width - CoeloSpacing.space4));
-      expect(tester.getTopLeft(files).dx, greaterThan(tester.getTopLeft(view).dx));
+      expect(tester.getTopRight(view).dx, lessThanOrEqualTo(width - CoeloSpacing.space4));
+      expect(find.byKey(const Key('institution-files-action')), findsNothing);
+      expect(find.text('Arquivos'), findsNothing);
+      expect(find.text('Importar'), findsNothing);
       expect(tester.takeException(), isNull, reason: 'toolbar width $width');
     }
-  });
-
-  testWidgets('keeps the compact files submenu inset on a narrowed desktop', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1320, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('institution-files-action')));
-    await tester.pumpAndSettle();
-    final menuItem = tester.getRect(find.widgetWithText(MenuItemButton, 'Importar'));
-    expect(menuItem.right, lessThanOrEqualTo(1320 - CoeloSpacing.space4));
-  });
-
-  testWidgets('keeps import progress in the notification center without blocking the page', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(1024, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('institution-files-action')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MenuItemButton, 'Importar'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-demo-file-picker')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-import-review')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('institution-import-confirm')));
-    await tester.pump();
-
-    expect(find.byType(SnackBar), findsNothing);
-    expect(find.byKey(const Key('superadmin-transient-notice')), findsOneWidget);
-
-    expect(find.byKey(const Key('institution-filter-toolbar')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('superadmin-notifications')));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('%'), findsOneWidget);
-    expect(find.text('instituicoes-julho.xlsx'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('superadmin-activity-close')));
-    await tester.pumpAndSettle();
-
-    await tester.pump(const Duration(milliseconds: 2400));
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('superadmin-notification-badge')),
-        matching: find.text('1'),
-      ),
-      findsOneWidget,
-    );
-
-    await tester.tap(find.byKey(const Key('superadmin-notifications')));
-    await tester.pumpAndSettle();
-    expect(find.text('100%'), findsOneWidget);
-    expect(find.text('24 importadas, 2 rejeitadas'), findsOneWidget);
   });
 
   testWidgets('uses one card column at 375 and multiple columns at 1440', (tester) async {
