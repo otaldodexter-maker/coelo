@@ -10,6 +10,7 @@ import '../features/activities/domain/activity_directory.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
+import '../features/assessments/assessment.dart';
 import '../features/auth/domain/reset_password_action.dart';
 import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
@@ -108,6 +109,7 @@ class SuperadminApp extends StatefulWidget {
   final InstitutionDirectoryRepository institutionDirectoryRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final ActivityDirectoryRepository activityDirectoryRepository;
+    this.assessmentRepository = const UnavailableAssessmentRepository(),
   final ActivityCommandRepository activityCommandRepository;
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
@@ -160,6 +162,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,
+  final AssessmentRepository assessmentRepository;
       accessProfileRepository: widget.accessProfileRepository,
       importRepository: widget.importRepository,
       inviteRepository: widget.inviteRepository,
@@ -235,3 +238,4 @@ class _SuperadminAppState extends State<SuperadminApp> {
     );
   }
 }
+      assessmentRepository: widget.assessmentRepository,
