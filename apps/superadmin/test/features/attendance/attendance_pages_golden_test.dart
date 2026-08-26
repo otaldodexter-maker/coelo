@@ -7,6 +7,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../support/fake_attendance_repository.dart';
 
 void main() {
   setUpAll(_loadGoldenFonts);
@@ -16,7 +17,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    final contextRepository = InMemoryAttendanceRepository.seeded();
+    final contextRepository = FakeAttendanceRepository.seeded();
     addTearDown(contextRepository.dispose);
     tester.view.physicalSize = const Size(375, 900);
     await tester.pumpWidget(
@@ -36,7 +37,7 @@ void main() {
       matchesGoldenFile('goldens/attendance_new_call_context_light_375.png'),
     );
 
-    final callRepository = InMemoryAttendanceRepository.seeded();
+    final callRepository = FakeAttendanceRepository.seeded();
     addTearDown(callRepository.dispose);
     tester.view.physicalSize = const Size(1440, 900);
     await tester.pumpWidget(
