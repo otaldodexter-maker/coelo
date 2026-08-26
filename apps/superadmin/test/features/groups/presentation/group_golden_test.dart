@@ -63,13 +63,7 @@ void main() {
     tester.view.physicalSize = const Size(375, 900);
     await tester.pumpWidget(
       _formApp(
-        GroupFormPage(
-          institutions: institutions,
-          repository: groups,
-          logout: _logout,
-          onCancel: () {},
-          onSaved: (_) {},
-        ),
+        GroupFormPage(repository: groups, logout: _logout, onCancel: () {}, onSaved: (_) {}),
         Brightness.light,
       ),
     );
@@ -83,7 +77,6 @@ void main() {
     await tester.pumpWidget(
       _formApp(
         GroupFormPage(
-          institutions: institutions,
           repository: groups,
           groupId: groups.records.first.id,
           logout: _logout,
@@ -366,9 +359,6 @@ final class _ScenarioRepository implements domain.GroupDirectoryRepository {
   final _Scenario scenario;
 
   @override
-  List<domain.GroupRecord> get records => const [];
-
-  @override
   String createId(String institutionId, String unitId, String name) =>
       throw UnsupportedError('Read-only golden scenario.');
 
@@ -391,7 +381,20 @@ final class _ScenarioRepository implements domain.GroupDirectoryRepository {
       };
 
   @override
-  domain.GroupRecord? findById(String id) => null;
+  Future<domain.GroupRecord?> findById(String id) async => null;
+
+  @override
+  Future<domain.GroupDirectoryFormContext> fetchFormContext({String? institutionId}) async =>
+      const domain.GroupDirectoryFormContext(institutions: [], units: []);
+
+  @override
+  Future<domain.GroupDirectoryExportResult> requestExport(domain.GroupDirectoryQuery query) async =>
+      throw UnsupportedError('Read-only golden scenario.');
+
+  @override
+  Future<domain.GroupDirectorySaveResult> saveComposition(
+    domain.GroupDirectorySaveRequest request,
+  ) async => throw UnsupportedError('Read-only golden scenario.');
 
   @override
   Future<void> upsert(domain.GroupRecord record) =>
