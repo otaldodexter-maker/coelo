@@ -14,8 +14,8 @@ final class UnitLocalEntry {
   final bool readOnly;
 }
 
-/// Unit form row management component with explicit create/search/link actions
-/// and pagination.
+/// Local-only prototype used by the Unit form. It deliberately owns no
+/// repository, authorization, or integration concern.
 final class UnitLocalManagementSection extends StatefulWidget {
   const UnitLocalManagementSection({
     required this.kind,
@@ -23,9 +23,7 @@ final class UnitLocalManagementSection extends StatefulWidget {
     this.inheritedEntries = const [],
     this.initialEntries = const [],
     this.onOpenCreateFlow,
-    this.onCreateProfessionalPerson,
     this.onOpenEditFlow,
-    this.onOpenSearchFlow,
     super.key,
   });
 
@@ -33,9 +31,7 @@ final class UnitLocalManagementSection extends StatefulWidget {
   final List<UnitLocalEntry> inheritedEntries;
   final List<UnitLocalEntry> initialEntries;
   final VoidCallback? onOpenCreateFlow;
-  final void Function(String initialPersonRole)? onCreateProfessionalPerson;
   final ValueChanged<String>? onOpenEditFlow;
-  final VoidCallback? onOpenSearchFlow;
   final VoidCallback onChanged;
 
   @override
@@ -44,10 +40,6 @@ final class UnitLocalManagementSection extends StatefulWidget {
 
 final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSection> {
   late final List<UnitLocalEntry> _entries = [...widget.initialEntries];
-
-  final TextEditingController _searchController = TextEditingController();
-  static const int _pageSize = 6;
-  int _page = 0;
 
   String get _title => switch (widget.kind) {
     UnitLocalManagementKind.administrators => 'Administradores da unidade',
@@ -61,7 +53,7 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
     UnitLocalManagementKind.administrators =>
       'Administradores herdados são somente leitura; inclusões manuais recebem acesso Owner.',
     UnitLocalManagementKind.people =>
-      'Cadastre, localize e organize pessoas e seus Perfis de Acesso neste fluxo de unidade.',
+      'Cadastre, localize e organize pessoas e seus Perfis de Acesso neste protótipo local.',
     UnitLocalManagementKind.invitations =>
       'Crie, reenvie ou revogue convites escopados visualmente a esta unidade.',
     UnitLocalManagementKind.groups =>
@@ -86,63 +78,6 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
     UnitLocalManagementKind.activities => 'unit-add-activity',
   };
 
-  String get _kindCode => switch (widget.kind) {
-    UnitLocalManagementKind.administrators => 'administrator',
-    UnitLocalManagementKind.people => 'person',
-    UnitLocalManagementKind.invitations => 'invite',
-    UnitLocalManagementKind.groups => 'group',
-    UnitLocalManagementKind.activities => 'activity',
-  };
-
-  bool get _supportsSearch => widget.kind != UnitLocalManagementKind.administrators;
-
-  List<UnitLocalEntry> get _filteredEntries {
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) {
-      return [..._entries];
-    }
-    return _entries.where((entry) {
-      return entry.name.toLowerCase().contains(query) || entry.detail.toLowerCase().contains(query);
-    }).toList();
-  }
-
-  int get _totalPages =>
-      _filteredEntries.isEmpty ? 1 : ((_filteredEntries.length - 1) / _pageSize).floor() + 1;
-
-  bool get _hasSearchAndPagination =>
-      _supportsSearch && (_entries.isNotEmpty || _searchController.text.isNotEmpty);
-
-  List<UnitLocalEntry> get _pagedEntries {
-    if (_filteredEntries.isEmpty) return const [];
-    final safePage = _page.clamp(0, _totalPages - 1);
-    if (safePage != _page) {
-      _page = safePage;
-    }
-    final start = _page * _pageSize;
-    final end = (start + _pageSize).clamp(0, _filteredEntries.length);
-    return _filteredEntries.sublist(start, end);
-  }
-
-  void _search() {
-    _page = 0;
-  }
-
-  void _clearSearch() {
-    if (_searchController.text.isEmpty) return;
-    _searchController.clear();
-    _page = 0;
-  }
-
-  void _nextPage() {
-    if (_page + 1 >= _totalPages) return;
-    _page++;
-  }
-
-  void _previousPage() {
-    if (_page <= 0) return;
-    _page--;
-  }
-
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -155,13 +90,15 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
         Text('Herdados da instituição', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space3),
         if (widget.inheritedEntries.isEmpty)
-          const _EmptyMessage('Nenhum administrador herdado nesta sessão.')
+          const _EmptyMessage('Nenhum administrador herdado nesta sessão local.')
         else
           _entryTable(widget.inheritedEntries, inherited: true),
         const SizedBox(height: CoeloSpacing.space5),
         Text('Incluídos manualmente', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space3),
       ],
+      _entryTable(_entries),
+      const SizedBox(height: CoeloSpacing.space4),
       Wrap(
         spacing: CoeloSpacing.space2,
         runSpacing: CoeloSpacing.space2,
@@ -185,48 +122,15 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
               icon: const Icon(Icons.upload_file_rounded),
               label: const Text('Importar CSV/XLSX'),
             ),
+            TextButton.icon(
+              key: const Key('unit-export-people'),
+              onPressed: _exportPeople,
+              icon: const Icon(Icons.download_rounded),
+              label: const Text('Exportar CSV/XLSX'),
+            ),
           ],
         ],
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      if (_hasSearchAndPagination) ...[
-        CoeloFormTextField(
-          fieldKey: Key('unit-$_kindCode-search'),
-          controller: _searchController,
-          onChanged: (_) => setState(_search),
-          labelText: 'Buscar por nome',
-          prefixIcon: Icons.search_rounded,
-        ),
-        const SizedBox(height: CoeloSpacing.space3),
-        if (_filteredEntries.length > _pageSize)
-          Row(
-            children: [
-              IconButton(
-                onPressed: _page == 0 ? null : () => setState(_previousPage),
-                icon: const Icon(Icons.chevron_left_rounded),
-              ),
-              const SizedBox(width: CoeloSpacing.space2),
-              Text('Página ${_page + 1} de $_totalPages'),
-              const SizedBox(width: CoeloSpacing.space2),
-              IconButton(
-                onPressed: _page + 1 >= _totalPages ? null : () => setState(_nextPage),
-                icon: const Icon(Icons.chevron_right_rounded),
-              ),
-              if (_searchController.text.isNotEmpty)
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => setState(_clearSearch),
-                      child: const Text('Limpar busca'),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-      ],
-      const SizedBox(height: CoeloSpacing.space4),
-      _entryTable(_supportsSearch ? _pagedEntries : _entries),
     ],
   );
 
@@ -327,35 +231,19 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
     UnitLocalManagementKind.groups => Icons.groups_outlined,
     UnitLocalManagementKind.activities => Icons.local_activity_outlined,
   };
+
   Future<void> _add() async {
-    if (_requiresExternalOwnership) {
-      widget.onOpenCreateFlow?.call();
+    if (widget.onOpenCreateFlow case final openFlow?) {
+      openFlow();
       return;
     }
-    if (widget.onOpenCreateFlow case final openFlow?) {
-      if (widget.kind != UnitLocalManagementKind.people ||
-          widget.onCreateProfessionalPerson == null) {
-        openFlow();
-        return;
-      }
-    }
-
-    final result = await _showEntryDialog(
-      context,
-      kind: widget.kind,
-      onCreateProfessionalPerson: widget.onCreateProfessionalPerson,
-    );
-    if (result == null || !mounted) return;
+    final result = await _showEntryDialog(context, kind: widget.kind);
+    if (result == null) return;
     setState(() => _entries.add(result));
     widget.onChanged();
   }
 
   Future<void> _edit(int index) async {
-    if (_requiresExternalOwnership) {
-      final entry = _entries[index];
-      widget.onOpenEditFlow?.call(entry.id ?? entry.name);
-      return;
-    }
     if (widget.onOpenEditFlow case final openFlow?) {
       openFlow(_entries[index].id ?? _entries[index].name);
       return;
@@ -365,25 +253,25 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
   }
 
   void _update(int index, UnitLocalEntry value) {
-    if (_requiresExternalOwnership) return;
     setState(() => _entries[index] = value);
     widget.onChanged();
   }
 
   void _remove(int index) {
-    if (_requiresExternalOwnership) return;
     setState(() => _entries.removeAt(index));
     widget.onChanged();
   }
 
-  void _searchPerson() => widget.onOpenSearchFlow?.call();
-
-  bool get _requiresExternalOwnership => switch (widget.kind) {
-    UnitLocalManagementKind.people ||
-    UnitLocalManagementKind.groups ||
-    UnitLocalManagementKind.activities => true,
-    _ => false,
-  };
+  Future<void> _searchPerson() async {
+    final result = await _showEntryDialog(
+      context,
+      kind: UnitLocalManagementKind.people,
+      search: true,
+    );
+    if (result == null) return;
+    setState(() => _entries.add(result));
+    widget.onChanged();
+  }
 
   Future<void> _showImportPreview() => showDialog<void>(
     context: context,
@@ -391,13 +279,19 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
     builder: (dialogContext) => CoeloAdminDialogShell(
       dialogKey: const Key('unit-import-preview'),
       title: 'Importar pessoas',
-      body: const Text('Prévia da importação em CSV/XLSX e vínculos antes da confirmação.'),
+      body: const Text(
+        'Demonstração local: CSV e XLSX exibiriam aqui a prévia, os vínculos e os Perfis de Acesso antes da confirmação.',
+      ),
       primaryAction: FilledButton(
         onPressed: () => Navigator.of(dialogContext).pop(),
         child: const Text('Entendi'),
       ),
     ),
   );
+
+  void _exportPeople() => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(const SnackBar(content: Text('Exportação demonstrativa preparada localmente.')));
 }
 
 final class _EmptyMessage extends StatelessWidget {
@@ -416,211 +310,36 @@ Future<UnitLocalEntry?> _showEntryDialog(
   required UnitLocalManagementKind kind,
   UnitLocalEntry? initial,
   bool search = false,
-  void Function(String initialPersonRole)? onCreateProfessionalPerson,
 }) => showDialog<UnitLocalEntry>(
   context: context,
   barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-  builder: (context) => _UnitLocalEntryDialog(
-    kind: kind,
-    initial: initial,
-    search: search,
-    onCreateProfessionalPerson: onCreateProfessionalPerson,
-  ),
+  builder: (context) => _UnitLocalEntryDialog(kind: kind, initial: initial, search: search),
 );
 
 final class _UnitLocalEntryDialog extends StatefulWidget {
-  const _UnitLocalEntryDialog({
-    required this.kind,
-    required this.initial,
-    required this.search,
-    this.onCreateProfessionalPerson,
-  });
+  const _UnitLocalEntryDialog({required this.kind, required this.initial, required this.search});
 
   final UnitLocalManagementKind kind;
   final UnitLocalEntry? initial;
   final bool search;
-  final void Function(String initialPersonRole)? onCreateProfessionalPerson;
 
   @override
   State<_UnitLocalEntryDialog> createState() => _UnitLocalEntryDialogState();
 }
 
-enum _UnitPeopleRegistrationMode { family, professional, professionalWithFamily }
-
 final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
   late final TextEditingController _name = TextEditingController(text: widget.initial?.name);
-  final TextEditingController _professionalIdentifierController = TextEditingController();
-  final List<TextEditingController> _guardianControllers = [];
-  final List<TextEditingController> _guardianSearchControllers = [];
-  final List<bool> _guardianAlreadyRegistered = [];
-  final List<TextEditingController> _childrenControllers = [];
-  final List<int> _childrenResponsibleIndexes = [];
-  int _guardianCount = 1;
-  int _childrenCount = 1;
-  int _activeGuardianStep = 0;
-  _UnitPeopleRegistrationMode _registrationMode = _UnitPeopleRegistrationMode.family;
+  final TextEditingController _guardians = TextEditingController();
+  final TextEditingController _children = TextEditingController();
+  String _registrationType = 'Nova família';
   String _profile = 'Responsável';
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.kind == UnitLocalManagementKind.people && !widget.search) {
-      _setRegistrationMode(_registrationMode);
-      if (widget.initial != null) {
-        _name.text = widget.initial!.name;
-      }
-    }
-  }
 
   @override
   void dispose() {
     _name.dispose();
-    _professionalIdentifierController.dispose();
-    for (final controller in _guardianControllers) {
-      controller.dispose();
-    }
-    for (final controller in _childrenControllers) {
-      controller.dispose();
-    }
-    for (final controller in _guardianSearchControllers) {
-      controller.dispose();
-    }
+    _guardians.dispose();
+    _children.dispose();
     super.dispose();
-  }
-
-  bool get _isFamilyRegistration =>
-      widget.kind == UnitLocalManagementKind.people &&
-      (_registrationMode == _UnitPeopleRegistrationMode.family ||
-          _registrationMode == _UnitPeopleRegistrationMode.professionalWithFamily);
-
-  bool get _isProfessionalRegistration =>
-      widget.kind == UnitLocalManagementKind.people &&
-      _registrationMode == _UnitPeopleRegistrationMode.professional;
-
-  bool get _isProfessionalAndFamilyRegistration =>
-      widget.kind == UnitLocalManagementKind.people &&
-      _registrationMode == _UnitPeopleRegistrationMode.professionalWithFamily;
-
-  bool get _guardianCanAdvance {
-    if (!_isFamilyRegistration) return true;
-    final index = _activeGuardianStep;
-    if (index < 0 || index >= _guardianCount) return false;
-    if (_guardianAlreadyRegistered[index]) {
-      return _guardianSearchControllers[index].text.trim().isNotEmpty;
-    }
-    return _guardianControllers[index].text.trim().isNotEmpty;
-  }
-
-  bool get _familyComplete {
-    return _activeGuardianStep >= _guardianCount - 1 &&
-        _guardianCanAdvance &&
-        _guardianNames.length == _guardianCount &&
-        _childrenControllers.length == _childrenCount &&
-        _childrenResponsibleIndexes.length == _childrenCount &&
-        _childrenNames.length == _childrenCount;
-  }
-
-  bool get _professionalComplete =>
-      _professionalName.isNotEmpty && _professionalIdentifierController.text.trim().isNotEmpty;
-
-  void _setRegistrationMode(_UnitPeopleRegistrationMode value) {
-    setState(() {
-      _registrationMode = value;
-      _activeGuardianStep = 0;
-      if (_isFamilyRegistration) {
-        _guardianCount = 1;
-        _childrenCount = 1;
-        _professionalIdentifierController.clear();
-        _profile = _registrationMode == _UnitPeopleRegistrationMode.family
-            ? 'Responsável'
-            : 'Profissional e responsável';
-        _syncGuardianEntries();
-        _syncChildrenEntries();
-        _syncChildrenResponsibleIndexes();
-      } else {
-        _clearFamilyCollections();
-        _guardianCount = 0;
-        _childrenCount = 0;
-        _profile = 'Profissional';
-      }
-    });
-  }
-
-  void _clearFamilyCollections() {
-    for (final controller in _guardianControllers) {
-      controller.dispose();
-    }
-    for (final controller in _guardianSearchControllers) {
-      controller.dispose();
-    }
-    for (final controller in _childrenControllers) {
-      controller.dispose();
-    }
-    _guardianControllers.clear();
-    _guardianSearchControllers.clear();
-    _guardianAlreadyRegistered.clear();
-    _childrenControllers.clear();
-    _childrenResponsibleIndexes.clear();
-  }
-
-  void _updateGuardianCount(int value) {
-    setState(() {
-      _guardianCount = value;
-      _activeGuardianStep = 0;
-      _syncGuardianEntries();
-      _syncChildrenResponsibleIndexes();
-    });
-  }
-
-  void _updateChildrenCount(int value) {
-    setState(() {
-      _childrenCount = value;
-      _syncChildrenEntries();
-      _syncChildrenResponsibleIndexes();
-    });
-  }
-
-  void _advanceGuardianStep() {
-    if (!_guardianCanAdvance) return;
-    if (_activeGuardianStep < _guardianCount - 1) {
-      _activeGuardianStep++;
-    }
-  }
-
-  void _syncGuardianEntries() {
-    while (_guardianControllers.length < _guardianCount) {
-      _guardianControllers.add(TextEditingController());
-      _guardianSearchControllers.add(TextEditingController());
-      _guardianAlreadyRegistered.add(false);
-    }
-    while (_guardianControllers.length > _guardianCount) {
-      final index = _guardianControllers.length - 1;
-      _guardianControllers.removeAt(index).dispose();
-      _guardianSearchControllers.removeAt(index).dispose();
-      _guardianAlreadyRegistered.removeAt(index);
-    }
-  }
-
-  void _syncChildrenEntries() {
-    while (_childrenControllers.length < _childrenCount) {
-      _childrenControllers.add(TextEditingController());
-    }
-    while (_childrenControllers.length > _childrenCount) {
-      _childrenControllers.removeLast().dispose();
-    }
-  }
-
-  void _syncChildrenResponsibleIndexes() {
-    while (_childrenResponsibleIndexes.length < _childrenCount) {
-      _childrenResponsibleIndexes.add(0);
-    }
-    while (_childrenResponsibleIndexes.length > _childrenCount) {
-      _childrenResponsibleIndexes.removeLast();
-    }
-    for (var i = 0; i < _childrenResponsibleIndexes.length; i++) {
-      final maxGuardian = (_guardianCount - 1).clamp(0, 5);
-      _childrenResponsibleIndexes[i] = _childrenResponsibleIndexes[i].clamp(0, maxGuardian);
-    }
   }
 
   @override
@@ -634,99 +353,27 @@ final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
           CoeloAdminSingleSelectField<String>(
             key: const Key('unit-person-registration-type'),
             label: 'Tipo de cadastro',
-            value: switch (_registrationMode) {
-              _UnitPeopleRegistrationMode.family => 'Nova família',
-              _UnitPeopleRegistrationMode.professional => 'Profissional',
-              _UnitPeopleRegistrationMode.professionalWithFamily => 'Profissional e responsável',
-            },
+            value: _registrationType,
             options: const ['Nova família', 'Profissional', 'Profissional e responsável'],
             optionLabel: (value) => value,
-            onChanged: (value) => _setRegistrationMode(switch (value) {
-              'Profissional' => _UnitPeopleRegistrationMode.professional,
-              'Profissional e responsável' => _UnitPeopleRegistrationMode.professionalWithFamily,
-              _ => _UnitPeopleRegistrationMode.family,
-            }),
+            onChanged: (value) => setState(() => _registrationType = value),
             prefixIcon: Icons.account_tree_outlined,
           ),
           const SizedBox(height: CoeloSpacing.space4),
-          if (_isFamilyRegistration) ...[
-            if (_isProfessionalAndFamilyRegistration) ...[
-              CoeloFormTextField(
-                fieldKey: const Key('unit-professional-name'),
-                controller: _name,
-                labelText: 'Nome do profissional',
-                prefixIcon: Icons.badge_outlined,
-              ),
-              const SizedBox(height: CoeloSpacing.space2),
-              CoeloFormTextField(
-                fieldKey: const Key('unit-professional-identifier'),
-                controller: _professionalIdentifierController,
-                labelText: '@, CPF, e-mail ou celular',
-                prefixIcon: Icons.contact_mail_rounded,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-            ],
-            CoeloAdminSingleSelectField<int>(
-              key: const Key('unit-family-guardians-count'),
-              label: 'Quantos responsáveis',
-              value: _guardianCount,
-              options: const [1, 2, 3, 4, 5, 6],
-              optionLabel: (value) => value.toString(),
-              onChanged: _updateGuardianCount,
-              prefixIcon: Icons.groups_2_rounded,
+          if (_registrationType == 'Nova família') ...[
+            CoeloFormTextField(
+              fieldKey: const Key('unit-family-guardians'),
+              controller: _guardians,
+              labelText: 'Responsáveis',
+              prefixIcon: Icons.family_restroom_rounded,
             ),
             const SizedBox(height: CoeloSpacing.space4),
-            Text(
-              'Responsável ${_activeGuardianStep + 1} de $_guardianCount',
-              style: Theme.of(context).textTheme.titleSmall,
+            CoeloFormTextField(
+              fieldKey: const Key('unit-family-children'),
+              controller: _children,
+              labelText: 'Crianças',
+              prefixIcon: Icons.child_care_rounded,
             ),
-            const SizedBox(height: CoeloSpacing.space2),
-            _responsibleInput(index: _activeGuardianStep),
-            const SizedBox(height: CoeloSpacing.space2),
-            if (_activeGuardianStep < _guardianCount - 1)
-              FilledButton(
-                key: const Key('unit-family-add-next-guardian'),
-                onPressed: _guardianCanAdvance ? () => setState(_advanceGuardianStep) : null,
-                child: Text(
-                  _activeGuardianStep == _guardianCount - 1
-                      ? 'Concluir responsáveis'
-                      : 'Salvar e próximo responsável',
-                ),
-              ),
-            if (_activeGuardianStep >= _guardianCount - 1) ...[
-              const SizedBox(height: CoeloSpacing.space4),
-              CoeloAdminSingleSelectField<int>(
-                key: const Key('unit-family-children-count'),
-                label: 'Quantas crianças',
-                value: _childrenCount,
-                options: const [1, 2, 3, 4, 5, 6],
-                optionLabel: (value) => value.toString(),
-                onChanged: _updateChildrenCount,
-                prefixIcon: Icons.child_care_rounded,
-              ),
-              const SizedBox(height: CoeloSpacing.space4),
-              Text('Crianças e vínculo', style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: CoeloSpacing.space3),
-              for (var index = 0; index < _childrenCount; index++) ...[
-                CoeloFormTextField(
-                  fieldKey: Key('unit-family-child-$index'),
-                  controller: _childrenControllers[index],
-                  labelText: 'Criança ${index + 1}',
-                  prefixIcon: Icons.child_care_rounded,
-                ),
-                const SizedBox(height: CoeloSpacing.space2),
-                CoeloAdminSingleSelectField<int>(
-                  key: Key('unit-family-child-responsavel-$index'),
-                  label: 'Responsável vinculado',
-                  value: _childrenResponsibleIndexes[index],
-                  options: List<int>.generate(_guardianCount, (guardianIndex) => guardianIndex),
-                  optionLabel: (value) => 'Responsável ${value + 1}',
-                  onChanged: (value) => setState(() => _childrenResponsibleIndexes[index] = value),
-                  prefixIcon: Icons.badge_outlined,
-                ),
-                const SizedBox(height: CoeloSpacing.space4),
-              ],
-            ],
           ] else ...[
             CoeloFormTextField(
               fieldKey: const Key('unit-local-name'),
@@ -734,15 +381,17 @@ final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
               labelText: 'Nome',
               prefixIcon: _dialogIcon,
             ),
-            const SizedBox(height: CoeloSpacing.space2),
-            CoeloFormTextField(
-              fieldKey: const Key('unit-local-professional-identifier'),
-              controller: _professionalIdentifierController,
-              labelText: '@, CPF, e-mail ou celular',
-              prefixIcon: Icons.contact_mail_rounded,
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
+            if (_registrationType == 'Profissional e responsável') ...[
+              const SizedBox(height: CoeloSpacing.space4),
+              CoeloFormTextField(
+                fieldKey: const Key('unit-family-children'),
+                controller: _children,
+                labelText: 'Crianças vinculadas',
+                prefixIcon: Icons.child_care_rounded,
+              ),
+            ],
           ],
+          const SizedBox(height: CoeloSpacing.space4),
           CoeloAdminSingleSelectField<String>(
             label: 'Perfil de Acesso',
             value: _profile,
@@ -769,14 +418,16 @@ final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
       onPressed: () {
         final name = _entryName;
         if (name.isEmpty || !_hasRequiredPeopleLinks) return;
-        if (widget.kind == UnitLocalManagementKind.people &&
-            (_isProfessionalRegistration || _isProfessionalAndFamilyRegistration)) {
-          if (widget.onCreateProfessionalPerson != null) {
-            widget.onCreateProfessionalPerson!(_resolvedPersonRole);
-            Navigator.of(context).pop();
-            return;
-          }
-          Navigator.of(context).pop(UnitLocalEntry(name: name, detail: _detail));
+        if (widget.search) {
+          final existing = _existingFakeUser(name);
+          Navigator.of(context).pop(
+            UnitLocalEntry(
+              name: existing ? 'Usuário encontrado' : 'Novo usuário',
+              detail: existing
+                  ? '${_maskIdentifier(name)} · convite local pendente'
+                  : '${_maskIdentifier(name)} · cadastro local e convite pendentes',
+            ),
+          );
           return;
         }
         Navigator.of(context).pop(UnitLocalEntry(name: name, detail: _detail));
@@ -785,9 +436,7 @@ final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
         widget.search
             ? 'Enviar convite'
             : widget.initial == null
-            ? ((_isProfessionalRegistration || _isProfessionalAndFamilyRegistration)
-                  ? 'Ir para cadastro de profissional'
-                  : 'Adicionar')
+            ? 'Adicionar'
             : 'Salvar',
       ),
     ),
@@ -812,13 +461,12 @@ final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
   String get _detail {
     return switch (widget.kind) {
       UnitLocalManagementKind.administrators => 'Owner · inclusão manual',
-      UnitLocalManagementKind.people => switch (_registrationMode) {
-        _UnitPeopleRegistrationMode.family =>
-          'Família -> Responsável -> Crianças: $_childrenWithResponsibleSummary',
-        _UnitPeopleRegistrationMode.professionalWithFamily =>
-          'Profissional: $_professionalName · Responsáveis: ${_guardianNames.join(', ')} · Perfil: $_profile',
-        _UnitPeopleRegistrationMode.professional =>
-          'Profissional: $_professionalName · Perfil: $_profile',
+      UnitLocalManagementKind.people => switch (_registrationType) {
+        'Nova família' =>
+          'Família · Responsável ↔ criança · ${_children.text.trim()} · Perfil de Acesso · $_profile',
+        'Profissional e responsável' =>
+          'Profissional e responsável · vínculo com ${_children.text.trim()} · Perfil de Acesso · $_profile',
+        _ => 'Profissional · Perfil de Acesso · $_profile',
       },
       UnitLocalManagementKind.invitations => 'Enviado',
       UnitLocalManagementKind.groups => 'Turma desta unidade',
@@ -826,117 +474,45 @@ final class _UnitLocalEntryDialogState extends State<_UnitLocalEntryDialog> {
     };
   }
 
-  String get _entryName {
-    if (widget.kind != UnitLocalManagementKind.people || widget.search) {
-      return _name.text.trim();
-    }
-
-    return switch (_registrationMode) {
-      _UnitPeopleRegistrationMode.family =>
-        _guardianNames.isNotEmpty ? _guardianNames.first : 'Nova família',
-      _UnitPeopleRegistrationMode.professionalWithFamily => _professionalName,
-      _UnitPeopleRegistrationMode.professional => _professionalName,
-    };
-  }
+  String get _entryName =>
+      widget.kind == UnitLocalManagementKind.people &&
+          !widget.search &&
+          _registrationType == 'Nova família'
+      ? _guardians.text.trim()
+      : _name.text.trim();
 
   bool get _hasRequiredPeopleLinks =>
       widget.kind != UnitLocalManagementKind.people ||
       widget.search ||
-      (_isFamilyRegistration && _familyComplete) ||
-      (_isProfessionalRegistration && _professionalComplete) ||
-      (_isProfessionalAndFamilyRegistration && _professionalComplete && _familyComplete);
+      _registrationType == 'Profissional' ||
+      _children.text.trim().isNotEmpty;
+}
 
-  String get _resolvedPersonRole {
-    if (_isProfessionalRegistration || _isProfessionalAndFamilyRegistration) {
-      return 'educator';
-    }
-    if (_profile == 'Responsável') {
-      return 'caregiver';
-    }
-    return 'educator';
+bool _existingFakeUser(String value) {
+  final normalized = value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9@]'), '');
+  return normalized == '@ana' ||
+      normalized == 'ana@coelome' ||
+      normalized == '11999990000' ||
+      normalized == '12345678909';
+}
+
+String _maskIdentifier(String value) {
+  final normalized = value.trim();
+  if (normalized.startsWith('@')) {
+    return normalized.length <= 2 ? '@•••' : '@${normalized[1]}•••';
   }
-
-  Widget _responsibleInput({required int index}) {
-    if (index < 0 || index >= _guardianControllers.length) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Responsável ${index + 1}', style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: CoeloSpacing.space2),
-        Row(
-          children: [
-            Expanded(
-              child: CoeloFormTextField(
-                key: Key('unit-family-guardian-$index'),
-                controller: _guardianControllers[index],
-                labelText: 'Nome do responsável ${index + 1}',
-                prefixIcon: Icons.family_restroom_rounded,
-              ),
-            ),
-            const SizedBox(width: CoeloSpacing.space2),
-            Switch.adaptive(
-              key: Key('unit-family-guardian-existing-switch-$index'),
-              value: _guardianAlreadyRegistered[index],
-              onChanged: (value) => setState(() {
-                _guardianAlreadyRegistered[index] = value;
-                if (!value) {
-                  _guardianSearchControllers[index].clear();
-                }
-              }),
-            ),
-            const SizedBox(width: CoeloSpacing.space1),
-            Text('Responsável já cadastrado?', style: Theme.of(context).textTheme.labelSmall),
-          ],
-        ),
-        if (_guardianAlreadyRegistered[index]) ...[
-          const SizedBox(height: CoeloSpacing.space2),
-          CoeloFormTextField(
-            key: Key('unit-family-guardian-existing-$index'),
-            controller: _guardianSearchControllers[index],
-            labelText: 'Buscar por @, CPF, e-mail ou celular',
-            prefixIcon: Icons.search_rounded,
-          ),
-        ],
-      ],
-    );
+  if (normalized.contains('@')) {
+    final parts = normalized.split('@');
+    final local = parts.first;
+    final domain = parts.length > 1 ? parts.last : '';
+    return '${local.isEmpty ? '•' : local[0]}•••@${domain.isEmpty ? '•••' : domain}';
   }
-
-  String get _professionalName => _name.text.trim();
-
-  List<String> get _guardianNames => [
-    for (var index = 0; index < _guardianControllers.length; index++)
-      if (_guardianAlreadyRegistered[index])
-        _guardianSearchControllers[index].text.trim()
-      else
-        _guardianControllers[index].text.trim(),
-  ].where((value) => value.isNotEmpty).toList(growable: false);
-
-  List<String> get _childrenNames => _childrenControllers
-      .map((controller) => controller.text.trim())
-      .where((value) => value.isNotEmpty)
-      .toList(growable: false);
-
-  String get _childrenWithResponsibleSummary {
-    if (_childrenControllers.isEmpty) {
-      return 'nenhum';
-    }
-    return [
-      for (var index = 0; index < _childrenControllers.length; index++)
-        '${_childrenControllers[index].text.trim().isEmpty ? 'Criança ${index + 1}' : _childrenControllers[index].text.trim()} -> ${_guardianNameForLink(index)}',
-    ].join('; ');
+  final digits = normalized.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 11) {
+    return '${digits.substring(0, 3)}.•••.•••-${digits.substring(9)}';
   }
-
-  String _guardianNameForLink(int childIndex) {
-    if (_childrenResponsibleIndexes.isEmpty || childIndex >= _childrenResponsibleIndexes.length) {
-      return 'Responsável não informado';
-    }
-    final guardianIndex = _childrenResponsibleIndexes[childIndex];
-    if (guardianIndex >= _guardianNames.length) {
-      return 'Responsável ${guardianIndex + 1}';
-    }
-    return _guardianNames[guardianIndex];
+  if (digits.length >= 8) {
+    return '(${digits.substring(0, 2)}) •••••-${digits.substring(digits.length - 4)}';
   }
+  return '••••••';
 }

@@ -1,10 +1,8 @@
-import 'dart:typed_data';
-
 import 'dart:async';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
-import 'package:coelo_superadmin/features/units/domain/unit_backend_commands.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_navigation.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_page.dart';
@@ -17,79 +15,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('handle change uses the canonical administrative dialog shell', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1024, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: UnitFormPage(
-          repository: repository,
-          backendCommands: _UnitBackendCommandsStub(),
-          unitId: repository.records.first.id,
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onSaved: (_) {},
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Hierarquia').first);
-    await tester.pumpAndSettle();
-    await _tapVisible(tester, find.byKey(const Key('unit-handle-change')));
-
-    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
-    expect(find.byType(AlertDialog), findsNothing);
-    final dialog = tester.widget<Dialog>(find.byType(Dialog));
-    expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
-    expect(dialog.surfaceTintColor, Colors.transparent);
-  });
-
-  testWidgets('institution transfer starts in the canonical selection dialog', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(1024, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: UnitFormPage(
-          repository: repository,
-          backendCommands: _UnitBackendCommandsStub(),
-          unitId: repository.records.first.id,
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onSaved: (_) {},
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Hierarquia').first);
-    await tester.pumpAndSettle();
-    await _tapVisible(tester, find.byKey(const Key('unit-transfer-institution')));
-
-    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
-    expect(find.byType(SimpleDialog), findsNothing);
-    expect(find.byKey(const Key('unit-transfer-destination-field')), findsOneWidget);
-    final continueAction = tester.widget<FilledButton>(
-      find.byKey(const Key('unit-transfer-destination-continue')),
-    );
-    expect(continueAction.onPressed, isNull);
-  });
-
-  testWidgets('uses the requested eleven sections and the shared form foundations', (tester) async {
+  testWidgets('uses the requested ten sections and the shared form foundations', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -108,7 +43,6 @@ void main() {
       'Turmas',
       'Atividades',
       'Plano',
-      'Sobre do perfil',
       'Revisão',
     ]) {
       expect(find.text(label), findsWidgets);
@@ -123,12 +57,13 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -156,14 +91,14 @@ void main() {
   testWidgets('restores inherited identity and plan summaries after customization', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
-    final institution = repository.institutionSource.records.first;
+    final institutions = FakeInstitutionDirectoryRepository();
+    final institution = institutions.records.first;
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: repository,
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -193,12 +128,13 @@ void main() {
   testWidgets('keeps administrators and people changes local to the unit form', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -221,50 +157,97 @@ void main() {
 
     await _tapVisible(tester, find.byKey(const Key('step-pessoas')));
     expect(find.byKey(const Key('unit-import-people')), findsOneWidget);
-    expect(find.byKey(const Key('unit-export-people')), findsNothing);
+    expect(find.byKey(const Key('unit-export-people')), findsOneWidget);
     expect(find.byKey(const Key('unit-search-person')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Tabela de Pessoas da unidade')), findsOneWidget);
   });
 
-  testWidgets('delegates person creation and lookup to the canonical people flows', (tester) async {
+  testWidgets('masks lookup identifiers and distinguishes existing from new users', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    var created = false;
-    var searched = false;
+    final institutions = FakeInstitutionDirectoryRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pessoas').first);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('unit-search-person')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('unit-local-name')), '@ana');
+    await tester.tap(find.byKey(const Key('unit-local-confirm')));
+    await tester.pumpAndSettle();
+    expect(find.text('Usuário encontrado'), findsOneWidget);
+    expect(find.text('@ana'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('unit-search-person')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('unit-local-name')), '99999999999');
+    await tester.tap(find.byKey(const Key('unit-local-confirm')));
+    await tester.pumpAndSettle();
+    expect(find.text('Novo usuário'), findsOneWidget);
+    expect(find.text('99999999999'), findsNothing);
+  });
+
+  testWidgets('registers a linked family and exposes professional registration modes', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
-          onCreatePerson: (_, _) => created = true,
-          onSearchPerson: (_, _) => searched = true,
         ),
       ),
     );
     await tester.pumpAndSettle();
     await _tapVisible(tester, find.byKey(const Key('step-pessoas')));
-
     await tester.tap(find.byKey(const Key('unit-add-person')));
-    expect(created, isTrue);
-    expect(find.byType(CoeloAdminDialogShell), findsNothing);
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('unit-search-person')));
-    expect(searched, isTrue);
-    expect(find.byType(CoeloAdminDialogShell), findsNothing);
+    await tester.tap(find.byKey(const Key('unit-person-registration-type')));
+    await tester.pumpAndSettle();
+    expect(find.text('Profissional'), findsOneWidget);
+    expect(find.text('Profissional e responsável'), findsOneWidget);
+    await tester.tap(find.text('Nova família').last);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('unit-family-guardians')), 'Ana Souza');
+    await tester.enterText(find.byKey(const Key('unit-family-children')), 'Lia Souza');
+    await tester.tap(find.byKey(const Key('unit-local-confirm')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ana Souza'), findsOneWidget);
+    expect(find.textContaining('Lia Souza'), findsOneWidget);
+    expect(find.textContaining('Responsável ↔ criança'), findsOneWidget);
   });
+
   testWidgets('opens the existing turma flow when a callback is supplied', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
     var opened = false;
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -282,12 +265,13 @@ void main() {
   testWidgets('exposes local invite, turma, and activity actions', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -309,13 +293,14 @@ void main() {
   testWidgets('cannot bypass required hierarchy validation from review', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
     UnitFormSaveResult? result;
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (value) => result = value,
@@ -339,12 +324,13 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -369,7 +355,8 @@ void main() {
   testWidgets('creates a unit with inherited plan and institution branding', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
     UnitFormSaveResult? result;
 
     await tester.pumpWidget(
@@ -403,8 +390,6 @@ void main() {
     expect(find.byKey(const Key('unit-plan-summary')), findsOneWidget);
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('unit-form-continue')));
-    await tester.pumpAndSettle();
     expect(find.byKey(const Key('unit-review-edit-profile')), findsOneWidget);
     expect(find.byKey(const Key('unit-review-edit-location')), findsOneWidget);
     expect(find.byKey(const Key('unit-review-edit-plan')), findsOneWidget);
@@ -421,13 +406,13 @@ void main() {
   testWidgets('uses the canonical advanced color picker for unit branding', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
-          identityMediaPicker: (_) async => Uint8List.fromList(const [1, 2, 3]),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -472,7 +457,8 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
     var cancelled = false;
 
     await tester.pumpWidget(
@@ -511,12 +497,13 @@ void main() {
   testWidgets('uses compact ten-step navigation on mobile', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -526,7 +513,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
-    expect(find.text('Etapa 1 de 11'), findsOneWidget);
+    expect(find.text('Etapa 1 de 10'), findsOneWidget);
     expect(find.text('Identidade'), findsWidgets);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     final formContext = tester.element(find.byKey(const Key('unit-form-scroll')));
@@ -537,6 +524,7 @@ void main() {
 
   testWidgets('keeps the 248 px rail and footer after it at 768 and 1024', (tester) async {
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     for (final width in [768.0, 1024.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -545,7 +533,7 @@ void main() {
           theme: CoeloTheme.light,
           home: UnitFormPage(
             key: ValueKey(width),
-            repository: FakeUnitDirectoryRepository(),
+            repository: FakeUnitDirectoryRepository(institutions),
             logout: () async => const LogoutResult.success(),
             onCancel: () {},
             onSaved: (_) {},
@@ -568,7 +556,8 @@ void main() {
   testWidgets('keeps edit actions inline on a wide layout', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final units = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final units = FakeUnitDirectoryRepository(institutions);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -599,6 +588,7 @@ void main() {
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
       for (final mode in [ThemeMode.light, ThemeMode.dark]) {
         tester.view.physicalSize = Size(width, 900);
+        final institutions = FakeInstitutionDirectoryRepository();
         await tester.pumpWidget(
           MaterialApp(
             theme: CoeloTheme.light,
@@ -609,7 +599,7 @@ void main() {
               child: child!,
             ),
             home: UnitFormPage(
-              repository: FakeUnitDirectoryRepository(),
+              repository: FakeUnitDirectoryRepository(institutions),
               logout: () async => const LogoutResult.success(),
               onCancel: () {},
               onSaved: (_) {},
@@ -624,11 +614,13 @@ void main() {
   });
 
   testWidgets('does not turn an unknown edit id into creation', (tester) async {
+    final institutions = FakeInstitutionDirectoryRepository();
+
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           unitId: 'missing-unit',
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
@@ -644,7 +636,8 @@ void main() {
   });
 
   testWidgets('represents async loading and unauthorized edit states', (tester) async {
-    final repository = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
     final completer = Completer<UnitRecord?>();
 
     await tester.pumpWidget(
@@ -669,7 +662,8 @@ void main() {
   });
 
   testWidgets('represents load failures without falling back to creation', (tester) async {
-    final repository = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
     final completer = Completer<UnitRecord?>();
 
     await tester.pumpWidget(
@@ -696,12 +690,13 @@ void main() {
   testWidgets('validates an optional contact email when it is filled', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(),
+          repository: FakeUnitDirectoryRepository(institutions),
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -715,7 +710,6 @@ void main() {
     await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-parque');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
-    await _tapVisible(tester, find.byKey(const Key('unit-inherit-contact')));
     await tester.enterText(find.byKey(const Key('unit-contact-email-field')), 'email-invalido');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
@@ -728,7 +722,8 @@ void main() {
   testWidgets('edit saves from the current step and remains on the form', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
     final edited = repository.records.first;
     UnitFormSaveResult? result;
 
@@ -753,7 +748,7 @@ void main() {
 
     expect(result, isNull);
     expect(find.text('Editar unidade'), findsWidgets);
-    expect(find.text('Unidade salva com segurança.'), findsOneWidget);
+    expect(find.text('Alterações salvas localmente.'), findsOneWidget);
     expect(repository.findById(edited.id)?.name, 'Unidade Atualizada');
   });
 
@@ -762,7 +757,8 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = FakeUnitDirectoryRepository();
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
     final edited = repository.records.first;
 
     await tester.pumpWidget(
@@ -837,9 +833,4 @@ final class _LoadingUnitRepository implements UnitDirectoryRepository {
     }
     return delegate.upsert(record);
   }
-}
-
-final class _UnitBackendCommandsStub implements UnitBackendCommandsGateway {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
