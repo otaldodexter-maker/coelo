@@ -63,6 +63,23 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
     }
   }
 
+  @override
+  void didUpdateWidget(covariant InstitutionFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.institutionId == widget.institutionId &&
+        identical(oldWidget.repository, widget.repository)) {
+      return;
+    }
+    if (widget.institutionId == null) {
+      _loadSequence += 1;
+      _controller?.dispose();
+      _controller = InstitutionFormController();
+      _loadState = _InstitutionFormLoadState.ready;
+      return;
+    }
+    unawaited(_load());
+  }
+
   Future<void> _load() async {
     final id = widget.institutionId;
     if (id == null) return;

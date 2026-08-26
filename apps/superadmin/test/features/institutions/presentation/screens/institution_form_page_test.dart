@@ -5,6 +5,8 @@ import 'dart:ui' as ui;
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/institutions/data/institution_location_service.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/screens/institution_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_logo_picker.dart';
 import 'package:coelo_superadmin/features/institutions/presentation/widgets/institution_form_navigation.dart';
@@ -137,6 +139,99 @@ void main() {
     );
     expect(field.controller!.text, 'Instituto Aurora');
   });
+
+  testWidgets('reloads the record when the route changes to another institution id', (
+    tester,
+  ) async {
+    final repository = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: repository,
+          institutionId: 'demo-institution-aurora',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('institution-field-brandDisplayName')))
+          .controller!
+          .text,
+      'Instituto Aurora',
+    );
+
+    await tester.pumpWidget(
+      _app(
+        InstitutionFormPage(
+          repository: repository,
+          institutionId: 'demo-institution-horizonte',
+          logout: _logout,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const Key('institution-field-brandDisplayName')))
+          .controller!
+          .text,
+      'Centro Horizonte',
+    );
+  });
+
+  for (final scenario in <({Exception error, Key stateKey, String safeMessage})>[
+    (
+      error: const InstitutionDirectoryUnauthorizedException(),
+      stateKey: const Key('institution-form-unauthorized'),
+      safeMessage: 'Você não tem permissão para acessar esta instituição.',
+    ),
+    (
+      error: const InstitutionDirectoryNotFoundException(),
+      stateKey: const Key('institution-form-not-found'),
+      safeMessage: 'O registro solicitado não foi encontrado.',
+    ),
+    (
+      error: const InstitutionDirectoryUnavailableException(),
+      stateKey: const Key('institution-form-unavailable'),
+      safeMessage: 'Verifique sua conexão e tente novamente.',
+    ),
+    (
+      error: Exception('sensitive backend detail'),
+      stateKey: const Key('institution-form-error'),
+      safeMessage: 'Ocorreu uma falha inesperada. Tente novamente.',
+    ),
+  ]) {
+    testWidgets('fails closed for ${scenario.stateKey} without rendering record fields', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _app(
+          InstitutionFormPage(
+            repository: _ThrowingDetailRepository(scenario.error),
+            institutionId: 'adulterated-institution-id',
+            logout: _logout,
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(scenario.stateKey), findsOneWidget);
+      expect(find.text(scenario.safeMessage), findsOneWidget);
+      expect(find.text('sensitive backend detail'), findsNothing);
+      expect(find.byKey(const Key('institution-field-brandDisplayName')), findsNothing);
+      expect(find.byKey(const Key('institution-form-save')), findsNothing);
+    });
+  }
 
   testWidgets('puts preview first, groups the complete palette, and offers emoji bio', (
     tester,
@@ -1726,3 +1821,15 @@ Finder _byKeyPrefix(String prefix) => find.byWidgetPredicate(
   (widget) =>
       widget.key is ValueKey<String> && (widget.key! as ValueKey<String>).value.startsWith(prefix),
 );
+
+final class _ThrowingDetailRepository implements InstitutionDirectoryRepository {
+  const _ThrowingDetailRepository(this.error);
+
+  final Exception error;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<InstitutionRecord> fetchById(String institutionId) => Future.error(error);
+}
