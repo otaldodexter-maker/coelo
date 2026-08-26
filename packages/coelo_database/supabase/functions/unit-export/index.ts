@@ -3,10 +3,14 @@ import * as XLSX from "xlsx";
 
 const BUCKET = "coelo-operations";
 const MAX_ROWS = 50000;
+const MAX_ARTIFACT_BYTES = 5242880;
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Json = Record<string, unknown>;
 type RpcResult = { data: unknown; error: unknown };
+type RpcClient = {
+  rpc: (name: string, args: Json) => PromiseLike<RpcResult>;
+};
 
 export function captureCreatedJobId(result: RpcResult, errorCode: string) {
   if (result.error) throw new Error(errorCode);
@@ -25,6 +29,20 @@ export async function recordCreatedFailureBestEffort(
   } catch {
     // Best effort cleanup; the authorized job state remains auditable.
   }
+}
+
+export async function reauthorizeExportJob(client: RpcClient, jobId: string) {
+  const result = await client.rpc("superadmin_get_unit_file_job", {
+    p_import_job_id: jobId,
+  });
+  const payload = result.data as Json | null;
+  if (
+    result.error || !payload || payload.job_id !== jobId ||
+    payload.domain !== "units_export"
+  ) {
+    throw new Error("export_reauthorization_failed");
+  }
+  return payload;
 }
 
 function cors(origin: string | null): HeadersInit {
@@ -66,9 +84,57 @@ function secret() {
   return legacy;
 }
 
+export function neutralizeCsvFormula(value: unknown) {
+  const text = String(value ?? "");
+  return /^[ \t\r\n]*[=+\-@]/.test(text) ? "'" + text : text;
+}
+
+export function assertArtifactWithinLimit(bytes: Uint8Array) {
+  if (bytes.length > MAX_ARTIFACT_BYTES) throw new Error("export_too_large");
+}
+
+export function validateExportArtifactPath(
+  jobId: string,
+  path: string,
+  format: unknown,
+) {
+  if (!UUID.test(jobId) || (format !== "csv" && format !== "xlsx")) {
+    return false;
+  }
+  const prefix = `exports/units/${jobId}/`;
+  const suffix = `.${format}`;
+  if (!path.startsWith(prefix) || !path.endsWith(suffix)) return false;
+  const objectId = path.slice(prefix.length, -suffix.length);
+  return UUID.test(objectId);
+}
+
+export function validateExportStatusPayload(jobId: string, payload: unknown) {
+  if (!UUID.test(jobId) || !payload || typeof payload !== "object") {
+    return false;
+  }
+  const value = payload as Json;
+  return value.job_id === jobId && value.domain === "units_export";
+}
+
+export function successfulReplayArtifactPath(
+  jobId: string,
+  payload: unknown,
+  format: unknown,
+) {
+  if (!validateExportStatusPayload(jobId, payload)) return null;
+  const value = payload as Json;
+  const summary = value.summary;
+  const path = summary && typeof summary === "object"
+    ? (summary as Json).storage_path
+    : null;
+  return value.state === "SUCESSO" && typeof path === "string" &&
+      validateExportArtifactPath(jobId, path, format)
+    ? path
+    : null;
+}
+
 function safe(value: unknown) {
-  let text = String(value ?? "");
-  if (/^[=+\-@]/.test(text)) text = "'" + text;
+  const text = neutralizeCsvFormula(value);
   return '"' + text.replaceAll('"', '""') + '"';
 }
 
@@ -138,6 +204,13 @@ export async function handler(request: Request) {
   if (request.method !== "POST") {
     return reply(origin, 405, { error: "method_not_allowed" });
   }
+  const workerSecret = Deno.env.get("COELO_UNIT_EXPORT_WORKER_SECRET")?.trim();
+  if (
+    !workerSecret ||
+    request.headers.get("x-coelo-worker-secret") !== workerSecret
+  ) {
+    return reply(origin, 403, { error: "worker_delegation_required" });
+  }
   const authorization = request.headers.get("authorization");
   if (!authorization?.startsWith("Bearer ")) {
     return reply(origin, 401, { error: "authentication_required" });
@@ -145,6 +218,7 @@ export async function handler(request: Request) {
 
   let createdJobId: string | null = null;
   let path: string | null = null;
+  let completionAttempted = false;
   try {
     const body = (await request.json()) as Json;
     const url = Deno.env.get("SUPABASE_URL")!;
@@ -169,8 +243,16 @@ export async function handler(request: Request) {
       });
       if (status.error) throw new Error("status_failed");
       const payload = status.data as Json;
+      if (!validateExportStatusPayload(requestedJobId, payload)) {
+        return reply(origin, 404, { error: "artifact_unavailable" });
+      }
       const stored = (payload.summary as Json | undefined)?.storage_path;
-      if (typeof stored === "string") {
+      if (payload.state === "SUCESSO" && typeof stored === "string") {
+        if (
+          !validateExportArtifactPath(requestedJobId, stored, payload.format)
+        ) {
+          return reply(origin, 404, { error: "artifact_unavailable" });
+        }
         const signed = await admin.storage.from(BUCKET).createSignedUrl(
           stored,
           300,
@@ -203,6 +285,16 @@ export async function handler(request: Request) {
     });
     createdJobId = captureCreatedJobId(created, "export_request_failed");
 
+    const replayPath = successfulReplayArtifactPath(
+      createdJobId,
+      created.data,
+      format,
+    );
+    if (replayPath) {
+      await reauthorizeExportJob(user, createdJobId);
+      return reply(origin, 200, created.data as Json);
+    }
+
     const materialized = await admin.rpc(
       "superadmin_materialize_unit_export_from_edge",
       {
@@ -229,8 +321,10 @@ export async function handler(request: Request) {
       afterOrdinal = next.ordinal;
     }
 
-    if (rows.length === 0) return reply(origin, 409, { error: "empty_export" });
+    if (rows.length === 0) throw new Error("empty_export");
     const generated = artifact(rows, format);
+    assertArtifactWithinLimit(generated.bytes);
+    await reauthorizeExportJob(user, createdJobId);
     path = "exports/units/" + createdJobId + "/" + crypto.randomUUID() + "." +
       generated.extension;
     const upload = await admin.storage.from(BUCKET).upload(
@@ -244,6 +338,8 @@ export async function handler(request: Request) {
     );
     if (upload.error) throw new Error("storage_upload_failed");
 
+    await reauthorizeExportJob(user, createdJobId);
+    completionAttempted = true;
     const completed = await admin.rpc("superadmin_complete_unit_file_job", {
       p_import_job_id: createdJobId,
       p_storage_path: path,
@@ -254,10 +350,10 @@ export async function handler(request: Request) {
       p_row_count: rows.length,
     });
     if (completed.error) {
-      await admin.storage.from(BUCKET).remove([path]);
       throw new Error("export_complete_failed");
     }
 
+    await reauthorizeExportJob(user, createdJobId);
     const signed = await admin.storage.from(BUCKET).createSignedUrl(path, 300, {
       download: true,
     });
@@ -271,25 +367,27 @@ export async function handler(request: Request) {
     const code = error instanceof Error
       ? error.message.split(":")[0]
       : "worker_error";
-    await recordCreatedFailureBestEffort(createdJobId, async (jobId) => {
-      const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), {
-        auth: { persistSession: false },
+    if (!completionAttempted) {
+      await recordCreatedFailureBestEffort(createdJobId, async (jobId) => {
+        const admin = createClient(Deno.env.get("SUPABASE_URL")!, secret(), {
+          auth: { persistSession: false },
+        });
+        if (path) await admin.storage.from(BUCKET).remove([path]);
+        const scope = await admin.from("import_jobs").select("request_id").eq(
+          "id",
+          jobId,
+        ).single();
+        if (scope.error || !scope.data?.request_id) {
+          throw new Error("job_scope_unavailable");
+        }
+        await admin.rpc("superadmin_fail_unit_file_job", {
+          p_import_job_id: jobId,
+          p_error_code: code.slice(0, 80),
+          p_expected_request_id: scope.data.request_id,
+        });
       });
-      if (path) await admin.storage.from(BUCKET).remove([path]);
-      const scope = await admin.from("import_jobs").select("request_id").eq(
-        "id",
-        jobId,
-      ).single();
-      if (scope.error || !scope.data?.request_id) {
-        throw new Error("job_scope_unavailable");
-      }
-      await admin.rpc("superadmin_fail_unit_file_job", {
-        p_import_job_id: jobId,
-        p_error_code: code.slice(0, 80),
-        p_expected_request_id: scope.data.request_id,
-      });
-    });
-    return reply(origin, 422, { error: code });
+    }
+    return reply(origin, code === "empty_export" ? 409 : 422, { error: code });
   }
 }
 

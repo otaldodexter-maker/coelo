@@ -171,11 +171,14 @@ async function checksum(bytes: Uint8Array) {
 }
 
 async function unitExport(url: string, authorization: string, body: Json) {
+  const workerSecret = Deno.env.get("COELO_UNIT_EXPORT_WORKER_SECRET")?.trim();
+  if (!workerSecret) throw new Error("unit_export_delegation_unavailable");
   const delegated = await fetch(`${url}/functions/v1/unit-export`, {
     method: "POST",
     headers: {
       Authorization: authorization,
       "Content-Type": "application/json",
+      "x-coelo-worker-secret": workerSecret,
     },
     body: JSON.stringify(body),
   });
