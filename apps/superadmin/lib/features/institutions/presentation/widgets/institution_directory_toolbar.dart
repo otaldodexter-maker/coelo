@@ -130,6 +130,7 @@ final class InstitutionDirectoryToolbar extends StatelessWidget {
                   width: searchWidth.clamp(0, filterConstraints.maxWidth),
                   height: CoeloSize.touchMin,
                   child: CoeloSearchField(
+                    key: const Key('institution-directory-search'),
                     controller: searchController,
                     hintText: 'Buscar por nome',
                     semanticLabel: 'Buscar por nome',

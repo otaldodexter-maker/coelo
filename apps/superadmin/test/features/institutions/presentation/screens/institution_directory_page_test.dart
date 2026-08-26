@@ -106,10 +106,10 @@ void main() {
     final typeLeft = tester.getTopLeft(find.byKey(const Key('institution-type-filter'))).dx;
     final stateLeft = tester.getTopLeft(find.byKey(const Key('institution-state-filter'))).dx;
     expect(typeLeft, lessThan(stateLeft), reason: 'type=$typeLeft state=$stateLeft');
-    final searchField = tester.widget<TextField>(find.byType(TextField));
+    final searchField = tester.widget<TextField>(_institutionSearchField());
     expect(searchField.decoration?.hintText, 'Buscar por nome');
     expect(searchField.decoration?.hintText, isNot(contains('domínio')));
-    expect(tester.getSize(find.byType(TextField)).width, 216);
+    expect(tester.getSize(_institutionSearchField()).width, 216);
     final searchBorder = searchField.decoration!.enabledBorder! as OutlineInputBorder;
     expect(searchBorder.borderRadius.topLeft.x, CoeloRadius.full);
     expect(find.text('Importar instituições'), findsNothing);
@@ -131,7 +131,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final controlsRect = tester.getRect(find.byKey(const Key('institution-filter-controls')));
-      final searchRect = tester.getRect(find.byType(TextField).first);
+      final searchRect = tester.getRect(_institutionSearchField());
       final typeRect = tester.getRect(find.byKey(const Key('institution-type-filter')));
       final stateRect = tester.getRect(find.byKey(const Key('institution-state-filter')));
       final expectedSearchWidth = width == 375
@@ -603,7 +603,7 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    final searchTop = tester.getTopLeft(find.byType(TextField)).dy;
+    final searchTop = tester.getTopLeft(_institutionSearchField()).dy;
     final displayIconTop = tester.getTopLeft(find.byKey(const Key('institution-view-cards'))).dy;
     expect((displayIconTop - searchTop).abs(), lessThan(CoeloSpacing.space4));
   });
@@ -615,7 +615,7 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField), 'aurora');
+    await tester.enterText(_institutionSearchField(), 'aurora');
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('institution-view-table')));
@@ -736,7 +736,7 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField), 'aurora');
+    await tester.enterText(_institutionSearchField(), 'aurora');
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
 
@@ -1315,7 +1315,7 @@ void main() {
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
     expect(find.byKey(const Key('institution-directory-pagination-footer')), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), 'no matches');
+    await tester.enterText(_institutionSearchField(), 'no matches');
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
@@ -1407,7 +1407,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.getSemantics(find.byType(TextField).first),
+      tester.getSemantics(_institutionSearchField()),
       isSemantics(label: 'Buscar por nome', isTextField: true),
     );
     semantics.dispose();
@@ -1576,6 +1576,11 @@ Finder _institutionDetailRows(String level) => find.byWidgetPredicate((widget) {
   final key = widget.key;
   return key is ValueKey<String> && key.value.startsWith('institution-detail-row-$level-');
 });
+
+Finder _institutionSearchField() => find.descendant(
+  of: find.byKey(const Key('institution-directory-search')),
+  matching: find.byType(TextField),
+);
 
 Widget _app({
   Key? pageKey,
