@@ -134,12 +134,14 @@ final class PrincipalProfileCircularsTab extends StatefulWidget {
     required this.repository,
     required this.scope,
     required this.onOpen,
+    this.embedded = false,
     super.key,
   });
 
   final CircularRepository repository;
   final CircularScope scope;
   final ValueChanged<String> onOpen;
+  final bool embedded;
 
   @override
   State<PrincipalProfileCircularsTab> createState() => _PrincipalProfileCircularsTabState();
@@ -212,6 +214,8 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
       );
     }
     return ListView.separated(
+      shrinkWrap: widget.embedded,
+      physics: widget.embedded ? const NeverScrollableScrollPhysics() : null,
       padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
       itemCount: _items.length + (_cursor == null ? 0 : 1),
       separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
