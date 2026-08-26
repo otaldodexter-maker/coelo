@@ -48,6 +48,14 @@ flutter:
     - assets/brand/logo-coelo-orange.svg
     - assets/brand/logo-coelo-orange.png
     - assets/brand/logo-coelo-orange-complete.png
+    - assets/principal_profile/institution-cover.png
+    - assets/principal_profile/institution-crest.png
+    - assets/principal_profile/highlights-strip.png
+    - assets/principal_happens/now-strip.png
+    - assets/principal_happens/feed-strip.png
+    - assets/principal_moments/moments-strip.png
+    - assets/principal_now/story-strip.png
+    - assets/agenda/event-thumbnails.png
   fonts:
     - family: Nunito Sans
       fonts:
