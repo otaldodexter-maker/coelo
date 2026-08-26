@@ -40,10 +40,7 @@ final class InstitutionFormSection extends StatelessWidget {
       ),
       InstitutionFormStep.administrators => _AdministratorsSection(controller: controller),
       InstitutionFormStep.plan => _PlanSection(controller: controller),
-      InstitutionFormStep.branding => _BrandingSection(
-        controller: controller,
-        imagePicker: imagePicker,
-      ),
+      InstitutionFormStep.branding => _BrandingSection(controller: controller),
       InstitutionFormStep.review => _ReviewSection(controller: controller),
     };
   }
@@ -1391,9 +1388,8 @@ final class _PlanSection extends StatelessWidget {
 }
 
 final class _BrandingSection extends StatelessWidget {
-  const _BrandingSection({required this.controller, required this.imagePicker});
+  const _BrandingSection({required this.controller});
   final InstitutionFormController controller;
-  final InstitutionLogoPicker imagePicker;
 
   @override
   Widget build(BuildContext context) {
@@ -1414,7 +1410,7 @@ final class _BrandingSection extends StatelessWidget {
         children: [
           _InstitutionBrandPreview(controller: controller, accent: accent, secondary: secondary),
           const SizedBox(height: CoeloSpacing.space5),
-          _LogoPicker(controller: controller, accent: accent, imagePicker: imagePicker),
+          _LogoPicker(controller: controller, accent: accent),
           const SizedBox(height: CoeloSpacing.space4),
           _CoverPicker(controller: controller, accent: accent),
           const SizedBox(height: CoeloSpacing.space5),
@@ -1699,50 +1695,11 @@ final class _BioField extends StatelessWidget {
 }
 
 final class _LogoPicker extends StatelessWidget {
-  const _LogoPicker({required this.controller, required this.accent, required this.imagePicker});
+  const _LogoPicker({required this.controller, required this.accent});
 
   static const maxBytes = 2 * 1024 * 1024;
   final InstitutionFormController controller;
   final Color accent;
-  final InstitutionLogoPicker imagePicker;
-
-  Future<void> _pick(BuildContext context) async {
-    final file = await imagePicker();
-    if (file == null || !context.mounted) {
-      return;
-    }
-    final extension = file.name.toLowerCase().split('.').last;
-    if (!const {'png', 'jpg', 'jpeg', 'webp'}.contains(extension)) {
-      controller.setLogoError('Use uma imagem em PNG, JPG ou WebP.');
-      return;
-    }
-    if (file.bytes.lengthInBytes > maxBytes) {
-      controller.setLogoError('A imagem deve ter no máximo 2 MB.');
-      return;
-    }
-    try {
-      final codec = await ui.instantiateImageCodec(file.bytes);
-      final frame = await codec.getNextFrame();
-      frame.image.dispose();
-      codec.dispose();
-    } on Exception {
-      controller.setLogoError('Não foi possível ler essa imagem.');
-      return;
-    }
-    if (!context.mounted) return;
-    final adjusted = await showDialog<AvatarCropResult>(
-      context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (context) => AvatarCropDialog(bytes: file.bytes),
-    );
-    if (adjusted == null || !context.mounted) return;
-    controller.setLogo(
-      bytes: adjusted.bytes,
-      fileName: file.name,
-      scale: adjusted.scale,
-      offset: adjusted.offset,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1774,7 +1731,8 @@ final class _LogoPicker extends StatelessWidget {
                 Text('Foto de perfil', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: CoeloSpacing.spaceHalf),
                 Text(
-                  controller.logoFileName ?? 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
+                  'Atualização indisponível neste fluxo até a conexão com o armazenamento privado.',
+                  key: const Key('institution-logo-actions-unavailable'),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (controller.logoError != null) ...[
@@ -1784,20 +1742,6 @@ final class _LogoPicker extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.error),
                   ),
                 ],
-                const SizedBox(height: CoeloSpacing.space2),
-                Wrap(
-                  spacing: CoeloSpacing.space2,
-                  children: [
-                    OutlinedButton.icon(
-                      key: const Key('institution-logo-picker'),
-                      onPressed: () => _pick(context),
-                      icon: const Icon(Icons.upload_rounded),
-                      label: Text(controller.hasSimulatedLogo ? 'Trocar foto' : 'Escolher foto'),
-                    ),
-                    if (controller.hasSimulatedLogo)
-                      TextButton(onPressed: controller.removeLogo, child: const Text('Remover')),
-                  ],
-                ),
               ],
             ),
           ),
@@ -1810,30 +1754,8 @@ final class _LogoPicker extends StatelessWidget {
 final class _CoverPicker extends StatelessWidget {
   const _CoverPicker({required this.controller, required this.accent});
 
-  static const maxBytes = 2 * 1024 * 1024;
   final InstitutionFormController controller;
   final Color accent;
-
-  Future<void> _pick(BuildContext context) async {
-    final file = await pickInstitutionLogo();
-    if (file == null || !context.mounted) {
-      return;
-    }
-
-    if (file.bytes.lengthInBytes > maxBytes) {
-      controller.setCoverError('A imagem deve ter no máximo 2 MB.');
-      return;
-    }
-    try {
-      final codec = await ui.instantiateImageCodec(file.bytes);
-      final frame = await codec.getNextFrame();
-      frame.image.dispose();
-      codec.dispose();
-      controller.setCover(bytes: file.bytes, fileName: file.name);
-    } on Exception {
-      controller.setCoverError('Não foi possível ler essa imagem.');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1873,7 +1795,8 @@ final class _CoverPicker extends StatelessWidget {
                 Text('Foto de capa', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: CoeloSpacing.spaceHalf),
                 Text(
-                  controller.coverFileName ?? 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
+                  'Atualização indisponível neste fluxo até a conexão com o armazenamento privado.',
+                  key: const Key('institution-cover-actions-unavailable'),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (controller.coverError != null) ...[
@@ -1883,20 +1806,6 @@ final class _CoverPicker extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.error),
                   ),
                 ],
-                const SizedBox(height: CoeloSpacing.space2),
-                Wrap(
-                  spacing: CoeloSpacing.space2,
-                  children: [
-                    OutlinedButton.icon(
-                      key: const Key('institution-cover-picker'),
-                      onPressed: () => _pick(context),
-                      icon: const Icon(Icons.upload_rounded),
-                      label: Text(controller.hasSimulatedCover ? 'Trocar capa' : 'Escolher capa'),
-                    ),
-                    if (controller.hasSimulatedCover)
-                      TextButton(onPressed: controller.removeCover, child: const Text('Remover')),
-                  ],
-                ),
               ],
             ),
           ),
