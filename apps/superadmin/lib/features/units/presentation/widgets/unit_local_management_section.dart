@@ -122,12 +122,6 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
               icon: const Icon(Icons.upload_file_rounded),
               label: const Text('Importar CSV/XLSX'),
             ),
-            TextButton.icon(
-              key: const Key('unit-export-people'),
-              onPressed: _exportPeople,
-              icon: const Icon(Icons.download_rounded),
-              label: const Text('Exportar CSV/XLSX'),
-            ),
           ],
         ],
       ),
@@ -289,9 +283,6 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
     ),
   );
 
-  void _exportPeople() => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(const SnackBar(content: Text('Exportação demonstrativa preparada localmente.')));
 }
 
 final class _EmptyMessage extends StatelessWidget {

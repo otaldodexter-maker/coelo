@@ -157,7 +157,7 @@ void main() {
 
     await _tapVisible(tester, find.byKey(const Key('step-pessoas')));
     expect(find.byKey(const Key('unit-import-people')), findsOneWidget);
-    expect(find.byKey(const Key('unit-export-people')), findsOneWidget);
+    expect(find.byKey(const Key('unit-export-people')), findsNothing);
     expect(find.byKey(const Key('unit-search-person')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Tabela de Pessoas da unidade')), findsOneWidget);
   });
