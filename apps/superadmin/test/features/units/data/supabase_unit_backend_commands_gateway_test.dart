@@ -299,6 +299,39 @@ void main() {
             );
           }
           final body = jsonDecode(request.body) as Map<String, dynamic>;
+          if (body['action'] == 'request_export') {
+            expect(body['domain'], 'units');
+            expect(body, isNot(contains('direction')));
+            expect(body['idempotency_key'], 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+            return _jsonResponse(request, {
+              'job_id': '22222222-2222-4222-8222-222222222222',
+              'domain': 'units',
+              'direction': 'export',
+              'format': 'xlsx',
+              'state': 'SUCESSO',
+              'created_at': '2026-08-11T12:00:00Z',
+              'started_at': '2026-08-11T12:00:05Z',
+              'finished_at': '2026-08-11T12:00:30Z',
+              'summary': {'phase': 'complete'},
+            });
+          }
+          if (body['action'] == 'download') {
+            expect(body['job_id'], '22222222-2222-4222-8222-222222222222');
+            return _jsonResponse(request, {
+              'job_id': '22222222-2222-4222-8222-222222222222',
+              'domain': 'units',
+              'direction': 'export',
+              'format': 'xlsx',
+              'state': 'SUCESSO',
+              'created_at': '2026-08-11T12:00:00Z',
+              'started_at': '2026-08-11T12:00:05Z',
+              'finished_at': '2026-08-11T12:00:30Z',
+              'summary': {'phase': 'complete'},
+              'download_url':
+                  'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.xlsx?token=signed-token',
+              'expires_in': 300,
+            });
+          }
           expect(body['action'], 'create_import');
           expect(body['idempotency_key'], 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
           return _jsonResponse(
@@ -311,23 +344,6 @@ void main() {
               summary: {'phase': 'created'},
             ),
           );
-        }
-        if (name == 'unit-export') {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          expect(body['action'], 'generate');
-          expect(body['idempotency_key'], 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
-          return _jsonResponse(request, {
-            ..._unitFileJobPayload(
-              jobId: '22222222-2222-4222-8222-222222222222',
-              domain: 'units_export',
-              format: 'xlsx',
-              state: 'SUCESSO',
-              summary: {'phase': 'complete'},
-              result: {'created_count': 2},
-            ),
-            'download_url': 'https://example.supabase.co/storage/signed/export.xlsx',
-            'expires_in': 300,
-          });
         }
         return _jsonResponse(request, {'message': 'unexpected endpoint'}, statusCode: 500);
       }),
@@ -400,7 +416,7 @@ void main() {
           sort: UnitExportSortField.name,
           sortAscending: true,
           groupByInstitution: false,
-          columns: ['name', 'status'],
+          columns: ['name', 'unit_status'],
         ),
         idempotencyKey: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
       ),
@@ -408,7 +424,7 @@ void main() {
     expect(download.job.status, UnitFileJobStatus.success);
     expect(download.url.host, 'example.supabase.co');
 
-    expect(requests.where((request) => request.url.pathSegments.contains('functions')).length, 6);
+    expect(requests.where((request) => request.url.pathSegments.contains('functions')).length, 7);
   });
 
   test('uploads a unit import through canonical create and binary Edge calls', () async {
@@ -576,9 +592,471 @@ void main() {
     }
     expect(requestCount, 0);
   });
+
+  group('hardens generated unit export downloads', () {
+    test('requests export through the canonical import-export hub contract', () async {
+      final captured = <Request>[];
+      final gateway = _exportGateway(
+        onRequest: captured.add,
+        downloadUrl:
+            'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+      );
+
+      final download = await gateway.generateExport(_exportRequest());
+
+      expect(captured, hasLength(2));
+      expect(
+        captured.map((request) => request.url.path),
+        everyElement('/functions/v1/import-export-jobs'),
+      );
+      final requestBody = jsonDecode(captured.first.body) as Map<String, dynamic>;
+      expect(requestBody, {
+        'action': 'request_export',
+        'domain': 'units',
+        'idempotency_key': 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        'format': 'csv',
+        'filters': _exportRequest().filters.toRpc(),
+        'current_view': _exportRequest().currentView.toRpc(),
+      });
+      expect(
+        requestBody['current_view'],
+        containsPair('columns', const [
+          'institution_name',
+          'institution_type_name',
+          'name',
+          'unit_type_name',
+          'unit_status',
+          'effective_plan_name',
+        ]),
+      );
+      expect(jsonEncode(requestBody), isNot(contains('storage_path')));
+      expect(jsonEncode(requestBody), isNot(contains('checksum')));
+      expect(jsonDecode(captured.last.body), {
+        'action': 'download',
+        'job_id': '22222222-2222-4222-8222-222222222222',
+      });
+      expect(download.job.status, UnitFileJobStatus.success);
+      expect(download.expiresInSeconds, 300);
+      expect(download.expiresAt, DateTime.utc(2026, 8, 26, 12, 5));
+      expect(download.url.queryParameters['token'], 'signed-token');
+    });
+
+    test('rejects non-canonical export columns before any network call', () async {
+      for (final column in <String>['status', 'unknown_column']) {
+        var requestCount = 0;
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-key',
+          httpClient: MockClient((request) async {
+            requestCount += 1;
+            return _jsonResponse(request, const <String, Object?>{});
+          }),
+        );
+        addTearDown(client.dispose);
+
+        await expectLater(
+          SupabaseUnitBackendCommandsGateway(
+            client,
+          ).generateExport(_exportRequest(columns: ['name', column])),
+          throwsA(
+            isA<UnitGatewayException>().having(
+              (error) => error.code,
+              'code',
+              UnitGatewayErrorCode.validation,
+            ),
+          ),
+          reason: column,
+        );
+        expect(requestCount, 0, reason: column);
+      }
+    });
+
+    test('rejects unsafe or non-canonical export URLs', () async {
+      const invalidUrls = <String>[
+        'javascript:alert(1)',
+        'file:///tmp/units.csv',
+        'http://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://attacker.example/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://example.supabase.co:444/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://user@example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token#fragment',
+        'https://example.supabase.co/storage/v1/object/sign/other/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/%2e%2e/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/99999999-9999-4999-8999-999999999999/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/not-an-artifact.csv?token=signed-token',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.xlsx?token=signed-token',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=one&token=two',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token&other=1',
+        'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token&download=1&download=2',
+      ];
+
+      for (final downloadUrl in invalidUrls) {
+        await expectLater(
+          _exportGateway(downloadUrl: downloadUrl).generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.invalidDownloadUrl,
+            ),
+          ),
+          reason: downloadUrl,
+        );
+      }
+    });
+
+    test('accepts one optional download query parameter', () async {
+      final download = await _exportGateway(
+        downloadUrl:
+            'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token&download=units.csv',
+      ).generateExport(_exportRequest());
+
+      expect(download.url.queryParameters['download'], 'units.csv');
+    });
+
+    test('rejects response storage path or checksum fields instead of trusting them', () async {
+      await expectLater(
+        _exportGateway(
+          responseOverrides: const {
+            'storage_path': '../../other-tenant.csv',
+            'checksum_sha256': 'not-a-checksum',
+          },
+        ).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.invalidResponse,
+          ),
+        ),
+      );
+    });
+
+    test('does not request a download while the export job is not ready', () async {
+      final captured = <Request>[];
+
+      await expectLater(
+        _exportGateway(
+          state: 'PROCESSANDO',
+          onRequest: captured.add,
+        ).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.notReady,
+          ),
+        ),
+      );
+
+      expect(captured, hasLength(1));
+      expect(jsonDecode(captured.single.body), containsPair('action', 'request_export'));
+    });
+
+    test('rejects an artifact returned during request_export', () async {
+      await expectLater(
+        _exportGateway(requestIncludesArtifact: true).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.invalidResponse,
+          ),
+        ),
+      );
+    });
+
+    test('rejects a download response for a different job', () async {
+      await expectLater(
+        _exportGateway(
+          downloadJobId: '99999999-9999-4999-8999-999999999999',
+        ).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.invalidResponse,
+          ),
+        ),
+      );
+    });
+
+    test('requires export TTL to be an exact integer from 1 to 300 seconds', () async {
+      for (final expiresIn in <Object?>[null, 0, -1, 301, 1.5, '300']) {
+        await expectLater(
+          _exportGateway(expiresIn: expiresIn).generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.expired,
+            ),
+          ),
+        );
+      }
+    });
+
+    test('separates non-terminal and failed terminal export jobs', () async {
+      for (final state in <String>['PENDENTE', 'PROCESSANDO']) {
+        await expectLater(
+          _exportGateway(state: state).generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.notReady,
+            ),
+          ),
+          reason: state,
+        );
+      }
+      for (final state in <String>['REJEICAO', 'ERRO']) {
+        await expectLater(
+          _exportGateway(state: state).generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.terminal,
+            ),
+          ),
+          reason: state,
+        );
+      }
+    });
+
+    test('requires strict export job metadata before parsing the shared DTO', () async {
+      final invalidCases = <SupabaseUnitBackendCommandsGateway>[
+        _exportGateway(jobId: 'not-a-job-id'),
+        _exportGateway(domain: 'units_export'),
+        _exportGateway(direction: 'import'),
+        _exportGateway(format: 'xlsx'),
+        _exportGateway(state: 'UNKNOWN'),
+        _exportGateway(createdAt: null),
+        _exportGateway(createdAt: 'not-a-date'),
+        _exportGateway(createdAt: '2026-08-26T09:00:00-03:00'),
+      ];
+      for (final gateway in invalidCases) {
+        await expectLater(
+          gateway.generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.invalidResponse,
+            ),
+          ),
+        );
+      }
+    });
+
+    test('maps malformed nested export job DTOs to invalidResponse', () async {
+      const invalidNestedPayloads = <Map<String, Object?>>[
+        {'summary': <Object?>[]},
+        {'result': <String, Object?>{}},
+        {'errors': <Object?>[]},
+      ];
+
+      for (final responseOverrides in invalidNestedPayloads) {
+        await expectLater(
+          _exportGateway(responseOverrides: responseOverrides).generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.invalidResponse,
+            ),
+          ),
+          reason: '$responseOverrides',
+        );
+      }
+    });
+
+    test('maps export HTTP failures without changing import error handling', () async {
+      final expectations = <int, Matcher>{
+        400: isA<UnitGatewayException>().having(
+          (error) => error.code,
+          'code',
+          UnitGatewayErrorCode.validation,
+        ),
+        401: isA<UnitGatewayException>().having(
+          (error) => error.code,
+          'code',
+          UnitGatewayErrorCode.unauthorized,
+        ),
+        403: isA<UnitGatewayException>().having(
+          (error) => error.code,
+          'code',
+          UnitGatewayErrorCode.unauthorized,
+        ),
+        404: isA<UnitGatewayException>().having(
+          (error) => error.code,
+          'code',
+          UnitGatewayErrorCode.notFound,
+        ),
+        409: isA<UnitGatewayException>().having(
+          (error) => error.code,
+          'code',
+          UnitGatewayErrorCode.conflict,
+        ),
+        410: isA<UnitExportException>().having(
+          (error) => error.code,
+          'code',
+          UnitExportFailureCode.expired,
+        ),
+        422: isA<UnitGatewayException>().having(
+          (error) => error.code,
+          'code',
+          UnitGatewayErrorCode.validation,
+        ),
+        503: isA<UnitGatewayException>()
+            .having((error) => error.code, 'code', UnitGatewayErrorCode.unavailable)
+            .having((error) => error.retriable, 'retriable', isTrue),
+      };
+      for (final MapEntry(key: status, value: matcher) in expectations.entries) {
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-key',
+          httpClient: MockClient(
+            (request) async => _jsonResponse(request, {'error': 'denied'}, statusCode: status),
+          ),
+        );
+        addTearDown(client.dispose);
+
+        await expectLater(
+          SupabaseUnitBackendCommandsGateway(client).generateExport(_exportRequest()),
+          throwsA(matcher),
+          reason: '$status',
+        );
+      }
+    });
+
+    test('maps malformed successful responses to typed invalidResponse', () async {
+      for (final body in <Object?>[
+        null,
+        true,
+        42,
+        'scalar',
+        const <Object?>[],
+        {'error': 'malformed'},
+        {'job_id': 1},
+      ]) {
+        final client = SupabaseClient(
+          'https://example.supabase.co',
+          'publishable-key',
+          httpClient: MockClient((request) async => _jsonResponse(request, body)),
+        );
+        addTearDown(client.dispose);
+
+        await expectLater(
+          SupabaseUnitBackendCommandsGateway(client).generateExport(_exportRequest()),
+          throwsA(
+            isA<UnitExportException>().having(
+              (error) => error.code,
+              'code',
+              UnitExportFailureCode.invalidResponse,
+            ),
+          ),
+        );
+      }
+
+      final malformedJsonClient = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => Response(
+            '{',
+            200,
+            headers: const {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(malformedJsonClient.dispose);
+      await expectLater(
+        SupabaseUnitBackendCommandsGateway(malformedJsonClient).generateExport(_exportRequest()),
+        throwsA(
+          isA<UnitExportException>().having(
+            (error) => error.code,
+            'code',
+            UnitExportFailureCode.invalidResponse,
+          ),
+        ),
+      );
+    });
+  });
 }
 
-Response _jsonResponse(Request request, Object body, {int statusCode = 200}) => Response(
+SupabaseUnitBackendCommandsGateway _exportGateway({
+  String downloadUrl =
+      'https://example.supabase.co/storage/v1/object/sign/coelo-operations/exports/units/22222222-2222-4222-8222-222222222222/33333333-3333-4333-8333-333333333333.csv?token=signed-token',
+  Object? expiresIn = 300,
+  String state = 'SUCESSO',
+  String jobId = '22222222-2222-4222-8222-222222222222',
+  String domain = 'units',
+  String direction = 'export',
+  String format = 'csv',
+  Object? createdAt = '2026-08-11T12:00:00Z',
+  Map<String, Object?> responseOverrides = const {},
+  bool requestIncludesArtifact = false,
+  String? downloadJobId,
+  void Function(Request request)? onRequest,
+}) {
+  final client = SupabaseClient(
+    'https://example.supabase.co',
+    'publishable-key',
+    httpClient: MockClient((request) async {
+      onRequest?.call(request);
+      final requestBody = jsonDecode(request.body) as Map<String, dynamic>;
+      final isDownload = requestBody['action'] == 'download';
+      final payload = <String, Object?>{
+        'job_id': isDownload ? (downloadJobId ?? jobId) : jobId,
+        'domain': domain,
+        'direction': direction,
+        'format': format,
+        'state': state,
+        'summary': const {'phase': 'complete'},
+        'created_at': createdAt,
+        'started_at': '2026-08-11T12:00:05Z',
+        'finished_at': state == 'PENDENTE' || state == 'PROCESSANDO'
+            ? null
+            : '2026-08-11T12:00:30Z',
+        ...responseOverrides,
+      };
+      if (isDownload || requestIncludesArtifact) {
+        payload['download_url'] = downloadUrl;
+        if (expiresIn != null) payload['expires_in'] = expiresIn;
+      }
+      return _jsonResponse(request, payload);
+    }),
+  );
+  addTearDown(client.dispose);
+  return SupabaseUnitBackendCommandsGateway(client, now: () => DateTime.utc(2026, 8, 26, 12));
+}
+
+UnitExportRequest _exportRequest({
+  List<String> columns = const [
+    'institution_name',
+    'institution_type_name',
+    'name',
+    'unit_type_name',
+    'unit_status',
+    'effective_plan_name',
+  ],
+}) => UnitExportRequest(
+  format: UnitFileFormat.csv,
+  filters: const UnitExportFilters(),
+  currentView: UnitExportCurrentView(
+    sort: UnitExportSortField.name,
+    sortAscending: true,
+    groupByInstitution: false,
+    columns: columns,
+  ),
+  idempotencyKey: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+);
+
+Response _jsonResponse(Request request, Object? body, {int statusCode = 200}) => Response(
   jsonEncode(body),
   statusCode,
   headers: const {'content-type': 'application/json'},

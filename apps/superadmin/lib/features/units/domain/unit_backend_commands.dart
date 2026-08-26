@@ -883,11 +883,29 @@ final class UnitImportTemplateArtifact {
 
 @immutable
 final class UnitExportDownload {
-  const UnitExportDownload({required this.job, required this.url, required this.expiresInSeconds});
+  const UnitExportDownload({
+    required this.job,
+    required this.url,
+    required this.expiresInSeconds,
+    required this.expiresAt,
+  });
 
   final UnitFileJob job;
   final Uri url;
   final int expiresInSeconds;
+  final DateTime expiresAt;
+}
+
+enum UnitExportFailureCode { invalidDownloadUrl, expired, notReady, terminal, invalidResponse }
+
+final class UnitExportException implements Exception {
+  const UnitExportException({required this.code, required this.message});
+
+  final UnitExportFailureCode code;
+  final String message;
+
+  @override
+  String toString() => 'UnitExportException($code)';
 }
 
 abstract interface class UnitBackendCommandsGateway {

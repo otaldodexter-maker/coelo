@@ -8,9 +8,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/unit_backend_commands.dart';
 
 final class SupabaseUnitBackendCommandsGateway implements UnitBackendCommandsGateway {
-  const SupabaseUnitBackendCommandsGateway(this._client);
+  const SupabaseUnitBackendCommandsGateway(this._client, {DateTime Function()? now})
+    : _now = now ?? _systemUtcNow;
 
   final SupabaseClient _client;
+  final DateTime Function() _now;
 
   @override
   Future<UnitTypeRequestReceipt> requestUnitType(UnitTypeRequestCommand command) async {
@@ -244,22 +246,88 @@ final class SupabaseUnitBackendCommandsGateway implements UnitBackendCommandsGat
 
   @override
   Future<UnitExportDownload> generateExport(UnitExportRequest request) async {
-    final payload = await _invokeEdge('unit-export', {
-      'action': 'generate',
+    _validateExportColumns(request.currentView.columns);
+    final requestedPayload = await _invokeExportEdge('request_export', {
+      'action': 'request_export',
+      'domain': 'units',
       'idempotency_key': _validateUuid(request.idempotencyKey),
       'format': request.format.databaseValue,
       'filters': request.filters.toRpc(),
       'current_view': request.currentView.toRpc(),
     });
-    final url = Uri.tryParse(payload['download_url']?.toString() ?? '');
-    if (url == null || !url.hasScheme) {
-      throw UnitGatewayException.unexpected(operation: 'unit-export.generate');
-    }
-    return UnitExportDownload(
-      job: _fileJob(payload),
-      url: url,
-      expiresInSeconds: _int(payload['expires_in']),
+    final requestedJob = _exportFileJob(
+      requestedPayload,
+      expectedFormat: request.format,
+      allowDownloadArtifact: false,
     );
+    _requireSuccessfulExportJob(requestedJob);
+    final downloadPayload = await _invokeExportEdge('download', {
+      'action': 'download',
+      'job_id': requestedJob.id,
+    });
+    final job = _exportFileJob(
+      downloadPayload,
+      expectedFormat: request.format,
+      expectedJobId: requestedJob.id,
+      allowDownloadArtifact: true,
+    );
+    _requireSuccessfulExportJob(job);
+    final rawExpiresIn = downloadPayload['expires_in'];
+    if (rawExpiresIn is! int || rawExpiresIn < 1 || rawExpiresIn > 300) {
+      throw const UnitExportException(
+        code: UnitExportFailureCode.expired,
+        message: 'The export download has expired.',
+      );
+    }
+    final expiresAt = _now().toUtc().add(Duration(seconds: rawExpiresIn));
+    final url = _validateExportDownloadUrl(
+      downloadPayload['download_url'],
+      storageUrl: _client.storage.url,
+      jobId: job.id,
+      jobFormat: job.format,
+      format: request.format,
+    );
+    return UnitExportDownload(
+      job: job,
+      url: url,
+      expiresInSeconds: rawExpiresIn,
+      expiresAt: expiresAt,
+    );
+  }
+
+  Future<Map<String, dynamic>> _invokeExportEdge(String action, Object body) async {
+    final operation = 'import-export-jobs.$action';
+    try {
+      final response = await _client.functions.invoke('import-export-jobs', body: body);
+      if (response.status < 200 || response.status >= 300) {
+        throw _exportHttpException(response.status, operation: operation);
+      }
+      final raw = response.data;
+      if (raw is! Map || raw.keys.any((key) => key is! String) || raw.containsKey('error')) {
+        throw const UnitExportException(
+          code: UnitExportFailureCode.invalidResponse,
+          message: 'The export service returned an invalid response.',
+        );
+      }
+      return <String, dynamic>{for (final entry in raw.entries) entry.key as String: entry.value};
+    } on UnitGatewayException {
+      rethrow;
+    } on UnitExportException {
+      rethrow;
+    } on FormatException {
+      throw const UnitExportException(
+        code: UnitExportFailureCode.invalidResponse,
+        message: 'The export service returned an invalid response.',
+      );
+    } on FunctionException catch (error) {
+      throw _exportHttpException(error.status, operation: operation);
+    } on ClientException {
+      throw UnitGatewayException.unavailable(operation: operation);
+    } on SocketException {
+      throw UnitGatewayException.unavailable(operation: operation);
+    } on Object {
+      throw UnitGatewayException.unavailable(operation: operation);
+    }
   }
 
   Future<Map<String, dynamic>> _invokeEdge(
@@ -300,6 +368,185 @@ final class SupabaseUnitBackendCommandsGateway implements UnitBackendCommandsGat
     }
   }
 }
+
+DateTime _systemUtcNow() => DateTime.now().toUtc();
+
+Object _exportHttpException(int status, {required String operation}) => switch (status) {
+  400 || 422 => UnitGatewayException.validation(operation: operation),
+  401 || 403 => UnitGatewayException.unauthorized(operation: operation),
+  404 => UnitGatewayException.notFound(operation: operation),
+  409 => UnitGatewayException.conflict(operation: operation),
+  410 => const UnitExportException(
+    code: UnitExportFailureCode.expired,
+    message: 'The export download has expired.',
+  ),
+  503 => UnitGatewayException.unavailable(operation: operation),
+  _ => UnitGatewayException.unavailable(operation: operation),
+};
+
+void _validateExportColumns(List<String> columns) {
+  const allowed = <String>{
+    'id',
+    'institution_id',
+    'institution_name',
+    'institution_type_name',
+    'name',
+    'unit_type_name',
+    'unit_type_other_text',
+    'unit_status',
+    'effective_plan_name',
+    'groups_count',
+    'activities_count',
+    'updated_at',
+  };
+  if (columns.length > allowed.length || columns.any((column) => !allowed.contains(column))) {
+    throw UnitGatewayException.validation(operation: 'import-export-jobs.request_export');
+  }
+}
+
+void _requireSuccessfulExportJob(UnitFileJob job) {
+  if (job.status == UnitFileJobStatus.draft || job.status == UnitFileJobStatus.processing) {
+    throw const UnitExportException(
+      code: UnitExportFailureCode.notReady,
+      message: 'The export is not ready for download.',
+    );
+  }
+  if (job.status == UnitFileJobStatus.rejected || job.status == UnitFileJobStatus.error) {
+    throw const UnitExportException(
+      code: UnitExportFailureCode.terminal,
+      message: 'The export finished without a downloadable artifact.',
+    );
+  }
+}
+
+UnitFileJob _exportFileJob(
+  Map<String, dynamic> row, {
+  required UnitFileFormat expectedFormat,
+  required bool allowDownloadArtifact,
+  String? expectedJobId,
+}) {
+  final jobId = row['job_id'];
+  final domain = row['domain'];
+  final direction = row['direction'];
+  final format = row['format'];
+  final state = row['state'];
+  final rawCreatedAt = row['created_at'];
+  final summary = row['summary'];
+  final createdAt = rawCreatedAt is String ? DateTime.tryParse(rawCreatedAt) : null;
+  final startedAt = _exportUtcTimestamp(row['started_at'], optional: true);
+  final finishedAt = _exportUtcTimestamp(row['finished_at'], optional: true);
+  const validStates = <String>{'PENDENTE', 'PROCESSANDO', 'SUCESSO', 'REJEICAO', 'ERRO'};
+  const jobKeys = <String>{
+    'job_id',
+    'domain',
+    'direction',
+    'format',
+    'state',
+    'created_at',
+    'started_at',
+    'finished_at',
+    'summary',
+  };
+  final allowedKeys = allowDownloadArtifact ? {...jobKeys, 'download_url', 'expires_in'} : jobKeys;
+  final isValid =
+      row.keys.every(allowedKeys.contains) &&
+      jobId is String &&
+      _canonicalUuidPattern.hasMatch(jobId) &&
+      (expectedJobId == null || jobId == expectedJobId) &&
+      domain == 'units' &&
+      direction == 'export' &&
+      format == expectedFormat.databaseValue &&
+      state is String &&
+      validStates.contains(state) &&
+      rawCreatedAt is String &&
+      (rawCreatedAt.endsWith('Z') || rawCreatedAt.endsWith('+00:00')) &&
+      createdAt != null &&
+      createdAt.isUtc &&
+      _isStringKeyedMap(summary) &&
+      startedAt.isValid &&
+      finishedAt.isValid;
+  if (!isValid) {
+    throw const UnitExportException(
+      code: UnitExportFailureCode.invalidResponse,
+      message: 'The export service returned invalid job metadata.',
+    );
+  }
+  return UnitFileJob(
+    id: jobId,
+    institutionId: '',
+    domain: domain as String,
+    format: expectedFormat,
+    status: UnitFileJobStatusValues.fromDatabaseValue(state),
+    summary: Map<String, dynamic>.from(summary as Map),
+    createdAt: createdAt,
+    startedAt: startedAt.value,
+    finishedAt: finishedAt.value,
+    result: const UnitFileJobResult(),
+    errors: const <UnitFileJobError>[],
+  );
+}
+
+bool _isStringKeyedMap(Object? value) => value is Map && value.keys.every((key) => key is String);
+
+({bool isValid, DateTime? value}) _exportUtcTimestamp(Object? raw, {required bool optional}) {
+  if (raw == null) return (isValid: optional, value: null);
+  if (raw is! String || !(raw.endsWith('Z') || raw.endsWith('+00:00'))) {
+    return (isValid: false, value: null);
+  }
+  final value = DateTime.tryParse(raw);
+  return (isValid: value != null && value.isUtc, value: value);
+}
+
+Uri _validateExportDownloadUrl(
+  Object? rawUrl, {
+  required String storageUrl,
+  required String jobId,
+  required UnitFileFormat jobFormat,
+  required UnitFileFormat format,
+}) {
+  final url = rawUrl is String ? Uri.tryParse(rawUrl) : null;
+  final storageBase = Uri.tryParse(storageUrl);
+  final tokenValues = url?.queryParametersAll['token'];
+  final downloadValues = url?.queryParametersAll['download'];
+  final normalizedStoragePath = storageBase == null
+      ? ''
+      : storageBase.path.replaceFirst(RegExp(r'/$'), '');
+  final artifactPattern = RegExp(
+    '^${RegExp.escape(normalizedStoragePath)}/object/sign/coelo-operations/'
+    'exports/units/${RegExp.escape(jobId)}/'
+    r'[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.'
+    '${RegExp.escape(format.fileExtension)}\$',
+  );
+  final isValid =
+      url != null &&
+      storageBase != null &&
+      _canonicalUuidPattern.hasMatch(jobId) &&
+      jobFormat == format &&
+      url.scheme == 'https' &&
+      storageBase.scheme == 'https' &&
+      url.host.toLowerCase() == storageBase.host.toLowerCase() &&
+      url.port == storageBase.port &&
+      url.userInfo.isEmpty &&
+      url.fragment.isEmpty &&
+      !url.path.contains('%') &&
+      artifactPattern.hasMatch(url.path) &&
+      url.queryParametersAll.keys.every((key) => key == 'token' || key == 'download') &&
+      tokenValues != null &&
+      tokenValues.length == 1 &&
+      tokenValues.single.trim().isNotEmpty &&
+      (downloadValues == null || downloadValues.length == 1);
+  if (!isValid) {
+    throw const UnitExportException(
+      code: UnitExportFailureCode.invalidDownloadUrl,
+      message: 'The signed export URL is invalid.',
+    );
+  }
+  return url;
+}
+
+final RegExp _canonicalUuidPattern = RegExp(
+  r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+);
 
 UnitTypeRequestReceipt _typeRequestReceipt(Map<String, dynamic> row) => UnitTypeRequestReceipt(
   requestId: _string(row['request_id']),

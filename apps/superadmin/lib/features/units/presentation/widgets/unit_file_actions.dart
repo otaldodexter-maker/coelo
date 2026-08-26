@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,7 +11,7 @@ import '../../../../core/platform/open_download.dart';
 import '../../domain/unit_backend_commands.dart';
 import '../../domain/unit_directory.dart';
 
-final class UnitFileActions extends StatelessWidget {
+final class UnitFileActions extends StatefulWidget {
   const UnitFileActions({
     required this.activityController,
     required this.query,
@@ -18,6 +20,7 @@ final class UnitFileActions extends StatelessWidget {
     this.backendCommands,
     this.compact = false,
     this.viewLabel,
+    this.openUrl,
     super.key,
   });
 
@@ -28,17 +31,30 @@ final class UnitFileActions extends StatelessWidget {
   final UnitBackendCommandsGateway? backendCommands;
   final bool compact;
   final String? viewLabel;
+  final Future<bool> Function(String url)? openUrl;
+
+  @override
+  State<UnitFileActions> createState() => _UnitFileActionsState();
+}
+
+final class _UnitFileActionsState extends State<UnitFileActions> {
+  bool _exportBusy = false;
+  _UnitExportAttempt? _retryAttempt;
+  _UnitPendingDownload? _pendingDownload;
 
   Future<void> _export(BuildContext context, UnitFileFormat format) async {
-    final gateway = backendCommands;
+    if (_exportBusy) return;
+    final gateway = widget.backendCommands;
     if (gateway == null) {
       final demoFormat = format == UnitFileFormat.csv
           ? SuperadminExportFormat.csv
           : SuperadminExportFormat.xlsx;
-      activityController.completeDemoExport(
+      widget.activityController.completeDemoExport(
         demoFormat,
-        subject: viewLabel == null ? 'Unidades' : 'Unidades · $viewLabel',
-        fileBaseName: viewLabel == null ? 'unidades' : 'unidades-${_viewSuffix(viewLabel!)}',
+        subject: widget.viewLabel == null ? 'Unidades' : 'Unidades · ${widget.viewLabel}',
+        fileBaseName: widget.viewLabel == null
+            ? 'unidades'
+            : 'unidades-${_viewSuffix(widget.viewLabel!)}',
       );
       showSuperadminNotice(
         context,
@@ -48,40 +64,47 @@ final class UnitFileActions extends StatelessWidget {
       return;
     }
 
+    final signature = _exportSignature(format);
+    setState(() => _exportBusy = true);
     try {
-      final result = await gateway.generateExport(
-        UnitExportRequest(
-          format: format,
-          filters: UnitExportFilters(
-            search: query.search,
-            institutionIds: query.institutionIds,
-            institutionTypeIds: query.institutionTypeIds,
-            unitTypeIds: query.unitTypeIds,
-            statuses: query.statuses,
-            planIds: query.planIds,
-            states: query.states,
-            cities: query.cities,
-            districts: query.districts,
-          ),
-          currentView: UnitExportCurrentView(
-            sort: _exportSort(query.sortColumn),
-            sortAscending: query.sortAscending,
-            groupByInstitution: groupByInstitution,
-            columns: const [
-              'institution_name',
-              'institution_type_name',
-              'name',
-              'unit_type_name',
-              'unit_status',
-              'effective_plan_name',
-            ],
-          ),
-          idempotencyKey: requestIdFactory(),
-        ),
-      );
+      var pending = _pendingDownload;
+      if (pending != null && pending.signature != signature) {
+        _pendingDownload = null;
+        pending = null;
+      }
+
+      if (pending == null) {
+        final retainedAttempt = _retryAttempt;
+        final attempt = retainedAttempt != null && retainedAttempt.signature == signature
+            ? retainedAttempt
+            : _UnitExportAttempt(
+                signature: signature,
+                request: _buildExportRequest(format, widget.requestIdFactory()),
+              );
+        if (!identical(attempt, retainedAttempt)) _retryAttempt = attempt;
+
+        final result = await gateway.generateExport(attempt.request);
+        if (!mounted) return;
+        _retryAttempt = null;
+        if (!result.expiresAt.toUtc().isAfter(DateTime.now().toUtc())) {
+          throw const UnitExportException(
+            code: UnitExportFailureCode.expired,
+            message: 'The signed export URL has expired.',
+          );
+        }
+        pending = _UnitPendingDownload(signature: signature, download: result);
+        _pendingDownload = pending;
+      } else if (!pending.download.expiresAt.toUtc().isAfter(DateTime.now().toUtc())) {
+        _pendingDownload = null;
+        throw const UnitExportException(
+          code: UnitExportFailureCode.expired,
+          message: 'The signed export URL has expired.',
+        );
+      }
+
+      final opened = await _openValidatedDownload(pending.download.url.toString());
       if (!context.mounted) return;
-      final opened = await openDownloadUrl(result.url.toString());
-      if (!context.mounted) return;
+      if (opened) _pendingDownload = null;
       showSuperadminNotice(
         context,
         opened
@@ -89,27 +112,91 @@ final class UnitFileActions extends StatelessWidget {
             : 'Exportação pronta, mas o navegador bloqueou a abertura do download.',
         icon: opened ? Icons.download_done_outlined : Icons.info_outline,
       );
-    } on UnitGatewayException {
+    } on UnitExportException catch (error) {
+      if (!_retainsIdempotencyKey(error.code)) _retryAttempt = null;
+      _pendingDownload = null;
+      if (!context.mounted) return;
+      showSuperadminNotice(context, _exportFailureNotice(error.code), icon: Icons.error_outline);
+    } on UnitGatewayException catch (error) {
+      if (!error.retriable) _retryAttempt = null;
+      if (!context.mounted) return;
+      showSuperadminNotice(context, _gatewayFailureNotice(error.code), icon: Icons.error_outline);
+    } on ArgumentError {
+      _retryAttempt = null;
       if (!context.mounted) return;
       showSuperadminNotice(
         context,
-        'Não foi possível gerar a exportação autorizada. Tente novamente.',
+        'Não foi possível validar esta tentativa de exportação. Tente novamente.',
         icon: Icons.error_outline,
       );
+    } finally {
+      if (mounted) setState(() => _exportBusy = false);
     }
   }
 
+  Future<bool> _openValidatedDownload(String url) async {
+    try {
+      return await (widget.openUrl ?? openDownloadUrl)(url);
+    } on Object {
+      return false;
+    }
+  }
+
+  UnitExportRequest _buildExportRequest(UnitFileFormat format, String idempotencyKey) =>
+      UnitExportRequest(
+        format: format,
+        filters: _exportFilters,
+        currentView: _exportCurrentView,
+        idempotencyKey: idempotencyKey,
+      );
+
+  UnitExportFilters get _exportFilters => UnitExportFilters(
+    search: widget.query.search,
+    institutionIds: widget.query.institutionIds,
+    institutionTypeIds: widget.query.institutionTypeIds,
+    unitTypeIds: widget.query.unitTypeIds,
+    statuses: widget.query.statuses,
+    planIds: widget.query.planIds,
+    states: widget.query.states,
+    cities: widget.query.cities,
+    districts: widget.query.districts,
+  );
+
+  UnitExportCurrentView get _exportCurrentView => UnitExportCurrentView(
+    sort: _exportSort(widget.query.sortColumn),
+    sortAscending: widget.query.sortAscending,
+    groupByInstitution: widget.groupByInstitution,
+    columns: const [
+      'institution_name',
+      'institution_type_name',
+      'name',
+      'unit_type_name',
+      'unit_status',
+      'effective_plan_name',
+    ],
+  );
+
+  String _exportSignature(UnitFileFormat format) => jsonEncode({
+    'format': format.databaseValue,
+    'filters': _exportFilters.toRpc(),
+    'current_view': _exportCurrentView.toRpc(),
+  });
+
   @override
   Widget build(BuildContext context) {
-    return CoeloAdminFileActions(
-      compact: compact,
+    final actions = CoeloAdminFileActions(
+      compact: widget.compact,
       actions: [
         CoeloAdminFileAction(
           key: const Key('unit-files-import'),
           label: 'Importar',
           icon: Icons.upload_file_outlined,
-          onPressed: () =>
-              _showImportDialog(context, activityController, backendCommands, requestIdFactory),
+          onPressed: () => _showImportDialog(
+            context,
+            widget.activityController,
+            widget.backendCommands,
+            widget.requestIdFactory,
+          ),
         ),
         CoeloAdminFileAction(
           key: const Key('unit-files-export-csv'),
@@ -125,8 +212,64 @@ final class UnitFileActions extends StatelessWidget {
         ),
       ],
     );
+    return Semantics(
+      key: const Key('unit-files-export-semantics'),
+      container: true,
+      liveRegion: _exportBusy,
+      enabled: !_exportBusy,
+      label: _exportBusy ? 'Exportação de unidades em andamento' : 'Ações de arquivos de unidades',
+      child: ExcludeFocus(
+        excluding: _exportBusy,
+        child: AbsorbPointer(
+          absorbing: _exportBusy,
+          child: ExcludeSemantics(excluding: _exportBusy, child: actions),
+        ),
+      ),
+    );
   }
 }
+
+final class _UnitExportAttempt {
+  const _UnitExportAttempt({required this.signature, required this.request});
+
+  final String signature;
+  final UnitExportRequest request;
+}
+
+final class _UnitPendingDownload {
+  const _UnitPendingDownload({required this.signature, required this.download});
+
+  final String signature;
+  final UnitExportDownload download;
+}
+
+String _exportFailureNotice(UnitExportFailureCode code) => switch (code) {
+  UnitExportFailureCode.invalidDownloadUrl =>
+    'O link de download recebido não é seguro. Gere uma nova exportação.',
+  UnitExportFailureCode.expired => 'O link de download expirou. Gere uma nova exportação.',
+  UnitExportFailureCode.notReady =>
+    'A exportação ainda está sendo processada. Tente novamente em instantes.',
+  UnitExportFailureCode.terminal =>
+    'A exportação não pôde ser concluída. Revise os filtros e tente novamente.',
+  UnitExportFailureCode.invalidResponse =>
+    'A resposta da exportação não pôde ser validada. Tente novamente.',
+};
+
+bool _retainsIdempotencyKey(UnitExportFailureCode code) =>
+    code == UnitExportFailureCode.notReady || code == UnitExportFailureCode.invalidResponse;
+
+String _gatewayFailureNotice(UnitGatewayErrorCode code) => switch (code) {
+  UnitGatewayErrorCode.unauthorized =>
+    'Sua sessão não autoriza esta exportação. Entre novamente e tente de novo.',
+  UnitGatewayErrorCode.notFound =>
+    'A exportação solicitada não foi encontrada. Gere uma nova exportação.',
+  UnitGatewayErrorCode.conflict => 'A exportação mudou enquanto era processada. Tente novamente.',
+  UnitGatewayErrorCode.validation =>
+    'Os filtros da exportação foram rejeitados. Revise-os e tente novamente.',
+  UnitGatewayErrorCode.unavailable =>
+    'Não foi possível gerar a exportação autorizada. Tente novamente.',
+  UnitGatewayErrorCode.unexpected => 'Não foi possível concluir a exportação. Tente novamente.',
+};
 
 UnitExportSortField _exportSort(UnitDirectorySortColumn value) => switch (value) {
   UnitDirectorySortColumn.name => UnitExportSortField.name,
