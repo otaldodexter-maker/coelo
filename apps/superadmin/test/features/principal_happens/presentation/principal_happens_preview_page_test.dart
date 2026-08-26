@@ -32,17 +32,17 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('renders the canonical mobile anatomy and local social actions', (tester) async {
+  testWidgets('renders as framed shell content without duplicate chrome', (tester) async {
     await pumpHappens(tester, size: const Size(375, 900));
 
-    expect(find.byKey(const Key('principal-happens-logo')), findsOneWidget);
-    expect(find.byKey(const Key('principal-happens-bug')), findsOneWidget);
-    expect(find.byKey(const Key('principal-happens-notifications')), findsOneWidget);
-    expect(find.byKey(const Key('principal-happens-context-avatar')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-logo')), findsNothing);
+    expect(find.byKey(const Key('principal-happens-bug')), findsNothing);
+    expect(find.byKey(const Key('principal-happens-notifications')), findsNothing);
+    expect(find.byKey(const Key('principal-happens-context-avatar')), findsNothing);
     expect(find.text('Acontece'), findsWidgets);
     expect(find.text('Agora'), findsOneWidget);
     expect(find.text('Ver tudo'), findsOneWidget);
-    expect(find.byKey(const Key('principal-happens-mobile-nav')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-mobile-nav')), findsNothing);
     expect(find.byKey(const Key('principal-happens-desktop-rail')), findsNothing);
     expect(find.byKey(const Key('principal-happens-context-column')), findsNothing);
 
@@ -112,11 +112,11 @@ void main() {
     expect(forYouOpened, isTrue);
   });
 
-  testWidgets('uses the optional create callback only for the central action', (tester) async {
+  testWidgets('uses the publication CTA inside the framed content', (tester) async {
     var created = false;
     await pumpHappens(tester, size: const Size(375, 900), onCreatePost: () => created = true);
 
-    await tester.tap(find.byTooltip('Criar'));
+    await tester.tap(find.byKey(const Key('principal-happens-create')));
     expect(created, isTrue);
     expect(tester.takeException(), isNull);
   });
@@ -131,10 +131,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('renders desktop rail, feed and contextual column', (tester) async {
+  testWidgets('keeps the desktop feed and context inside the shell content', (tester) async {
     await pumpHappens(tester, size: const Size(1440, 1000));
 
-    expect(find.byKey(const Key('principal-happens-desktop-rail')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-desktop-rail')), findsNothing);
     expect(find.byKey(const Key('principal-happens-feed')), findsOneWidget);
     expect(find.byKey(const Key('principal-happens-context-column')), findsOneWidget);
     expect(find.text('Próximos eventos'), findsOneWidget);
