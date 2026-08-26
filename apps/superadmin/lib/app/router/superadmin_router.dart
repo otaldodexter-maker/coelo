@@ -9,6 +9,7 @@ import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanIm
 import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_attendance_repository.dart';
+import '../dev_menu/development_invite_repository.dart';
 import '../dev_menu/development_routine_repository.dart';
 import '../activity/superadmin_activity.dart';
 import '../prototype/superadmin_prototype_store.dart';
@@ -236,6 +237,9 @@ GoRouter createSuperadminRouter({
   DevelopmentRoutineRepository? cachedRoutinePreviewRepository;
   DevelopmentRoutineRepository routinePreviewRepository() =>
       cachedRoutinePreviewRepository ??= DevelopmentRoutineRepository.content();
+  DevelopmentInviteRepository? cachedInvitePreviewRepository;
+  DevelopmentInviteRepository invitePreviewRepository() =>
+      cachedInvitePreviewRepository ??= DevelopmentInviteRepository();
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
@@ -2645,7 +2649,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devInvites,
             name: SuperadminRoutes.devInvitesName,
             builder: (context, state) => InviteDirectoryPage(
-              repository: inviteRepository,
+              repository: invitePreviewRepository(),
               logout: _previewLogout,
               onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
               onCreate: () => context.goNamed(SuperadminRoutes.devInviteCreateName),
@@ -2659,7 +2663,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devInviteCreate,
             name: SuperadminRoutes.devInviteCreateName,
             builder: (context, state) => InviteFormPage(
-              repository: inviteRepository,
+              repository: invitePreviewRepository(),
               logout: _previewLogout,
               onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),
               onCancel: () => context.goNamed(SuperadminRoutes.devInvitesName),
@@ -2670,7 +2674,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devInviteDetail,
             name: SuperadminRoutes.devInviteDetailName,
             builder: (context, state) => InviteDetailPage(
-              repository: inviteRepository,
+              repository: invitePreviewRepository(),
               inviteId: state.pathParameters['inviteId']!,
               logout: _previewLogout,
               onDestinationSelected: (value) => _navigateFromDevelopmentShell(context, value),

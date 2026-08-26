@@ -1,12 +1,12 @@
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
+import 'package:coelo_superadmin/app/dev_menu/development_invite_repository.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
-import 'package:coelo_superadmin/features/invites/data/fake_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/plans/data/fake_plan_catalog_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('plan and invite actions reach activity center and sanitized audit once', () {
+  test('plan and invite actions reach activity center and sanitized audit once', () async {
     final now = DateTime.utc(2026, 8, 3, 12);
     final activities = SuperadminActivityController(now: () => now);
     final store = SuperadminPrototypeStore(activityController: activities, now: () => now);
@@ -14,8 +14,32 @@ void main() {
     final plans = FakePlanCatalogRepository(store: store);
     plans.update(plans.plans.first.copyWith(), reason: 'Revisão operacional local.');
 
-    final invites = FakeInviteRepository(now: () => now, prototypeStore: store);
-    invites.resend(invites.list(const InviteQuery()).first.id);
+    final invites = DevelopmentInviteRepository(now: () => now);
+    final page = await invites.fetchPage(InviteDirectoryQuery());
+    final invite = page.items.first;
+    final result = await invites.resend(
+      InviteResendCommand(
+        inviteId: invite.id,
+        requestId: 'operational-resend',
+        expectedVersion: invite.managementVersion,
+      ),
+    );
+    store.recordActivity(
+      kind: SuperadminActivityKind.announcement,
+      subject: 'Convites',
+      summary: 'Convite reenviado no ambiente local.',
+    );
+    store.recordAuditEvent(
+      module: 'Convites',
+      action: 'reenviado',
+      objectType: 'convite',
+      objectId: result.invite.id,
+      risk: PrototypeAuditRisk.medium,
+      after: {
+        'status': result.invite.status.name,
+        'expiresAt': result.invite.expiresAt.toIso8601String(),
+      },
+    );
 
     for (final module in ['Planos', 'Convites']) {
       expect(store.auditEvents.where((event) => event.module == module), hasLength(1));

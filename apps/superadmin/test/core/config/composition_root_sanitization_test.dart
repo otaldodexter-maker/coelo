@@ -35,12 +35,18 @@ void main() {
     for (final source in [authScope, app, mainSource]) {
       expect(source, isNot(contains('SupabaseInviteRepository')));
       expect(source, isNot(contains('supabase_invite_repository.dart')));
+      expect(source, isNot(contains('DevelopmentInviteRepository')));
+      expect(source, isNot(contains('development_invite_repository.dart')));
     }
     expect(
       RegExp(r'inviteRepository:\s*const UnavailableInviteRepository\(\)').allMatches(authScope),
       hasLength(2),
     );
     expect(app, contains('this.inviteRepository = const UnavailableInviteRepository()'));
+    expect(router, isNot(contains('SupabaseInviteRepository')));
+    expect(router, isNot(contains('supabase_invite_repository.dart')));
+    expect(RegExp(r'repository:\s*inviteRepository,').allMatches(router), hasLength(3));
+    expect(RegExp(r'repository:\s*invitePreviewRepository\(\),').allMatches(router), hasLength(3));
   });
 
   test('basic Access routes stay statically unavailable without page composition', () {

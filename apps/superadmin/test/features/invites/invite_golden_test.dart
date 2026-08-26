@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:coelo_superadmin/features/invites/data/fake_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_detail_page.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_page.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_form_page.dart';
@@ -9,6 +8,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'invite_test_repository.dart';
 
 void main() {
   setUpAll(_loadGoldenFonts);
@@ -129,7 +130,7 @@ void main() {
   });
 }
 
-FakeInviteRepository _repository() => FakeInviteRepository(now: () => DateTime(2026, 8, 4, 12));
+TestInviteRepository _repository() => TestInviteRepository();
 
 Future<void> _pumpGolden(
   WidgetTester tester,
