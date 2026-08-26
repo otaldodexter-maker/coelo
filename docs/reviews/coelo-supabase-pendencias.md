@@ -505,7 +505,7 @@ somada à da família; espera por decisão externa não está incluída.
 | 4 | `units` | `units.create` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
 | 4 | `units` | `units.edit` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
 | 4 | `units` | `units.error` | Contrato backend de falha foi inventariado, mas o estado de erro produtivo e sua recuperação não possuem E2E. | `audited` | Reproduzir uma falha + teste local mínimo; não fecha ação. | Básica + erro tipado, autorização e ausência de dados antes da permissão. | Intermediária + tenant A/B, sessão revogada, ID adulterado e retry seguro. | Avançada + Flutter/E2E, regressão, remoto autorizado, auditoria e cleanup. | `Avançada` | 2–4 h | Erro backend tipado e minimizado; nenhum dado pré-autorização; tenant A/B; sessão revogada; ID adulterado; retry sem duplicação ou vazamento. |
-| 4 | `units` | `units.export` | D3a Edge local fechou validação/allowlists e limites do hub, DTO público, teto pré-upload de 5 MiB, neutralização CSV, path canônico, reautorização pré-upload/pré-conclusão e export vazio auditável. A ação permanece `audited`: worker direto e grants legados, escopo/capability institucional, revogação antes da materialização, replay pós-`SUCESSO`, retenção/remint, cleanup/purge, remoto e E2E continuam RED ou bloqueados. O contrato de escopo está `blocked-decision` por OQ-032, ADR 0019 e OQ-034; produção segue fail-closed. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 10–19 h locais + remoto/E2E separado | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. |
+| 4 | `units` | `units.export` | D3a Edge local fechou validação/allowlists e limites do hub, DTO público, teto pré-upload de 5 MiB, neutralização CSV, path canônico, reautorização pré-upload/pré-conclusão e export vazio auditável. O gateway Flutter consome `request_export` → `status` → `download`, a UI rejeita snapshot obsoleto, o worker reutiliza replay `SUCESSO`, preserva artefato pós-conclusão, reautoriza antes da URL e exige segredo interno dedicado do hub antes de qualquer RPC. A ação permanece `audited`: grants legados, escopo/capability institucional, retenção/remint, cleanup/purge, configuração/deploy remoto e E2E continuam RED ou bloqueados. O contrato de escopo está `blocked-decision` por OQ-032, ADR 0019 e OQ-034; produção segue fail-closed. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, tenant A/B, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–15 h locais + remoto/E2E separado | Flutter 45/45. Unit-export 41/47; 6 REDs preservados: purge, retention/remint, cleanup órfão e 3 grants legados. Chamada direta do worker: 403/zero RPC. |
 | 4 | `units` | `units.filter` | Filtros server-side foram inventariados no contrato de listagem, mas noResults e integração produtiva não possuem E2E. | `audited` | RED de filtro/noResults + teste local mínimo; não fecha ação. | Básica + allowlist, escopo backend, autorização e negativas locais. | Intermediária + tenant A/B, filtros/IDs adulterados, paginação e minimização. | Avançada + Flutter/E2E, regressão, remoto autorizado, auditoria e cleanup. | `Avançada` | 2–4 h | Busca/filtros autorizados e allowlisted; noResults sem vazamento; tenant A/B; filtros/IDs adulterados; paginação/minimização e reload. |
 | 4 | `units` | `units.import` | D3b testou CSV/XLSX reais, identidades/memberships, tenant A+B, cross-actor, adulteração, replay, concorrência Edge e falhas parciais. D3c-EDGE fechou o path adulterado. D3d provou create/upload/preview/confirm/retry em conexões Postgres reais num banco descartável, com replay convergente e payload divergente negado; o RED explícito de cleanup confirma que falha do delete mantém job auditável, mas deixa órfão sem retry/purge. Permanecem também os REDs de membership revogada e `request_id` nulo. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. |
 | 4 | `units` | `units.list` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
@@ -2635,3 +2635,80 @@ da simples soma das 207 ações.
   integrado pela atividade Final Higenização a partir do worktree compartilhado.
 - **Memória de conhecimento:** nenhuma regra durável de produto foi aprovada;
   portanto, não há projeção `docs/knowledge` a atualizar.
+
+### Checkpoint seguro 24 — `units.export` replay pós-sucesso
+
+- **Action_id:** somente `units.export`; alteração local em
+  `supabase/functions/unit-export/index.ts`, sem migration, deploy ou mutação
+  remota.
+- **RED reproduzido:** replay de job `SUCESSO` chamava novamente
+  `superadmin_materialize_unit_export_from_edge` e tentava novo upload.
+- **Causa raiz:** após `superadmin_request_unit_export`, o worker ignorava o
+  estado e o `summary.storage_path` canônico já retornados.
+- **Correção mínima:** `successfulReplayArtifactPath` aceita somente mesmo
+  `job_id`, domínio `units_export`, estado `SUCESSO`, formato permitido e path
+  canônico; o ator é reautorizado e o job é devolvido sem materializar, subir
+  arquivo ou assinar URL. A assinatura continua pertencendo ao passo
+  `download` do hub.
+- **Provas:** RED isolado 0/1 → GREEN 1/1; matriz Deno 34/44, com 10 REDs
+  restantes nominalmente preservados; `deno check` GREEN.
+- **Estado:** gate local `local-green`; item Supabase permanece `audited`, ação
+  integrada `blocked-supabase`, zero remoto mutável e zero E2E.
+- **Próximo gate:** tratar resposta de conclusão perdida sem apagar artefato
+  possivelmente canônico.
+
+### Checkpoint seguro 25 — `units.export` fronteira pós-conclusão
+
+- **Action_id:** somente `units.export`; mudança local no worker, sem migration,
+  deploy, configuração ou mutação remota.
+- **REDs reproduzidos:** resposta perdida de
+  `superadmin_complete_unit_file_job` apagava artefato possivelmente confirmado;
+  falha de signed URL após conclusão também apagava o objeto e tentava demotion.
+- **Causa raiz:** o `catch` não distinguia falha compensável pré-commit de falha
+  ambígua ou posterior ao commit.
+- **Correção mínima:** `completionAttempted` é marcado imediatamente antes da
+  RPC de conclusão; depois dessa fronteira, não se executa cleanup nem
+  `superadmin_fail_unit_file_job`. O status/download posterior reconcilia o job.
+- **Provas:** pós-sucesso 3/4, matriz Deno 36/44, `deno check` GREEN e Flutter
+  45/45. Os oito REDs restantes continuam visíveis.
+- **Estado:** os dois gates estão `local-green`; a ação Supabase permanece
+  `audited`, integrada `blocked-supabase`, sem remoto mutável nem E2E.
+- **Próximo gate:** reautorizar após conclusão e antes de mintar signed URL.
+
+### Checkpoint seguro 26 — `units.export` reautorização pós-conclusão
+
+- **Action_id:** somente `units.export`; alteração local no worker, sem migration,
+  deploy ou mutação remota.
+- **RED reproduzido:** a terceira consulta autorizadora, depois da conclusão,
+  não existia; vínculo revogado ainda alcançava Storage.
+- **Correção mínima:** nova `reauthorizeExportJob` após conclusão e antes da
+  signed URL. Falha fica após a fronteira de commit e, portanto, não apaga nem
+  rebaixa o job.
+- **Provas:** pós-sucesso 4/4, matriz Deno 37/44, `deno check` GREEN e Flutter
+  45/45.
+- **Estado:** gate `local-green`; ação Supabase `audited`, integrada
+  `blocked-supabase`; sete REDs, remoto e E2E permanecem.
+- **Próximo gate:** negar acesso direto ao worker sem delegação server-owned.
+
+### Checkpoint seguro 27 — `units.export` delegação server-owned
+
+- **Action_id:** somente `units.export`; alterações locais no hub, worker,
+  fixtures e README, sem migration, deploy, segredo real ou mutação remota.
+- **RED reproduzido:** JWT de navegador alcançava o worker e uma RPC privada,
+  retornando 200 com campos internos.
+- **Correção mínima:** `import-export-jobs` exige
+  `COELO_UNIT_EXPORT_WORKER_SECRET` e o envia no header interno; `unit-export`
+  compara o mesmo segredo antes de ler Authorization ou chamar Supabase.
+  Ausência/divergência retorna 403. Nenhum valor de segredo foi gravado.
+- **Provas:** negativo direto 403 e zero RPC; testes do hub verificam o header;
+  pós-sucesso 4/4; unit-export 41/47; import-export-jobs 22/23, com o RED de
+  cleanup de import já conhecido; Flutter 45/45.
+- **Resíduos nominais:** purge expirado, retenção/remint, cleanup órfão e três
+  grants legados. A configuração remota coordenada do segredo e o deploy das
+  duas Functions exigem autorização específica.
+- **Estado:** pacote principal local 7/7 concluído; item Supabase permanece
+  `audited`, ação integrada `blocked-supabase`, zero `remote-green` e zero E2E.
+- **Encerramento medido:** recorte 100,00% (7/7), restante 0,00% (0/7);
+  backlog integrado 0,00% (0/207), restante 100,00% (207/207). Tempo mensurável
+  de 28 min entre o marcador 16:44 e 17:12 BRT; inventário anterior ao marcador
+  não calculável com segurança.

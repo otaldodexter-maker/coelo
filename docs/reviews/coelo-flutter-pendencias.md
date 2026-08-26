@@ -255,7 +255,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 4.4 | Editar Unidade | `units.edit` | Herança/override, dirty state e erro precisam prova. | `local-green` | B | I | A | C | Avançada | 2 h | Herdar/personalizar, salvar/falhar/abandonar e 200%. |
 | 4.5 | Unidades / Status | `units.status` | Confirmação e estados após mudança não têm prova final. | `local-green` | B | I | A | C | Avançada | 1 h | Ativar/desativar, confirmação negativa, erro e reload. |
 | 4.6 | Unidades / Importar | `units.import` | Adapter cobre template, upload/preview, confirmação e retry, mas produção injeta `UnavailableUnitDirectoryRepository` e `UnavailableUnitBackendCommandsGateway`; composição aguarda handoff Supabase. | `blocked-supabase` | B | I | A | C | Avançada após handoff | 1.5 h + decisão | Composição produtiva aprovada; seleção/validação/preview/confirmar/retry/erro/cancelamento acessíveis. |
-| 4.7 | Unidades / Exportar | `units.export` | Flutter em `audited/local-hardening`: gateway exige hub bifásico `request_export` → `download`, correlaciona o job, valida DTO/colunas/estado/URL HTTPS/TTL e a UI impede duplo clique, preserva idempotência controlada, revalida expiração, injeta opener e apresenta busy/erros acessíveis. Produção continua com gateway `Unavailable`; escopo autoritativo, remoto, cleanup/cache, remint e E2E seguem bloqueados. | `blocked-supabase` | B | I | A | C | Avançada após decisão e handoff | 5–8 h executadas; 6–10 h Flutter residual + decisão/backend/remoto | 41 testes diretos do gateway/widget passam; analyzer tem 0 erros, 0 warnings e 45 infos preexistentes; ainda exige composição aprovada, autorização por vínculo, request/aguardar/retry/download real, tenant A/B, revogação/remint, reload, remoto e E2E sem expor caminho. |
+| 4.7 | Unidades / Exportar | `units.export` | Flutter em `audited/local-hardening`: gateway exige hub trifásico `request_export` → `status` → `download`, correlaciona o job em cada resposta, valida DTO/colunas/estado/URL HTTPS/TTL e a UI impede duplo clique, preserva idempotência controlada, revalida expiração, injeta opener e apresenta busy/erros acessíveis. A UI também revalida o snapshot após o `await` e não abre artefato produzido para filtros/view antigos. Produção continua com gateway `Unavailable`; escopo autoritativo, remoto, cleanup/cache, remint e E2E seguem bloqueados. O worker local reutiliza replay `SUCESSO`, preserva o artefato pós-conclusão, reautoriza antes da URL e exige delegação interna do hub. | `blocked-supabase` | B | I | A | C | Avançada após decisão e handoff | pacote principal local executado; 5–9 h Flutter/composição residual + decisão/backend/remoto | Flutter 45/45; analyzer focado sem issues. Supabase unit-export 41/47, com 6 REDs explícitos. Ainda exige configuração coordenada do segredo, composição aprovada, tenant A/B, grants legados, retenção/remint, cleanup/purge, remoto e E2E sem expor caminho. |
 | 4.8 | Unidades / Erro | `units.error` | Estado de falha e ação criar foram cobertos localmente; erros reais de gateway e telemetria continuam fora. | `local-green` | B | I | A | C | Avançada | 0.5 h | Falhar sem sucesso falso, mensagem clara, criar quando permitido e retry acessível. |
 | 4.9 | Unidades / Acesso negado | `units.access-denied` | UI local esconde toolbar, busca, filtros, tabs, alternância Cards/Tabela, arquivos, criar, Cards/tabela e paginação depois que o diretório entra em `unauthorized`; autorização pré-resposta, cache anterior, sessão/vínculo revogado, tenant A/B, deep link e backend real não foram certificados. | `local-green` | B | I | A | C | Avançada | 0.5 h executada; 2–4 h residuais + integração | Estado final negado em 375 px/200% sem dados ou ações, mensagem semântica e bounds válidos; ainda exigir pré-resposta, success→revogação, foco/teclado, 768–1440, tenant A/B, link direto e E2E. |
 | 4.10 | Unidades / Recarregar | `units.reload` | Retry local alterna falha e acesso negado, mas preservação completa de filtros/paginação e rede real seguem abertas. | `local-green` | B | I | A | C | Avançada | 1 h | Repetir carga sem duplicar, preservar consulta/página e tratar nova falha. |
@@ -914,6 +914,89 @@ ações ainda abertas, dependências integradas, bloqueio e próxima ação segu
   no Flutter, executar um pacote separado para as lacunas não bloqueantes de
   teste (sucesso seguido de nova chave e rebuild alterando filtros/view), ETA
   1–2 h, sem tocar em `units.people-export`.
+
+### Checkpoint seguro — `units.export` snapshot após rebuild
+
+- **Action_id:** somente `units.export`; nenhuma migration, Edge Function,
+  configuração, dado ou recurso remoto foi alterado.
+- **RED reproduzido:** durante `generateExport`, um rebuild com nova
+  `UnitDirectoryQuery` fazia a UI abrir a signed URL do snapshot anterior.
+- **Causa raiz:** a assinatura era capturada antes do `await`, mas não era
+  revalidada antes de abrir o artefato.
+- **Correção mínima:** após a resposta, a UI recompõe a assinatura; em caso de
+  divergência limpa o download pendente, não abre URL e informa que filtros ou
+  visão mudaram, exigindo nova geração.
+- **GREEN focado:** `unit_file_actions_test.dart` passou 21/21, incluindo 375 px
+  com texto a 200%; o conjunto gateway + widget passa agora 42 testes diretos.
+- **Estado:** a correção Flutter desta unidade está `local-green`, mas a ação
+  integrada continua `blocked-supabase`, com produção `Unavailable` e zero E2E.
+- **Próximo gate:** revisar o request/status/download do gateway sem compor
+  produção; preservar os 11 REDs Supabase já catalogados.
+
+### Checkpoint seguro — `units.export` request/status/download
+
+- **Action_id:** somente `units.export`; nenhuma alteração Supabase ou remota.
+- **RED reproduzido:** o teste do contrato canônico exigiu três chamadas e
+  recebeu somente duas; o gateway pulava `status` e ia de `request_export`
+  diretamente para `download`.
+- **Causa raiz:** `generateExport` não consumia a ação `status` já prevista e
+  testada pelo hub local.
+- **Correção mínima:** `status` é chamado com o `job_id` retornado, sua resposta
+  não pode conter artefato, precisa manter ID/domínio/direção/formato e chegar a
+  `SUCESSO`; somente então o mesmo ID segue para `download`.
+- **Provas:** gateway 24/24, incluindo job divergente, artefato prematuro e
+  estado não pronto; widget 21/21; analyzer focado em quatro arquivos sem
+  issues. Total direto do recorte Flutter: 45/45.
+- **Estado:** gate Flutter `local-green`; `units.export` integrado continua
+  `blocked-supabase`, produção `Unavailable`, sem remoto mutável e sem E2E.
+- **Próximo gate:** provar replay após sucesso sem rematerialização no backend
+  local, mantendo a composição produtiva fechada.
+
+### Checkpoint seguro — `units.export` fronteira pós-conclusão
+
+- **Action_id:** somente `units.export`; nenhuma alteração Flutter adicional,
+  migration, deploy ou mutação remota.
+- **RED:** resposta de conclusão perdida e falha de signed URL provocavam
+  deleção do artefato possivelmente canônico e tentativa de marcar erro.
+- **Correção:** o worker registra a fronteira antes de chamar a conclusão; após
+  esse ponto, falhas retornam de modo seguro sem cleanup otimista nem demotion.
+- **Provas:** os dois cenários passaram; arquivo pós-sucesso ficou 3/4, matriz
+  Deno 36/44 e regressão Flutter 45/45.
+- **Estado:** dois gates locais GREEN; ação Flutter permanece `local-green`,
+  integrada `blocked-supabase`, produção `Unavailable`, zero E2E.
+- **Próximo gate:** reautorização depois da conclusão e antes da assinatura.
+
+### Checkpoint seguro — `units.export` reautorização pós-conclusão
+
+- **Action_id:** somente `units.export`; nenhuma alteração Flutter, migration,
+  deploy ou mutação remota.
+- **RED:** ator revogado depois do commit ainda alcançava a mintagem da URL.
+- **Correção:** `reauthorizeExportJob` é executada novamente depois da resposta
+  de conclusão e imediatamente antes de `createSignedUrl`.
+- **Provas:** pós-sucesso 4/4, matriz Deno 37/44, `deno check` GREEN e Flutter
+  45/45 preservado.
+- **Estado:** gate local GREEN; ação Supabase `audited`, integrada
+  `blocked-supabase`, produção `Unavailable`, zero remoto/E2E.
+- **Próximo gate:** impedir chamada direta do worker com JWT do navegador.
+
+### Checkpoint seguro — `units.export` delegação exclusiva ao worker
+
+- **Action_id:** somente `units.export`; Flutter não foi recomposto em produção.
+- **RED:** JWT do navegador chamava `unit-export` diretamente, alcançava RPC e
+  podia receber campos privados fora do sanitizador do hub.
+- **Correção:** hub e worker compartilham somente em runtime o segredo dedicado
+  `COELO_UNIT_EXPORT_WORKER_SECRET`; o worker exige o header interno antes de
+  ler a sessão ou chamar RPC. Não foi usado `service_role` como credencial de
+  delegação.
+- **Provas:** chamada direta 403/zero RPC; hub verifica o header; pós-sucesso
+  4/4; suíte unit-export 41/47 e Flutter 45/45.
+- **Estado:** sétimo gate local GREEN e pacote principal 7/7; ação continua
+  `blocked-supabase`, pois segredo/deploy remoto, grants, retenção, cleanup,
+  composição e E2E seguem abertos.
+- **Encerramento medido:** recorte 100,00% (7/7), restante 0,00% (0/7);
+  backlog integrado 0,00% (0/207), restante 100,00% (207/207). Foram medidos
+  28 min entre o marcador retomável 16:44 e 17:12 BRT; o inventário anterior ao
+  marcador não é reconstruível com precisão e não foi inventado.
 
 ### Dependências integradas identificadas e fora de escopo
 
