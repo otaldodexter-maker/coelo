@@ -1,11 +1,11 @@
 ---
-title: "Happens como nome oficial do feed privado"
+title: "Acontece como nome oficial do feed privado"
 status: "Accepted for planning"
 generated_at: "2026-08-04"
 source: "Aprovação explícita do Coelo Owner"
 ---
 
-# Happens como nome oficial do feed privado
+# Acontece como nome oficial do feed privado
 
 ## Contexto
 
@@ -15,8 +15,8 @@ comportamento, regras de autorização ou persistência.
 
 ## Decisão
 
-`Happens` substitui `Flow` em linguagem de produto, feature entitlements,
-scaffolds locais e documentação ativa. Os módulos `Happens`, `Now` e `Moments`
+`Acontece` substitui `Flow` em linguagem de produto, feature entitlements,
+scaffolds locais e documentação ativa. Os módulos `Acontece`, `Agora` e `Momentos`
 continuam independentes no domínio e compostos na experiência do App Coelo.
 
 Identificadores planejados passam a usar `happens`, incluindo
@@ -29,4 +29,4 @@ Identificadores planejados passam a usar `happens`, incluindo
 - Tabelas, migrations, schema, eventos existentes como `post_published` e o
   conceito genérico de fluxo técnico permanecem inalterados.
 - Fontes históricas preservadas em `docs/source/originals/` não são reescritas.
-- Novas specs e implementações devem usar `Happens`/`happens`.
+- Novas specs e implementações devem usar `Acontece`/`happens`.
