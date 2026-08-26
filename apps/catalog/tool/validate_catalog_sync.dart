@@ -59,7 +59,7 @@ CatalogSyncReport validateCatalogSync({
   }
 
   final expectedRegistryIds = entries.values
-      .where((entry) => _requiresImplementation(entry.status))
+      .where(_requiresRegistry)
       .map((entry) => entry.id)
       .toSet();
   for (final id in expectedRegistryIds) {
@@ -103,33 +103,47 @@ CatalogSyncReport validateCatalogSync({
   for (final entry in entries.values) {
     final publicFile = safePublicFiles[entry.id];
     final declaration = publicDeclarations[_declarationKey(entry.ownerPackage, entry.name)];
+    final ownerRequiresRegistry = _registryOwnerPackages.contains(entry.ownerPackage);
+    final declarationFile =
+        declaration?.file ??
+        (publicFile != null && ownerRequiresRegistry
+            ? _findDirectlyExportedPublicClass(
+                repositoryRoot: repositoryRoot,
+                publicFile: publicFile,
+                name: entry.name,
+              )
+            : null);
     File? sourceFile;
-    if (publicFile != null && declaration != null) {
-      sourceFile = _containedFile(repositoryRoot, declaration.file);
+    if (publicFile != null && declarationFile != null) {
+      sourceFile = _containedFile(repositoryRoot, declarationFile);
       if (sourceFile == null) {
         diagnostics.add(
           CatalogSyncDiagnostic(
             code: 'invalid-public-declaration-path',
             message: 'A declaração exportada está fora da raiz do repositório.',
             id: entry.id,
-            path: declaration.file.path,
+            path: declarationFile.path,
           ),
         );
       }
     } else if (publicFile != null && _requiresImplementation(entry.status)) {
-      diagnostics.add(
-        CatalogSyncDiagnostic(
-          code: 'public-widget-not-exported',
-          message: 'O widget público não foi localizado nos exports do pacote.',
-          id: entry.id,
-          path: entry.publicFile,
-        ),
-      );
+      if (!ownerRequiresRegistry) {
+        sourceFile = publicFile;
+      } else {
+        diagnostics.add(
+          CatalogSyncDiagnostic(
+            code: 'public-widget-not-exported',
+            message: 'O widget público não foi localizado nos exports do pacote.',
+            id: entry.id,
+            path: entry.publicFile,
+          ),
+        );
+      }
     }
     final current = CatalogSyncFingerprint(
       source: catalogSyncFingerprint(
         sourceFile != null && sourceFile.existsSync()
-            ? sourceFile.readAsBytesSync()
+            ? _normalizedDartSourceBytes(sourceFile)
             : const <int>[],
       ),
       example: catalogSyncFingerprint(utf8.encode(entry.example)),
@@ -172,6 +186,9 @@ String catalogSyncFingerprint(List<int> bytes) {
   }
   return hash.toRadixString(16).padLeft(8, '0');
 }
+
+List<int> _normalizedDartSourceBytes(File file) =>
+    utf8.encode(file.readAsStringSync().replaceAll('\r\n', '\n').replaceAll('\r', '\n'));
 
 int runCatalogSyncCommand(List<String> arguments, {void Function(String message)? writeOutput}) {
   final output = writeOutput ?? stdout.writeln;
@@ -344,6 +361,11 @@ CatalogSyncReport? _readPreviousReport(File reportFile, List<CatalogSyncDiagnost
 bool _requiresImplementation(String status) =>
     status == 'implemented' || status == 'catalog-stale' || status == 'deprecated';
 
+const _registryOwnerPackages = {'coelo_ui_core', 'coelo_ui_admin', 'coelo_ui_principal'};
+
+bool _requiresRegistry(_IndexEntry entry) =>
+    _requiresImplementation(entry.status) && _registryOwnerPackages.contains(entry.ownerPackage);
+
 bool _sameStrings(List<String> left, List<String> right) {
   final normalizedLeft = [...left]..sort();
   final normalizedRight = [...right]..sort();
@@ -395,6 +417,94 @@ File? _resolveSafePublicFile({
     );
   }
   return contained;
+}
+
+File? _findDirectlyExportedPublicClass({
+  required Directory repositoryRoot,
+  required File publicFile,
+  required String name,
+}) {
+  if (name.startsWith('_') || !publicFile.existsSync()) {
+    return null;
+  }
+  final barrelSource = maskDartCommentsPreservingStrings(publicFile.readAsStringSync());
+  final maskedBarrel = _maskDartStrings(barrelSource);
+  final exportStartPattern = RegExp(r'^\s*export\b', multiLine: true);
+  final exportPattern = RegExp(r'''^\s*export\s+['"]([^'"]+)['"]\s*;''', multiLine: true);
+  final declarationPattern = RegExp(
+    '^\\s*(?:(?:abstract|base|final|interface|sealed)\\s+)*'
+    'class\\s+${RegExp.escape(name)}\\b',
+    multiLine: true,
+  );
+  for (final exportStart in exportStartPattern.allMatches(maskedBarrel)) {
+    final directiveEnd = barrelSource.indexOf(';', exportStart.end);
+    if (directiveEnd < 0) {
+      continue;
+    }
+    final directive = barrelSource.substring(exportStart.start, directiveEnd + 1);
+    final export = exportPattern.firstMatch(directive);
+    if (export == null) {
+      continue;
+    }
+    final uri = export.group(1)!;
+    if (uri.startsWith('/') || uri.startsWith(r'\') || uri.contains(':')) {
+      continue;
+    }
+    final sourceFile = _containedFile(
+      repositoryRoot,
+      File.fromUri(publicFile.parent.uri.resolve(uri)),
+    );
+    if (sourceFile == null || !sourceFile.existsSync()) {
+      continue;
+    }
+    final source = _maskDartStrings(
+      maskDartCommentsPreservingStrings(sourceFile.readAsStringSync()),
+    );
+    if (declarationPattern.hasMatch(source)) {
+      return sourceFile;
+    }
+  }
+  return null;
+}
+
+String _maskDartStrings(String source) {
+  final result = StringBuffer();
+  var index = 0;
+  while (index < source.length) {
+    final quote = source[index];
+    if (quote != "'" && quote != '"') {
+      result.write(quote);
+      index++;
+      continue;
+    }
+    final triple =
+        index + 2 < source.length && source[index + 1] == quote && source[index + 2] == quote;
+    final delimiterLength = triple ? 3 : 1;
+    result.write(' ' * delimiterLength);
+    index += delimiterLength;
+    while (index < source.length) {
+      final closes = triple
+          ? index + 2 < source.length &&
+                source[index] == quote &&
+                source[index + 1] == quote &&
+                source[index + 2] == quote
+          : source[index] == quote;
+      if (closes) {
+        result.write(' ' * delimiterLength);
+        index += delimiterLength;
+        break;
+      }
+      if (source[index] == r'\' && index + 1 < source.length) {
+        result.write(' ');
+        result.write(source[index + 1] == '\n' ? '\n' : ' ');
+        index += 2;
+        continue;
+      }
+      result.write(source[index] == '\n' ? '\n' : ' ');
+      index++;
+    }
+  }
+  return result.toString();
 }
 
 File? _containedFile(Directory repositoryRoot, File candidate) {

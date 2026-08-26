@@ -1,6 +1,55 @@
 {
-  "status": "synchronized",
-  "diagnostics": [],
+  "status": "catalogStale",
+  "diagnostics": [
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.avatar-crop-dialog",
+      "path": "apps/superadmin/lib/shared/presentation/widgets/avatar_crop_dialog.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.advanced-color-picker",
+      "path": "apps/superadmin/lib/app/widgets/superadmin_advanced_color_picker_dialog.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.cover-crop-dialog",
+      "path": "apps/superadmin/lib/shared/presentation/widgets/cover_crop_dialog.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.dialog-shell",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.interactive-card",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.kanban-board",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.forms-editor",
+      "path": "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.forms-response",
+      "path": "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart"
+    }
+  ],
   "fingerprints": {
     "pattern.rejected-visual-patterns": {
       "source": "811c9dc5",
@@ -87,8 +136,8 @@
       "example": "efe7b835"
     },
     "admin.pagination": {
-      "source": "6838b2d5",
-      "example": "3f55595e"
+      "source": "471a9dcf",
+      "example": "6af44495"
     },
     "admin.create-action": {
       "source": "b111e24a",
@@ -258,9 +307,9 @@
       "source": "811c9dc5",
       "example": "35ab2a58"
     },
-    "product.attendance-new-call-landing": {
+    "product.attendance-responsive-dashboard": {
       "source": "811c9dc5",
-      "example": "58617791"
+      "example": "7cc5df74"
     },
     "governance.family-release-checkpoints": {
       "source": "811c9dc5",

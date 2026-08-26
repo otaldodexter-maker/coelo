@@ -143,6 +143,171 @@ void main() {
     expect(report.diagnostics, contains(_diagnostic('orphan-registry-entry')));
   });
 
+  test('accepts a registered exported public non-widget utility', () {
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/coelo_ui_core.dart',
+      "export 'src/public_formatter.dart';",
+    );
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/src/public_formatter.dart',
+      'final class PublicFormatter { const PublicFormatter(); }',
+    );
+    _writeIndex(indexFile, _entry(id: 'core.public-formatter', name: 'PublicFormatter'));
+    registryFile.writeAsStringSync(_registrySource(const [], id: 'core.public-formatter'));
+
+    final report = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+
+    expect(report.diagnostics, isEmpty);
+    expect(report.status, CatalogSyncStatus.synchronized);
+  });
+
+  test('reports a registered public utility missing from the package exports', () {
+    _write(repositoryRoot, 'packages/coelo_ui_core/lib/coelo_ui_core.dart', '');
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/src/public_formatter.dart',
+      'final class PublicFormatter { const PublicFormatter(); }',
+    );
+    _writeIndex(indexFile, _entry(id: 'core.public-formatter', name: 'PublicFormatter'));
+    registryFile.writeAsStringSync(_registrySource(const [], id: 'core.public-formatter'));
+
+    final report = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+
+    expect(report.diagnostics, contains(_diagnostic('public-widget-not-exported')));
+  });
+
+  test('ignores export and class declarations inside multiline strings', () {
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/coelo_ui_core.dart',
+      "const fakeExport = '''\nexport 'src/public_formatter.dart';\n''';",
+    );
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/src/public_formatter.dart',
+      "const fakeDeclaration = '''\nfinal class PublicFormatter {}\n''';",
+    );
+    _writeIndex(indexFile, _entry(id: 'core.public-formatter', name: 'PublicFormatter'));
+    registryFile.writeAsStringSync(_registrySource(const [], id: 'core.public-formatter'));
+
+    final report = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+
+    expect(report.diagnostics, contains(_diagnostic('public-widget-not-exported')));
+  });
+  test('reports an exported public utility source change without an example update', () {
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/coelo_ui_core.dart',
+      "export 'src/public_formatter.dart';",
+    );
+    final sourceFile = _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/src/public_formatter.dart',
+      'final class PublicFormatter { const PublicFormatter(); }',
+    );
+    _writeIndex(indexFile, _entry(id: 'core.public-formatter', name: 'PublicFormatter'));
+    registryFile.writeAsStringSync(_registrySource(const [], id: 'core.public-formatter'));
+    final baseline = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+    reportFile.writeAsStringSync(jsonEncode(baseline.toJson()));
+    sourceFile.writeAsStringSync(
+      'final class PublicFormatter { const PublicFormatter(); String format() => "formatted"; }',
+    );
+
+    final report = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+
+    expect(report.diagnostics, contains(_diagnostic('source-example-fingerprint-mismatch')));
+  });
+
+  test('ignores source newline style changes', () {
+    _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/coelo_ui_core.dart',
+      "export 'src/public_formatter.dart';",
+    );
+    final sourceFile = _write(
+      repositoryRoot,
+      'packages/coelo_ui_core/lib/src/public_formatter.dart',
+      'final class PublicFormatter {\r\n  const PublicFormatter();\r\n}\r\n',
+    );
+    _writeIndex(indexFile, _entry(id: 'core.public-formatter', name: 'PublicFormatter'));
+    registryFile.writeAsStringSync(_registrySource(const [], id: 'core.public-formatter'));
+    final baseline = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+    reportFile.writeAsStringSync(jsonEncode(baseline.toJson()));
+    sourceFile.writeAsStringSync('final class PublicFormatter {\n  const PublicFormatter();\n}\n');
+
+    final report = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+
+    expect(report.diagnostics, isNot(contains(_diagnostic('source-example-fingerprint-mismatch'))));
+  });
+  test('accepts and fingerprints a private superadmin entry outside the registry', () {
+    _write(repositoryRoot, 'packages/coelo_ui_core/lib/coelo_ui_core.dart', '');
+    final privateFile = _write(
+      repositoryRoot,
+      'apps/superadmin/lib/features/example/private_surface.dart',
+      'final class PrivateSurface {}',
+    );
+    _writeIndex(
+      indexFile,
+      _entry(
+        id: 'superadmin.private-surface',
+        name: 'PrivateSurface',
+        ownerPackage: 'coelo_superadmin',
+        publicFile: 'apps/superadmin/lib/features/example/private_surface.dart',
+      ),
+    );
+    registryFile.writeAsStringSync("const catalogRegistryManifestJson = r'''{}''';");
+
+    final report = _validate(
+      indexFile: indexFile,
+      registryFile: registryFile,
+      reportFile: reportFile,
+      repositoryRoot: repositoryRoot,
+    );
+
+    expect(report.diagnostics, isEmpty);
+    expect(
+      report.fingerprints['superadmin.private-surface']?.source,
+      catalogSyncFingerprint(privateFile.readAsBytesSync()),
+    );
+  });
+
   test('ignores manifest-looking text inside comments', () {
     registryFile.writeAsStringSync('''
 // const catalogRegistryManifestJson = r\'\'\'{"comment.fake":[]}\'\'\';
@@ -300,6 +465,8 @@ CatalogSyncReport _validate({
 
 Map<String, Object?> _entry({
   String id = 'core.public-widget',
+  String name = 'PublicWidget',
+  String ownerPackage = 'coelo_ui_core',
   String publicFile = 'packages/coelo_ui_core/lib/coelo_ui_core.dart',
   String status = 'implemented',
   String example = 'const PublicWidget()',
@@ -307,8 +474,8 @@ Map<String, Object?> _entry({
 }) {
   return {
     'id': id,
-    'name': 'PublicWidget',
-    'ownerPackage': 'coelo_ui_core',
+    'name': name,
+    'ownerPackage': ownerPackage,
     'status': status,
     'publicFile': publicFile,
     'example': example,

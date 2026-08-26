@@ -11,16 +11,25 @@ const catalogRegistryManifestJson = r'''
 {
   "core.avatar": ["small", "medium", "large"],
   "core.search-field": [],
-  "core.form-text-field": [],
+  "core.form-text-field": ["single-line", "multiline-top-aligned", "formatted-input"],
+  "core.date-range-picker": ["open", "compact", "field", "dark", "error", "disabled"],
+  "core.date-range-field": ["field", "disabled", "error"],
+  "core.date-time-field": ["field", "disabled"],
+  "core.calendar-month": ["default", "compact", "marked"],
+  "core.brazilian-phone-input-formatter": ["landline", "mobile"],
   "core.status-chip": [],
   "core.state-panel": [],
   "admin.listing-toolbar": [],
   "admin.multi-select-filter": [],
-  "admin.multi-select-field": [],
+  "admin.multi-select-field": ["searchable", "non-searchable"],
+  "admin.toggle-field": [],
   "admin.single-select-field": [],
   "admin.pagination": [],
   "admin.create-action": ["tile", "banner"],
   "admin.file-actions": [],
+  "admin.interactive-card": ["default-card"],
+  "admin.expandable-status-indicator": [],
+  "admin.flyout": ["standard", "negative-group"],
   "admin.resizable-table": [],
   "admin.kanban-board": [],
   "admin.work-item-card": [],
@@ -54,15 +63,24 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'core.avatar': (_) => const _AvatarExample(),
     'core.search-field': (_) => const _SearchFieldExample(),
     'core.form-text-field': (_) => const _FormTextFieldExample(),
+    'core.date-range-picker': (_) => const _DateRangePickerExample(),
+    'core.date-range-field': (_) => const _DateRangePickerExample(),
+    'core.date-time-field': (_) => const _DateTimeFieldExample(),
+    'core.calendar-month': (_) => const _CalendarMonthExample(),
+    'core.brazilian-phone-input-formatter': (_) => const _BrazilianPhoneFormatterExample(),
     'core.status-chip': (_) => const _StatusChipExample(),
     'core.state-panel': (_) => const _StatePanelExample(),
     'admin.listing-toolbar': (_) => const _ListingToolbarExample(),
     'admin.multi-select-filter': (_) => const _MultiSelectFilterExample(),
     'admin.multi-select-field': (_) => const _MultiSelectFieldExample(),
+    'admin.toggle-field': (_) => const _ToggleFieldExample(),
     'admin.single-select-field': (_) => const _SingleSelectFieldExample(),
     'admin.pagination': (_) => const _PaginationExample(),
     'admin.create-action': (_) => const _CreateActionExample(),
     'admin.file-actions': (_) => const _FileActionsExample(),
+    'admin.interactive-card': (_) => const _InteractiveCardExample(),
+    'admin.expandable-status-indicator': (_) => const _ExpandableStatusExample(),
+    'admin.flyout': (_) => const _FlyoutExample(),
     'admin.resizable-table': (_) => const _ResizableTableExample(),
     'admin.kanban-board': (_) => const _KanbanBoardExample(),
     'admin.work-item-card': (_) => const _WorkItemCardExample(),
@@ -100,6 +118,95 @@ final class _FormTextFieldExample extends StatefulWidget {
 
   @override
   State<_FormTextFieldExample> createState() => _FormTextFieldExampleState();
+}
+
+final class _DateRangePickerExample extends StatefulWidget {
+  const _DateRangePickerExample();
+
+  @override
+  State<_DateRangePickerExample> createState() => _DateRangePickerExampleState();
+}
+
+final class _DateTimeFieldExample extends StatefulWidget {
+  const _DateTimeFieldExample();
+
+  @override
+  State<_DateTimeFieldExample> createState() => _DateTimeFieldExampleState();
+}
+
+final class _DateTimeFieldExampleState extends State<_DateTimeFieldExample> {
+  DateTime? _value = DateTime(2026, 8, 31, 18);
+
+  @override
+  Widget build(BuildContext context) => CoeloDateTimeField(
+    value: _value,
+    onChanged: (value) => setState(() => _value = value),
+    firstDate: DateTime(2025),
+    lastDate: DateTime(2027, 12, 31),
+    currentDate: DateTime(2026, 8, 13),
+    labelText: 'Prazo de lançamento',
+  );
+}
+
+final class _CalendarMonthExample extends StatefulWidget {
+  const _CalendarMonthExample();
+
+  @override
+  State<_CalendarMonthExample> createState() => _CalendarMonthExampleState();
+}
+
+final class _CalendarMonthExampleState extends State<_CalendarMonthExample> {
+  var _month = DateTime(2026, 8);
+  var _selected = DateTime(2026, 8, 18);
+
+  @override
+  Widget build(BuildContext context) => CoeloCalendarMonth(
+    displayedMonth: _month,
+    selectedDate: _selected,
+    events: [
+      CoeloCalendarEventMarker(
+        id: 'meeting',
+        date: DateTime(2026, 8, 12),
+        semanticLabel: 'Reunião',
+      ),
+      CoeloCalendarEventMarker(
+        id: 'test',
+        date: DateTime(2026, 8, 18),
+        semanticLabel: 'Avaliação pedagógica',
+      ),
+    ],
+    onPreviousMonth: () => setState(() => _month = DateTime(_month.year, _month.month - 1)),
+    onNextMonth: () => setState(() => _month = DateTime(_month.year, _month.month + 1)),
+    onDateSelected: (date) => setState(() => _selected = date),
+  );
+}
+
+final class _DateRangePickerExampleState extends State<_DateRangePickerExample> {
+  DateTimeRange? _value = DateTimeRange(start: DateTime(2026, 8, 13), end: DateTime(2026, 8, 18));
+
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloDateRangeField(
+          value: _value,
+          onChanged: (value) => setState(() => _value = value),
+          firstDate: DateTime(2025),
+          lastDate: DateTime(2027, 12, 31),
+          currentDate: DateTime(2026, 8, 13),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloDateRangePicker(
+          value: _value,
+          onChanged: (value) => setState(() => _value = value),
+          firstDate: DateTime(2025),
+          lastDate: DateTime(2027, 12, 31),
+          currentDate: DateTime(2026, 8, 13),
+        ),
+      ],
+    ),
+  );
 }
 
 final class _FormTextFieldExampleState extends State<_FormTextFieldExample> {
@@ -457,6 +564,120 @@ final class _ResizableTableExample extends StatelessWidget {
       onRowPressed: (_) {},
     );
   }
+}
+
+final class _BrazilianPhoneFormatterExample extends StatefulWidget {
+  const _BrazilianPhoneFormatterExample();
+
+  @override
+  State<_BrazilianPhoneFormatterExample> createState() => _BrazilianPhoneFormatterExampleState();
+}
+
+final class _BrazilianPhoneFormatterExampleState extends State<_BrazilianPhoneFormatterExample> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloFormTextField(
+    controller: _controller,
+    labelText: 'Celular',
+    hintText: '+55 (11) 99999-9999',
+    prefixIcon: Icons.phone_rounded,
+    keyboardType: TextInputType.phone,
+    textInputAction: TextInputAction.done,
+    inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
+  );
+}
+
+final class _ToggleFieldExample extends StatefulWidget {
+  const _ToggleFieldExample();
+
+  @override
+  State<_ToggleFieldExample> createState() => _ToggleFieldExampleState();
+}
+
+final class _ToggleFieldExampleState extends State<_ToggleFieldExample> {
+  var _enabled = true;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminToggleField(
+    label: 'Happens',
+    description: 'Permitir registros de atividades da turma.',
+    value: _enabled,
+    onChanged: (value) => setState(() => _enabled = value),
+  );
+}
+
+final class _InteractiveCardExample extends StatelessWidget {
+  const _InteractiveCardExample();
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminInteractiveCard(
+    key: const ValueKey('institution-aquarela-card'),
+    semanticLabel: 'Abrir instituição Aquarela',
+    onPressed: () {},
+    child: const Padding(
+      padding: EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Aquarela'),
+          SizedBox(height: CoeloSpacing.space2),
+          Text('Educação infantil'),
+        ],
+      ),
+    ),
+  );
+}
+
+final class _ExpandableStatusExample extends StatelessWidget {
+  const _ExpandableStatusExample();
+
+  @override
+  Widget build(BuildContext context) {
+    final status = Theme.of(context).extension<CoeloStatusColors>()!;
+    return CoeloAdminExpandableStatusIndicator(
+      label: 'Ativa',
+      semanticLabel: 'Status: Ativa',
+      backgroundColor: status.successContainer,
+      foregroundColor: status.onSuccessContainer,
+    );
+  }
+}
+
+final class _FlyoutExample extends StatelessWidget {
+  const _FlyoutExample();
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminFlyout<String>(
+    items: const [
+      CoeloAdminFlyoutItem(value: 'profile', label: 'Perfil', icon: Icons.person_outline_rounded),
+      CoeloAdminFlyoutItem(
+        value: 'settings',
+        label: 'Configurações',
+        icon: Icons.settings_outlined,
+      ),
+      CoeloAdminFlyoutItem(
+        value: 'logout',
+        label: 'Sair',
+        icon: Icons.logout_rounded,
+        startsGroup: true,
+        tone: CoeloAdminFlyoutTone.negative,
+      ),
+    ],
+    onSelected: (_) {},
+    builder: (context, controller) => OutlinedButton.icon(
+      onPressed: controller.open,
+      icon: const Icon(Icons.more_horiz_rounded),
+      label: const Text('Abrir ações'),
+    ),
+  );
 }
 
 final class _ExampleRow {
