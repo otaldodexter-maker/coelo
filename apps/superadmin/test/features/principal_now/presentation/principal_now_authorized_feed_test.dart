@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/principal_now/domain/principal_now_fee
 import 'package:coelo_superadmin/features/principal_now/presentation/principal_now_preview_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,6 +14,7 @@ void main() {
     WidgetTester tester, {
     required PrincipalNowFeedRepository repository,
     PrincipalNowFeedRefreshSignal? refreshSignal,
+    VoidCallback? onClose,
     bool settle = true,
   }) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
@@ -26,6 +28,7 @@ void main() {
             feedRepository: repository,
             feedScope: scope,
             refreshSignal: refreshSignal,
+            onClose: onClose,
           ),
         ),
       ),
@@ -40,10 +43,19 @@ void main() {
   testWidgets('mostra loading e vazio sem recorrer aos dados demo', (tester) async {
     final pending = Completer<List<PrincipalNowFeedItem>>();
     final repository = _FakeNowFeedRepository(list: (_) => pending.future);
+    var closed = false;
 
-    await pumpAuthorized(tester, repository: repository, settle: false);
+    await pumpAuthorized(
+      tester,
+      repository: repository,
+      onClose: () => closed = true,
+      settle: false,
+    );
     expect(find.bySemanticsLabel('Carregando Agora'), findsOneWidget);
     expect(find.text('Riverside School'), findsNothing);
+    expect(find.byKey(const Key('principal-now-close')), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    expect(closed, isTrue);
 
     pending.complete(const []);
     await tester.pumpAndSettle();

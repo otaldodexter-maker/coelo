@@ -378,10 +378,9 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
 
   @override
   Widget build(BuildContext context) {
-    if (_feedConfigurationInvalid ||
-        (_usesRemoteFeed && (_feedLoading || _feedFailure != null || _stories.isEmpty))) {
-      return _buildFeedState(context);
-    }
+    final showFeedState =
+        _feedConfigurationInvalid ||
+        (_usesRemoteFeed && (_feedLoading || _feedFailure != null || _stories.isEmpty));
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.arrowLeft): _previous,
@@ -391,18 +390,22 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
       },
       child: Focus(
         autofocus: true,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final desktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
-            final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-            return Scaffold(
-              backgroundColor: CoeloPalette.neutral950,
-              body: SafeArea(
-                child: desktop ? _buildDesktop(context) : _buildCompact(context, compact: compact),
+        child: showFeedState
+            ? _buildFeedState(context)
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  final desktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+                  final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+                  return Scaffold(
+                    backgroundColor: CoeloPalette.neutral950,
+                    body: SafeArea(
+                      child: desktop
+                          ? _buildDesktop(context)
+                          : _buildCompact(context, compact: compact),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
     );
   }
@@ -414,49 +417,65 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     return Scaffold(
       backgroundColor: CoeloPalette.neutral950,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Semantics(
-              container: true,
-              liveRegion: true,
-              label: _feedLoading ? 'Carregando Agora' : null,
-              child: CoeloStatePanel(
-                loading: _feedLoading,
-                title: invalid
-                    ? 'Agora indisponível'
-                    : _feedLoading
-                    ? 'Carregando Agora'
-                    : unauthorized
-                    ? 'Agora indisponível'
-                    : empty
-                    ? 'Nada novo no Agora'
-                    : 'Não foi possível carregar',
-                message: invalid
-                    ? 'O contexto necessário para carregar o Agora não está disponível.'
-                    : _feedLoading
-                    ? 'Buscando atualizações disponíveis para você.'
-                    : unauthorized
-                    ? 'Seu vínculo atual não permite acessar estes conteúdos.'
-                    : empty
-                    ? 'Novos registros aparecerão aqui quando forem publicados.'
-                    : 'Confira sua conexão e tente novamente.',
-                icon: invalid
-                    ? Icons.lock_outline_rounded
-                    : _feedLoading
-                    ? null
-                    : unauthorized
-                    ? Icons.lock_outline_rounded
-                    : empty
-                    ? Icons.auto_awesome_outlined
-                    : Icons.cloud_off_outlined,
-                actionLabel: !invalid && !_feedLoading && !unauthorized && !empty
-                    ? 'Tentar novamente'
-                    : null,
-                onAction: !invalid && !_feedLoading && !unauthorized && !empty ? _loadFeed : null,
+        child: Stack(
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Semantics(
+                  container: true,
+                  liveRegion: true,
+                  label: _feedLoading ? 'Carregando Agora' : null,
+                  child: CoeloStatePanel(
+                    loading: _feedLoading,
+                    title: invalid
+                        ? 'Agora indisponível'
+                        : _feedLoading
+                        ? 'Carregando Agora'
+                        : unauthorized
+                        ? 'Agora indisponível'
+                        : empty
+                        ? 'Nada novo no Agora'
+                        : 'Não foi possível carregar',
+                    message: invalid
+                        ? 'O contexto necessário para carregar o Agora não está disponível.'
+                        : _feedLoading
+                        ? 'Buscando atualizações disponíveis para você.'
+                        : unauthorized
+                        ? 'Seu vínculo atual não permite acessar estes conteúdos.'
+                        : empty
+                        ? 'Novos registros aparecerão aqui quando forem publicados.'
+                        : 'Confira sua conexão e tente novamente.',
+                    icon: invalid
+                        ? Icons.lock_outline_rounded
+                        : _feedLoading
+                        ? null
+                        : unauthorized
+                        ? Icons.lock_outline_rounded
+                        : empty
+                        ? Icons.auto_awesome_outlined
+                        : Icons.cloud_off_outlined,
+                    actionLabel: !invalid && !_feedLoading && !unauthorized && !empty
+                        ? 'Tentar novamente'
+                        : null,
+                    onAction: !invalid && !_feedLoading && !unauthorized && !empty
+                        ? _loadFeed
+                        : null,
+                  ),
+                ),
               ),
             ),
-          ),
+            Positioned(
+              right: CoeloSpacing.space3,
+              top: CoeloSpacing.space3,
+              child: _ViewerIconButton(
+                key: const Key('principal-now-close'),
+                tooltip: 'Fechar Agora',
+                icon: Icons.close_rounded,
+                onPressed: _close,
+              ),
+            ),
+          ],
         ),
       ),
     );
