@@ -367,7 +367,7 @@ class _SupportPageState extends State<SupportPage> {
     ],
     onSelected: (status) => _requestStatus(ticket, status),
     builder: (_, controller) {
-      final open = () => controller.isOpen ? controller.close() : controller.open();
+      void open() => controller.isOpen ? controller.close() : controller.open();
       return Semantics(
         key: Key('support-status-${ticket.id}'),
         button: true,
