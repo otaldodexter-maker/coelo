@@ -1460,22 +1460,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               icon: const Icon(Icons.mail_outline_rounded),
               label: const Text('Convidar usuário'),
             ),
-            OutlinedButton.icon(
-              key: const Key('group-invite-export'),
-              onPressed: () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Exportação de convites preparada.'))),
-              icon: const Icon(Icons.download_outlined),
-              label: const Text('Exportar convites (CSV/XLSX)'),
-            ),
-            TextButton.icon(
-              key: const Key('group-invite-import'),
-              onPressed: () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Arquivo pronto para revisão.'))),
-              icon: const Icon(Icons.upload_file_outlined),
-              label: const Text('Importar convites (CSV/XLSX)'),
-            ),
           ],
         ),
       ],

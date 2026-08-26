@@ -350,6 +350,9 @@ void main() {
     }
 
     await tester.ensureVisible(find.byKey(const Key('group-invite-add')));
+    expect(find.byKey(const Key('group-invite-add')), findsOneWidget);
+    expect(find.byKey(const Key('group-invite-export')), findsNothing);
+    expect(find.byKey(const Key('group-invite-import')), findsNothing);
     await tester.tap(find.byKey(const Key('group-invite-add')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-invite-identifier-field')), '@responsavel');
