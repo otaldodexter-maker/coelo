@@ -4,7 +4,7 @@ source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-26"
-action_count: 206
+action_count: 207
 family_count: 37
 ---
 
@@ -257,14 +257,15 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 4.6 | Unidades / Importar | `units.import` | Adapter cobre template, upload/preview, confirmação e retry, mas produção injeta `UnavailableUnitDirectoryRepository` e `UnavailableUnitBackendCommandsGateway`; composição aguarda handoff Supabase. | `blocked-supabase` | B | I | A | C | Avançada após handoff | 1.5 h + decisão | Composição produtiva aprovada; seleção/validação/preview/confirmar/retry/erro/cancelamento acessíveis. |
 | 4.7 | Unidades / Exportar | `units.export` | Flutter em `audited/local-hardening`: gateway exige hub bifásico `request_export` → `download`, correlaciona o job, valida DTO/colunas/estado/URL HTTPS/TTL e a UI impede duplo clique, preserva idempotência controlada, revalida expiração, injeta opener e apresenta busy/erros acessíveis. Produção continua com gateway `Unavailable`; escopo autoritativo, remoto, cleanup/cache, remint e E2E seguem bloqueados. | `blocked-supabase` | B | I | A | C | Avançada após decisão e handoff | 5–8 h executadas; 6–10 h Flutter residual + decisão/backend/remoto | 41 testes diretos do gateway/widget passam; analyzer tem 0 erros, 0 warnings e 45 infos preexistentes; ainda exige composição aprovada, autorização por vínculo, request/aguardar/retry/download real, tenant A/B, revogação/remint, reload, remoto e E2E sem expor caminho. |
 | 4.8 | Unidades / Erro | `units.error` | Estado de falha e ação criar foram cobertos localmente; erros reais de gateway e telemetria continuam fora. | `local-green` | B | I | A | C | Avançada | 0.5 h | Falhar sem sucesso falso, mensagem clara, criar quando permitido e retry acessível. |
-| 4.9 | Unidades / Acesso negado | `units.access-denied` | UI local esconde criar no estado unauthorized; autorização server-side e deep link real não foram certificados. | `local-green` | B | I | A | C | Avançada | 0.5 h | 403/negação sem dados ou ações, sem chamada indevida, teclado e 200%. |
+| 4.9 | Unidades / Acesso negado | `units.access-denied` | UI local esconde toolbar, busca, filtros, tabs, alternância Cards/Tabela, arquivos, criar, Cards/tabela e paginação depois que o diretório entra em `unauthorized`; autorização pré-resposta, cache anterior, sessão/vínculo revogado, tenant A/B, deep link e backend real não foram certificados. | `local-green` | B | I | A | C | Avançada | 0.5 h executada; 2–4 h residuais + integração | Estado final negado em 375 px/200% sem dados ou ações, mensagem semântica e bounds válidos; ainda exigir pré-resposta, success→revogação, foco/teclado, 768–1440, tenant A/B, link direto e E2E. |
 | 4.10 | Unidades / Recarregar | `units.reload` | Retry local alterna falha e acesso negado, mas preservação completa de filtros/paginação e rede real seguem abertas. | `local-green` | B | I | A | C | Avançada | 1 h | Repetir carga sem duplicar, preservar consulta/página e tratar nova falha. |
+| 4.11 | Unidade / Pessoas / Exportar | `units.people-export` | O botão produtivo e o SnackBar de sucesso falso foram removidos: não existe job, arquivo, URL, capability nem contrato de colunas/escopo. A ação permanece ausente até decisão e backend próprios; não confundir com `units.export` nem `people.export`. | `blocked-decision` | B | I | A | C | Completa após decisão | 0,5 h fail-closed executada; 18–32 h para funcional real | RED encontrou o botão; após 10 deleções no widget e 1 expectativa negativa, o teste focado passou e `unit_form_page_test.dart` passou 24/24. Analyzer 0 erros/0 warnings/45 infos; visual e catálogo verdes. Para concluir: capability `people.export` com `unit_id` server-side, AAL2, minimização, tenant A/B, revogação, job/Storage privado, auditoria, cleanup, remoto e E2E. |
 | 5.1 | Turmas / Diretório | `groups.list` | Revalidar diretório produtivo, estados e goldens. | `local-green` | B | I | A | C | Avançada | 1.5 h | Cards/tabela, estados, filtros, 375–1440 e 200%. |
 | 5.2 | Criar Turma | `groups.create` | CRUD produtivo e regressão do formulário permanecem. | `local-green` | B | I | A | C | Avançada | 1.5 h | Criar, validar, erro, duplo envio e baseline de formulário. |
 | 5.3 | Turmas / Detalhe-editar | `groups.edit` | Detalhe/edição e estados de erro não têm prova final. | `local-green` | B | I | A | C | Avançada | 1.5 h | Abrir, editar, cancelar, salvar/falhar e link direto. |
 | 5.4 | Turmas / Membros | `groups.members` | Inclusão/remoção, foco e conflitos continuam abertos. | `local-green` | B | I | A | C | Avançada | 1.5 h | Buscar, incluir/remover, negar, conflito, teclado e reload. |
-| 5.5 | Turmas / Importar | `groups.import` | Fluxo de arquivo ainda não comprovado. | `audited` | B | I | A | C | Avançada | 1 h | Upload, preview, validação, erro e cancelamento. |
-| 5.6 | Turmas / Exportar | `groups.export` | Geração, erro e download não comprovados. | `audited` | B | I | A | C | Avançada | 1 h | Solicitação, progresso, falha/retry e download acessível. |
+| 5.5 | Turmas / Importar | `groups.import` | Botão e SnackBar de sucesso falso foram removidos do formulário; a ação real de arquivo continua ausente, sem picker, gateway, job, upload ou preview. | `audited` / `fail-closed` | B | I | A | C | Avançada | 0,5 h fail-closed executada; 6–12 h + remoto/E2E | RED→GREEN focado 1/1 e suíte do formulário 8/8 em 375 px/200%; analyzer 0 erros/0 warnings. Para concluir: seleção, preview, validação, confirmação, retry/reload, autorização, tenant A/B, remoto e E2E. |
+| 5.6 | Turmas / Exportar | `groups.export` | Botão e SnackBar de sucesso falso foram removidos do formulário; a ação real continua ausente, sem gateway, job, arquivo, status, URL ou download. | `audited` / `fail-closed` | B | I | A | C | Avançada | 0,5 h fail-closed executada; 6–12 h + remoto/E2E | RED→GREEN focado 1/1 e suíte do formulário 8/8 em 375 px/200%; analyzer 0 erros/0 warnings. Para concluir: request/status/download, URL expirada, retry/reload, autorização, tenant A/B, remoto e E2E. |
 | 6.1 | Pessoas / Diretório | `people.list` | Identidade produtiva fail-closed; oito goldens abertos. | `audited` | B | I | A | C | Avançada | 3 h | Cards/tabela/tabs/filtros/estados, 375–1440 e goldens. |
 | 6.2 | Criar Pessoa | `people.create` | Revalidar formulário e resultado sem fingir persistência. | `local-green` | B | I | A | C | Avançada | 2.5 h | Criar/validar/falhar, 200%, teclado e baseline administrativa. |
 | 6.3 | Editar Pessoa | `people.edit` | Carga, vínculos, erro e dirty state ainda abertos. | `local-green` | B | I | A | C | Avançada | 2.5 h | Abrir/editar/salvar/falhar/abandonar, 375–1440. |
@@ -811,6 +812,54 @@ ações ainda abertas, dependências integradas, bloqueio e próxima ação segu
   próximo pacote Flutter seguro é reduzir warnings/infos por grupo, sem misturar
   backend; ETA inicial 1–2 h para um grupo pequeno.
 
+### Checkpoint seguro — `units.access-denied`
+
+- Posição atual: o pacote independente corrigiu apenas a composição final de
+  acesso negado em `unit_directory_page.dart` e adicionou
+  `unit_directory_access_denied_test.dart`. O hunk anterior
+  `createAction: UnitCreateBanner(onPressed: onCreate),` foi preservado.
+- Correção comprovada: quando o ViewModel termina em `unauthorized`, a árvore
+  mantém o painel canônico de negação e omite toolbar, busca/filtros, tabs,
+  alternância de visualização, `UnitFileActions`, import/export, criar,
+  Cards/tabela e paginação. O source atual **não** oculta esses controles em
+  `initial/loading`; não registrar essa proteção como executada.
+- Evidência TDD: o RED causal encontrou `UnitDirectoryToolbar` no estado final
+  negado. Após o patch, o handoff final registrou 23 testes non-golden e todos
+  os 23 passaram; uma suíte ampliada desta frente executou 25 testes e todos os
+  25 passaram. Isso inclui acesso negado, states, página e rotas prod/DEV
+  fail-closed, mas não constitui E2E.
+- Evidência de qualidade: analyzer focado dos dois paths sem issues; analyzer
+  global com 0 erros, 0 warnings e 45 infos preexistentes; format 2/2 sem
+  mudança e diff-check verde. Validador visual admin terminou com exit 0. O
+  catálogo em report externo ficou `synchronized` com zero diagnóstico no
+  snapshot corrente; essa mudança concorrente não é atribuída ao patch de
+  Unidades. Nenhum golden foi executado ou atualizado.
+- Manifesto final: `unit_directory_page.dart`, 16.120 bytes, SHA-256
+  `8d51cdda14835d4b0eff14f739470e139ffc85af89a83e0ad54913b28777294e`,
+  OID `c5cc5a2e1a14fceccd890498d9108adb925995fd`;
+  `unit_directory_access_denied_test.dart`, 4.276 bytes, SHA-256
+  `02863c77062affbe2bb43bc1301c2a2d6e3507f74353da307cdb59f43a9f1210`,
+  OID `19a0d37f85129ecff5dac813f2ab3d372c6bfec0`.
+- Estado correto: atividade corretiva local concluída; ação Flutter permanece
+  somente `local-green`; tela de Unidades não concluída; Supabase continua
+  `audited/fail-closed`; integração permanece `blocked-supabase`; zero E2E.
+- Pendências e bloqueios: o ViewModel ainda conserva página/filtros anteriores
+  em memória após a negação, embora a UI final não os renderize. Ausência de
+  controles antes da primeira resposta, success→revogação, sessão/vínculo
+  revogado, tenant A/B, link direto para criar/editar, foco/teclado e prova
+  backend/RLS exigem pacote e contrato próprios. Não inferir capacidade pelo
+  estado de loading nem ocultar toolbar durante refresh autorizado, pois isso
+  faria busca/filtros perderem geometria e foco.
+- Dependência integrada adicional: o handoff remoto informou RED 42702/42703 em
+  `institutions.import`/`institutions.export`. Este rastreador mantém essas ações
+  somente `audited`, sem `local-green` ou E2E; a falha remota não foi revisada ou
+  certificada nesta atividade Flutter.
+- Próximo passo seguro: congelar os dois paths e este checkpoint para a
+  consolidação documental. Um futuro pacote Avançado de 2–4 h deve começar por
+  contrato explícito de capability/revogação e testes delayed-load,
+  success→revogação, cache/foco e deep link; backend/tenant/E2E permanecem
+  separados.
+
 ### Checkpoint seguro — `units.export` HARDEN-EXPORT A+B
 
 - Posição atual: o pacote Flutter local de hardening A+B foi executado somente
@@ -854,13 +903,11 @@ ações ainda abertas, dependências integradas, bloqueio e próxima ação segu
   autoritativo derivado do vínculo e reautorizar `units.export` em request,
   materialize, complete, sign e remint. TTL/cache-control/cleanup por objeto são
   responsabilidades backend/remoto fora deste recorte.
-- Lacuna separada, sem novo `action_id`: `unit_local_management_section.dart`
-  contém uma exportação de pessoas distinta que hoje mostra falso sucesso sem
-  job/arquivo/URL/auditoria. Registrar como candidato futuro
-  `units.people-export`, sem confundir com `units.export` nem `people.export`;
-  path concorrente não foi tocado. Pacote próprio aconselhado: Completa,
-  18–32 h, começando por RED fail-closed e decisão de capability/AAL2/colunas
-  minimizadas.
+- Lacuna separada registrada como `units.people-export`: o botão e o SnackBar
+  de falso sucesso foram removidos. A ação produtiva permanece ausente e
+  `blocked-decision`, sem confundir com `units.export` nem `people.export`.
+  Implementação funcional exige pacote próprio Completa, 18–32 h, começando
+  por decisão de capability/AAL2/escopo unitário/colunas minimizadas.
 - Próximo passo seguro: preservar estes cinco paths e o rastreador até o handoff
   nominal; não compor produção. Depois, decidir OQ-032/OQ-034 e alinhar o backend
   remoto antes de qualquer fatia de composição/E2E. Se o trabalho continuar só
@@ -871,9 +918,9 @@ ações ainda abertas, dependências integradas, bloqueio e próxima ação segu
 ### Dependências integradas identificadas e fora de escopo
 
 A consulta leve ao rastreador Flutter–Supabase registra a estrutura atual de
-**201 ações normativas + 5 ações de shell = 206 IDs totais**. No último
-checkpoint integrado recebido, 45 estavam `not-reviewed`, 111
-`blocked-supabase` e 50 `blocked-decision`; nenhuma estava `verified-e2e`.
+**202 ações normativas + 5 ações de shell = 207 IDs totais**. No último
+checkpoint integrado recebido, 40 estavam `not-reviewed`, 111
+`blocked-supabase` e 51 `blocked-decision`; nenhuma estava `verified-e2e`.
 Esses números significam que não há ação com prova atual completa do clique no
 Flutter até persistência/autorização no backend. Nesta atividade Flutter:
 
@@ -943,7 +990,7 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 2 | `shell` — Home, menu, contexto, unauthorized, reload | `shell.load` `local-green`; `shell.navigate` `local-green`; `shell.switch-context` `audited`; `shell.unauthorized` `local-green`; `shell.reload` `audited` | Reconciliar deep links e troca de contexto; smoke dos estados e foco; 6 h. |
 | 3 | `institutions` — Lista, filtros, detalhe, criar, editar, status, arquivos, importar/exportar, erro, acesso negado e reload | `institutions.list`/`filter`/`create`/`edit`/`status` `local-green`; `institutions.detail`/`files`/`import`/`export`/`error`/`access-denied`/`reload` `audited` | Revalidar baseline e 7 PNGs alterados, com prova isolada das 12 ações e texto 200%; 16 h. |
 | 4 | `units` — Lista, filtros, criar, editar, status, erro, acesso negado, reload e arquivos | `units.list`/`filter`/`create`/`edit`/`status`/`error`/`access-denied`/`reload` `local-green`; `units.import`/`export` `blocked-supabase` | Diretório recompila e 16 testes passaram; import/export continuam com gateways produtivos indisponíveis. Revisar 17+ PNGs, E2E e composição somente após handoff; 13 h + decisão. |
-| 5 | `groups` — Lista, criar, detalhe/editar, membros, arquivos | `groups.list` `local-green`; `groups.create` `local-green`; `groups.edit` `local-green`; `groups.members` `local-green`; `groups.import` `audited`; `groups.export` `audited` | Preservar Profile About canônico; provar CRUD produtivo, membros, arquivos e goldens; 8 h. |
+| 5 | `groups` — Lista, criar, detalhe/editar, membros, arquivos | `groups.list` `local-green`; `groups.create` `local-green`; `groups.edit` `local-green`; `groups.members` `local-green`; `groups.import`/`groups.export` `audited`/`fail-closed`, com falsos controles removidos | Preservar Profile About canônico; provar CRUD produtivo, membros e fluxos reais de arquivo com gateway/job/Storage, autorização, tenant A/B, remoto/E2E; 8 h + backend. |
 | 6 | `people` — Lista, criar, editar, vínculos | `people.list` `audited`; `people.create` `local-green`; `people.edit` `local-green`; `people.links` `audited`; `people.reload` `audited` | Identidade produtiva fail-closed; comparar 8 goldens de diretório e revisar status/card, vínculo e reload; 12 h. |
 | 7 | `access_profiles` — Lista, criar, detalhe, editar, atribuir/excluir | `access-profiles.list` `audited`; `access-profiles.create` `blocked-decision`; `access-profiles.detail` `audited`; `access-profiles.edit` `blocked-decision`; `access-profiles.assign` `blocked-decision`; `access-profiles.delete` `blocked-decision` | Access Basic 503 é seguro; Access Extended depende de Imports/backend e 16-path closure; não aceitar shims `isDemo/contextCount`; 16 h após decisão. |
 | 8 | `access_models` — Lista, filtros, criar, detalhe, editar, duplicar | `access-models.list`/`filter` `audited`; `access-models.detail`/`duplicate`/`create`/`edit` `blocked-decision` | Manter Basic Access; testes concorrentes foram preservados e composition root segue 503. `deleteModel` não possui superfície UI comprovada. Capability/backend ainda bloqueiam composição; 11 h. |
@@ -1116,6 +1163,9 @@ deixe o Markdown pronto para retomada sem depender da memória da conversa.
 
 | Data | Mudança |
 |---|---|
+| 2026-08-26 | `groups.import`/`groups.export`: removidos do formulário os dois botões e SnackBars que simulavam sucesso sem arquivo, gateway ou job. RED→GREEN focado 1/1 e suíte `group_form_page_test.dart` 8/8; analyzer focado e global sem erros/warnings. Estado máximo `audited`/fail-closed; fluxos reais de import/export, autorização, Storage, remoto e E2E continuam pendentes. |
+| 2026-08-26 | `units.people-export`: removido o botão produtivo que apenas mostrava SnackBar sem gerar job, arquivo ou URL. RED focado reproduziu a ação falsa; GREEN focado 1/1 e suíte `unit_form_page_test.dart` 24/24. Estado máximo fail-closed/`blocked-decision`; funcional real exige capability e snapshot próprios de Pessoas escopados à unidade, backend/Storage, tenant A/B, revogação, cleanup, remoto e E2E. |
+| 2026-08-26 | `units.access-denied`: pacote Flutter local omitiu toolbar/filtros/tabs/arquivos/criar/conteúdo/paginação no estado final `unauthorized`, preservando o `createAction` anterior. Handoff registrou 23 testes finais aprovados e esta frente executou uma suíte ampliada de 25 testes, todos aprovados; analyzer ficou em 0 erros/0 warnings/45 infos. Estado máximo `local-green`; pré-resposta, cache/revogação, tenant A/B, deep link, backend/RLS e E2E permanecem abertos. |
 | 2026-08-26 | `units.export` HARDEN-EXPORT A+B: gateway Flutter passou a exigir `request_export` → `download` com job correlacionado, DTO/colunas/URL/TTL estritos; UI ganhou single-flight, idempotência controlada, opener injetável, expiração e busy acessível. Os dois arquivos diretos executaram 41 testes e todos passaram; analyzer ficou em 0 erros/0 warnings/45 infos e Catálogo externo manteve somente `superadmin.forms-response`. Estado máximo `audited/local-hardening`; produção `Unavailable`, decisões OQ-032/OQ-034, backend/remoto/E2E e `units.people-export` separado permanecem abertos. |
 | 2026-08-26 | P0.5 Units `units.list`: patch de 1 linha forneceu `createAction`; 16 testes Units e 5 router Access passaram; analyzer chegou a zero erros/47 issues; quatro ações de estado adicionadas, totalizando 206 IDs; import/export/backend/goldens permaneceram intocados. |
 | 2026-08-26 | P0.5 Access opção A: 3 arquivos preservados externamente com 12.539 bytes/manifesto idêntico; 2 testes router incompatíveis removidos da árvore; fake alinhado sem `isDemo/contextCount`; 9 testes passaram; Access 3→0 erros e global 4→1, bloqueado por Units; 2 router tests não compilaram por esse erro externo. |

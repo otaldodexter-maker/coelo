@@ -4,7 +4,7 @@ source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions
 status: "living"
 generated_at: "2026-08-26"
 updated_at: "2026-08-26"
-action_count: 206
+action_count: 207
 family_count: 37
 ---
 
@@ -512,10 +512,11 @@ somada à da família; espera por decisão externa não está incluída.
 | 4 | `units` | `units.reload` | Contrato backend de releitura foi inventariado, mas retry/reload produtivo e persistência após recarregar não possuem E2E. | `audited` | RED de retry/reload + teste local mínimo; não fecha ação. | Básica + contrato de releitura, autorização e negativa local. | Intermediária + tenant A/B, sessão revogada, idempotência e persistência. | Avançada + Flutter/E2E, regressão, remoto autorizado, auditoria e cleanup. | `Avançada` | 2–4 h | Retry autorizado; reload reflete estado persistido; tenant A/B; sessão revogada; sem duplicação, cache cruzado ou dados obsoletos. |
 | 4 | `units` | `units.status` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
 | 4 | `units` | `units.access-denied` | A negação backend foi inventariada; a superfície produtiva permanece explicitamente fail-closed e sem E2E. | `audited` / `fail-closed` | RED de acesso negado + teste local mínimo; não fecha ação. | Básica + autorização backend, resposta uniforme e nenhum dado pré-autorização. | Intermediária + capability/sessão revogada, tenant A/B e ID adulterado. | Avançada + Flutter/E2E, acesso direto, remoto autorizado, regressão e auditoria. | `Avançada` | 2–4 h | Sem capability, revogado, tenant diferente e ID adulterado recebem negação uniforme; nenhum dado antes da autorização; UI fail-closed comprovada. |
+| 4 | `units` | `units.people-export` | Não existe capability, snapshot, job ou worker para exportar Pessoas por unidade. `superadmin_people_list` não serve para arquivo porque pode agregar contextos externos da pessoa; `units.export` exporta Unidades; o hub aceita somente `units`. A superfície Flutter foi ocultada e deve permanecer fail-closed. | `blocked-decision` / `fail-closed` | Inventário/RED de ausência; não fecha ação. | Básica + decidir capability, unidade, colunas e modelo 1 linha/pessoa ou vínculo. | Intermediária + snapshot/job/worker, AAL2, tenant A/B, revogação, replay e arquivos locais. | Avançada + remoto autorizado, auditoria, retenção/cleanup e E2E; pode fechar ação. | `Completa` | 8–14 h backend local; 18–32 h vertical total após decisões | Capability `people.export` + `unit_id` server-derived; sem contextos A+B; colunas minimizadas; CSV/XLSX formula-safe; Storage privado ≤5 MiB, URL 5 min, retenção ≤24 h; cross-tenant, ID adulterado, revogado, concorrência, reload e E2E. |
 | 5 | `groups` | `groups.create` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
 | 5 | `groups` | `groups.edit` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
-| 5 | `groups` | `groups.export` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. |
-| 5 | `groups` | `groups.import` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. |
+| 5 | `groups` | `groups.export` | Flutter ocultou o falso controle de exportação, mas adapter produtivo, repository, job, Storage, status e download permanecem indisponíveis. Nenhuma prova Supabase nova foi produzida. | `fail-closed` | RED + teste backend local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, job/arquivo/status e remoto autorizado. | Avançada + regressão, Advisors, auditoria, retenção/cleanup e E2E; pode fechar ação. | `Avançada` | 6–12 h | Request/status/download; arquivo real; ator/tenant/ownership; negações; replay; URL expirada/revogação; DTO sem path; cleanup sem órfão; reload e E2E. |
+| 5 | `groups` | `groups.import` | Flutter ocultou o falso controle de importação, mas adapter produtivo, repository, picker, upload, preview e job permanecem indisponíveis. Nenhuma prova Supabase nova foi produzida. | `fail-closed` | RED + teste backend local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, upload/preview/confirm/retry e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E; pode fechar ação. | `Avançada` | 6–12 h | Seleção/upload/preview/validação/confirm/retry; arquivo real; ator/tenant/ownership; negações; replay; cleanup sem órfão; reload e E2E. |
 | 5 | `groups` | `groups.list` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 5 | `groups` | `groups.members` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 6 | `people` | `people.create` | Acesso está seguro, porém a ação produtiva permanece indisponível. | `fail-closed` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
@@ -732,7 +733,7 @@ não autoriza remover nenhum gate de segurança ou evidência.
 | 35 | `meal_plans` | 6 | 18–36 h |
 | 36 | `internal_users` | 5 | 18–36 h |
 | 37 | `error_pages` | 6 | 12–24 h |
-| — | **Backlog conhecido** | **206** | **715–1430 h** |
+| — | **Backlog conhecido** | **207** | **715–1430 h** |
 
 O total bruto não é promessa de calendário: itens `blocked-decision` somam espera
 externa, e migrations, RLS, Auth, dados sensíveis e remoto exigem pacotes
@@ -756,8 +757,8 @@ do `action_id` não contém `reload`.
 | 1 | `auth` | `audited`: `auth.login`, `auth.recover`, `auth.logout`; `blocked-decision`: `auth.reset`, `auth.mfa` | Wiring de login/logout/refresh e perguntas OQ-006/OQ-016 auditados localmente em 2026-08-26; sem E2E remoto. | Decidir recovery/SMTP/MFA por papel; testar sessão válida/inválida, callback, AAL2, downgrade, revogação e acesso direto. | decisão 0,5 d + 1–2 d |
 | 2 | `shell` | `audited`: `shell.load`, `shell.navigate`, `shell.switch-context`, `shell.unauthorized`, `shell.reload` | Composição/rotas auditadas localmente em 2026-08-26; baseline tinha 79 rotas normais e 96 `/dev`. | Reextrair grafo vivo; provar nenhum dado pré-autorização, limpeza de cache/contexto e zero Supabase em `/dev`. | 1 d |
 | 3 | `institutions` | `local-green`: `institutions.list`, `institutions.filter`, `institutions.detail`, `institutions.create`, `institutions.edit`, `institutions.status`, `institutions.files`, `institutions.error`, `institutions.access-denied`, `institutions.reload`; `fail-closed`: `institutions.import`, `institutions.export` | Contratos gerais tiveram evidência local anterior, mas o plugin oficial confirmou dois wrappers remotos executáveis por `authenticated` com falhas runtime: import `42702` e export `42703`. Nenhuma ação de arquivo está E2E ou concluída. | Manter import/export indisponíveis; corrigir primeiro a história reproduzível das migrations e os dois REDs; depois provar autorização, tenant A/B, vínculo revogado, IDs/filtros adulterados, arquivos reais, reload, cleanup, remoto autorizado e E2E. | 1–2 d local + remoto/E2E separado |
-| 4 | `units` | `audited`: `units.list`, `units.filter`, `units.error`, `units.reload`, `units.create`, `units.edit`, `units.status`, `units.import`, `units.export`; `audited`/`fail-closed`: `units.access-denied` | UI confirmou filter/noResults, erro, retry/reload e acesso negado em 2026-08-26; contratos backend correspondentes foram inventariados, mas Unit Directory produtivo segue reprovado e sem E2E. | Manter diretório `Unavailable`; provar filtros, vazio, erro/retry, reload/persistência e negação uniforme com tenant A/B; reconciliar RPC/Edge/Storage e executar arquivos reais. | 2–4 d |
-| 5 | `groups` | `fail-closed`: `groups.list`, `groups.create`, `groups.edit`, `groups.members`, `groups.import`, `groups.export` | Adapter produtivo stale/reprovado; composição segura proposta em 2026-08-26. | Integrar somente contrato canônico após comparar RPC/ACL; manter produção Unavailable e `/dev` fake local até pgTAP, arquivos e E2E. | 2–3 d |
+| 4 | `units` | `audited`: `units.list`, `units.filter`, `units.error`, `units.reload`, `units.create`, `units.edit`, `units.status`, `units.import`, `units.export`; `audited`/`fail-closed`: `units.access-denied`; `blocked-decision`/`fail-closed`: `units.people-export` | UI confirmou filter/noResults, erro, retry/reload e acesso negado; a ação falsa people-export foi ocultada. Contratos backend correspondentes foram inventariados, mas Unit Directory produtivo segue reprovado, people-export não tem capability/job próprio e não há E2E. | Manter diretório `Unavailable`; decidir capability/escopo/colunas de people-export; provar filtros, erro/retry, reload/persistência e negação uniforme com tenant A/B; reconciliar RPC/Edge/Storage e executar arquivos reais. | 2–4 d + 18–32 h vertical de people-export após decisões |
+| 5 | `groups` | `fail-closed`: `groups.list`, `groups.create`, `groups.edit`, `groups.members`, `groups.import`, `groups.export` | Flutter ocultou os falsos controles import/export; adapter produtivo stale/reprovado e nenhum backend/arquivo foi promovido. | Integrar somente contrato canônico após comparar RPC/ACL; manter produção Unavailable e `/dev` fake local até pgTAP, jobs/Storage, arquivos e E2E. | 2–3 d |
 | 6 | `people` | `fail-closed`: `people.list`, `people.create`, `people.edit`, `people.links`, `people.reload` | Identity repository/RPC/ACL auditados localmente; decisão produtiva e E2E ausentes. | Fechar lookup canônico OQ-038, minimização de PII, AAL2/capabilities, vínculos A/B e reload; só então substituir Unavailable. | 2–4 d |
 | 7 | `access_profiles` | `fail-closed`: `access-profiles.list`, `access-profiles.create`, `access-profiles.detail`, `access-profiles.edit`, `access-profiles.assign`, `access-profiles.delete` | Migrations de lint e ACL locais inspecionadas; definição observada fora do ledger; extended repository removido da composição. | Reconciliar ledger, validar delegação/escopo/versionamento e testar atribuição/exclusão com reatribuição, AAL2 e revogação. | 2–3 d |
 | 8 | `access_models` | `fail-closed`: `access-models.list`, `access-models.filter`, `access-models.create`, `access-models.detail`, `access-models.edit`, `access-models.duplicate` | Closure estendido/arquivos parcial e não reprodutível em clean HEAD; a UI real de busca, domínio/status, vazio e reload confirmou `access-models.filter` em 2026-08-26. | Aprovar contrato de catálogo/modelo e filtros/escopo; implementar menor backend versionado e executar allowlist, tenant A/B, paginação/minimização, IDs adulterados, capability/AAL2, idempotência e reload. | 2–3 d |
@@ -1013,6 +1014,12 @@ produto ainda pendente.
 
 ## 12. Estado da atividade de organização — 2026-08-26
 
+> **Nota de supersessão:** esta seção preserva o contrato histórico anterior à
+> confirmação do usuário. A Opção B (`Avançada`) foi confirmada e executada
+> parcialmente. O estado operacional vigente está na seção 14 e no Checkpoint
+> seguro 23; as expressões “não confirmada” e “não iniciada” abaixo não descrevem
+> mais o estado atual.
+
 ### Contrato ainda não confirmado para correções
 
 - **Tempo disponível:** o usuário indicou `Intermediária` como preferência
@@ -1023,10 +1030,10 @@ produto ainda pendente.
 - **Posição atual na ordem:** Fase 0, congelamento e inventário. O baseline local
   e remoto foi recapturado; a próxima ação depende da confirmação do recorte.
 - **Ações Supabase concluídas nesta atividade:** nenhuma. A atividade de
-  organização abriu 201 ações independentes; as sincronizações Flutter de
+  organização abriu 202 ações independentes; as sincronizações Flutter de
   2026-08-26 confirmaram `access-models.filter` e quatro ações de Units, elevando
-  o inventário a 206.
-- **Ações restantes no recorte global:** 206 ações, além das 22 pendências gerais
+  o inventário total, incluindo shell, a 207.
+- **Ações restantes no recorte global:** 207 ações, além das 22 pendências gerais
   SUP-GEN. A estimativa bruta das ações é 715–1430 horas antes de espera por
   decisões externas; não é um pacote aconselhado para execução contínua.
 - **Pendências fora de qualquer pacote ainda não confirmado:** todo código,
@@ -1058,7 +1065,7 @@ produto ainda pendente.
 | --- | --- | --- | ---: | --- |
 | A | `Intermediária` | Fase 0: reconciliar nomes/hashes/ledger em read-only; classificar o ambiente; triagem dirigida das duas Edge Functions sem `verify_jwt` e dos Advisors P0 alcançáveis. | 4–6 h | Produz baseline confiável e um plano de correção por objeto; não corrige segurança nem fecha ação Supabase. |
 | B | `Avançada` | Tudo da Opção A + corrigir localmente a primeira fatia P0 comprovada, com grants/RLS/autorização, negativos, tenant A/B e preparar validação remota separadamente autorizada. | 1–2 dias | **Recomendação para extrema importância.** Pode concluir o pacote contratado, mas não toda a fundação nem uma tela. |
-| C | `Completa` | Uma unidade fechada da fundação, começando por um grupo coerente de `SECURITY DEFINER` ou por uma família de RLS, com regressão, Advisors, auditoria e cleanup. | 2–5 dias por unidade | Única opção que pode levar a unidade escolhida a `done`; não fecha as 206 ações do produto. |
+| C | `Completa` | Uma unidade fechada da fundação, começando por um grupo coerente de `SECURITY DEFINER` ou por uma família de RLS, com regressão, Advisors, auditoria e cleanup. | 2–5 dias por unidade | Única opção que pode levar a unidade escolhida a `done`; não fecha as 207 ações do produto. |
 
 **Conselho registrado:** não usar a preferência Intermediária para alterar Auth,
 RLS, grants, migrations ou segurança. Se a prioridade é corrigir o que tem
@@ -1092,6 +1099,15 @@ cleanup seletivo. Validação remota continua dependendo de autorização espec�
 
 ## 13. Histórico de atualização
 
+- 2026-08-26: `groups.import`/`groups.export` permaneceram `fail-closed` após o
+  Flutter ocultar os falsos botões/SnackBars. Nenhuma prova Supabase, repository,
+  job, Storage, remoto ou E2E foi acrescentada; fluxos reais exigem pacote
+  próprio de autorização, tenant A/B, revogação, replay, reload e cleanup.
+- 2026-08-26: `units.people-export` foi separado de `units.export` e
+  `people.export`. Backend não possui capability/job/worker utilizável;
+  listagem de Pessoas pode misturar contextos e não pode ser exportada
+  diretamente. Cliente ficou oculto/fail-closed; ação permanece
+  `blocked-decision`, sem remoto/E2E.
 - 2026-08-26: adicionados orçamento de tempo, níveis `Básica`, `Intermediária`,
   `Avançada` e `Completa`, recomendações por tema/tela e uso obrigatório do
   plugin `@Supabase`, das skills Supabase/Postgres/RTK e da leitura integrada.
@@ -1116,15 +1132,18 @@ cleanup seletivo. Validação remota continua dependendo de autorização espec�
 - **Confirmação do usuário:** executar a Opção B (`Avançada`) sem interromper a
   atividade por ordens de outras conversas, mantendo feedback por etapa e
   checkpoints seguros.
-- **Tempo contratado:** 1–2 dias de trabalho focado; estimativa restante após o
-  inventário inicial: 7–14 horas, sujeita à quantidade de divergências reais.
+- **Tempo contratado:** 1–2 dias de trabalho focado. Após a confirmação dos P0
+  de Instituições, a estimativa mínima restante foi recalculada para 9–17 horas
+  locais; validação remota autorizada e E2E formam pacote separado.
 - **Macrotema:** Fundação Supabase.
 - **Tela/subtela/família:** infraestrutura transversal de migrations e ledger;
   nenhuma tela de produto será declarada concluída por este pacote.
-- **Ações em execução:** `SUP-GEN-002` (reconciliar migrations) e `SUP-GEN-016`
-  (consolidar resíduos concorrentes).
-- **Posição na ordem:** Fase 1, classificação da primeira divergência P0 após
-  comparação canônico/mirror/remoto.
+- **Ações em execução:** `SUP-GEN-002` (reconciliar migrations), `SUP-GEN-016`
+  (consolidar resíduos concorrentes), com os primeiros P0 confirmados em
+  `institutions.import` e `institutions.export`.
+- **Posição na ordem:** Fase 1, antes do reparo de compatibilidade de replay da
+  migration `20260811220646_institution_import_export.sql`; depois vêm as
+  correções forward-only dos SQLSTATE `42702` e `42703`, uma por vez.
 - **Estado do pacote:** `in-progress`; nenhuma ação Supabase está `done` ainda.
 
 ### Etapas, estimativas e evidência
@@ -1133,11 +1152,11 @@ cleanup seletivo. Validação remota continua dependendo de autorização espec�
 | --- | --- | ---: | --- | --- |
 | 1 | Instruções, HEAD, worktree e ownership | 20–40 min | concluída | HEAD `447ac02c6c75617a8233f141dd0b2c8dc6c228d1`; worktree concorrente preservado. |
 | 2 | 156 migrations canônicas, 156 do mirror e 103 do ledger remoto | 60–90 min | concluída | Canônico e mirror sem arquivo ausente ou hash divergente; plugin oficial usado somente para leitura. |
-| 3 | Classificar drift, resíduos e primeiro P0 | 45–90 min | em execução | As 103 versões remotas estão cobertas; o canônico agora possui 70 versões não remotas: as 68 do inventário, a fonte de Chat aplicada localmente que foi recuperada e uma correção forward-only nova. |
+| 3 | Classificar drift, resíduos e primeiro P0 | 45–90 min | parcial | As 103 versões remotas estão cobertas; há 173 migrations canônicas, 173 no mirror e 70 versões somente locais. O inventário por pacotes foi produzido, mas a história ainda não é reprodutível a partir do HEAD. |
 | 4 | Reproduzir a primeira divergência P0 | 60–120 min | concluída para Unidades | RED determinístico: o teste falhou porque o canônico não continha `20260811215621_unit_performance_hardening.sql`. Nenhuma alteração remota. |
 | 5 | Aplicar a menor correção local segura | 2–4 h | concluída para Unidades | Três timestamps implantados restaurados; guards da ordem histórica preservados; nenhuma regra de autorização alterada. |
-| 6 | Testes positivos, negativos, cross-tenant e regressão aplicável | 2–4 h | parcial | Checkpoint 4: 438 asserts pgTAP e 3 contratos Deno verdes; reset limpo descartável, lint global e E2E Flutter–Supabase ainda não executados. |
-| 7 | Reconciliar evidências e preparar handoff | 30–60 min | em execução | Checkpoints registram estado local/remoto, limites de conclusão e próximo passo; falta fechar classificação das 68 versões locais. |
+| 6 | Testes positivos, negativos, cross-tenant e regressão aplicável | 2–4 h | parcial | Pacotes locais focados foram executados, mas a tentativa de clean-stack expôs a ordem incompatível da migration `11220646`, os P0 `42702`/`42703` e o incidente local. Não há prova válida de replay limpo nem E2E. |
+| 7 | Reconciliar evidências e preparar handoff | 30–60 min | em execução | Checkpoints registram estado local/remoto e limites de conclusão. O Checkpoint 23 consolida o recorte, a sequência restante e o handoff sem promover ação a `done`. |
 
 ### Checkpoint seguro 1 — triagem de reparos históricos isolados
 
@@ -2532,3 +2551,87 @@ schema ou regra de auditoria para obter o GREEN.
 
 - **ETA local:** 4–8 h para história + dois RED/GREEN + regressão proporcional.
 - **Remoto/E2E:** pacote separado, autorizado e estimado depois do GREEN local.
+
+### Checkpoint seguro 23 — estado do recorte contratado e retomada
+
+#### Resposta objetiva
+
+- **A atividade contratada Opção B (`Avançada`) não está concluída.** O
+  inventário, a consolidação e vários pacotes locais foram executados, mas a
+  história de migrations ainda não é reproduzível pelo HEAD e os dois primeiros
+  P0 confirmados de Instituições ainda não receberam RED/GREEN forward-only.
+- **Recorte contratado vigente:** fundação `SUP-GEN-002`/`SUP-GEN-016` e a
+  primeira fatia P0 comprovada, atualmente `institutions.import` e
+  `institutions.export`.
+- **Nível realmente executado:** Avançada parcial. Pacotes menores podem estar
+  concluídos como atividades, mas nenhuma das quatro ações deste recorte está
+  `done`, nenhuma tela Supabase foi concluída e não há integração E2E concluída.
+
+#### O que foi executado e sua evidência
+
+| Atividade/pacote | Estado da atividade | Evidência disponível | Limite de conclusão |
+| --- | --- | --- | --- |
+| Organização por tela, subtela e ação | concluída | 207 `action_id` únicos em 37 famílias, com nível, ETA, dependência, evidência e próximo passo | Não corrige automaticamente nenhuma ação. |
+| Inventário canônico/mirror/remoto | concluído em leitura | 173 migrations canônicas, 173 no mirror, 103 remotas cobertas e 70 versões somente locais | A cronologia de aplicação não foi recuperada integralmente; replay do HEAD continua vermelho. |
+| Inventário remoto e Advisors | concluído em leitura | Projeto ativo; 103 migrations; 207 Advisors de segurança e 505 de desempenho | Nenhuma validação remota mutável, SQL, migration, repair ou deploy foi autorizada/executada. |
+| Pacotes locais de migrations e autorização anteriores | concluídos apenas nos respectivos grants | Checkpoints 1–19 registram pgTAP, Deno, negativos, tenant A/B, grants e REDs preservados | Cada ação mantém o estado conservador da tabela; teste local não prova remoto nem Flutter E2E. |
+| `units.import` D1–D3d | pacote local concluído até o grant concedido | Contrato, RED/GREEN Edge, fixtures e concorrência focada; RED de `request_id` nulo e lacunas de retry/purge preservados | `units.import` continua `audited`/fail-closed, sem migration final, remoto ou E2E. |
+| `units.export` D1–D3a e DTO | pacote local concluído até o grant concedido | Checkpoints 20–21: 47 testes Deno, 36 GREEN e 11 RED externos catalogados; DTO do hub endurecido | Worker direto, grants legados, revogação, retenção, cleanup, replay e Flutter continuam bloqueados; ação não está `done`. |
+| `institutions.import`/`institutions.export` | auditoria P0 concluída | SQLSTATE `42702` e `42703` reproduzidos/classificados; remoto confirma wrappers/grants e forma da view | Ambas continuam fail-closed; nenhuma correção de produção foi aplicada. |
+
+#### Pendências na ordem obrigatória
+
+| Ordem | Ação/objeto | Trabalho restante | Nível mínimo | ETA local | Evidência de parada/conclusão |
+| ---: | --- | --- | --- | ---: | --- |
+| 1 | `SUP-GEN-002`/`SUP-GEN-016` — replay da migration `20260811220646` | Recuperar o artefato/log exato aplicado. Se não existir, obter autorização explícita para reparo histórico documentado de compatibilidade, adicionando os labels obrigatórios no canônico e mirror sem alegar identidade byte a byte com o remoto. | Avançada | 4–8 h | Proveniência registrada; canônico/mirror idênticos; teste estático do insert; reset em ambiente realmente isolado e reproduzível. |
+| 2 | `institutions.import` — SQLSTATE `42702` | Criar migration forward-only com variáveis PL/pgSQL não ambíguas; RED/GREEN para sucesso, contagens, replay, AAL1, capability ausente, vínculo revogado, ator/tenant B, job/ID adulterado e ACL. | Avançada | 3–5,5 h | pgTAP focado e regressão verdes; replay divergente permanece explicitamente RED se exigir decisão adicional. |
+| 3 | `institutions.export` — SQLSTATE `42703` | Criar migration forward-only que obtenha `slug`/`updated_at` da tabela canônica `public.institutions`, sem ampliar silenciosamente a view. | Avançada | 2–3,5 h | RED/GREEN runtime, autorização e regressão verdes; ação permanece fail-closed até fechar contrato e worker. |
+| 4 | `institutions.export` — fechamento funcional | Decidir e implementar filtros, sort, snapshot, idempotência/replay, auditoria, worker/Storage, revogação, retenção e cleanup. | Completa | +8–14 h | Matriz positiva/negativa/cross-tenant, arquivos reais, persistência/reload e integração cliente comprovadas. |
+| 5 | Remoto autorizado e Flutter E2E | Aplicar somente migrations aprovadas em ambiente classificado; repetir Advisors, runtime e fluxo Flutter request/status/download. | Avançada/Completa | estimar após GREEN local | Ledger, logs redigidos, Advisors comparados e E2E sem mock; nenhuma tela é promovida antes disso. |
+
+O mínimo local restante do recorte Avançado atual é **9–17 horas** para as três
+primeiras ordens. O fechamento funcional de `institutions.export` acrescenta
+**8–14 horas locais** e pertence a um pacote Completo; remoto autorizado e E2E
+são estimados separadamente. A ampliação decorre de defeitos P0 confirmados, não
+da simples soma das 207 ações.
+
+#### Dependências, bloqueios e critério de parada
+
+- A cronologia factual indica, por histórico Git, que a migration de
+  Instituições nasceu antes da migration de Access Profiles, embora os nomes
+  atuais imponham a ordem inversa. Isso é evidência de provável ordem histórica,
+  não substitui artefato ou log de deploy.
+- Sem recuperar essa proveniência, qualquer edição da migration histórica exige
+  decisão explícita e registro como reparo de compatibilidade de replay. Não
+  renomear, fazer `migration repair`, squash ou fabricar equivalência remota.
+- O próximo pacote para antes de mutation remota, mudança de escopo, conflito de
+  ownership ou necessidade de decisão de produto. Nunca se retiram testes,
+  autorização, RLS ou evidências para fazê-lo caber no tempo.
+- A documentação oficial Supabase confirma que migrations são aplicadas na
+  ordem dos timestamps e que `db reset` recria o banco e destrói os dados locais;
+  o próximo reset deve usar ambiente comprovadamente isolado. Referências:
+  [Managing migrations](https://supabase.com/docs/guides/deployment/database-migrations)
+  e [Local development and database migrations](https://supabase.com/docs/guides/local-development/overview).
+
+#### Estado para retomada e handoff
+
+- **Posição atual:** parada segura imediatamente antes de qualquer edição de
+  migration. Primeiro recuperar a origem exata de `11220646`; na ausência dela,
+  solicitar o grant do reparo de compatibilidade descrito na ordem 1.
+- **Estado local:** o incidente do Checkpoint 22 deixou o stack compartilhado sem
+  fixtures e com ledger de 173 versões; esse estado não vale como clean-stack e
+  não é reprodutível a partir do HEAD. Nenhuma nova mutation local foi feita
+  neste checkpoint.
+- **Estado remoto:** última leitura permanece em 103 migrations, 207 Advisors de
+  segurança e 505 de desempenho; remoto não foi alterado.
+- **Flutter–Supabase:** composição produtiva de Units permanece fail-closed; os
+  contratos de import/export ainda não têm E2E. Instituições também permanece
+  sem fluxo ponta a ponta concluído.
+- **Pendências globais:** o catálogo conserva 207 ações e zero ação/tela/E2E
+  promovida a conclusão global por este checkpoint. Itens fora do recorte
+  permanecem com o estado individual da tabela da seção 7.
+- **Git e entrega:** somente este rastreador foi atualizado neste checkpoint;
+  nenhum stage, commit ou deploy foi criado. O delta deve ser revisado e
+  integrado pela atividade Final Higenização a partir do worktree compartilhado.
+- **Memória de conhecimento:** nenhuma regra durável de produto foi aprovada;
+  portanto, não há projeção `docs/knowledge` a atualizar.
