@@ -123,11 +123,6 @@ import '../../features/meal_plans/presentation/meal_plan_directory_page.dart';
 import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
-import '../../features/forms/presentation/editor/forms_editor_route_page.dart';
-import '../../features/forms/presentation/monitoring/forms_monitor_page.dart';
-import '../../features/forms/presentation/response/form_response_route_page.dart';
-import '../../features/forms/presentation/responses/form_response_detail_page.dart';
-import '../../features/forms/presentation/responses/forms_responses_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
@@ -154,29 +149,6 @@ void _returnToOr(
     return;
   }
   context.goNamed(fallbackRouteName, extra: extra);
-}
-
-/// UI affordances sourced by an authenticated, server-authoritative capability
-/// snapshot. They intentionally default to deny; Forms RPCs remain the final
-/// authorization boundary for every operation.
-final class FormsRouteCapabilities {
-  const FormsRouteCapabilities({
-    this.canManage = false,
-    this.canMonitor = false,
-    this.canReadResponses = false,
-    this.canExportFiles = false,
-    this.canListPeople = false,
-    this.canReadAnonymousParticipation = false,
-    this.canExportAnonymousParticipation = false,
-  });
-
-  final bool canManage;
-  final bool canMonitor;
-  final bool canReadResponses;
-  final bool canExportFiles;
-  final bool canListPeople;
-  final bool canReadAnonymousParticipation;
-  final bool canExportAnonymousParticipation;
 }
 
 SupportPrototypeController _createDevelopmentSupportController() => SupportPrototypeController();
@@ -221,7 +193,6 @@ GoRouter createSuperadminRouter({
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
   FormsApi? formsApi,
-  FormsRouteCapabilities formsCapabilities = const FormsRouteCapabilities(),
   NowPublicationRepository? nowPublicationRepository,
   ChildSafetyController? childSafetyController,
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
@@ -1080,10 +1051,6 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.formsName,
             builder: (context, state) => FormsDirectoryPage(
               api: formsApi,
-              canManage: formsCapabilities.canManage,
-              onCreate: formsCapabilities.canManage
-                  ? () => context.goNamed(SuperadminRoutes.formCreateName)
-                  : null,
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.formOverviewName,
                 pathParameters: {'formId': form.id},
@@ -1093,112 +1060,43 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formCreate,
             name: SuperadminRoutes.formCreateName,
-            builder: (context, state) => FormsEditorRoutePage(
-              api: formsApi,
-              institutionId: state.uri.queryParameters['institutionId'],
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formOverview,
             name: SuperadminRoutes.formOverviewName,
-            builder: (context, state) {
-              final formId = state.pathParameters['formId']!;
-              return FormsOverviewPage(
-                api: formsApi,
-                formId: formId,
-                onEdit: formsCapabilities.canManage
-                    ? () => context.goNamed(
-                        SuperadminRoutes.formEditName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-                onTest: () => context.goNamed(
-                  SuperadminRoutes.formTestName,
-                  pathParameters: {'formId': formId},
-                ),
-                onMonitor: formsCapabilities.canMonitor
-                    ? () => context.goNamed(
-                        SuperadminRoutes.formMonitorName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-                onResponses: formsCapabilities.canReadResponses
-                    ? () => context.goNamed(
-                        SuperadminRoutes.formResponsesName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-                onFiles: formsCapabilities.canExportFiles
-                    ? () => context.goNamed(
-                        SuperadminRoutes.formFilesName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-              );
-            },
+            builder: (context, state) =>
+                FormsOverviewPage(api: formsApi, formId: state.pathParameters['formId']!),
           ),
           GoRoute(
             path: SuperadminRoutes.formEdit,
             name: SuperadminRoutes.formEditName,
-            builder: (context, state) =>
-                FormsEditorRoutePage(api: formsApi, formId: state.pathParameters['formId']),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formTest,
             name: SuperadminRoutes.formTestName,
-            builder: (context, state) => FormsEditorRoutePage(
-              api: formsApi,
-              formId: state.pathParameters['formId'],
-              readOnly: true,
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formMonitor,
             name: SuperadminRoutes.formMonitorName,
-            builder: (context, state) => FormsMonitorPage(
-              api: formsApi,
-              formId: state.pathParameters['formId']!,
-              canListPeople: formsCapabilities.canListPeople,
-              canReadAnonymousParticipation: formsCapabilities.canReadAnonymousParticipation,
-              canExportAnonymousParticipation: formsCapabilities.canExportAnonymousParticipation,
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formRespond,
             name: SuperadminRoutes.formRespondName,
-            builder: (context, state) => FormResponseRoutePage(
-              api: formsApi,
-              occurrenceId: state.pathParameters['occurrenceId']!,
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponses,
             name: SuperadminRoutes.formResponsesName,
-            builder: (context, state) {
-              final formId = state.pathParameters['formId']!;
-              return FormsResponsesPage(
-                api: formsApi,
-                formId: formId,
-                onOpenDetail: formsCapabilities.canReadResponses
-                    ? (response) => context.goNamed(
-                        SuperadminRoutes.formResponseDetailName,
-                        pathParameters: {'formId': formId, 'responseId': response.id},
-                      )
-                    : null,
-              );
-            },
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponseDetail,
             name: SuperadminRoutes.formResponseDetailName,
-            builder: (context, state) => FormResponseDetailPage(
-              api: formsApi,
-              responseId: state.pathParameters['responseId']!,
-              onOpenAsset: (assetId) => context.goNamed(
-                SuperadminRoutes.formMediaName,
-                pathParameters: {'assetId': assetId},
-              ),
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formFiles,
@@ -2730,10 +2628,6 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devFormsName,
             builder: (context, state) => FormsDirectoryPage(
               api: formsApi,
-              canManage: formsCapabilities.canManage,
-              onCreate: formsCapabilities.canManage
-                  ? () => context.goNamed(SuperadminRoutes.devFormCreateName)
-                  : null,
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.devFormOverviewName,
                 pathParameters: {'formId': form.id},
@@ -2743,112 +2637,43 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormCreate,
             name: SuperadminRoutes.devFormCreateName,
-            builder: (context, state) => FormsEditorRoutePage(
-              api: formsApi,
-              institutionId: state.uri.queryParameters['institutionId'],
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormOverview,
             name: SuperadminRoutes.devFormOverviewName,
-            builder: (context, state) {
-              final formId = state.pathParameters['formId']!;
-              return FormsOverviewPage(
-                api: formsApi,
-                formId: formId,
-                onEdit: formsCapabilities.canManage
-                    ? () => context.goNamed(
-                        SuperadminRoutes.devFormEditName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-                onTest: () => context.goNamed(
-                  SuperadminRoutes.devFormTestName,
-                  pathParameters: {'formId': formId},
-                ),
-                onMonitor: formsCapabilities.canMonitor
-                    ? () => context.goNamed(
-                        SuperadminRoutes.devFormMonitorName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-                onResponses: formsCapabilities.canReadResponses
-                    ? () => context.goNamed(
-                        SuperadminRoutes.devFormResponsesName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-                onFiles: formsCapabilities.canExportFiles
-                    ? () => context.goNamed(
-                        SuperadminRoutes.devFormFilesName,
-                        pathParameters: {'formId': formId},
-                      )
-                    : null,
-              );
-            },
+            builder: (context, state) =>
+                FormsOverviewPage(api: formsApi, formId: state.pathParameters['formId']!),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormEdit,
             name: SuperadminRoutes.devFormEditName,
-            builder: (context, state) =>
-                FormsEditorRoutePage(api: formsApi, formId: state.pathParameters['formId']),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormTest,
             name: SuperadminRoutes.devFormTestName,
-            builder: (context, state) => FormsEditorRoutePage(
-              api: formsApi,
-              formId: state.pathParameters['formId'],
-              readOnly: true,
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormMonitor,
             name: SuperadminRoutes.devFormMonitorName,
-            builder: (context, state) => FormsMonitorPage(
-              api: formsApi,
-              formId: state.pathParameters['formId']!,
-              canListPeople: formsCapabilities.canListPeople,
-              canReadAnonymousParticipation: formsCapabilities.canReadAnonymousParticipation,
-              canExportAnonymousParticipation: formsCapabilities.canExportAnonymousParticipation,
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormRespond,
             name: SuperadminRoutes.devFormRespondName,
-            builder: (context, state) => FormResponseRoutePage(
-              api: formsApi,
-              occurrenceId: state.pathParameters['occurrenceId']!,
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormResponses,
             name: SuperadminRoutes.devFormResponsesName,
-            builder: (context, state) {
-              final formId = state.pathParameters['formId']!;
-              return FormsResponsesPage(
-                api: formsApi,
-                formId: formId,
-                onOpenDetail: formsCapabilities.canReadResponses
-                    ? (response) => context.goNamed(
-                        SuperadminRoutes.devFormResponseDetailName,
-                        pathParameters: {'formId': formId, 'responseId': response.id},
-                      )
-                    : null,
-              );
-            },
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormResponseDetail,
             name: SuperadminRoutes.devFormResponseDetailName,
-            builder: (context, state) => FormResponseDetailPage(
-              api: formsApi,
-              responseId: state.pathParameters['responseId']!,
-              onOpenAsset: (assetId) => context.goNamed(
-                SuperadminRoutes.devFormMediaName,
-                pathParameters: {'assetId': assetId},
-              ),
-            ),
+            builder: (context, state) => _unavailableFormsRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormFiles,
@@ -3891,6 +3716,8 @@ Widget _unavailableMedicationPlans(BuildContext context) => SuperadminErrorScree
   kind: SuperadminErrorKind.unavailable,
   onAction: () => context.goNamed(SuperadminRoutes.homeName),
 );
+
+Widget _unavailableFormsRoute(BuildContext context) => _unavailableCompositionRootRoute(context);
 
 Widget _unavailableCompositionRootRoute(BuildContext context) => SuperadminErrorScreen(
   kind: SuperadminErrorKind.unavailable,

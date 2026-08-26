@@ -8,8 +8,6 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 
-import '../directory/forms_lifecycle_actions.dart';
-
 final class FormsOverviewPage extends StatefulWidget {
   const FormsOverviewPage({
     required this.api,
@@ -98,39 +96,11 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
     return ListView(
       padding: const EdgeInsets.all(CoeloSpacing.space5),
       children: [
-        Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: CoeloSpacing.space4,
-          runSpacing: CoeloSpacing.space3,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(overview.definition.title, style: Theme.of(context).textTheme.headlineMedium),
-                Text('Versão de gestão ${overview.definition.managementVersion}'),
-              ],
-            ),
-            Wrap(
-              spacing: CoeloSpacing.space2,
-              runSpacing: CoeloSpacing.space2,
-              children: [
-                OutlinedButton(onPressed: widget.onTest, child: const Text('Testar')),
-                OutlinedButton(onPressed: widget.onMonitor, child: const Text('Monitorar')),
-                OutlinedButton(onPressed: widget.onFiles, child: const Text('Arquivos')),
-                FilledButton(onPressed: widget.onEdit, child: const Text('Editar')),
-                if (widget.canManageLifecycle)
-                  FormsLifecycleActions(
-                    api: widget.api,
-                    formId: overview.definition.id,
-                    formTitle: overview.definition.title,
-                    managementVersion: overview.definition.managementVersion,
-                    canManage: widget.canManageLifecycle,
-                    canTransferCrossInstitution: widget.canTransferCrossInstitution,
-                    onCompleted: _load,
-                  ),
-              ],
-            ),
+            Text(overview.definition.title, style: Theme.of(context).textTheme.headlineMedium),
+            Text('Versão de gestão ${overview.definition.managementVersion}'),
           ],
         ),
         const SizedBox(height: CoeloSpacing.space5),
@@ -144,13 +114,7 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
               children: [
                 _metric(context, width, 'Distribuições', overview.applicationCount),
                 _metric(context, width, 'Ocorrências', overview.occurrenceCount),
-                _metric(
-                  context,
-                  width,
-                  'Respostas',
-                  overview.responseCount,
-                  onPressed: widget.onResponses,
-                ),
+                _metric(context, width, 'Respostas', overview.responseCount),
               ],
             );
           },

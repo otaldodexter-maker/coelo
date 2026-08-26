@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
-import 'forms_lifecycle_actions.dart';
 
 enum FormsDirectoryDisplay { table, cards }
 
@@ -196,12 +195,6 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
             onCardsSelected: () => setState(() => _display = FormsDirectoryDisplay.cards),
             onTableViewSelected: (_) => setState(() => _display = FormsDirectoryDisplay.table),
           ),
-          if (widget.canManage)
-            FilledButton.icon(
-              onPressed: widget.onCreate,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Novo formulário'),
-            ),
         ],
       ),
       const SizedBox(height: CoeloSpacing.space5),
@@ -215,12 +208,10 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       message: 'Aguarde enquanto os dados autorizados são carregados.',
       loading: true,
     ),
-    FormsDirectoryLoadStatus.empty => CoeloStatePanel(
-      title: 'Nenhum formulário criado',
-      message: 'Crie o primeiro formulário ou enquete rápida.',
+    FormsDirectoryLoadStatus.empty => const CoeloStatePanel(
+      title: 'Nenhum formulário disponível',
+      message: 'Não há formulários para consultar neste escopo.',
       icon: Icons.dynamic_form_outlined,
-      actionLabel: widget.canManage ? 'Criar formulário' : null,
-      onAction: widget.canManage ? widget.onCreate : null,
     ),
     FormsDirectoryLoadStatus.noResults => CoeloStatePanel(
       title: 'Nenhum resultado',
@@ -321,21 +312,10 @@ final class FormsDirectoryResults extends StatelessWidget {
           ? 2
           : 1;
       final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
-      final textScale = MediaQuery.textScalerOf(context).scale(1);
-      final cardHeight = textScale >= 2 ? null : 188.0;
       return Wrap(
         spacing: CoeloSpacing.space4,
         runSpacing: CoeloSpacing.space4,
         children: [
-          if (canManage)
-            SizedBox(
-              width: width,
-              height: cardHeight,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 188),
-                child: CoeloAdminCreateAction(label: 'Novo formulário', onPressed: onCreate),
-              ),
-            ),
           for (final item in page.items)
             SizedBox(
               width: width,
@@ -349,27 +329,7 @@ final class FormsDirectoryResults extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                item.title,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                            if (canManageLifecycle)
-                              FormsLifecycleActions(
-                                api: api,
-                                formId: item.id,
-                                formTitle: item.title,
-                                managementVersion: item.managementVersion,
-                                canManage: canManageLifecycle,
-                                canTransferCrossInstitution: canTransferCrossInstitution,
-                                onCompleted: onLifecycleCompleted,
-                              ),
-                          ],
-                        ),
+                        Text(item.title, style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: CoeloSpacing.space3),
                         Text(_kindLabel(item.kind)),
                         Text(_operationalStatusLabel(item.operationalStatus)),
@@ -431,23 +391,6 @@ final class FormsDirectoryResults extends StatelessWidget {
         maxWidth: 210,
         cellBuilder: (_, item) => Text(_shortDate(item.updatedAt)),
       ),
-      if (canManageLifecycle)
-        CoeloAdminTableColumn(
-          id: 'actions',
-          label: 'Ações',
-          initialWidth: 88,
-          minWidth: 80,
-          maxWidth: 104,
-          cellBuilder: (_, item) => FormsLifecycleActions(
-            api: api,
-            formId: item.id,
-            formTitle: item.title,
-            managementVersion: item.managementVersion,
-            canManage: canManageLifecycle,
-            canTransferCrossInstitution: canTransferCrossInstitution,
-            onCompleted: onLifecycleCompleted,
-          ),
-        ),
     ],
     headerHeight: 56,
     rowHeight: 68,

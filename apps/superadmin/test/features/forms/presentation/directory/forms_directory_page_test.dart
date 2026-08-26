@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('loads the authorized projection and keeps actions equivalent in table and cards', (
-    tester,
-  ) async {
+  testWidgets('loads the authorized projection read-only in table and cards', (tester) async {
     final api = _FormsApi(page: FormCursorPage(items: [_item], nextCursor: null));
     FormDirectoryItem? opened;
 
@@ -25,7 +23,7 @@ void main() {
     expect(find.text('Pesquisa das famílias'), findsWidgets);
     expect(find.text('Programado'), findsWidgets);
     expect(find.text('Publicado'), findsNothing);
-    expect(find.text('Novo formulário'), findsOneWidget);
+    expect(find.text('Novo formulário'), findsNothing);
     await tester.tap(find.text('Pesquisa das famílias').first);
     expect(opened?.id, 'form-1');
 

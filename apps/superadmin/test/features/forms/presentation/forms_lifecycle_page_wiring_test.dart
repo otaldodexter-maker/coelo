@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('directory exposes the lifecycle menu in table and cards only when capable', (
+  testWidgets('directory never exposes lifecycle mutations from local capability flags', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -24,13 +24,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
+    expect(find.byTooltip('Ações do formulário Pesquisa'), findsNothing);
     await tester.tap(find.byKey(const Key('forms-directory-view-cards')));
     await tester.pumpAndSettle();
-    expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
+    expect(find.byTooltip('Ações do formulário Pesquisa'), findsNothing);
   });
 
-  testWidgets('overview exposes the same lifecycle menu when forms.manage is present', (
+  testWidgets('overview never exposes lifecycle mutations from local capability flags', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -43,7 +43,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
+    expect(find.byTooltip('Ações do formulário Pesquisa'), findsNothing);
   });
 }
 
