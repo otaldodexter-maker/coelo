@@ -49,23 +49,31 @@ referências e devem ser recalculadas depois do inventário.
 
 ## Progresso percentual obrigatório
 
-Na abertura e em todo checkpoint, pausa ou encerramento, apresente o progresso
-do recorte contratado e do backlog geral conhecido sem misturar os dois. Use as
-unidades rastreáveis do inventário (`action_id` ou gate de conceito) e informe a
-base do cálculo. Uma unidade só conta como concluída quando possui as evidências
-Flutter, Supabase e integradas exigidas para o estado declarado; trabalho
-parcial permanece no restante.
+Depois de ler os três rastreadores obrigatórios, a primeira resposta ao usuário
+deve começar pelo progresso geral de todas as pendências Flutter, Supabase e
+integradas conhecidas, antes da pergunta de orçamento, dos níveis e do recorte.
+Essa prioridade também vale quando a skill for chamada apenas para revisão,
+estimativa ou continuação.
+
+Calcule o geral sobre a união dos `action_id` e gates de conceito dos três
+rastreadores, sem contar a mesma unidade mais de uma vez e incluindo itens fora
+do recorte atual. Na abertura e em todo checkpoint, pausa ou encerramento,
+apresente primeiro esse geral e depois o progresso do recorte contratado, sem
+misturar os dois. Informe a base do cálculo. Uma unidade só conta como concluída
+quando possui as evidências Flutter, Supabase e integradas exigidas para o estado
+declarado; trabalho parcial permanece no restante.
 
 Use sempre este formato, com duas casas decimais e soma igual a `100,00%`:
 
 ```text
-Progresso do recorte — Concluído: 21,43% (3/14 unidades)
-Progresso do recorte — Restante: 78,57% (11/14 unidades)
-Tempo usado no trabalho concluído: 50 h
-Tempo estimado para finalizar o recorte: 2 dias 4 h 48 min
-Progresso geral conhecido — Concluído: ...
-Progresso geral conhecido — Restante: ...
+Progresso geral conhecido — Concluído: 21,43% (3/14 unidades)
+Progresso geral conhecido — Restante: 78,57% (11/14 unidades)
+Tempo usado no trabalho geral concluído: 50 h
 Tempo estimado para finalizar o backlog geral: ...
+Progresso do recorte — Concluído: ...
+Progresso do recorte — Restante: ...
+Tempo usado no trabalho concluído no recorte: ...
+Tempo estimado para finalizar o recorte: 2 dias 4 h 48 min
 Base do cálculo: action_ids/gates considerados, evidência e horário de referência.
 ```
 
