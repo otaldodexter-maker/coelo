@@ -495,10 +495,10 @@ somada à da família; espera por decisão externa não está incluída.
 | 3 | `institutions` | `institutions.detail` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 3 | `institutions` | `institutions.edit` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
 | 3 | `institutions` | `institutions.error` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
-| 3 | `institutions` | `institutions.export` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. |
+| 3 | `institutions` | `institutions.export` | O wrapper remoto executável por `authenticated` alcança `app_private.superadmin_request_institution_export`, cuja query referencia `institution_directory.slug` e `updated_at`, colunas ausentes da view remota; runtime/lint falha com SQLSTATE `42703`. Cliente deve permanecer fail-closed. | `fail-closed` | Reproduzir `42703` e manter integração indisponível; não fecha ação. | Básica + corrigir projeção/contrato sem confiar em filtros, com autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, limites, arquivo real, expiração e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E; pode fechar ação. | `Avançada` | 6–12 h | RED/GREEN do runtime; view e função compatíveis; ator/tenant/ownership; filtros/IDs adulterados; arquivo real; DTO sem path; expiração/revogação; cleanup sem órfão; remoto autorizado e E2E. |
 | 3 | `institutions` | `institutions.files` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 3 | `institutions` | `institutions.filter` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
-| 3 | `institutions` | `institutions.import` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 6–12 h | Arquivo sintético real; ator/tenant/ownership; negações; expiração/revogação; DTO sem path; cleanup sem órfão. |
+| 3 | `institutions` | `institutions.import` | O wrapper remoto executável por `authenticated` alcança `app_private.superadmin_confirm_institution_import`, cujo update usa `created_count` e `rejected_count` de forma ambígua; runtime/lint falha com SQLSTATE `42702`. Cliente deve permanecer fail-closed. | `fail-closed` | Reproduzir `42702` e manter integração indisponível; não fecha ação. | Básica + qualificar variáveis/colunas, contrato, autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, idempotência, arquivo real e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E; pode fechar ação. | `Avançada` | 6–12 h | RED/GREEN do runtime; contagens persistidas sem ambiguidade; ator/tenant/ownership; negações; replay; arquivo real; reload; auditoria; remoto autorizado e E2E. |
 | 3 | `institutions` | `institutions.list` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 3 | `institutions` | `institutions.reload` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 3 | `institutions` | `institutions.status` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
@@ -755,7 +755,7 @@ do `action_id` não contém `reload`.
 | ---: | --- | --- | --- | --- | --- |
 | 1 | `auth` | `audited`: `auth.login`, `auth.recover`, `auth.logout`; `blocked-decision`: `auth.reset`, `auth.mfa` | Wiring de login/logout/refresh e perguntas OQ-006/OQ-016 auditados localmente em 2026-08-26; sem E2E remoto. | Decidir recovery/SMTP/MFA por papel; testar sessão válida/inválida, callback, AAL2, downgrade, revogação e acesso direto. | decisão 0,5 d + 1–2 d |
 | 2 | `shell` | `audited`: `shell.load`, `shell.navigate`, `shell.switch-context`, `shell.unauthorized`, `shell.reload` | Composição/rotas auditadas localmente em 2026-08-26; baseline tinha 79 rotas normais e 96 `/dev`. | Reextrair grafo vivo; provar nenhum dado pré-autorização, limpeza de cache/contexto e zero Supabase em `/dev`. | 1 d |
-| 3 | `institutions` | `local-green`: `institutions.list`, `institutions.filter`, `institutions.detail`, `institutions.create`, `institutions.edit`, `institutions.status`, `institutions.files`, `institutions.import`, `institutions.export`, `institutions.error`, `institutions.access-denied`, `institutions.reload` | Contratos e testes locais previamente verdes; remoto/ledger não reconciliados em 2026-08-26. | Instalar por ledger em stack limpa; provar listagem, detalhe, criação, edição, ativação/desativação, arquivos, importação/exportação, erros, acesso negado, CRUD A/B, sem capability, revogado, ID adulterado e reload; depois remoto autorizado. | 1–2 d |
+| 3 | `institutions` | `local-green`: `institutions.list`, `institutions.filter`, `institutions.detail`, `institutions.create`, `institutions.edit`, `institutions.status`, `institutions.files`, `institutions.error`, `institutions.access-denied`, `institutions.reload`; `fail-closed`: `institutions.import`, `institutions.export` | Contratos gerais tiveram evidência local anterior, mas o plugin oficial confirmou dois wrappers remotos executáveis por `authenticated` com falhas runtime: import `42702` e export `42703`. Nenhuma ação de arquivo está E2E ou concluída. | Manter import/export indisponíveis; corrigir primeiro a história reproduzível das migrations e os dois REDs; depois provar autorização, tenant A/B, vínculo revogado, IDs/filtros adulterados, arquivos reais, reload, cleanup, remoto autorizado e E2E. | 1–2 d local + remoto/E2E separado |
 | 4 | `units` | `audited`: `units.list`, `units.filter`, `units.error`, `units.reload`, `units.create`, `units.edit`, `units.status`, `units.import`, `units.export`; `audited`/`fail-closed`: `units.access-denied` | UI confirmou filter/noResults, erro, retry/reload e acesso negado em 2026-08-26; contratos backend correspondentes foram inventariados, mas Unit Directory produtivo segue reprovado e sem E2E. | Manter diretório `Unavailable`; provar filtros, vazio, erro/retry, reload/persistência e negação uniforme com tenant A/B; reconciliar RPC/Edge/Storage e executar arquivos reais. | 2–4 d |
 | 5 | `groups` | `fail-closed`: `groups.list`, `groups.create`, `groups.edit`, `groups.members`, `groups.import`, `groups.export` | Adapter produtivo stale/reprovado; composição segura proposta em 2026-08-26. | Integrar somente contrato canônico após comparar RPC/ACL; manter produção Unavailable e `/dev` fake local até pgTAP, arquivos e E2E. | 2–3 d |
 | 6 | `people` | `fail-closed`: `people.list`, `people.create`, `people.edit`, `people.links`, `people.reload` | Identity repository/RPC/ACL auditados localmente; decisão produtiva e E2E ausentes. | Fechar lookup canônico OQ-038, minimização de PII, AAL2/capabilities, vínculos A/B e reload; só então substituir Unavailable. | 2–4 d |
@@ -2474,3 +2474,61 @@ schema ou regra de auditoria para obter o GREEN.
 - **Próximo passo seguro:** alinhar o contrato Flutter request/status/download
   e, em grant separado com migration, introduzir delegação server-owned antes de
   revogar os três RPCs legados.
+
+### Checkpoint seguro 22 — Instituições import/export runtime-broken
+
+#### Recorte e classificação
+
+- **Action_ids afetados:** `institutions.import` e `institutions.export`.
+- **Estado corrigido:** ambas passam de `local-green` para `fail-closed`.
+- **Limite de conclusão:** atividade de auditoria somente leitura concluída;
+  ações Supabase, tela, integração Flutter–Supabase e produto continuam
+  pendentes.
+
+#### Evidência local e remota
+
+- O clean-stack reproduziu que a história atual não é diretamente instalável:
+  `20260811215451_access_profile_management_v2.sql` torna `module_label`,
+  `screen_label` e `action_label` obrigatórios antes de
+  `20260811220646_institution_import_export.sql` inserir permissões sem esses
+  campos. A cronologia histórica de aplicação diverge da ordenação atual dos
+  filenames; não reescrever migration implantada sem decisão explícita.
+- Após compatibilidade exclusivamente diagnóstica fora do repositório,
+  `supabase db lint` encontrou:
+  - `app_private.superadmin_confirm_institution_import`: referências ambíguas a
+    `created_count`/`rejected_count`, SQLSTATE `42702`;
+  - `app_private.superadmin_request_institution_export`: referências a
+    `institution_directory.slug` e `updated_at`, ausentes da view, SQLSTATE
+    `42703`.
+- O plugin oficial `@Supabase`, em leitura somente, confirmou que os wrappers
+  públicos correspondentes estão implantados e possuem `EXECUTE` para
+  `authenticated`. A view remota também não expõe `slug` nem `updated_at`.
+- Advisors remotos permaneceram no baseline: 207 de segurança e 505 de
+  desempenho. Nenhuma mutation, migration, repair, deploy ou configuração
+  remota foi executada.
+
+#### Incidente e limites do ambiente local
+
+- O comando diagnóstico com `db reset --db-url` reiniciou inesperadamente o
+  stack compartilhado e deixou o banco local principal sem seed, com zero
+  usuários, sessões, instituições, unidades, pessoas, jobs e objetos. O remoto
+  não foi afetado.
+- O ledger local pós-incidente contém 173 versões, mas não constitui prova de
+  localhost limpo nem é reproduzível pelo HEAD atual. O estado anterior não deve
+  ser inferido ou reconstruído sem backup.
+- Nenhum stage ou commit foi realizado pela atividade Supabase que produziu
+  esta evidência.
+
+#### Ordem e próximo passo seguro
+
+1. decidir a estratégia de história reproduzível das migrations sem mascarar a
+   cronologia implantada;
+2. escrever REDs focados para `42702` e `42703`;
+3. corrigir uma função por vez em migration forward-only autorizada;
+4. provar autorização, AAL2, vínculo revogado, tenant A/B, IDs/filtros
+   adulterados, replay e arquivos reais;
+5. repetir clean-stack em ambiente realmente isolado, lint, regressão e somente
+   então remoto autorizado/E2E.
+
+- **ETA local:** 4–8 h para história + dois RED/GREEN + regressão proporcional.
+- **Remoto/E2E:** pacote separado, autorizado e estimado depois do GREEN local.
