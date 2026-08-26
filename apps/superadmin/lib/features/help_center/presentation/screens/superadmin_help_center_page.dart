@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -413,31 +414,20 @@ class _StackedHistory extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: MenuAnchor(
-                style: MenuStyle(
-                  backgroundColor: WidgetStatePropertyAll(colors.surface),
-                  surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-                  elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
-                  padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
-                  side: WidgetStatePropertyAll(BorderSide(color: colors.outlineVariant)),
-                  shape: WidgetStatePropertyAll(
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
-                  ),
-                ),
-                menuChildren: [
+              child: CoeloAdminFlyout<String>(
+                items: [
                   for (final conversation in conversations)
-                    MenuItemButton(
-                      onPressed: () => onConversationSelected(conversation.id),
-                      style: _discreteMenuItemStyle(colors),
-                      leadingIcon: Icon(
-                        conversation.id == selectedId
-                            ? Icons.chat_rounded
-                            : Icons.chat_bubble_outline_rounded,
-                      ),
-                      child: Text(conversation.title),
+                    CoeloAdminFlyoutItem(
+                      value: conversation.id,
+                      label: conversation.title,
+                      icon: conversation.id == selectedId
+                          ? Icons.chat_rounded
+                          : Icons.chat_bubble_outline_rounded,
+                      selected: conversation.id == selectedId,
                     ),
                 ],
-                builder: (context, controller, child) {
+                onSelected: onConversationSelected,
+                builder: (context, controller) {
                   return TextButton.icon(
                     onPressed: conversations.isEmpty
                         ? null
@@ -857,34 +847,5 @@ ButtonStyle _discreteIconButtonStyle(ColorScheme colors) {
     hoverColor: colors.primaryContainer,
     focusColor: colors.primaryContainer,
     highlightColor: colors.primaryContainer,
-  );
-}
-
-ButtonStyle _discreteMenuItemStyle(ColorScheme colors) {
-  final highlightedBackground = WidgetStateProperty.resolveWith<Color?>((states) {
-    if (states.contains(WidgetState.hovered) ||
-        states.contains(WidgetState.focused) ||
-        states.contains(WidgetState.pressed)) {
-      return colors.primaryContainer;
-    }
-    return Colors.transparent;
-  });
-  final highlightedForeground = WidgetStateProperty.resolveWith<Color?>((states) {
-    if (states.contains(WidgetState.hovered) ||
-        states.contains(WidgetState.focused) ||
-        states.contains(WidgetState.pressed)) {
-      return colors.primary;
-    }
-    return colors.onSurface;
-  });
-  return ButtonStyle(
-    backgroundColor: highlightedBackground,
-    foregroundColor: highlightedForeground,
-    iconColor: highlightedForeground,
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-    minimumSize: const WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
-    shape: WidgetStatePropertyAll(
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-    ),
   );
 }

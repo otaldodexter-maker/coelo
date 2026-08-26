@@ -1,6 +1,7 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/help_center/presentation/screens/superadmin_help_center_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -336,42 +337,69 @@ void main() {
     expect(find.descendant(of: sendFinder, matching: find.byType(Transform)), findsNothing);
   });
 
-  testWidgets('uses the canonical surface and discrete hover in the mobile history flyout', (
+  testWidgets('uses the canonical mobile history flyout with safe focus and viewport', (
     tester,
   ) async {
+    const question = 'Como cadastro uma institui\u00e7\u00e3o?';
+    const secondQuestion = 'Onde encontro os planos?';
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(375, 900);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    await tester.pumpWidget(_app());
+    await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.byKey(const Key('superadmin-help-composer-field')),
-      'Como cadastro uma instituição?',
-    );
+    await tester.enterText(find.byKey(const Key('superadmin-help-composer-field')), question);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
 
-    final anchorFinder = find.descendant(
-      of: find.byKey(const Key('superadmin-help-history-stacked')),
-      matching: find.byType(MenuAnchor),
-    );
-    final anchor = tester.widget<MenuAnchor>(anchorFinder);
-    final colors = Theme.of(tester.element(anchorFinder)).colorScheme;
-    expect(anchor.style?.backgroundColor?.resolve({}), colors.surface);
-    expect(anchor.style?.surfaceTintColor?.resolve({}), Colors.transparent);
-    expect(anchor.style?.padding?.resolve({}), const EdgeInsets.all(CoeloSpacing.space2));
+    await tester.tap(find.byTooltip('Nova conversa'));
+    await tester.enterText(find.byKey(const Key('superadmin-help-composer-field')), secondQuestion);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
 
-    final item = anchor.menuChildren.single as MenuItemButton;
-    expect(item.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
-    expect(item.style?.backgroundColor?.resolve({WidgetState.focused}), colors.primaryContainer);
-    expect(item.style?.foregroundColor?.resolve({WidgetState.hovered}), colors.primary);
-    expect(item.style?.overlayColor?.resolve({WidgetState.hovered}), Colors.transparent);
-    expect(
-      item.style?.minimumSize?.resolve({}),
-      const Size(CoeloSize.touchMin, CoeloSize.touchMin),
+    final flyoutFinder = find.descendant(
+      of: find.byKey(const Key('superadmin-help-history-stacked')),
+      matching: find.byWidgetPredicate((widget) => widget is CoeloAdminFlyout<String>),
     );
+    expect(flyoutFinder, findsOneWidget);
+
+    final triggerFinder = find.descendant(of: flyoutFinder, matching: find.byType(TextButton));
+    final triggerFocus = _focusNodeFor(tester, triggerFinder);
+    triggerFocus.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    final itemFinder = find.widgetWithText(MenuItemButton, question);
+    expect(itemFinder, findsOneWidget);
+    final selectedItemFinder = find.widgetWithText(MenuItemButton, secondQuestion);
+    expect(
+      find.ancestor(
+        of: selectedItemFinder,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.selected == true,
+        ),
+      ),
+      findsOneWidget,
+    );
+    final itemRect = tester.getRect(itemFinder);
+    expect(itemRect.left, greaterThanOrEqualTo(CoeloSpacing.space2));
+    expect(itemRect.right, lessThanOrEqualTo(375 - CoeloSpacing.space2));
+    expect(tester.takeException(), isNull);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(itemFinder, findsNothing);
+    expect(triggerFocus.hasPrimaryFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(question).last);
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: triggerFinder, matching: find.text(question)), findsOneWidget);
+    expect(find.descendant(of: triggerFinder, matching: find.text(secondQuestion)), findsNothing);
+    expect(find.byType(MenuItemButton), findsNothing);
   });
 
   testWidgets('supports dark theme, 200% text and reduced motion without overflow', (tester) async {
@@ -405,6 +433,22 @@ void main() {
 }
 
 Future<LogoutResult> _logout() async => const LogoutResult.success();
+
+FocusNode _focusNodeFor(WidgetTester tester, Finder target) {
+  final targetElement = tester.element(target);
+  return FocusManager.instance.rootScope.descendants.firstWhere((node) {
+    final context = node.context;
+    if (context is! Element) return false;
+    if (context == targetElement) return true;
+    var belongsToTarget = false;
+    context.visitAncestorElements((element) {
+      if (element != targetElement) return true;
+      belongsToTarget = true;
+      return false;
+    });
+    return belongsToTarget;
+  });
+}
 
 Widget _app({
   ThemeMode themeMode = ThemeMode.light,
