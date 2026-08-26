@@ -47,6 +47,34 @@ Autenticação, RLS (regras de acesso no banco), autorização, segurança, arqu
 privados e dados sensíveis nunca recebem recomendação Básica. As faixas são
 referências e devem ser recalculadas depois do inventário.
 
+## Progresso percentual obrigatório
+
+Na abertura e em todo checkpoint, pausa ou encerramento, apresente o progresso
+do recorte contratado e do backlog geral conhecido sem misturar os dois. Use as
+unidades rastreáveis do inventário (`action_id` ou gate de conceito) e informe a
+base do cálculo. Uma unidade só conta como concluída quando possui as evidências
+Flutter, Supabase e integradas exigidas para o estado declarado; trabalho
+parcial permanece no restante.
+
+Use sempre este formato, com duas casas decimais e soma igual a `100,00%`:
+
+```text
+Progresso do recorte — Concluído: 21,43% (3/14 unidades)
+Progresso do recorte — Restante: 78,57% (11/14 unidades)
+Tempo usado no trabalho concluído: 50 h
+Tempo estimado para finalizar o recorte: 2 dias 4 h 48 min
+Progresso geral conhecido — Concluído: ...
+Progresso geral conhecido — Restante: ...
+Tempo estimado para finalizar o backlog geral: ...
+Base do cálculo: action_ids/gates considerados, evidência e horário de referência.
+```
+
+Tempo usado é duração medida, nunca deduzida pelo percentual. ETA considera
+dependências, testes, ambiente, autorizações e bloqueios e deve ser recalculado
+quando o inventário mudar. Se faltarem dados confiáveis, escreva `não calculável
+ainda`, liste o dado ausente e dê o próximo passo para torná-lo calculável; não
+use zero, percentual aproximado ou falsa precisão.
+
 ## Contrato e confirmação
 
 Antes de alterar código, banco ou remoto, apresente: pendências por lado e por
