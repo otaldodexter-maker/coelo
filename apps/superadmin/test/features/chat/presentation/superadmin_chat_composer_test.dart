@@ -36,5 +36,6 @@ void main() {
     expect(controller.text, 'Ola $emoji');
     expect(find.byKey(const Key('superadmin-chat-emoji-picker')), findsNothing);
     expect(tester.getSize(find.byTooltip('Adicionar emoji')).shortestSide, CoeloSize.touchMin);
+    expect(find.byTooltip('Gravar áudio'), findsOneWidget);
   });
 }

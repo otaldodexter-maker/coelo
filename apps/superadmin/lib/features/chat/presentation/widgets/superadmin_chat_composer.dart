@@ -132,7 +132,7 @@ final class _SuperadminChatComposerState extends State<SuperadminChatComposer> {
               ),
             ),
             if (!widget.compact) ...[
-              _Action(icon: Icons.mic_none_rounded, label: 'Gravar Ã¡udio', onTap: widget.onAudio),
+              _Action(icon: Icons.mic_none_rounded, label: 'Gravar áudio', onTap: widget.onAudio),
               _Action(icon: Icons.image_outlined, label: 'Adicionar imagem', onTap: widget.onImage),
             ],
             const SizedBox(width: CoeloSpacing.space1),
