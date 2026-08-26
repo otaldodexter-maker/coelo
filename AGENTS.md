@@ -4,7 +4,7 @@ Este arquivo e o contexto principal do projeto Coelo. Ele nao cria um agente por
 
 ## Visao Do Produto
 
-Coelo e um superapp privado de rotina, comunicacao e cuidado entre instituicoes, familias, responsaveis e alunos. O produto centraliza comunicacao escolar/institucional, agenda, rotina, Happens, Now, Moments, chat, notificacoes e contexto familiar com privacidade, confianca e clareza.
+Coelo e um superapp privado de rotina, comunicacao e cuidado entre instituicoes, familias, responsaveis e alunos. O produto centraliza comunicacao escolar/institucional, agenda, rotina, Acontece, Agora, Momentos, chat, notificacoes e contexto familiar com privacidade, confianca e clareza.
 
 Coelo nao e um ERP completo, nao e rede social aberta, nao e substituto generico de WhatsApp e nao deve transformar cuidado infantil em feed publico. O produto deve preservar o melhor interesse da crianca, a relacao entre instituicao e familia, e a auditabilidade das acoes sensiveis.
 
@@ -46,7 +46,7 @@ Regras globais:
 
 ## Seguranca, LGPD E Midia
 
-`service_role` e qualquer segredo equivalente nunca podem aparecer no cliente, em apps Flutter ou no site publico. Midia privada do produto deve usar Cloudflare R2 como destino unico desde o MVP, com Postgres/Supabase guardando metadados, permissoes, vinculos, ownership e trilha de auditoria. Antes da implementacao, deve existir spike tecnico de R2.
+`service_role` e qualquer segredo equivalente nunca podem aparecer no cliente, em apps Flutter ou no site publico. Fotos de perfil e identidade usam Supabase Storage privado; conteudo operacional de Agora, Acontece e Momentos usa Cloudflare R2. Postgres/Supabase guarda metadados, permissoes, vinculos, ownership e trilha de auditoria de ambos. A separacao e regida pela ADR 0022 e nao autoriza bucket publico nem segredo no Flutter.
 
 Dados pessoais, dados de criancas, CPF, midias, mensagens e logs devem respeitar LGPD, minimizacao, base legal, retencao definida, rastreabilidade e melhor interesse da crianca. Lacunas juridicas devem ficar abertas ate decisao formal.
 
