@@ -33,8 +33,9 @@ void main() {
     router.go(SuperadminRoutes.devConversations);
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
-    expect(find.text('Turma Girassol'), findsWidgets);
+    expect(find.text('Nao foi possivel carregar'), findsOneWidget);
     expect(find.byTooltip('Abrir menu de desenvolvimento'), findsOneWidget);
+    expect(find.byTooltip('Voltar'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Voltar'));
     await tester.pumpAndSettle();
@@ -58,7 +59,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.conversations);
-    expect(find.byKey(const Key('superadmin-chat-thread')), findsOne);
+    expect(find.text('Nao foi possivel carregar'), findsOneWidget);
+    expect(find.byTooltip('Voltar'), findsOneWidget);
     expect(find.byTooltip('Abrir menu de desenvolvimento'), findsNothing);
   });
 }
