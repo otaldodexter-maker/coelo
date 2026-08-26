@@ -1395,6 +1395,13 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-bug-menu')));
     await tester.pumpAndSettle();
+    final bugMenuAnchor = tester.widget<MenuAnchor>(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-bug-menu')),
+        matching: find.byType(MenuAnchor),
+      ),
+    );
+    expect(bugMenuAnchor.style?.surfaceTintColor?.resolve({}), Colors.transparent);
     for (final section in [
       'Estrutura',
       'Acessos',

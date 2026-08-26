@@ -217,13 +217,26 @@ class _BugSingleSelect<T> extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final menuWidth = constraints.maxWidth;
+        final view = View.of(context);
+        final devicePixelRatio = view.devicePixelRatio;
+        final safePadding = EdgeInsets.fromViewPadding(view.padding, devicePixelRatio);
+        final obscuredInsets = EdgeInsets.fromViewPadding(view.viewInsets, devicePixelRatio);
+        final unobscuredHeight =
+            view.physicalSize.height / devicePixelRatio -
+            safePadding.vertical -
+            obscuredInsets.vertical;
+        final menuMaxHeight = (unobscuredHeight - CoeloSpacing.space2 * 2)
+            .clamp(CoeloSize.touchMin, 420.0)
+            .toDouble();
+        final contentHeight = items.length * CoeloSize.touchMin;
         return MenuAnchor(
           alignmentOffset: const Offset(0, CoeloSpacing.space1),
           style: MenuStyle(
             backgroundColor: WidgetStatePropertyAll(colors.surface),
+            surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
             elevation: const WidgetStatePropertyAll(6),
             padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-            maximumSize: WidgetStatePropertyAll(Size(menuWidth, 420)),
+            maximumSize: WidgetStatePropertyAll(Size(menuWidth, menuMaxHeight)),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(CoeloRadius.lg),
@@ -234,46 +247,52 @@ class _BugSingleSelect<T> extends StatelessWidget {
           menuChildren: [
             SizedBox(
               width: menuWidth,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: items
-                    .map(
-                      (item) => MenuItemButton(
-                        key: itemKey(item),
-                        onPressed: () => onChanged(item),
-                        style: MenuItemButton.styleFrom().copyWith(
-                          foregroundColor: WidgetStateProperty.resolveWith((states) {
-                            final highlighted =
-                                states.contains(WidgetState.hovered) ||
-                                states.contains(WidgetState.focused);
-                            return item == value || highlighted
-                                ? colors.primary
-                                : colors.onSurfaceVariant;
-                          }),
-                          backgroundColor: WidgetStateProperty.resolveWith((states) {
-                            final highlighted =
-                                states.contains(WidgetState.hovered) ||
-                                states.contains(WidgetState.focused);
-                            return item == value || highlighted
-                                ? colors.primaryContainer
-                                : Colors.transparent;
-                          }),
-                          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                          shape: WidgetStateProperty.resolveWith((states) {
-                            final highlighted =
-                                states.contains(WidgetState.hovered) ||
-                                states.contains(WidgetState.focused);
-                            return RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                item == value || highlighted ? 0 : CoeloRadius.md,
-                              ),
-                            );
-                          }),
+              height: contentHeight > menuMaxHeight ? menuMaxHeight : contentHeight,
+              child: SingleChildScrollView(
+                key: const Key('superadmin-bug-select-scroll'),
+                primary: false,
+                padding: EdgeInsets.zero,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: items
+                      .map(
+                        (item) => MenuItemButton(
+                          key: itemKey(item),
+                          onPressed: () => onChanged(item),
+                          style: MenuItemButton.styleFrom().copyWith(
+                            foregroundColor: WidgetStateProperty.resolveWith((states) {
+                              final highlighted =
+                                  states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.focused);
+                              return item == value || highlighted
+                                  ? colors.primary
+                                  : colors.onSurfaceVariant;
+                            }),
+                            backgroundColor: WidgetStateProperty.resolveWith((states) {
+                              final highlighted =
+                                  states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.focused);
+                              return item == value || highlighted
+                                  ? colors.primaryContainer
+                                  : Colors.transparent;
+                            }),
+                            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                            shape: WidgetStateProperty.resolveWith((states) {
+                              final highlighted =
+                                  states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.focused);
+                              return RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  item == value || highlighted ? 0 : CoeloRadius.md,
+                                ),
+                              );
+                            }),
+                          ),
+                          child: Text('$item'),
                         ),
-                        child: Text('$item'),
-                      ),
-                    )
-                    .toList(growable: false),
+                      )
+                      .toList(growable: false),
+                ),
               ),
             ),
           ],

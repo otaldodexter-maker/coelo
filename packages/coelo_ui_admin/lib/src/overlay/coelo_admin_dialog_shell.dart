@@ -28,7 +28,55 @@ final class CoeloAdminDialogShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final viewportHeight = MediaQuery.sizeOf(context).height;
+    final mediaQuery = MediaQuery.of(context);
+    final viewportHeight = mediaQuery.size.height;
+    final header = Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CoeloSpacing.space6,
+        CoeloSpacing.space4,
+        CoeloSpacing.space3,
+        CoeloSpacing.space2,
+      ),
+      child: Row(
+        children: [
+          Expanded(child: Text(title, style: Theme.of(context).textTheme.headlineSmall)),
+          IconButton(
+            key: closeButtonKey,
+            tooltip: closeTooltip,
+            onPressed: onClose ?? () => Navigator.of(context).pop(),
+            style:
+                IconButton.styleFrom(
+                  minimumSize: const Size.square(CoeloSize.touchMin),
+                  maximumSize: const Size.square(CoeloSize.touchMin),
+                  foregroundColor: colors.error,
+                  shape: const CircleBorder(),
+                ).copyWith(
+                  backgroundColor: WidgetStateProperty.resolveWith(
+                    (states) =>
+                        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                        ? colors.errorContainer
+                        : Colors.transparent,
+                  ),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                ),
+            icon: const Icon(Icons.close_rounded),
+          ),
+        ],
+      ),
+    );
+    final divider = Divider(height: 1, color: colors.outlineVariant);
+    final footer = Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CoeloSpacing.space6,
+        0,
+        CoeloSpacing.space6,
+        CoeloSpacing.space6,
+      ),
+      child: _DialogFooter(primaryAction: primaryAction, secondaryAction: secondaryAction),
+    );
+    final paddedBody = Padding(padding: const EdgeInsets.all(CoeloSpacing.space6), child: body);
+    final normalBody = SingleChildScrollView(primary: false, child: paddedBody);
+    final keyboardIsOpen = mediaQuery.viewInsets.vertical > 0;
     return Dialog(
       key: dialogKey,
       backgroundColor: colors.surface,
@@ -42,63 +90,26 @@ final class CoeloAdminDialogShell extends StatelessWidget {
           maxWidth: maxWidth,
           maxHeight: viewportHeight - (CoeloSpacing.space6 * 2),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CoeloSpacing.space6,
-                CoeloSpacing.space4,
-                CoeloSpacing.space3,
-                CoeloSpacing.space2,
-              ),
-              child: Row(
+        child: keyboardIsOpen
+            ? SingleChildScrollView(
+                key: const Key('coelo-admin-dialog-keyboard-scroll'),
+                primary: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [header, divider, paddedBody, footer],
+                ),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(child: Text(title, style: Theme.of(context).textTheme.headlineSmall)),
-                  IconButton(
-                    key: closeButtonKey,
-                    tooltip: closeTooltip,
-                    onPressed: onClose ?? () => Navigator.of(context).pop(),
-                    style:
-                        IconButton.styleFrom(
-                          minimumSize: const Size.square(CoeloSize.touchMin),
-                          maximumSize: const Size.square(CoeloSize.touchMin),
-                          foregroundColor: colors.error,
-                          shape: const CircleBorder(),
-                        ).copyWith(
-                          backgroundColor: WidgetStateProperty.resolveWith(
-                            (states) =>
-                                states.contains(WidgetState.hovered) ||
-                                    states.contains(WidgetState.focused)
-                                ? colors.errorContainer
-                                : Colors.transparent,
-                          ),
-                          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                        ),
-                    icon: const Icon(Icons.close_rounded),
-                  ),
+                  header,
+                  divider,
+                  Flexible(child: normalBody),
+                  footer,
                 ],
               ),
-            ),
-            Divider(height: 1, color: colors.outlineVariant),
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(CoeloSpacing.space6),
-                child: body,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CoeloSpacing.space6,
-                0,
-                CoeloSpacing.space6,
-                CoeloSpacing.space6,
-              ),
-              child: _DialogFooter(primaryAction: primaryAction, secondaryAction: secondaryAction),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -116,10 +127,7 @@ final class _DialogFooter extends StatelessWidget {
     if (secondary == null) {
       return ConstrainedBox(
         key: const Key('coelo-admin-dialog-footer'),
-        constraints: const BoxConstraints(
-          minWidth: double.infinity,
-          minHeight: CoeloSize.touchMin,
-        ),
+        constraints: const BoxConstraints(minWidth: double.infinity, minHeight: CoeloSize.touchMin),
         child: primaryAction,
       );
     }
