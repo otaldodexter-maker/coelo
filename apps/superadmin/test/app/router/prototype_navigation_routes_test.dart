@@ -13,7 +13,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    final session = SuperadminSession()..signIn();
+    final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
@@ -34,7 +34,7 @@ void main() {
       ('plans', '/dev/plans'),
       ('import', '/dev/imports'),
       ('invites', '/dev/invites'),
-      ('notices', '/notices'),
+      ('notices', '/dev/notices'),
       ('audit', '/dev/audit'),
       ('catalog', '/dev/catalog'),
     ];
