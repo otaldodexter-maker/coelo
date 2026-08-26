@@ -82,7 +82,21 @@ List<AdminVisualDiagnostic> validateAdminVisualContracts({
     final stripped = _stripCommentsAndStrings(file.readAsStringSync());
     for (final symbol in _prohibitedSymbols.keys) {
       final matches = _constructorMatches(stripped, symbol).toList();
-      final allowed = validEntries['$relativePath|$symbol']?.maxOccurrences ?? 0;
+      final entry = validEntries['$relativePath|$symbol'];
+      final allowed = entry?.maxOccurrences ?? 0;
+      if (entry != null && matches.length < allowed) {
+        diagnostics.add(
+          AdminVisualDiagnostic(
+            path: relativePath,
+            line: 1,
+            symbol: 'allowlist',
+            message:
+                'baseline esperava exatamente $allowed ocorrencia(s) de '
+                '${entry.symbol}, mas encontrou ${matches.length}; remova ou '
+                'reduza a excecao obsoleta',
+          ),
+        );
+      }
       for (final match in matches.skip(allowed)) {
         diagnostics.add(
           AdminVisualDiagnostic(

@@ -102,6 +102,31 @@ Widget build() => CoeloAdminInteractiveCard(child: Text(description));
       expect(diagnostics.single.message, contains('excede a baseline 1'));
     });
 
+    test('rejects stale allowlist entries when the counted legacy use was removed', () {
+      final fixture = _Fixture();
+      addTearDown(fixture.dispose);
+      const path = 'apps/superadmin/lib/features/example/presentation/legacy.dart';
+      fixture.writeFeature('legacy.dart', 'Widget build() => const SizedBox();');
+      fixture.writeAllowlist(<Map<String, Object>>[
+        <String, Object>{
+          'path': path,
+          'symbol': 'InkWell',
+          'maxOccurrences': 1,
+          'reason': 'Legado existente preservado ate revisao visual dedicada.',
+        },
+      ]);
+
+      final diagnostics = validateAdminVisualContracts(
+        root: fixture.root,
+        allowlist: fixture.allowlist,
+      );
+
+      expect(diagnostics, hasLength(1));
+      expect(diagnostics.single.symbol, 'allowlist');
+      expect(diagnostics.single.message, contains('esperava exatamente 1'));
+      expect(diagnostics.single.message, contains('encontrou 0'));
+    });
+
     test('rejects allowlist entries with missing files or empty reasons', () {
       final fixture = _Fixture();
       addTearDown(fixture.dispose);
