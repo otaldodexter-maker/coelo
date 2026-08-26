@@ -7,10 +7,10 @@ import '../core/config/superadmin_app_config.dart';
 import '../core/guards/superadmin_session.dart';
 import '../features/activities/domain/activity_command.dart';
 import '../features/activities/domain/activity_directory.dart';
+import '../features/assessments/assessment.dart';
 import '../features/auth/domain/login_request.dart';
 import '../features/auth/domain/logout_action.dart';
 import '../features/auth/domain/password_recovery.dart';
-import '../features/assessments/assessment.dart';
 import '../features/auth/domain/reset_password_action.dart';
 import '../features/attendance/attendance.dart';
 import '../features/attendance/data/supabase_attendance_repository.dart';
@@ -32,7 +32,6 @@ import '../features/daily_routine/domain/routine_contract.dart';
 import '../features/audit/domain/audit.dart';
 import '../features/safety/application/child_safety_controller.dart';
 import '../features/safety/domain/child_safety_contract.dart';
-
 import '../features/access_profiles/domain/access_profile.dart';
 import '../features/groups/domain/group_directory.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
@@ -83,6 +82,7 @@ class SuperadminApp extends StatefulWidget {
     this.groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
+    this.assessmentRepository = const UnavailableAssessmentRepository(),
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
@@ -109,8 +109,8 @@ class SuperadminApp extends StatefulWidget {
   final InstitutionDirectoryRepository institutionDirectoryRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final ActivityDirectoryRepository activityDirectoryRepository;
-    this.assessmentRepository = const UnavailableAssessmentRepository(),
   final ActivityCommandRepository activityCommandRepository;
+  final AssessmentRepository assessmentRepository;
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
@@ -158,11 +158,11 @@ class _SuperadminAppState extends State<SuperadminApp> {
       groupDirectoryRepository: widget.groupDirectoryRepository,
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,
+      assessmentRepository: widget.assessmentRepository,
       personDirectoryRepository: widget.personDirectoryRepository,
       personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,
-  final AssessmentRepository assessmentRepository;
       accessProfileRepository: widget.accessProfileRepository,
       importRepository: widget.importRepository,
       inviteRepository: widget.inviteRepository,
@@ -238,4 +238,3 @@ class _SuperadminAppState extends State<SuperadminApp> {
     );
   }
 }
-      assessmentRepository: widget.assessmentRepository,
