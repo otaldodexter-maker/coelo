@@ -1214,11 +1214,24 @@ void main() {
   testWidgets('hides pagination for empty and no-results states', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    var createRequested = false;
 
-    await tester.pumpWidget(_app(repository: FakeInstitutionDirectoryRepository(items: [])));
+    await tester.pumpWidget(
+      _app(
+        repository: FakeInstitutionDirectoryRepository(items: []),
+        onCreate: () => createRequested = true,
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
     expect(find.byKey(const Key('institution-directory-pagination-footer')), findsNothing);
+    expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('create-institution-card')));
+    expect(createRequested, isTrue);
+
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('create-institution-banner')), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
@@ -1238,6 +1251,31 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
     expect(find.byKey(const Key('institution-directory-pagination-footer')), findsNothing);
+    expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
+  });
+
+  testWidgets('keeps creation available when loading the directory fails', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1280, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var createRequested = false;
+
+    await tester.pumpWidget(
+      _app(repository: const _FailingDirectoryRepository(), onCreate: () => createRequested = true),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Não foi possível carregar as instituições. Tente novamente.'),
+      findsOneWidget,
+    );
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byKey(const Key('create-institution-card')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('create-institution-card')));
+    expect(createRequested, isTrue);
+
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('create-institution-banner')), findsOneWidget);
   });
 
   testWidgets('hides pagination when a successful page reports zero total count', (tester) async {
@@ -1544,6 +1582,26 @@ final class _ZeroTotalCountRepository implements InstitutionDirectoryRepository 
       page: query.page,
       pageSize: query.pageSize,
     );
+  }
+
+  @override
+  Future<InstitutionDirectoryFilterOptions> fetchFilterOptions({
+    Set<String> states = const {},
+    Set<String> cities = const {},
+  }) async {
+    return InstitutionDirectoryFilterOptions.empty;
+  }
+}
+
+final class _FailingDirectoryRepository implements InstitutionDirectoryRepository {
+  const _FailingDirectoryRepository();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<domain.InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
+    throw Exception('offline');
   }
 
   @override

@@ -6,11 +6,13 @@ import '../view_models/institution_directory_view_model.dart';
 final class InstitutionDirectoryStates extends StatelessWidget {
   const InstitutionDirectoryStates({
     required this.viewModel,
+    required this.createAction,
     required this.successContent,
     super.key,
   });
 
   final InstitutionDirectoryViewModel viewModel;
+  final Widget createAction;
   final Widget successContent;
 
   @override
@@ -23,11 +25,13 @@ final class InstitutionDirectoryStates extends StatelessWidget {
           child: Center(child: CircularProgressIndicator()),
         );
       case InstitutionDirectoryLoadState.failure:
-        return _MessageCard(
-          icon: Icons.error_outline,
-          message: viewModel.errorMessage ?? InstitutionDirectoryViewModel.genericErrorMessage,
-          actionLabel: 'Tentar novamente',
-          onAction: viewModel.retry,
+        return _withCreateAction(
+          _MessageCard(
+            icon: Icons.error_outline,
+            message: viewModel.errorMessage ?? InstitutionDirectoryViewModel.genericErrorMessage,
+            actionLabel: 'Tentar novamente',
+            onAction: viewModel.retry,
+          ),
         );
       case InstitutionDirectoryLoadState.unauthorized:
         return _MessageCard(
@@ -35,18 +39,33 @@ final class InstitutionDirectoryStates extends StatelessWidget {
           message: viewModel.errorMessage ?? InstitutionDirectoryViewModel.unauthorizedMessage,
         );
       case InstitutionDirectoryLoadState.empty:
-        return const _MessageCard(
-          icon: Icons.apartment_outlined,
-          message: 'Ainda não há instituições cadastradas.',
+        return _withCreateAction(
+          const _MessageCard(
+            icon: Icons.apartment_outlined,
+            message: 'Ainda não há instituições cadastradas.',
+          ),
         );
       case InstitutionDirectoryLoadState.noResults:
-        return const _MessageCard(
-          icon: Icons.search_off_outlined,
-          message: 'Nenhuma instituição encontrada com estes filtros.',
+        return _withCreateAction(
+          const _MessageCard(
+            icon: Icons.search_off_outlined,
+            message: 'Nenhuma instituição encontrada com estes filtros.',
+          ),
         );
       case InstitutionDirectoryLoadState.success:
         return successContent;
     }
+  }
+
+  Widget _withCreateAction(Widget stateContent) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        createAction,
+        const SizedBox(height: CoeloSpacing.space4),
+        stateContent,
+      ],
+    );
   }
 }
 

@@ -374,6 +374,13 @@ class _InstitutionDirectoryResults extends StatelessWidget {
         if (viewModel.isLoading) const SizedBox(height: CoeloSpacing.space4),
         InstitutionDirectoryStates(
           viewModel: viewModel,
+          createAction: display == InstitutionDirectoryDisplay.table
+              ? InstitutionCreateBanner(onPressed: onCreate)
+              : InstitutionDirectoryCards(
+                  items: const [],
+                  onCreate: onCreate,
+                  onEdit: (item) => onEdit(item.id),
+                ),
           successContent: display == InstitutionDirectoryDisplay.table
               ? InstitutionDirectoryTable(
                   items: viewModel.page.items,
