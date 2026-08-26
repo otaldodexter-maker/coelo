@@ -155,7 +155,15 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
+  Widget build(BuildContext context) => CallbackShortcuts(
+    bindings: {
+      const SingleActivator(LogicalKeyboardKey.escape): () =>
+          _invoke(widget.onOpenHappens, 'Acontece'),
+    },
+    child: _buildLayout(),
+  );
+
+  Widget _buildLayout() => LayoutBuilder(
     builder: (context, constraints) {
       final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
       return Scaffold(

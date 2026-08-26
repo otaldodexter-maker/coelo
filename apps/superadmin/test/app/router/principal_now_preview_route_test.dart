@@ -109,11 +109,8 @@ void main() {
     await tester.pumpAndSettle();
 
     final origin = find.byKey(const Key('principal-happens-tab-momentos'));
-    final focus = Focus.of(
-      tester.element(find.descendant(of: origin, matching: find.byType(Text)).first),
-    );
-    focus.requestFocus();
-    await tester.pump();
+    final focus = await _tabTo(tester, origin);
+    expect(_focusIsWithin(focus, origin), isTrue);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
@@ -123,8 +120,12 @@ void main() {
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
+    expect(find.byType(PrincipalMomentsPreviewPage), findsNothing);
+    expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
-    expect(focus.hasFocus, isTrue);
+    final restoredFocus = FocusManager.instance.primaryFocus;
+    expect(restoredFocus, isNotNull);
+    expect(_focusIsWithin(restoredFocus!, origin), isTrue);
   });
 
   testWidgets('a direct Agora link closes to Acontece through the fallback', (tester) async {
@@ -171,10 +172,9 @@ void main() {
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
-    await mouse.addPointer(
-      location: tester.getCenter(find.byKey(const Key('principal-moments-close'))),
-    );
-    await mouse.down(tester.getCenter(find.byKey(const Key('principal-moments-close'))));
+    final closeToHappens = find.byKey(const Key('principal-moments-nav-acontece'));
+    await mouse.addPointer(location: tester.getCenter(closeToHappens));
+    await mouse.down(tester.getCenter(closeToHappens));
     await mouse.up();
     await tester.pumpAndSettle();
 
