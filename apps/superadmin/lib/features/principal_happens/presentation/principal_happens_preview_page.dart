@@ -548,24 +548,16 @@ final class _FeedStatePanel extends StatelessWidget {
 }
 
 final class _Tab extends StatelessWidget {
-  const _Tab({
-    this.tabKey,
-    required this.label,
-    this.selected = false,
-    this.autofocus = false,
-    this.onPressed,
-  });
+  const _Tab({this.tabKey, required this.label, this.selected = false, this.onPressed});
   final Key? tabKey;
   final String label;
   final bool selected;
-  final bool autofocus;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     final button = TextButton(
       key: tabKey,
-      autofocus: autofocus,
       onPressed: selected ? null : onPressed,
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(88, CoeloSize.touchMin)),
