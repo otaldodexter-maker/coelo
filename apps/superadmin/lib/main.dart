@@ -26,7 +26,6 @@ Future<void> main() async {
       personDirectoryRepository: authScope.personDirectoryRepository,
       personIdentityRepository: authScope.personIdentityRepository,
       accessProfileRepository: authScope.accessProfileRepository,
-      accessProfileExtendedRepository: authScope.accessProfileExtendedRepository,
       importRepository: authScope.importRepository,
       inviteRepository: authScope.inviteRepository,
       noticeRepository: authScope.noticeRepository,

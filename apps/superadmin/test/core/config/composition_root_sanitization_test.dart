@@ -1,0 +1,75 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  final authScope = File('lib/core/config/superadmin_auth_scope.dart').readAsStringSync();
+  final app = File('lib/app/superadmin_app.dart').readAsStringSync();
+  final mainSource = File('lib/main.dart').readAsStringSync();
+  final router = File('lib/app/router/superadmin_router.dart').readAsStringSync();
+
+  test('composition roots exclude unavailable extended and media dependencies', () {
+    for (final source in [authScope, app, mainSource, router]) {
+      expect(source, isNot(contains('AccessProfileExtendedRepository')));
+      expect(source, isNot(contains('accessProfileExtendedRepository')));
+      expect(source, isNot(contains('FormMediaResolver')));
+      expect(source, isNot(contains('formMediaResolver')));
+      expect(source, isNot(contains('formMediaResolve')));
+    }
+
+    for (final importPath in const [
+      'supabase_access_profile_extended_repository.dart',
+      'unavailable_access_profile_extended_repository.dart',
+      'access_profile_model_directory_page.dart',
+      'access_profile_model_form_page.dart',
+      'access_profile_model_detail_page.dart',
+      'form_media_resolver.dart',
+      'presentation/files/form_media_page.dart',
+      'presentation/files/forms_files_route_page.dart',
+    ]) {
+      expect(router + authScope + app, isNot(contains(importPath)), reason: importPath);
+    }
+  });
+
+  test('configured and fallback invitation composition remains unavailable', () {
+    for (final source in [authScope, app, mainSource]) {
+      expect(source, isNot(contains('SupabaseInviteRepository')));
+      expect(source, isNot(contains('supabase_invite_repository.dart')));
+    }
+    expect(
+      RegExp(r'inviteRepository:\s*const UnavailableInviteRepository\(\)').allMatches(authScope),
+      hasLength(2),
+    );
+    expect(app, contains('this.inviteRepository = const UnavailableInviteRepository()'));
+  });
+
+  test('basic Access wiring stays present without extended composition', () {
+    expect(router, contains('AccessProfileDirectoryPage('));
+    expect(router, contains('AccessProfileFormPage('));
+    expect(router, isNot(contains('extendedRepository:')));
+    expect(router, contains('GroupDirectoryRepository groupDirectoryRepository'));
+  });
+
+  test('model and media route declarations stay fail-closed without missing pages', () {
+    for (final routeName in const [
+      'profileModelsName',
+      'profileModelCreateName',
+      'profileModelDetailName',
+      'profileModelEditName',
+      'profileModelDuplicateName',
+      'formFilesName',
+      'formMediaName',
+    ]) {
+      expect(router, contains('SuperadminRoutes.$routeName'), reason: routeName);
+    }
+    for (final page in const [
+      'AccessProfileModelDirectoryPage',
+      'AccessProfileModelFormPage',
+      'AccessProfileModelDetailPage',
+      'FormsFilesRoutePage',
+      'FormMediaPage',
+    ]) {
+      expect(router, isNot(contains(page)), reason: page);
+    }
+  });
+}

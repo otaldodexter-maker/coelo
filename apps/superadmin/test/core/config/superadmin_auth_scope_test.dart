@@ -8,7 +8,6 @@ import 'package:coelo_superadmin/features/audit/domain/audit.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/daily_routine/domain/routine_contract.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
-import 'package:coelo_superadmin/features/invites/data/supabase_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_identity.dart';
@@ -82,7 +81,7 @@ void main() {
     expect(scope.session.isAuthenticated, isFalse);
     expect(scope.personDirectoryRepository, isA<SupabasePersonDirectoryRepository>());
     expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
-    expect(scope.inviteRepository, isA<SupabaseInviteRepository>());
+    expect(scope.inviteRepository, isA<UnavailableInviteRepository>());
     expect(scope.attendanceRepository, isA<SupabaseAttendanceRepository>());
     expect(scope.studentTrackingRepository, isA<UnavailableStudentTrackingRepository>());
     expect(scope.routineRepository, isA<UnavailableRoutineRepository>());

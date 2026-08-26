@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:coelo_auth/coelo_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,7 +15,6 @@ import '../../features/assessments/assessment.dart';
 import '../../features/assessments/data/supabase_assessment_repository.dart';
 import '../../features/imports/data/supabase_import_repository.dart';
 import '../../features/imports/domain/import_repository.dart';
-import '../../features/invites/data/supabase_invite_repository.dart';
 import '../../features/invites/domain/platform_invite.dart';
 import '../../features/notices/data/supabase_notice_repository.dart';
 import '../../features/notices/domain/notice_repository.dart';
@@ -33,7 +30,6 @@ import '../../features/meal_plans/data/supabase_meal_plan_image_repository.dart'
 import '../../features/meal_plans/domain/meal_plan_image_repository.dart';
 import '../../features/meal_plans/domain/meal_plan_repository.dart';
 import '../../features/forms/data/forms_backend_gateway.dart';
-import '../../features/forms/data/form_media_resolver.dart';
 import '../../features/forms/data/supabase_forms_api.dart';
 import 'package:coelo_api/coelo_api.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
@@ -44,8 +40,6 @@ import '../../features/people/domain/person_directory.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/groups/domain/group_directory.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
-import '../../features/access_profiles/data/supabase_access_profile_extended_repository.dart';
-import '../../features/access_profiles/data/unavailable_access_profile_extended_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
@@ -82,7 +76,6 @@ final class SuperadminAuthScope {
     required this.personDirectoryRepository,
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
-    required this.accessProfileExtendedRepository,
     required this.groupDirectoryRepository,
     required this.unitDirectoryRepository,
     required this.unitBackendCommands,
@@ -99,7 +92,6 @@ final class SuperadminAuthScope {
     required this.mealPlanRepository,
     required this.mealPlanImageRepository,
     required this.formsApi,
-    required this.formMediaResolver,
     this.nowPublicationRepository,
   });
 
@@ -114,7 +106,6 @@ final class SuperadminAuthScope {
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
-  final AccessProfileExtendedRepository accessProfileExtendedRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
@@ -131,7 +122,6 @@ final class SuperadminAuthScope {
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final FormsApi? formsApi;
-  final FormMediaResolver? formMediaResolver;
   final NowPublicationRepository? nowPublicationRepository;
 }
 
@@ -172,12 +162,11 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
-      accessProfileExtendedRepository: SupabaseAccessProfileExtendedRepository(client),
       groupDirectoryRepository: SupabaseGroupDirectoryRepository(client),
       unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
       unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
       importRepository: SupabaseImportRepository(client),
-      inviteRepository: SupabaseInviteRepository(client),
+      inviteRepository: const UnavailableInviteRepository(),
       noticeRepository: SupabaseNoticeRepository(client),
       attendanceRepository: SupabaseAttendanceRepository(client),
       studentTrackingRepository: const UnavailableStudentTrackingRepository(),
@@ -189,10 +178,6 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       mealPlanRepository: SupabaseMealPlanRepository(client),
       mealPlanImageRepository: SupabaseMealPlanImageRepository(client),
       formsApi: SupabaseFormsApi(formsBackend),
-      formMediaResolver: FormMediaResolver(
-        backend: formsBackend,
-        requestIdFactory: _newFormRequestId,
-      ),
       nowPublicationRepository: SupabaseNowPublicationRepository(client),
     );
   } on Exception catch (error, stackTrace) {
@@ -226,7 +211,6 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     personDirectoryRepository: const UnavailablePersonDirectoryRepository(),
     personIdentityRepository: const UnavailablePersonIdentityRepository(),
     accessProfileRepository: const UnavailableAccessProfileRepository(),
-    accessProfileExtendedRepository: const UnavailableAccessProfileExtendedRepository(),
     groupDirectoryRepository: const UnavailableGroupDirectoryRepository(),
     unitDirectoryRepository: const UnavailableUnitDirectoryRepository(),
     unitBackendCommands: const UnavailableUnitBackendCommandsGateway(),
@@ -243,19 +227,8 @@ SuperadminAuthScope _createUnavailableScope(CoeloAuthGateway auth) {
     mealPlanRepository: const UnavailableMealPlanRepository(),
     mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
     formsApi: null,
-    formMediaResolver: null,
     nowPublicationRepository: null,
   );
-}
-
-String _newFormRequestId() {
-  final random = Random.secure();
-  final bytes = List<int>.generate(16, (_) => random.nextInt(256));
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
-  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-'
-      '${hex.substring(16, 20)}-${hex.substring(20)}';
 }
 
 CoeloAuthGateway _createAuthGateway({

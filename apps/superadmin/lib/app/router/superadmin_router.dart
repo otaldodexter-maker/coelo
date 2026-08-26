@@ -41,13 +41,8 @@ import '../../features/account/presentation/screens/settings_page.dart';
 import '../../features/account/presentation/user_preferences_controller.dart';
 import '../../features/imports/domain/import_job.dart';
 import '../../features/access_profiles/data/supabase_access_profile_repository.dart';
-import '../../features/access_profiles/data/unavailable_access_profile_extended_repository.dart';
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/access_profiles/presentation/access_profile_detail_page.dart';
-import '../../features/access_profiles/presentation/access_profile_model_detail_page.dart';
-import '../../features/access_profiles/presentation/access_profile_model_directory_page.dart';
-import '../../features/access_profiles/presentation/access_profile_model_form_page.dart';
-import '../../features/support/domain/support_ticket.dart';
 import '../../features/access_profiles/presentation/access_profile_directory_page.dart';
 import '../../features/access_profiles/presentation/access_profile_form_page.dart';
 import '../../features/agenda/data/agenda_prototype_store.dart';
@@ -130,8 +125,6 @@ import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/editor/forms_editor_route_page.dart';
-import '../../features/forms/presentation/files/form_media_page.dart';
-import '../../features/forms/presentation/files/forms_files_route_page.dart';
 import '../../features/forms/presentation/monitoring/forms_monitor_page.dart';
 import '../../features/forms/presentation/response/form_response_route_page.dart';
 import '../../features/forms/presentation/responses/form_response_detail_page.dart';
@@ -187,15 +180,6 @@ final class FormsRouteCapabilities {
   final bool canExportAnonymousParticipation;
 }
 
-final class _UnavailableFormsMediaPage extends StatelessWidget {
-  const _UnavailableFormsMediaPage();
-
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    body: Center(child: Text('M\u00eddia indispon\u00edvel para esta sess\u00e3o.')),
-  );
-}
-
 SupportPrototypeController _createDevelopmentSupportController() => SupportPrototypeController();
 
 GoRouter createSuperadminRouter({
@@ -217,8 +201,6 @@ GoRouter createSuperadminRouter({
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
-  AccessProfileExtendedRepository accessProfileExtendedRepository =
-      const UnavailableAccessProfileExtendedRepository(),
   ResetPasswordAction resetPassword = unavailableResetPassword,
   String catalogUrl = const String.fromEnvironment(
     'COELO_CATALOG_URL',
@@ -241,7 +223,6 @@ GoRouter createSuperadminRouter({
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
   FormsApi? formsApi,
   FormsRouteCapabilities formsCapabilities = const FormsRouteCapabilities(),
-  FormMediaResolve? formMediaResolve,
   NowPublicationRepository? nowPublicationRepository,
   ChildSafetyController? childSafetyController,
   bool allowDevelopmentPreview = SuperadminAppConfig.allowDevelopmentPreview,
@@ -1227,24 +1208,12 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formFiles,
             name: SuperadminRoutes.formFilesName,
-            builder: (context, state) => FormsFilesRoutePage(
-              api: formsApi,
-              formId: state.pathParameters['formId']!,
-              onDownload: (path) {
-                unawaited(openDownloadUrl(path));
-              },
-            ),
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.formMedia,
             name: SuperadminRoutes.formMediaName,
-            builder: (context, state) {
-              final resolve = formMediaResolve;
-              if (resolve == null) {
-                return const _UnavailableFormsMediaPage();
-              }
-              return FormMediaPage(assetId: state.pathParameters['assetId']!, resolve: resolve);
-            },
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfiles,
@@ -1475,7 +1444,6 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.profilesName,
             builder: (context, state) => AccessProfileDirectoryPage(
               repository: accessProfileRepository,
-              extendedRepository: accessProfileExtendedRepository,
               logout: logout,
               onCreate: (domain) => context.goNamed(
                 SuperadminRoutes.profileCreateName,
@@ -1493,101 +1461,27 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.profileModels,
             name: SuperadminRoutes.profileModelsName,
-            builder: (context, state) => AccessProfileModelDirectoryPage(
-              repository: accessProfileExtendedRepository,
-              logout: logout,
-              onCreate: (domain) => context.goNamed(
-                SuperadminRoutes.profileModelCreateName,
-                pathParameters: {'domain': domain.databaseValue},
-              ),
-              onOpen: (domain, id) => context.goNamed(
-                SuperadminRoutes.profileModelDetailName,
-                pathParameters: {'domain': domain.databaseValue, 'modelId': id},
-              ),
-              onDuplicate: (domain, id) => context.goNamed(
-                SuperadminRoutes.profileModelDuplicateName,
-                pathParameters: {'domain': domain.databaseValue, 'modelId': id},
-              ),
-              onDestinationSelected: (destination) =>
-                  _navigateFromPersistentShell(context, destination),
-              onBugReportSubmitted: productionSupportController?.submitReport,
-            ),
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelCreate,
             name: SuperadminRoutes.profileModelCreateName,
-            builder: (context, state) {
-              final domain = _accessDomainIncludingPrincipalOrNull(state.pathParameters['domain']);
-              if (domain == null) {
-                return _invalidAccessProfileRoute(context, SuperadminRoutes.profileModelsName);
-              }
-              return AccessProfileModelFormPage(
-                repository: accessProfileExtendedRepository,
-                logout: logout,
-                domain: domain,
-                onCancel: () => context.goNamed(SuperadminRoutes.profileModelsName),
-                onSaved: (model) => context.goNamed(
-                  SuperadminRoutes.profileModelDetailName,
-                  pathParameters: {'domain': model.domain.databaseValue, 'modelId': model.id},
-                ),
-                onDestinationSelected: (destination) =>
-                    _navigateFromPersistentShell(context, destination),
-                onBugReportSubmitted: productionSupportController?.submitReport,
-              );
-            },
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelDetail,
             name: SuperadminRoutes.profileModelDetailName,
-            builder: (context, state) {
-              final domain = _accessDomainIncludingPrincipalOrNull(state.pathParameters['domain']);
-              final modelId = state.pathParameters['modelId'];
-              if (domain == null || modelId == null) {
-                return _invalidAccessProfileRoute(context, SuperadminRoutes.profileModelsName);
-              }
-              return AccessProfileModelDetailPage(
-                repository: accessProfileExtendedRepository,
-                logout: logout,
-                domain: domain,
-                modelId: modelId,
-                onBack: () => context.goNamed(SuperadminRoutes.profileModelsName),
-                onEdit: () => context.goNamed(
-                  SuperadminRoutes.profileModelEditName,
-                  pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
-                ),
-                onDuplicate: () => context.goNamed(
-                  SuperadminRoutes.profileModelDuplicateName,
-                  pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
-                ),
-                onDestinationSelected: (destination) =>
-                    _navigateFromPersistentShell(context, destination),
-                onBugReportSubmitted: productionSupportController?.submitReport,
-              );
-            },
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelEdit,
             name: SuperadminRoutes.profileModelEditName,
-            builder: (context, state) => _profileModelFormRoute(
-              context,
-              state,
-              repository: accessProfileExtendedRepository,
-              logout: logout,
-              duplicate: false,
-              onBugReportSubmitted: productionSupportController?.submitReport,
-            ),
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.profileModelDuplicate,
             name: SuperadminRoutes.profileModelDuplicateName,
-            builder: (context, state) => _profileModelFormRoute(
-              context,
-              state,
-              repository: accessProfileExtendedRepository,
-              logout: logout,
-              duplicate: true,
-              onBugReportSubmitted: productionSupportController?.submitReport,
-            ),
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.profileCreate,
@@ -1599,7 +1493,6 @@ GoRouter createSuperadminRouter({
               }
               return AccessProfileFormPage(
                 repository: accessProfileRepository,
-                extendedRepository: accessProfileExtendedRepository,
                 logout: logout,
                 domain: domain,
                 onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
@@ -1650,7 +1543,6 @@ GoRouter createSuperadminRouter({
               final profileId = state.pathParameters['profileId']!;
               return AccessProfileFormPage(
                 repository: accessProfileRepository,
-                extendedRepository: accessProfileExtendedRepository,
                 logout: logout,
                 domain: domain,
                 profileId: profileId,
@@ -2970,20 +2862,12 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormFiles,
             name: SuperadminRoutes.devFormFilesName,
-            builder: (context, state) => FormsFilesRoutePage(
-              api: formsApi,
-              formId: state.pathParameters['formId']!,
-              onDownload: (path) => unawaited(openDownloadUrl(path)),
-            ),
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormMedia,
             name: SuperadminRoutes.devFormMediaName,
-            builder: (context, state) {
-              final resolve = formMediaResolve;
-              if (resolve == null) return const _UnavailableFormsMediaPage();
-              return FormMediaPage(assetId: state.pathParameters['assetId']!, resolve: resolve);
-            },
+            builder: (context, state) => _unavailableCompositionRootRoute(context),
           ),
           GoRoute(
             path: SuperadminRoutes.invites,
@@ -3990,45 +3874,6 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
   }
 }
 
-Widget _profileModelFormRoute(
-  BuildContext context,
-  GoRouterState state, {
-  required AccessProfileExtendedRepository repository,
-  required LogoutAction logout,
-  required bool duplicate,
-  required ValueChanged<SupportReportDraft>? onBugReportSubmitted,
-}) {
-  final domain = _accessDomainIncludingPrincipalOrNull(state.pathParameters['domain']);
-  final modelId = state.pathParameters['modelId'];
-  if (domain == null || modelId == null) {
-    return _invalidAccessProfileRoute(context, SuperadminRoutes.profileModelsName);
-  }
-  return AccessProfileModelFormPage(
-    repository: repository,
-    logout: logout,
-    domain: domain,
-    modelId: modelId,
-    duplicate: duplicate,
-    onCancel: () => context.goNamed(
-      SuperadminRoutes.profileModelDetailName,
-      pathParameters: {'domain': domain.databaseValue, 'modelId': modelId},
-    ),
-    onSaved: (model) => context.goNamed(
-      SuperadminRoutes.profileModelDetailName,
-      pathParameters: {'domain': model.domain.databaseValue, 'modelId': model.id},
-    ),
-    onDestinationSelected: (destination) => _navigateFromPersistentShell(context, destination),
-    onBugReportSubmitted: onBugReportSubmitted,
-  );
-}
-
-AccessProfileDomain? _accessDomainIncludingPrincipalOrNull(String? value) {
-  for (final domain in AccessProfileDomain.values) {
-    if (domain.databaseValue == value) return domain;
-  }
-  return null;
-}
-
 RoutineEntryKind _routineEntryKind(String? value) {
   for (final kind in RoutineEntryKind.values) {
     if (kind.name == value) return kind;
@@ -4052,6 +3897,11 @@ Widget _invalidAccessProfileRoute(BuildContext context, String destination) =>
     );
 
 Widget _unavailableMedicationPlans(BuildContext context) => SuperadminErrorScreen(
+  kind: SuperadminErrorKind.unavailable,
+  onAction: () => context.goNamed(SuperadminRoutes.homeName),
+);
+
+Widget _unavailableCompositionRootRoute(BuildContext context) => SuperadminErrorScreen(
   kind: SuperadminErrorKind.unavailable,
   onAction: () => context.goNamed(SuperadminRoutes.homeName),
 );

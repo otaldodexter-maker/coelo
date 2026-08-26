@@ -26,7 +26,6 @@ import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
 import '../features/people/domain/person_identity.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
-import '../features/access_profiles/data/unavailable_access_profile_extended_repository.dart';
 import '../features/imports/domain/import_repository.dart';
 import '../features/invites/domain/platform_invite.dart';
 import '../features/notices/domain/notice_repository.dart';
@@ -91,7 +90,6 @@ class SuperadminApp extends StatefulWidget {
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
-    this.accessProfileExtendedRepository = const UnavailableAccessProfileExtendedRepository(),
     this.importRepository = const UnavailableImportRepository(),
     this.inviteRepository = const UnavailableInviteRepository(),
     this.noticeRepository = const UnavailableNoticeRepository(),
@@ -119,7 +117,6 @@ class SuperadminApp extends StatefulWidget {
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
   final AccessProfileRepository accessProfileRepository;
-  final AccessProfileExtendedRepository accessProfileExtendedRepository;
   final ImportRepository importRepository;
   final InviteRepository inviteRepository;
   final NoticeRepository noticeRepository;
@@ -167,7 +164,6 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,
       accessProfileRepository: widget.accessProfileRepository,
-      accessProfileExtendedRepository: widget.accessProfileExtendedRepository,
       importRepository: widget.importRepository,
       inviteRepository: widget.inviteRepository,
       noticeRepository: widget.noticeRepository,
