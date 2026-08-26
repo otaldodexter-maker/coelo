@@ -73,10 +73,24 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
+  coelo_api:
+    dependency: "direct main"
+    description:
+      path: "../../packages/coelo_api"
+      relative: true
+    source: path
+    version: "0.1.0"
   coelo_auth:
     dependency: "direct main"
     description:
       path: "../../packages/coelo_auth"
+      relative: true
+    source: path
+    version: "0.1.0"
+  coelo_domain:
+    dependency: "direct main"
+    description:
+      path: "../../packages/coelo_domain"
       relative: true
     source: path
     version: "0.1.0"

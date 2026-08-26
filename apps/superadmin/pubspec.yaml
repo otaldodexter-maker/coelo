@@ -10,8 +10,12 @@ environment:
 dependencies:
   characters: 1.4.1
   crypto: 3.0.6
+  coelo_api:
+    path: ../../packages/coelo_api
   coelo_auth:
     path: ../../packages/coelo_auth
+  coelo_domain:
+    path: ../../packages/coelo_domain
   coelo_tokens:
     path: ../../packages/coelo_tokens
   coelo_ui_admin:
