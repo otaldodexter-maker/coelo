@@ -101,6 +101,8 @@ void main() {
     );
 
     final surface = find.byKey(const Key('agenda-event-card-surface-routine-school'));
+    await tester.ensureVisible(card);
+    await tester.pumpAndSettle();
     final before = tester.widget<AnimatedContainer>(surface).decoration! as BoxDecoration;
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
