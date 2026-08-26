@@ -796,7 +796,7 @@ class _RankingRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: CoeloSpacing.space3),
-              Text(_rateLabel(item.rate)),
+              Flexible(child: Text(_rateLabel(item.rate), textAlign: TextAlign.end)),
             ],
           ),
         ),
@@ -1019,7 +1019,7 @@ class _CallsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          width: 360,
+          width: double.infinity,
           child: CoeloSearchField(
             controller: searchController,
             onChanged: controller.changeSearch,
