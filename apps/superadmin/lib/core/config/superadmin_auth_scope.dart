@@ -41,7 +41,6 @@ import '../../features/institutions/data/supabase_institution_directory_reposito
 import '../../features/groups/data/supabase_group_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
 import '../../features/people/data/supabase_person_directory_repository.dart';
-import '../../features/people/data/supabase_person_identity_repository.dart';
 import '../../features/people/domain/person_directory.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/groups/domain/group_directory.dart';
@@ -172,7 +171,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       activityCommandRepository: SupabaseActivityCommandRepository(client),
       assessmentRepository: SupabaseAssessmentRepository(client),
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
-      personIdentityRepository: SupabasePersonIdentityRepository(client),
+      personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       accessProfileExtendedRepository: SupabaseAccessProfileExtendedRepository(client),
       groupDirectoryRepository: SupabaseGroupDirectoryRepository(client),

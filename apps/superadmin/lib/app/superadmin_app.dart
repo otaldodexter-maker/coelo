@@ -24,6 +24,7 @@ import '../features/units/domain/unit_backend_commands.dart';
 import '../features/units/domain/unit_directory.dart';
 import '../features/people/data/supabase_person_directory_repository.dart';
 import '../features/people/domain/person_directory.dart';
+import '../features/people/domain/person_identity.dart';
 import '../features/access_profiles/data/supabase_access_profile_repository.dart';
 import '../features/access_profiles/data/unavailable_access_profile_extended_repository.dart';
 import '../features/imports/domain/import_repository.dart';
@@ -86,6 +87,7 @@ class SuperadminApp extends StatefulWidget {
     this.activityDirectoryRepository = const UnavailableActivityDirectoryRepository(),
     this.activityCommandRepository = const UnavailableActivityCommandRepository(),
     this.personDirectoryRepository = const UnavailablePersonDirectoryRepository(),
+    this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
@@ -113,6 +115,7 @@ class SuperadminApp extends StatefulWidget {
   final ActivityDirectoryRepository activityDirectoryRepository;
   final ActivityCommandRepository activityCommandRepository;
   final PersonDirectoryRepository personDirectoryRepository;
+  final PersonIdentityRepository personIdentityRepository;
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
   final AccessProfileRepository accessProfileRepository;
@@ -160,6 +163,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       activityDirectoryRepository: widget.activityDirectoryRepository,
       activityCommandRepository: widget.activityCommandRepository,
       personDirectoryRepository: widget.personDirectoryRepository,
+      personIdentityRepository: widget.personIdentityRepository,
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,
       accessProfileRepository: widget.accessProfileRepository,
