@@ -1,7 +1,7 @@
 ---
 source: "specs/013-ui-packages-componentization.md; docs/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
 status: "implemented-local-foundation"
-generated_at: "2026-07-24"
+generated_at: "2026-08-06"
 ---
 
 # Coelo UI Catalog
@@ -51,3 +51,8 @@ O catalogo organiza fundamentos, componentes, padroes, produtos e governanca;
 filtra por consumidores; muda tema e viewport; renderiza os componentes reais;
 e mostra orientacao e codigo minimo. Nao e editor de codigo, CMS ou mecanismo de
 aprovacao do Design System.
+
+O registry interativo renderiza somente componentes importaveis dos pacotes UI
+materializados. Componentes privados em `apps/*` permanecem no indice e na
+verificacao de arquivos e fingerprints, sem builder. O catalogo e ferramenta de
+governanca, nao consumidor, e nunca importa outro app.
