@@ -170,7 +170,7 @@ final class _EmoticonShortcut extends StatelessWidget {
   final ValueChanged<String> onSelected;
   @override
   Widget build(BuildContext context) => Tooltip(
-    message: 'Inserir ',
+    message: 'Inserir $label',
     child: TextButton(
       onPressed: () => onSelected(emoji),
       style: TextButton.styleFrom(minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin)),

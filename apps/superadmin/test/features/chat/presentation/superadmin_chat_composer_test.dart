@@ -29,6 +29,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Adicionar emoji'));
     await tester.pumpAndSettle();
+    expect(find.byTooltip('Inserir :)'), findsOneWidget);
     await tester.tap(find.text(emoji));
     await tester.pumpAndSettle();
 
