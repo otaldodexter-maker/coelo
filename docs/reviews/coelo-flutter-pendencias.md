@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Flutter por tela e ação"
-source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD a4d2e65790bb6dc2c79209ab88d14ccbe61a8c52"
+source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD 6dedcb79c02fd997eae0f0c5727bf63acb51be3d"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-27"
@@ -1268,7 +1268,39 @@ produto, backend, ambiente integrado e inspeção visual humana pendentes.
 | 7 | Formulários; Conversas; Convites; Comunicação | quatro arquivos de Formulários e testes; `superadmin_chat_page.dart` e teste; `notice_directory_page.dart`, `notice_popup_preview.dart` e dois testes | Diretório/overview de Formulários alinhados; busca Chat canônica com debounce e proteção contra resposta stale; Avisos sem header duplicado, CTA vazio ou vazamento em forbidden. Convites passou regressão sem alteração. | Formulários e UI de Comunicação `local-green`; Convites produtivo continua unavailable. | Editor/respostas/arquivos de Formulários e repository produtivo de Convites permanecem fail-closed; contratos de membership/mídia não mudaram. |
 | 8 | Acontece; Para Você; Momentos; Agora | Nenhum arquivo modificado. | 64 testes non-golden passaram; rotas e fixtures confirmadas somente em `/dev`; nenhuma dependência `coelo_ui_admin` foi adicionada ao Principal. | Regressão local verde, sem desvio estrutural reproduzido. | Produção, publicação, lifecycle e mídia dependem de produto/backend; dark específico de algumas superfícies permanece coberto somente por goldens não executados. |
 
-## 15. Histórico
+## 15. Consolidação Flutter/UI complementar — 2026-08-27
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações).
+
+**Progresso do recorte — Concluído:** 0,00% (0/89 `action_id` verificados).
+
+**Progresso do recorte — Restante:** 100,00% (89/89 `action_id`).
+
+Este checkpoint integrou somente evidência local: wizards canônicos de Publicar
+Acontece/Momentos/Agora; um único shell para prévias/Perfil e wiring de Conteúdo
+somente em `/dev`; Conteúdo demonstrativo com preview responsivo; launcher de
+Chat arrastável e fail-safe; tabela canônica de permissões da Agenda; campos de
+Medicação legíveis a 200%; e serialização de salvar/publicar no Acontece. Rotas
+produtivas, repositories reais, backend, migrations, mídia remota e goldens não
+foram habilitados nem executados.
+
+Os gates finais executaram 58 testes não-golden e todos passaram; o analyzer
+completo terminou sem issues em 70,6 s. Os handoffs específicos somaram ainda
+testes focados previamente aceitos de Momentos, Agora, Conteúdo e Chat. Nenhuma
+ação foi promovida a `verified` ou E2E. O tempo total confiável desta rodada não
+é calculável porque implementação, revisão paralela e consolidação vieram de
+frentes com marcos distintos; a ETA das 89 ações permanece não calculável sem
+decisões, backend, ambiente integrado e inspeção visual humana.
+
+Pendências explícitas preservadas: dashboard de Assiduidade; Perfil detalhado;
+Lançar atividade; Cardápio/Modelo; Criar Formulário; Perfil de cuidado; e
+validação transversal de tabelas/cards, flyouts e shell nas demais telas. O
+validador visual continua RED somente nos dois desvios preexistentes fora do
+recorte (`CheckboxListTile` em Instituições e `InkWell` em Pessoas).
+
+## 16. Histórico
 
 | Data | Mudança |
 |---|---|
