@@ -1,8 +1,8 @@
 ---
 title: "Identidade interna exclusiva do Superadmin"
-source: "Decisão aprovada pelo Owner Coelo em 2026-08-05; docs/product/prd-superadmin.md; specs/023-superadmin-internal-users-local-preview.md; decisions/0017-access-profile-governance.md"
+source: "Decisão aprovada pelo Owner Coelo em 2026-08-05 e 2026-08-27; docs/product/prd-superadmin.md; specs/023-superadmin-internal-users-local-preview.md; decisions/0017-access-profile-governance.md"
 status: "accepted"
-generated_at: "2026-08-05"
+generated_at: "2026-08-27"
 ---
 
 # ADR 0019 — Identidade interna exclusiva do Superadmin
@@ -38,3 +38,19 @@ Superadmin com cadastros, credenciais e relações do Admin e do Principal.
   ou persistência produtiva.
 - O desenho físico atual fica registrado como dívida de migração, não como
   arquitetura futura aprovada.
+
+## Aditivo 2026-08-27 — realm, sessão e MFA internos
+
+**Decisão aprovada pelo Owner Coelo em 2026-08-27.** Superadmin, Admin e
+Principal permanecem no mesmo projeto Supabase, mas cada Usuário Interno usa
+conta distinta em `auth.users` e e-mail distinto da conta que a mesma pessoa
+eventualmente use no Admin ou no Principal. O vínculo dessa conta com a
+identidade interna é privado; sessão e autorização não são compartilhadas entre
+o realm interno e o realm global.
+
+O Owner exige AAL2 em todo contexto e comando, inclusive no bootstrap. Os
+demais papéis seguem a exigência já aprovada de AAL2 apenas quando a capacidade
+ativa tiver `platform_permissions.requires_mfa = true`.
+
+Os detalhes contratuais de `auth_link` privado, revalidação de sessão e contexto
+estão em `specs/039-superadmin-internal-auth-session-context.md`.
