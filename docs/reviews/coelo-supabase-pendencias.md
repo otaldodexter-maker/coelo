@@ -2758,3 +2758,52 @@ da simples soma das 207 ações.
   commits posteriores incluído nesta mesma janela operacional. **Tempo restante
   estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
   Grupos e Pessoas; backlog integral não calculável ainda.
+
+### Checkpoint seguro 29 — restauração comprovada de Auditoria e próximo RED
+
+- **Lote:** reconciliação individual da migration remota
+  `20260812000847_audit_production.sql`; nenhuma ação da matriz foi promovida.
+- **Ações tratadas:** somente os gates gerais `SUP-GEN-002` e `SUP-GEN-016`.
+  Auth, Instituições e as demais migrations recovery-only não foram alterados.
+- **Migrations, RPCs ou Functions alteradas:** a migration canônica
+  `20260812000847` foi restaurada ao blob histórico
+  `268467fd0efadcc11f2c5914b2e67b72de790f84` do commit
+  `5dea64a9a2e24b66f40b302d222b3ae0b5bc6391`; nenhum objeto remoto foi escrito.
+- **Evidências:** o primeiro replay isolado reproduziu SQLSTATE `42601` no
+  identificador reservado `authorization`. O ledger remoto, consultado por
+  `SELECT`, contém exatamente 12 ocorrências de `v_authorization`, zero do
+  identificador reservado e zero da variante recovery
+  `authorization_scope_value`, além dos labels de capability. O arquivo
+  restaurado possui zero diferenças contra `5dea64a9`; canônico e mirror têm
+  66.923 bytes, SHA-256 raw
+  `546127f251867629ee4110348d2aedd7af5003d28a8a3c5c0fd298c067b66b5c`
+  e SHA-256 LF-normalized
+  `8562df833a09ba3a79d972bbe0b6a533bd76647eb0d338698eecdb0ce8625b30`.
+  Manifesto v2 regenerado: id
+  `953681023d3ed4f24c5d0c74c43aecbba2095e3d927ced3363887279e7a2b4f8`,
+  CSV 142.936 bytes/SHA-256
+  `82951d24ba3518c7232f35185e971526ce03787dda3723ef43d63b492d913568`
+  e meta 1.128 bytes/SHA-256
+  `339cf0566086c66d2a88a39860dabb04d8a6d08a76dde857169c07e651e4e6fd`.
+- **Testes executados:** replay RED inicial; restauração mínima; replay afetado
+  uma vez; `Sync-SupabaseCliMigrations.ps1` Prepare e Verify, ambos 100/100;
+  igualdade contra o blob histórico; `git diff --check`; teardown nominal.
+- **Estado local/remoto:** a sintaxe reservada foi removida, mas o replay segue
+  RED na mesma migration porque `platform_permissions.module_label` ainda não
+  existe no baseline canônico. A dependência é a candidata
+  `20260811215451_access_profile_management_v2.sql` e não foi promovida sem sua
+  própria prova. O remoto permaneceu somente leitura: zero DDL, DML operacional,
+  Auth, Storage, Edge, migration aplicada ou deploy.
+- **Bloqueios:** ledger canônico incompleto antes de `20260812000847`; as outras
+  54 candidatas remotas continuam sem fingerprint integral. As 31 local-only,
+  inclusive Medicação e Perfis de cuidado, permanecem em pacotes individuais.
+- **Cleanup:** projetos Docker `coelo_auth_baseline_20260827_01` e
+  `coelo_replay_20260827_02`, redes e diretórios temporários foram removidos;
+  zero container/volume/rede residual desses projetos. Os três volumes antigos
+  `coelo_database` foram apenas observados e permaneceram intactos.
+- **Pendências:** fechar a proveniência de `20260811215451`, repetir somente o
+  replay afetado e continuar a reconciliação por dependência; Auth SQL permanece
+  bloqueado até ledger/replay reconciliados.
+- **Tempo usado:** aproximadamente 1 h 45 min acumulados. **Tempo restante
+  estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
+  Grupos e Pessoas; backlog integral não calculável ainda.

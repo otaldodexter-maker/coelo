@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Flutter integrado ao Supabase"
-source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD f19de3e52aeb0411d877cee2ad1e74e7020fa44a"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 00c78b227c7301951efbfab96e2b9a49ff3c4668"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-27"
@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-supabase_tracker_sha256: "B7D8A6D30E2450C673822EAB0CF603DE2FA607504A5CAC9A0E56D9F218B112D2"
+supabase_tracker_sha256: "C2847D7649A470E78F01F97AABBCE7E1D53681C58596050C943B280DAC8CE8A3"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -872,7 +872,7 @@ reexecutada se código, schema, policy, configuração ou ambiente mudou.
 **Ponto de retomada seguro:** `units.list` e os estados recuperáveis do diretório
 estão local-green. Para `units.export`, Flutter HARDEN A+B terminou com 41/41 e
 Supabase checkpoint 21 terminou com 36/47 testes Deno verdes, preservando 11
-REDs; o tracker Supabase está no SHA-256 `B7D8A6D3…`. O Pacote A continua
+REDs; o tracker Supabase está no SHA-256 `C2847D76…`. O Pacote A continua
 preservado externamente e revertido, portanto produção permanece fail-closed e
 há zero E2E. O contrato conceitual de OQ-034/OQ-035 foi encerrado pela spec 039,
 mas sua implementação continua bloqueada. O próximo passo não é compor nem
@@ -971,6 +971,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 
 | Data | Mudança |
 |---|---|
+| 2026-08-27 | Reconciliação Supabase individual sem promoção integrada: `20260812000847_audit_production.sql` foi restaurada ao blob histórico `5dea64a9` após o ledger remoto read-only confirmar as 12 substituições de identificador e os labels. Canônico/mirror ficaram 100/100 e idênticos; o replay isolado avançou do SQLSTATE `42601` para o próximo RED, ausência de `platform_permissions.module_label`, dependência ainda não promovida. Teardown completo, zero mutação remota e zero E2E; todas as 207 ações integradas permanecem inalteradas. |
 | 2026-08-27 | Baseline Supabase/Auth sem promoção integrada: spec 039 e ADR 0019 fixaram conta/e-mail Auth distintos no mesmo projeto, principal/link/membership internos, `session_id` revalidado, `platform.read` escopado, Owner AAL2 e envelope PostgREST 200 auditável. O manifesto v2 inventariou 100 canônicas, 175 recovery e 103 remotas em 186 versões, preservando seis conflitos textuais. Dois commits locais (`d6366d49`, `64308b19`) passaram reviews, knowledge gates, determinismo, autointegridade e secrets scan. Nenhuma migration/RPC/Function/Flutter foi alterada, o remoto recebeu somente `SELECT`, zero E2E foi executado e todos os estados integrados permanecem inalterados. Próximo gate: provar equivalência/proveniência por versão remota e triar as migrations apenas locais por pacote/decisão antes de qualquer replay isolado; não promover as 86 candidatas em lote. Tempo usado aproximado: 1 h; ETA do recorte backend 8–17 dias focados; backlog integral não calculável. |
 | 2026-08-26 | `groups.import`/`groups.export`: commit `81038c2b` removeu os falsos botões/SnackBars; RED→GREEN local e suíte do formulário 8/8. Flutter fica `audited`/fail-closed, Supabase `fail-closed` e integrado `blocked-supabase`; repository, jobs/Storage, RLS/Auth, tenant A/B, revogação, replay, reload, cleanup, remoto e E2E continuam pendentes. |
 | 2026-08-26 | `units.access-denied` foi comprovado localmente sem controles no estado final negado e permanece `blocked-supabase`; pré-resposta e cache/revogação seguem abertos. `units.people-export` foi criado como ação separada após remoção do falso sucesso; permanece `blocked-decision`/fail-closed, sem backend, remoto ou E2E. Contagem atual: 202 ações normativas + cinco shell = 207 Flutter. |
