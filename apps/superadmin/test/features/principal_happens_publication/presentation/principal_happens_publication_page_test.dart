@@ -6,8 +6,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/domain/happens_publication.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 
 void main() {
+  testWidgets('usa frame, etapas e rodape canonicos do wizard', (tester) async {
+    tester.view.physicalSize = const Size(1024, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.textContaining('Etapa 1 de 4'), findsOneWidget);
+    expect(find.text('Continuar'), findsOneWidget);
+  });
+
   testWidgets('mantém composer e prévia no fluxo compacto', (tester) async {
     tester.view.physicalSize = const Size(375, 1100);
     tester.view.devicePixelRatio = 1;
@@ -19,10 +41,12 @@ void main() {
     );
     await tester.pump();
     expect(find.text('Publicar no Acontece'), findsWidgets);
-    expect(find.text('Mídia'), findsOneWidget);
+    expect(find.text('Mídia'), findsWidgets);
+    await _continue(tester);
+    expect(find.text('Legenda'), findsWidgets);
+    await _continue(tester);
     expect(find.text('Público e contexto'), findsOneWidget);
-    await tester.drag(find.byType(ListView).first, const Offset(0, -900));
-    await tester.pump();
+    await _continue(tester);
     expect(find.text('Prévia do post no Acontece'), findsOneWidget);
   });
 
@@ -32,8 +56,11 @@ void main() {
       MaterialApp(home: PrincipalHappensPublicationPage(repository: repository)),
     );
     await tester.pump();
+    await _continue(tester);
     await tester.enterText(find.byKey(const Key('happens-caption')), 'Nossa turma floresceu.');
+    await _continue(tester);
     await tester.tap(find.text('Famílias').first);
+    await _continue(tester);
     await tester.ensureVisible(find.text('Publicar no Acontece').last);
     await tester.tap(find.text('Publicar no Acontece').last);
     await tester.pumpAndSettle();
@@ -54,6 +81,37 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('preserva o wizard em 375, 768, 1024 e 1440 px com texto a 200%', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1400);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: PrincipalHappensPublicationPage(
+            key: ValueKey(width),
+            repository: InMemoryHappensPublicationRepository(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'largura $width, etapa mídia');
+      await _continue(tester);
+      expect(tester.takeException(), isNull, reason: 'largura $width, etapa conteúdo');
+      await _continue(tester);
+      expect(tester.takeException(), isNull, reason: 'largura $width, etapa público');
+      await _continue(tester);
+
+      expect(tester.takeException(), isNull, reason: 'largura $width, etapa revisão');
+      expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    }
+  });
+
   testWidgets('autosave expõe estado e alterna pelo rótulo inteiro', (tester) async {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(
@@ -62,6 +120,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await _continue(tester);
     await tester.ensureVisible(find.text('Salvar como rascunho').first);
     final toggle = find.bySemanticsLabel(RegExp('Salvar como rascunho'));
 
@@ -99,6 +158,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await _continue(tester);
     await tester.ensureVisible(find.byKey(const Key('happens-autosave-toggle')));
     await tester.pumpAndSettle();
 
@@ -149,6 +209,11 @@ Color? _autosaveColor(WidgetTester tester) =>
     (tester.widget<AnimatedContainer>(find.byKey(const Key('happens-autosave-surface'))).decoration
             as BoxDecoration?)
         ?.color;
+
+Future<void> _continue(WidgetTester tester) async {
+  await tester.tap(find.text('Continuar'));
+  await tester.pumpAndSettle();
+}
 
 HappensMediaDraft _media(String id) => HappensMediaDraft(
   localId: id,
