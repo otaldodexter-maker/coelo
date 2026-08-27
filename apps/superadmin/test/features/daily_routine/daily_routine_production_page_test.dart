@@ -14,6 +14,7 @@ void main() {
     double width = 1440,
     double textScale = 1,
     ValueChanged<RoutineDirectoryItem>? onEdit,
+    ValueChanged<RoutineEntryKind>? onCreateEntry,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = Size(width, 1200);
@@ -30,6 +31,7 @@ void main() {
           repository: repository,
           logout: unavailableSuperadminLogout,
           onEdit: onEdit,
+          onCreateEntry: onCreateEntry,
         ),
       ),
     );
@@ -111,7 +113,115 @@ void main() {
 
     expect(find.byKey(const Key('daily-routine-unauthorized')), findsOneWidget);
     expect(find.byKey(const Key('daily-routine-cards')), findsNothing);
+    expect(find.byKey(const Key('daily-routine-search')), findsNothing);
+    expect(find.byKey(const Key('daily-routine-type-tabs')), findsNothing);
     expect(find.textContaining('private object exists'), findsNothing);
+  });
+
+  testWidgets('directory follows toolbar then tabs ordering from the approved baseline', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async => RoutineDirectoryPage(
+          items: const [],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalCount: 0,
+          canManage: true,
+        ),
+      ),
+    );
+
+    final searchTop = tester.getTopLeft(find.byKey(const Key('daily-routine-search'))).dy;
+    final tabsTop = tester.getTopLeft(find.byKey(const Key('daily-routine-type-tabs'))).dy;
+    expect(searchTop, lessThan(tabsTop));
+  });
+
+  testWidgets('read-only notice follows toolbar and tabs without changing directory order', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async => RoutineDirectoryPage(
+          items: const [],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalCount: 0,
+          canManage: false,
+        ),
+      ),
+    );
+
+    final searchTop = tester.getTopLeft(find.byKey(const Key('daily-routine-search'))).dy;
+    final tabsTop = tester.getTopLeft(find.byKey(const Key('daily-routine-type-tabs'))).dy;
+    final noticeTop = tester.getTopLeft(find.text('Modo somente leitura')).dy;
+    final stateTop = tester.getTopLeft(find.byKey(const Key('daily-routine-empty'))).dy;
+    expect(searchTop, lessThan(tabsTop));
+    expect(tabsTop, lessThan(noticeTop));
+    expect(noticeTop, lessThan(stateTop));
+  });
+
+  testWidgets('authorized create action remains available across empty and error states', (
+    tester,
+  ) async {
+    var calls = 0;
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async {
+          if (calls++ > 0) {
+            throw const RoutineRepositoryException(
+              RoutineRepositoryFailureKind.unavailable,
+              'temporarily unavailable',
+            );
+          }
+          return RoutineDirectoryPage(
+            items: const [],
+            page: query.page,
+            pageSize: query.pageSize,
+            totalCount: 0,
+            canManage: true,
+          );
+        },
+      ),
+      onCreateEntry: (_) {},
+    );
+
+    expect(find.byKey(const Key('daily-routine-create-state')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('daily-routine-search')), 'falha');
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('daily-routine-error')), findsOneWidget);
+    expect(find.byKey(const Key('daily-routine-create-state')), findsOneWidget);
+  });
+
+  testWidgets('repository pagination is rendered in the sticky footer surface', (tester) async {
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async => RoutineDirectoryPage(
+          items: const [
+            RoutineDirectoryItem(
+              id: 'routine-page-item',
+              kind: RoutineEntryKind.model,
+              name: 'Rotina paginada',
+              status: 'active',
+              version: 1,
+            ),
+          ],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalCount: 30,
+          canManage: true,
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('daily-routine-pagination-footer')), findsOneWidget);
+    expect(find.byKey(const Key('daily-routine-pagination')), findsOneWidget);
   });
 
   testWidgets('directory tabs and async state survive responsive 200 percent matrix', (

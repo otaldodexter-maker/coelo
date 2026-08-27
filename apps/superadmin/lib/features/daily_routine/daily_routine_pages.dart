@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../app/activity/superadmin_activity.dart';
 import '../../app/shell/superadmin_shell.dart';
 import '../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import '../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../auth/domain/logout_action.dart';
 import 'daily_routine.dart';
@@ -49,9 +50,10 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
 }
 
 class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
-  bool get _canManage => _controller.state.page?.canManage ?? false;
+  bool get _canManage => _controller.state.page?.canManage ?? _lastCanManage;
   final _search = TextEditingController();
   late RoutineDirectoryController _controller;
+  var _lastCanManage = false;
   var _display = _RoutineDisplay.cards;
   var _selectedType = RoutineEntryKind.model;
 
@@ -72,6 +74,8 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   }
 
   void _refresh() {
+    final page = _controller.state.page;
+    if (page != null) _lastCanManage = page.canManage;
     if (mounted) setState(() {});
   }
 
@@ -106,29 +110,58 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
         color: Theme.of(context).colorScheme.surface,
         child: LayoutBuilder(
           builder: (context, constraints) {
+            final horizontalPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+                ? CoeloSpacing.space10
+                : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                ? CoeloSpacing.space6
+                : CoeloSpacing.space4;
             final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
             final textScale = MediaQuery.textScalerOf(context).scale(1);
-            return ListView(
-              padding: const EdgeInsets.all(CoeloSpacing.space5),
+            final state = _controller.state;
+            if (state.status == RoutineDirectoryStatus.unauthorized) {
+              return ListView(
+                key: const Key('daily-routine-content-scroll'),
+                padding: EdgeInsets.all(horizontalPadding),
+                children: [_content()],
+              );
+            }
+            final page = state.status == RoutineDirectoryStatus.data ? state.page : null;
+            return Column(
               children: [
-                if (!_canManage) ...[
-                  const Text('Modo somente leitura'),
-                  const SizedBox(height: CoeloSpacing.space4),
-                ],
-                SuperadminUnderlineTabs<RoutineEntryKind>(
-                  key: const Key('daily-routine-type-tabs'),
-                  selected: _selectedType,
-                  tabs: const [
-                    SuperadminUnderlineTab(value: RoutineEntryKind.model, label: 'Modelos'),
-                    SuperadminUnderlineTab(value: RoutineEntryKind.application, label: 'Rotinas'),
-                    SuperadminUnderlineTab(value: RoutineEntryKind.launch, label: 'Lancamentos'),
-                  ],
-                  onSelected: (value) => updateDirectory(() => _selectedType = value),
+                Expanded(
+                  child: ListView(
+                    key: const Key('daily-routine-content-scroll'),
+                    padding: EdgeInsets.all(horizontalPadding),
+                    children: [
+                      _toolbar(compact, constraints.maxWidth, textScale > 1.3),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      SuperadminUnderlineTabs<RoutineEntryKind>(
+                        key: const Key('daily-routine-type-tabs'),
+                        selected: _selectedType,
+                        tabs: const [
+                          SuperadminUnderlineTab(value: RoutineEntryKind.model, label: 'Modelos'),
+                          SuperadminUnderlineTab(
+                            value: RoutineEntryKind.application,
+                            label: 'Rotinas',
+                          ),
+                          SuperadminUnderlineTab(
+                            value: RoutineEntryKind.launch,
+                            label: 'Lancamentos',
+                          ),
+                        ],
+                        onSelected: (value) => updateDirectory(() => _selectedType = value),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      if (state.page != null && !_canManage) ...[
+                        const Text('Modo somente leitura'),
+                        const SizedBox(height: CoeloSpacing.space4),
+                      ],
+                      _content(),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: CoeloSpacing.space4),
-                _toolbar(compact, constraints.maxWidth, textScale > 1.3),
-                const SizedBox(height: CoeloSpacing.space5),
-                _content(),
+                if (page != null && _totalPages(page) > 1)
+                  _pagination(page, horizontalPadding: horizontalPadding),
               ],
             );
           },
@@ -202,25 +235,27 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
         message: 'Aguarde enquanto os dados autorizados sao carregados.',
         loading: true,
       ),
-      RoutineDirectoryStatus.empty => CoeloStatePanel(
-        key: Key(
-          _selectedType == RoutineEntryKind.launch
-              ? 'daily-routine-launches-empty'
-              : 'daily-routine-empty',
+      RoutineDirectoryStatus.empty => _stateWithCreate(
+        CoeloStatePanel(
+          key: Key(
+            _selectedType == RoutineEntryKind.launch
+                ? 'daily-routine-launches-empty'
+                : 'daily-routine-empty',
+          ),
+          title: 'Nenhum item criado',
+          message: 'Nao ha itens neste escopo.',
+          icon: Icons.event_note_outlined,
         ),
-        title: 'Nenhum item criado',
-        message: 'Nao ha itens neste escopo.',
-        icon: Icons.event_note_outlined,
-        actionLabel: _canManage ? 'Criar' : null,
-        onAction: _canManage ? _requestCreate : null,
       ),
-      RoutineDirectoryStatus.noResults => CoeloStatePanel(
-        key: const Key('daily-routine-no-results'),
-        title: 'Nenhum resultado',
-        message: 'Ajuste a busca.',
-        icon: Icons.search_off_rounded,
-        actionLabel: 'Limpar busca',
-        onAction: clearFilters,
+      RoutineDirectoryStatus.noResults => _stateWithCreate(
+        CoeloStatePanel(
+          key: const Key('daily-routine-no-results'),
+          title: 'Nenhum resultado',
+          message: 'Ajuste a busca.',
+          icon: Icons.search_off_rounded,
+          actionLabel: 'Limpar busca',
+          onAction: clearFilters,
+        ),
       ),
       RoutineDirectoryStatus.unauthorized => const CoeloStatePanel(
         key: Key('daily-routine-unauthorized'),
@@ -234,13 +269,15 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
         message: 'O recurso solicitado nao esta disponivel.',
         icon: Icons.search_off_rounded,
       ),
-      RoutineDirectoryStatus.conflict || RoutineDirectoryStatus.failure => CoeloStatePanel(
-        key: const Key('daily-routine-error'),
-        title: 'Nao foi possivel carregar a rotina diaria',
-        message: state.message ?? 'Atualize para tentar novamente.',
-        icon: Icons.error_outline_rounded,
-        actionLabel: 'Tentar novamente',
-        onAction: _load,
+      RoutineDirectoryStatus.conflict || RoutineDirectoryStatus.failure => _stateWithCreate(
+        CoeloStatePanel(
+          key: const Key('daily-routine-error'),
+          title: 'Nao foi possivel carregar a rotina diaria',
+          message: state.message ?? 'Atualize para tentar novamente.',
+          icon: Icons.error_outline_rounded,
+          actionLabel: 'Tentar novamente',
+          onAction: _load,
+        ),
       ),
       RoutineDirectoryStatus.data =>
         _display == _RoutineDisplay.cards ? _cards(state.page!) : _table(state.page!),
@@ -267,12 +304,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                   width: width,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(minHeight: 216),
-                    child: CoeloAdminCreateAction(
-                      key: const Key('daily-routine-create-tile'),
-                      label: 'Criar item',
-                      onPressed: _requestCreate,
-                      icon: Icons.add_task_rounded,
-                    ),
+                    child: _createAction(key: const Key('daily-routine-create-tile')),
                   ),
                 ),
               for (final item in page.items)
@@ -291,7 +323,9 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                           children: [
                             Text(item.name, style: Theme.of(context).textTheme.titleMedium),
                             const SizedBox(height: CoeloSpacing.space3),
-                            Text('${item.status} - v${item.version}'),
+                            _RoutineStatusIndicator(status: item.status),
+                            const SizedBox(height: CoeloSpacing.space2),
+                            Text('Versao v${item.version}'),
                             if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
                             if (item.effectiveLabel != null)
                               Text('Efetivo: ${item.effectiveLabel}'),
@@ -305,7 +339,6 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
           );
         },
       ),
-      _pagination(page),
     ],
   );
 
@@ -339,7 +372,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             initialWidth: 140,
             minWidth: 110,
             maxWidth: 200,
-            cellBuilder: (_, item) => Text(item.status),
+            cellBuilder: (_, item) => _RoutineStatusIndicator(status: item.status),
           ),
           CoeloAdminTableColumn(
             id: 'version',
@@ -354,15 +387,21 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
         rowHeight: 64,
         onRowPressed: widget.onEdit == null ? null : (item) => widget.onEdit!(item),
       ),
-      _pagination(page),
     ],
   );
 
-  Widget _pagination(RoutineDirectoryPage page) {
-    final totalPages = (page.totalCount / page.pageSize).ceil().clamp(1, 999999);
-    if (totalPages <= 1) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(top: CoeloSpacing.space5),
+  int _totalPages(RoutineDirectoryPage page) =>
+      (page.totalCount / page.pageSize).ceil().clamp(1, 999999);
+
+  Widget _pagination(RoutineDirectoryPage page, {required double horizontalPadding}) {
+    final totalPages = _totalPages(page);
+    return SuperadminListingPaginationFooter(
+      semanticKey: const Key('daily-routine-pagination-footer'),
+      horizontalPadding: horizontalPadding,
+      compactCurrentPage: page.page,
+      compactTotalPages: totalPages,
+      compactOnPrevious: page.page > 1 ? () => _load(page: page.page - 1) : null,
+      compactOnNext: page.page < totalPages ? () => _load(page: page.page + 1) : null,
       child: CoeloAdminPagination(
         key: const Key('daily-routine-pagination'),
         currentPage: page.page,
@@ -374,7 +413,42 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     );
   }
 
-  bool get _canCreate => _canManage && _selectedType == RoutineEntryKind.model;
+  bool get _canCreate =>
+      _canManage &&
+      _selectedType == RoutineEntryKind.model &&
+      (widget.onCreateEntry != null || widget.onCreate != null);
+
+  Widget _stateWithCreate(Widget state) {
+    if (!_canCreate) return state;
+    final createAction = _createAction(key: const Key('daily-routine-create-state'));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_display == _RoutineDisplay.cards)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420, minHeight: 216),
+              child: createAction,
+            ),
+          )
+        else
+          createAction,
+        const SizedBox(height: CoeloSpacing.space4),
+        state,
+      ],
+    );
+  }
+
+  Widget _createAction({required Key key}) => CoeloAdminCreateAction(
+    key: key,
+    label: 'Criar item',
+    onPressed: _requestCreate,
+    icon: Icons.add_task_rounded,
+    variant: _display == _RoutineDisplay.cards
+        ? CoeloAdminCreateActionVariant.tile
+        : CoeloAdminCreateActionVariant.banner,
+  );
 
   void _requestCreate() {
     final callback = widget.onCreateEntry;
@@ -383,6 +457,38 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     } else {
       widget.onCreate?.call();
     }
+  }
+}
+
+final class _RoutineStatusIndicator extends StatelessWidget {
+  const _RoutineStatusIndicator({required this.status});
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final statusColors =
+        theme.extension<CoeloStatusColors>() ??
+        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+    final normalized = status.trim().toLowerCase();
+    final colors = switch (normalized) {
+      'active' ||
+      'ativo' ||
+      'published' ||
+      'publicado' => (statusColors.successContainer, statusColors.onSuccessContainer),
+      'draft' ||
+      'rascunho' ||
+      'in_review' ||
+      'em revisao' => (statusColors.infoContainer, statusColors.onInfoContainer),
+      _ => (theme.colorScheme.surfaceContainerHighest, theme.colorScheme.onSurfaceVariant),
+    };
+    return CoeloAdminExpandableStatusIndicator(
+      label: status,
+      semanticLabel: 'Status: $status',
+      backgroundColor: colors.$1,
+      foregroundColor: colors.$2,
+    );
   }
 }
 
