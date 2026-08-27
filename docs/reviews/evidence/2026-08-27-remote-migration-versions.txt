@@ -1,5 +1,6 @@
 # Supabase project evvbomzejfijozbtgvpt, read-only ledger snapshot, 2026-08-27.
 # Format: version|name. The generator requires exactly 103 unique versions.
+# remote_statement_sha256|20260811215451|115|117154|b8d3dfc1764fdfa9320c8f8c398198986a057a2fa1b05e42df130fe9c91486c3|remote-statement-joined-ledger
 # remote_statement_sha256|20260811220646|1|21242|75f17f5b9985c0c818736d6edcd6d43ca8dd6eaef2079224a326923edd419f9a|remote-statement-equivalent-eol-only
 # remote_statement_sha256|20260812000847|120|66593|4b5d73e87d96b3d1798f804de2e45cadc163cdbec9af75aa1da1b8df4973f62d|remote-statement-joined-ledger
 20260623191021|superadmin_foundation_v1

@@ -6,7 +6,11 @@ param(
 
   [Parameter()]
   [ValidatePattern('^recovery://[A-Za-z0-9][A-Za-z0-9.-]*/[A-Za-z0-9][A-Za-z0-9.-]*$')]
-  [string]$RecoveryLogicalId
+  [string]$RecoveryLogicalId,
+
+  [Parameter()]
+  [ValidateRange(1, 10000)]
+  [int]$ExpectedCanonicalCount = 100
 )
 
 $ErrorActionPreference = 'Stop'
@@ -191,7 +195,9 @@ Assert-Under $metadataFull $evidenceFull 'manifest metadata output'
 
 $canonical = Get-MigrationFiles $canonicalFull 'canonical' 'packages/coelo_database/migrations'
 $recovery = Get-MigrationFiles $recoveryFull 'recovery' $recoveryLogical
-if ($canonical.Count -ne 100) { throw "canonical migration count mismatch: expected=100 actual=$($canonical.Count)" }
+if ($canonical.Count -ne $ExpectedCanonicalCount) {
+  throw "canonical migration count mismatch: expected=$ExpectedCanonicalCount actual=$($canonical.Count)"
+}
 if ($recovery.Count -ne 175) { throw "recovery migration count mismatch: expected=175 actual=$($recovery.Count)" }
 
 $remoteStatementEvidence = @{}
