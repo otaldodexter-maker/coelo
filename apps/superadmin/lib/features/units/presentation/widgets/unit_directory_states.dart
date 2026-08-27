@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import '../unit_directory_view_model.dart';
 
 final class UnitDirectoryStates extends StatelessWidget {
-  const UnitDirectoryStates({required this.viewModel, required this.successContent, super.key});
+  const UnitDirectoryStates({
+    required this.viewModel,
+    required this.createAction,
+    required this.successContent,
+    super.key,
+  });
 
   final UnitDirectoryViewModel viewModel;
+  final Widget createAction;
   final Widget successContent;
 
   @override
@@ -16,27 +22,42 @@ final class UnitDirectoryStates extends StatelessWidget {
         padding: EdgeInsets.all(CoeloSpacing.space8),
         child: Center(child: CircularProgressIndicator()),
       ),
-      UnitDirectoryLoadState.failure => _MessageCard(
-        icon: Icons.error_outline,
-        message: 'Não foi possível carregar as unidades. Tente novamente.',
-        actionLabel: 'Tentar novamente',
-        onAction: viewModel.retry,
+      UnitDirectoryLoadState.failure => _withCreateAction(
+        _MessageCard(
+          icon: Icons.error_outline,
+          message: 'Não foi possível carregar as unidades. Tente novamente.',
+          actionLabel: 'Tentar novamente',
+          onAction: viewModel.retry,
+        ),
       ),
       UnitDirectoryLoadState.unauthorized => const _MessageCard(
         icon: Icons.lock_outline,
         message: 'Você não tem permissão para ver as unidades.',
       ),
-      UnitDirectoryLoadState.empty => const _MessageCard(
-        icon: Icons.apartment_outlined,
-        message: 'Ainda não há unidades cadastradas.',
+      UnitDirectoryLoadState.empty => _withCreateAction(
+        const _MessageCard(
+          icon: Icons.apartment_outlined,
+          message: 'Ainda não há unidades cadastradas.',
+        ),
       ),
-      UnitDirectoryLoadState.noResults => const _MessageCard(
-        icon: Icons.search_off_outlined,
-        message: 'Nenhuma unidade encontrada com estes filtros.',
+      UnitDirectoryLoadState.noResults => _withCreateAction(
+        const _MessageCard(
+          icon: Icons.search_off_outlined,
+          message: 'Nenhuma unidade encontrada com estes filtros.',
+        ),
       ),
       UnitDirectoryLoadState.success => successContent,
     };
   }
+
+  Widget _withCreateAction(Widget stateContent) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      createAction,
+      const SizedBox(height: CoeloSpacing.space4),
+      stateContent,
+    ],
+  );
 }
 
 final class _MessageCard extends StatelessWidget {
