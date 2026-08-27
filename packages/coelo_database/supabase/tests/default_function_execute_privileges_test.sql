@@ -1,5 +1,5 @@
 begin;
-select plan(10);
+select plan(12);
 
 select is(
   current_user,
@@ -53,16 +53,54 @@ select ok(
   not exists (
     select 1
     from pg_catalog.pg_default_acl d
-    join pg_catalog.pg_namespace n on n.oid = d.defaclnamespace
     cross join lateral pg_catalog.aclexplode(d.defaclacl) a
     where d.defaclrole = 'postgres'::regrole
       and d.defaclobjtype = 'f'
-      and n.nspname in ('public', 'app_private')
+      and d.defaclnamespace = 0
       and a.grantee = 0
       and a.privilege_type = 'EXECUTE'
   ),
-  'new public and private functions do not grant execute to PUBLIC by default'
+  'new postgres-owned functions do not grant execute to PUBLIC by default'
 );
+
+create function public.default_execute_probe()
+returns integer language sql set search_path = '' as $$ select 1 $$;
+create function app_private.default_execute_probe()
+returns integer language sql set search_path = '' as $$ select 1 $$;
+
+select ok(
+  not has_function_privilege('anon', 'public.default_execute_probe()', 'EXECUTE')
+    and not has_function_privilege('authenticated', 'public.default_execute_probe()', 'EXECUTE')
+    and not has_function_privilege('service_role', 'public.default_execute_probe()', 'EXECUTE')
+    and not exists (
+      select 1
+      from pg_catalog.pg_proc p
+      cross join lateral pg_catalog.aclexplode(
+        coalesce(p.proacl, pg_catalog.acldefault('f', p.proowner))
+      ) a
+      where p.oid = 'public.default_execute_probe()'::regprocedure
+        and a.grantee = 0
+        and a.privilege_type = 'EXECUTE'
+    ),
+  'new public functions deny execute until a role is explicitly granted'
+);
+select ok(
+  not has_function_privilege('anon', 'app_private.default_execute_probe()', 'EXECUTE')
+    and not has_function_privilege('authenticated', 'app_private.default_execute_probe()', 'EXECUTE')
+    and not has_function_privilege('service_role', 'app_private.default_execute_probe()', 'EXECUTE')
+    and not exists (
+      select 1
+      from pg_catalog.pg_proc p
+      cross join lateral pg_catalog.aclexplode(
+        coalesce(p.proacl, pg_catalog.acldefault('f', p.proowner))
+      ) a
+      where p.oid = 'app_private.default_execute_probe()'::regprocedure
+        and a.grantee = 0
+        and a.privilege_type = 'EXECUTE'
+    ),
+  'new private functions deny execute until a role is explicitly granted'
+);
+
 select ok(
   not exists (
     with targets(procedure_oid) as (

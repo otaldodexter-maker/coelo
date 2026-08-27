@@ -11,10 +11,12 @@ begin
 end
 $guard$;
 
+alter default privileges for role postgres
+  revoke execute on functions from public, anon, authenticated, service_role;
 alter default privileges for role postgres in schema public
-  revoke execute on functions from public, anon, authenticated;
+  revoke execute on functions from public, anon, authenticated, service_role;
 alter default privileges for role postgres in schema app_private
-  revoke execute on functions from public, anon, authenticated;
+  revoke execute on functions from public, anon, authenticated, service_role;
 
 revoke all on function app_private.superadmin_group_import_apply(uuid,uuid,jsonb,jsonb)
   from public, anon, authenticated;

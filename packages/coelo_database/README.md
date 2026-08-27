@@ -99,6 +99,15 @@ CLI, a limpeza opcional e:
 & packages/coelo_database/scripts/Sync-SupabaseCliMigrations.ps1 -Mode Clean
 ```
 
+Replays locais completos que alcancem a migration historica de Grupos devem ser
+executados por `Invoke-SafeLocalMigrationReplay.ps1`, apontando para um projeto
+Supabase descartavel e nao vinculado fora deste repositorio. O wrapper inicia a
+stack local, prepara um preflight imediatamente antes de Grupos, executa somente
+`db reset --local` e remove o staging antes do teardown. Nunca use
+`Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
+staging com `db push`, `migration repair` ou qualquer comando remoto. As
+migrations sinteticas do replay nao pertencem ao ledger remoto.
+
 Novas migrations nascem com `npx supabase migration new <nome>
 --workdir packages/coelo_database`; o arquivo gerado deve ser movido para
 `migrations/` sem alterar o timestamp.
