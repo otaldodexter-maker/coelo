@@ -297,7 +297,8 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
 
   Widget _grid(List<Widget> children) => LayoutBuilder(
     builder: (context, constraints) {
-      final twoColumns = constraints.maxWidth >= 700;
+      final textScale = MediaQuery.textScalerOf(context).scale(1);
+      final twoColumns = constraints.maxWidth >= 700 && textScale <= 1.3;
       final width = twoColumns
           ? (constraints.maxWidth - CoeloSpacing.space3) / 2
           : constraints.maxWidth;

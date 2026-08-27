@@ -162,28 +162,45 @@ final class _ResponsibleState extends State<CoeloMedicationResponsibleSelector> 
         if (value == null)
           const _UnavailableField(label: 'Responsável')
         else
-          Row(
-            children: [
-              Expanded(
-                child: CoeloAdminSingleSelectField<String>(
-                  label: 'Responsável',
-                  value: value,
-                  options: available.map((item) => item.id).toList(),
-                  optionLabel: label,
-                  onChanged: (next) => setState(() => candidate = next),
-                  prefixIcon: Icons.person_outline_rounded,
-                ),
-              ),
-              const SizedBox(width: CoeloSpacing.space3),
-              OutlinedButton.icon(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final stack =
+                  constraints.maxWidth < CoeloBreakpoints.medium.minWidth ||
+                  MediaQuery.textScalerOf(context).scale(1) > 1.3;
+              final field = CoeloAdminSingleSelectField<String>(
+                label: 'Responsável',
+                value: value,
+                options: available.map((item) => item.id).toList(),
+                optionLabel: label,
+                onChanged: (next) => setState(() => candidate = next),
+                prefixIcon: Icons.person_outline_rounded,
+              );
+              final action = OutlinedButton.icon(
                 onPressed: () {
                   widget.onChanged({...widget.selectedIds, value});
                   setState(() => candidate = null);
                 },
                 icon: const Icon(Icons.add_rounded),
                 label: const Text('Adicionar'),
-              ),
-            ],
+              );
+              if (stack) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    field,
+                    const SizedBox(height: CoeloSpacing.space2),
+                    action,
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(child: field),
+                  const SizedBox(width: CoeloSpacing.space3),
+                  action,
+                ],
+              );
+            },
           ),
         if (widget.selectedIds.isNotEmpty) ...[
           const SizedBox(height: CoeloSpacing.space3),

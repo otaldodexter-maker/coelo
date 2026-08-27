@@ -166,4 +166,32 @@ void main() {
     expect(find.byType(DatePickerDialog), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('medication inputs stack before labels can be clipped at 200 percent text', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: HealthMedicationPlanFormPage(
+          logout: unavailableSuperadminLogout,
+          childOptions: const [HealthCareFormChoice(id: 'child-a', label: 'Ana')],
+          onCancel: () {},
+          onSaved: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    Finder field(String label) =>
+        find.ancestor(of: find.text(label), matching: find.byType(CoeloFormTextField));
+    expect(tester.getTopLeft(field('Nome do medicamento')).dx, tester.getTopLeft(field('Dose')).dx);
+    expect(tester.takeException(), isNull);
+  });
 }
