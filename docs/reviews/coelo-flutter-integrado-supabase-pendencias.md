@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-supabase_tracker_sha256: "2FA9A0899D126DD026A34561EDBA4C4A58C3AB06957BA8CEE24A31B07B96E128"
+supabase_tracker_sha256: "5F65682FAEB1C851AEB27F92592CDFB84701E7826065763C0E65387F0EC8B6CC"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -872,7 +872,7 @@ reexecutada se código, schema, policy, configuração ou ambiente mudou.
 **Ponto de retomada seguro:** `units.list` e os estados recuperáveis do diretório
 estão local-green. Para `units.export`, Flutter HARDEN A+B terminou com 41/41 e
 Supabase checkpoint 21 terminou com 36/47 testes Deno verdes, preservando 11
-REDs; o tracker Supabase está no SHA-256 `C2847D76…`. O Pacote A continua
+REDs; o tracker Supabase está no SHA-256 `5F65682F…`. O Pacote A continua
 preservado externamente e revertido, portanto produção permanece fail-closed e
 há zero E2E. O contrato conceitual de OQ-034/OQ-035 foi encerrado pela spec 039,
 mas sua implementação continua bloqueada. O próximo passo não é compor nem
@@ -992,4 +992,4 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 | 2026-08-26 | Units D3d comprovou concorrência multi-conexão sem duplicação observável e deixou RED reproduzível para órfão quando Storage delete falha. Banco descartável e fixtures foram removidos; restam membership revogada, retry nulo e cleanup, todos dependentes de autorização para migration/infra local. |
 | 2026-08-26 | Units Export foi sincronizado após Flutter HARDEN A+B e Supabase checkpoint 21: 41/41 testes Flutter passaram; a matriz Deno ficou em 36 verdes e 11 REDs, com regressão de import 7/7. Produção continua Unavailable/fail-closed, `units.export` permanece `blocked-supabase` e nenhuma ação foi promovida a E2E. Contagem operacional reconciliada em 201 ações normativas + cinco gates shell = 206 no Flutter. |
 | 2026-08-27 | Terceira reconciliação Supabase individual sem promoção integrada: `20260811151254_group_management_security.sql` foi restaurada do único blob Git/recovery após equivalência exata dos 140 statements com o ledger remoto read-only. Canônico/mirror chegaram a 102/102 e o replay avançou além de Import/Export até o próximo RED em `20260812002000_child_safety_schema.sql`, que omite `platform_permissions.module_label`. Teardown completo, zero mutação remota, nenhum Flutter alterado e zero E2E; as 207 ações integradas permanecem inalteradas. |
-| 2026-08-27 | Revisão de segurança de Grupos encontrou e reproduziu exposição parcial de `SECURITY DEFINER` após `COMMIT` interno. A migration forward-only `20260827214000_harden_default_function_execute_privileges.sql` exige o creator `postgres`, endurece seus defaults em `public`/`app_private`, remove grants fora da allowlist e reaplica ACLs mínimos; replay focal e pgTAP passaram 10/10. A correção é somente local, não foi implantada, não altera Flutter e não promove nenhuma das 207 ações/E2E. |
+| 2026-08-27 | Revisão de segurança de Grupos encontrou e reproduziu exposição parcial de `SECURITY DEFINER` após `COMMIT` interno. A migration forward-only `20260827214000_harden_default_function_execute_privileges.sql` exige o creator `postgres`, torna `PUBLIC`/`anon`/`authenticated`/`service_role` opt-in nos defaults global e por schema, remove grants fora da allowlist e reaplica ACLs mínimos; pgTAP passou 12/12. Um wrapper DB-only aplicou 104 migrations com preflight imediatamente antes de Grupos até `20260812001975`, limpou o staging e encerrou com zero containers. Child Safety continua bloqueada por divergência histórica sem equivalência remota; `groups.export` permanece fail-closed. Tudo é somente local, sem Flutter, remoto mutável ou promoção das 207 ações/E2E. |

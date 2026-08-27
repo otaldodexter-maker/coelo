@@ -2918,8 +2918,9 @@ da simples soma das 207 ações.
 - **Migrations, RPCs ou Functions alteradas:** adicionada a migration
   forward-only `20260827214000_harden_default_function_execute_privileges.sql`.
   Ela exige execução como `postgres`, revoga `EXECUTE` por default para
-  `PUBLIC`, `anon` e `authenticated` nos schemas `public` e `app_private` para
-  objetos criados por `postgres`, remove grants explícitos fora da allowlist e
+  globalmente e nas camadas por schema `public`/`app_private` para objetos
+  criados por `postgres`, tornando `PUBLIC`, `anon`, `authenticated` e
+  `service_role` opt-in; também remove grants explícitos fora da allowlist e
   reaplica os ACLs mínimos das oito funções pós-`COMMIT` de import/export de
   Grupos. O blob remoto histórico
   `20260811151254` não foi reescrito.
@@ -2928,35 +2929,77 @@ da simples soma das 207 ações.
   Após o erro, tabela pré-commit e função persistiram e
   `has_function_privilege('public', ..., 'EXECUTE')` retornou verdadeiro. Isso
   confirmou exposição parcial real no runner, não apenas risco estático.
+  Uma contraprova posterior ficou 10/12: a camada `IN SCHEMA` não revogava o
+  grant global padrão de `PUBLIC`. A revisão remota read-only também comprovou
+  defaults aditivos por schema para `anon`, `authenticated` e `service_role`.
+  A correção final neutraliza as camadas global e por schema antes de reaplicar
+  somente os grants explícitos necessários.
 - **GREEN:** replay isolado das 29 migrations até `20260811151254` mais a nova
   hardening aplicou sem erro. O teste
-  `default_function_execute_privileges_test.sql` passou 10/10: executor e
+  `default_function_execute_privileges_test.sql` passou 12/12: executor e
   owners `postgres`, `anon` negado,
   gateway autenticado preservado, complete/fail negados a `authenticated`,
-  permitidos a `service_role`, defaults de `postgres` sem `PUBLIC EXECUTE` e
+  permitidos a `service_role`, defaults global e por schema de `postgres` sem
+  `PUBLIC EXECUTE`, probes sintéticos negados aos três client/server roles e
   allowlist exata das oito ACLs.
   Um grant sintético indevido a `anon` em helper privado foi removido pela
-  reaplicação idempotente e os 10 asserts permaneceram verdes. Execução sob
+  reaplicação idempotente e os 12 asserts permaneceram verdes. Execução sob
   `authenticated` foi negada pelo guard antes de alterar defaults ou ACLs.
-- **Manifesto:** canônico/mirror verificados 103/103; contagem 102 negada;
+- **Replay seguro:** o forward posterior não consegue proteger sozinho uma
+  falha depois do `COMMIT` interno da migration histórica. O wrapper local
+  `Invoke-SafeLocalMigrationReplay.ps1` exige projeto descartável fora do
+  repositório, rejeita projeto vinculado, usa somente `db reset --local`, injeta
+  um preflight SHA-256
+  `AB4AE8E35B26926963A2D4D741709E582BF2058E6402E00C661A136FC7E12027`
+  imediatamente antes de Grupos e remove o staging no teardown. O replay
+  DB-only aplicou 104 arquivos até `20260812001975`; staging final 0 e zero
+  containers.
+- **Manifesto:** canônico/mirror verificados 103/103, incluindo a migration
+  final com 3.760 bytes e SHA-256 idêntico
+  `8C49FFF6E6037F46021CD78ED88169415C9630E1DCD47BF33F85F0CCA07C830D`;
   geração dupla determinística com sidecar id
-  `19c5153d0e7be186a86435951d71d2bd10fa2a1dff7c4717a4cd9a1e456fec66`.
+  `3de0f6f438dda51de0089077348e2333da299fe9ba17b779adfd714d2590b237`.
   CSV com 144.973 bytes, 381 linhas e SHA-256
-  `f971a48291d3ce0a84590e11e50022e255da08050f6c1b21fa9365183f62e540`;
+  `0d410467c23d9a66061792c86061890521d66c192809ed3f101576d218d844a1`;
   meta SHA-256
-  `4924ae116f7a36c9a8575dd438542936ccf3e0c3a957877fa4e88cc5fd282145`.
+  `d85880339d7ea64b6f317d2c160b9ddad8bb4f60e68d286947b858e7a3daa8a3`.
 - **Estado local/remoto:** `local-green` somente para o endurecimento focal. A
   migration nova não existe no remoto e não foi aplicada; portanto o pacote
   não é `remote-green` nem `done`. O remoto permaneceu sem DDL, DML operacional,
   Auth, Storage, Edge ou deploy.
 - **Cleanup:** projetos `coelo_cli_atomicity_20260827_06`,
-  `coelo_group_acl_20260827_07` e `coelo_group_acl_20260827_08`, redes, volumes
-  e diretórios temporários foram removidos nominalmente; zero resíduo desses
-  projetos.
+  `coelo_group_acl_20260827_07`, `coelo_group_acl_20260827_08` e
+  `coelo_group_acl_20260827_10`–`12`, redes e volumes foram removidos
+  nominalmente. O replay final DB-only deixou zero migration no staging e zero
+  container; os diretórios descartáveis sem dados continuam fora do Git.
 - **Bloqueios e pendências:** o replay amplo continua no RED de Child Safety do
-  checkpoint 31. A nova migration precisa de integração e futura aplicação
-  remota autorizada antes de qualquer conclusão. Auth/contexto permanece
-  bloqueado pela reconciliação anterior do ledger.
+  checkpoint 31. `groups.export` é exigida por RPCs, mas o permission code não é
+  criado por migration canônica/recovery; permanece `fail-closed`. A nova
+  migration precisa de integração e futura aplicação remota autorizada antes de
+  qualquer conclusão. Auth/contexto permanece bloqueado pela reconciliação.
 - **Tempo usado:** aproximadamente 3 h 45 min acumulados. **Tempo restante
   estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
   Grupos e Pessoas; backlog integral não calculável ainda.
+
+### Checkpoint seguro 33 — proveniência de Child Safety bloqueada
+
+- **Lote:** investigação individual do primeiro RED de Child Safety; nenhuma
+  migration foi promovida e nenhuma ação funcional mudou de estado.
+- **Ações tratadas:** `SUP-GEN-002`/`SUP-GEN-016` apenas como reconciliação do
+  replay. Child Safety, Auth e Flutter não foram implementados.
+- **Evidências e testes:** a versão `20260812002000` não existe no ledger remoto
+  e o remoto não possui rows `child_safety.%`, portanto não há equivalência
+  remota possível. O blob histórico mínimo `d4ef6d0f...` resolve o primeiro
+  `23502` de labels, mas encontra SQLSTATE `42703` no mesmo arquivo porque tenta
+  atualizar `platform_role_permissions.updated_at`, coluna inexistente. Busca
+  em 129 blobs SQL Git e 168 recoveries não encontrou migration anterior que
+  crie a coluna.
+- **Bloqueio:** o candidato posterior `a27d7823...` remove a referência inválida,
+  mas também altera regras de produto e grants legados. Não foi promovido. O
+  arquivo canônico foi mantido no baseline; a decisão deve ser tratada em pacote
+  próprio, sem reconstrução ou promoção em lote.
+- **Estado local/remoto:** apenas investigação/replay local e consultas remotas
+  read-only já registradas; zero DDL, DML operacional, Auth, Storage, Edge ou
+  deploy remoto. Próximo lote independente seguro: inventário Auth/contexto.
+- **Tempo usado:** aproximadamente 4 h 30 min acumulados. **Tempo restante
+  estimado:** 8–17 dias focados; backlog integral não calculável ainda.
