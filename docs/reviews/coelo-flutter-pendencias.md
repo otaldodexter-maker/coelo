@@ -1300,7 +1300,28 @@ validação transversal de tabelas/cards, flyouts e shell nas demais telas. O
 validador visual continua RED somente nos dois desvios preexistentes fora do
 recorte (`CheckboxListTile` em Instituições e `InkWell` em Pessoas).
 
-## 16. Histórico
+## 16. Fechamento seguro da worktree Flutter/UI — 2026-08-27
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+**Progresso do recorte — Concluído:** 0,00% (0/89 `action_id` verificados E2E).
+
+**Progresso do recorte — Restante:** 100,00% (89/89 `action_id` E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Telas alteradas | Shell/navegação; Acontece; Para Você; Momentos; Agora; Perfil; Publicar Acontece/Momentos/Agora; Assiduidade; Atividades; Formulários; Cardápios/Modelos; Perfis de cuidado; Pessoas; Instituições; Unidades; Turmas; Rotina diária; Segurança; Convites; Avisos; Imports; Configurações; Suporte. |
+| Arquivos modificados | Manifesto Git da worktree: 97 arquivos rastreados mais 7 arquivos novos de repositories/testes de desenvolvimento; concentrados em `apps/superadmin/lib/app/{navigation,router,shell}`, `apps/superadmin/lib/features/{activities,attendance,forms,groups,health_care,imports,institutions,invites,meal_plans,notices,people,platform_users,principal_*,units}` e testes focados correspondentes. O rastreador é o único arquivo documental deste fechamento. |
+| Correções realizadas | Shell único e contêiner direito responsivo nos previews Principal; wizards canônicos; proteção contra respostas A→B obsoletas; retry de cuidado; isolamento `/dev` de Imports, Forms, Agora, Support e Settings; idempotência local de Cardápios alinhada ao receipt produtivo; callbacks vazios removidos; rotas produtivas mutantes sem capability autoritativa redirecionadas antes do builder para 503 fullscreen; comandos embutidos de diretórios ficam ocultos/desabilitados em produção e ativos somente no `/dev` local. |
+| Estado atual | `local-green`, `/dev` isolado ou fail-closed conforme a superfície. Analyzer completo: sem issues. `git diff --check`: verde. Suítes focadas de races/wizards/diretórios/rotas passaram nos casos alterados. Nenhum backend, migration, RLS, Auth, Storage remoto ou golden foi alterado. |
+| Bloqueios | Capability autoritativa server-side ainda não existe; produção permanece 503 para mutações sem prova. Detalhe de Perfis, Medicação, Agenda, publicação/mídia Principal e partes de Forms dependem de produto/backend. O validador visual ainda aponta o `CheckboxListTile` cru preexistente em `institution_form_sections.dart:471`. Um teste preexistente de semântica de status de Unidades continua RED (`Status: Rascunho` não encontrado). Uma execução acidental do golden de Segurança divergiu 9,97%; imagem não foi atualizada nem ocultada. |
+| Pendências restantes | Contrato server-side de capabilities; integrações backend/E2E; decisões de produto listadas; inspeção visual humana final; corrigir o controle cru de Instituições e a semântica do status de Unidades em lote próprio. Access Profiles mantém noop interno apenas em composição produtiva já unavailable; Platform Users é somente `/dev`. |
+| Tempo usado | Não calculável com precisão: implementação e revisões ocorreram em frentes paralelas e atravessaram retomadas sem um único marco confiável. |
+| Estimativa restante | Não calculável até existirem decisões de produto, contratos backend/capabilities, ambiente integrado e inspeção visual humana. |
+
+## 17. Histórico
 
 | Data | Mudança |
 |---|---|
