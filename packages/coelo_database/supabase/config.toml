@@ -386,6 +386,11 @@ deno_version = 2
 [functions.form-media]
 verify_jwt = true
 
+# Browser clients invoke the canonical import/export hub with their authenticated JWT.
+[functions.import-export-jobs]
+verify_jwt = true
+
+# Browser clients resolve private exports with their authenticated user JWT.
 [functions.form-export-download]
 verify_jwt = true
 
