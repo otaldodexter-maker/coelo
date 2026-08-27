@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Flutter integrado ao Supabase"
-source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 521d6349df6bb482397bf7192082748eb259709d"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD f19de3e52aeb0411d877cee2ad1e74e7020fa44a"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-27"
@@ -9,8 +9,11 @@ flutter_action_count: 207
 family_count: 37
 ready_for_e2e_count: 0
 verified_e2e_count: 0
+supabase_gate_count: 22
+strict_work_unit_count: 229
+strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-supabase_tracker_sha256: "231E0807354EF70A80AABFDF411CBE6DCD68EBD960309736F3BD918873134BF1"
+supabase_tracker_sha256: "B7D8A6D30E2450C673822EAB0CF603DE2FA607504A5CAC9A0E56D9F218B112D2"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -869,11 +872,14 @@ reexecutada se código, schema, policy, configuração ou ambiente mudou.
 **Ponto de retomada seguro:** `units.list` e os estados recuperáveis do diretório
 estão local-green. Para `units.export`, Flutter HARDEN A+B terminou com 41/41 e
 Supabase checkpoint 21 terminou com 36/47 testes Deno verdes, preservando 11
-REDs; o tracker Supabase está no SHA-256 `231E0807…`. O Pacote A continua
+REDs; o tracker Supabase está no SHA-256 `B7D8A6D3…`. O Pacote A continua
 preservado externamente e revertido, portanto produção permanece fail-closed e
-há zero E2E. O próximo passo não é compor: primeiro resolver OQ-032/OQ-034 e o
-escopo da ADR0019, obter autorização nominal para migrations forward e fechar
-worker/grants, revogação, retenção, cleanup, replay e resposta pós-complete.
+há zero E2E. O contrato conceitual de OQ-034/OQ-035 foi encerrado pela spec 039,
+mas sua implementação continua bloqueada. O próximo passo não é compor nem
+promover recoveries em lote: primeiro comprovar equivalência/proveniência por
+versão remota, triar cada migration apenas local por pacote e decisão, resolver
+OQ-032, obter autorização nominal para migrations forward e fechar worker/grants,
+revogação, retenção, cleanup, replay e resposta pós-complete.
 Somente depois executar regressão local fresca, staging/remoto autorizado e E2E
 Flutter–Supabase com tenant A/B, sessão/vínculo revogado, arquivos reais,
 expiração e reload. Migration, SQL mutante e deploy remoto exigem autorização
@@ -881,7 +887,9 @@ explícita separada.
 
 **Gate estrutural deste checkpoint:** os três rastreadores possuem os mesmos 207
 `action_id`; cada rastreador contém 207 linhas únicas, zero duplicadas, e o
-integrado possui zero linhas com quantidade inválida de colunas.
+integrado possui zero linhas com quantidade inválida de colunas. Os 22 gates
+`SUP-GEN` são um conjunto transversal separado: o universo estrito tem 229
+unidades, 0 `done`; a métrica de produto/E2E permanece 0/207 ações.
 
 ## 9. Relatório obrigatório ao usuário
 
@@ -963,7 +971,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 
 | Data | Mudança |
 |---|---|
-| 2026-08-27 | Baseline Supabase/Auth sem promoção integrada: spec 039 e ADR 0019 fixaram conta/e-mail Auth distintos no mesmo projeto, principal/link/membership internos, `session_id` revalidado, `platform.read` escopado, Owner AAL2 e envelope PostgREST 200 auditável. O manifesto v2 reconciliou 100 canônicas, 175 recovery e 103 remotas em 186 versões, preservando seis conflitos textuais. Dois commits locais (`d6366d49`, `64308b19`) passaram reviews, knowledge gates, determinismo, autointegridade e secrets scan. Nenhuma migration/RPC/Function/Flutter foi alterada, o remoto recebeu somente `SELECT`, zero E2E foi executado e todos os estados integrados permanecem inalterados. Próximo gate: promover 86 recovery-only sem sobrescrita e executar replay Docker isolado. Tempo usado aproximado: 1 h; ETA do recorte backend 8–17 dias focados; backlog integral não calculável. |
+| 2026-08-27 | Baseline Supabase/Auth sem promoção integrada: spec 039 e ADR 0019 fixaram conta/e-mail Auth distintos no mesmo projeto, principal/link/membership internos, `session_id` revalidado, `platform.read` escopado, Owner AAL2 e envelope PostgREST 200 auditável. O manifesto v2 inventariou 100 canônicas, 175 recovery e 103 remotas em 186 versões, preservando seis conflitos textuais. Dois commits locais (`d6366d49`, `64308b19`) passaram reviews, knowledge gates, determinismo, autointegridade e secrets scan. Nenhuma migration/RPC/Function/Flutter foi alterada, o remoto recebeu somente `SELECT`, zero E2E foi executado e todos os estados integrados permanecem inalterados. Próximo gate: provar equivalência/proveniência por versão remota e triar as migrations apenas locais por pacote/decisão antes de qualquer replay isolado; não promover as 86 candidatas em lote. Tempo usado aproximado: 1 h; ETA do recorte backend 8–17 dias focados; backlog integral não calculável. |
 | 2026-08-26 | `groups.import`/`groups.export`: commit `81038c2b` removeu os falsos botões/SnackBars; RED→GREEN local e suíte do formulário 8/8. Flutter fica `audited`/fail-closed, Supabase `fail-closed` e integrado `blocked-supabase`; repository, jobs/Storage, RLS/Auth, tenant A/B, revogação, replay, reload, cleanup, remoto e E2E continuam pendentes. |
 | 2026-08-26 | `units.access-denied` foi comprovado localmente sem controles no estado final negado e permanece `blocked-supabase`; pré-resposta e cache/revogação seguem abertos. `units.people-export` foi criado como ação separada após remoção do falso sucesso; permanece `blocked-decision`/fail-closed, sem backend, remoto ou E2E. Contagem atual: 202 ações normativas + cinco shell = 207 Flutter. |
 | 2026-08-26 | Criação do controlador integrado; todas as 37 famílias permanecem abertas até prova por ação. |

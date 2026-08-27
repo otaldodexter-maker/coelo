@@ -3,7 +3,7 @@ title: "Pendências Coelo — Supabase por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-08-26"
+updated_at: "2026-08-27"
 action_count: 207
 family_count: 37
 ---
@@ -2747,9 +2747,13 @@ da simples soma das 207 ações.
   automática; `20260812000847` e `20260813155005` também pertencem ao ledger
   remoto. Nenhum dos seis será sobrescrito. O replay Docker isolado ainda não
   foi executado.
-- **Pendências:** promover sem sobrescrita somente as 55 migrations remotas e
-  31 locais ausentes, regenerar o mirror, executar o primeiro replay/reset
-  isolado, classificar os seis conflitos e só depois escrever o RED Auth.
+- **Pendências:** para as 55 candidatas remotas, provar equivalência ou
+  proveniência por versão antes de restaurar qualquer arquivo; somente
+  `20260811220646` possui fingerprint do statement remoto neste checkpoint. As
+  31 migrations apenas locais exigem triagem e gates por pacote/decisão — não
+  promoção em lote —, incluindo os bloqueios já registrados de Medicação e Care
+  Profiles. Depois, regenerar o mirror, classificar os seis conflitos e executar
+  replay/reset isolado antes de escrever o RED Auth.
 - **Tempo usado:** aproximadamente 1 h até o checkpoint; tempo de reviews e
   commits posteriores incluído nesta mesma janela operacional. **Tempo restante
   estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
