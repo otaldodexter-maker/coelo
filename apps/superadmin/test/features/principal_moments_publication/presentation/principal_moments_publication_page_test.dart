@@ -1,6 +1,9 @@
 import 'package:coelo_superadmin/features/principal_moments_publication/application/moments_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/domain/moments_publication.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +14,7 @@ void main() {
     WidgetTester tester, {
     required Size size,
     double textScale = 1,
+    ThemeData? theme,
     VoidCallback? onAddMedia,
     VoidCallback? onEditCover,
     VoidCallback? onSelectContext,
@@ -33,7 +37,7 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
-        theme: CoeloTheme.light,
+        theme: theme ?? CoeloTheme.light,
         home: MediaQuery(
           data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
           child: PrincipalMomentsPublicationPage(
@@ -56,14 +60,14 @@ void main() {
   testWidgets('renders the approved composer anatomy on mobile', (tester) async {
     await pumpPage(tester, size: const Size(375, 900));
 
-    expect(find.text('Publicar em Momentos'), findsOneWidget);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
     expect(find.text('Mídia'), findsOneWidget);
     expect(find.text('Legenda'), findsWidgets);
-    expect(find.text('Público e contexto'), findsOneWidget);
-    expect(find.text('Agendamento'), findsOneWidget);
-    expect(find.text('Opções'), findsOneWidget);
     expect(find.text('Salvar rascunho'), findsOneWidget);
-    expect(find.text('Publicar agora'), findsWidgets);
+    expect(find.text('Continuar'), findsOneWidget);
     expect(find.byKey(const Key('moments-publication-preview')), findsNothing);
     expect(find.byType(CoeloFormTextField), findsOneWidget);
     final media = tester.widget<AspectRatio>(
@@ -71,6 +75,32 @@ void main() {
     );
     expect(media.aspectRatio, 9 / 16);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uses the canonical wizard navigation and footer hierarchy', (tester) async {
+    await pumpPage(tester, size: const Size(1440, 1000));
+
+    expect(find.text('Conteúdo'), findsOneWidget);
+    expect(find.text('Público'), findsOneWidget);
+    expect(find.text('Revisão'), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-cancel')), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-save')), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-continue')), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-publish')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Público e contexto'), findsOneWidget);
+    expect(find.text('Agendamento'), findsOneWidget);
+    expect(find.text('Opções'), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-previous')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('moments-publication-preview')), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-publish')), findsOneWidget);
   });
 
   testWidgets('context and schedule expose real injectable actions', (tester) async {
@@ -83,6 +113,8 @@ void main() {
       onOpenSchedule: () => scheduleCalls += 1,
     );
 
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-context')));
     await tester.ensureVisible(find.byKey(const Key('moments-publication-schedule')));
     await tester.pumpAndSettle();
@@ -94,6 +126,8 @@ void main() {
 
   testWidgets('context action resolves Coelo hover and focus states', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000));
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
     final contextAction = tester.widget<OutlinedButton>(
       find.byKey(const Key('moments-publication-context')),
     );
@@ -113,14 +147,17 @@ void main() {
   testWidgets('keeps preview synchronized with caption and audience', (tester) async {
     final controller = await pumpPage(tester, size: const Size(1440, 1000));
 
-    expect(find.byKey(const Key('moments-publication-preview')), findsOneWidget);
     await tester.enterText(
       find.byKey(const Key('moments-publication-caption')),
       'Descobertas que ficam para a vida toda.',
     );
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-audience-students')));
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pump();
 
+    expect(find.byKey(const Key('moments-publication-preview')), findsOneWidget);
     expect(controller.state.draft.caption, 'Descobertas que ficam para a vida toda.');
     expect(controller.state.draft.audiences, contains(MomentsAudienceKind.students));
     expect(find.text('Descobertas que ficam para a vida toda.'), findsWidgets);
@@ -136,8 +173,14 @@ void main() {
       onEditCover: () => coverCalls += 1,
     );
 
+    await tester.ensureVisible(find.byKey(const Key('moments-publication-add-media')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-add-media')));
+    await tester.ensureVisible(find.byKey(const Key('moments-publication-edit-cover')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-edit-cover')));
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('moments-publication-save-toggle')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-save-toggle')));
@@ -158,10 +201,16 @@ void main() {
       onClose: () => closeCalls += 1,
     );
 
+    await tester.ensureVisible(find.byKey(const ValueKey('moments-media-moment-media-1')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('moments-media-moment-media-1')));
     await tester.pump();
     expect(find.text('2/5'), findsOneWidget);
 
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pumpAndSettle();
 
@@ -176,9 +225,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(controller.state.phase, MomentsPublicationPhase.saved);
 
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-publish')));
     await tester.pumpAndSettle();
     expect(controller.state.phase, MomentsPublicationPhase.success);
+  });
+
+  testWidgets('renders the canonical wizard in dark theme', (tester) async {
+    await pumpPage(tester, size: const Size(1440, 1000), theme: CoeloTheme.dark);
+
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   for (final width in [375.0, 600.0, 768.0, 839.0, 840.0, 1024.0, 1440.0]) {
@@ -186,6 +248,14 @@ void main() {
       await pumpPage(tester, size: Size(width, 1100), textScale: 2);
 
       expect(find.byKey(const Key('moments-publication-scroll')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.byKey(const Key('moments-publication-continue')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.byKey(const Key('moments-publication-continue')));
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
   }

@@ -4,8 +4,10 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../application/moments_publication_controller.dart';
 import '../domain/moments_publication.dart';
 
@@ -42,6 +44,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   late final bool _ownsController;
   late final TextEditingController _captionController;
   int _selectedMediaIndex = 0;
+  int _currentStep = 0;
 
   @override
   void initState() {
@@ -93,166 +96,158 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Scaffold(
-      backgroundColor: colors.surface,
-      body: SafeArea(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) => LayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.maxWidth;
-              if (width >= 1200) return _desktop(width);
-              return _compactOrTablet(width);
-            },
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) => SuperadminFormFrame(
+          viewportWidth: MediaQuery.sizeOf(context).width,
+          scrollKey: const Key('moments-publication-scroll'),
+          navigation: _stepNavigation(),
+          body: _stepBody(),
+          footer: _ActionFooter(
+            state: _controller.state,
+            currentStep: _currentStep,
+            onCancel: _cancel,
+            onPrevious: _previousStep,
+            onContinue: _continueStep,
+            onSave: _saveDraft,
+            onPublish: _publish,
           ),
         ),
       ),
     );
   }
 
-  Widget _compactOrTablet(double width) {
-    final isTablet = width >= 700;
-    final padding = isTablet ? CoeloSpacing.space6 : CoeloSpacing.space4;
-    return Column(
-      children: [
-        if (isTablet) ...[
-          _CompactHeader(onNotifications: _showNotifications),
-          _PageHeading(onClose: widget.onClose),
-        ] else
-          _MobilePageHeader(onClose: widget.onClose, onNotifications: _showNotifications),
-        Expanded(
-          child: SingleChildScrollView(
-            key: const Key('moments-publication-scroll'),
-            padding: EdgeInsets.fromLTRB(padding, CoeloSpacing.space4, padding, 112),
-            child: isTablet ? _tabletEditor() : _mobileEditor(),
-          ),
+  Widget _stepNavigation() => SuperadminFormStepNavigation(
+    currentIndex: _currentStep,
+    onStepSelected: (index) => setState(() => _currentStep = index),
+    steps: [
+      for (var index = 0; index < 3; index++)
+        SuperadminFormStep(
+          key: Key('moments-publication-step-$index'),
+          label: const ['Conteúdo', 'Público', 'Revisão'][index],
+          enabled: index <= _currentStep,
+          status: index < _currentStep
+              ? SuperadminFormStepStatus.complete
+              : index == _currentStep
+              ? SuperadminFormStepStatus.current
+              : SuperadminFormStepStatus.incomplete,
         ),
-        _ActionFooter(state: _controller.state, onSave: _saveDraft, onPublish: _publish),
+    ],
+  );
+
+  Widget _stepBody() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(
+        const [
+          'Conteúdo do momento',
+          'Público e publicação',
+          'Revise antes de publicar',
+        ][_currentStep],
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+      ),
+      const SizedBox(height: CoeloSpacing.space2),
+      Text(
+        const [
+          'Escolha a mídia e escreva a legenda.',
+          'Defina quem verá o momento e quando ele será publicado.',
+          'Confira a prévia e as configurações antes de publicar.',
+        ][_currentStep],
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      ),
+      const SizedBox(height: CoeloSpacing.space5),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final useColumns = constraints.maxWidth >= 700;
+          return switch (_currentStep) {
+            0 => _contentStep(useColumns),
+            1 => _audienceStep(useColumns),
+            _ => _reviewStep(useColumns),
+          };
+        },
+      ),
+    ],
+  );
+
+  Widget _contentStep(bool useColumns) {
+    if (!useColumns) {
+      return Column(
+        children: [
+          _mediaPanel(),
+          const SizedBox(height: CoeloSpacing.space4),
+          _captionCard(),
+        ],
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(flex: 4, child: _mediaPanel()),
+        const SizedBox(width: CoeloSpacing.space4),
+        Expanded(flex: 5, child: _captionCard()),
       ],
     );
   }
 
-  Widget _desktop(double width) => Column(
-    children: [
-      _DesktopHeader(onNotifications: _showNotifications),
-      Expanded(
-        child: Row(
-          children: [
-            const _DesktopRail(),
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      key: const Key('moments-publication-scroll'),
-                      padding: const EdgeInsets.all(CoeloSpacing.space8),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1120),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Publicar em Momentos',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                              const SizedBox(height: CoeloSpacing.space5),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(flex: 10, child: _mediaPanel()),
-                                  const SizedBox(width: CoeloSpacing.space4),
-                                  Expanded(flex: 10, child: _editorPanel()),
-                                  const SizedBox(width: CoeloSpacing.space4),
-                                  Expanded(flex: 8, child: _previewPanel()),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  _ActionFooter(
-                    state: _controller.state,
-                    onSave: _saveDraft,
-                    onPublish: _publish,
-                    maxWidth: 1120,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-
-  Widget _mobileEditor() => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _mediaPanel(),
-      const SizedBox(height: CoeloSpacing.space3),
-      _captionCard(),
-      const SizedBox(height: CoeloSpacing.space3),
-      _audienceCard(),
-      const SizedBox(height: CoeloSpacing.space3),
-      _scheduleCard(),
-      const SizedBox(height: CoeloSpacing.space3),
-      _optionsCard(),
-    ],
-  );
-
-  Widget _tabletEditor() => Column(
-    children: [
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _audienceStep(bool useColumns) {
+    final settings = Column(
+      children: [
+        _scheduleCard(),
+        const SizedBox(height: CoeloSpacing.space4),
+        _optionsCard(),
+      ],
+    );
+    if (!useColumns) {
+      return Column(
         children: [
-          Expanded(flex: 11, child: _mediaPanel()),
-          const SizedBox(width: CoeloSpacing.space4),
-          Expanded(
-            flex: 9,
-            child: Column(
-              children: [
-                _captionCard(),
-                const SizedBox(height: CoeloSpacing.space3),
-                _audienceCard(),
-              ],
-            ),
-          ),
+          _audienceCard(),
+          const SizedBox(height: CoeloSpacing.space4),
+          settings,
         ],
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: _scheduleCard()),
-          const SizedBox(width: CoeloSpacing.space4),
-          Expanded(child: _optionsCard()),
-        ],
-      ),
-    ],
-  );
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: _audienceCard()),
+        const SizedBox(width: CoeloSpacing.space4),
+        Expanded(child: settings),
+      ],
+    );
+  }
 
-  Widget _editorPanel() => Column(
-    children: [
-      _captionCard(),
-      const SizedBox(height: CoeloSpacing.space3),
-      _audienceCard(),
-      const SizedBox(height: CoeloSpacing.space3),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _reviewStep(bool useColumns) {
+    final settings = Column(
+      children: [
+        _audienceCard(),
+        const SizedBox(height: CoeloSpacing.space4),
+        _scheduleCard(),
+        const SizedBox(height: CoeloSpacing.space4),
+        _optionsCard(),
+      ],
+    );
+    if (!useColumns) {
+      return Column(
         children: [
-          Expanded(child: _scheduleCard()),
-          const SizedBox(width: CoeloSpacing.space3),
-          Expanded(child: _optionsCard()),
+          _previewPanel(),
+          const SizedBox(height: CoeloSpacing.space4),
+          settings,
         ],
-      ),
-    ],
-  );
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: _previewPanel()),
+        const SizedBox(width: CoeloSpacing.space4),
+        Expanded(child: settings),
+      ],
+    );
+  }
 
   Widget _mediaPanel() {
     final media = _controller.state.draft.media;
@@ -397,6 +392,24 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     child: _MomentPreview(draft: _controller.state.draft, context: _controller.context),
   );
 
+  void _cancel() {
+    if (widget.onClose case final callback?) {
+      callback();
+      return;
+    }
+    Navigator.maybePop(context);
+  }
+
+  void _previousStep() {
+    if (_currentStep == 0) return;
+    setState(() => _currentStep -= 1);
+  }
+
+  void _continueStep() {
+    if (_currentStep >= 2) return;
+    setState(() => _currentStep += 1);
+  }
+
   void _addMedia() {
     if (widget.onAddMedia case final callback?) {
       callback();
@@ -458,6 +471,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   }
 
   void _showMessage(String message) {
+    if (Scaffold.maybeOf(context) == null) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -473,6 +487,4 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
         ),
       );
   }
-
-  void _showNotifications() => _showMessage('Você não tem novas notificações.');
 }

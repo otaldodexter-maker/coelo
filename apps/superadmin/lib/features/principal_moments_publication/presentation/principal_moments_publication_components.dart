@@ -21,16 +21,32 @@ class _SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    label,
-                    style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
-                  ),
-                ),
-                ?trailing,
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final stackHeader =
+                    MediaQuery.textScalerOf(context).scale(1) > 1.3 || constraints.maxWidth < 320;
+                final title = Text(
+                  label,
+                  style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+                );
+                if (trailing == null) return title;
+                if (stackHeader) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      title,
+                      const SizedBox(height: CoeloSpacing.space1),
+                      trailing!,
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: title),
+                    trailing!,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: CoeloSpacing.space3),
             child,
@@ -476,21 +492,6 @@ ButtonStyle _discreteActionStyle(BuildContext context) {
   );
 }
 
-ButtonStyle _negativeIconButtonStyle(BuildContext context) {
-  final colors = Theme.of(context).colorScheme;
-  return ButtonStyle(
-    minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
-    foregroundColor: WidgetStatePropertyAll(colors.error),
-    backgroundColor: WidgetStateProperty.resolveWith(
-      (states) => states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
-          ? colors.errorContainer
-          : Colors.transparent,
-    ),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-    shape: const WidgetStatePropertyAll(CircleBorder()),
-  );
-}
-
 class _MomentPreview extends StatelessWidget {
   const _MomentPreview({required this.draft, required this.context});
 
@@ -576,294 +577,65 @@ class _MomentPreview extends StatelessWidget {
 class _ActionFooter extends StatelessWidget {
   const _ActionFooter({
     required this.state,
+    required this.currentStep,
+    required this.onCancel,
+    required this.onPrevious,
+    required this.onContinue,
     required this.onSave,
     required this.onPublish,
-    this.maxWidth,
   });
 
   final MomentsPublicationState state;
+  final int currentStep;
+  final VoidCallback onCancel;
+  final VoidCallback onPrevious;
+  final VoidCallback onContinue;
   final Future<void> Function() onSave;
   final Future<void> Function() onPublish;
-  final double? maxWidth;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final busy =
         state.phase == MomentsPublicationPhase.saving ||
         state.phase == MomentsPublicationPhase.publishing;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('moments-publication-footer-surface'),
+      tertiaryAction: TextButton(
+        key: const Key('moments-publication-cancel'),
+        onPressed: busy ? null : onCancel,
+        child: const Text('Cancelar'),
       ),
-      child: SafeArea(
-        top: false,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
-            child: Padding(
-              padding: const EdgeInsets.all(CoeloSpacing.space4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      key: const Key('moments-publication-save'),
-                      onPressed: busy ? null : onSave,
-                      icon: const Icon(Icons.bookmark_border_rounded),
-                      label: Text(
-                        state.phase == MomentsPublicationPhase.saving
-                            ? 'Salvando…'
-                            : 'Salvar rascunho',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: CoeloSpacing.space3),
-                  Expanded(
-                    child: FilledButton.icon(
-                      key: const Key('moments-publication-publish'),
-                      onPressed: busy ? null : onPublish,
-                      icon: const Icon(Icons.send_rounded),
-                      label: Text(
-                        state.phase == MomentsPublicationPhase.publishing
-                            ? 'Publicando…'
-                            : 'Publicar agora',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      continuationActions: [
+        if (currentStep > 0)
+          OutlinedButton(
+            key: const Key('moments-publication-previous'),
+            onPressed: busy ? null : onPrevious,
+            child: const Text('Anterior'),
+          ),
+        OutlinedButton.icon(
+          key: const Key('moments-publication-save'),
+          onPressed: busy ? null : onSave,
+          icon: const Icon(Icons.bookmark_border_rounded),
+          label: Text(
+            state.phase == MomentsPublicationPhase.saving ? 'Salvando…' : 'Salvar rascunho',
+          ),
+        ),
+        if (currentStep == 2)
+          FilledButton.icon(
+            key: const Key('moments-publication-publish'),
+            onPressed: busy ? null : onPublish,
+            icon: const Icon(Icons.send_rounded),
+            label: Text(
+              state.phase == MomentsPublicationPhase.publishing ? 'Publicando…' : 'Publicar agora',
             ),
+          )
+        else
+          FilledButton(
+            key: const Key('moments-publication-continue'),
+            onPressed: busy ? null : onContinue,
+            child: const Text('Continuar'),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CompactHeader extends StatelessWidget {
-  const _CompactHeader({required this.onNotifications});
-
-  final VoidCallback onNotifications;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    height: 64,
-    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Row(
-      children: [
-        SvgPicture.asset('assets/brand/logo-coelo-orange.svg', width: 72, semanticsLabel: 'Coelo'),
-        const Spacer(),
-        IconButton(
-          tooltip: 'Notificações',
-          onPressed: onNotifications,
-          icon: const Icon(Icons.notifications_none_rounded),
-        ),
-        const CircleAvatar(radius: 18, child: Icon(Icons.person_outline_rounded)),
       ],
-    ),
-  );
-}
-
-class _MobilePageHeader extends StatelessWidget {
-  const _MobilePageHeader({required this.onClose, required this.onNotifications});
-
-  final VoidCallback? onClose;
-  final VoidCallback onNotifications;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    constraints: const BoxConstraints(minHeight: 64),
-    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Row(
-      children: [
-        IconButton(
-          tooltip: 'Fechar publicação',
-          onPressed: onClose ?? () => Navigator.maybePop(context),
-          style: _negativeIconButtonStyle(context),
-          icon: const Icon(Icons.close_rounded),
-        ),
-        const SizedBox(width: CoeloSpacing.space1),
-        Expanded(
-          child: Text(
-            'Publicar em Momentos',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-          ),
-        ),
-        IconButton(
-          tooltip: 'Notificações',
-          onPressed: onNotifications,
-          icon: const Icon(Icons.notifications_none_rounded),
-        ),
-        const CircleAvatar(radius: 18, child: Icon(Icons.person_outline_rounded)),
-      ],
-    ),
-  );
-}
-
-class _PageHeading extends StatelessWidget {
-  const _PageHeading({required this.onClose});
-
-  final VoidCallback? onClose;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    constraints: const BoxConstraints(minHeight: 64),
-    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Row(
-      children: [
-        IconButton(
-          tooltip: 'Fechar publicação',
-          onPressed: onClose ?? () => Navigator.maybePop(context),
-          style: _negativeIconButtonStyle(context),
-          icon: const Icon(Icons.close_rounded),
-        ),
-        const SizedBox(width: CoeloSpacing.space2),
-        Expanded(
-          child: Text(
-            'Publicar em Momentos',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class _DesktopHeader extends StatelessWidget {
-  const _DesktopHeader({required this.onNotifications});
-
-  final VoidCallback onNotifications;
-
-  @override
-  Widget build(BuildContext context) {
-    final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-    return Container(
-      height: 72,
-      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space6),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            'assets/brand/logo-coelo-orange.svg',
-            width: 86,
-            semanticsLabel: 'Coelo',
-          ),
-          const Spacer(),
-          const _TopNavItem(label: 'Início'),
-          const _TopNavItem(label: 'Agenda'),
-          const _TopNavItem(label: 'Mensagens'),
-          const _TopNavItem(label: 'Momentos', selected: true),
-          const _TopNavItem(label: 'Mais'),
-          const Spacer(),
-          IconButton(
-            tooltip: 'Notificações',
-            onPressed: onNotifications,
-            icon: const Icon(Icons.notifications_none_rounded),
-          ),
-          const SizedBox(width: CoeloSpacing.space2),
-          const CircleAvatar(radius: 18, child: Icon(Icons.person_outline_rounded)),
-          if (!enlargedText) ...[
-            const SizedBox(width: CoeloSpacing.space2),
-            const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text('Camila Rocha'), Text('Mãe do Lucas')],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _TopNavItem extends StatelessWidget {
-  const _TopNavItem({required this.label, this.selected = false});
-
-  final String label;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      height: 72,
-      padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: selected ? Border(bottom: BorderSide(color: colors.primary, width: 2)) : null,
-      ),
-      child: Text(label, style: TextStyle(color: selected ? colors.primary : colors.onSurface)),
-    );
-  }
-}
-
-class _DesktopRail extends StatelessWidget {
-  const _DesktopRail();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 112,
-    padding: const EdgeInsets.all(CoeloSpacing.space3),
-    decoration: BoxDecoration(
-      border: Border(right: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: const Column(
-      children: [
-        _RailItem(icon: Icons.home_outlined, label: 'Início'),
-        _RailItem(icon: Icons.calendar_today_outlined, label: 'Agenda'),
-        _RailItem(icon: Icons.chat_bubble_outline_rounded, label: 'Mensagens'),
-        _RailItem(icon: Icons.video_library_outlined, label: 'Momentos', selected: true),
-        _RailItem(icon: Icons.school_outlined, label: 'Aprendizados'),
-        Spacer(),
-        _RailItem(icon: Icons.account_balance_outlined, label: 'Colégio Coelo'),
-      ],
-    ),
-  );
-}
-
-class _RailItem extends StatelessWidget {
-  const _RailItem({required this.icon, required this.label, this.selected = false});
-
-  final IconData icon;
-  final String label;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-      child: SizedBox(
-        height: 52,
-        child: Row(
-          children: [
-            Icon(icon, size: CoeloSize.iconSm, color: selected ? colors.primary : null),
-            const SizedBox(width: CoeloSpacing.space2),
-            Expanded(
-              child: Text(
-                label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(color: selected ? colors.primary : null),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
