@@ -100,10 +100,10 @@ CLI, a limpeza opcional e:
 ```
 
 Replays locais completos que alcancem a migration historica de Grupos devem ser
-executados por `Invoke-SafeLocalMigrationReplay.ps1`, apontando para um projeto
-Supabase descartavel e nao vinculado fora deste repositorio. O wrapper inicia a
-stack local, prepara um preflight imediatamente antes de Grupos, executa somente
-`db reset --local` e remove o staging antes do teardown. Nunca use
+executados por `Invoke-SafeLocalMigrationReplay.ps1`. O wrapper cria projeto,
+identidade Docker e portas descartaveis fora do repositorio, prepara um
+preflight imediatamente antes de Grupos, executa somente `db reset --local` e
+remove a stack e o staging no teardown. Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As
 migrations sinteticas do replay nao pertencem ao ledger remoto.
