@@ -2907,3 +2907,48 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 3 h acumuladas. **Tempo restante estimado:**
   8–17 dias focados para Auth/contexto + Instituições, Unidades, Grupos e
   Pessoas; backlog integral não calculável ainda.
+
+### Checkpoint seguro 32 — ACL default de funções fail-closed
+
+- **Lote:** fechamento do P1 encontrado na revisão independente do pacote de
+  Grupos; nenhuma ação funcional foi promovida.
+- **Ações tratadas:** `SUP-GEN-002`, `SUP-GEN-004` e `SUP-GEN-016`, somente no
+  ambiente local testado.
+- **Migrations, RPCs ou Functions alteradas:** adicionada a migration
+  forward-only `20260827214000_harden_default_function_execute_privileges.sql`.
+  Ela revoga `EXECUTE` por default para `PUBLIC`, `anon` e `authenticated` nos
+  schemas `public` e `app_private` e reaplica os ACLs mínimos das oito funções
+  pós-`COMMIT` de import/export de Grupos. O blob remoto histórico
+  `20260811151254` não foi reescrito.
+- **RED:** um projeto Docker mínimo executado com Supabase CLI 2.116.0 criou
+  uma função `SECURITY DEFINER` depois de `COMMIT` e falhou antes do `REVOKE`.
+  Após o erro, tabela pré-commit e função persistiram e
+  `has_function_privilege('public', ..., 'EXECUTE')` retornou verdadeiro. Isso
+  confirmou exposição parcial real no runner, não apenas risco estático.
+- **GREEN:** replay isolado das 29 migrations até `20260811151254` mais a nova
+  hardening aplicou sem erro. O teste
+  `default_function_execute_privileges_test.sql` passou 8/8: `anon` negado,
+  gateway autenticado preservado, complete/fail negados a `authenticated`,
+  permitidos a `service_role`, defaults sem `PUBLIC EXECUTE` e oito ACLs sem
+  grant público.
+- **Manifesto:** canônico/mirror verificados 103/103; contagem 102 negada;
+  geração dupla determinística com sidecar id
+  `f40e01b3fbe1345e3e3b811bf2be524f7bc59d580c1dfa4697742657b590fd7f`.
+  CSV com 144.973 bytes, 381 linhas e SHA-256
+  `21ef32b7ef5898e7c7d689d9601ddb2320f3224ff705b2c5dc9e974d8d94ca25`;
+  meta SHA-256
+  `08394a562484d00b3102dda59ed53e14bed46daec913766a0f6a68f5d416ad43`.
+- **Estado local/remoto:** `local-green` somente para o endurecimento focal. A
+  migration nova não existe no remoto e não foi aplicada; portanto o pacote
+  não é `remote-green` nem `done`. O remoto permaneceu sem DDL, DML operacional,
+  Auth, Storage, Edge ou deploy.
+- **Cleanup:** projetos `coelo_cli_atomicity_20260827_06` e
+  `coelo_group_acl_20260827_07`, redes, volumes e diretórios temporários foram
+  removidos nominalmente; zero resíduo desses projetos.
+- **Bloqueios e pendências:** o replay amplo continua no RED de Child Safety do
+  checkpoint 31. A nova migration precisa de integração e futura aplicação
+  remota autorizada antes de qualquer conclusão. Auth/contexto permanece
+  bloqueado pela reconciliação anterior do ledger.
+- **Tempo usado:** aproximadamente 3 h 45 min acumulados. **Tempo restante
+  estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
+  Grupos e Pessoas; backlog integral não calculável ainda.
