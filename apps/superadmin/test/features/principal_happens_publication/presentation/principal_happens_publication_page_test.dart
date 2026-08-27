@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:coelo_superadmin/features/principal_happens_publication/application/happens_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/domain/happens_publication.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
@@ -203,6 +204,22 @@ void main() {
     expect(find.byTooltip('Remover mídia 1'), findsOneWidget);
     expect(find.byTooltip('Remover mídia 2'), findsOneWidget);
   });
+
+  testWidgets('mantém ações bloqueadas quando o contexto é negado', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalHappensPublicationPage(repository: _UnauthorizedRepository())),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Continuar')).onPressed,
+      isNull,
+    );
+    expect(
+      tester.widget<TextButton>(find.widgetWithText(TextButton, 'Cancelar')).onPressed,
+      isNull,
+    );
+  });
 }
 
 Color? _autosaveColor(WidgetTester tester) =>
@@ -225,3 +242,33 @@ HappensMediaDraft _media(String id) => HappensMediaDraft(
     ),
   ),
 );
+
+final class _UnauthorizedRepository implements HappensPublicationRepository {
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) =>
+      throw HappensPublicationUnauthorized();
+
+  @override
+  Future<HappensPostDraft> saveDraft(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+}

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -76,6 +77,30 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 40));
 
       expect(repository.saveCalls, 1);
+    });
+
+    test('serializes save and publish while a publication is in flight', () async {
+      final repository = _BlockingRepository();
+      final controller =
+          HappensPublicationController(
+              repository: repository,
+              context: HappensPublicationContext.demo,
+            )
+            ..setCaption('Legenda')
+            ..toggleAudience(HappensAudienceKind.families);
+
+      final firstPublish = controller.publish();
+      await repository.saveStarted.future;
+
+      expect(controller.operationInFlight, isTrue);
+      expect(await controller.publish(), isNull);
+      await controller.saveDraft();
+      expect(repository.saveCalls, 1);
+
+      repository.saved.complete(controller.state.draft.copyWith(id: 'draft-1', version: 1));
+      expect(await firstPublish, isNotNull);
+      expect(repository.publishCalls, 1);
+      expect(controller.operationInFlight, isFalse);
     });
 
     test('publishes immediately or schedules from publishAt', () async {
@@ -259,4 +284,49 @@ final class _FailureRepository implements HappensPublicationRepository {
     status: HappensPostStatus.published,
     publishAt: DateTime.utc(2030),
   );
+}
+
+final class _BlockingRepository implements HappensPublicationRepository {
+  final saveStarted = Completer<void>();
+  final saved = Completer<HappensPostDraft>();
+  var saveCalls = 0;
+  var publishCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async => null;
+
+  @override
+  Future<HappensPostDraft> saveDraft(HappensPublicationContext context, HappensPostDraft draft) {
+    saveCalls++;
+    if (!saveStarted.isCompleted) saveStarted.complete();
+    return saved.future;
+  }
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
+
+  @override
+  Future<HappensPublication> publish(
+    HappensPublicationContext context,
+    HappensPostDraft draft,
+  ) async {
+    publishCalls++;
+    return HappensPublication(
+      id: draft.id!,
+      status: HappensPostStatus.published,
+      publishAt: DateTime.utc(2030),
+    );
+  }
 }

@@ -85,6 +85,10 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
     animation: controller,
     builder: (context, _) {
       final state = controller.state;
+      final actionsEnabled =
+          !controller.operationInFlight &&
+          (state.phase == HappensPublicationPhase.editing ||
+              state.phase == HappensPublicationPhase.saved);
       final colors = Theme.of(context).colorScheme;
       return Scaffold(
         backgroundColor: colors.surface,
@@ -108,11 +112,13 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
                         : index < _step
                         ? SuperadminFormStepStatus.complete
                         : SuperadminFormStepStatus.incomplete,
-                    enabled: index <= _step,
+                    enabled: actionsEnabled && index <= _step,
                   ),
               ],
               currentIndex: _step,
-              onStepSelected: (index) => setState(() => _step = index),
+              onStepSelected: (index) {
+                if (actionsEnabled) setState(() => _step = index);
+              },
             ),
             body: _WizardBody(
               controller: controller,
@@ -122,39 +128,35 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
             ),
             footer: SuperadminFormActionFooter(
               tertiaryAction: TextButton(
-                onPressed: state.phase == HappensPublicationPhase.publishing
-                    ? null
-                    : widget.onClose ?? () => Navigator.maybePop(context),
+                onPressed: actionsEnabled
+                    ? widget.onClose ?? () => Navigator.maybePop(context)
+                    : null,
                 child: const Text('Cancelar'),
               ),
               continuationActions: [
                 if (_step > 0)
                   OutlinedButton(
-                    onPressed: state.phase == HappensPublicationPhase.publishing
-                        ? null
-                        : () => setState(() => _step--),
+                    onPressed: actionsEnabled ? () => setState(() => _step--) : null,
                     child: const Text('Anterior'),
                   ),
                 if (_step < _publicationSteps.length - 1)
                   FilledButton(
-                    onPressed: () => setState(() => _step++),
+                    onPressed: actionsEnabled ? () => setState(() => _step++) : null,
                     child: const Text('Continuar'),
                   )
                 else ...[
                   OutlinedButton.icon(
-                    onPressed: state.phase == HappensPublicationPhase.autosaving
-                        ? null
-                        : controller.saveDraft,
+                    onPressed: actionsEnabled ? controller.saveDraft : null,
                     icon: const Icon(Icons.save_outlined),
                     label: const Text('Salvar rascunho'),
                   ),
                   FilledButton.icon(
-                    onPressed: state.phase == HappensPublicationPhase.publishing
-                        ? null
-                        : () async {
+                    onPressed: actionsEnabled
+                        ? () async {
                             final result = await controller.publish();
                             if (result != null) widget.onCompleted?.call(result);
-                          },
+                          }
+                        : null,
                     icon: const Icon(Icons.send_outlined),
                     label: Text(
                       state.draft.publishAt == null ? 'Publicar no Acontece' : 'Agendar publicação',

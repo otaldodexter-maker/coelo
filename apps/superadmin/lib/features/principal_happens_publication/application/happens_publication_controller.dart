@@ -44,8 +44,10 @@ final class HappensPublicationController extends ChangeNotifier {
   final Duration autosaveDelay;
   HappensPublicationState _state;
   Timer? _autosaveTimer;
+  var _operationInFlight = false;
 
   HappensPublicationState get state => _state;
+  bool get operationInFlight => _operationInFlight;
 
   Future<void> load() async {
     _emit(_state.copyWith(phase: HappensPublicationPhase.loading, clearMessage: true));
@@ -74,6 +76,7 @@ final class HappensPublicationController extends ChangeNotifier {
   void setCaption(String value) => _edit(_state.draft.copyWith(caption: value));
 
   void setAutosave(bool value) {
+    if (_operationInFlight) return;
     if (!value) _autosaveTimer?.cancel();
     _emit(_state.copyWith(autosave: value, phase: HappensPublicationPhase.editing));
     if (value) _scheduleAutosave();
@@ -97,6 +100,7 @@ final class HappensPublicationController extends ChangeNotifier {
   }
 
   Future<void> removeMedia(int index) async {
+    if (_operationInFlight) return;
     final media = _state.draft.media[index];
     try {
       await repository.removeMedia(context, media);
@@ -121,6 +125,8 @@ final class HappensPublicationController extends ChangeNotifier {
   }
 
   Future<void> saveDraft() async {
+    if (_operationInFlight || !_acceptsOperation(_state.phase)) return;
+    _operationInFlight = true;
     _autosaveTimer?.cancel();
     _emit(_state.copyWith(phase: HappensPublicationPhase.autosaving, clearMessage: true));
     try {
@@ -147,10 +153,14 @@ final class HappensPublicationController extends ChangeNotifier {
           message: 'Não foi possível salvar o rascunho.',
         ),
       );
+    } finally {
+      _operationInFlight = false;
+      notifyListeners();
     }
   }
 
   Future<HappensPublication?> publish() async {
+    if (_operationInFlight || !_acceptsOperation(_state.phase)) return null;
     _autosaveTimer?.cancel();
     if (_state.draft.caption.trim().isEmpty && _state.draft.media.isEmpty) {
       _emit(_state.copyWith(message: 'Adicione uma legenda ou mídia para publicar.'));
@@ -160,6 +170,7 @@ final class HappensPublicationController extends ChangeNotifier {
       _emit(_state.copyWith(message: 'Escolha pelo menos um público.'));
       return null;
     }
+    _operationInFlight = true;
     _emit(_state.copyWith(phase: HappensPublicationPhase.publishing, clearMessage: true));
     try {
       var preparedDraft = await repository.saveDraft(context, _state.draft);
@@ -204,16 +215,27 @@ final class HappensPublicationController extends ChangeNotifier {
           message: 'Não foi possível publicar agora.',
         ),
       );
+    } finally {
+      _operationInFlight = false;
+      notifyListeners();
     }
     return null;
   }
 
   void _edit(HappensPostDraft draft) {
+    if (_operationInFlight) return;
     _emit(
       _state.copyWith(draft: draft, phase: HappensPublicationPhase.editing, clearMessage: true),
     );
     if (_state.autosave) _scheduleAutosave();
   }
+
+  bool _acceptsOperation(HappensPublicationPhase phase) => switch (phase) {
+    HappensPublicationPhase.editing ||
+    HappensPublicationPhase.saved ||
+    HappensPublicationPhase.failure => true,
+    _ => false,
+  };
 
   void _scheduleAutosave() {
     _autosaveTimer?.cancel();
