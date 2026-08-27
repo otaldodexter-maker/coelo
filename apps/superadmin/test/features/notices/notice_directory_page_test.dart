@@ -61,7 +61,7 @@ void main() {
       tester,
       repository: repository,
       inlinePreview: true,
-      size: const Size(1440, 900),
+      size: const Size(1024, 900),
     );
     await tester.tap(find.text('Conteúdos').first);
     await tester.pump();
@@ -231,6 +231,7 @@ Future<void> _pumpDirectory(
       home: Scaffold(
         body: NoticeDirectoryPage(
           repository: repository,
+          canManageLifecycle: true,
           onCreate: onCreate,
           onEdit: onEdit,
           enableInlinePreview: inlinePreview,

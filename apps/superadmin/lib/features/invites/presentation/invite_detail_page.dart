@@ -19,6 +19,7 @@ final class InviteDetailPage extends StatefulWidget {
   const InviteDetailPage({
     required this.repository,
     required this.inviteId,
+    this.allowCommands = false,
     this.logout = unavailableSuperadminLogout,
     this.onDestinationSelected,
     super.key,
@@ -26,6 +27,7 @@ final class InviteDetailPage extends StatefulWidget {
 
   final InviteRepository repository;
   final String inviteId;
+  final bool allowCommands;
   final LogoutAction logout;
   final ValueChanged<String>? onDestinationSelected;
 
@@ -284,7 +286,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
       children: [
-        if (invite.canResend)
+        if (widget.allowCommands && invite.canResend)
           if (invite.status == InviteStatus.expired)
             FilledButton.icon(
               key: const Key('invite-detail-resend'),
@@ -299,7 +301,7 @@ final class _InviteDetailPageState extends State<InviteDetailPage> {
               icon: _actionIcon(_DetailAction.resend, Icons.forward_to_inbox_outlined),
               label: const Text('Reenviar convite'),
             ),
-        if (invite.canRevoke)
+        if (widget.allowCommands && invite.canRevoke)
           TextButton.icon(
             key: const Key('invite-detail-revoke'),
             style: TextButton.styleFrom(

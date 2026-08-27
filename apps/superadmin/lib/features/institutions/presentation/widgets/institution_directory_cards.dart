@@ -13,16 +13,11 @@ Duration _interactionDuration(BuildContext context, Duration duration) {
 }
 
 final class InstitutionDirectoryCards extends StatelessWidget {
-  const InstitutionDirectoryCards({
-    required this.items,
-    required this.onCreate,
-    required this.onEdit,
-    super.key,
-  });
+  const InstitutionDirectoryCards({required this.items, this.onCreate, this.onEdit, super.key});
 
   final List<InstitutionDirectoryItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<InstitutionDirectoryItem> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<InstitutionDirectoryItem>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +30,18 @@ final class InstitutionDirectoryCards extends StatelessWidget {
           spacing: CoeloSpacing.space6,
           runSpacing: CoeloSpacing.space6,
           children: [
-            SizedBox(
-              width: cardWidth,
-              child: _CreateInstitutionCard(onPressed: onCreate),
-            ),
+            if (onCreate != null)
+              SizedBox(
+                width: cardWidth,
+                child: _CreateInstitutionCard(onPressed: onCreate!),
+              ),
             ...items.map(
               (item) => SizedBox(
                 width: cardWidth,
-                child: _InstitutionCard(item: item, onPressed: () => onEdit(item)),
+                child: _InstitutionCard(
+                  item: item,
+                  onPressed: onEdit == null ? null : () => onEdit!(item),
+                ),
               ),
             ),
           ],
@@ -95,7 +94,7 @@ class _InstitutionCard extends StatefulWidget {
   const _InstitutionCard({required this.item, required this.onPressed});
 
   final InstitutionDirectoryItem item;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   State<_InstitutionCard> createState() => _InstitutionCardState();

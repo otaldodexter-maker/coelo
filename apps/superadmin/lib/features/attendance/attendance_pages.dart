@@ -57,6 +57,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   var _currentStep = 0;
   var _submitting = false;
   Object? _commandError;
+  var _optionsLoadGeneration = 0;
 
   DateTime get _today => DateUtils.dateOnly(widget.today ?? DateTime.now());
 
@@ -69,7 +70,18 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   }
 
   @override
+  void didUpdateWidget(covariant AttendanceNewCallPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) && oldWidget.today == widget.today) {
+      return;
+    }
+    _date = _today;
+    _loadOptions(useInitialValues: true);
+  }
+
+  @override
   void dispose() {
+    _optionsLoadGeneration++;
     _dateFocusNode.dispose();
     super.dispose();
   }
@@ -331,6 +343,9 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   }
 
   Future<void> _loadOptions({bool useInitialValues = false}) async {
+    final generation = ++_optionsLoadGeneration;
+    final repository = widget.repository;
+    final requestedDate = _date;
     if (mounted) {
       setState(() {
         _options = null;
@@ -338,8 +353,8 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
       });
     }
     try {
-      final options = await widget.repository.fetchContextOptions(date: _date);
-      if (!mounted) return;
+      final options = await repository.fetchContextOptions(date: requestedDate);
+      if (!_isCurrentOptionsLoad(generation, repository, requestedDate)) return;
       final preferredInstitution = useInitialValues ? widget.initialInstitutionId : _institution;
       final institution = _validId(preferredInstitution, options.institutions);
       final units = options.units
@@ -375,9 +390,21 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
         if (_context == 'activity' && activity == null) _context = 'group';
       });
     } catch (error) {
-      if (mounted) setState(() => _loadError = error);
+      if (_isCurrentOptionsLoad(generation, repository, requestedDate)) {
+        setState(() => _loadError = error);
+      }
     }
   }
+
+  bool _isCurrentOptionsLoad(
+    int generation,
+    AttendanceRepository repository,
+    DateTime requestedDate,
+  ) =>
+      mounted &&
+      generation == _optionsLoadGeneration &&
+      identical(repository, widget.repository) &&
+      DateUtils.isSameDay(requestedDate, _date);
 
   Widget _loadingOrFailure() {
     final error = _loadError;
@@ -610,6 +637,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
   Object? _commandError;
   var _loading = true;
   var _commandInFlight = false;
+  var _loadGeneration = 0;
 
   @override
   void initState() {
@@ -617,7 +645,26 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     _loadCall();
   }
 
+  @override
+  void didUpdateWidget(covariant AttendanceCallPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.callId == widget.callId && identical(oldWidget.repository, widget.repository)) {
+      return;
+    }
+    for (final controller in _notes.values) {
+      controller.dispose();
+    }
+    _notes.clear();
+    _call = null;
+    _lastBulkReceipt = null;
+    _loading = true;
+    _loadCall();
+  }
+
   Future<void> _loadCall() async {
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final callId = widget.callId;
     if (mounted) {
       setState(() {
         _loading = _call == null;
@@ -626,8 +673,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       });
     }
     try {
-      final call = await widget.repository.fetchCall(widget.callId);
-      if (mounted) {
+      final call = await repository.fetchCall(callId);
+      if (_isCurrentCallLoad(generation, repository, callId)) {
         setState(() {
           _call = call;
           _loading = false;
@@ -635,7 +682,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
         });
       }
     } catch (error) {
-      if (mounted) {
+      if (_isCurrentCallLoad(generation, repository, callId)) {
         setState(() {
           _initialLoadError = error;
           _loading = false;
@@ -644,8 +691,15 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     }
   }
 
+  bool _isCurrentCallLoad(int generation, AttendanceRepository repository, String callId) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(repository, widget.repository) &&
+      callId == widget.callId;
+
   @override
   void dispose() {
+    _loadGeneration++;
     for (final controller in _notes.values) {
       controller.dispose();
     }
@@ -887,7 +941,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                       child: const Text('Voltar para Assiduidade'),
                     ),
                     continuationActions: [
-                      if (concluded)
+                      if (concluded && call.participants.isNotEmpty)
                         OutlinedButton.icon(
                           onPressed: () => _showCorrection(context, call),
                           icon: const Icon(Icons.history_rounded),

@@ -169,8 +169,8 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
             avoidChatLauncher: widget.onConversationsOpen != null,
             onDisplayChanged: _changeDisplay,
             onTableViewChanged: _changeTableView,
-            onCreate: widget.onCreate ?? () {},
-            onEdit: widget.onEdit ?? (_) {},
+            onCreate: widget.onCreate,
+            onEdit: widget.onEdit,
             onFooterHeightChanged: _handlePaginationFooterHeightChanged,
             onClearFilters: () {
               _searchController.clear();
@@ -207,8 +207,8 @@ class _InstitutionDirectoryContent extends StatefulWidget {
   final bool avoidChatLauncher;
   final ValueChanged<InstitutionDirectoryDisplay> onDisplayChanged;
   final ValueChanged<InstitutionDirectoryTableView> onTableViewChanged;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
   final VoidCallback onClearFilters;
 
@@ -375,8 +375,8 @@ class _InstitutionDirectoryResults extends StatelessWidget {
   final InstitutionDirectoryViewModel viewModel;
   final InstitutionDirectoryDisplay display;
   final InstitutionDirectoryTableView tableView;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -389,18 +389,22 @@ class _InstitutionDirectoryResults extends StatelessWidget {
         InstitutionDirectoryStates(
           viewModel: viewModel,
           createAction: display == InstitutionDirectoryDisplay.table
-              ? InstitutionCreateBanner(onPressed: onCreate)
+              ? onCreate == null
+                    ? const SizedBox.shrink()
+                    : InstitutionCreateBanner(onPressed: onCreate!)
               : InstitutionDirectoryCards(
                   items: const [],
                   onCreate: onCreate,
-                  onEdit: (item) => onEdit(item.id),
+                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
                 ),
           successContent: display == InstitutionDirectoryDisplay.table
               ? InstitutionDirectoryTable(
                   items: viewModel.page.items,
                   view: tableView,
-                  createAction: InstitutionCreateBanner(onPressed: onCreate),
-                  onEdit: (item) => onEdit(item.id),
+                  createAction: onCreate == null
+                      ? const SizedBox.shrink()
+                      : InstitutionCreateBanner(onPressed: onCreate!),
+                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
                   sortColumn: viewModel.query.sortColumn,
                   sortAscending: viewModel.query.sortAscending,
                   onSort: viewModel.setSort,
@@ -408,7 +412,7 @@ class _InstitutionDirectoryResults extends StatelessWidget {
               : InstitutionDirectoryCards(
                   items: viewModel.page.items,
                   onCreate: onCreate,
-                  onEdit: (item) => onEdit(item.id),
+                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
                 ),
         ),
       ],

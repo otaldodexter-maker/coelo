@@ -11,7 +11,7 @@ final class UnitDirectoryTable extends StatelessWidget {
   const UnitDirectoryTable({
     required this.items,
     required this.createAction,
-    required this.onEdit,
+    this.onEdit,
     required this.sortColumn,
     required this.sortAscending,
     required this.onSort,
@@ -21,7 +21,7 @@ final class UnitDirectoryTable extends StatelessWidget {
 
   final List<UnitDirectoryItem> items;
   final Widget createAction;
-  final ValueChanged<UnitDirectoryItem> onEdit;
+  final ValueChanged<UnitDirectoryItem>? onEdit;
   final UnitDirectorySortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<UnitDirectorySortColumn> onSort;
@@ -131,7 +131,7 @@ final class UnitDirectoryTable extends StatelessWidget {
       columns: columns.map(_detailColumn).toList(growable: false),
       headerHeight: 56,
       rowHeight: 64,
-      onRowPressed: (row) => onEdit(row.unit),
+      onRowPressed: onEdit == null ? null : (row) => onEdit!(row.unit),
       sortColumnId: _UnitDetailColumn.institution.id,
       sortAscending: true,
       onSort: (_) {},

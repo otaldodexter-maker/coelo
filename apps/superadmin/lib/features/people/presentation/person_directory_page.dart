@@ -26,6 +26,8 @@ final class PersonDirectoryPage extends StatefulWidget {
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
+    this.onImport,
+    this.onExport,
     this.successMessage,
     super.key,
   });
@@ -37,6 +39,8 @@ final class PersonDirectoryPage extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
+  final VoidCallback? onImport;
+  final PersonExportAction? onExport;
   final String? successMessage;
 
   @override
@@ -44,7 +48,7 @@ final class PersonDirectoryPage extends StatefulWidget {
 }
 
 final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
-  late final PersonDirectoryViewModel _viewModel;
+  late PersonDirectoryViewModel _viewModel;
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
   double _paginationFooterHeight = 0;
@@ -53,6 +57,14 @@ final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
   @override
   void didUpdateWidget(covariant PersonDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.repository != widget.repository) {
+      _viewModel.dispose();
+      _viewModel = PersonDirectoryViewModel(widget.repository);
+      _searchController.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _viewModel.load();
+      });
+    }
     if (oldWidget.successMessage != widget.successMessage) {
       _noticeShown = false;
     }
@@ -101,9 +113,10 @@ final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
         return _PersonDirectoryContent(
           viewModel: _viewModel,
           searchController: _searchController,
-          activityController: _activityController,
-          onCreate: widget.onCreate ?? () {},
-          onEdit: widget.onEdit ?? (_) {},
+          onImport: widget.onImport,
+          onExport: widget.onExport,
+          onCreate: widget.onCreate,
+          onEdit: widget.onEdit,
           onFooterHeightChanged: (height) {
             if ((_paginationFooterHeight - height).abs() < .5) return;
             setState(() => _paginationFooterHeight = height);
@@ -118,7 +131,8 @@ final class _PersonDirectoryContent extends StatefulWidget {
   const _PersonDirectoryContent({
     required this.viewModel,
     required this.searchController,
-    required this.activityController,
+    required this.onImport,
+    required this.onExport,
     required this.onCreate,
     required this.onEdit,
     required this.onFooterHeightChanged,
@@ -126,9 +140,10 @@ final class _PersonDirectoryContent extends StatefulWidget {
 
   final PersonDirectoryViewModel viewModel;
   final TextEditingController searchController;
-  final SuperadminActivityController activityController;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onImport;
+  final PersonExportAction? onExport;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
 
   @override
@@ -172,6 +187,14 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
           final showPagination = widget.viewModel.state == PersonDirectoryLoadState.success;
           _measureFooter(showPagination);
           final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
+          if (widget.viewModel.state == PersonDirectoryLoadState.loading ||
+              widget.viewModel.state == PersonDirectoryLoadState.unauthorized) {
+            return ListView(
+              key: const Key('people-directory-scroll'),
+              padding: EdgeInsets.all(horizontalPadding),
+              children: [_PersonResults(viewModel: widget.viewModel, onCreate: null, onEdit: null)],
+            );
+          }
           return Stack(
             fit: StackFit.expand,
             children: [
@@ -187,7 +210,8 @@ final class _PersonDirectoryContentState extends State<_PersonDirectoryContent> 
                   _PersonToolbar(
                     viewModel: widget.viewModel,
                     searchController: widget.searchController,
-                    activityController: widget.activityController,
+                    onImport: widget.onImport,
+                    onExport: widget.onExport,
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   _PersonSegmentSelector(viewModel: widget.viewModel),
@@ -247,11 +271,13 @@ final class _PersonToolbar extends StatelessWidget {
   const _PersonToolbar({
     required this.viewModel,
     required this.searchController,
-    required this.activityController,
+    required this.onImport,
+    required this.onExport,
   });
   final PersonDirectoryViewModel viewModel;
   final TextEditingController searchController;
-  final SuperadminActivityController activityController;
+  final VoidCallback? onImport;
+  final PersonExportAction? onExport;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -449,12 +475,16 @@ final class _PersonToolbar extends StatelessWidget {
                   onCardsSelected: () => viewModel.setLayout(PersonDirectoryLayout.cards),
                   onTableViewSelected: viewModel.setTableView,
                 ),
-                const SizedBox(width: CoeloSpacing.space2),
-                PersonFileActions(
-                  activityController: activityController,
-                  compact: compactFileAction,
-                  tableView: viewModel.tableView,
-                ),
+                if (viewModel.state == PersonDirectoryLoadState.success &&
+                    (onImport != null || onExport != null)) ...[
+                  const SizedBox(width: CoeloSpacing.space2),
+                  PersonFileActions(
+                    onImport: onImport,
+                    onExport: onExport,
+                    compact: compactFileAction,
+                    tableView: viewModel.tableView,
+                  ),
+                ],
               ],
             ),
           ),
@@ -467,8 +497,8 @@ final class _PersonToolbar extends StatelessWidget {
 final class _PersonResults extends StatelessWidget {
   const _PersonResults({required this.viewModel, required this.onCreate, required this.onEdit});
   final PersonDirectoryViewModel viewModel;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -538,23 +568,24 @@ final class _PersonResults extends StatelessWidget {
 final class _PersonCards extends StatelessWidget {
   const _PersonCards({required this.items, required this.onCreate, required this.onEdit});
   final List<PersonDirectoryItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final columns = math.max(1, (constraints.maxWidth / 340).floor());
       final cards = <Widget>[
-        ConstrainedBox(
-          key: const Key('create-person-card'),
-          constraints: const BoxConstraints(minHeight: 216),
-          child: CoeloAdminCreateAction(
-            label: 'Criar pessoa',
-            icon: Icons.person_add_alt_1_outlined,
-            onPressed: onCreate,
+        if (onCreate != null)
+          ConstrainedBox(
+            key: const Key('create-person-card'),
+            constraints: const BoxConstraints(minHeight: 216),
+            child: CoeloAdminCreateAction(
+              label: 'Criar pessoa',
+              icon: Icons.person_add_alt_1_outlined,
+              onPressed: onCreate!,
+            ),
           ),
-        ),
         for (final item in items) _PersonCard(item: item, onEdit: onEdit),
       ];
       return Column(
@@ -584,28 +615,13 @@ final class _PersonCards extends StatelessWidget {
   );
 }
 
-final class _PersonCard extends StatefulWidget {
+final class _PersonCard extends StatelessWidget {
   const _PersonCard({required this.item, required this.onEdit});
   final PersonDirectoryItem item;
-  final ValueChanged<String> onEdit;
-
-  @override
-  State<_PersonCard> createState() => _PersonCardState();
-}
-
-final class _PersonCardState extends State<_PersonCard> {
-  final FocusNode _focusNode = FocusNode();
-  bool _highlighted = false;
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.item;
     final colors = Theme.of(context).colorScheme;
     final metrics = <Widget>[
       _PersonDetail(
@@ -639,125 +655,73 @@ final class _PersonCardState extends State<_PersonCard> {
           value: '${item.linkedGuardiansCount}',
         ),
     ];
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 216),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: Semantics(
-          button: true,
-          label: '${item.displayName}. ${item.type.label}. Status: ${item.status.label}',
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: MediaQuery.disableAnimationsOf(context)
-                ? Duration.zero
-                : CoeloMotion.standard,
-            builder: (context, progress, child) => Container(
-              key: Key('person-card-${item.id}'),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
-                  color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: .5),
-                    progress,
-                  )!,
-                  width: 1 + .5 * progress,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: .03),
-                      colors.primary.withValues(alpha: .15),
-                      progress,
-                    )!,
-                    blurRadius: CoeloSpacing.space2 + CoeloSpacing.space1 * progress,
-                    spreadRadius: CoeloSpacing.spaceHalf * progress,
-                    offset: Offset(0, CoeloSpacing.spaceHalf + CoeloSpacing.spaceHalf * progress),
+    return CoeloAdminInteractiveCard(
+      surfaceKey: Key('person-card-${item.id}'),
+      minHeight: 216,
+      semanticLabel: '${item.displayName}. ${item.type.label}. Status: ${item.status.label}',
+      onPressed: onEdit == null ? null : () => onEdit!(item.id),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SizedBox.square(
+                  dimension: 44,
+                  child: FittedBox(
+                    child: CoeloAvatar(
+                      initials: item.initials,
+                      semanticLabel: 'Avatar de ${item.displayName}',
+                      size: CoeloAvatarSize.large,
+                    ),
                   ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  focusNode: _focusNode,
-                  onFocusChange: (value) => setState(() => _highlighted = value),
-                  onTap: () => widget.onEdit(item.id),
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: child,
                 ),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CoeloSpacing.space6,
-                vertical: CoeloSpacing.space4,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox.square(
-                        dimension: 44,
-                        child: FittedBox(
-                          child: CoeloAvatar(
-                            initials: item.initials,
-                            semanticLabel: 'Avatar de ${item.displayName}',
-                            size: CoeloAvatarSize.large,
-                          ),
-                        ),
+                      Text(
+                        item.displayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(width: CoeloSpacing.space3),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            Text(
-                              [
-                                item.type.label,
-                                item.authLink.label,
-                                if (!item.isEditable) 'Somente leitura',
-                              ].join(' • '),
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                            ),
-                          ],
-                        ),
+                      Text(
+                        [
+                          item.type.label,
+                          item.authLink.label,
+                          if (!item.isEditable) 'Somente leitura',
+                        ].join(' • '),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                       ),
-                      const SizedBox(width: CoeloSpacing.space2),
-                      _PersonStatusIndicator(item: item),
                     ],
                   ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  const Divider(height: 1),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  for (var index = 0; index < metrics.length; index += 2) ...[
-                    _PersonDetails(
-                      first: metrics[index],
-                      second: index + 1 < metrics.length
-                          ? metrics[index + 1]
-                          : const SizedBox.shrink(),
-                    ),
-                    if (index + 2 < metrics.length) const SizedBox(height: CoeloSpacing.space3),
-                  ],
-                ],
-              ),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                _PersonStatusIndicator(item: item),
+              ],
             ),
-          ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space4),
+            for (var index = 0; index < metrics.length; index += 2) ...[
+              _PersonDetails(
+                first: metrics[index],
+                second: index + 1 < metrics.length ? metrics[index + 1] : const SizedBox.shrink(),
+              ),
+              if (index + 2 < metrics.length) const SizedBox(height: CoeloSpacing.space3),
+            ],
+          ],
         ),
       ),
     );
@@ -928,8 +892,8 @@ final class _PersonTable extends StatelessWidget {
     required this.tableView,
   });
   final List<PersonDirectoryItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final PersonDirectorySortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<PersonDirectorySortColumn> onSort;
@@ -939,21 +903,22 @@ final class _PersonTable extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) => Column(
       children: [
-        SizedBox(
-          width: constraints.maxWidth,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
-            child: CoeloAdminCreateAction(
-              key: const Key('create-person-banner'),
-              label: 'Criar pessoa',
-              description: 'Cadastre identidade e vínculos contextuais.',
-              icon: Icons.person_add_alt_1_outlined,
-              variant: CoeloAdminCreateActionVariant.banner,
-              onPressed: onCreate,
+        if (onCreate != null)
+          SizedBox(
+            width: constraints.maxWidth,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
+              child: CoeloAdminCreateAction(
+                key: const Key('create-person-banner'),
+                label: 'Criar pessoa',
+                description: 'Cadastre identidade e vínculos contextuais.',
+                icon: Icons.person_add_alt_1_outlined,
+                variant: CoeloAdminCreateActionVariant.banner,
+                onPressed: onCreate!,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
+        if (onCreate != null) const SizedBox(height: CoeloSpacing.space4),
         SizedBox(
           key: const Key('people-table-viewport'),
           child: Align(
@@ -965,9 +930,7 @@ final class _PersonTable extends StatelessWidget {
               headerHeight: 56,
               rowHeight: 64,
               showHorizontalScrollbar: true,
-              onRowPressed: (item) {
-                onEdit(item.id);
-              },
+              onRowPressed: onEdit == null ? null : (item) => onEdit!(item.id),
               pinnedColumn: CoeloAdminTableColumn(
                 id: 'display_name',
                 label: 'Pessoa',

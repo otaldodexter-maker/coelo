@@ -60,7 +60,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onOpen: (_) {})));
+    await tester.pumpWidget(
+      _app(InviteDirectoryPage(repository: repository, onOpen: (_) {}, allowCommands: true)),
+    );
     await tester.pumpAndSettle();
 
     final trigger = find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111'));
@@ -121,7 +123,9 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = _AmbiguousResendRepository();
-    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onOpen: (_) {})));
+    await tester.pumpWidget(
+      _app(InviteDirectoryPage(repository: repository, onOpen: (_) {}, allowCommands: true)),
+    );
     await tester.pumpAndSettle();
 
     final trigger = find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111'));

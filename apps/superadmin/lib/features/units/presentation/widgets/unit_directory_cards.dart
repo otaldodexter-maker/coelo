@@ -9,16 +9,11 @@ import '../../domain/unit_directory.dart';
 import 'unit_status_presentation.dart';
 
 final class UnitDirectoryCards extends StatelessWidget {
-  const UnitDirectoryCards({
-    required this.items,
-    required this.onCreate,
-    required this.onEdit,
-    super.key,
-  });
+  const UnitDirectoryCards({required this.items, this.onCreate, this.onEdit, super.key});
 
   final List<UnitDirectoryItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<UnitDirectoryItem> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<UnitDirectoryItem>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -31,22 +26,26 @@ final class UnitDirectoryCards extends StatelessWidget {
           spacing: CoeloSpacing.space6,
           runSpacing: CoeloSpacing.space6,
           children: [
-            SizedBox(
-              width: cardWidth,
-              child: ConstrainedBox(
-                key: const Key('create-unit-card'),
-                constraints: const BoxConstraints(minHeight: 216),
-                child: CoeloAdminCreateAction(
-                  label: 'Criar unidade',
-                  icon: Icons.apartment_outlined,
-                  onPressed: onCreate,
+            if (onCreate != null)
+              SizedBox(
+                width: cardWidth,
+                child: ConstrainedBox(
+                  key: const Key('create-unit-card'),
+                  constraints: const BoxConstraints(minHeight: 216),
+                  child: CoeloAdminCreateAction(
+                    label: 'Criar unidade',
+                    icon: Icons.apartment_outlined,
+                    onPressed: onCreate!,
+                  ),
                 ),
               ),
-            ),
             for (final item in items)
               SizedBox(
                 width: cardWidth,
-                child: _UnitCard(item: item, onPressed: () => onEdit(item)),
+                child: _UnitCard(
+                  item: item,
+                  onPressed: onEdit == null ? null : () => onEdit!(item),
+                ),
               ),
           ],
         );
@@ -76,7 +75,7 @@ final class _UnitCard extends StatelessWidget {
   const _UnitCard({required this.item, required this.onPressed});
 
   final UnitDirectoryItem item;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

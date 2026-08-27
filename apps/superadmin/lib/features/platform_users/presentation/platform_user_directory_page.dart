@@ -403,7 +403,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
           spacing: CoeloSpacing.space6,
           runSpacing: CoeloSpacing.space6,
           children: [
-            if (widget.capability == PlatformUserCapability.owner)
+            if (widget.capability == PlatformUserCapability.owner && widget.onCreate != null)
               SizedBox(
                 width: cardWidth,
                 child: ConstrainedBox(
@@ -412,7 +412,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
                   child: CoeloAdminCreateAction(
                     label: 'Criar acesso interno',
                     icon: Icons.person_add_alt_1_outlined,
-                    onPressed: widget.onCreate ?? () {},
+                    onPressed: widget.onCreate!,
                   ),
                 ),
               ),
@@ -430,7 +430,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   Widget _table() {
     return Column(
       children: [
-        if (widget.capability == PlatformUserCapability.owner) ...[
+        if (widget.capability == PlatformUserCapability.owner && widget.onCreate != null) ...[
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: CoeloSpacing.space20),
             child: SizedBox(
@@ -440,7 +440,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
                 icon: Icons.person_add_alt_1_outlined,
                 variant: CoeloAdminCreateActionVariant.banner,
                 description: 'Adicionar novo vínculo à equipe Coelo.',
-                onPressed: widget.onCreate ?? () {},
+                onPressed: widget.onCreate!,
               ),
             ),
           ),

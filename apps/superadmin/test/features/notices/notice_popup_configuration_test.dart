@@ -59,12 +59,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('notice-preview-dialog-fullscreen')), findsNothing);
   });
+
+  testWidgets('explicit light background keeps readable copy in dark theme', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.dark(),
+        home: Scaffold(
+          body: NoticePopupPreview(
+            notice: _notice(
+              popupSize: NoticePopupSize.compact,
+              hasOuterInset: false,
+              backgroundColorValue: Colors.white.toARGB32(),
+            ),
+            device: NoticeTargetDevice.web,
+            checkboxChecked: false,
+            onCheckboxChanged: null,
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.widget<Text>(find.text('Atualização importante')).style?.color, Colors.black);
+    expect(
+      tester.widget<Text>(find.text('Confira as novas orientações.')).style?.color,
+      Colors.black,
+    );
+  });
 }
 
 PlatformNotice _notice({
   required NoticePopupSize popupSize,
   required bool hasOuterInset,
   int? buttonColorValue,
+  int? backgroundColorValue,
 }) => PlatformNotice(
   id: 'notice-1',
   title: 'Atualização importante',
@@ -80,6 +107,7 @@ PlatformNotice _notice({
   reach: 0,
   buttonLabel: 'Entendi',
   buttonColorValue: buttonColorValue,
+  backgroundColorValue: backgroundColorValue,
   popupSize: popupSize,
   hasOuterInset: hasOuterInset,
 );

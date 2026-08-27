@@ -465,11 +465,12 @@ List<AttendanceContextOption> _contextOptions(Object? value) => _rows(value)
 
 AttendanceDashboardAccess _dashboardAccess(Map<String, dynamic> json) => AttendanceDashboardAccess(
   scope: switch (json['scope']) {
+    'platform' => AttendanceDashboardScope.platform,
     'institution' => AttendanceDashboardScope.institution,
     'unit' => AttendanceDashboardScope.unit,
     'assignments' => AttendanceDashboardScope.assignments,
     'guardian' => AttendanceDashboardScope.guardian,
-    _ => AttendanceDashboardScope.platform,
+    final value => throw FormatException('Escopo de assiduidade inválido: $value'),
   },
   canRead: json['can_read'] as bool? ?? false,
   institutionId: json['institution_id'] as String?,

@@ -20,6 +20,44 @@ void main() {
     expect(coeloSuperadminNavigation.every((node) => !node.label.contains('Menu')), isTrue);
   });
 
+  test('guards attendance creation with an explicit capability', () {
+    final node = coeloNavigationNodeById('attendance-create')!;
+
+    expect(node.capability, 'attendance.create');
+    expect(
+      node.isAvailable(CoeloNavigationEnvironment.production, canAccess: (_) => false),
+      isFalse,
+    );
+    expect(
+      node.isAvailable(CoeloNavigationEnvironment.development, canAccess: (_) => true),
+      isTrue,
+    );
+  });
+
+  test('guards activity creation with an explicit capability', () {
+    final node = coeloNavigationNodeById('activity-create')!;
+
+    expect(node.capability, 'activities.create');
+    expect(
+      node.isAvailable(CoeloNavigationEnvironment.production, canAccess: (_) => false),
+      isFalse,
+    );
+  });
+
+  test('mutation destinations fail closed without a capability resolver', () {
+    for (final id in const [
+      'institution-create',
+      'person-create',
+      'form-create',
+      'notice-create',
+      'principal-now-publish',
+    ]) {
+      final node = coeloNavigationNodeById(id)!;
+      expect(node.capability, isNotNull, reason: id);
+      expect(node.isAvailable(CoeloNavigationEnvironment.production), isFalse, reason: id);
+    }
+  });
+
   test('keeps the exact static hierarchy and excludes record-only destinations', () {
     List<String> flatten(CoeloNavigationNode node) => [
       node.label,

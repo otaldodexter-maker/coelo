@@ -238,6 +238,8 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
 
   Future<void> _load(PersonDirectoryQuery value) async {
     final version = ++_requestVersion;
+    _page = const PersonDirectoryPage(items: [], totalCount: 0, page: 0, pageSize: 11);
+    _filterOptions = const PersonDirectoryFilterOptions();
     _state = PersonDirectoryLoadState.loading;
     notifyListeners();
     try {
@@ -254,9 +256,29 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
           ? PersonDirectoryLoadState.noResults
           : PersonDirectoryLoadState.empty;
     } on PersonDirectoryUnauthorizedException {
-      if (version == _requestVersion) _state = PersonDirectoryLoadState.unauthorized;
+      if (version == _requestVersion) {
+        _query = PersonDirectoryQuery(pageSize: value.pageSize);
+        _page = PersonDirectoryPage(
+          items: const [],
+          totalCount: 0,
+          page: 0,
+          pageSize: value.pageSize,
+        );
+        _filterOptions = const PersonDirectoryFilterOptions();
+        _state = PersonDirectoryLoadState.unauthorized;
+      }
     } on Exception {
-      if (version == _requestVersion) _state = PersonDirectoryLoadState.failure;
+      if (version == _requestVersion) {
+        _query = PersonDirectoryQuery(pageSize: value.pageSize);
+        _page = PersonDirectoryPage(
+          items: const [],
+          totalCount: 0,
+          page: 0,
+          pageSize: value.pageSize,
+        );
+        _filterOptions = const PersonDirectoryFilterOptions();
+        _state = PersonDirectoryLoadState.failure;
+      }
     }
     if (version == _requestVersion) notifyListeners();
   }

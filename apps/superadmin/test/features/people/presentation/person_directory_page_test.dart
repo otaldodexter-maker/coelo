@@ -2,7 +2,11 @@ import 'dart:ui' show PointerDeviceKind, SemanticsAction;
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/people/domain/person_directory.dart'
-    show PersonDirectorySegment, PersonDirectoryTableView, PersonFilterOption;
+    show
+        PersonDirectoryRepository,
+        PersonDirectorySegment,
+        PersonDirectoryTableView,
+        PersonFilterOption;
 import 'package:coelo_superadmin/features/people/presentation/person_directory_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_underline_tabs.dart';
@@ -232,13 +236,16 @@ void main() {
     await tester.pumpAndSettle();
 
     final card = find.byKey(const Key('person-card-person-0'));
-    final animation = find.ancestor(of: card, matching: find.byType(TweenAnimationBuilder<double>));
+    expect(
+      find.ancestor(of: card, matching: find.byType(CoeloAdminInteractiveCard)),
+      findsOneWidget,
+    );
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
     await mouse.addPointer();
     await mouse.moveTo(tester.getCenter(card));
     await tester.pumpAndSettle();
-    expect(tester.widget<TweenAnimationBuilder<double>>(animation).tween.end, 1);
+    expect(tester.takeException(), isNull);
 
     final action = find.descendant(of: card, matching: find.byType(InkWell));
     tester.widget<InkWell>(action.first).focusNode!.requestFocus();
@@ -332,19 +339,70 @@ void main() {
     await tester.pumpWidget(_app(repository: FakePersonDirectoryRepository(unauthorized: true)));
     await tester.pumpAndSettle();
     expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byKey(const Key('people-filter-toolbar')), findsNothing);
+    expect(find.byKey(const Key('people-segment-selector')), findsNothing);
+    expect(find.byKey(const Key('create-person-card')), findsNothing);
+    expect(find.byKey(const Key('create-person-banner')), findsNothing);
 
     await tester.pumpWidget(_app(repository: FakePersonDirectoryRepository(fail: true)));
     await tester.pumpAndSettle();
     expect(find.text('Não foi possível carregar as pessoas'), findsOneWidget);
     expect(find.text('Tentar novamente'), findsOneWidget);
   });
+
+  testWidgets('clears tenant content when repository is replaced by unauthorized', (tester) async {
+    final allowed = FakePersonDirectoryRepository();
+    await tester.pumpWidget(_pageApp(allowed));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('people-filter-toolbar')), findsOneWidget);
+    expect(find.text('Ana Pessoa 1'), findsWidgets);
+
+    await tester.pumpWidget(_pageApp(FakePersonDirectoryRepository(unauthorized: true)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.text('Ana Pessoa 1'), findsNothing);
+    expect(find.byKey(const Key('people-filter-toolbar')), findsNothing);
+    expect(find.byKey(const Key('people-segment-selector')), findsNothing);
+    expect(find.byKey(const Key('create-person-card')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
+  });
+
+  testWidgets('omits create and edit actions when callbacks are absent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(withActions: false));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('create-person-card')), findsNothing);
+    final card = find.byKey(const Key('person-card-person-0'));
+    final action = find.descendant(of: card, matching: find.byType(InkWell));
+    expect(tester.widget<InkWell>(action).onTap, isNull);
+
+    await tester.tap(find.byKey(const Key('people-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('create-person-banner')), findsNothing);
+  });
 }
+
+Widget _pageApp(PersonDirectoryRepository repository) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: PersonDirectoryPage(
+    repository: repository,
+    logout: () async => const LogoutResult.success(),
+    onCreate: () {},
+    onEdit: (_) {},
+    onImport: () {},
+    onExport: (_, _) {},
+  ),
+);
 
 Widget _app({
   FakePersonDirectoryRepository? repository,
   VoidCallback? onCreate,
   ValueChanged<String>? onEdit,
   VoidCallback? onConversationsOpen,
+  bool withActions = true,
 }) {
   final resolvedRepository = repository ?? FakePersonDirectoryRepository();
   final router = GoRouter(
@@ -355,9 +413,11 @@ Widget _app({
           key: ValueKey(resolvedRepository),
           repository: resolvedRepository,
           logout: () async => const LogoutResult.success(),
-          onCreate: onCreate,
-          onEdit: onEdit,
+          onCreate: withActions ? (onCreate ?? () {}) : null,
+          onEdit: withActions ? (onEdit ?? (_) {}) : null,
           onConversationsOpen: onConversationsOpen,
+          onImport: () {},
+          onExport: (_, _) {},
         ),
       ),
     ],

@@ -15,7 +15,13 @@ void main() {
   ) async {
     final repository = TestInviteRepository(invites: [testInvite(status: InviteStatus.expired)]);
     await tester.pumpWidget(
-      _app(InviteDetailPage(repository: repository, inviteId: repository.invites.single.id)),
+      _app(
+        InviteDetailPage(
+          repository: repository,
+          inviteId: repository.invites.single.id,
+          allowCommands: true,
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -32,7 +38,13 @@ void main() {
   testWidgets('revocation remains negative, confirmed and versioned', (tester) async {
     final repository = TestInviteRepository();
     await tester.pumpWidget(
-      _app(InviteDetailPage(repository: repository, inviteId: repository.invites.single.id)),
+      _app(
+        InviteDetailPage(
+          repository: repository,
+          inviteId: repository.invites.single.id,
+          allowCommands: true,
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -61,7 +73,13 @@ void main() {
       invites: [testInvite(status: InviteStatus.pending, expiresAt: DateTime.utc(2099, 1, 1))],
     );
     await tester.pumpWidget(
-      _app(InviteDetailPage(repository: repository, inviteId: repository.invites.single.id)),
+      _app(
+        InviteDetailPage(
+          repository: repository,
+          inviteId: repository.invites.single.id,
+          allowCommands: true,
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -128,6 +146,7 @@ void main() {
           key: const Key('routed-invite-detail'),
           repository: repository,
           inviteId: first.id,
+          allowCommands: true,
         ),
       ),
     );
@@ -142,6 +161,7 @@ void main() {
           key: const Key('routed-invite-detail'),
           repository: repository,
           inviteId: second.id,
+          allowCommands: true,
         ),
       ),
     );
@@ -168,6 +188,7 @@ void main() {
           key: const Key('routed-invite-detail'),
           repository: repository,
           inviteId: first.id,
+          allowCommands: true,
         ),
       ),
     );
@@ -182,6 +203,7 @@ void main() {
           key: const Key('routed-invite-detail'),
           repository: repository,
           inviteId: second.id,
+          allowCommands: true,
         ),
       ),
     );

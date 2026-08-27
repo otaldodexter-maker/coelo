@@ -25,6 +25,7 @@ void main() {
         home: GroupDirectoryPage(
           repository: repository,
           logout: () async => const LogoutResult.success(),
+          onCreate: () {},
           onEdit: (id) => editedId = id,
         ),
       ),
@@ -111,9 +112,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps compact sticky pagination usable at 200 percent text', (
-    tester,
-  ) async {
+  testWidgets('keeps compact sticky pagination usable at 200 percent text', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());

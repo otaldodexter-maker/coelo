@@ -113,6 +113,60 @@ void main() {
     expect(productionCommands.calls, 0);
   });
 
+  testWidgets('production hides create actions when commands are unavailable', (tester) async {
+    final session = SuperadminSession(isAuthenticated: true);
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      activityDirectoryRepository: FakeActivityDirectoryRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.activities);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Consulte as atividades da plataforma.'), findsOneWidget);
+    expect(find.text('Criar atividade'), findsNothing);
+  });
+
+  testWidgets('production mutation deep links render fullscreen 503 without repository access', (
+    tester,
+  ) async {
+    final session = SuperadminSession(isAuthenticated: true);
+    final directory = _TrackingActivityDirectoryRepository();
+    final commands = _TripwireActivityCommandRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      activityDirectoryRepository: directory,
+      activityCommandRepository: commands,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.activityCreate);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(find.text('503'), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+    expect(directory.calls, 0);
+    expect(commands.calls, 0);
+
+    router.go('/activities/activity-1/edit');
+    await tester.pumpAndSettle();
+    expect(find.text('503'), findsOneWidget);
+    expect(directory.calls, 0);
+    expect(commands.calls, 0);
+  });
+
   testWidgets('production routes use only the injected directory repository', (tester) async {
     final session = SuperadminSession(isAuthenticated: true);
     final directory = _TrackingActivityDirectoryRepository();
@@ -142,8 +196,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       router.routeInformationProvider.value.uri.path,
-      '/activities/activity-1/assessment-settings',
+      '/errors/mutation-capability-unavailable',
     );
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
     expect(commands.calls, 0);
   });
 }

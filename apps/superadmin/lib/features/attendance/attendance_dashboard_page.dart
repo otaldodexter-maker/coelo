@@ -104,6 +104,7 @@ class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
               today: _today,
               maxWidth: constraints.maxWidth,
               inset: inset,
+              permissions: widget.permissions,
               onCreate: widget.onCreate,
               onOpenCall: widget.onOpenCall,
             ),
@@ -121,6 +122,7 @@ class _DashboardStateView extends StatelessWidget {
     required this.today,
     required this.maxWidth,
     required this.inset,
+    required this.permissions,
     required this.onCreate,
     required this.onOpenCall,
   });
@@ -130,6 +132,7 @@ class _DashboardStateView extends StatelessWidget {
   final DateTime today;
   final double maxWidth;
   final double inset;
+  final AttendancePermissions permissions;
   final VoidCallback onCreate;
   final ValueChanged<String> onOpenCall;
 
@@ -153,6 +156,7 @@ class _DashboardStateView extends StatelessWidget {
             today: today,
             maxWidth: maxWidth,
             inset: inset,
+            permissions: permissions,
             onCreate: onCreate,
             onOpenCall: onOpenCall,
           ),
@@ -228,6 +232,7 @@ class _DashboardContent extends StatelessWidget {
     required this.today,
     required this.maxWidth,
     required this.inset,
+    required this.permissions,
     required this.onCreate,
     required this.onOpenCall,
   });
@@ -238,6 +243,7 @@ class _DashboardContent extends StatelessWidget {
   final DateTime today;
   final double maxWidth;
   final double inset;
+  final AttendancePermissions permissions;
   final VoidCallback onCreate;
   final ValueChanged<String> onOpenCall;
 
@@ -250,7 +256,12 @@ class _DashboardContent extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _DashboardHeader(access: snapshot.access, onCreate: onCreate),
+        _DashboardHeader(
+          canCreate:
+              snapshot.access.canCreateCall &&
+              permissions.canCreate(backendCanManage: snapshot.access.canCreateCall),
+          onCreate: onCreate,
+        ),
         const SizedBox(height: CoeloSpacing.space6),
         _Filters(query: snapshot.query, controller: controller, today: today),
         const SizedBox(height: CoeloSpacing.space4),
@@ -284,8 +295,8 @@ class _DashboardContent extends StatelessWidget {
 }
 
 class _DashboardHeader extends StatelessWidget {
-  const _DashboardHeader({required this.access, required this.onCreate});
-  final AttendanceDashboardAccess access;
+  const _DashboardHeader({required this.canCreate, required this.onCreate});
+  final bool canCreate;
   final VoidCallback onCreate;
 
   @override
@@ -302,7 +313,7 @@ class _DashboardHeader extends StatelessWidget {
           const Text('Indicadores calculados sobre registros oficiais válidos.'),
         ],
       ),
-      if (access.canCreateCall)
+      if (canCreate)
         FilledButton.icon(
           onPressed: onCreate,
           icon: const Icon(Icons.add_rounded),

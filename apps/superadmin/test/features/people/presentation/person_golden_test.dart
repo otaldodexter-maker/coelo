@@ -135,7 +135,12 @@ Widget _directoryApp(Brightness brightness, {TextScaler textScaler = TextScaler.
         child: child!,
       ),
     ),
-    home: PersonDirectoryPage(repository: FakePersonDirectoryRepository(), logout: _logout),
+    home: PersonDirectoryPage(
+      repository: FakePersonDirectoryRepository(),
+      logout: _logout,
+      onImport: () {},
+      onExport: (_, _) {},
+    ),
   );
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../../support/activities/fake_activity_directory_repository.dart';
 import 'package:coelo_domain/profile_about.dart';
 import 'package:coelo_superadmin/app/dev_menu/development_activity_fixture_repository.dart';
@@ -239,7 +241,9 @@ void main() {
     );
     institution.onChanged('institution-1');
     await tester.pump();
-    await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+    final unit = find.byKey(const Key('activity-unit-institution-1-unit-1'));
+    await tester.ensureVisible(unit);
+    await tester.tap(unit);
     await tester.pump();
 
     await tester.tap(find.byKey(const Key('activity-form-save-draft')));
@@ -357,6 +361,110 @@ void main() {
     );
     expect(governance.enabled, isFalse);
     expect(governance.value, ActivityGovernance.fixed);
+  });
+
+  testWidgets('edit route reloads when the activity id changes in place', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_app(activityId: 'activity-1'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Música',
+    );
+
+    await tester.pumpWidget(_app(activityId: 'activity-2'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Dança',
+    );
+  });
+
+  testWidgets('edit route ignores an older activity response after an A to B swap', (tester) async {
+    final repositoryA = _DelayedActivityRepository();
+    final repositoryB = _DelayedActivityRepository();
+    ActivityFormDraft? saved;
+
+    await tester.pumpWidget(
+      _app(
+        activityId: 'activity-1',
+        repository: repositoryA,
+        onSaveDraft: (draft) async => saved = draft,
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      _app(
+        activityId: 'activity-2',
+        repository: repositoryB,
+        onSaveDraft: (draft) async => saved = draft,
+      ),
+    );
+    await tester.pump();
+
+    await repositoryB.complete('activity-2');
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Dança',
+    );
+
+    await repositoryA.complete('activity-1');
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Dança',
+    );
+
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+    expect(saved?.name, 'Dança');
+  });
+
+  testWidgets('failed draft save exposes retry and preserves the draft', (tester) async {
+    var attempts = 0;
+    await tester.pumpWidget(
+      _app(
+        onSaveDraft: (_) async {
+          attempts++;
+          if (attempts == 1) throw const ActivityDirectoryUnavailableException();
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('activity-form-name')), 'Robótica');
+    await tester.tap(find.byKey(const Key('activity-form-continue')));
+    await tester.pumpAndSettle();
+    final institution = tester.widget<CoeloAdminSingleSelectField<String>>(
+      find.byKey(const Key('activity-form-institution')),
+    );
+    institution.onChanged('institution-1');
+    await tester.pump();
+    final selectedUnit = find.byKey(const Key('activity-unit-institution-1-unit-1'));
+    await tester.ensureVisible(selectedUnit);
+    await tester.tap(selectedUnit);
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('activity-form-command-error')), findsOneWidget);
+    expect(find.text('Não foi possível salvar o rascunho.'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+
+    final retry = find.text('Tentar novamente');
+    await tester.ensureVisible(retry);
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(attempts, 2);
+    expect(find.byKey(const Key('activity-form-command-error')), findsNothing);
+    await tester.tap(find.byKey(const Key('activity-form-previous')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('activity-form-name'))).controller?.text,
+      'Robótica',
+    );
   });
 
   testWidgets('preserves a complete initial draft through the edit page contract', (tester) async {
@@ -705,6 +813,41 @@ final class _TaxonomyOptionsRepository implements ActivityDirectoryRepository {
       templates: options.templates,
     );
   }
+
+  @override
+  Future<List<ActivityFormProfessionalOption>> searchProfessionals({
+    required String institutionId,
+    required String query,
+    int limit = 20,
+  }) => _delegate.searchProfessionals(institutionId: institutionId, query: query, limit: limit);
+
+  @override
+  Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) =>
+      _delegate.fetchPage(query);
+}
+
+final class _DelayedActivityRepository implements ActivityDirectoryRepository {
+  final FakeActivityDirectoryRepository _delegate = FakeActivityDirectoryRepository();
+  final Map<String, Completer<ActivityDetail?>> _requests = {};
+
+  Future<void> complete(String activityId) async {
+    _requests[activityId]!.complete(await _delegate.fetchById(activityId));
+  }
+
+  @override
+  Future<ActivityDetail?> fetchById(String activityId) =>
+      (_requests[activityId] ??= Completer<ActivityDetail?>()).future;
+
+  @override
+  Future<ActivityFilterOptions> fetchFilterOptions() => _delegate.fetchFilterOptions();
+
+  @override
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) =>
+      _delegate.fetchFormOptions(institutionId: institutionId);
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) =>
+      _delegate.fetchTemplateOptions(institutionId: institutionId);
 
   @override
   Future<List<ActivityFormProfessionalOption>> searchProfessionals({

@@ -67,6 +67,7 @@ final class NoticeDirectoryPage extends StatefulWidget {
     required this.repository,
     this.onCreate,
     this.onEdit,
+    this.canManageLifecycle = false,
     this.enableInlinePreview = false,
     this.viewState = NoticeDirectoryViewState.content,
     super.key,
@@ -75,6 +76,7 @@ final class NoticeDirectoryPage extends StatefulWidget {
   final NoticeRepository repository;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+  final bool canManageLifecycle;
   final bool enableInlinePreview;
   final NoticeDirectoryViewState viewState;
 
@@ -178,7 +180,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                       child: _content(
                         context,
                         compact: compact,
-                        allowInlinePreview: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
+                        allowInlinePreview:
+                            constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth,
                         all: all,
                         notices: notices,
                       ),
@@ -643,20 +646,21 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
 
   Set<_NoticeCardAction> _rowActions(PlatformNotice notice) {
     final actions = <_NoticeCardAction>{_NoticeCardAction.preview};
-    if (notice.canEdit) {
-      actions
-        ..add(_NoticeCardAction.edit)
-        ..add(_NoticeCardAction.publish);
-    }
-    if (notice.status == NoticeStatus.active) actions.add(_NoticeCardAction.pause);
-    if (notice.status == NoticeStatus.paused) actions.add(_NoticeCardAction.resume);
-    if (const {
-      NoticeStatus.draft,
-      NoticeStatus.scheduled,
-      NoticeStatus.active,
-      NoticeStatus.paused,
-    }.contains(notice.status)) {
-      actions.add(_NoticeCardAction.cancel);
+    if (widget.canManageLifecycle) {
+      if (notice.canEdit) {
+        if (widget.onEdit != null) actions.add(_NoticeCardAction.edit);
+        actions.add(_NoticeCardAction.publish);
+      }
+      if (notice.status == NoticeStatus.active) actions.add(_NoticeCardAction.pause);
+      if (notice.status == NoticeStatus.paused) actions.add(_NoticeCardAction.resume);
+      if (const {
+        NoticeStatus.draft,
+        NoticeStatus.scheduled,
+        NoticeStatus.active,
+        NoticeStatus.paused,
+      }.contains(notice.status)) {
+        actions.add(_NoticeCardAction.cancel);
+      }
     }
     return actions;
   }

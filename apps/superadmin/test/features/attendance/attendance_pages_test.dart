@@ -214,6 +214,48 @@ void main() {
     expect(find.text('Atividade'), findsOneWidget);
     expect(find.text('M\u00fasica'), findsOneWidget);
   });
+
+  testWidgets('new call ignores context options returned for an older date', (tester) async {
+    final repository = _DelayedAttendanceOptionsRepository();
+    final firstDate = DateTime(2026, 8, 3);
+    final secondDate = DateTime(2026, 8, 4);
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onCreated: (_) {},
+          today: firstDate,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      _app(
+        AttendanceNewCallPage(
+          repository: repository,
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onCancel: () {},
+          onCreated: (_) {},
+          today: secondDate,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    repository.complete(secondDate, _contextOptions('B'));
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição B'), findsOneWidget);
+
+    repository.complete(firstDate, _contextOptions('A'));
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição B'), findsOneWidget);
+    expect(find.text('Instituição A'), findsNothing);
+  });
   testWidgets('new call adapts without overflow at Coelo breakpoints and 200 percent text', (
     tester,
   ) async {
@@ -271,7 +313,7 @@ void main() {
   testWidgets('read-only administrator has no write action', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
-    final dashboard = _DashboardRepository(canCreate: false);
+    final dashboard = _DashboardRepository(canCreate: true);
 
     await tester.pumpWidget(
       _app(
@@ -540,6 +582,49 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(SuperadminShell), findsOneWidget);
     expect(find.text('Chamada não encontrada.'), findsOneWidget);
+  });
+
+  testWidgets('call route reloads when the call id changes in place', (tester) async {
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+
+    Widget page(String callId) => _app(
+      AttendanceCallPage(
+        repository: repository,
+        callId: callId,
+        permissions: const AttendancePermissions.owner(),
+        logout: unavailableSuperadminLogout,
+        onBack: () {},
+      ),
+    );
+
+    await tester.pumpWidget(page('call-progress'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Turma Sol'), findsWidgets);
+
+    await tester.pumpWidget(page('call-completed'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Turma Lua'), findsWidgets);
+    expect(find.textContaining('Turma Sol'), findsNothing);
+  });
+
+  testWidgets('completed empty call does not expose participant correction', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: _EmptyAttendanceRepository(),
+          callId: 'empty-call',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nenhum participante encontrado para este contexto.'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Corrigir chamada'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('command failure preserves the call snapshot and reloads safely', (tester) async {
@@ -837,6 +922,47 @@ void main() {
     expect(find.text('Visualizar como professor'), findsNothing);
   });
 
+  testWidgets('call page ignores an older call response after an A to B swap', (tester) async {
+    final seed = FakeAttendanceRepository.seeded();
+    addTearDown(seed.dispose);
+    final repositoryA = _DelayedAttendanceCallRepository();
+    final repositoryB = _DelayedAttendanceCallRepository();
+
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repositoryA,
+          callId: 'call-progress',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      _app(
+        AttendanceCallPage(
+          repository: repositoryB,
+          callId: 'call-completed',
+          permissions: const AttendancePermissions.owner(),
+          logout: unavailableSuperadminLogout,
+          onBack: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    repositoryB.complete('call-completed', await seed.fetchCall('call-completed'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Turma Lua'), findsWidgets);
+
+    repositoryA.complete('call-progress', await seed.fetchCall('call-progress'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Turma Lua'), findsWidgets);
+    expect(find.text('Música · Turma Sol'), findsNothing);
+  });
+
   testWidgets('participant list preserves Coelo radius and clipping', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
@@ -937,6 +1063,78 @@ Widget _app(Widget child, {TextScaler textScaler = TextScaler.noScaling}) => Mat
     child: appChild!,
   ),
   home: child,
+);
+
+final class _EmptyAttendanceRepository implements AttendanceRepository {
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) async => AttendanceCall(
+    id: callId,
+    institutionId: 'institution-1',
+    institutionName: 'Instituto Horizonte',
+    unitId: 'unit-1',
+    unitName: 'Unidade Centro',
+    groupId: 'group-empty',
+    groupName: 'Turma sem participantes',
+    date: DateTime(2026, 8, 3),
+    status: AttendanceCallStatus.completed,
+    canManage: true,
+    participants: const [],
+    responsible: 'Equipe pedagógica',
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _DelayedAttendanceOptionsRepository implements AttendanceRepository {
+  final Map<DateTime, Completer<AttendanceContextOptions>> _requests = {};
+
+  void complete(DateTime date, AttendanceContextOptions options) {
+    _requests[date]!.complete(options);
+  }
+
+  @override
+  Future<AttendanceContextOptions> fetchContextOptions({required DateTime date}) =>
+      (_requests[date] ??= Completer<AttendanceContextOptions>()).future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _DelayedAttendanceCallRepository implements AttendanceRepository {
+  final Map<String, Completer<AttendanceCall?>> _requests = {};
+
+  void complete(String callId, AttendanceCall? call) {
+    _requests[callId]!.complete(call);
+  }
+
+  @override
+  Future<AttendanceCall?> fetchCall(String callId) =>
+      (_requests[callId] ??= Completer<AttendanceCall?>()).future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+AttendanceContextOptions _contextOptions(String suffix) => AttendanceContextOptions(
+  institutions: [AttendanceContextOption(id: 'institution-$suffix', name: 'Instituição $suffix')],
+  units: [
+    AttendanceContextOption(
+      id: 'unit-$suffix',
+      name: 'Unidade $suffix',
+      institutionId: 'institution-$suffix',
+    ),
+  ],
+  groups: [
+    AttendanceContextOption(
+      id: 'group-$suffix',
+      name: 'Turma $suffix',
+      institutionId: 'institution-$suffix',
+      unitId: 'unit-$suffix',
+    ),
+  ],
+  activities: const [],
+  canManage: true,
 );
 
 final class _DashboardRepository implements AttendanceDashboardRepository {

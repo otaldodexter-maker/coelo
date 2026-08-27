@@ -100,6 +100,10 @@ final class NoticeFormController extends ChangeNotifier {
   String? _publishRequestId;
   PlatformNotice? _pendingPublishNotice;
   int _audienceLoadGeneration = 0;
+  int _loadGeneration = 0;
+  int _commandGeneration = 0;
+  bool _isDisposed = false;
+  bool _isApplyingNotice = false;
   String _audienceSearch = '';
   String? _audienceNextCursorLabel;
   String? _audienceNextCursorId;
@@ -126,61 +130,82 @@ final class NoticeFormController extends ChangeNotifier {
       _audienceNextCursorLabel != null && _audienceNextCursorId != null;
 
   Future<void> _load(String noticeId) async {
+    final generation = ++_loadGeneration;
+    final requestedRepository = repository;
     isLoading = true;
     errorMessage = null;
     loadFailure = null;
     notifyListeners();
     try {
-      final notice = await repository.getById(noticeId);
+      final notice = await requestedRepository.getById(noticeId);
+      if (!_isCurrentLoad(generation, requestedRepository, noticeId)) return;
+      if (notice.id != noticeId) {
+        throw const NoticeUnexpectedException();
+      }
       _applyNotice(notice);
       await loadAudienceOptions();
     } on NoticeRepositoryException catch (error) {
+      if (!_isCurrentLoad(generation, requestedRepository, noticeId)) return;
       loadFailure = error;
     } on Object {
+      if (!_isCurrentLoad(generation, requestedRepository, noticeId)) return;
       loadFailure = const NoticeUnexpectedException();
     } finally {
-      isLoading = false;
-      notifyListeners();
+      if (_isCurrentLoad(generation, requestedRepository, noticeId)) {
+        isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
+  bool _isCurrentLoad(int generation, NoticeRepository requestedRepository, String noticeId) =>
+      !_isDisposed &&
+      generation == _loadGeneration &&
+      identical(requestedRepository, repository) &&
+      noticeId == _noticeId;
+
   void _applyNotice(PlatformNotice notice) {
-    savedNotice = notice;
-    _noticeId = notice.id;
-    titleController.text = notice.title;
-    messageController.text = notice.message;
-    audienceLabelController.text = notice.audienceLabel;
-    buttonLabelController.text = notice.buttonLabel;
-    intervalDaysController.text = notice.intervalDays?.toString() ?? '';
-    dayOfMonthController.text = notice.dayOfMonth?.toString() ?? '';
-    priority = notice.priority;
-    type = notice.type;
-    contentFormat = notice.contentFormat;
-    audience = _allowedAudiences.contains(notice.audience)
-        ? notice.audience
-        : NoticeAudience.everyone;
-    targetDevice = notice.targetDevice;
-    behavior = notice.behavior;
-    recurrence = notice.recurrence;
-    imageOrientation = notice.imageOrientation;
-    startsAt = notice.startsAt;
-    endsAt = notice.endsAt;
-    recurrenceUntil = notice.recurrenceUntil;
-    selectedWeekdays
-      ..clear()
-      ..addAll(notice.weeklyDays);
-    backgroundColor = notice.backgroundColorValue == null
-        ? const Color(0xFFD63C00)
-        : Color(notice.backgroundColorValue!);
-    textColor = notice.textColorValue == null
-        ? const Color(0xFFFFFFFF)
-        : Color(notice.textColorValue!);
-    buttonColor = notice.buttonColorValue == null
-        ? const Color(0xFFD63C00)
-        : Color(notice.buttonColorValue!);
-    popupSize = notice.popupSize;
-    hasOuterInset = notice.hasOuterInset;
-    audienceSelection = notice.audienceSelection;
+    _isApplyingNotice = true;
+    try {
+      savedNotice = notice;
+      _noticeId = notice.id;
+      titleController.text = notice.title;
+      messageController.text = notice.message;
+      audienceLabelController.text = notice.audienceLabel;
+      buttonLabelController.text = notice.buttonLabel;
+      intervalDaysController.text = notice.intervalDays?.toString() ?? '';
+      dayOfMonthController.text = notice.dayOfMonth?.toString() ?? '';
+      priority = notice.priority;
+      type = notice.type;
+      contentFormat = notice.contentFormat;
+      audience = _allowedAudiences.contains(notice.audience)
+          ? notice.audience
+          : NoticeAudience.everyone;
+      targetDevice = notice.targetDevice;
+      behavior = notice.behavior;
+      recurrence = notice.recurrence;
+      imageOrientation = notice.imageOrientation;
+      startsAt = notice.startsAt;
+      endsAt = notice.endsAt;
+      recurrenceUntil = notice.recurrenceUntil;
+      selectedWeekdays
+        ..clear()
+        ..addAll(notice.weeklyDays);
+      backgroundColor = notice.backgroundColorValue == null
+          ? const Color(0xFFD63C00)
+          : Color(notice.backgroundColorValue!);
+      textColor = notice.textColorValue == null
+          ? const Color(0xFFFFFFFF)
+          : Color(notice.textColorValue!);
+      buttonColor = notice.buttonColorValue == null
+          ? const Color(0xFFD63C00)
+          : Color(notice.buttonColorValue!);
+      popupSize = notice.popupSize;
+      hasOuterInset = notice.hasOuterInset;
+      audienceSelection = notice.audienceSelection;
+    } finally {
+      _isApplyingNotice = false;
+    }
   }
 
   SuperadminFormStepStatus statusFor(NoticeFormStep step) {
@@ -531,62 +556,89 @@ final class NoticeFormController extends ChangeNotifier {
 
   Future<PlatformNotice?> saveDraft() async {
     if (isSaving) return null;
+    final generation = ++_commandGeneration;
+    final requestedRepository = repository;
     final requestId = _saveRequestId ??= _newRequestId();
     isSaving = true;
     errorMessage = null;
     notifyListeners();
     try {
       final current = savedNotice;
-      final notice = await repository.saveDraft(
+      final requestedNoticeId = current?.id ?? _noticeId;
+      final notice = await requestedRepository.saveDraft(
         draft,
         requestId: requestId,
-        noticeId: current?.id ?? _noticeId,
+        noticeId: requestedNoticeId,
         expectedVersion: current?.managementVersion,
       );
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
+      if (requestedNoticeId != null && notice.id != requestedNoticeId) {
+        throw const NoticeUnexpectedException();
+      }
       _saveRequestId = null;
       _applyNotice(notice);
       return notice;
     } on NoticeRepositoryException catch (error) {
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
       errorMessage = error.safeMessage;
       return null;
     } on Object {
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
       errorMessage = const NoticeUnexpectedException().safeMessage;
       return null;
     } finally {
-      isSaving = false;
-      notifyListeners();
+      if (_canFinishCommand(requestedRepository)) {
+        isSaving = false;
+        notifyListeners();
+      }
     }
   }
 
   Future<PlatformNotice?> saveAndPublish() async {
     final saved = _pendingPublishNotice ?? await saveDraft();
-    if (saved == null) return null;
+    if (saved == null || _isDisposed) return null;
+    final generation = ++_commandGeneration;
+    final requestedRepository = repository;
     _pendingPublishNotice = saved;
     final requestId = _publishRequestId ??= _newRequestId();
     isSaving = true;
     errorMessage = null;
     notifyListeners();
     try {
-      final published = await repository.publish(
+      final published = await requestedRepository.publish(
         saved,
         requestId: requestId,
         expectedVersion: saved.managementVersion,
       );
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
+      if (published.id != saved.id) throw const NoticeUnexpectedException();
       _publishRequestId = null;
       _pendingPublishNotice = null;
       _applyNotice(published);
       return published;
     } on NoticeRepositoryException catch (error) {
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
       errorMessage = error.safeMessage;
       return null;
     } on Object {
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
       errorMessage = const NoticeUnexpectedException().safeMessage;
       return null;
     } finally {
-      isSaving = false;
-      notifyListeners();
+      if (_canFinishCommand(requestedRepository)) {
+        isSaving = false;
+        notifyListeners();
+      }
     }
   }
+
+  bool _isCurrentCommand(int generation, NoticeRepository requestedRepository) =>
+      !_isDisposed &&
+      generation == _commandGeneration &&
+      identical(requestedRepository, repository);
+
+  bool _canFinishCommand(NoticeRepository requestedRepository) =>
+      !_isDisposed && identical(requestedRepository, repository);
 
   void _set(VoidCallback mutation) {
     _invalidatePendingCommands();
@@ -595,11 +647,13 @@ final class NoticeFormController extends ChangeNotifier {
   }
 
   void _onTextChanged() {
+    if (_isApplyingNotice) return;
     _invalidatePendingCommands();
     notifyListeners();
   }
 
   void _invalidatePendingCommands() {
+    _commandGeneration++;
     _saveRequestId = null;
     _publishRequestId = null;
     _pendingPublishNotice = null;
@@ -621,6 +675,10 @@ final class NoticeFormController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _isDisposed = true;
+    _loadGeneration++;
+    _commandGeneration++;
+    _audienceLoadGeneration++;
     for (final controller in _textControllers) {
       controller.dispose();
     }

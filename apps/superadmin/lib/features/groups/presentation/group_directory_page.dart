@@ -120,8 +120,8 @@ final class _GroupDirectoryPageState extends State<GroupDirectoryPage> {
             tableView: _tableView,
             onDisplayChanged: _setDisplay,
             onTableViewChanged: _setTableView,
-            onCreate: widget.onCreate ?? () {},
-            onEdit: widget.onEdit ?? (_) {},
+            onCreate: widget.onCreate,
+            onEdit: widget.onEdit,
             onFooterHeightChanged: (height) {
               if ((_footerHeight - height).abs() >= .5) {
                 setState(() => _footerHeight = height);
@@ -153,8 +153,8 @@ final class _GroupDirectoryContent extends StatefulWidget {
   final GroupDirectoryTableView tableView;
   final ValueChanged<GroupDirectoryDisplay> onDisplayChanged;
   final ValueChanged<GroupDirectoryTableView> onTableViewChanged;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
 
   @override
@@ -446,8 +446,8 @@ final class _GroupResults extends StatelessWidget {
 
   final GroupDirectoryViewModel viewModel;
   final GroupDirectoryDisplay display;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -474,7 +474,11 @@ final class _GroupResults extends StatelessWidget {
         title: empty ? 'Nenhuma turma cadastrada' : 'Nenhuma turma encontrada',
         message: empty ? 'Crie a primeira turma da plataforma.' : 'Ajuste ou limpe os filtros.',
         icon: Icons.groups_outlined,
-        actionLabel: empty ? 'Criar turma' : 'Limpar filtros',
+        actionLabel: empty && onCreate == null
+            ? null
+            : empty
+            ? 'Criar turma'
+            : 'Limpar filtros',
         onAction: empty ? onCreate : viewModel.clearFilters,
       );
     }
@@ -489,14 +493,16 @@ final class _GroupResults extends StatelessWidget {
               : _GroupDirectoryTableLayout(
                   child: Column(
                     children: [
-                      SuperadminDirectoryCreateBanner(
-                        label: 'Criar turma',
-                        description: 'Adicionar nova turma ao sistema.',
-                        onPressed: onCreate,
-                        bannerKey: const Key('group-create-banner'),
-                        surfaceKey: const Key('group-create-banner-surface'),
-                      ),
-                      const SizedBox(height: CoeloSpacing.space4),
+                      if (onCreate != null) ...[
+                        SuperadminDirectoryCreateBanner(
+                          label: 'Criar turma',
+                          description: 'Adicionar nova turma ao sistema.',
+                          onPressed: onCreate!,
+                          bannerKey: const Key('group-create-banner'),
+                          surfaceKey: const Key('group-create-banner-surface'),
+                        ),
+                        const SizedBox(height: CoeloSpacing.space4),
+                      ],
                       _GroupTable(
                         items: viewModel.page.items,
                         viewModel: viewModel,
@@ -534,14 +540,20 @@ final class _GroupCards extends StatelessWidget {
   const _GroupCards({required this.items, required this.onCreate, required this.onEdit});
 
   final List<GroupDirectoryItem> items;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
     final children = <Widget>[
-      CoeloAdminCreateAction(label: 'Criar turma', icon: Icons.groups_rounded, onPressed: onCreate),
-      for (final item in items) _GroupCard(item: item, onPressed: () => onEdit(item.id)),
+      if (onCreate != null)
+        CoeloAdminCreateAction(
+          label: 'Criar turma',
+          icon: Icons.groups_rounded,
+          onPressed: onCreate!,
+        ),
+      for (final item in items)
+        _GroupCard(item: item, onPressed: onEdit == null ? null : () => onEdit!(item.id)),
     ];
     return LayoutBuilder(
       key: const Key('group-card-grid'),
@@ -571,7 +583,7 @@ final class _GroupCard extends StatelessWidget {
   const _GroupCard({required this.item, required this.onPressed});
 
   final GroupDirectoryItem item;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -731,7 +743,7 @@ final class _GroupTable extends StatelessWidget {
 
   final List<GroupDirectoryItem> items;
   final GroupDirectoryViewModel viewModel;
-  final ValueChanged<String> onEdit;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -763,7 +775,7 @@ final class _GroupTable extends StatelessWidget {
           rowKey: (item) => 'group-table-row-${item.id}',
           headerHeight: 56,
           rowHeight: 64,
-          onRowPressed: (item) => onEdit(item.id),
+          onRowPressed: onEdit == null ? null : (item) => onEdit!(item.id),
           sortColumnId: switch (viewModel.query.sortColumn) {
             GroupDirectorySortColumn.name => 'group',
             GroupDirectorySortColumn.institutionName => 'institution',

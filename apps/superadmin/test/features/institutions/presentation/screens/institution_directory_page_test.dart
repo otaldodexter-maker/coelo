@@ -1491,6 +1491,22 @@ void main() {
     expect(dark.color, CoeloTheme.dark.colorScheme.surface);
     expect(dark.border?.top.color, CoeloTheme.dark.colorScheme.outlineVariant);
   });
+
+  testWidgets('omits create and edit actions when callbacks are absent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(_app(withActions: false));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('create-institution-card')), findsNothing);
+    final card = find.byKey(const Key('institution-card-demo-institution-aurora'));
+    final action = find.descendant(of: card, matching: find.byType(InkWell));
+    expect(tester.widget<InkWell>(action).onTap, isNull);
+
+    await tester.tap(find.byKey(const Key('institution-view-table')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('create-institution-banner')), findsNothing);
+  });
 }
 
 class _ThemeTransitionDirectoryApp extends StatefulWidget {
@@ -1584,6 +1600,7 @@ Widget _app({
   VoidCallback? onCreate,
   ValueChanged<String>? onEdit,
   VoidCallback? onConversationsOpen,
+  bool withActions = true,
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -1597,8 +1614,8 @@ Widget _app({
       key: pageKey,
       repository: repository ?? FakeInstitutionDirectoryRepository(),
       logout: () async => const LogoutResult.success(),
-      onCreate: onCreate,
-      onEdit: onEdit,
+      onCreate: withActions ? (onCreate ?? () {}) : null,
+      onEdit: withActions ? (onEdit ?? (_) {}) : null,
       onConversationsOpen: onConversationsOpen,
     ),
   );

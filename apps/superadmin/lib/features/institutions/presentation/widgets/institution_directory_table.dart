@@ -13,7 +13,7 @@ class InstitutionDirectoryTable extends StatelessWidget {
     required this.items,
     required this.view,
     required this.createAction,
-    required this.onEdit,
+    this.onEdit,
     required this.sortColumn,
     required this.sortAscending,
     required this.onSort,
@@ -23,7 +23,7 @@ class InstitutionDirectoryTable extends StatelessWidget {
   final List<InstitutionDirectoryItem> items;
   final InstitutionDirectoryTableView view;
   final Widget createAction;
-  final ValueChanged<InstitutionDirectoryItem> onEdit;
+  final ValueChanged<InstitutionDirectoryItem>? onEdit;
   final InstitutionDirectorySortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<InstitutionDirectorySortColumn> onSort;
@@ -107,7 +107,7 @@ class InstitutionDirectoryTable extends StatelessWidget {
       columns: columns.map(_detailColumn).toList(growable: false),
       headerHeight: 56,
       rowHeight: 64,
-      onRowPressed: (row) => onEdit(row.institution),
+      onRowPressed: onEdit == null ? null : (row) => onEdit!(row.institution),
       sortColumnId: _InstitutionDetailColumn.institution.id,
       sortAscending: true,
       onSort: (_) {},

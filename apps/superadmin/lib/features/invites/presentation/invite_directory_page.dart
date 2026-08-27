@@ -19,6 +19,7 @@ final class InviteDirectoryPage extends StatefulWidget {
     required this.repository,
     this.onCreate,
     this.onOpen,
+    this.allowCommands = false,
     this.logout = unavailableSuperadminLogout,
     this.onDestinationSelected,
     super.key,
@@ -27,6 +28,7 @@ final class InviteDirectoryPage extends StatefulWidget {
   final InviteRepository repository;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onOpen;
+  final bool allowCommands;
   final LogoutAction logout;
   final ValueChanged<String>? onDestinationSelected;
 
@@ -136,6 +138,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       widget.onOpen?.call(invite.id);
       return;
     }
+    if (!widget.allowCommands) return;
     if (action == InviteRowAction.revoke) {
       final confirmed = await showInviteRevokeConfirmation(
         context,
@@ -352,6 +355,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     items: page.items,
     busyInviteId: _busyInviteId,
     onOpen: widget.onOpen,
+    allowCommands: widget.allowCommands,
     onAction: _handleAction,
   );
 

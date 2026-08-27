@@ -54,6 +54,24 @@ void main() {
     expect(find.byType(SupportPage), findsOneWidget);
   });
 
+  testWidgets('dev support never reuses the injected production controller', (tester) async {
+    final session = SuperadminSession();
+    final production = SupportPrototypeController(initialTickets: const <SupportTicket>[]);
+    final router = _router(session, supportController: production);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    addTearDown(production.dispose);
+    router.go(SuperadminRoutes.devSupport);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<SupportPage>(find.byType(SupportPage)).controller,
+      isNot(same(production)),
+    );
+    expect(production.tickets, isEmpty);
+  });
+
   testWidgets('keeps reports and navigation in one injected support session', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));

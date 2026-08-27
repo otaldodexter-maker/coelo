@@ -90,7 +90,9 @@ final class _PopupSurface extends StatelessWidget {
         ? _backgroundFallback(colors, statusColors, notice.backgroundTone)
         : Color(notice.backgroundColorValue!);
     final textColor = notice.textColorValue == null
-        ? _textFallback(colors, statusColors, notice.textTone)
+        ? notice.backgroundColorValue == null
+              ? _textFallback(colors, statusColors, notice.textTone)
+              : _bestForeground(backgroundColor)
         : Color(notice.textColorValue!);
     final buttonColor = notice.buttonColorValue == null
         ? colors.primary

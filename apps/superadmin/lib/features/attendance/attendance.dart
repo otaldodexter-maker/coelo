@@ -39,6 +39,13 @@ class AttendancePermissions {
       assignedGroupIds = const {},
       assignedActivityContextIds = const {};
 
+  /// Preview-only permission set. Inject exclusively from `/dev` composition.
+  const AttendancePermissions.development()
+    : canManage = true,
+      backendResolved = false,
+      assignedGroupIds = const {},
+      assignedActivityContextIds = const {};
+
   const AttendancePermissions.teacher({
     this.assignedGroupIds = const {},
     this.assignedActivityContextIds = const {},

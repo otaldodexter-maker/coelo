@@ -43,6 +43,28 @@ void main() {
     expect(destination, 'attendance');
   });
 
+  testWidgets('shell hides attendance creation when capability is not proven', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell.host(
+          logout: unavailableSuperadminLogout,
+          currentDestination: 'attendance',
+          onDestinationSelected: (_) {},
+          canAccessCapability: (_) => false,
+          child: const SizedBox(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Assiduidade'), findsOneWidget);
+    expect(find.text('Nova chamada'), findsNothing);
+  });
+
   testWidgets('opens local attendance routes', (tester) async {
     final session = SuperadminSession()..signIn();
     final repository = DevelopmentAttendanceRepository.content();

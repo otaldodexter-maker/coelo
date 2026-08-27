@@ -80,4 +80,54 @@ void main() {
     expect(viewModel.query.municipalityIds, isEmpty);
     expect(viewModel.query.neighborhoodIds, isEmpty);
   });
+
+  test('revocation clears loaded people, filters and sensitive query state', () async {
+    final repository = _RevocablePersonRepository();
+    final viewModel = PersonDirectoryViewModel(repository, searchDebounce: Duration.zero);
+    await viewModel.load();
+    await viewModel.setInstitutions({'institution-0'});
+    expect(viewModel.page.items, isNotEmpty);
+    expect(viewModel.visibleUnits, isNotEmpty);
+    final pageSize = viewModel.page.pageSize;
+
+    repository.unauthorized = true;
+    await viewModel.retry();
+
+    expect(viewModel.state, PersonDirectoryLoadState.unauthorized);
+    expect(viewModel.page.items, isEmpty);
+    expect(viewModel.page.page, 0);
+    expect(viewModel.page.pageSize, pageSize);
+    expect(viewModel.query.hasActiveFilters, isFalse);
+    expect(viewModel.filterOptions.institutions, isEmpty);
+    expect(viewModel.filterOptions.units, isEmpty);
+    expect(viewModel.filterOptions.groups, isEmpty);
+    expect(viewModel.filterOptions.roles, isEmpty);
+    expect(viewModel.filterOptions.activities, isEmpty);
+    expect(viewModel.filterOptions.states, isEmpty);
+    expect(viewModel.filterOptions.municipalities, isEmpty);
+    expect(viewModel.filterOptions.neighborhoods, isEmpty);
+    expect(viewModel.visibleUnits, isEmpty);
+    expect(viewModel.visibleGroups, isEmpty);
+    expect(viewModel.visibleActivities, isEmpty);
+  });
+}
+
+final class _RevocablePersonRepository implements PersonDirectoryRepository {
+  final _delegate = FakePersonDirectoryRepository();
+  var unauthorized = false;
+
+  @override
+  Future<PersonDirectoryPage> fetchPage(PersonDirectoryQuery query) {
+    if (unauthorized) throw const PersonDirectoryUnauthorizedException();
+    return _delegate.fetchPage(query);
+  }
+
+  @override
+  Future<PersonDirectoryFilterOptions> fetchFilterOptions() {
+    if (unauthorized) throw const PersonDirectoryUnauthorizedException();
+    return _delegate.fetchFilterOptions();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

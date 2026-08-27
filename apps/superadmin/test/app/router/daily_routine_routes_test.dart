@@ -87,15 +87,14 @@ void main() {
     repository.calls.clear();
     router.go('/daily-routine/new');
     await tester.pumpAndSettle();
-    final create = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
-    expect(create.repository, same(repository));
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+    expect(repository.calls, isEmpty);
 
     repository.calls.clear();
     router.go('/daily-routine/application-1/edit?kind=application');
     await tester.pumpAndSettle();
-    final edit = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
-    expect(edit.repository, same(repository));
-    expect(repository.calls, ['fetchApplication:application-1']);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+    expect(repository.calls, isEmpty);
   });
 }
 

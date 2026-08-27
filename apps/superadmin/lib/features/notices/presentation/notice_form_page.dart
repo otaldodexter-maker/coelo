@@ -33,18 +33,34 @@ final class NoticeFormPage extends StatefulWidget {
 }
 
 final class _NoticeFormPageState extends State<NoticeFormPage> {
-  late final NoticeFormController _controller;
+  late NoticeFormController _controller;
   bool _previewCheckboxChecked = false;
   NoticeTargetDevice _previewDevice = NoticeTargetDevice.web;
+  int _commandGeneration = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = NoticeFormController(repository: widget.repository, noticeId: widget.noticeId);
+    _controller = _createController();
   }
 
   @override
+  void didUpdateWidget(covariant NoticeFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.noticeId != widget.noticeId ||
+        !identical(oldWidget.repository, widget.repository)) {
+      _commandGeneration++;
+      _controller.dispose();
+      _controller = _createController();
+    }
+  }
+
+  NoticeFormController _createController() =>
+      NoticeFormController(repository: widget.repository, noticeId: widget.noticeId);
+
+  @override
   void dispose() {
+    _commandGeneration++;
     _controller.dispose();
     super.dispose();
   }
@@ -801,8 +817,10 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   Future<void> _onSaveDraft() async {
     if (!_controller.validateAll()) return;
-    final notice = await _controller.saveDraft();
-    if (!mounted) return;
+    final controller = _controller;
+    final generation = ++_commandGeneration;
+    final notice = await controller.saveDraft();
+    if (!_isCurrentCommand(generation, controller)) return;
     if (notice == null) {
       _showFeedback(_controller.errorMessage ?? 'Não foi possível salvar o rascunho.');
       return;
@@ -813,8 +831,10 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   Future<void> _onSaveAndPublish() async {
     if (!_controller.validateAll(requireContrast: true)) return;
-    final notice = await _controller.saveAndPublish();
-    if (!mounted) return;
+    final controller = _controller;
+    final generation = ++_commandGeneration;
+    final notice = await controller.saveAndPublish();
+    if (!_isCurrentCommand(generation, controller)) return;
     if (notice == null) {
       _showFeedback(_controller.errorMessage ?? 'Não foi possível publicar o aviso.');
       return;
@@ -822,6 +842,9 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
     widget.onSaved?.call(notice);
     _showFeedback('Aviso publicado: ${notice.title}');
   }
+
+  bool _isCurrentCommand(int generation, NoticeFormController controller) =>
+      mounted && generation == _commandGeneration && identical(controller, _controller);
 
   Future<void> _onPreview() =>
       showNoticePreview(context, _controller.previewNotice, onAccepted: null);

@@ -24,6 +24,8 @@ typedef ActivityLocationCreator =
 
 enum _ActivityFormLoadState { loading, ready, notFound, failure, unauthorized }
 
+enum _ActivityFormCommand { saveDraft, submit }
+
 final class ActivityFormPage extends StatefulWidget {
   const ActivityFormPage({
     required this.repository,
@@ -71,6 +73,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   _ActivityFormLoadState _state = _ActivityFormLoadState.loading;
   double _footerHeight = 0;
   ActivityFormController? _controller;
+  _ActivityFormCommand? _failedCommand;
+  var _loadGeneration = 0;
 
   bool get _isEditing => widget.activityId != null;
 
@@ -82,35 +86,56 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   }
 
   @override
+  void didUpdateWidget(covariant ActivityFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.activityId == widget.activityId &&
+        identical(oldWidget.repository, widget.repository)) {
+      return;
+    }
+    _controller?.dispose();
+    _controller = null;
+    _failedCommand = null;
+    _state = _ActivityFormLoadState.loading;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  @override
   void dispose() {
+    _loadGeneration++;
     _controller?.dispose();
     _activityController.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final activityId = widget.activityId;
+    final isEditing = activityId != null;
     setState(() => _state = _ActivityFormLoadState.loading);
     try {
-      final detail = _isEditing ? await widget.repository.fetchById(widget.activityId!) : null;
-      if (_isEditing && detail == null) {
-        if (mounted) setState(() => _state = _ActivityFormLoadState.notFound);
+      final detail = isEditing ? await repository.fetchById(activityId) : null;
+      if (!_isCurrentLoad(generation, repository, activityId)) return;
+      if (isEditing && detail == null) {
+        setState(() => _state = _ActivityFormLoadState.notFound);
         return;
       }
       ActivityFormOptions options;
       String? initialCatalogError;
-      if (_isEditing || widget.initialInstitutionId != null) {
-        options = await widget.repository.fetchFormOptions(
+      if (isEditing || widget.initialInstitutionId != null) {
+        options = await repository.fetchFormOptions(
           institutionId: detail?.item.institutionId ?? widget.initialInstitutionId!,
         );
       } else {
         try {
-          options = _formOptionsFromTemplates(await widget.repository.fetchTemplateOptions());
+          options = _formOptionsFromTemplates(await repository.fetchTemplateOptions());
         } on ActivityDirectoryUnauthorizedException {
           rethrow;
         } on Exception {
           ActivityFilterOptions filters;
           try {
-            filters = await widget.repository.fetchFilterOptions();
+            filters = await repository.fetchFilterOptions();
           } on ActivityDirectoryUnauthorizedException {
             rethrow;
           } on Exception {
@@ -124,15 +149,15 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
           initialCatalogError = 'Não foi possível carregar categorias e modelos.';
         }
       }
-      if (!mounted) return;
+      if (!_isCurrentLoad(generation, repository, activityId)) return;
       _controller?.dispose();
-      final nextController = _isEditing
+      final nextController = isEditing
           ? ActivityFormController.edit(
               options,
               detail!,
               initialDraft: widget.initialDraft,
               professionalSearcher: (institutionId, query) =>
-                  widget.repository.searchProfessionals(institutionId: institutionId, query: query),
+                  repository.searchProfessionals(institutionId: institutionId, query: query),
             )
           : ActivityFormController.create(
               options,
@@ -140,27 +165,40 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
               initialUnitId: widget.initialUnitId,
               initialTemplateId: widget.initialTemplateId,
               loadScopedOptions: (institutionId) =>
-                  widget.repository.fetchFormOptions(institutionId: institutionId),
+                  repository.fetchFormOptions(institutionId: institutionId),
               loadTemplateOptions: (institutionId) =>
-                  widget.repository.fetchTemplateOptions(institutionId: institutionId),
+                  repository.fetchTemplateOptions(institutionId: institutionId),
               initialCatalogError: initialCatalogError,
               professionalSearcher: (institutionId, query) =>
-                  widget.repository.searchProfessionals(institutionId: institutionId, query: query),
+                  repository.searchProfessionals(institutionId: institutionId, query: query),
             );
       if (widget.initialStep case final step?) {
         nextController.goToStep(step.index);
       }
-      if (!mounted) return;
+      if (!_isCurrentLoad(generation, repository, activityId)) {
+        nextController.dispose();
+        return;
+      }
       setState(() {
         _controller = nextController;
         _state = _ActivityFormLoadState.ready;
       });
     } on ActivityDirectoryUnauthorizedException {
-      if (mounted) setState(() => _state = _ActivityFormLoadState.unauthorized);
+      if (_isCurrentLoad(generation, repository, activityId)) {
+        setState(() => _state = _ActivityFormLoadState.unauthorized);
+      }
     } on Exception {
-      if (mounted) setState(() => _state = _ActivityFormLoadState.failure);
+      if (_isCurrentLoad(generation, repository, activityId)) {
+        setState(() => _state = _ActivityFormLoadState.failure);
+      }
     }
   }
+
+  bool _isCurrentLoad(int generation, ActivityDirectoryRepository repository, String? activityId) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(repository, widget.repository) &&
+      activityId == widget.activityId;
 
   Future<bool> _confirmExit() async {
     final controller = _controller;
@@ -198,10 +236,13 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   Future<void> _saveDraft() async {
     final controller = _controller!;
     if (!controller.validateDraft()) return;
+    setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
       await widget.onSaveDraft(controller.toDraft());
       if (mounted) controller.markSubmitted();
+    } on Exception {
+      if (mounted) setState(() => _failedCommand = _ActivityFormCommand.saveDraft);
     } finally {
       if (mounted) controller.setSubmitting(false);
     }
@@ -210,10 +251,13 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
   Future<void> _submit() async {
     final controller = _controller!;
     if (!controller.validateCompletion()) return;
+    setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
       await widget.onSubmit(controller.toDraft());
       if (mounted) controller.markSubmitted();
+    } on Exception {
+      if (mounted) setState(() => _failedCommand = _ActivityFormCommand.submit);
     } finally {
       if (mounted) controller.setSubmitting(false);
     }
@@ -280,6 +324,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       imagePicker: widget.imagePicker ?? pickInstitutionLogo,
       aboutRepository: widget.aboutRepository,
       activityId: widget.activityId,
+      failedCommand: _failedCommand,
+      onRetryCommand: _failedCommand == _ActivityFormCommand.saveDraft ? _saveDraft : _submit,
     ),
   };
 }
@@ -304,6 +350,8 @@ final class _ActivityFormBody extends StatelessWidget {
     required this.imagePicker,
     required this.aboutRepository,
     required this.activityId,
+    required this.failedCommand,
+    required this.onRetryCommand,
   });
 
   final ActivityFormController controller;
@@ -317,6 +365,8 @@ final class _ActivityFormBody extends StatelessWidget {
   final InstitutionLogoPicker imagePicker;
   final ActivityProfileAboutRepository aboutRepository;
   final String? activityId;
+  final _ActivityFormCommand? failedCommand;
+  final VoidCallback onRetryCommand;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -354,13 +404,31 @@ final class _ActivityFormBody extends StatelessWidget {
             viewportWidth: viewportWidth,
             navigation: navigation,
             scrollKey: const Key('activity-form-scroll'),
-            body: ActivityFormSection(
-              controller: controller,
-              onCreateLocation: onCreateLocation,
-              onRetryCatalogOptions: onRetryCatalogOptions,
-              imagePicker: imagePicker,
-              aboutRepository: aboutRepository,
-              activityId: activityId,
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (failedCommand case final command?) ...[
+                  CoeloStatePanel(
+                    key: const Key('activity-form-command-error'),
+                    title: command == _ActivityFormCommand.saveDraft
+                        ? 'Não foi possível salvar o rascunho.'
+                        : 'Não foi possível salvar a atividade.',
+                    message: 'Confira a conexão e tente novamente sem perder as alterações.',
+                    icon: Icons.cloud_off_outlined,
+                    actionLabel: 'Tentar novamente',
+                    onAction: onRetryCommand,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                ],
+                ActivityFormSection(
+                  controller: controller,
+                  onCreateLocation: onCreateLocation,
+                  onRetryCatalogOptions: onRetryCatalogOptions,
+                  imagePicker: imagePicker,
+                  aboutRepository: aboutRepository,
+                  activityId: activityId,
+                ),
+              ],
             ),
             footer: _ActivityFormFooter(
               controller: controller,

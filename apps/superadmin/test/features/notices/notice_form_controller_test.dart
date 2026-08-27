@@ -102,6 +102,94 @@ void main() {
 
     expect(controller.audienceOptions.single.id, 'new');
   });
+
+  test('a pending save cannot publish state after the controller is disposed', () async {
+    final repository = _PendingSaveRepository();
+    final controller = NoticeFormController(repository: repository);
+    controller.titleController.text = 'Rascunho A';
+    controller.messageController.text = 'Mensagem A';
+
+    final save = controller.saveDraft();
+    controller.dispose();
+    repository.pending.single.complete(_notice('notice-a', 'Rascunho A'));
+
+    await expectLater(save, completion(isNull));
+  });
+
+  test('editing during save ignores stale response and releases the save guard', () async {
+    final repository = _PendingSaveRepository();
+    final controller = NoticeFormController(repository: repository);
+    addTearDown(controller.dispose);
+    controller.titleController.text = 'Rascunho A';
+    controller.messageController.text = 'Mensagem A';
+
+    final first = controller.saveDraft();
+    controller.titleController.text = 'Rascunho B';
+    repository.pending.first.complete(_notice('notice-a', 'Rascunho A'));
+    await expectLater(first, completion(isNull));
+    expect(controller.isSaving, isFalse);
+    expect(controller.titleController.text, 'Rascunho B');
+
+    final second = controller.saveDraft();
+    expect(repository.pending, hasLength(2));
+    repository.pending.last.complete(_notice('notice-b', 'Rascunho B'));
+    await expectLater(second, completion(isNotNull));
+  });
+
+  test('load fails closed when repository returns another notice id', () async {
+    final controller = NoticeFormController(
+      repository: _MismatchedLoadRepository(),
+      noticeId: 'notice-a',
+    );
+    addTearDown(controller.dispose);
+
+    await controller.ready;
+
+    expect(controller.savedNotice, isNull);
+    expect(controller.loadFailure, isA<NoticeUnexpectedException>());
+  });
+}
+
+PlatformNotice _notice(String id, String title) => PlatformNotice(
+  id: id,
+  title: title,
+  message: 'Mensagem',
+  priority: NoticePriority.important,
+  status: NoticeStatus.draft,
+  startsAt: DateTime(2026, 8, 27),
+  endsAt: null,
+  audience: NoticeAudience.everyone,
+  audienceLabel: 'Todos',
+  behavior: NoticeBehavior.confirmation,
+  targetDevice: NoticeTargetDevice.all,
+  reach: 0,
+);
+
+final class _PendingSaveRepository implements NoticeRepository {
+  final pending = <Completer<PlatformNotice>>[];
+
+  @override
+  Future<PlatformNotice> saveDraft(
+    NoticeDraft draft, {
+    required String requestId,
+    String? noticeId,
+    int? expectedVersion,
+  }) {
+    final request = Completer<PlatformNotice>();
+    pending.add(request);
+    return request.future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _MismatchedLoadRepository implements NoticeRepository {
+  @override
+  Future<PlatformNotice> getById(String noticeId) async => _notice('notice-b', 'Outro aviso');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _PagedAudienceRepository extends _OrderedAudienceRepository {

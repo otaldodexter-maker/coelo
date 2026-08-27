@@ -31,12 +31,13 @@ final class PersonEditRoutePage extends StatefulWidget {
 }
 
 final class _PersonEditRoutePageState extends State<PersonEditRoutePage> {
-  late Future<PersonDirectoryItem> _detail;
+  late Future<_LoadedPerson> _detail;
+  var _requestGeneration = 0;
 
   @override
   void initState() {
     super.initState();
-    _detail = widget.repository.fetchDetail(widget.personId);
+    _load();
   }
 
   @override
@@ -44,23 +45,34 @@ final class _PersonEditRoutePageState extends State<PersonEditRoutePage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.personId != widget.personId ||
         !identical(oldWidget.repository, widget.repository)) {
-      _detail = widget.repository.fetchDetail(widget.personId);
+      _load();
     }
   }
 
-  void _retry() => setState(() {
-    _detail = widget.repository.fetchDetail(widget.personId);
-  });
+  void _load() {
+    final personId = widget.personId;
+    final generation = ++_requestGeneration;
+    _detail = widget.repository
+        .fetchDetail(personId)
+        .then((person) => _LoadedPerson(personId, generation, person));
+  }
+
+  void _retry() => setState(_load);
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<PersonDirectoryItem>(
+  Widget build(BuildContext context) => FutureBuilder<_LoadedPerson>(
     future: _detail,
     builder: (context, snapshot) {
-      if (snapshot.hasData) {
+      final loaded = snapshot.data;
+      if (loaded != null &&
+          loaded.requestedId == widget.personId &&
+          loaded.generation == _requestGeneration &&
+          loaded.person.id == widget.personId) {
         return PersonFormPage(
+          key: ValueKey('person-form-${loaded.person.id}'),
           repository: widget.repository,
           logout: widget.logout,
-          original: snapshot.requireData,
+          original: loaded.person,
           onCancel: widget.onCancel,
           onSaved: widget.onSaved,
           onDestinationSelected: widget.onDestinationSelected,
@@ -98,4 +110,12 @@ final class _PersonEditRoutePageState extends State<PersonEditRoutePage> {
       );
     },
   );
+}
+
+final class _LoadedPerson {
+  const _LoadedPerson(this.requestedId, this.generation, this.person);
+
+  final String requestedId;
+  final int generation;
+  final PersonDirectoryItem person;
 }

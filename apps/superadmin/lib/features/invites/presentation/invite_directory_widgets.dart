@@ -89,6 +89,7 @@ final class InviteDirectoryTable extends StatelessWidget {
     required this.items,
     required this.busyInviteId,
     required this.onAction,
+    this.allowCommands = false,
     this.onOpen,
     super.key,
   });
@@ -96,6 +97,7 @@ final class InviteDirectoryTable extends StatelessWidget {
   final List<PlatformInvite> items;
   final String? busyInviteId;
   final ValueChanged<String>? onOpen;
+  final bool allowCommands;
   final void Function(PlatformInvite, InviteRowAction) onAction;
 
   @override
@@ -173,6 +175,7 @@ final class InviteDirectoryTable extends StatelessWidget {
               invite: invite,
               busy: busyInviteId == invite.id,
               showDetails: onOpen != null,
+              allowCommands: allowCommands,
               onSelected: (action) => onAction(invite, action),
             ),
           ),
@@ -203,12 +206,14 @@ final class _InviteRowActions extends StatelessWidget {
     required this.invite,
     required this.busy,
     required this.showDetails,
+    required this.allowCommands,
     required this.onSelected,
   });
 
   final PlatformInvite invite;
   final bool busy;
   final bool showDetails;
+  final bool allowCommands;
   final ValueChanged<InviteRowAction> onSelected;
 
   @override
@@ -220,13 +225,13 @@ final class _InviteRowActions extends StatelessWidget {
           icon: Icons.visibility_outlined,
           label: 'Ver detalhes',
         ),
-      if (invite.canResend)
+      if (allowCommands && invite.canResend)
         const CoeloAdminFlyoutItem(
           value: InviteRowAction.resend,
           icon: Icons.forward_to_inbox_outlined,
           label: 'Reenviar convite',
         ),
-      if (invite.canRevoke)
+      if (allowCommands && invite.canRevoke)
         const CoeloAdminFlyoutItem(
           value: InviteRowAction.revoke,
           icon: Icons.block_rounded,

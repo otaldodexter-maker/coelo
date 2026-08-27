@@ -161,8 +161,8 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
               tableView: _tableView,
               onDisplayChanged: _changeDisplay,
               onTableViewChanged: _changeTableView,
-              onCreate: widget.onCreate ?? () {},
-              onEdit: widget.onEdit ?? (_) {},
+              onCreate: widget.onCreate,
+              onEdit: widget.onEdit,
               onFooterHeightChanged: _handlePaginationFooterHeightChanged,
               onClearFilters: () {
                 _searchController.clear();
@@ -202,8 +202,8 @@ final class _UnitDirectoryContent extends StatefulWidget {
   final UnitDirectoryTableView tableView;
   final ValueChanged<UnitDirectoryDisplay> onDisplayChanged;
   final ValueChanged<UnitDirectoryTableView> onTableViewChanged;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
   final VoidCallback onClearFilters;
 
@@ -384,8 +384,8 @@ final class _UnitDirectoryResults extends StatelessWidget {
   final UnitDirectoryViewModel viewModel;
   final UnitDirectoryDisplay display;
   final UnitDirectoryTableView tableView;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onEdit;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -397,12 +397,16 @@ final class _UnitDirectoryResults extends StatelessWidget {
         if (viewModel.isLoading) const SizedBox(height: CoeloSpacing.space4),
         UnitDirectoryStates(
           viewModel: viewModel,
-          createAction: UnitCreateBanner(onPressed: onCreate),
+          createAction: onCreate == null
+              ? const SizedBox.shrink()
+              : UnitCreateBanner(onPressed: onCreate!),
           successContent: display == UnitDirectoryDisplay.table
               ? UnitDirectoryTable(
                   items: viewModel.page.items,
-                  createAction: UnitCreateBanner(onPressed: onCreate),
-                  onEdit: (item) => onEdit(item.id),
+                  createAction: onCreate == null
+                      ? const SizedBox.shrink()
+                      : UnitCreateBanner(onPressed: onCreate!),
+                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
                   sortColumn: viewModel.query.sortColumn,
                   sortAscending: viewModel.query.sortAscending,
                   onSort: viewModel.setSort,
@@ -411,7 +415,7 @@ final class _UnitDirectoryResults extends StatelessWidget {
               : UnitDirectoryCards(
                   items: viewModel.page.items,
                   onCreate: onCreate,
-                  onEdit: (item) => onEdit(item.id),
+                  onEdit: onEdit == null ? null : (item) => onEdit!(item.id),
                 ),
         ),
       ],

@@ -35,8 +35,7 @@ class CoeloNavigationNode {
     CoeloNavigationEnvironment environment, {
     CoeloNavigationCapabilityCheck? canAccess,
   }) =>
-      availability(environment) &&
-      (capability == null || canAccess == null || canAccess(capability!));
+      availability(environment) && (capability == null || (canAccess?.call(capability!) ?? false));
 
   Iterable<CoeloNavigationNode> get descendants sync* {
     for (final child in children) {
@@ -70,6 +69,7 @@ CoeloNavigationNode _leaf(
   String? routeName,
   List<String> keywords = const <String>[],
   CoeloNavigationAvailability availability = _alwaysAvailable,
+  String? capability,
 }) => CoeloNavigationNode(
   id: id,
   label: label,
@@ -77,6 +77,8 @@ CoeloNavigationNode _leaf(
   routeName: routeName ?? id,
   keywords: keywords,
   availability: availability,
+  capability:
+      capability ?? ((id.endsWith('-create') || id.endsWith('-publish')) ? '$id.access' : null),
 );
 
 CoeloNavigationNode _screen(
@@ -110,14 +112,24 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
       _leaf('group-create', 'Criar turma', Icons.group_add_outlined),
     ]),
     _screen('activities', 'Atividades', Icons.local_activity_outlined, [
-      _leaf('activity-create', 'Criar atividade', Icons.add_task_outlined),
+      _leaf(
+        'activity-create',
+        'Criar atividade',
+        Icons.add_task_outlined,
+        capability: 'activities.create',
+      ),
       _leaf('assessment-entry', 'Lançar avaliações', Icons.edit_note_outlined),
       _leaf('assessment-closing', 'Fechamento de avaliações', Icons.lock_clock_outlined),
     ]),
   ]),
   _screen('monitoring', 'Acompanhamento', Icons.monitor_heart_outlined, [
     _screen('attendance', 'Assiduidade', Icons.fact_check_outlined, [
-      _leaf('attendance-create', 'Nova chamada', Icons.add_task_outlined),
+      _leaf(
+        'attendance-create',
+        'Nova chamada',
+        Icons.add_task_outlined,
+        capability: 'attendance.create',
+      ),
     ]),
     _screen('daily-routine', 'Rotina diária', Icons.view_agenda_outlined, [
       _leaf('daily-routine-create', 'Criar item', Icons.add_box_outlined),

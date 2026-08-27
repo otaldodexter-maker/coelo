@@ -145,6 +145,7 @@ void main() {
         home: UnitDirectoryPage(
           repository: repository,
           logout: () async => const LogoutResult.success(),
+          onCreate: () {},
           onEdit: (id) => editedId = id,
         ),
       ),

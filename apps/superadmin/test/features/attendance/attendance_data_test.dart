@@ -61,6 +61,27 @@ void main() {
     expect(call.participants.single.notice!.intent, AttendanceNoticeIntent.lateArrival);
   });
 
+  test('dashboard adapter rejects an unknown access scope', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({'scope': 'unexpected-scope', 'can_read': true, 'can_create_call': true}),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseAttendanceRepository(client).fetchAccess(),
+      throwsA(isA<FormatException>()),
+    );
+  });
+
   test('dashboard adapter decodes access, insufficient data and server pagination', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',
