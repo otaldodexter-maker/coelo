@@ -2947,9 +2947,9 @@ da simples soma das 207 ações.
   `authenticated` foi negada pelo guard antes de alterar defaults ou ACLs.
 - **Replay seguro:** o forward posterior não consegue proteger sozinho uma
   falha depois do `COMMIT` interno da migration histórica. O wrapper local
-  `Invoke-SafeLocalMigrationReplay.ps1` exige projeto descartável fora do
-  repositório, rejeita projeto vinculado, usa somente `db reset --local`, injeta
-  um preflight SHA-256
+  `Invoke-SafeLocalMigrationReplay.ps1` cria projeto, identidade Docker e portas
+  descartáveis fora do repositório, rejeita reparse points, usa somente
+  `db reset --local`, injeta um preflight SHA-256
   `AB4AE8E35B26926963A2D4D741709E582BF2058E6402E00C661A136FC7E12027`
   imediatamente antes de Grupos e remove o staging no teardown. O replay
   DB-only aplicou 104 arquivos até `20260812001975`; staging final 0 e zero
@@ -3003,3 +3003,33 @@ da simples soma das 207 ações.
   deploy remoto. Próximo lote independente seguro: inventário Auth/contexto.
 - **Tempo usado:** aproximadamente 4 h 30 min acumulados. **Tempo restante
   estimado:** 8–17 dias focados; backlog integral não calculável ainda.
+
+### Checkpoint seguro 34 — isolamento destrutivo do replay e `groups.export`
+
+- **Lote:** correção do harness local após re-review adversarial e fechamento
+  read-only da proveniência de `groups.export`; nenhuma ação foi promovida.
+- **Ações tratadas:** `SUP-GEN-002`, `SUP-GEN-003`, `SUP-GEN-016` e
+  `groups.export`, que continua `fail-closed`.
+- **Arquivos alterados:** `Invoke-SafeLocalMigrationReplay.ps1` e README. O
+  wrapper agora gera identidade `coelo_safe_<GUID>` e portas próprias, verifica
+  colisões Docker antes/depois, rejeita reparse points, tenta teardown mesmo em
+  falha parcial e exige zero diretório, container, volume e rede residuais. SHA
+  do script: `D609BE1D0751A2086C925C7BAACD2D328DF7720A84DEBD8FB42E3F9C9A3DE140`.
+- **Evidências e testes:** parser, diff-check e secret scan verdes. Caminho GREEN
+  aplicou 104 migrations até `20260812001975`; caminho RED reproduziu o `23502`
+  esperado em Child Safety. Ambos terminaram com zero `coelo_safe_*` e zero
+  containers. Review independente: zero P0/P1.
+- **Proveniência `groups.export`:** o remoto possui somente `groups.read/manage`;
+  a migration de Grupos apenas referencia `groups.export`. O blob histórico
+  `bb7de4d8...` da versão local-only `20260813183644` cria a capability, mas
+  também cria bridge/worker e depende de `20260813122643`, igualmente ausente
+  do remoto. Não foi restaurado nem separado artificialmente. A capability deve
+  permanecer inativa até aprovação do fluxo completo, worker, Storage e testes.
+- **Estado local/remoto:** harness `local-green`; migration ACL ainda não
+  implantada. A investigação remota foi somente `SELECT`; zero DDL/DML/Auth/
+  Storage/Edge/deploy. Não é `remote-green` nem `done`.
+- **Bloqueios e pendências:** Child Safety continua bloqueada conforme checkpoint
+  33. Follow-ups não bloqueantes do harness: pin explícito do Supabase CLI e
+  eventual teste automatizado adicional de falha de cleanup.
+- **Tempo usado:** aproximadamente 5 h acumuladas. **Tempo restante estimado:**
+  8–17 dias focados; backlog integral não calculável ainda.
