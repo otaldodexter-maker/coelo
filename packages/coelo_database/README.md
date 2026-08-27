@@ -103,7 +103,15 @@ Replays locais completos que alcancem a migration historica de Grupos devem ser
 executados por `Invoke-SafeLocalMigrationReplay.ps1`. O wrapper cria projeto,
 identidade Docker e portas descartaveis fora do repositorio, prepara um
 preflight imediatamente antes de Grupos, executa somente `db reset --local` e
-remove a stack e o staging no teardown. Nunca use
+remove a stack e o staging no teardown. Ele serializa execucoes locais e fixa o
+Supabase CLI 2.116.0 validado neste historico. Exemplo:
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260812001975
+```
+
+Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As
 migrations sinteticas do replay nao pertencem ao ledger remoto.
