@@ -1,9 +1,9 @@
 ---
 title: "Pendências Coelo — Flutter por tela e ação"
-source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD 447ac02c6c75617a8233f141dd0b2c8dc6c228d1"
+source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD a4d2e65790bb6dc2c79209ab88d14ccbe61a8c52"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-26"
+updated_at: "2026-08-27"
 action_count: 207
 family_count: 37
 ---
@@ -1242,7 +1242,33 @@ pendências, bloqueios, próxima ação e tempo estimado restante. Antes de paus
 deixe o Markdown pronto para retomada sem depender da memória da conversa.
 ```
 
-## 14. Histórico
+## 14. Execução Flutter/UI das 17 telas — 2026-08-27
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações).
+
+**Progresso do recorte — Concluído:** 0,00% (0/89 `action_id` verificados).
+
+**Progresso do recorte — Restante:** 100,00% (89/89 `action_id`).
+
+O trabalho abaixo é evidência `local-green`, regressão ou fail-closed. Não
+promove nenhuma ação a `verified`/E2E. O tempo wall-clock confiável deste
+checkpoint foi medido de 15:53 a 16:15 (22 min); o trecho paralelo anterior da
+mesma execução não tem marco inicial confiável e permanece **não calculável**.
+Os nove lotes seguros e seus handoffs foram fechados; a estimativa restante
+para verificar os 89 `action_id` permanece não calculável sem decisões de
+produto, backend, ambiente integrado e inspeção visual humana pendentes.
+
+| Lote | Telas alteradas ou regredidas | Arquivos modificados | Correções realizadas | Estado atual | Bloqueios e pendências restantes |
+|---:|---|---|---|---|---|
+| 1–4 | Rotina diária; Segurança da criança; Perfis de cuidado; Planos de medicação; Cardápio/Modelo; Formulários; Conversas; Comunicação | `daily_routine_pages.dart`; `safety_pages.dart`; `health_care_directory_page.dart`; `health_care_file_actions.dart`; `health_care_form_pages.dart`; `health_medication_plan_directory_page.dart`; `meal_plan_directory_page.dart`; `meal_plan_wizard_page.dart`; `forms_directory_page.dart`; `forms_overview_page.dart`; `superadmin_chat_page.dart`; `notice_directory_page.dart`; `notice_popup_preview.dart`; testes focados correspondentes; `superadmin_router.dart`; `health_care_routes_test.dart` | Insets `space4/space6/space10`; ordem toolbar/tabs/conteúdo; cards `space6`; paginação sticky; frames canônicos; datas Coelo; status progressivo; unauthorized sem conteúdo anterior; callbacks ausentes desabilitados; demo de arquivos removida; fixtures de cuidado injetadas somente em `/dev`. | `local-green`/fail-closed; nenhum golden ou backend alterado. | Validação visual global ainda bloqueada por `CheckboxListTile` em Instituições e `InkWell` em Pessoas, fora do recorte. Nomenclatura Avisos/Comunicação depende de produto. |
+| 5 | Assiduidade; Rotina diária; Acompanhamento; Agenda | `daily_routine_pages.dart`; `daily_routine_production_page_test.dart`; `agenda_module_shell.dart`; `agenda_calendar_page.dart`; `agenda_calendar_page_test.dart` | Rotina alinhada e fail-closed; Agenda `/dev` sem overflow a 200% e com insets locais. Assiduidade e Acompanhamento passaram regressão sem alteração. | Rotina `local-green`; Agenda continua `/dev`; Assiduidade/Acompanhamento sem desvio estrutural reproduzido. | Agenda, permissões e navegação continuam `blocked-decision`; E2E e goldens permanecem abertos. |
+| 6 | Segurança; Perfis de cuidado; Medicação; Cardápio; Modelo de cardápio | `safety_pages.dart`; `safety_pages_test.dart`; quatro libs de `health_care/presentation`; seis testes de `health_care/presentation`; dois arquivos de router/teste; três arquivos de Cardápios e dois testes | Validade aberta preservada; criação exige capability; produção de cuidado indisponível sem contrato; Medicação produtiva 503; wizard Cardápios em `SuperadminFormFrame`; callbacks no-op removidos. | `local-green`, `/dev` ou fail-closed conforme a rota. | Detalhe de Perfis, Medicação OQ-003/OQ-040, publicação/mídia e duas asserções antigas de teste de Medicação permanecem abertas. |
+| 7 | Formulários; Conversas; Convites; Comunicação | quatro arquivos de Formulários e testes; `superadmin_chat_page.dart` e teste; `notice_directory_page.dart`, `notice_popup_preview.dart` e dois testes | Diretório/overview de Formulários alinhados; busca Chat canônica com debounce e proteção contra resposta stale; Avisos sem header duplicado, CTA vazio ou vazamento em forbidden. Convites passou regressão sem alteração. | Formulários e UI de Comunicação `local-green`; Convites produtivo continua unavailable. | Editor/respostas/arquivos de Formulários e repository produtivo de Convites permanecem fail-closed; contratos de membership/mídia não mudaram. |
+| 8 | Acontece; Para Você; Momentos; Agora | Nenhum arquivo modificado. | 64 testes non-golden passaram; rotas e fixtures confirmadas somente em `/dev`; nenhuma dependência `coelo_ui_admin` foi adicionada ao Principal. | Regressão local verde, sem desvio estrutural reproduzido. | Produção, publicação, lifecycle e mídia dependem de produto/backend; dark específico de algumas superfícies permanece coberto somente por goldens não executados. |
+
+## 15. Histórico
 
 | Data | Mudança |
 |---|---|
