@@ -25,6 +25,7 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   GroupDirectoryLoadState _state = GroupDirectoryLoadState.initial;
   Timer? _searchTimer;
   int _requestVersion = 0;
+  bool _isDisposed = false;
 
   GroupDirectoryQuery get query => _query;
   GroupDirectoryPage get page => _page;
@@ -46,10 +47,11 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   );
 
   void setSearch(String value) {
+    if (_isDisposed) return;
     _query = _copy(search: value);
     _searchTimer?.cancel();
     _searchTimer = Timer(searchDebounce, () => _load(_query));
-    notifyListeners();
+    _notifyIfActive();
   }
 
   Future<void> setInstitutions(Set<String> value) async {
@@ -101,21 +103,23 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
   );
 
   Future<void> _replace(GroupDirectoryQuery value) {
+    if (_isDisposed) return Future.value();
     _searchTimer?.cancel();
     _query = value;
     return _load(value);
   }
 
   Future<void> _load(GroupDirectoryQuery value) async {
+    if (_isDisposed) return;
     final version = ++_requestVersion;
     _state = GroupDirectoryLoadState.loading;
-    notifyListeners();
+    _notifyIfActive();
     try {
       final results = await Future.wait<Object>([
         _repository.fetchPage(value),
         _repository.fetchFilterOptions(institutionIds: value.institutionIds),
-      ]);
-      if (version != _requestVersion) return;
+      ], eagerError: true);
+      if (_isDisposed || version != _requestVersion) return;
       _page = results[0] as GroupDirectoryPage;
       _filterOptions = results[1] as GroupDirectoryFilterOptions;
       _state = _page.items.isNotEmpty
@@ -124,21 +128,27 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
           ? GroupDirectoryLoadState.noResults
           : GroupDirectoryLoadState.empty;
     } on GroupDirectoryUnauthorizedException {
-      if (version == _requestVersion) {
+      if (!_isDisposed && version == _requestVersion) {
         _state = GroupDirectoryLoadState.unauthorized;
       }
     } on Exception {
-      if (version == _requestVersion) {
+      if (!_isDisposed && version == _requestVersion) {
         _state = GroupDirectoryLoadState.failure;
       }
     }
-    if (version == _requestVersion) {
-      notifyListeners();
+    if (!_isDisposed && version == _requestVersion) {
+      _notifyIfActive();
     }
+  }
+
+  void _notifyIfActive() {
+    if (!_isDisposed) notifyListeners();
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
+    _requestVersion++;
     _searchTimer?.cancel();
     super.dispose();
   }

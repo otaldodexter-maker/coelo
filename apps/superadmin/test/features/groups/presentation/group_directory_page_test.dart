@@ -111,7 +111,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('keeps sticky pagination usable at 200 percent text on compact width', (
+  testWidgets('keeps compact sticky pagination usable at 200 percent text', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
@@ -134,7 +134,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('group-directory-pagination-footer')), findsOneWidget);
-    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-page-size')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-pagination-previous')), findsOneWidget);
+    expect(find.byKey(const Key('coelo-admin-pagination-next')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

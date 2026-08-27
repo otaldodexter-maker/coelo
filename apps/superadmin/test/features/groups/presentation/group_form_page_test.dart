@@ -206,7 +206,7 @@ void main() {
     expect(find.text('Turma preservada'), findsOneWidget);
   });
 
-  testWidgets('creates a group with the confirmed fields and active default', (tester) async {
+  testWidgets('creates a custom group type with its canonical description', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final institutions = FakeInstitutionDirectoryRepository();
@@ -234,6 +234,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Ativo'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Girassol');
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('group-type-field')),
+        matching: find.text('Turma'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MenuItemButton, 'Outros'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-type-other-field')), 'Oficina maker');
 
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
@@ -260,7 +270,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(result, GroupFormSaveResult.created);
-    expect(repository.records.any((record) => record.name == 'Turma Girassol'), isTrue);
+    final saved = repository.records.singleWhere((record) => record.name == 'Turma Girassol');
+    expect(saved.groupType, 'other');
+    expect(saved.groupTypeOtherText, 'Oficina maker');
   });
 
   testWidgets('locks hierarchy while editing and preserves dirty work on cancel', (tester) async {

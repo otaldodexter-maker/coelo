@@ -478,6 +478,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               unitName: unit.label,
               name: _nameController.text.trim(),
               groupType: _typeController.text.trim(),
+              groupTypeOtherText: _typeController.text == 'other'
+                  ? _typeOtherController.text.trim()
+                  : null,
               status: _status,
               inheritAppearance: _inheritAppearance,
               inheritAccess: _inheritAccess,
@@ -488,6 +491,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           : original.copyWith(
               name: _nameController.text.trim(),
               groupType: _typeController.text.trim(),
+              groupTypeOtherText: _typeController.text == 'other'
+                  ? _typeOtherController.text.trim()
+                  : null,
               status: _status,
               inheritAppearance: _inheritAppearance,
               inheritAccess: _inheritAccess,

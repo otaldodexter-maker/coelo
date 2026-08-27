@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_directory_view_model.dart';
@@ -47,4 +49,46 @@ void main() {
 
     expect(viewModel.query.hasActiveFilters, isFalse);
   });
+
+  test('surfaces a page authorization failure while filter options remain pending', () async {
+    final repository = _MixedFailureGroupRepository();
+    final viewModel = GroupDirectoryViewModel(repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load().timeout(const Duration(milliseconds: 250));
+
+    expect(viewModel.state, GroupDirectoryLoadState.unauthorized);
+  });
+}
+
+final class _MixedFailureGroupRepository implements GroupDirectoryRepository {
+  Future<T> _unavailable<T>() => Future<T>.error(const GroupDirectoryUnavailableException());
+
+  @override
+  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) =>
+      Future<GroupDirectoryPage>.error(const GroupDirectoryUnauthorizedException());
+
+  @override
+  Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) =>
+      Completer<GroupDirectoryFilterOptions>().future;
+
+  @override
+  Future<GroupRecord?> findById(String id) => _unavailable();
+
+  @override
+  String createId(String institutionId, String unitId, String name) =>
+      throw const GroupDirectoryUnavailableException();
+
+  @override
+  Future<void> upsert(GroupRecord record) => _unavailable();
+
+  @override
+  Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) =>
+      _unavailable();
+
+  @override
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) => _unavailable();
+
+  @override
+  Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) => _unavailable();
 }
