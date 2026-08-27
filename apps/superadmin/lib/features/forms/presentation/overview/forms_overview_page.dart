@@ -70,58 +70,70 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final failure = _failure;
-    final overview = _overview;
-    if (failure != null) {
-      return CoeloStatePanel(
-        title: failure.kind == FormApiFailureKind.unauthorized
-            ? 'Acesso não autorizado'
-            : 'Não foi possível carregar o formulário',
-        message: failure.message,
-        icon: failure.kind == FormApiFailureKind.unauthorized
-            ? Icons.lock_outline_rounded
-            : Icons.error_outline_rounded,
-        actionLabel: failure.kind == FormApiFailureKind.unauthorized ? null : 'Tentar novamente',
-        onAction: failure.kind == FormApiFailureKind.unauthorized ? null : _load,
-      );
-    }
-    if (overview == null) {
-      return const CoeloStatePanel(
-        title: 'Carregando formulário',
-        message: 'Aguarde enquanto o resumo autorizado é carregado.',
-        loading: true,
-      );
-    }
-    return ListView(
-      padding: const EdgeInsets.all(CoeloSpacing.space5),
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(overview.definition.title, style: Theme.of(context).textTheme.headlineMedium),
-            Text('Versão de gestão ${overview.definition.managementVersion}'),
-          ],
-        ),
-        const SizedBox(height: CoeloSpacing.space5),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final columns = constraints.maxWidth >= 900 ? 3 : 1;
-            final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
-            return Wrap(
-              spacing: CoeloSpacing.space4,
-              runSpacing: CoeloSpacing.space4,
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+          ? CoeloSpacing.space6
+          : CoeloSpacing.space4;
+      final failure = _failure;
+      final overview = _overview;
+      return ListView(
+        key: const Key('forms-overview-content'),
+        padding: EdgeInsets.all(contentPadding),
+        children: [
+          if (failure != null)
+            CoeloStatePanel(
+              title: failure.kind == FormApiFailureKind.unauthorized
+                  ? 'Acesso não autorizado'
+                  : 'Não foi possível carregar o formulário',
+              message: failure.message,
+              icon: failure.kind == FormApiFailureKind.unauthorized
+                  ? Icons.lock_outline_rounded
+                  : Icons.error_outline_rounded,
+              actionLabel: failure.kind == FormApiFailureKind.unauthorized
+                  ? null
+                  : 'Tentar novamente',
+              onAction: failure.kind == FormApiFailureKind.unauthorized ? null : _load,
+            )
+          else if (overview == null)
+            const CoeloStatePanel(
+              title: 'Carregando formulário',
+              message: 'Aguarde enquanto o resumo autorizado é carregado.',
+              loading: true,
+            )
+          else ...[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _metric(context, width, 'Distribuições', overview.applicationCount),
-                _metric(context, width, 'Ocorrências', overview.occurrenceCount),
-                _metric(context, width, 'Respostas', overview.responseCount),
+                Text(overview.definition.title, style: Theme.of(context).textTheme.headlineMedium),
+                Text('Versão de gestão ${overview.definition.managementVersion}'),
               ],
-            );
-          },
-        ),
-      ],
-    );
-  }
+            ),
+            const SizedBox(height: CoeloSpacing.space6),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 900 ? 3 : 1;
+                final width =
+                    (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+                return Wrap(
+                  key: const Key('forms-overview-metrics'),
+                  spacing: CoeloSpacing.space6,
+                  runSpacing: CoeloSpacing.space6,
+                  children: [
+                    _metric(context, width, 'Distribuições', overview.applicationCount),
+                    _metric(context, width, 'Ocorrências', overview.occurrenceCount),
+                    _metric(context, width, 'Respostas', overview.responseCount),
+                  ],
+                );
+              },
+            ),
+          ],
+        ],
+      );
+    },
+  );
 
   Widget _metric(
     BuildContext context,

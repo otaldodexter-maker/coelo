@@ -2,6 +2,7 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_directory_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -30,6 +31,9 @@ void main() {
     await tester.tap(find.byKey(const Key('forms-directory-view-cards')));
     await tester.pumpAndSettle();
     expect(find.text('Pesquisa das famílias'), findsWidgets);
+    final cards = tester.widget<Wrap>(find.byKey(const Key('forms-directory-card-grid')));
+    expect(cards.spacing, CoeloSpacing.space6);
+    expect(cards.runSpacing, CoeloSpacing.space6);
   });
 
   testWidgets('renders fail-closed authorization and 200% text without overflow', (tester) async {
@@ -41,7 +45,13 @@ void main() {
         data: const MediaQueryData(textScaler: TextScaler.linear(2)),
         child: MaterialApp(
           theme: CoeloTheme.light,
-          home: Scaffold(body: FormsDirectoryPage(api: _FormsApi(unauthorized: true))),
+          home: Scaffold(
+            body: FormsDirectoryPage(
+              api: _FormsApi(unauthorized: true),
+              canManage: true,
+              onCreate: () {},
+            ),
+          ),
         ),
       ),
     );
@@ -51,7 +61,53 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-search')), findsNothing);
+    expect(find.byKey(const Key('forms-directory-view-cards')), findsNothing);
+    expect(find.byKey(const Key('forms-directory-create')), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uses canonical responsive insets without a duplicated local title', (tester) async {
+    for (final (size, expectedInset) in [
+      (const Size(375, 900), CoeloSpacing.space4),
+      (const Size(768, 900), CoeloSpacing.space6),
+      (const Size(1440, 900), CoeloSpacing.space10),
+    ]) {
+      await tester.binding.setSurfaceSize(size);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(body: FormsDirectoryPage(api: _FormsApi())),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final inset = tester.widget<ListView>(
+        find.byKey(const Key('forms-directory-content-scroll')),
+      );
+      expect(inset.padding, EdgeInsets.all(expectedInset));
+      expect(find.text('Formulários'), findsNothing);
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('keeps cursor pagination in the sticky canonical footer', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: FormsDirectoryPage(
+            api: _FormsApi(
+              page: FormCursorPage(items: [_item], nextCursor: 'next'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('forms-directory-pagination-footer')), findsOneWidget);
+    expect(find.byType(CoeloAdminPagination), findsOneWidget);
   });
 }
 
