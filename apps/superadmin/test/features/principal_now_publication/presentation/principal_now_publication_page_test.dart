@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/principal_now_publication/domain/now_publication.dart';
 import 'package:coelo_superadmin/features/principal_now_publication/presentation/principal_now_publication_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +31,35 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('usa o frame, etapas e rodapé canônicos do Superadmin', (tester) async {
+    await pumpPage(tester, const Size(1440, 1000));
+
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.text('Mídia'), findsOneWidget);
+    expect(find.text('Detalhes'), findsOneWidget);
+    expect(find.byKey(const Key('now-publication-close')), findsNothing);
+  });
+
+  testWidgets('avança e retorna sem perder a mídia selecionada', (tester) async {
+    await pumpPage(tester, const Size(1440, 1000));
+
+    await tester.tap(find.text('Adicionar mídia'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
+    expect(find.text('Publicar agora'), findsOneWidget);
+
+    await tester.tap(find.text('Anterior'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
+    expect(find.text('Adicionar mídia'), findsNothing);
+  });
+
   for (final size in <Size>[const Size(375, 900), const Size(768, 1024), const Size(1440, 1000)]) {
     testWidgets('renderiza composer sem overflow em ${size.width}', (tester) async {
       await pumpPage(tester, size);
@@ -38,9 +70,7 @@ void main() {
       expect(find.text('Música'), findsOneWidget);
       expect(find.text('Cortar'), findsOneWidget);
       expect(find.text('Capa'), findsOneWidget);
-      expect(find.text('Público e contexto'), findsOneWidget);
-      expect(find.text('Agendar publicação'), findsOneWidget);
-      expect(find.text('Publicar agora'), findsOneWidget);
+      expect(find.text('Continuar'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -66,6 +96,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -82,15 +115,11 @@ void main() {
     expect(find.byKey(const Key('now-overlay-field')), findsOneWidget);
   });
 
-  testWidgets('fechar publicação permanece na família semântica negativa', (tester) async {
+  testWidgets('cancelar usa a ação terciária do rodapé canônico', (tester) async {
     await pumpPage(tester, const Size(768, 1024));
 
-    final button = tester.widget<IconButton>(find.byKey(const Key('now-publication-close')));
-    final colors = CoeloTheme.light.colorScheme;
-    expect(button.style?.backgroundColor?.resolve(<WidgetState>{}), colors.surface);
-    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.errorContainer);
-    expect(button.style?.foregroundColor?.resolve(<WidgetState>{}), colors.error);
-    expect(button.style?.foregroundColor?.resolve({WidgetState.focused}), colors.error);
+    expect(find.widgetWithText(TextButton, 'Cancelar'), findsOneWidget);
+    expect(find.byKey(const Key('now-publication-footer')), findsOneWidget);
   });
 
   testWidgets('dialog privado usa surface e empilha todas as ações quando não cabem', (
@@ -146,6 +175,8 @@ void main() {
 
   testWidgets('agendamento aplica uma data futura sem date picker Material', (tester) async {
     await pumpPage(tester, const Size(375, 900));
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('now-schedule-toggle')));
     await tester.tap(find.byKey(const Key('now-schedule-toggle')));
     await tester.pumpAndSettle();
@@ -165,6 +196,8 @@ void main() {
         home: PrincipalNowPublicationPage(repository: repository),
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 
     final field = tester.widget<TextFormField>(find.byKey(const Key('now-caption-field')));
@@ -216,6 +249,8 @@ void main() {
         home: PrincipalNowPublicationPage(repository: repository),
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final toggleFinder = find.byKey(const Key('now-schedule-toggle'));
     await tester.ensureVisible(toggleFinder);

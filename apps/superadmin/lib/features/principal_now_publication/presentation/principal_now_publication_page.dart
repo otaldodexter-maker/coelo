@@ -3,6 +3,9 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../application/now_publication_controller.dart';
 import '../domain/now_publication.dart';
 import '../domain/now_media_metadata.dart';
@@ -35,6 +38,7 @@ final class PrincipalNowPublicationPage extends StatefulWidget {
 final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicationPage> {
   late final NowPublicationController controller;
   late final TextEditingController captionController;
+  var _currentStep = 0;
 
   @override
   void initState() {
@@ -125,104 +129,75 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: controller,
     builder: (context, _) => LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-        final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
-        final stackContent =
-            compact ||
-            (MediaQuery.textScalerOf(context).scale(1) > 1.5 &&
-                constraints.maxWidth < CoeloBreakpoints.large.minWidth);
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          body: SafeArea(
-            child: Column(
-              children: [
-                _Header(onClose: widget.onClose),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      stackContent ? CoeloSpacing.space4 : CoeloSpacing.space8,
-                      CoeloSpacing.space5,
-                      stackContent ? CoeloSpacing.space4 : CoeloSpacing.space8,
-                      CoeloSpacing.space8,
-                    ),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1120),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            'Publicar no Agora',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: CoeloSpacing.space3),
-                          _ProgressLine(compact: stackContent),
-                          const SizedBox(height: CoeloSpacing.space5),
-                          if (stackContent)
-                            Column(
-                              children: [
-                                _MediaAndTools(
-                                  controller: controller,
-                                  width: 220,
-                                  onPickMedia: _pickMedia,
-                                  onText: _showTextEditor,
-                                  onMusic: _pickAudio,
-                                  onCrop: _showCropEditor,
-                                  onCover: _showCoverEditor,
-                                ),
-                                const SizedBox(height: CoeloSpacing.space4),
-                                _Details(
-                                  controller: controller,
-                                  captionController: captionController,
-                                ),
-                              ],
-                            )
-                          else
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: desktop ? 5 : 4,
-                                  child: _MediaAndTools(
-                                    controller: controller,
-                                    width: desktop ? 300 : 260,
-                                    onPickMedia: _pickMedia,
-                                    onText: _showTextEditor,
-                                    onMusic: _pickAudio,
-                                    onCrop: _showCropEditor,
-                                    onCover: _showCoverEditor,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: desktop ? CoeloSpacing.space12 : CoeloSpacing.space6,
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: _Details(
-                                    controller: controller,
-                                    captionController: captionController,
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
+      builder: (context, constraints) => Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: SafeArea(
+          child: SuperadminFormFrame(
+            viewportWidth: constraints.maxWidth,
+            navigation: SuperadminFormStepNavigation(
+              steps: [
+                SuperadminFormStep(
+                  label: 'Mídia',
+                  status: _currentStep == 0
+                      ? SuperadminFormStepStatus.current
+                      : SuperadminFormStepStatus.complete,
                 ),
-                _ActionFooter(
-                  compact: stackContent,
-                  controller: controller,
-                  onCompleted: widget.onCompleted,
+                SuperadminFormStep(
+                  label: 'Detalhes',
+                  status: _currentStep == 1
+                      ? SuperadminFormStepStatus.current
+                      : SuperadminFormStepStatus.incomplete,
+                  enabled: _currentStep == 1,
                 ),
               ],
+              currentIndex: _currentStep,
+              onStepSelected: (step) {
+                if (step <= _currentStep) setState(() => _currentStep = step);
+              },
+            ),
+            scrollKey: Key('now-publication-step-$_currentStep'),
+            body: _stepBody(),
+            footer: _PublicationFooter(
+              currentStep: _currentStep,
+              controller: controller,
+              onCancel: widget.onClose ?? () => Navigator.maybePop(context),
+              onPrevious: () => setState(() => _currentStep = 0),
+              onContinue: () => setState(() => _currentStep = 1),
+              onCompleted: widget.onCompleted,
             ),
           ),
-        );
-      },
+        ),
+      ),
     ),
+  );
+
+  Widget _stepBody() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text('Publicar no Agora', style: Theme.of(context).textTheme.headlineSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text(
+        _currentStep == 0 ? 'Escolha e prepare a mídia.' : 'Defina público e publicação.',
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      ),
+      const SizedBox(height: CoeloSpacing.space5),
+      if (_currentStep == 0)
+        LayoutBuilder(
+          builder: (context, constraints) => _MediaAndTools(
+            controller: controller,
+            width: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth ? 300 : 220,
+            onPickMedia: _pickMedia,
+            onText: _showTextEditor,
+            onMusic: _pickAudio,
+            onCrop: _showCropEditor,
+            onCover: _showCoverEditor,
+          ),
+        )
+      else
+        _Details(controller: controller, captionController: captionController),
+    ],
   );
 
   Future<void> _showTextEditor() async {
@@ -339,79 +314,6 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
         ),
       ],
     ),
-  );
-}
-
-final class _Header extends StatelessWidget {
-  const _Header({this.onClose});
-  final VoidCallback? onClose;
-  @override
-  Widget build(BuildContext context) => Container(
-    height: 68,
-    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Row(
-      children: [
-        IconButton(
-          key: const Key('now-publication-close'),
-          tooltip: 'Fechar publicação',
-          style: ButtonStyle(
-            minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
-            foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.error),
-            backgroundColor: WidgetStateProperty.resolveWith(
-              (states) =>
-                  states.contains(WidgetState.hovered) ||
-                      states.contains(WidgetState.focused) ||
-                      states.contains(WidgetState.pressed)
-                  ? Theme.of(context).colorScheme.errorContainer
-                  : Theme.of(context).colorScheme.surface,
-            ),
-            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          ),
-          onPressed: onClose ?? () => Navigator.maybePop(context),
-          icon: const Icon(Icons.close_rounded),
-        ),
-        const Spacer(),
-        Text(
-          'coelo',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          tooltip: 'Ajuda',
-          onPressed: () => showDialog<void>(
-            context: context,
-            builder: (context) => _NowDialog(
-              title: 'Como publicar no Agora',
-              body: const Text(
-                'Escolha uma mídia vertical, confirme o público e publique. O conteúdo fica disponível por 24 horas.',
-              ),
-              actions: [
-                FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Entendi')),
-              ],
-            ),
-          ),
-          icon: const Icon(Icons.help_outline_rounded),
-        ),
-      ],
-    ),
-  );
-}
-
-final class _ProgressLine extends StatelessWidget {
-  const _ProgressLine({required this.compact});
-  final bool compact;
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Container(width: compact ? 52 : 72, height: 3, color: Theme.of(context).colorScheme.primary),
-      Expanded(child: Container(height: 3, color: Theme.of(context).colorScheme.outlineVariant)),
-    ],
   );
 }
 
@@ -938,10 +840,20 @@ final class _ScheduleCard extends StatelessWidget {
   }
 }
 
-final class _ActionFooter extends StatelessWidget {
-  const _ActionFooter({required this.compact, required this.controller, this.onCompleted});
-  final bool compact;
+final class _PublicationFooter extends StatelessWidget {
+  const _PublicationFooter({
+    required this.currentStep,
+    required this.controller,
+    required this.onCancel,
+    required this.onPrevious,
+    required this.onContinue,
+    this.onCompleted,
+  });
+  final int currentStep;
   final NowPublicationController controller;
+  final VoidCallback onCancel;
+  final VoidCallback onPrevious;
+  final VoidCallback onContinue;
   final ValueChanged<NowPublication>? onCompleted;
   @override
   Widget build(BuildContext context) {
@@ -950,7 +862,7 @@ final class _ActionFooter extends StatelessWidget {
       NowPublicationPhase.saving,
       NowPublicationPhase.publishing,
     }.contains(controller.state.phase);
-    final primary = FilledButton(
+    final publish = FilledButton(
       onPressed: busy
           ? null
           : () async {
@@ -963,33 +875,19 @@ final class _ActionFooter extends StatelessWidget {
       onPressed: busy ? null : controller.saveDraft,
       child: const Text('Salvar rascunho'),
     );
-    return Container(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: compact
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  primary,
-                  const SizedBox(height: CoeloSpacing.space2),
-                  secondary,
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  secondary,
-                  const SizedBox(width: CoeloSpacing.space4),
-                  primary,
-                ],
-              ),
-      ),
+    return SuperadminFormActionFooter(
+      surfaceKey: const Key('now-publication-footer'),
+      tertiaryAction: TextButton(onPressed: busy ? null : onCancel, child: const Text('Cancelar')),
+      continuationActions: [
+        if (currentStep > 0)
+          OutlinedButton(onPressed: busy ? null : onPrevious, child: const Text('Anterior')),
+        if (currentStep == 0)
+          FilledButton(onPressed: busy ? null : onContinue, child: const Text('Continuar'))
+        else ...[
+          secondary,
+          publish,
+        ],
+      ],
     );
   }
 }
