@@ -5,7 +5,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/features/agenda/data/agenda_prototype_store.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_calendar_page.dart';
+import 'package:coelo_superadmin/features/agenda/presentation/agenda_module_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_underline_tabs.dart';
 
 void main() {
   testWidgets('matriz responsiva não apresenta overflow', (tester) async {
@@ -53,6 +55,65 @@ void main() {
 
     expect(find.byKey(const Key('agenda-timeline')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('shell, timeline e calendario completo usam insets responsivos canonicos', (
+    tester,
+  ) async {
+    await _setSize(tester, const Size(1440, 1000));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final tabs = find.byType(SuperadminUnderlineTabs<AgendaModuleArea>);
+    final tabsPadding = tester.element(tabs).findAncestorWidgetOfExactType<Padding>()!;
+    final tabsWidth = tester.getSize(find.byWidget(tabsPadding)).width;
+    expect((tabsPadding.padding as EdgeInsets).left, _expectedInset(tabsWidth));
+
+    final timeline = tester.widget<SingleChildScrollView>(find.byKey(const Key('agenda-timeline')));
+    expect(
+      (timeline.padding! as EdgeInsets).left,
+      _expectedInset(tester.getSize(find.byKey(const Key('agenda-timeline'))).width),
+    );
+
+    await tester.ensureVisible(find.byKey(const Key('agenda-open-full-calendar')));
+    await tester.tap(find.byKey(const Key('agenda-open-full-calendar')));
+    await tester.pumpAndSettle();
+
+    final workspace = find.byType(CoeloAdminWorkspaceLayout);
+    final workspacePadding = tester.element(workspace).findAncestorWidgetOfExactType<Padding>()!;
+    final workspaceWidth = tester.getSize(find.byWidget(workspacePadding)).width;
+    expect((workspacePadding.padding as EdgeInsets).left, _expectedInset(workspaceWidth));
+  });
+
+  testWidgets('timeline e calendario completo suportam matriz 200 por cento em ambos os temas', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
+      for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+        tester.view.physicalSize = Size(width, 1400);
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpWidget(_app(theme: theme, textScaler: const TextScaler.linear(2)));
+        await tester.pumpAndSettle();
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'timeline width=$width theme=${theme.brightness}',
+        );
+
+        await tester.ensureVisible(find.byKey(const Key('agenda-open-full-calendar')));
+        await tester.tap(find.byKey(const Key('agenda-open-full-calendar')));
+        await tester.pumpAndSettle();
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'calendar width=$width theme=${theme.brightness}',
+        );
+      }
+    }
   });
 
   testWidgets('filtro de atividades mantém apenas ocorrências de atividade', (tester) async {
@@ -149,8 +210,8 @@ void main() {
   });
 }
 
-Widget _app({TextScaler textScaler = TextScaler.noScaling}) => MaterialApp(
-  theme: CoeloTheme.light,
+Widget _app({TextScaler textScaler = TextScaler.noScaling, ThemeData? theme}) => MaterialApp(
+  theme: theme ?? CoeloTheme.light,
   home: MediaQuery(
     data: MediaQueryData(textScaler: textScaler),
     child: AgendaCalendarPage(
@@ -170,3 +231,9 @@ Future<void> _setSize(WidgetTester tester, Size size) async {
     tester.view.resetPhysicalSize();
   });
 }
+
+double _expectedInset(double width) => width >= CoeloBreakpoints.large.minWidth
+    ? CoeloSpacing.space10
+    : width >= CoeloBreakpoints.medium.minWidth
+    ? CoeloSpacing.space6
+    : CoeloSpacing.space4;

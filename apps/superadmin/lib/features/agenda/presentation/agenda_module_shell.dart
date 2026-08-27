@@ -46,27 +46,31 @@ final class AgendaModuleShell extends StatelessWidget {
     actions: actions,
     compactActions: compactActions,
     onDestinationSelected: onDestinationSelected,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CoeloSpacing.space4,
-            0,
-            CoeloSpacing.space4,
-            CoeloSpacing.space3,
-          ),
-          child: SuperadminUnderlineTabs<AgendaModuleArea>(
-            tabs: [
-              for (final area in AgendaModuleArea.values)
-                SuperadminUnderlineTab(value: area, label: area.label),
-            ],
-            selected: selectedArea,
-            onSelected: onAreaSelected,
-          ),
-        ),
-        Expanded(child: child),
-      ],
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+            ? CoeloSpacing.space10
+            : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+            ? CoeloSpacing.space6
+            : CoeloSpacing.space4;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space3),
+              child: SuperadminUnderlineTabs<AgendaModuleArea>(
+                tabs: [
+                  for (final area in AgendaModuleArea.values)
+                    SuperadminUnderlineTab(value: area, label: area.label),
+                ],
+                selected: selectedArea,
+                onSelected: onAreaSelected,
+              ),
+            ),
+            Expanded(child: child),
+          ],
+        );
+      },
     ),
   );
 }

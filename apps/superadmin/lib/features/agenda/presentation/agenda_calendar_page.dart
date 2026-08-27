@@ -91,6 +91,11 @@ class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
       builder: (context, _) => LayoutBuilder(
         builder: (context, constraints) {
           final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+          final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+              ? CoeloSpacing.space10
+              : compact
+              ? CoeloSpacing.space4
+              : CoeloSpacing.space6;
           final view = _view ?? (compact ? AgendaCalendarView.agenda : AgendaCalendarView.month);
           final occurrences = _visibleOccurrences(view);
           if (!_showFullCalendar) {
@@ -115,12 +120,7 @@ class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
             );
           }
           return Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CoeloSpacing.space4,
-              0,
-              CoeloSpacing.space4,
-              CoeloSpacing.space4,
-            ),
+            padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space4),
             child: CoeloAdminWorkspaceLayout(
               toolbar: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -343,16 +343,16 @@ final class _AgendaTimeline extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : compact
+          ? CoeloSpacing.space4
+          : CoeloSpacing.space6;
       return ColoredBox(
         color: Theme.of(context).colorScheme.surface,
         child: SingleChildScrollView(
           key: const Key('agenda-timeline'),
-          padding: EdgeInsets.fromLTRB(
-            compact ? CoeloSpacing.space3 : CoeloSpacing.space6,
-            0,
-            compact ? CoeloSpacing.space3 : CoeloSpacing.space6,
-            CoeloSpacing.space6,
-          ),
+          padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space6),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1040),
@@ -905,6 +905,7 @@ class _MonthViewState extends State<_MonthView> {
     final first = DateTime(widget.anchor.year, widget.anchor.month, 1);
     final gridStart = first.subtract(Duration(days: first.weekday % 7));
     final selectedDay = _selectedDay ?? widget.anchor;
+    final amplifiedText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
     return Column(
       children: [
         Row(
@@ -927,7 +928,13 @@ class _MonthViewState extends State<_MonthView> {
             key: const Key('agenda-month-grid'),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
-              childAspectRatio: widget.compact ? .76 : 1.05,
+              childAspectRatio: widget.compact
+                  ? amplifiedText
+                        ? .5
+                        : .76
+                  : amplifiedText
+                  ? .8
+                  : 1.05,
             ),
             itemCount: 42,
             itemBuilder: (context, index) {
@@ -950,7 +957,7 @@ class _MonthViewState extends State<_MonthView> {
         if (widget.compact) ...[
           const SizedBox(height: CoeloSpacing.space3),
           SizedBox(
-            height: 190,
+            height: amplifiedText ? 96 : 190,
             child: _OccurrenceList(
               occurrences: widget.occurrences
                   .where((item) => _sameDay(item.startsAt, selectedDay))
@@ -987,7 +994,8 @@ final class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final visible = compact ? items.take(3) : items.take(2);
+    final amplifiedText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final visible = compact ? items.take(amplifiedText ? 1 : 3) : items.take(amplifiedText ? 1 : 2);
     final hidden = items.length - visible.length;
     return Semantics(
       label: '${_longDate(day)}; ${items.length} itens',
@@ -1045,6 +1053,8 @@ final class _DayCell extends StatelessWidget {
                   Text(
                     '+$hidden',
                     key: Key('agenda-more-${day.year}-${day.month}-${day.day}'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(
                       context,
                     ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
