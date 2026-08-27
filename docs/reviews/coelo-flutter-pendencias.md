@@ -455,7 +455,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | Unidade de planejamento | Estimativa preliminar | Observação |
 |---|---:|---|
 | Temas gerais compartilhados | 290 h brutas | Não somar integralmente às famílias: shell, UI, responsividade, acessibilidade e regressão são absorvidos por vários pacotes de tela. |
-| 37 famílias / 201 ações Flutter | aproximadamente 388 h sequenciais | Soma operacional atual por família, sem espera externa; inclui a decomposição explícita das 12 ações de Instituições e exige reestimativa após rerun do snapshot. |
+| 37 famílias / 207 ações Flutter | aproximadamente 388 h sequenciais | Soma operacional atual por família, sem espera externa; inclui a decomposição explícita das 12 ações de Instituições e exige reestimativa após rerun do snapshot. |
 | Pacote Intermediário sugerido para decisão | 2–6 h | Uma ou poucas ações relacionadas de baixo/médio risco; nunca conclui a tela. |
 | Pacote Avançado de uma família complexa | 1–2 dias | Inclui ações relacionadas, arquitetura, estados, acessibilidade, responsividade e regressões. |
 | Pacote Completo de uma tela | 2–5 dias | Só pode fechar a tela Flutter se todas as ações aplicáveis e evidências estiverem completas. |
@@ -1072,7 +1072,7 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 1 | `auth` — Login, recuperar, redefinir, MFA | `auth.login` `local-green`; `auth.recover` `local-green`; `auth.reset` `local-green`; `auth.logout` `local-green`; `auth.mfa` `audited` | 99 testes locais de Auth passaram com matriz 375–1440 e 200%; ainda provar MFA, rotas globais, token/link/sessão reais e integração remota; 3–6 h. |
 | 2 | `shell` — Home, menu, contexto, unauthorized, reload | `shell.load` `local-green`; `shell.navigate` `local-green`; `shell.switch-context` `audited`; `shell.unauthorized` `local-green`; `shell.reload` `audited` | Reconciliar deep links e troca de contexto; smoke dos estados e foco; 6 h. |
 | 3 | `institutions` — Lista, filtros, detalhe, criar, editar, status, arquivos, importar/exportar, erro, acesso negado e reload | `institutions.list`/`filter`/`create`/`edit`/`status` `local-green`; `institutions.detail`/`files`/`import`/`export`/`error`/`access-denied`/`reload` `audited` | Revalidar baseline e 7 PNGs alterados, com prova isolada das 12 ações e texto 200%; 16 h. |
-| 4 | `units` — Lista, filtros, criar, editar, status, erro, acesso negado, reload e arquivos | `units.list`/`filter`/`create`/`edit`/`status`/`error`/`access-denied`/`reload` `local-green`; `units.import`/`export` `blocked-supabase` | Diretório recompila e 16 testes passaram; import/export continuam com gateways produtivos indisponíveis. Revisar 17+ PNGs, E2E e composição somente após handoff; 13 h + decisão. |
+| 4 | `units` — Lista, filtros, criar, editar, status, erro, acesso negado, reload e arquivos | `units.list`/`filter`/`create`/`edit`/`status`/`error`/`access-denied`/`reload` `local-green`; `units.import`/`export` `blocked-supabase`; `units.people-export` `blocked-decision` | Diretório recompila e 16 testes passaram; import/export continuam com gateways produtivos indisponíveis; `people-export` não possui capability, job, arquivo ou URL próprios e exige decisão. Revisar 17+ PNGs, E2E e composição somente após handoff; 13 h + decisão. |
 | 5 | `groups` — Lista, criar, detalhe/editar, membros, arquivos | `groups.list` `local-green`; `groups.create` `local-green`; `groups.edit` `local-green`; `groups.members` `local-green`; `groups.import`/`groups.export` `audited`/`fail-closed`, com falsos controles removidos | Preservar Profile About canônico; provar CRUD produtivo, membros e fluxos reais de arquivo com gateway/job/Storage, autorização, tenant A/B, remoto/E2E; 8 h + backend. |
 | 6 | `people` — Lista, criar, editar, vínculos | `people.list` `audited`; `people.create` `local-green`; `people.edit` `local-green`; `people.links` `audited`; `people.reload` `audited` | Identidade produtiva fail-closed; comparar 8 goldens de diretório e revisar status/card, vínculo e reload; 12 h. |
 | 7 | `access_profiles` — Lista, criar, detalhe, editar, atribuir/excluir | `access-profiles.list` `audited`; `access-profiles.create` `blocked-decision`; `access-profiles.detail` `audited`; `access-profiles.edit` `blocked-decision`; `access-profiles.assign` `blocked-decision`; `access-profiles.delete` `blocked-decision` | Access Basic 503 é seguro; Access Extended depende de Imports/backend e 16-path closure; não aceitar shims `isDemo/contextCount`; 16 h após decisão. |
@@ -1256,7 +1256,7 @@ O trabalho abaixo é evidência `local-green`, regressão ou fail-closed. Não
 promove nenhuma ação a `verified`/E2E. O tempo wall-clock confiável deste
 checkpoint foi medido de 15:53 a 16:15 (22 min); o trecho paralelo anterior da
 mesma execução não tem marco inicial confiável e permanece **não calculável**.
-Os nove lotes seguros e seus handoffs foram fechados; a estimativa restante
+Os oito lotes seguros e seus handoffs foram fechados; a estimativa restante
 para verificar os 89 `action_id` permanece não calculável sem decisões de
 produto, backend, ambiente integrado e inspeção visual humana pendentes.
 

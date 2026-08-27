@@ -1,16 +1,16 @@
 ---
 title: "Pendências Coelo — Flutter integrado ao Supabase"
-source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 447ac02c6c75617a8233f141dd0b2c8dc6c228d1"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 521d6349df6bb482397bf7192082748eb259709d"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-26"
+updated_at: "2026-08-27"
 action_count: 202
 flutter_action_count: 207
 family_count: 37
 ready_for_e2e_count: 0
 verified_e2e_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-supabase_tracker_sha256: "710C85B98318EF813552EE142DD0B3EA1613CE9CC8CC30E7A85020BD513F54FD"
+supabase_tracker_sha256: "231E0807354EF70A80AABFDF411CBE6DCD68EBD960309736F3BD918873134BF1"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -647,7 +647,7 @@ operação backend por inferência.
 | `screen_id` | `action_id` oficiais |
 |---|---|
 | `auth` | `auth.login`; `auth.recover`; `auth.reset`; `auth.logout`; `auth.mfa` |
-| `shell` (Flutter-only; fora dos 201) | `shell.load`; `shell.navigate`; `shell.switch-context`; `shell.unauthorized`; `shell.reload` |
+| `shell` (Flutter-only; fora dos 202) | `shell.load`; `shell.navigate`; `shell.switch-context`; `shell.unauthorized`; `shell.reload` |
 | `institutions` | `institutions.list`; `institutions.filter`; `institutions.detail`; `institutions.create`; `institutions.edit`; `institutions.status`; `institutions.files`; `institutions.import`; `institutions.export`; `institutions.error`; `institutions.access-denied`; `institutions.reload` |
 | `units` | `units.list`; `units.filter`; `units.create`; `units.edit`; `units.status`; `units.error`; `units.access-denied`; `units.reload`; `units.import`; `units.export`; `units.people-export` |
 | `groups` | `groups.list`; `groups.create`; `groups.edit`; `groups.members`; `groups.import`; `groups.export` |
@@ -777,7 +777,7 @@ gera `ready-for-e2e` automaticamente.
 1. Revalidar HEAD, catálogo, rotas prod/DEV e composição sem overlays: 1–2 d.
 2. Fechar decisões e backend conforme os ETAs Supabase preservados na tabela.
 3. Executar, por ação, clique → repository → backend remoto → reload/nova sessão,
-   incluindo negado, sessão revogada, duplo envio e cross-tenant: mínimo de 201
+   incluindo negado, sessão revogada, duplo envio e cross-tenant: mínimo de 202
    provas, estimativa inicial de 25–39 d úteis após os blockers estruturais.
 4. Executar a dívida Flutter estimada em 388 h, paralelizável por famílias, mais
    inspeção individual dos 199 PNGs rastreados fora de `failures/`.
@@ -869,7 +869,7 @@ reexecutada se código, schema, policy, configuração ou ambiente mudou.
 **Ponto de retomada seguro:** `units.list` e os estados recuperáveis do diretório
 estão local-green. Para `units.export`, Flutter HARDEN A+B terminou com 41/41 e
 Supabase checkpoint 21 terminou com 36/47 testes Deno verdes, preservando 11
-REDs; o tracker Supabase está no SHA-256 `710C85B9…`. O Pacote A continua
+REDs; o tracker Supabase está no SHA-256 `231E0807…`. O Pacote A continua
 preservado externamente e revertido, portanto produção permanece fail-closed e
 há zero E2E. O próximo passo não é compor: primeiro resolver OQ-032/OQ-034 e o
 escopo da ADR0019, obter autorização nominal para migrations forward e fechar
