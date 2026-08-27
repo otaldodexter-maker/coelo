@@ -7,10 +7,32 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_act
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('embedded publication uses only the canonical form surface', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalNowPublicationPage(
+          embedded: true,
+          repository: InMemoryNowPublicationRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   Future<void> pumpPage(WidgetTester tester, Size size) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -237,9 +259,7 @@ void main() {
     );
   });
 
-  testWidgets('toggle de agendamento aceita teclado e desabilita durante salvamento', (
-    tester,
-  ) async {
+  testWidgets('toggle canônico de agendamento desabilita durante salvamento', (tester) async {
     final repository = _BlockingRepository();
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -253,12 +273,9 @@ void main() {
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final toggleFinder = find.byKey(const Key('now-schedule-toggle'));
+    expect(find.byType(CoeloAdminToggleField), findsOneWidget);
     await tester.ensureVisible(toggleFinder);
-    final actionContext = tester.element(
-      find.descendant(of: toggleFinder, matching: find.byType(GestureDetector)),
-    );
-
-    Actions.invoke(actionContext, const ActivateIntent());
+    await tester.tap(toggleFinder);
     await tester.pump();
     expect(find.byKey(const Key('now-schedule-field')), findsOneWidget);
 

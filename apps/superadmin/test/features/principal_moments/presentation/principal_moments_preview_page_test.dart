@@ -170,6 +170,21 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('embedded web preview omits its own application chrome', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(theme: CoeloTheme.light, home: const PrincipalMomentsPreviewPage(embedded: true)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-desktop-aside')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('shows the canonical loading and empty states for an authorized feed', (
     tester,
   ) async {

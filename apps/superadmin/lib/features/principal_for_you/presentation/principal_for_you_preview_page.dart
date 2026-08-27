@@ -6,6 +6,7 @@ import 'widgets/coelo_principal_action_card.dart';
 
 final class PrincipalForYouPreviewPage extends StatefulWidget {
   const PrincipalForYouPreviewPage({
+    this.embedded = false,
     this.data,
     this.onOpenHappens,
     this.onOpenNow,
@@ -15,6 +16,7 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
     super.key,
   });
 
+  final bool embedded;
   final PrincipalForYouPreviewData? data;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenNow;
@@ -67,8 +69,10 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
       final large = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: _ForYouAppBar(onProfile: () => _invoke(widget.onOpenProfile, 'Perfil')),
-        bottomNavigationBar: compact
+        appBar: widget.embedded
+            ? null
+            : _ForYouAppBar(onProfile: () => _invoke(widget.onOpenProfile, 'Perfil')),
+        bottomNavigationBar: compact && !widget.embedded
             ? _MobileNavigation(
                 onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
                 onNow: () => _invoke(widget.onOpenNow, 'Agora'),
@@ -79,7 +83,7 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (expanded)
+            if (expanded && !widget.embedded)
               _DesktopRail(
                 onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
                 onNow: () => _invoke(widget.onOpenNow, 'Agora'),

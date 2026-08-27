@@ -8,6 +8,7 @@ import '../domain/principal_moments_preview_data.dart';
 
 final class PrincipalMomentsPreviewPage extends StatefulWidget {
   const PrincipalMomentsPreviewPage({
+    this.embedded = false,
     this.onOpenHappens,
     this.onOpenProfile,
     this.onCreateMoment,
@@ -18,6 +19,7 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
     super.key,
   });
 
+  final bool embedded;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenProfile;
   final VoidCallback? onCreateMoment;
@@ -168,12 +170,14 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: _MomentsAppBar(
-          expandedIdentity: desktop,
-          onBug: () => _prototypeMessage('Reporte de bug'),
-          onNotifications: () => _prototypeMessage('Notificações'),
-          onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-        ),
+        appBar: widget.embedded
+            ? null
+            : _MomentsAppBar(
+                expandedIdentity: desktop,
+                onBug: () => _prototypeMessage('Reporte de bug'),
+                onNotifications: () => _prototypeMessage('Notificações'),
+                onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
+              ),
         body: Column(
           children: [
             Expanded(
@@ -208,14 +212,14 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
                 ),
               ),
             ),
-            if (!desktop)
+            if (!widget.embedded && !desktop)
               _MomentsNavigation(
                 key: const Key('principal-moments-mobile-nav'),
                 dark: true,
                 onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
                 onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
               )
-            else
+            else if (!widget.embedded)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   CoeloSpacing.space4,

@@ -5,6 +5,7 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_act
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -182,6 +183,7 @@ void main() {
     await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('moments-publication-save-toggle')));
+    expect(find.byType(CoeloAdminToggleField), findsOneWidget);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-save-toggle')));
     await tester.pump();

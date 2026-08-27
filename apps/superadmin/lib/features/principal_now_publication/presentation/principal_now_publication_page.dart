@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,7 @@ typedef NowAudioPicker = Future<NowAudioDraft?> Function();
 final class PrincipalNowPublicationPage extends StatefulWidget {
   const PrincipalNowPublicationPage({
     required this.repository,
+    this.embedded = false,
     this.publicationContext = NowPublicationContext.demo,
     this.mediaPicker,
     this.audioPicker,
@@ -25,6 +27,7 @@ final class PrincipalNowPublicationPage extends StatefulWidget {
   });
 
   final NowPublicationRepository repository;
+  final bool embedded;
   final NowPublicationContext publicationContext;
   final NowMediaPicker? mediaPicker;
   final NowAudioPicker? audioPicker;
@@ -132,6 +135,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
       builder: (context, constraints) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SafeArea(
+          top: !widget.embedded,
+          bottom: !widget.embedded,
+          left: !widget.embedded,
+          right: !widget.embedded,
           child: SuperadminFormFrame(
             viewportWidth: constraints.maxWidth,
             navigation: SuperadminFormStepNavigation(
@@ -792,36 +799,18 @@ final class _ScheduleCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space3,
-            vertical: CoeloSpacing.space2,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.calendar_today_outlined),
-              const SizedBox(width: CoeloSpacing.space3),
-              const Expanded(child: Text('Agendar publicação')),
-              _PrincipalToggle(
-                key: const Key('now-schedule-toggle'),
-                value: scheduled,
-                onChanged: busy
-                    ? null
-                    : (value) {
-                        if (!value) return controller.setPublishAt(null);
-                        final tomorrow = now.add(const Duration(days: 1));
-                        controller.setPublishAt(
-                          DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 8),
-                        );
-                      },
-              ),
-            ],
-          ),
+        CoeloAdminToggleField(
+          key: const Key('now-schedule-toggle'),
+          label: 'Agendar publicação',
+          description: 'Defina data e horário para publicar automaticamente.',
+          value: scheduled,
+          onChanged: busy
+              ? null
+              : (value) {
+                  if (!value) return controller.setPublishAt(null);
+                  final tomorrow = now.add(const Duration(days: 1));
+                  controller.setPublishAt(DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 8));
+                },
         ),
         if (scheduled) ...[
           const SizedBox(height: CoeloSpacing.space2),
@@ -888,88 +877,6 @@ final class _PublicationFooter extends StatelessWidget {
           publish,
         ],
       ],
-    );
-  }
-}
-
-final class _PrincipalToggle extends StatefulWidget {
-  const _PrincipalToggle({required this.value, required this.onChanged, super.key});
-
-  final bool value;
-  final ValueChanged<bool>? onChanged;
-
-  @override
-  State<_PrincipalToggle> createState() => _PrincipalToggleState();
-}
-
-final class _PrincipalToggleState extends State<_PrincipalToggle> {
-  bool highlighted = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final enabled = widget.onChanged != null;
-    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.fast;
-    void toggle() => widget.onChanged?.call(!widget.value);
-    return Semantics(
-      button: true,
-      enabled: enabled,
-      toggled: widget.value,
-      label: 'Agendar publicação',
-      onTap: toggle,
-      child: MouseRegion(
-        cursor: enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
-        onEnter: enabled ? (_) => setState(() => highlighted = true) : null,
-        onExit: (_) => setState(() => highlighted = false),
-        child: FocusableActionDetector(
-          enabled: enabled,
-          onShowFocusHighlight: (value) => setState(() => highlighted = value),
-          actions: <Type, Action<Intent>>{
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (_) {
-                if (enabled) toggle();
-                return null;
-              },
-            ),
-          },
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: toggle,
-            child: SizedBox(
-              width: 56,
-              height: CoeloSize.touchMin,
-              child: Center(
-                child: AnimatedContainer(
-                  duration: duration,
-                  width: 52,
-                  height: 32,
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: widget.value
-                        ? colors.primary
-                        : highlighted
-                        ? colors.primaryContainer
-                        : colors.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(CoeloRadius.full),
-                    border: Border.all(color: highlighted ? colors.primary : colors.outlineVariant),
-                  ),
-                  child: AnimatedAlign(
-                    duration: duration,
-                    alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: widget.value ? colors.onPrimary : colors.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const SizedBox.square(dimension: 24),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -12,6 +12,7 @@ enum _ProfileTab { happens, moments, circulars, about }
 final class PrincipalProfilePreviewPage extends StatefulWidget {
   const PrincipalProfilePreviewPage({
     required this.onOpenAgenda,
+    this.embedded = false,
     this.onOpenHappens,
     this.onOpenMoments,
     this.onReportBug,
@@ -30,6 +31,7 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   });
 
   final VoidCallback onOpenAgenda;
+  final bool embedded;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenMoments;
   final VoidCallback? onReportBug;
@@ -58,13 +60,16 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: PrincipalPreviewAppBar(
-        keyPrefix: 'principal-profile',
-        onReportBug: () => _runOrPreview(context, widget.onReportBug, 'Reporte de bug'),
-        onOpenNotifications: () =>
-            _runOrPreview(context, widget.onOpenNotifications, 'Notificações'),
-        onOpenContext: () => _runOrPreview(context, widget.onOpenContext, 'Troca de contexto'),
-      ),
+      appBar: widget.embedded
+          ? null
+          : PrincipalPreviewAppBar(
+              keyPrefix: 'principal-profile',
+              onReportBug: () => _runOrPreview(context, widget.onReportBug, 'Reporte de bug'),
+              onOpenNotifications: () =>
+                  _runOrPreview(context, widget.onOpenNotifications, 'Notificações'),
+              onOpenContext: () =>
+                  _runOrPreview(context, widget.onOpenContext, 'Troca de contexto'),
+            ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;

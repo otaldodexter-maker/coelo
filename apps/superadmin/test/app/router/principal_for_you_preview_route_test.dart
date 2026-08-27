@@ -39,6 +39,10 @@ void main() {
     await tester.tap(find.byKey(const Key('principal-happens-tab-for-you')));
     await tester.pumpAndSettle();
     expect(find.byType(PrincipalForYouPreviewPage), findsOneWidget);
+    expect(
+      tester.widget<PrincipalForYouPreviewPage>(find.byType(PrincipalForYouPreviewPage)).embedded,
+      isTrue,
+    );
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalForYou);
 
     await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));

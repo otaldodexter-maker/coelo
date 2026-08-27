@@ -9,8 +9,8 @@ import 'package:coelo_superadmin/features/principal_happens/presentation/princip
 import 'package:coelo_superadmin/features/principal_moments/presentation/principal_moments_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_now/presentation/principal_now_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_now_publication/presentation/principal_now_publication_page.dart';
+import 'package:coelo_superadmin/features/principal_now_publication/domain/now_publication.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -115,6 +115,10 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(find.byType(PrincipalMomentsPreviewPage), findsOneWidget);
+    expect(
+      tester.widget<PrincipalMomentsPreviewPage>(find.byType(PrincipalMomentsPreviewPage)).embedded,
+      isTrue,
+    );
     expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
     expect(find.byType(Dialog), findsNothing);
 
@@ -153,7 +157,7 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
   });
 
-  testWidgets('a direct Momentos link closes to Acontece with a mouse click', (tester) async {
+  testWidgets('a direct Momentos link returns to Acontece through the host shell', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
@@ -170,12 +174,11 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
-    addTearDown(mouse.removePointer);
-    final closeToHappens = find.byKey(const Key('principal-moments-nav-acontece'));
-    await mouse.addPointer(location: tester.getCenter(closeToHappens));
-    await mouse.down(tester.getCenter(closeToHappens));
-    await mouse.up();
+    await tester.tap(find.byKey(const Key('superadmin-mobile-menu')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-navigation-search')), 'Acontece');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('superadmin-navigation-principal-happens')));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
@@ -183,12 +186,14 @@ void main() {
 
   testWidgets('opens the Agora composer without replacing the viewer route', (tester) async {
     final session = SuperadminSession();
+    final productionRepository = _TripwireNowPublicationRepository();
     final router = createSuperadminRouter(
       session: session,
       login: unavailableSuperadminLogin,
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+      nowPublicationRepository: productionRepository,
       onThemeModeChanged: (_) {},
     );
     addTearDown(router.dispose);
@@ -199,12 +204,51 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PrincipalNowPublicationPage), findsOneWidget);
+    expect(
+      tester.widget<PrincipalNowPublicationPage>(find.byType(PrincipalNowPublicationPage)).embedded,
+      isTrue,
+    );
     expect(find.byType(PrincipalNowPreviewPage), findsNothing);
     expect(
       router.routeInformationProvider.value.uri.path,
       SuperadminRoutes.devPrincipalNowPublication,
     );
+    expect(productionRepository.calls, 0);
   });
+}
+
+final class _TripwireNowPublicationRepository implements NowPublicationRepository {
+  var calls = 0;
+
+  Future<T> _fail<T>() {
+    calls++;
+    return Future<T>.error(StateError('production Agora repository reached from /dev'));
+  }
+
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) => _fail();
+
+  @override
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) =>
+      _fail();
+
+  @override
+  Future<NowPublicationDraft> saveDraft(NowPublicationContext context, NowPublicationDraft draft) =>
+      _fail();
+
+  @override
+  Future<NowAudioDraft> uploadAudio(
+    NowPublicationContext context,
+    String publicationId,
+    NowAudioDraft audio,
+  ) => _fail();
+
+  @override
+  Future<NowMediaDraft> uploadMedia(
+    NowPublicationContext context,
+    String publicationId,
+    NowMediaDraft media,
+  ) => _fail();
 }
 
 Future<void> _pumpRouteTransition(WidgetTester tester) async {

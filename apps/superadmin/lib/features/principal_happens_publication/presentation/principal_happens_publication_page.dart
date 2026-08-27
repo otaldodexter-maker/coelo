@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 
 import '../../principal_shared/presentation/principal_preview_app_bar.dart';
@@ -15,6 +16,7 @@ typedef HappensMediaPicker = Future<List<HappensMediaDraft>> Function();
 class PrincipalHappensPublicationPage extends StatefulWidget {
   const PrincipalHappensPublicationPage({
     required this.repository,
+    this.embedded = false,
     this.publicationContext = HappensPublicationContext.demo,
     this.onClose,
     this.onCompleted,
@@ -23,6 +25,7 @@ class PrincipalHappensPublicationPage extends StatefulWidget {
   });
 
   final HappensPublicationRepository repository;
+  final bool embedded;
   final HappensPublicationContext publicationContext;
   final VoidCallback? onClose;
   final ValueChanged<HappensPublication>? onCompleted;
@@ -92,12 +95,14 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
       final colors = Theme.of(context).colorScheme;
       return Scaffold(
         backgroundColor: colors.surface,
-        appBar: PrincipalPreviewAppBar(
-          keyPrefix: 'principal-happens-publication',
-          onReportBug: () => _prototypeMessage('Reporte de bug'),
-          onOpenNotifications: () => _prototypeMessage('Notificações'),
-          onOpenContext: () => _prototypeMessage('Troca de contexto'),
-        ),
+        appBar: widget.embedded
+            ? null
+            : PrincipalPreviewAppBar(
+                keyPrefix: 'principal-happens-publication',
+                onReportBug: () => _prototypeMessage('Reporte de bug'),
+                onOpenNotifications: () => _prototypeMessage('Notificações'),
+                onOpenContext: () => _prototypeMessage('Troca de contexto'),
+              ),
         body: LayoutBuilder(
           builder: (context, constraints) => SuperadminFormFrame(
             viewportWidth: constraints.maxWidth,
@@ -365,7 +370,7 @@ class _AudienceToggleState extends State<_AudienceToggle> {
   }
 }
 
-class _AutosaveToggle extends StatefulWidget {
+class _AutosaveToggle extends StatelessWidget {
   const _AutosaveToggle({
     required this.label,
     required this.description,
@@ -379,127 +384,13 @@ class _AutosaveToggle extends StatefulWidget {
   final ValueChanged<bool> onChanged;
 
   @override
-  State<_AutosaveToggle> createState() => _AutosaveToggleState();
-}
-
-class _AutosaveToggleState extends State<_AutosaveToggle> {
-  final FocusNode _focusNode = FocusNode(debugLabel: 'Salvar como rascunho');
-  bool _hovered = false;
-  bool _focused = false;
-
-  void _toggle() => widget.onChanged(!widget.value);
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(CoeloRadius.lg);
-    return Semantics(
-      container: true,
-      excludeSemantics: true,
-      button: true,
-      toggled: widget.value,
-      label: widget.label,
-      hint: widget.description,
-      onTap: _toggle,
-      child: FocusableActionDetector(
-        key: const Key('happens-autosave-toggle'),
-        focusNode: _focusNode,
-        mouseCursor: SystemMouseCursors.click,
-        onFocusChange: (value) => setState(() => _focused = value),
-        actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => _toggle())},
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          onEnter: (_) => setState(() => _hovered = true),
-          onExit: (_) => setState(() => _hovered = false),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _toggle,
-            child: AnimatedContainer(
-              key: const Key('happens-autosave-surface'),
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? CoeloMotion.instant
-                  : CoeloMotion.short,
-              decoration: BoxDecoration(
-                color: _hovered || _focused ? colors.primaryContainer : colors.surface,
-                borderRadius: radius,
-                border: Border.all(color: _focused ? colors.primary : colors.outlineVariant),
-              ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                child: Padding(
-                  padding: const EdgeInsets.all(CoeloSpacing.space3),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(widget.label, style: const TextStyle(fontWeight: FontWeight.w700)),
-                            const SizedBox(height: CoeloSpacing.space1),
-                            Text(
-                              widget.description,
-                              style: TextStyle(color: colors.onSurfaceVariant),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: CoeloSpacing.space3),
-                      _ToggleIndicator(value: widget.value),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ToggleIndicator extends StatelessWidget {
-  const _ToggleIndicator({required this.value});
-
-  final bool value;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? CoeloMotion.instant
-        : CoeloMotion.short;
-    return ExcludeSemantics(
-      child: AnimatedContainer(
-        duration: duration,
-        width: CoeloSpacing.space10,
-        height: CoeloSpacing.space6,
-        padding: const EdgeInsets.all(CoeloSpacing.spaceHalf),
-        decoration: BoxDecoration(
-          color: value ? colors.primary : colors.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(CoeloRadius.full),
-          border: Border.all(color: value ? colors.primary : colors.outlineVariant),
-        ),
-        child: AnimatedAlign(
-          duration: duration,
-          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            width: CoeloSpacing.space5,
-            height: CoeloSpacing.space5,
-            decoration: BoxDecoration(
-              color: value ? colors.onPrimary : colors.onSurfaceVariant,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => CoeloAdminToggleField(
+    key: const Key('happens-autosave-toggle'),
+    label: label,
+    description: description,
+    value: value,
+    onChanged: onChanged,
+  );
 }
 
 class _CaptionFieldState extends State<_CaptionField> {

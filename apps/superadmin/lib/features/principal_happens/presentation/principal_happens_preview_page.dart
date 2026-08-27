@@ -19,6 +19,7 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.embedded = false,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
   }) : mixedFeedRepository = null,
@@ -37,6 +38,7 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.embedded = false,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
   }) : feedRepository = mediaRepository,
@@ -49,6 +51,7 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.embedded = false,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
   }) : feedRepository = null,
@@ -64,6 +67,7 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenNow;
   final VoidCallback? onOpenForYou;
   final VoidCallback? onCreatePost;
+  final bool embedded;
   final PrincipalHappensFeedRepository? feedRepository;
   final PrincipalHappensFeedScope? feedScope;
   final PrincipalMixedFeedRepository? mixedFeedRepository;
@@ -207,6 +211,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                   _savedPosts.contains(index) ? _savedPosts.remove(index) : _savedPosts.add(index);
                 }),
                 onPrototypeAction: _prototypeMessage,
+                embedded: widget.embedded,
               ),
             ),
             if (large)
@@ -243,6 +248,7 @@ final class _Feed extends StatelessWidget {
     required this.onLike,
     required this.onSave,
     required this.onPrototypeAction,
+    required this.embedded,
   });
 
   final PrincipalHappensPreviewData data;
@@ -264,6 +270,7 @@ final class _Feed extends StatelessWidget {
   final ValueChanged<int> onLike;
   final ValueChanged<int> onSave;
   final ValueChanged<String> onPrototypeAction;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -276,14 +283,18 @@ final class _Feed extends StatelessWidget {
           sliver: SliverToBoxAdapter(
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    'Acontece',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-                  ),
-                ),
+                if (!embedded)
+                  Expanded(
+                    child: Text(
+                      'Acontece',
+                      key: const Key('principal-happens-local-title'),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                  )
+                else
+                  const Spacer(),
                 if (compact || MediaQuery.textScalerOf(context).scale(1) > 1.5)
                   IconButton.filled(
                     key: const Key('principal-happens-create'),

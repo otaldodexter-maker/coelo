@@ -344,7 +344,7 @@ class _SettingRow extends StatelessWidget {
   }
 }
 
-class _MomentToggleField extends StatefulWidget {
+class _MomentToggleField extends StatelessWidget {
   const _MomentToggleField({
     super.key,
     required this.label,
@@ -357,104 +357,8 @@ class _MomentToggleField extends StatefulWidget {
   final ValueChanged<bool>? onChanged;
 
   @override
-  State<_MomentToggleField> createState() => _MomentToggleFieldState();
-}
-
-class _MomentToggleFieldState extends State<_MomentToggleField> {
-  bool _hovered = false;
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final enabled = widget.onChanged != null;
-    final highlighted = enabled && (_hovered || _focused);
-    return Semantics(
-      container: true,
-      label: widget.label,
-      toggled: widget.value,
-      enabled: enabled,
-      onTap: enabled ? _toggle : null,
-      child: ExcludeSemantics(
-        child: MouseRegion(
-          cursor: enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
-          onEnter: enabled ? (_) => setState(() => _hovered = true) : null,
-          onExit: enabled ? (_) => setState(() => _hovered = false) : null,
-          child: FocusableActionDetector(
-            enabled: enabled,
-            onShowFocusHighlight: (value) => setState(() => _focused = value),
-            shortcuts: const {
-              SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-              SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-            },
-            actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => _toggle())},
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: enabled ? _toggle : null,
-              child: AnimatedContainer(
-                duration: MediaQuery.disableAnimationsOf(context)
-                    ? Duration.zero
-                    : CoeloMotion.fast,
-                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                decoration: BoxDecoration(
-                  color: highlighted
-                      ? theme.colorScheme.primaryContainer
-                      : theme.colorScheme.surface,
-                  border: Border.all(
-                    color: highlighted
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outlineVariant,
-                  ),
-                  borderRadius: BorderRadius.circular(CoeloRadius.md),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.assignment_outlined, size: CoeloSize.iconSm),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Expanded(child: Text(widget.label, style: theme.textTheme.labelSmall)),
-                    SizedBox(
-                      width: 48,
-                      height: 28,
-                      child: AnimatedContainer(
-                        duration: MediaQuery.disableAnimationsOf(context)
-                            ? Duration.zero
-                            : CoeloMotion.fast,
-                        padding: const EdgeInsets.all(CoeloSpacing.space1),
-                        decoration: BoxDecoration(
-                          color: widget.value
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(CoeloRadius.full),
-                        ),
-                        child: AnimatedAlign(
-                          duration: MediaQuery.disableAnimationsOf(context)
-                              ? Duration.zero
-                              : CoeloMotion.fast,
-                          alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: widget.value
-                                  ? theme.colorScheme.onPrimary
-                                  : theme.colorScheme.onSurfaceVariant,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const SizedBox.square(dimension: 20),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _toggle() => widget.onChanged?.call(!widget.value);
+  Widget build(BuildContext context) =>
+      CoeloAdminToggleField(label: label, value: value, onChanged: onChanged);
 }
 
 ButtonStyle _discreteActionStyle(BuildContext context) {

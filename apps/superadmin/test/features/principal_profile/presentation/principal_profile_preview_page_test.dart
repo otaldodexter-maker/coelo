@@ -7,6 +7,23 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular.da
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 
 void main() {
+  testWidgets('embedded web preview omits its own application header', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfilePreviewPage(embedded: true, onOpenAgenda: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.byKey(const Key('principal-profile-logo')), findsNothing);
+    expect(find.byKey(const Key('principal-profile-scroll')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('supports 200 percent text at 375x900 light', (tester) async {
     await tester.binding.setSurfaceSize(const Size(375, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));

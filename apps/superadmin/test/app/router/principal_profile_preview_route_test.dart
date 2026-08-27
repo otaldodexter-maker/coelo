@@ -37,6 +37,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PrincipalProfilePreviewPage), findsOneWidget);
+    expect(
+      tester.widget<PrincipalProfilePreviewPage>(find.byType(PrincipalProfilePreviewPage)).embedded,
+      isTrue,
+    );
     await tester.ensureVisible(find.byKey(const Key('principal-profile-open-agenda')));
     await tester.tap(find.byKey(const Key('principal-profile-open-agenda')));
     await tester.pumpAndSettle();

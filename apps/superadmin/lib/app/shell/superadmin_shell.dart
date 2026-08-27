@@ -46,6 +46,7 @@ class SuperadminShell extends StatefulWidget {
     this.showChatLauncher = true,
     this.chatLauncherBottomInset = 0,
     this.isHost = false,
+    this.canAccessCapability,
     super.key,
   }) : assert(chatLauncherBottomInset >= 0);
 
@@ -57,6 +58,7 @@ class SuperadminShell extends StatefulWidget {
     this.activityController,
     this.onBugReportSubmitted,
     this.chatUnreadCountLoader,
+    this.canAccessCapability,
     super.key,
   }) : title = '',
        subtitle = '',
@@ -82,6 +84,7 @@ class SuperadminShell extends StatefulWidget {
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
   final bool isHost;
+  final CoeloNavigationCapabilityCheck? canAccessCapability;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
@@ -227,6 +230,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                             collapsed: false,
                             currentDestination: widget.currentDestination,
                             onDestinationSelected: widget.onDestinationSelected,
+                            canAccessCapability: widget.canAccessCapability,
                           ),
                         ),
                       ],
@@ -270,6 +274,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                           collapsed: false,
                           currentDestination: widget.currentDestination,
                           onDestinationSelected: widget.onDestinationSelected,
+                          canAccessCapability: widget.canAccessCapability,
                         ),
                       ),
                     ],
@@ -356,6 +361,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                                       progress: _sidebarController.value,
                                       currentDestination: widget.currentDestination,
                                       onDestinationSelected: widget.onDestinationSelected,
+                                      canAccessCapability: widget.canAccessCapability,
                                     ),
                                   ),
                                 ),
@@ -510,11 +516,13 @@ class _SidebarTransition extends StatelessWidget {
     required this.progress,
     required this.currentDestination,
     required this.onDestinationSelected,
+    this.canAccessCapability,
   });
 
   final double progress;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
+  final CoeloNavigationCapabilityCheck? canAccessCapability;
 
   @override
   Widget build(BuildContext context) {
@@ -534,6 +542,7 @@ class _SidebarTransition extends StatelessWidget {
                 collapsed: collapsed,
                 currentDestination: currentDestination,
                 onDestinationSelected: onDestinationSelected,
+                canAccessCapability: canAccessCapability,
               ),
             ),
           ),
@@ -548,11 +557,13 @@ class _Sidebar extends StatelessWidget {
     required this.collapsed,
     required this.currentDestination,
     required this.onDestinationSelected,
+    this.canAccessCapability,
   });
 
   final bool collapsed;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
+  final CoeloNavigationCapabilityCheck? canAccessCapability;
 
   @override
   Widget build(BuildContext context) {
@@ -569,6 +580,7 @@ class _Sidebar extends StatelessWidget {
             collapsed: collapsed,
             currentDestination: currentDestination,
             onDestinationSelected: onDestinationSelected,
+            canAccessCapability: canAccessCapability,
           ),
         ),
         const _InsetDivider(),

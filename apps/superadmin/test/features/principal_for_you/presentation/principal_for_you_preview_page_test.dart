@@ -41,6 +41,21 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('embedded web preview omits its own application chrome', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(theme: CoeloTheme.light, home: const PrincipalForYouPreviewPage(embedded: true)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsNothing);
+    expect(find.byKey(const Key('principal-for-you-mobile-nav')), findsNothing);
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.byKey(const Key('principal-for-you-summary-aside')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('opens the context selector and updates the active projection', (tester) async {
     await pumpPage(tester, const Size(375, 900));
 

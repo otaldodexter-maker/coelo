@@ -10,8 +10,31 @@ import 'package:coelo_superadmin/features/principal_happens_publication/presenta
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 
 void main() {
+  testWidgets('embedded publication uses only the canonical form surface', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalHappensPublicationPage(
+          embedded: true,
+          repository: InMemoryHappensPublicationRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('usa frame, etapas e rodape canonicos do wizard', (tester) async {
     tester.view.physicalSize = const Size(1024, 900);
     tester.view.devicePixelRatio = 1;
@@ -129,8 +152,8 @@ void main() {
       tester.getSemantics(toggle),
       matchesSemantics(
         label: 'Salvar como rascunho',
-        hint: 'Ative para salvar automaticamente.',
-        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
         hasToggledState: true,
         isToggled: false,
         hasTapAction: true,
@@ -142,8 +165,8 @@ void main() {
       tester.getSemantics(toggle),
       matchesSemantics(
         label: 'Salvar como rascunho',
-        hint: 'Ative para salvar automaticamente.',
-        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
         hasToggledState: true,
         isToggled: true,
         hasTapAction: true,
@@ -152,7 +175,7 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('autosave usa tonal laranja no hover e foco', (tester) async {
+  testWidgets('autosave reutiliza o toggle canônico e seu hover', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
@@ -162,22 +185,12 @@ void main() {
     await _continue(tester);
     await tester.ensureVisible(find.byKey(const Key('happens-autosave-toggle')));
     await tester.pumpAndSettle();
+    expect(find.byType(CoeloAdminToggleField), findsOneWidget);
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
     await mouse.addPointer();
     await mouse.moveTo(tester.getCenter(find.byKey(const Key('happens-autosave-toggle'))));
-    await tester.pumpAndSettle();
-    expect(
-      _autosaveColor(tester),
-      Theme.of(tester.element(find.byType(Scaffold))).colorScheme.primaryContainer,
-    );
-
-    await mouse.moveTo(Offset.zero);
-    tester
-        .widget<FocusableActionDetector>(find.byKey(const Key('happens-autosave-toggle')))
-        .focusNode!
-        .requestFocus();
     await tester.pumpAndSettle();
     expect(
       _autosaveColor(tester),
@@ -223,7 +236,16 @@ void main() {
 }
 
 Color? _autosaveColor(WidgetTester tester) =>
-    (tester.widget<AnimatedContainer>(find.byKey(const Key('happens-autosave-surface'))).decoration
+    (tester
+                .widget<AnimatedContainer>(
+                  find
+                      .descendant(
+                        of: find.byKey(const Key('happens-autosave-toggle')),
+                        matching: find.byType(AnimatedContainer),
+                      )
+                      .first,
+                )
+                .decoration
             as BoxDecoration?)
         ?.color;
 
