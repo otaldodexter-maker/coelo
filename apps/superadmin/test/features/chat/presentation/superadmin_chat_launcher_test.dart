@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('desktop launcher keeps the stable orange capsule and server count', (tester) async {
+  testWidgets('desktop launcher uses the canonical circular FAB and server count', (tester) async {
     _viewport(tester, 1024);
     await tester.pumpWidget(_app(unreadCount: 10));
 
@@ -13,13 +13,15 @@ void main() {
     final material = tester.widget<Material>(surface);
     final size = tester.getSize(surface);
 
-    expect(find.text('Mens.'), findsOneWidget);
+    expect(find.text('Mens.'), findsNothing);
     expect(find.text('9+'), findsOneWidget);
     expect(material.color, CoeloTheme.light.colorScheme.primary);
-    expect(material.shape, isA<StadiumBorder>());
-    expect(size.width, greaterThanOrEqualTo(CoeloSize.touchMin));
-    expect(size.height, CoeloSize.touchMin);
-    expect(find.bySemanticsLabel('Abrir conversas, 10 mensagens nao lidas'), findsOneWidget);
+    expect(material.shape, isA<CircleBorder>());
+    expect(size, const Size.square(CoeloSize.touchMin));
+    expect(
+      find.bySemanticsLabel(RegExp('Abrir conversas, 10 mensagens nao lidas')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('loads the authorised unread total and caps the visual badge at 9+', (tester) async {
@@ -28,7 +30,10 @@ void main() {
     await tester.pump();
 
     expect(find.text('9+'), findsOneWidget);
-    expect(find.bySemanticsLabel('Abrir conversas, 10 mensagens nao lidas'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp('Abrir conversas, 10 mensagens nao lidas')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('routes directly to the authorised conversations surface', (tester) async {
@@ -43,7 +48,9 @@ void main() {
     expect(find.byKey(const Key('superadmin-chat-launcher-panel')), findsNothing);
   });
 
-  testWidgets('mobile launcher is a 48px circle and has no synthetic badge', (tester) async {
+  testWidgets('mobile launcher is the same 48px circular FAB without synthetic badge', (
+    tester,
+  ) async {
     _viewport(tester, 375);
     await tester.pumpWidget(_app());
 
@@ -52,29 +59,62 @@ void main() {
     expect(find.text('Mens.'), findsNothing);
     expect(find.byIcon(Icons.forum_outlined), findsOneWidget);
     expect(find.text('0'), findsNothing);
+    expect(material.color, CoeloTheme.light.colorScheme.primary);
     expect(material.shape, isA<CircleBorder>());
     expect(tester.getSize(surface), const Size(CoeloSize.touchMin, CoeloSize.touchMin));
-    expect(find.bySemanticsLabel('Abrir conversas, nenhuma mensagem nao lida'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp('Abrir conversas, nenhuma mensagem nao lida')),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('drag and Alt arrows never move the safe-area anchored launcher', (tester) async {
+  testWidgets('drag, Alt arrows and Home reposition and reset within the safe area', (
+    tester,
+  ) async {
     _viewport(tester, 1024);
-    await tester.pumpWidget(_app());
+    final controller = SuperadminChatLauncherPositionController();
+    addTearDown(controller.dispose);
+    var openCount = 0;
+    await tester.pumpWidget(_app(positionController: controller, onOpen: () => openCount += 1));
+    await tester.pumpAndSettle();
     final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
     final initial = tester.getTopLeft(launcher);
 
     await tester.drag(launcher, const Offset(-180, -120));
+    await tester.pumpAndSettle();
+    final dragged = tester.getTopLeft(launcher);
+
+    expect(dragged.dx, lessThan(initial.dx));
+    expect(dragged.dy, lessThan(initial.dy));
+    expect(controller.value, isNotNull);
+
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
     await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
     await tester.pumpAndSettle();
+    final keyboardMoved = tester.getTopLeft(launcher);
+
+    expect(keyboardMoved.dx, lessThan(dragged.dx));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.home);
+    await tester.pumpAndSettle();
 
     expect(tester.getTopLeft(launcher), initial);
+    expect(controller.value, isNull);
+
+    await tester.tap(launcher);
+    await tester.pumpAndSettle();
+    expect(openCount, 1);
   });
 }
 
-Widget _app({VoidCallback? onOpen, int unreadCount = 0, Future<int> Function()? loadUnreadCount}) {
+Widget _app({
+  VoidCallback? onOpen,
+  int unreadCount = 0,
+  Future<int> Function()? loadUnreadCount,
+  SuperadminChatLauncherPositionController? positionController,
+}) {
   return MaterialApp(
     theme: CoeloTheme.light,
     home: Scaffold(
@@ -83,6 +123,7 @@ Widget _app({VoidCallback? onOpen, int unreadCount = 0, Future<int> Function()? 
         child: SuperadminChatLauncher(
           unreadCount: unreadCount,
           loadUnreadCount: loadUnreadCount,
+          positionController: positionController,
           onOpenConversations: onOpen ?? () {},
         ),
       ),

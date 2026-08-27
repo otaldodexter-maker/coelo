@@ -25,7 +25,10 @@ void main() {
       ),
     );
 
-    expect(find.bySemanticsLabel('Abrir conversas, nenhuma mensagem nao lida'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp('Abrir conversas, nenhuma mensagem nao lida')),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const Key('superadmin-chat-launcher-surface')));
     await tester.pumpAndSettle();
 
