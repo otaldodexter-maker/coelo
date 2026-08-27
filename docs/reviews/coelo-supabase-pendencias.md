@@ -2807,3 +2807,54 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 1 h 45 min acumulados. **Tempo restante
   estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
   Grupos e Pessoas; backlog integral não calculável ainda.
+
+### Checkpoint seguro 30 — dependência Access Profiles comprovada
+
+- **Lote:** reconciliação individual de
+  `20260811215451_access_profile_management_v2.sql`; nenhuma ação funcional foi
+  promovida.
+- **Ações tratadas:** somente `SUP-GEN-002` e `SUP-GEN-016`. A migration Auth,
+  Flutter e as outras 84 candidatas não foram alterados.
+- **Migrations, RPCs ou Functions alteradas:** adicionada à fonte canônica a
+  versão remota `20260811215451` a partir do blob Git único
+  `ac2b2b023d55607204b95a5d4ca391146b68698e`, presente nos commits equivalentes
+  `10bad552bd70b33e7ba2333a8290403dafe68a0f` e
+  `849b867fc7073580e5b021954754131c41b1940c`. A recovery posterior
+  `99322aa83f0f2c0b1d67edb8d70377f3cb3cb1d6` foi rejeitada.
+- **Evidências:** ledger remoto read-only: 115 statements, 117.154 bytes no join
+  e SHA-256
+  `b8d3dfc1764fdfa9320c8f8c398198986a057a2fa1b05e42df130fe9c91486c3`.
+  O vetor estrutural remoto — 22 funções públicas de perfil, 19 gateways com
+  parâmetros posicionais, três wrappers nomeados, zero drops tardios e zero
+  patch de labels Units — seleciona somente `ac2b2b...` entre cinco blobs. O
+  arquivo canônico/mirror tem 117.682 bytes, SHA-256 raw
+  `04c1bedd194b812ea753243dd95e400d39e0257f985506a8b703e68329d90208`
+  e LF-normalized
+  `cf774bdd403025673ba385c7234cea1527e4a6b0204a7afad4d980f575745462`.
+- **Manifesto:** gerador passou a exigir contagem canônica esperada explícita;
+  `-ExpectedCanonicalCount 100` nega e `101` gera deterministicamente. Sidecar
+  id `59d218305d76653e1f1dd16d345d2ae451beb9b40fe7c7a34cbfec7091e6f859`;
+  CSV 143.738 bytes/SHA-256
+  `33f5ef6d0c3bf79cd6b428a4e9b7b6b60eef9ccd55edc2f2bda20d38ed45dbd9`;
+  meta 1.128 bytes/SHA-256
+  `0cc28d855108e82acaac136a1b06771d82146f5ee5b78880f64a85ff8663677b`.
+- **Testes executados:** review de proveniência independente; parser SQL dos
+  cinco blobs; mirror Prepare/Verify 101/101; replay isolado afetado uma vez;
+  negativo/positivo do gerador; geração determinística dupla; teardown nominal.
+  O `diff --check` padrão sinaliza somente a linha vazia histórica no EOF do
+  blob remoto; com `core.whitespace=-blank-at-eof`, os demais gates de whitespace
+  passam. A linha foi preservada para manter o blob Git exato.
+- **Estado local/remoto:** `20260811215451` e `20260812000847` passaram no
+  replay. O próximo RED é SQLSTATE `42703` em
+  `20260812001000_import_export_hub_security.sql`: a coluna
+  `public.import_jobs.processing_state` ainda não existe no baseline. O remoto
+  recebeu apenas SELECTs de ledger; zero migration, DDL, DML operacional, Auth,
+  Storage, Edge ou deploy.
+- **Cleanup:** projeto/rede/diretório temporário
+  `coelo_replay_20260827_03` removido; zero container, volume ou rede residual.
+- **Bloqueios e pendências:** identificar por proveniência individual a migration
+  que cria `processing_state`; não reconstruir as oito versões órfãs descritas
+  pelo rastreador. Auth SQL permanece bloqueado até o replay reconciliar.
+- **Tempo usado:** aproximadamente 2 h 20 min acumulados. **Tempo restante
+  estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
+  Grupos e Pessoas; backlog integral não calculável ainda.

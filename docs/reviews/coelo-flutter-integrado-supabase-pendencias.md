@@ -1,6 +1,6 @@
 ---
 title: "Pendências Coelo — Flutter integrado ao Supabase"
-source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 6dedcb79c02fd997eae0f0c5727bf63acb51be3d"
+source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 4937389e2d60e5266faed6d2449cb7c47523d9a4"
 status: "open"
 generated_at: "2026-08-26"
 updated_at: "2026-08-27"
@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-supabase_tracker_sha256: "C2847D7649A470E78F01F97AABBCE7E1D53681C58596050C943B280DAC8CE8A3"
+supabase_tracker_sha256: "2FA9A0899D126DD026A34561EDBA4C4A58C3AB06957BA8CEE24A31B07B96E128"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -972,6 +972,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 | Data | Mudança |
 |---|---|
 | 2026-08-27 | Consolidação Flutter/UI complementar: wizards Acontece/Momentos/Agora, shell único, Conteúdo somente `/dev`, Chat, Agenda/Permissões e responsividade de Medicação foram integrados em commits pequenos. Um P1 herdado de concorrência no Acontece foi fechado com mutex e ações fail-closed. Gate final: 58/58 testes não-golden e analyzer completo sem issues; nenhum backend/golden/remoto foi alterado e todos os estados integrados permanecem inalterados, com E2E 0/207. |
+| 2026-08-27 | Segunda reconciliação Supabase individual sem promoção integrada: `20260811215451_access_profile_management_v2.sql` foi restaurada do único blob Git compatível com o vetor do ledger remoto; a recovery posterior foi rejeitada. Canônico/mirror chegaram a 101/101 e o replay avançou até o próximo RED, ausência de `import_jobs.processing_state`. Teardown completo, zero mutação remota e zero E2E; as 207 ações integradas permanecem inalteradas. |
 | 2026-08-27 | Reconciliação Supabase individual sem promoção integrada: `20260812000847_audit_production.sql` foi restaurada ao blob histórico `5dea64a9` após o ledger remoto read-only confirmar as 12 substituições de identificador e os labels. Canônico/mirror ficaram 100/100 e idênticos; o replay isolado avançou do SQLSTATE `42601` para o próximo RED, ausência de `platform_permissions.module_label`, dependência ainda não promovida. Teardown completo, zero mutação remota e zero E2E; todas as 207 ações integradas permanecem inalteradas. |
 | 2026-08-27 | Baseline Supabase/Auth sem promoção integrada: spec 039 e ADR 0019 fixaram conta/e-mail Auth distintos no mesmo projeto, principal/link/membership internos, `session_id` revalidado, `platform.read` escopado, Owner AAL2 e envelope PostgREST 200 auditável. O manifesto v2 inventariou 100 canônicas, 175 recovery e 103 remotas em 186 versões, preservando seis conflitos textuais. Dois commits locais (`d6366d49`, `64308b19`) passaram reviews, knowledge gates, determinismo, autointegridade e secrets scan. Nenhuma migration/RPC/Function/Flutter foi alterada, o remoto recebeu somente `SELECT`, zero E2E foi executado e todos os estados integrados permanecem inalterados. Próximo gate: provar equivalência/proveniência por versão remota e triar as migrations apenas locais por pacote/decisão antes de qualquer replay isolado; não promover as 86 candidatas em lote. Tempo usado aproximado: 1 h; ETA do recorte backend 8–17 dias focados; backlog integral não calculável. |
 | 2026-08-26 | `groups.import`/`groups.export`: commit `81038c2b` removeu os falsos botões/SnackBars; RED→GREEN local e suíte do formulário 8/8. Flutter fica `audited`/fail-closed, Supabase `fail-closed` e integrado `blocked-supabase`; repository, jobs/Storage, RLS/Auth, tenant A/B, revogação, replay, reload, cleanup, remoto e E2E continuam pendentes. |
