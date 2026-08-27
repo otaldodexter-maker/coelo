@@ -164,7 +164,7 @@ final class _PopupSurface extends StatelessWidget {
             const SizedBox(height: CoeloSpacing.space4),
             FilledButton(
               key: const Key('notice-popup-primary-action'),
-              onPressed: buttonEnabled ? (onPrimaryPressed ?? () {}) : null,
+              onPressed: buttonEnabled && onPrimaryPressed != null ? onPrimaryPressed : null,
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(CoeloSize.touchMin),
                 backgroundColor: buttonColor,

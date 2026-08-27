@@ -30,6 +30,7 @@ void main() {
     expect(find.widgetWithText(FilledButton, 'Entendi'), findsOneWidget);
     final button = tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Entendi'));
     expect(button.style?.backgroundColor?.resolve({}), const Color(0xFF146C43));
+    expect(button.onPressed, isNull);
   });
 
   testWidgets('fullscreen dialog removes outer inset and closes through CTA', (tester) async {

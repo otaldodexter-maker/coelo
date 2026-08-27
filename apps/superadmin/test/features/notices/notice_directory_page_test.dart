@@ -12,9 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/fake_notice_repository.dart';
 
 void main() {
-  testWidgets('uses the communications title and type tabs to filter the same directory', (
-    tester,
-  ) async {
+  testWidgets('uses the shell title without repeating a local heading', (tester) async {
     final repository = _repository()
       ..create(_draft(1, type: CommunicationType.notice))
       ..create(_draft(2, type: CommunicationType.content))
@@ -23,7 +21,7 @@ void main() {
 
     await _pumpDirectory(tester, repository: repository);
 
-    expect(find.text('Comunicações do app'), findsOneWidget);
+    expect(find.text('Comunicações do app'), findsNothing);
     for (final label in ['Todos', 'Avisos', 'Conteúdos', 'Destaques', 'Para você']) {
       expect(find.text(label), findsWidgets);
     }
@@ -32,6 +30,13 @@ void main() {
     await tester.pump();
     expect(find.text('Aviso 2'), findsWidgets);
     expect(find.text('Aviso 1'), findsNothing);
+  });
+
+  testWidgets('uses the canonical large directory inset', (tester) async {
+    await _pumpDirectory(tester, repository: _repository(), size: const Size(1440, 900));
+
+    final inset = tester.widget<Padding>(find.byKey(const Key('notice-directory-content-inset')));
+    expect(inset.padding, const EdgeInsets.all(CoeloSpacing.space10));
   });
 
   testWidgets('uses cards on compact width and the canonical table on medium width', (
@@ -147,6 +152,17 @@ void main() {
 
     expect(find.text('Nenhuma comunicação'), findsOneWidget);
     expect(find.text('Nova comunicação'), findsOneWidget);
+  });
+
+  testWidgets('renders only the forbidden state when directory access is denied', (tester) async {
+    final repository = _repository()..nextError = const NoticeUnauthorizedException();
+    await _pumpDirectory(tester, repository: repository);
+
+    expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.byType(CoeloAdminListingToolbar), findsNothing);
+    expect(find.byKey(const Key('notice-directory-content-inset')), findsOneWidget);
+    expect(find.text('Todos'), findsNothing);
+    expect(find.text('Nova comunicação'), findsNothing);
   });
 }
 

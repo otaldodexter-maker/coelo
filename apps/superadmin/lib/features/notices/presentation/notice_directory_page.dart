@@ -115,7 +115,26 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final contentPadding = compact ? CoeloSpacing.space4 : CoeloSpacing.space6;
+      final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : compact
+          ? CoeloSpacing.space4
+          : CoeloSpacing.space6;
+      if (_state == NoticeDirectoryViewState.forbidden) {
+        return Container(
+          color: Theme.of(context).colorScheme.surface,
+          child: Padding(
+            key: const Key('notice-directory-content-inset'),
+            padding: EdgeInsets.all(contentPadding),
+            child: _content(
+              context,
+              compact: compact,
+              all: const <PlatformNotice>[],
+              notices: const <PlatformNotice>[],
+            ),
+          ),
+        );
+      }
       final all = _items;
       final notices = _items;
       final totalPages = _nextCursorId == null ? _page : _page + 1;
@@ -126,6 +145,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           children: [
             Expanded(
               child: Padding(
+                key: const Key('notice-directory-content-inset'),
                 padding: EdgeInsets.fromLTRB(
                   contentPadding,
                   contentPadding,
@@ -135,13 +155,6 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Comunicações do app', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: CoeloSpacing.space1),
-                    Text(
-                      'Gerencie avisos, conteúdos, destaques e recomendações exibidos no app.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: CoeloSpacing.space4),
                     _toolbar(compact: compact),
                     const SizedBox(height: CoeloSpacing.space4),
                     SuperadminUnderlineTabs<_CommunicationTypeFilter>(
