@@ -8,6 +8,7 @@ import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.da
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 import '../application/child_safety_controller.dart';
@@ -38,6 +39,27 @@ final class SafetyLandingPage extends StatefulWidget {
 
 final class _SafetyLandingPageState extends State<SafetyLandingPage> {
   final search = TextEditingController();
+  final GlobalKey _footerKey = GlobalKey();
+  double _footerHeight = 0;
+  bool _measurementScheduled = false;
+
+  void _scheduleFooterMeasurement(bool showFooter) {
+    if (_measurementScheduled) return;
+    _measurementScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _measurementScheduled = false;
+      if (!mounted) return;
+      var nextHeight = 0.0;
+      if (showFooter) {
+        final renderObject = _footerKey.currentContext?.findRenderObject();
+        if (renderObject is! RenderBox || !renderObject.hasSize) return;
+        nextHeight = renderObject.size.height;
+      }
+      if ((nextHeight - _footerHeight).abs() < 0.5) return;
+      setState(() => _footerHeight = nextHeight);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,74 +83,125 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
       animation: widget.controller,
       builder: (context, _) => LayoutBuilder(
         builder: (context, constraints) {
-          final inset = constraints.maxWidth >= 1200
+          final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
               ? CoeloSpacing.space10
-              : constraints.maxWidth >= 768
+              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
               ? CoeloSpacing.space6
               : CoeloSpacing.space4;
+          if (widget.controller.state == ChildSafetyLoadState.unauthorized) {
+            _scheduleFooterMeasurement(false);
+            return ColoredBox(
+              key: const Key('safety-directory-surface'),
+              color: Theme.of(context).colorScheme.surface,
+              child: ListView(
+                padding: EdgeInsets.all(inset),
+                children: const [
+                  CoeloStatePanel(
+                    title: 'Sem permissão',
+                    message: 'O contexto atual não autoriza esta consulta.',
+                    icon: Icons.lock_outline_rounded,
+                  ),
+                ],
+              ),
+            );
+          }
+          final showPagination =
+              widget.controller.state == ChildSafetyLoadState.ready &&
+              widget.controller.totalPages > 1;
+          _scheduleFooterMeasurement(showPagination);
+          final footerInset = showPagination ? _footerHeight + CoeloSpacing.space4 : 0.0;
           return ColoredBox(
             key: const Key('safety-directory-surface'),
             color: Theme.of(context).colorScheme.surface,
-            child: ListView(
-              padding: EdgeInsets.all(inset),
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                CoeloAdminListingToolbar(
-                  search: SizedBox(
-                    width: constraints.maxWidth < 768 ? constraints.maxWidth : 320,
-                    height: CoeloSize.touchMin,
-                    child: CoeloSearchField(
-                      controller: search,
-                      hintText: 'Nome ou identificação interna',
-                      semanticLabel: 'Buscar criança no escopo autorizado',
-                      onChanged: widget.controller.setSearch,
+                ListView(
+                  padding: EdgeInsets.fromLTRB(inset, inset, inset, inset + footerInset),
+                  children: [
+                    CoeloAdminListingToolbar(
+                      search: SizedBox(
+                        width: constraints.maxWidth < 768 ? constraints.maxWidth : 320,
+                        height: CoeloSize.touchMin,
+                        child: CoeloSearchField(
+                          controller: search,
+                          hintText: 'Nome ou identificação interna',
+                          semanticLabel: 'Buscar criança no escopo autorizado',
+                          onChanged: widget.controller.setSearch,
+                        ),
+                      ),
+                      filters: const [],
+                      actions: [
+                        SuperadminDirectoryViewToggle<_TableView>(
+                          cardsSelected:
+                              widget.controller.query.view == ChildSafetyDirectoryView.cards,
+                          groupedView: _TableView.grouped,
+                          selectedTableView: _TableView.grouped,
+                          tableViews: const [
+                            SuperadminDirectoryTableViewOption(
+                              value: _TableView.grouped,
+                              label: 'Agrupado',
+                            ),
+                          ],
+                          cardsKey: const Key('safety-view-cards'),
+                          tableKey: const Key('safety-view-table'),
+                          onCardsSelected: () =>
+                              widget.controller.setView(ChildSafetyDirectoryView.cards),
+                          onTableViewSelected: (_) =>
+                              widget.controller.setView(ChildSafetyDirectoryView.table),
+                        ),
+                        if (widget.onExport != null)
+                          CoeloAdminFileActions(
+                            actions: [
+                              CoeloAdminFileAction(
+                                key: const Key('safety-export-csv'),
+                                label: 'Exportar CSV',
+                                icon: Icons.download_outlined,
+                                onPressed: widget.onExport!,
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    SuperadminUnderlineTabs<ChildSafetyDirectorySegment>(
+                      tabs: [
+                        for (final value in ChildSafetyDirectorySegment.values)
+                          SuperadminUnderlineTab(
+                            value: value,
+                            label: '${value.label} (${widget.controller.segmentCounts[value]})',
+                          ),
+                      ],
+                      selected: widget.controller.query.segment,
+                      onSelected: widget.controller.setStatusSegment,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    _body(),
+                  ],
+                ),
+                if (showPagination)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: SizeChangedLayoutNotifier(
+                      key: _footerKey,
+                      child: SuperadminListingPaginationFooter(
+                        semanticKey: const Key('safety-directory-pagination-footer'),
+                        horizontalPadding: inset,
+                        compactCurrentPage: widget.controller.currentPage + 1,
+                        compactTotalPages: widget.controller.totalPages,
+                        compactOnPrevious: widget.controller.currentPage > 0
+                            ? () => widget.controller.goToPage(widget.controller.currentPage - 1)
+                            : null,
+                        compactOnNext:
+                            widget.controller.currentPage + 1 < widget.controller.totalPages
+                            ? () => widget.controller.goToPage(widget.controller.currentPage + 1)
+                            : null,
+                        child: _pagination(),
+                      ),
                     ),
                   ),
-                  filters: const [],
-                  actions: [
-                    SuperadminDirectoryViewToggle<_TableView>(
-                      cardsSelected: widget.controller.query.view == ChildSafetyDirectoryView.cards,
-                      groupedView: _TableView.grouped,
-                      selectedTableView: _TableView.grouped,
-                      tableViews: const [
-                        SuperadminDirectoryTableViewOption(
-                          value: _TableView.grouped,
-                          label: 'Agrupado',
-                        ),
-                      ],
-                      cardsKey: const Key('safety-view-cards'),
-                      tableKey: const Key('safety-view-table'),
-                      onCardsSelected: () =>
-                          widget.controller.setView(ChildSafetyDirectoryView.cards),
-                      onTableViewSelected: (_) =>
-                          widget.controller.setView(ChildSafetyDirectoryView.table),
-                    ),
-                    if (widget.onExport != null)
-                      CoeloAdminFileActions(
-                        actions: [
-                          CoeloAdminFileAction(
-                            key: const Key('safety-export-csv'),
-                            label: 'Exportar CSV',
-                            icon: Icons.download_outlined,
-                            onPressed: widget.onExport!,
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-                const SizedBox(height: CoeloSpacing.space4),
-                SuperadminUnderlineTabs<ChildSafetyDirectorySegment>(
-                  tabs: [
-                    for (final value in ChildSafetyDirectorySegment.values)
-                      SuperadminUnderlineTab(
-                        value: value,
-                        label: '${value.label} (${widget.controller.segmentCounts[value]})',
-                      ),
-                  ],
-                  selected: widget.controller.query.segment,
-                  onSelected: widget.controller.setStatusSegment,
-                ),
-                const SizedBox(height: CoeloSpacing.space4),
-                _body(),
               ],
             ),
           );
@@ -177,10 +250,10 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   : box.maxWidth >= 720
                   ? 2
                   : 1;
-              final width = (box.maxWidth - CoeloSpacing.space4 * (columns - 1)) / columns;
+              final width = (box.maxWidth - CoeloSpacing.space6 * (columns - 1)) / columns;
               return Wrap(
-                spacing: CoeloSpacing.space4,
-                runSpacing: CoeloSpacing.space4,
+                spacing: CoeloSpacing.space6,
+                runSpacing: CoeloSpacing.space6,
                 children: [
                   if (c.canCreate && widget.onCreate != null)
                     SizedBox(
@@ -219,22 +292,23 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
           ],
           _SafetyTable(records: c.records, onOpen: widget.onOpenChild),
         ],
-        if (c.totalPages > 1) ...[
-          const SizedBox(height: CoeloSpacing.space4),
-          CoeloAdminPagination(
-            currentPage: c.currentPage + 1,
-            totalPages: c.totalPages,
-            pageSize: c.pageSize,
-            pageSizeOptions: c.query.view == ChildSafetyDirectoryView.cards
-                ? const [11, 20, 50, 100]
-                : const [8, 20, 50, 100],
-            onPageSelected: (v) => c.goToPage(v - 1),
-            onPageSizeChanged: c.setPageSize,
-            onPrevious: c.currentPage > 0 ? () => c.goToPage(c.currentPage - 1) : null,
-            onNext: c.currentPage + 1 < c.totalPages ? () => c.goToPage(c.currentPage + 1) : null,
-          ),
-        ],
       ],
+    );
+  }
+
+  Widget _pagination() {
+    final c = widget.controller;
+    return CoeloAdminPagination(
+      currentPage: c.currentPage + 1,
+      totalPages: c.totalPages,
+      pageSize: c.pageSize,
+      pageSizeOptions: c.query.view == ChildSafetyDirectoryView.cards
+          ? const [11, 20, 50, 100]
+          : const [8, 20, 50, 100],
+      onPageSelected: (value) => c.goToPage(value - 1),
+      onPageSizeChanged: c.setPageSize,
+      onPrevious: c.currentPage > 0 ? () => c.goToPage(c.currentPage - 1) : null,
+      onNext: c.currentPage + 1 < c.totalPages ? () => c.goToPage(c.currentPage + 1) : null,
     );
   }
 }
@@ -442,40 +516,67 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
               ),
             );
           }
-          final inset = constraints.maxWidth >= 1200 ? CoeloSpacing.space10 : CoeloSpacing.space4;
+          final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+              ? CoeloSpacing.space10
+              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              ? CoeloSpacing.space6
+              : CoeloSpacing.space4;
+          final compactHeader = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+          final identity = Row(
+            children: [
+              IconButton(
+                tooltip: 'Voltar',
+                constraints: const BoxConstraints.tightFor(
+                  width: CoeloSize.touchMin,
+                  height: CoeloSize.touchMin,
+                ),
+                onPressed: widget.onBack,
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(child.childName, style: Theme.of(context).textTheme.headlineSmall),
+                    Text('${child.institutionName} · ${child.unitName} · ${child.internalId}'),
+                  ],
+                ),
+              ),
+            ],
+          );
+          final createButton = !widget.controller.canCreate || widget.onCreate == null
+              ? null
+              : FilledButton.icon(
+                  key: const Key('safety-add-authorized-person'),
+                  onPressed: widget.onCreate,
+                  icon: const Icon(Icons.person_add_alt_1_outlined),
+                  label: const Text('Cadastrar pessoa'),
+                );
           return ListView(
             padding: EdgeInsets.all(inset),
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    tooltip: 'Voltar',
-                    constraints: const BoxConstraints.tightFor(
-                      width: CoeloSize.touchMin,
-                      height: CoeloSize.touchMin,
-                    ),
-                    onPressed: widget.onBack,
-                    icon: const Icon(Icons.arrow_back_rounded),
-                  ),
-                  const SizedBox(width: CoeloSpacing.space2),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(child.childName, style: Theme.of(context).textTheme.headlineSmall),
-                        Text('${child.institutionName} · ${child.unitName} · ${child.internalId}'),
-                      ],
-                    ),
-                  ),
-                  if (widget.onCreate != null)
-                    FilledButton.icon(
-                      key: const Key('safety-add-authorized-person'),
-                      onPressed: widget.onCreate,
-                      icon: const Icon(Icons.person_add_alt_1_outlined),
-                      label: const Text('Cadastrar pessoa'),
-                    ),
-                ],
-              ),
+              if (compactHeader)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    identity,
+                    if (createButton != null) ...[
+                      const SizedBox(height: CoeloSpacing.space3),
+                      Align(alignment: Alignment.centerRight, child: createButton),
+                    ],
+                  ],
+                )
+              else
+                Row(
+                  children: [
+                    Expanded(child: identity),
+                    ...switch (createButton) {
+                      null => const <Widget>[],
+                      final button => <Widget>[button],
+                    },
+                  ],
+                ),
               const SizedBox(height: CoeloSpacing.space6),
               if (child.pendingCount > 0) ...[
                 _PendingNotice(count: child.pendingCount),
@@ -486,8 +587,10 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                   title: 'Nenhuma pessoa autorizada',
                   message: 'A retirada permanece bloqueada até uma autorização ser aprovada.',
                   icon: Icons.gpp_bad_outlined,
-                  actionLabel: widget.onCreate == null ? null : 'Cadastrar pessoa',
-                  onAction: widget.onCreate,
+                  actionLabel: widget.controller.canCreate && widget.onCreate != null
+                      ? 'Cadastrar pessoa'
+                      : null,
+                  onAction: widget.controller.canCreate ? widget.onCreate : null,
                 )
               else if (constraints.maxWidth >= 768)
                 _AuthorizedTable(
@@ -554,7 +657,14 @@ final class _AuthorizedTable extends StatelessWidget {
     columns: [
       _column('relationship', 'Relação', (a) => a.relationship, 180),
       _column('validity', 'Validade', _period, 220),
-      _column('status', 'Status', (a) => a.status.label, 150),
+      CoeloAdminTableColumn(
+        id: 'status',
+        label: 'Status',
+        initialWidth: 150,
+        minWidth: 140,
+        maxWidth: 220,
+        cellBuilder: (_, item) => _Status(status: item.status),
+      ),
       CoeloAdminTableColumn(
         id: 'actions',
         label: 'Ações',
@@ -680,9 +790,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   final childSearch = TextEditingController(),
       personId = TextEditingController(),
       relationshipDetail = TextEditingController(),
-      requestReason = TextEditingController(),
-      validFrom = TextEditingController(),
-      validUntil = TextEditingController();
+      requestReason = TextEditingController();
   var step = 0,
       searching = false,
       relationship = 'mother',
@@ -691,6 +799,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       transport = false;
   var options = const <ChildSafetyChildOption>[];
   ChildSafetyChildOption? child;
+  DateTimeRange? validity;
+  var validityOpenEnded = false;
   String? error;
   int expectedVersion = 1;
   static const labels = ['Criança', 'Pessoa autorizada', 'Validade e capacidades', 'Revisão'];
@@ -745,8 +855,13 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
           relationship = _relationshipCode(authorization.relationship);
           relationshipDetail.text = relationship == 'other' ? authorization.relationship : '';
           requestReason.text = authorization.requestReason ?? '';
-          validFrom.text = _date(authorization.startsAt);
-          validUntil.text = _date(authorization.endsAt);
+          validity = authorization.startsAt == null
+              ? null
+              : DateTimeRange(
+                  start: authorization.startsAt!,
+                  end: authorization.endsAt ?? authorization.startsAt!,
+                );
+          validityOpenEnded = authorization.startsAt != null && authorization.endsAt == null;
           pickup = authorization.capabilityCodes.contains('pickup');
           emergency = authorization.capabilityCodes.contains('emergency_contact');
           transport = authorization.capabilityCodes.contains('transport');
@@ -764,8 +879,6 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     personId.dispose();
     relationshipDetail.dispose();
     requestReason.dispose();
-    validFrom.dispose();
-    validUntil.dispose();
     widget.controller.removeListener(_controllerChanged);
     super.dispose();
   }
@@ -779,7 +892,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     onDestinationSelected: widget.onDestinationSelected,
     child: LayoutBuilder(
       builder: (context, constraints) => SuperadminFormFrame(
-        viewportWidth: MediaQuery.sizeOf(context).width,
+        viewportWidth: constraints.maxWidth,
         navigation: SuperadminFormStepNavigation(
           currentIndex: step,
           steps: [
@@ -907,19 +1020,26 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       ],
     ],
     2 => [
-      CoeloFormTextField(
-        controller: validFrom,
-        labelText: 'Válida a partir de',
-        hintText: 'DD/MM/AAAA',
-        prefixIcon: Icons.event_available_outlined,
+      CoeloDateRangeField(
+        value: validity,
+        onChanged: (value) => setState(() {
+          validity = value;
+          if (value == null) validityOpenEnded = false;
+        }),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100, 12, 31),
+        showQuickRanges: false,
+        labelText: 'Período de validade (opcional)',
       ),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        controller: validUntil,
-        labelText: 'Válida até (opcional)',
-        hintText: 'DD/MM/AAAA',
-        prefixIcon: Icons.event_busy_outlined,
-      ),
+      if (validity != null) ...[
+        const SizedBox(height: CoeloSpacing.space2),
+        CoeloAdminToggleField(
+          label: 'Sem data final',
+          description: 'A validade começa na data escolhida e permanece sem término definido.',
+          value: validityOpenEnded,
+          onChanged: (value) => setState(() => validityOpenEnded = value),
+        ),
+      ],
       const SizedBox(height: CoeloSpacing.space4),
       CoeloAdminToggleField(
         label: 'Retirada',
@@ -1039,8 +1159,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         relationshipDetail: relationship == 'other' ? relationshipDetail.text.trim() : null,
         capabilityCodes: _capabilities(),
         requestReason: requestReason.text.trim(),
-        validFrom: _parseDate(validFrom.text),
-        validUntil: _parseDate(validUntil.text),
+        validFrom: validity?.start,
+        validUntil: validityOpenEnded ? null : validity?.end,
       ),
     );
     if (!mounted) return;
@@ -1069,14 +1189,28 @@ final class _Review extends StatelessWidget {
   const _Review({required this.label, required this.value});
   final String label, value;
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(width: 160, child: Text(label, style: Theme.of(context).textTheme.labelLarge)),
-        Expanded(child: Text(value)),
-      ],
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+      child: constraints.maxWidth < 520
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: CoeloSpacing.space1),
+                Text(value),
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 160,
+                  child: Text(label, style: Theme.of(context).textTheme.labelLarge),
+                ),
+                Expanded(child: Text(value)),
+              ],
+            ),
     ),
   );
 }
@@ -1087,16 +1221,11 @@ final class _Status extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = _statusPair(context, status);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CoeloSpacing.space3,
-        vertical: CoeloSpacing.space1,
-      ),
-      decoration: BoxDecoration(
-        color: colors.$1,
-        borderRadius: BorderRadius.circular(CoeloRadius.full),
-      ),
-      child: Text(status.label, style: TextStyle(color: colors.$2)),
+    return CoeloAdminExpandableStatusIndicator(
+      label: status.label,
+      semanticLabel: 'Status da autorização: ${status.label}',
+      backgroundColor: colors.$1,
+      foregroundColor: colors.$2,
     );
   }
 }
@@ -1213,15 +1342,6 @@ String _date(DateTime? value) => value == null
     ? ''
     : '${value.day.toString().padLeft(2, '0')}/'
           '${value.month.toString().padLeft(2, '0')}/${value.year}';
-DateTime? _parseDate(String raw) {
-  if (raw.trim().isEmpty) return null;
-  final parts = raw.trim().split('/');
-  if (parts.length != 3) return null;
-  final day = int.tryParse(parts[0]), month = int.tryParse(parts[1]), year = int.tryParse(parts[2]);
-  if (day == null || month == null || year == null) return null;
-  final value = DateTime(year, month, day);
-  return value.day == day && value.month == month && value.year == year ? value : null;
-}
 
 String _initials(String name) {
   final parts = name.trim().split(RegExp(r'\s+')).where((value) => value.isNotEmpty).toList();

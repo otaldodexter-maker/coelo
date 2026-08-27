@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/safety/presentation/safety_pages.dart'
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -63,10 +64,40 @@ void main() {
     await tester.pump();
     expect(find.text('Sem permissão'), findsOneWidget);
     expect(find.text('Criar segurança'), findsNothing);
+    expect(find.byType(CoeloSearchField), findsNothing);
+    expect(find.textContaining('Todos ('), findsNothing);
+  });
+
+  testWidgets('paginated directory keeps controls in a sticky footer', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = ChildSafetyController(
+      _Repository(totalCount: 24),
+      searchDebounce: Duration.zero,
+    );
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        SafetyLandingPage(
+          controller: controller,
+          logout: _logout,
+          onOpenChild: (_) {},
+          onCreate: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('safety-directory-pagination-footer')), findsOneWidget);
+    expect(
+      find.ancestor(of: find.byType(CoeloAdminPagination), matching: find.byType(Positioned)),
+      findsOneWidget,
+    );
   });
 
   testWidgets('detail uses table at 768 and cards at 375', (tester) async {
     final controller = ChildSafetyController(_Repository());
+    await controller.load();
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.binding.setSurfaceSize(const Size(768, 1000));
     await tester.pumpWidget(
@@ -94,10 +125,32 @@ void main() {
           onBack: () {},
           onCreate: () {},
         ),
+        textScaler: const TextScaler.linear(2),
       ),
     );
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Maria'), 200);
+    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('detail hides create action without create capability', (tester) async {
+    final controller = ChildSafetyController(_Repository(canCreate: false));
+    await controller.load();
+    await tester.pumpWidget(
+      _app(
+        ChildSecurityPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onBack: () {},
+          onCreate: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('safety-add-authorized-person')), findsNothing);
   });
 
   testWidgets('wizard searches server-side and requires child selection', (tester) async {
@@ -130,6 +183,11 @@ void main() {
     await tester.tap(find.byKey(const Key('safety-wizard-primary')));
     await tester.pump();
     expect(find.text('Pessoa autorizada'), findsWidgets);
+    await tester.enterText(find.byType(TextFormField).at(0), 'person-1');
+    await tester.enterText(find.byType(TextFormField).at(1), 'Solicitação familiar');
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.byType(CoeloDateRangeField), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -138,6 +196,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = _Repository();
     final controller = ChildSafetyController(repository);
+    var saved = false;
     await tester.pumpWidget(
       _app(
         ChildSafetyWizardPage(
@@ -146,7 +205,7 @@ void main() {
           controller: controller,
           logout: _logout,
           onCancel: () {},
-          onSaved: () {},
+          onSaved: () => saved = true,
         ),
       ),
     );
@@ -157,6 +216,16 @@ void main() {
     await tester.pump();
     expect(find.text('Pessoa autorizada'), findsWidgets);
     expect(find.text('Solicitação familiar'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Sem data final'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pumpAndSettle();
+    expect(repository.savedCommand?.validFrom, DateTime(2026, 1, 1));
+    expect(repository.savedCommand?.validUntil, isNull);
+    expect(saved, isTrue);
   });
 
   testWidgets('directory stays responsive in light and dark at 200 percent text', (tester) async {
@@ -231,8 +300,11 @@ Widget _app(
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 final class _Repository implements ChildSafetyRepository {
-  _Repository({this.unauthorized = false});
+  _Repository({this.unauthorized = false, this.totalCount = 3, this.canCreate = true});
   final bool unauthorized;
+  final int totalCount;
+  final bool canCreate;
+  SavePickupAuthorizationCommand? savedCommand;
   static final records = [
     ChildSafetyRecord(
       childId: 'child-1',
@@ -250,7 +322,7 @@ final class _Repository implements ChildSafetyRepository {
           status: PickupAuthorizationStatus.approved,
           origin: PickupAuthorizationOrigin.institution,
           startsAt: DateTime(2026, 1, 1),
-          lifetime: true,
+          lifetime: false,
           personId: 'person-1',
           childContextId: 'context-1',
           unitId: 'unit-1',
@@ -299,14 +371,14 @@ final class _Repository implements ChildSafetyRepository {
     if (unauthorized) throw const ChildSafetyUnauthorizedException();
     return ChildSafetyDirectoryPage(
       records: records,
-      totalCount: 3,
+      totalCount: totalCount,
       segmentCounts: const ChildSafetySegmentCounts(
         all: 3,
         awaitingApproval: 1,
         authorized: 1,
         withoutAuthorization: 1,
       ),
-      canCreate: true,
+      canCreate: canCreate,
     );
   }
 
@@ -333,7 +405,10 @@ final class _Repository implements ChildSafetyRepository {
         ),
       ];
   @override
-  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {}
+  Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
+    savedCommand = command;
+  }
+
   @override
   Future<void> transitionAuthorization(TransitionPickupAuthorizationCommand command) async {}
   @override
