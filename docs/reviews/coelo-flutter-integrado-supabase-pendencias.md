@@ -13,7 +13,7 @@ supabase_gate_count: 22
 strict_work_unit_count: 229
 strict_done_count: 0
 supabase_evidence_scope: "local snapshot + remote read-only inventory; no deploy or remote mutation"
-supabase_tracker_sha256: "CDCE2607B9D8C1592E29289F76F9D7B41B2CC12535EF555EED7DCF5707AF518F"
+supabase_tracker_sha256: "4EE497D32C8285C512F8572A9BD5A153914F4BBB7035D08F71E14C9086C090E1"
 coordination_source_thread: "01a03a60-2c1b-7f72-9235-b83cddeee63e"
 ---
 
@@ -872,7 +872,7 @@ reexecutada se código, schema, policy, configuração ou ambiente mudou.
 **Ponto de retomada seguro:** `units.list` e os estados recuperáveis do diretório
 estão local-green. Para `units.export`, Flutter HARDEN A+B terminou com 41/41 e
 Supabase checkpoint 21 terminou com 36/47 testes Deno verdes, preservando 11
-REDs; o tracker Supabase está no SHA-256 `CDCE2607…`. O Pacote A continua
+REDs; o tracker Supabase está no SHA-256 `4EE497D3…`. O Pacote A continua
 preservado externamente e revertido, portanto produção permanece fail-closed e
 há zero E2E. O contrato conceitual de OQ-034/OQ-035 foi encerrado pela spec 039,
 mas sua implementação continua bloqueada. O próximo passo não é compor nem

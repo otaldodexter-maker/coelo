@@ -3011,14 +3011,18 @@ da simples soma das 207 ações.
 - **Ações tratadas:** `SUP-GEN-002`, `SUP-GEN-003`, `SUP-GEN-016` e
   `groups.export`, que continua `fail-closed`.
 - **Arquivos alterados:** `Invoke-SafeLocalMigrationReplay.ps1` e README. O
-  wrapper agora gera identidade `coelo_safe_<GUID>` e portas próprias, verifica
-  colisões Docker antes/depois, rejeita reparse points, tenta teardown mesmo em
-  falha parcial e exige zero diretório, container, volume e rede residuais. SHA
-  do script: `D609BE1D0751A2086C925C7BAACD2D328DF7720A84DEBD8FB42E3F9C9A3DE140`.
+  wrapper agora gera identidade `coelo_safe_<GUID>` e portas próprias, fixa
+  Supabase CLI 2.116.0, rejeita TEMP no repositório e reparse points, serializa
+  a sessão com mutex recuperável, preserva erro primário junto de falhas de
+  teardown e exige zero diretório, container, volume e rede residuais. SHA do
+  script: `B745A1DCB274B179E2CE23C3FE294E859089CD07A70882650EC6FAC6C3738FDF`.
 - **Evidências e testes:** parser, diff-check e secret scan verdes. Caminho GREEN
   aplicou 104 migrations até `20260812001975`; caminho RED reproduziu o `23502`
-  esperado em Child Safety. Ambos terminaram com zero `coelo_safe_*` e zero
-  containers. Review independente: zero P0/P1.
+  esperado em Child Safety. Testes adversariais provaram rejeição de TEMP dentro
+  do repo sem criar/remover path, concorrência negada, recuperação de mutex
+  abandonado e `AggregateException` contendo simultaneamente o RED de reset e a
+  falha de stop. Todos terminaram com zero `coelo_safe_*` e zero containers.
+  Dois reviews independentes: zero P0/P1.
 - **Proveniência `groups.export`:** o remoto possui somente `groups.read/manage`;
   a migration de Grupos apenas referencia `groups.export`. O blob histórico
   `bb7de4d8...` da versão local-only `20260813183644` cria a capability, mas
@@ -3029,7 +3033,8 @@ da simples soma das 207 ações.
   implantada. A investigação remota foi somente `SELECT`; zero DDL/DML/Auth/
   Storage/Edge/deploy. Não é `remote-green` nem `done`.
 - **Bloqueios e pendências:** Child Safety continua bloqueada conforme checkpoint
-  33. Follow-ups não bloqueantes do harness: pin explícito do Supabase CLI e
-  eventual teste automatizado adicional de falha de cleanup.
+  33. Residuais P2 do harness: corrida externa entre descoberta/uso de porta,
+  mutex limitado à sessão Windows e janela local check-then-delete; falham de
+  forma segura no fluxo contratado e não ampliam autoridade remota.
 - **Tempo usado:** aproximadamente 5 h acumuladas. **Tempo restante estimado:**
   8–17 dias focados; backlog integral não calculável ainda.
