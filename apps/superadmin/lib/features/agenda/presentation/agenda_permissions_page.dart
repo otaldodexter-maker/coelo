@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../data/agenda_prototype_store.dart';
@@ -55,50 +56,67 @@ final class _PermissionMatrix extends StatelessWidget {
   const _PermissionMatrix({required this.store});
   final AgendaPrototypeStore store;
 
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(CoeloRadius.lg),
-    ),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: const [
-          DataColumn(label: Text('Contexto')),
-          DataColumn(label: Text('Publicar itens')),
-          DataColumn(label: Text('Aprovar aniversário')),
-        ],
-        rows: [for (final node in store.contexts) _row(context, node)],
-      ),
-    ),
+  Widget _cell(Widget child) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+    child: Align(alignment: Alignment.centerLeft, child: child),
   );
 
-  DataRow _row(BuildContext context, AgendaContext node) => DataRow(
-    cells: [
-      DataCell(
+  @override
+  Widget build(BuildContext context) => CoeloAdminResizableTable<AgendaContext>(
+    key: const Key('agenda-permissions-table'),
+    items: store.contexts,
+    rowKey: (node) => node.id,
+    headerHeight: 56,
+    rowHeight: 160,
+    pinnedColumn: CoeloAdminTableColumn<AgendaContext>(
+      id: 'context',
+      label: 'Contexto',
+      initialWidth: 220,
+      minWidth: 180,
+      maxWidth: 320,
+      cellBuilder: (context, node) => _cell(
         Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(node.name),
-            Text(_label(node.level.name), style: Theme.of(context).textTheme.bodySmall),
+            Text(node.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(
+              _label(node.level.name),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
       ),
-      DataCell(
-        _PermissionControl(
-          store: store,
-          node: node,
-          capability: AgendaCapability.publishAgendaItems,
+    ),
+    columns: [
+      CoeloAdminTableColumn<AgendaContext>(
+        id: 'publish',
+        label: 'Publicar itens',
+        initialWidth: 290,
+        minWidth: 240,
+        maxWidth: 380,
+        cellBuilder: (_, node) => _cell(
+          _PermissionControl(
+            store: store,
+            node: node,
+            capability: AgendaCapability.publishAgendaItems,
+          ),
         ),
       ),
-      DataCell(
-        _PermissionControl(
-          store: store,
-          node: node,
-          capability: AgendaCapability.approveGuardianBirthdayRequest,
+      CoeloAdminTableColumn<AgendaContext>(
+        id: 'birthday',
+        label: 'Aprovar aniversário',
+        initialWidth: 330,
+        minWidth: 270,
+        maxWidth: 420,
+        cellBuilder: (_, node) => _cell(
+          _PermissionControl(
+            store: store,
+            node: node,
+            capability: AgendaCapability.approveGuardianBirthdayRequest,
+          ),
         ),
       ),
     ],
@@ -150,7 +168,6 @@ final class _PermissionControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final resolution = store.resolveCapability(node.id, capability);
     final blocked = resolution.state == PermissionState.blockedByAncestor;
-    final restricted = node.restrictedCapabilities.contains(capability);
     final capabilityLabel = switch (capability) {
       AgendaCapability.publishAgendaItems => 'Publicar itens',
       AgendaCapability.approveGuardianBirthdayRequest => 'Aprovar solicitação de aniversário',
@@ -163,35 +180,18 @@ final class _PermissionControl extends StatelessWidget {
       PermissionState.blockedByAncestor =>
         'Bloqueado por ${resolution.blockedByContextName ?? 'ancestral'}',
     };
-    return MergeSemantics(
-      child: Semantics(
-        label: '$capabilityLabel. $detail',
-        enabled: !blocked,
-        checked: resolution.isAllowed,
-        child: Row(
-          key: Key('agenda-permission-${node.id}-${capability.name}'),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Checkbox(
-              value: resolution.isAllowed,
-              onChanged: blocked
-                  ? null
-                  : (value) => store.setCapabilityRestricted(node.id, capability, value != true),
-            ),
-            const SizedBox(width: CoeloSpacing.space2),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(capabilityLabel),
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(detail),
-                ],
-              ),
-            ),
-            if (restricted) const Icon(Icons.lock_outline_rounded),
-          ],
-        ),
+    return Semantics(
+      label: '$capabilityLabel. $detail',
+      enabled: !blocked,
+      checked: resolution.isAllowed,
+      child: CoeloAdminToggleField(
+        key: Key('agenda-permission-${node.id}-${capability.name}'),
+        label: capabilityLabel,
+        description: detail,
+        value: resolution.isAllowed,
+        onChanged: blocked
+            ? null
+            : (value) => store.setCapabilityRestricted(node.id, capability, !value),
       ),
     );
   }

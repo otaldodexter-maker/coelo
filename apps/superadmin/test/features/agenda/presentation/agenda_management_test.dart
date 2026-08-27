@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/agenda/presentation/agenda_requests_pa
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -88,11 +89,11 @@ void main() {
     final prototype = store();
     prototype.setCapabilityRestricted('inst-horizonte', AgendaCapability.publishAgendaItems, true);
     await tester.pumpWidget(app(AgendaPermissionsPage(store: prototype)));
+    expect(find.byType(CoeloAdminResizableTable<AgendaContext>), findsOneWidget);
+    expect(find.byType(DataTable), findsNothing);
     final control = find.byKey(const Key('agenda-permission-group-girassol-publishAgendaItems'));
-    final checkbox = tester.widget<Checkbox>(
-      find.descendant(of: control, matching: find.byType(Checkbox)),
-    );
-    expect(checkbox.onChanged, isNull);
+    final toggle = tester.widget<CoeloAdminToggleField>(control);
+    expect(toggle.onChanged, isNull);
     expect(find.textContaining('Bloqueado por'), findsWidgets);
   });
 }
