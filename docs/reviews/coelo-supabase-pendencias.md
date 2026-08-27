@@ -2712,3 +2712,45 @@ da simples soma das 207 ações.
   backlog integrado 0,00% (0/207), restante 100,00% (207/207). Tempo mensurável
   de 28 min entre o marcador 16:44 e 17:12 BRT; inventário anterior ao marcador
   não calculável com segurança.
+
+### Checkpoint seguro 28 — baseline reconciliável e contrato Auth interno
+
+- **Lote:** baseline/reconciliação read-only e contrato de Auth, sessão e
+  contexto interno; nenhuma ação da matriz foi promovida. O inventário corrigiu
+  a contagem geral para 207 `action_id` + 22 gates `SUP-GEN` = 229 unidades
+  estritas, mantendo ações e gates como conjuntos separados.
+- **Ações tratadas:** fundação de `auth.login`, `auth.logout`, `auth.mfa` e
+  `shell.load`/`shell.switch-context` apenas no contrato. Recovery/reset,
+  convite e qualquer alteração Flutter permanecem fora deste lote.
+- **Migrations, RPCs ou Functions alteradas:** nenhuma. A spec 039 definiu para
+  implementação futura identidade, `auth_link` e membership privados,
+  `session_id` validado em `auth.sessions`, `platform.read` escopado, Owner AAL2
+  e envelopes auditáveis; nenhuma definição SQL foi criada ou aplicada.
+- **Evidências:** worktree `codex/supabase-foundation` em base `b81923dc`;
+  commits `d6366d491f272070c43c703c6daf57f2c8071dd8` e
+  `64308b19bb6de2e9b579293f54cda46d55b270d1`. Manifesto v2 portátil
+  `3eb7f9dd1c8ae55529d34cb8e1d59de7381cf74fcd9ee46f4224b3d9f38e61e5`:
+  100 canônicas, 175 recovery, 103 remotas, 186 versões e 378 linhas. CSV com
+  142.534 bytes e SHA-256
+  `22d6268119fe9af9d8a009f5790cfc7dbd64e86f9218ab57929fb7bc27be253e`;
+  o sidecar confere o payload e não contém path absoluto.
+- **Testes executados:** geração dupla determinística; payload SHA/bytes/rows;
+  nomes remotos; EOL normalizado; rejeição de reparse/escape; parser PowerShell;
+  `git diff --check`; scan de segredos; validadores e testes da memória Coelo.
+  Três ciclos de review fecharam capability inexistente, semântica HTTP do
+  PostgREST, auditoria negativa, portabilidade e autointegridade.
+- **Estado local/remoto:** documentação e evidência `local-green`; branch limpa
+  após os dois commits. O projeto remoto `coelo` (`evvbomzejfijozbtgvpt`) foi
+  consultado somente por `SELECT` de ledger/metadata e permaneceu com 103
+  migrations; zero DDL, DML operacional, Auth, Storage, Edge ou deploy.
+- **Bloqueios:** seis versões têm conflito textual e não entram em promoção
+  automática; `20260812000847` e `20260813155005` também pertencem ao ledger
+  remoto. Nenhum dos seis será sobrescrito. O replay Docker isolado ainda não
+  foi executado.
+- **Pendências:** promover sem sobrescrita somente as 55 migrations remotas e
+  31 locais ausentes, regenerar o mirror, executar o primeiro replay/reset
+  isolado, classificar os seis conflitos e só depois escrever o RED Auth.
+- **Tempo usado:** aproximadamente 1 h até o checkpoint; tempo de reviews e
+  commits posteriores incluído nesta mesma janela operacional. **Tempo restante
+  estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
+  Grupos e Pessoas; backlog integral não calculável ainda.
