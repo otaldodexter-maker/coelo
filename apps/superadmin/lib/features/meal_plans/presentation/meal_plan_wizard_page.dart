@@ -6,7 +6,6 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
@@ -24,6 +23,8 @@ final class MealPlanWizardPage extends StatefulWidget {
     this.templatePlanId,
     this.mealPlanModelId,
     this.isTemplate = false,
+    this.tenantId = '',
+    this.imageSelectionEnabled = true,
     super.key,
   });
 
@@ -33,6 +34,8 @@ final class MealPlanWizardPage extends StatefulWidget {
   final String? templatePlanId;
   final String? mealPlanModelId;
   final bool isTemplate;
+  final String tenantId;
+  final bool imageSelectionEnabled;
   final VoidCallback onSaved;
   final VoidCallback onCancel;
 
@@ -74,6 +77,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   bool _saving = false;
   bool _saveAsTemplate = false;
   String? _error;
+  String? _persistOperationId;
   MealPlan? _original;
   MealPlanTemplate? _originalTemplate;
   MealPlanAudienceOptions _audienceOptions = const MealPlanAudienceOptions();
@@ -95,6 +99,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   final Set<String> _people = {};
   final Set<String> _excludedPeople = {};
   final List<_MealEditor> _meals = [_MealEditor()];
+  int _loadGeneration = 0;
+  int _commandGeneration = 0;
 
   List<String> get _steps => widget.isTemplate ? _templateSteps : _planSteps;
   bool get _isSimple => _variant == MealPlanPlanVariant.simple;
@@ -109,7 +115,23 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   }
 
   @override
+  void didUpdateWidget(covariant MealPlanWizardPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.repository, widget.repository) ||
+        oldWidget.mealPlanId != widget.mealPlanId ||
+        oldWidget.templatePlanId != widget.templatePlanId ||
+        oldWidget.mealPlanModelId != widget.mealPlanModelId ||
+        oldWidget.isTemplate != widget.isTemplate) {
+      _commandGeneration++;
+      _resetForLoad();
+      _load();
+    }
+  }
+
+  @override
   void dispose() {
+    _loadGeneration++;
+    _commandGeneration++;
     for (final controller in <TextEditingController>[
       _name,
       _simpleImageAlt,
@@ -478,7 +500,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       OutlinedButton.icon(
-        onPressed: _saving ? null : _pickSimpleImage,
+        onPressed: _saving || !widget.imageSelectionEnabled ? null : _pickSimpleImage,
         icon: const Icon(Icons.add_photo_alternate_outlined),
         label: Text(
           _simpleImage == null && _pendingSimpleImage == null
@@ -486,6 +508,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
               : 'Trocar imagem',
         ),
       ),
+      if (!widget.imageSelectionEnabled) const Text('Envio de imagem indisponível nesta prévia.'),
       if (_simpleImage != null || _pendingSimpleImage != null) ...[
         const SizedBox(height: CoeloSpacing.space2),
         Text('Arquivo: ${_pendingSimpleImage?.fileName ?? _simpleImage!.title}'),
@@ -671,7 +694,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           ),
           const SizedBox(height: CoeloSpacing.space3),
           OutlinedButton.icon(
-            onPressed: () => _pickMealImage(meal),
+            onPressed: widget.imageSelectionEnabled ? () => _pickMealImage(meal) : null,
             icon: const Icon(Icons.add_photo_alternate_outlined),
             label: Text(
               meal.image == null && meal.pendingImage == null
@@ -679,6 +702,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
                   : 'Trocar imagem do prato',
             ),
           ),
+          if (!widget.imageSelectionEnabled)
+            const Text('Envio de imagem indisponível nesta prévia.'),
           if (meal.image != null || meal.pendingImage != null)
             Text('Arquivo: ${meal.pendingImage?.fileName ?? meal.image!.title}'),
           const SizedBox(height: CoeloSpacing.space3),
@@ -815,13 +840,25 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   );
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final mealPlanId = widget.mealPlanId;
+    final templatePlanId = widget.templatePlanId;
+    final mealPlanModelId = widget.mealPlanModelId;
+    final isTemplate = widget.isTemplate;
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
     try {
       final results = await Future.wait<Object>([
-        widget.repository.fetchAudienceOptions(),
-        widget.repository.fetchTemplatePage(const MealPlanListFilter(pageSize: 100)),
+        repository.fetchAudienceOptions(),
+        repository.fetchTemplatePage(const MealPlanListFilter(pageSize: 100)),
       ]);
-      _audienceOptions = results[0] as MealPlanAudienceOptions;
-      _templates = (results[1] as MealPlanPage).items
+      final audienceOptions = results[0] as MealPlanAudienceOptions;
+      final templates = (results[1] as MealPlanPage).items
           .where((value) => value.isTemplate)
           .map(
             (value) => MealPlanTemplate(
@@ -844,22 +881,140 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             ),
           )
           .toList(growable: false);
-      if (widget.isTemplate && widget.mealPlanModelId != null) {
-        _originalTemplate = await widget.repository.getTemplateById(widget.mealPlanModelId!);
-        _hydrateTemplate(_originalTemplate!);
-      } else if (widget.mealPlanId != null) {
-        _original = await widget.repository.getById(widget.mealPlanId!);
-        _hydratePlan(_original!);
-      } else if (widget.templatePlanId != null) {
-        final template = await widget.repository.getTemplateById(widget.templatePlanId!);
-        _templateId = template.id;
-        _hydrateTemplate(template, copyName: false);
+      MealPlan? original;
+      MealPlanTemplate? originalTemplate;
+      MealPlanTemplate? sourceTemplate;
+      if (isTemplate && mealPlanModelId != null) {
+        originalTemplate = await repository.getTemplateById(mealPlanModelId);
+        if (originalTemplate.id != mealPlanModelId) {
+          throw const MealPlanUnavailableException('O modelo solicitado não pôde ser validado.');
+        }
+      } else if (mealPlanId != null) {
+        original = await repository.getById(mealPlanId);
+        if (original.id != mealPlanId) {
+          throw const MealPlanUnavailableException('O cardápio solicitado não pôde ser validado.');
+        }
+      } else if (templatePlanId != null) {
+        sourceTemplate = await repository.getTemplateById(templatePlanId);
+        if (sourceTemplate.id != templatePlanId) {
+          throw const MealPlanUnavailableException(
+            'O modelo-base solicitado não pôde ser validado.',
+          );
+        }
       }
+      if (!_isCurrentLoad(
+        generation,
+        repository,
+        mealPlanId,
+        templatePlanId,
+        mealPlanModelId,
+        isTemplate,
+      )) {
+        return;
+      }
+      setState(() {
+        _audienceOptions = audienceOptions;
+        _templates = templates;
+        _original = original;
+        _originalTemplate = originalTemplate;
+        if (originalTemplate != null) {
+          _hydrateTemplate(originalTemplate);
+        } else if (original != null) {
+          _hydratePlan(original);
+        } else if (sourceTemplate != null) {
+          _templateId = sourceTemplate.id;
+          _hydrateTemplate(sourceTemplate, copyName: false);
+        }
+      });
     } on MealPlanRepositoryException catch (error) {
-      _error = error.message;
+      if (_isCurrentLoad(
+        generation,
+        repository,
+        mealPlanId,
+        templatePlanId,
+        mealPlanModelId,
+        isTemplate,
+      )) {
+        setState(() => _error = error.message);
+      }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (_isCurrentLoad(
+        generation,
+        repository,
+        mealPlanId,
+        templatePlanId,
+        mealPlanModelId,
+        isTemplate,
+      )) {
+        setState(() => _loading = false);
+      }
     }
+  }
+
+  bool _isCurrentLoad(
+    int generation,
+    MealPlanRepository repository,
+    String? mealPlanId,
+    String? templatePlanId,
+    String? mealPlanModelId,
+    bool isTemplate,
+  ) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(repository, widget.repository) &&
+      mealPlanId == widget.mealPlanId &&
+      templatePlanId == widget.templatePlanId &&
+      mealPlanModelId == widget.mealPlanModelId &&
+      isTemplate == widget.isTemplate;
+
+  void _resetForLoad() {
+    _step = 0;
+    _loading = true;
+    _saving = false;
+    _saveAsTemplate = false;
+    _error = null;
+    _persistOperationId = null;
+    _original = null;
+    _originalTemplate = null;
+    _audienceOptions = const MealPlanAudienceOptions();
+    _templates = const [];
+    _variant = MealPlanPlanVariant.complete;
+    _audience = MealPlanAudienceSegment.students;
+    _visibility = MealPlanVisibilityMode.immediate;
+    _recurrence = MealPlanRecurrenceKind.weekly;
+    final today = DateUtils.dateOnly(DateTime.now());
+    _period = DateTimeRange(start: today, end: today.add(const Duration(days: 6)));
+    _visibleDate = null;
+    _templateId = '';
+    _simpleImage = null;
+    _pendingSimpleImage = null;
+    _recurrenceWeekdays
+      ..clear()
+      ..addAll(const {1, 2, 3, 4, 5});
+    for (final values in <Set<String>>[
+      _institutions,
+      _units,
+      _groups,
+      _activities,
+      _people,
+      _excludedPeople,
+    ]) {
+      values.clear();
+    }
+    _name.clear();
+    _simpleImageAlt.clear();
+    _simpleNotes.clear();
+    _priority.text = '0';
+    _cycleWeeks.text = '2';
+    _specificDates.clear();
+    _excludedDates.clear();
+    _templateName.clear();
+    for (final meal in _meals) {
+      meal.dispose();
+    }
+    _meals
+      ..clear()
+      ..add(_MealEditor());
   }
 
   void _hydratePlan(MealPlan plan) {
@@ -979,16 +1134,18 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   bool get _hasPendingImages =>
       _pendingSimpleImage != null || _meals.any((meal) => meal.pendingImage != null);
 
-  Future<void> _uploadPendingImages({
+  Future<bool> _uploadPendingImages({
     required String resourceId,
     required MealPlanImageResourceKind resourceKind,
+    required MealPlanImageRepository imageRepository,
+    required bool Function() isCurrent,
   }) async {
     Future<MealPlanAttachmentMeta> upload(
       _PendingImage pending, {
       required String slot,
       String? replaceAssetId,
     }) async {
-      final asset = await widget.imageRepository.upload(
+      final asset = await imageRepository.upload(
         MealPlanImageUploadRequest(
           resource: resourceKind == MealPlanImageResourceKind.mealPlan
               ? MealPlanImageResource.mealPlan(resourceId)
@@ -1005,24 +1162,31 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
 
     final simplePending = _pendingSimpleImage;
     if (simplePending != null) {
-      _simpleImage = await upload(
+      if (!isCurrent()) return false;
+      final uploaded = await upload(
         simplePending,
         slot: 'simple-cover',
         replaceAssetId: _simpleImage?.reference,
       );
+      if (!isCurrent()) return false;
+      _simpleImage = uploaded;
       _pendingSimpleImage = null;
     }
     for (var index = 0; index < _meals.length; index++) {
       final meal = _meals[index];
       final pending = meal.pendingImage;
       if (pending == null) continue;
-      meal.image = await upload(
+      if (!isCurrent()) return false;
+      final uploaded = await upload(
         pending,
         slot: 'meal-$index',
         replaceAssetId: meal.image?.reference,
       );
+      if (!isCurrent()) return false;
+      meal.image = uploaded;
       meal.pendingImage = null;
     }
+    return true;
   }
 
   void _moveMeal(int from, int to) => setState(() {
@@ -1121,11 +1285,29 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       _saving = true;
       _error = null;
     });
+    final generation = ++_commandGeneration;
+    final repository = widget.repository;
+    final imageRepository = widget.imageRepository;
+    final mealPlanId = widget.mealPlanId;
+    final templatePlanId = widget.templatePlanId;
+    final mealPlanModelId = widget.mealPlanModelId;
+    final isTemplate = widget.isTemplate;
+    bool isCurrent() => _isCurrentCommand(
+      generation,
+      repository,
+      imageRepository,
+      mealPlanId,
+      templatePlanId,
+      mealPlanModelId,
+      isTemplate,
+    );
+    final operationId = _persistOperationId ??= _newUuid();
     try {
-      if (widget.isTemplate) {
-        var savedTemplate = await widget.repository.saveTemplate(
+      if (isTemplate) {
+        var savedTemplate = await repository.saveTemplate(
           MealPlanTemplateDraft(
-            id: widget.mealPlanModelId,
+            requestId: '$operationId-template-save',
+            id: mealPlanModelId,
             name: _name.text.trim(),
             planVariant: _variant,
             audienceSegment: _audience,
@@ -1134,13 +1316,22 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           ),
           publish: publish,
         );
+        if (!isCurrent()) return;
+        if (mealPlanModelId != null && savedTemplate.id != mealPlanModelId) {
+          throw const MealPlanUnavailableException('O modelo salvo não corresponde ao solicitado.');
+        }
         if (_hasPendingImages) {
-          await _uploadPendingImages(
+          final uploaded = await _uploadPendingImages(
             resourceId: savedTemplate.id,
             resourceKind: MealPlanImageResourceKind.template,
+            imageRepository: imageRepository,
+            isCurrent: isCurrent,
           );
-          savedTemplate = await widget.repository.saveTemplate(
+          if (!uploaded || !isCurrent()) return;
+          final savedTemplateId = savedTemplate.id;
+          savedTemplate = await repository.saveTemplate(
             MealPlanTemplateDraft(
+              requestId: '$operationId-template-media',
               id: savedTemplate.id,
               name: _name.text.trim(),
               planVariant: _variant,
@@ -1150,21 +1341,47 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             ),
             publish: publish,
           );
+          if (!isCurrent()) return;
+          if (savedTemplate.id != savedTemplateId) {
+            throw const MealPlanUnavailableException(
+              'O modelo salvo não corresponde ao solicitado.',
+            );
+          }
         }
       } else {
-        final draft = _buildDraft();
-        var saved = await widget.repository.createOrUpdateDraft(draft);
-        if (_hasPendingImages) {
-          await _uploadPendingImages(
-            resourceId: saved.id,
-            resourceKind: MealPlanImageResourceKind.mealPlan,
-          );
-          saved = await widget.repository.createOrUpdateDraft(
-            _buildDraft(savedMealPlanId: saved.id, expectedRevision: saved.revision),
+        final draft = _buildDraft(requestId: '$operationId-save');
+        var saved = await repository.createOrUpdateDraft(draft);
+        if (!isCurrent()) return;
+        if (mealPlanId != null && saved.id != mealPlanId) {
+          throw const MealPlanUnavailableException(
+            'O cardápio salvo não corresponde ao solicitado.',
           );
         }
+        if (_hasPendingImages) {
+          final uploaded = await _uploadPendingImages(
+            resourceId: saved.id,
+            resourceKind: MealPlanImageResourceKind.mealPlan,
+            imageRepository: imageRepository,
+            isCurrent: isCurrent,
+          );
+          if (!uploaded || !isCurrent()) return;
+          final savedId = saved.id;
+          saved = await repository.createOrUpdateDraft(
+            _buildDraft(
+              requestId: '$operationId-save-media',
+              savedMealPlanId: saved.id,
+              expectedRevision: saved.revision,
+            ),
+          );
+          if (!isCurrent()) return;
+          if (saved.id != savedId) {
+            throw const MealPlanUnavailableException(
+              'O cardápio salvo não corresponde ao solicitado.',
+            );
+          }
+        }
         if (publish) {
-          final conflicts = await widget.repository.checkConflicts(
+          final conflicts = await repository.checkConflicts(
             scopeLevel: draft.scopeLevel.name,
             scopeId: draft.scopeId,
             startDate: draft.startDate,
@@ -1172,39 +1389,82 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             recurrence: draft.recurrence,
             menu: draft.menu,
           );
+          if (!isCurrent()) return;
           if (conflicts.isNotEmpty) {
             setState(
               () => _error =
                   'Publicação bloqueada: resolva ${conflicts.length} conflito(s) e defina prioridade explícita.',
             );
+            _persistOperationId = null;
             return;
           }
-          final reviewed = await widget.repository.submitForReview(
+          final reviewed = await repository.submitForReview(
             saved.id,
-            draft.requestId!,
+            '$operationId-review',
             saved.revision,
           );
-          await widget.repository.publish(reviewed.id, draft.requestId!, reviewed.revision);
+          if (!isCurrent()) return;
+          if (reviewed.id != saved.id) {
+            throw const MealPlanUnavailableException(
+              'O cardápio em revisão não corresponde ao solicitado.',
+            );
+          }
+          final published = await repository.publish(
+            reviewed.id,
+            '$operationId-publish',
+            reviewed.revision,
+          );
+          if (!isCurrent()) return;
+          if (published.id != reviewed.id) {
+            throw const MealPlanUnavailableException(
+              'O cardápio publicado não corresponde ao solicitado.',
+            );
+          }
         }
       }
-      if (mounted) widget.onSaved();
+      if (!isCurrent()) return;
+      _persistOperationId = null;
+      widget.onSaved();
     } on MealPlanRepositoryException catch (error) {
-      if (mounted) setState(() => _error = error.message);
+      if (!isCurrent()) return;
+      if (error is MealPlanConflictException || error is MealPlanValidationException) {
+        _persistOperationId = null;
+      }
+      setState(() => _error = error.message);
     } on Object catch (error) {
-      if (mounted) {
+      if (isCurrent()) {
         setState(() => _error = 'Não foi possível enviar a imagem. Tente novamente. ($error)');
       }
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (isCurrent()) setState(() => _saving = false);
     }
   }
 
-  MealPlanDraft _buildDraft({String? savedMealPlanId, int? expectedRevision}) {
+  bool _isCurrentCommand(
+    int generation,
+    MealPlanRepository repository,
+    MealPlanImageRepository imageRepository,
+    String? mealPlanId,
+    String? templatePlanId,
+    String? mealPlanModelId,
+    bool isTemplate,
+  ) =>
+      mounted &&
+      generation == _commandGeneration &&
+      identical(repository, widget.repository) &&
+      identical(imageRepository, widget.imageRepository) &&
+      mealPlanId == widget.mealPlanId &&
+      templatePlanId == widget.templatePlanId &&
+      mealPlanModelId == widget.mealPlanModelId &&
+      isTemplate == widget.isTemplate;
+
+  MealPlanDraft _buildDraft({
+    required String requestId,
+    String? savedMealPlanId,
+    int? expectedRevision,
+  }) {
     final period = _period!;
-    final tenantId =
-        _original?.tenantId ??
-        Supabase.instance.client.auth.currentUser?.appMetadata['tenant_id']?.toString() ??
-        '';
+    final tenantId = _original?.tenantId ?? widget.tenantId;
     final scopeLevel = _people.isNotEmpty
         ? MealPlanScopeLevel.person
         : _activities.isNotEmpty
@@ -1223,7 +1483,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       MealPlanScopeLevel.global => '',
     };
     return MealPlanDraft(
-      requestId: '${DateTime.now().microsecondsSinceEpoch}',
+      requestId: requestId,
       mealPlanId: savedMealPlanId ?? widget.mealPlanId,
       tenantId: tenantId,
       institutionId: _institutions.firstOrNull ?? _original?.institutionId,

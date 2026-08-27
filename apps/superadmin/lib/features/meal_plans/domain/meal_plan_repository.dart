@@ -562,6 +562,7 @@ final class MealPlanTemplate {
 
 final class MealPlanTemplateDraft {
   const MealPlanTemplateDraft({
+    this.requestId,
     this.id,
     required this.name,
     required this.planVariant,
@@ -569,13 +570,14 @@ final class MealPlanTemplateDraft {
     required this.payload,
     this.expectedVersion = 0,
   });
-  final String? id;
+  final String? requestId, id;
   final String name;
   final MealPlanPlanVariant planVariant;
   final MealPlanAudienceSegment audienceSegment;
   final Map<String, Object?> payload;
   final int expectedVersion;
   Map<String, Object?> toJson() => {
+    'requestId': requestId,
     'name': name,
     'planVariant': planVariant.name,
     'audienceSegment': audienceSegment.name,

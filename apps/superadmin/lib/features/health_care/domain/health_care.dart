@@ -780,6 +780,36 @@ final class HealthCareProfileItem {
   final String? otherText;
 }
 
+final class HealthCareProfileDraft {
+  HealthCareProfileDraft({
+    required this.childId,
+    this.allergyType = HealthCareAllergyType.food,
+    this.allergyStatus = HealthCareAllergyStatus.active,
+    this.lastEpisode = '',
+    this.severity = HealthCareEpisodeSeverity.moderate,
+    this.observedReaction = '',
+    this.allergyGuidance = '',
+    this.allergyNotes = '',
+    Set<String> careItemIds = const {},
+    this.importantSigns = '',
+    this.adaptations = '',
+    this.justification = '',
+  }) : careItemIds = Set.unmodifiable(careItemIds);
+
+  final String childId;
+  final HealthCareAllergyType allergyType;
+  final HealthCareAllergyStatus allergyStatus;
+  final String lastEpisode;
+  final HealthCareEpisodeSeverity severity;
+  final String observedReaction;
+  final String allergyGuidance;
+  final String allergyNotes;
+  final Set<String> careItemIds;
+  final String importantSigns;
+  final String adaptations;
+  final String justification;
+}
+
 final class HealthCareAcknowledgement {
   const HealthCareAcknowledgement({
     required this.id,

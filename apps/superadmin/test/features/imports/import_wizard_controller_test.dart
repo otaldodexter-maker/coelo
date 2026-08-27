@@ -12,6 +12,19 @@ void main() {
     controller.dispose();
   });
 
+  test('rejects unsupported presets before any repository call', () {
+    final repository = InMemoryImportRepository();
+    final controller = ImportWizardController(
+      repository: repository,
+      initialEntity: ImportEntity.activities,
+    );
+
+    expect(controller.entity, ImportEntity.units);
+    controller.selectEntity(ImportEntity.people);
+    expect(controller.entity, ImportEntity.units);
+    controller.dispose();
+  });
+
   test('does not confirm without an authenticated source file', () {
     final controller = ImportWizardController(repository: InMemoryImportRepository());
 

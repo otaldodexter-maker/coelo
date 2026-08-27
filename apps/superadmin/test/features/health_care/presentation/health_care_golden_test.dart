@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import '../support/health_care_fixture_repository.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_directory_page.dart';
@@ -149,7 +150,10 @@ void main() {
               logout: unavailableSuperadminLogout,
               childOptions: _profileChildren,
               onCancel: () {},
-              onSaved: () async {},
+              onSaved: (_) async {},
+              loadDraft: configuration.dark
+                  ? (childId) async => HealthCareProfileDraft(childId: childId)
+                  : null,
               childId: configuration.dark ? 'child-demo-a' : null,
             );
       await _pumpFrame(tester, page, dark: configuration.dark);

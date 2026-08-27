@@ -50,6 +50,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   String? _message;
   int _pageIndex = 0;
   Timer? _searchDebounce;
+  int _loadGeneration = 0;
 
   @override
   void initState() {
@@ -58,7 +59,16 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   }
 
   @override
+  void didUpdateWidget(covariant FormsDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.api, widget.api)) {
+      _resetAndLoad();
+    }
+  }
+
+  @override
   void dispose() {
+    _loadGeneration++;
     _searchDebounce?.cancel();
     _search.dispose();
     super.dispose();
@@ -66,35 +76,41 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
 
   Future<void> _load() async {
     final api = widget.api;
+    final generation = ++_loadGeneration;
     if (api == null) {
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _status = FormsDirectoryLoadStatus.failure;
         _message = 'O serviço de Formulários não está disponível neste ambiente.';
       });
       return;
     }
+    final search = _search.text.trim();
+    final operationalStatuses = Set<FormOperationalStatus>.of(_operationalStatuses);
+    final period = _period;
+    final cursor = _cursors[_pageIndex];
     setState(() => _status = FormsDirectoryLoadStatus.loading);
     try {
       final page = await api.listDirectory(
         FormDirectoryQuery(
-          search: _search.text.trim().isEmpty ? null : _search.text.trim(),
-          operationalStatuses: _operationalStatuses,
-          startsOnOrAfter: _period?.start,
-          endsOnOrBefore: _period?.end,
-          cursor: _cursors[_pageIndex],
+          search: search.isEmpty ? null : search,
+          operationalStatuses: operationalStatuses,
+          startsOnOrAfter: period?.start,
+          endsOnOrBefore: period?.end,
+          cursor: cursor,
         ),
       );
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration || !identical(api, widget.api)) return;
       setState(() {
         _page = page;
         _status = page.items.isNotEmpty
             ? FormsDirectoryLoadStatus.data
-            : (_search.text.isNotEmpty || _operationalStatuses.isNotEmpty || _period != null)
+            : (search.isNotEmpty || operationalStatuses.isNotEmpty || period != null)
             ? FormsDirectoryLoadStatus.noResults
             : FormsDirectoryLoadStatus.empty;
       });
     } on FormApiException catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration || !identical(api, widget.api)) return;
       setState(() {
         _status = error.kind == FormApiFailureKind.unauthorized
             ? FormsDirectoryLoadStatus.unauthorized

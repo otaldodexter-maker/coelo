@@ -286,7 +286,7 @@ void main() {
           logout: unavailableSuperadminLogout,
           childOptions: _profileChildren,
           onCancel: () {},
-          onSaved: () async {},
+          onSaved: (_) async {},
         ),
         HealthMedicationPlanFormPage(
           logout: unavailableSuperadminLogout,

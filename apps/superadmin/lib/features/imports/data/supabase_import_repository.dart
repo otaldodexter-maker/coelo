@@ -10,9 +10,11 @@ import '../domain/import_repository.dart';
 /// Production adapter: every read is scoped by the hub RPC and uploads are
 /// binary requests to the authenticated Edge boundary.
 final class SupabaseImportRepository implements ImportRepository {
-  const SupabaseImportRepository(this._client);
+  SupabaseImportRepository(this._client);
 
   final SupabaseClient _client;
+  final Map<String, String> _createKeys = <String, String>{};
+  final Map<String, String> _confirmKeys = <String, String>{};
 
   @override
   Future<List<ImportJob>> fetchJobs() async =>
@@ -59,16 +61,20 @@ final class SupabaseImportRepository implements ImportRepository {
     required ImportStrategy strategy,
     String context = 'Coelo',
     ImportFileFixture file = ImportFileFixture.csv,
-  }) {
+  }) async {
     if (entity != ImportEntity.units) return _unavailable();
-    return _invoke(<String, Object?>{
+    final intent = '${entity.name}|${strategy.name}|$context|${file.name}';
+    final key = _createKeys.putIfAbsent(intent, _uuid);
+    final result = await _invoke(<String, Object?>{
       'action': 'create_import',
       'domain': 'units',
       'file_name': file.fileName,
       'mime_type': _mime(file),
       'source_format': file.name,
-      'idempotency_key': _uuid(),
+      'idempotency_key': key,
     });
+    if (_createKeys[intent] == key) _createKeys.remove(intent);
+    return result;
   }
 
   @override
@@ -87,11 +93,14 @@ final class SupabaseImportRepository implements ImportRepository {
         },
       );
       if (response.status < 200 || response.status >= 300) return _unavailable();
-      return _invoke(<String, Object?>{
+      final requestId = _confirmKeys.putIfAbsent(job.id, _uuid);
+      final result = await _invoke(<String, Object?>{
         'action': 'confirm_import',
         'job_id': job.id,
-        'request_id': _uuid(),
+        'request_id': requestId,
       });
+      if (_confirmKeys[job.id] == requestId) _confirmKeys.remove(job.id);
+      return result;
     } on FunctionException {
       throw const ImportRepositoryUnavailableException();
     } on ClientException {

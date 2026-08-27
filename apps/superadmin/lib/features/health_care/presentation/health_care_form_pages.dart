@@ -12,7 +12,8 @@ import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dar
 import '../../auth/domain/logout_action.dart';
 import '../domain/health_care.dart';
 
-typedef HealthCareFormSave = Future<void> Function();
+typedef HealthCareProfileFormSave = Future<void> Function(HealthCareProfileDraft draft);
+typedef HealthCareProfileFormLoad = Future<HealthCareProfileDraft?> Function(String childId);
 
 @immutable
 final class HealthCareProfileChildOption {
@@ -29,6 +30,8 @@ final class HealthCareProfileFormPage extends StatefulWidget {
     required this.logout,
     required this.onCancel,
     this.onSaved,
+    this.onSaveSucceeded,
+    this.loadDraft,
     this.childOptions = const [],
     this.childId,
     super.key,
@@ -36,7 +39,9 @@ final class HealthCareProfileFormPage extends StatefulWidget {
 
   final LogoutAction logout;
   final VoidCallback onCancel;
-  final HealthCareFormSave? onSaved;
+  final HealthCareProfileFormSave? onSaved;
+  final VoidCallback? onSaveSucceeded;
+  final HealthCareProfileFormLoad? loadDraft;
   final List<HealthCareProfileChildOption> childOptions;
   final String? childId;
 
@@ -53,33 +58,235 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   var _severity = HealthCareEpisodeSeverity.moderate;
   var _careItems = <String>{};
   var _saving = false;
+  var _loadingDraft = false;
+  var _draftReady = false;
+  var _dirty = false;
+  String? _loadError;
+  String? _validationError;
+  var _loadGeneration = 0;
+  var _commandGeneration = 0;
   final _lastEpisode = TextEditingController();
   final _reaction = TextEditingController();
   final _guidance = TextEditingController();
   final _notes = TextEditingController();
   final _signs = TextEditingController();
   final _adaptations = TextEditingController();
+  final _justification = TextEditingController();
+
+  Iterable<TextEditingController> get _textControllers => [
+    _lastEpisode,
+    _reaction,
+    _guidance,
+    _notes,
+    _signs,
+    _adaptations,
+    _justification,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    for (final controller in _textControllers) {
+      controller.addListener(_markDirty);
+    }
+    if (widget.childId case final childId?) {
+      _loadDraft(childId);
+    } else {
+      _draftReady = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant HealthCareProfileFormPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final loadIdentityChanged =
+        oldWidget.childId != widget.childId || oldWidget.loadDraft != widget.loadDraft;
+    final commandIdentityChanged =
+        oldWidget.onSaved != widget.onSaved || oldWidget.onSaveSucceeded != widget.onSaveSucceeded;
+    if (!loadIdentityChanged && !commandIdentityChanged) return;
+    _commandGeneration++;
+    _saving = false;
+    if (!loadIdentityChanged) return;
+    _loadGeneration++;
+    _resetDraft();
+    _draftReady = widget.childId == null;
+    _loadingDraft = false;
+    _loadError = null;
+    _validationError = null;
+    _dirty = false;
+    if (widget.childId case final childId?) _loadDraft(childId);
+  }
 
   @override
   void dispose() {
+    _loadGeneration++;
+    _commandGeneration++;
     _lastEpisode.dispose();
     _reaction.dispose();
     _guidance.dispose();
     _notes.dispose();
     _signs.dispose();
     _adaptations.dispose();
+    _justification.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     final onSaved = widget.onSaved;
     if (_saving || onSaved == null) return;
-    setState(() => _saving = true);
-    try {
-      await onSaved();
-    } finally {
-      if (mounted) setState(() => _saving = false);
+    if (_justification.text.trim().isEmpty) {
+      setState(() => _validationError = 'Informe a justificativa antes de salvar.');
+      return;
     }
+    setState(() {
+      _saving = true;
+      _validationError = null;
+    });
+    final generation = ++_commandGeneration;
+    final requestedChildId = widget.childId;
+    final onSaveSucceeded = widget.onSaveSucceeded;
+    try {
+      await onSaved(_draft);
+      if (!_isCurrentCommand(generation, requestedChildId, onSaved)) return;
+      setState(() => _dirty = false);
+      onSaveSucceeded?.call();
+    } catch (_) {
+      if (_isCurrentCommand(generation, requestedChildId, onSaved)) {
+        setState(() {
+          _validationError = 'Não foi possível salvar. Revise os dados e tente novamente.';
+        });
+      }
+    } finally {
+      if (_isCurrentCommand(generation, requestedChildId, onSaved)) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
+  Future<void> _loadDraft(String childId) async {
+    final loadDraft = widget.loadDraft;
+    if (loadDraft == null) return;
+    final generation = ++_loadGeneration;
+    setState(() {
+      _loadingDraft = true;
+      _loadError = null;
+    });
+    try {
+      final draft = await loadDraft(childId);
+      if (!mounted || generation != _loadGeneration || widget.childId != childId) return;
+      if (draft == null || draft.childId != childId) {
+        setState(() {
+          _loadingDraft = false;
+          _loadError = draft == null
+              ? 'O perfil solicitado não foi encontrado.'
+              : 'O perfil retornado não corresponde à criança solicitada.';
+        });
+        return;
+      }
+      _applyDraft(draft);
+      setState(() {
+        _loadingDraft = false;
+        _draftReady = true;
+        _dirty = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _loadGeneration || widget.childId != childId) return;
+      setState(() {
+        _loadingDraft = false;
+        _loadError = 'Não foi possível carregar o perfil de cuidado.';
+      });
+    }
+  }
+
+  void _applyDraft(HealthCareProfileDraft draft) {
+    _childId = draft.childId;
+    _allergyType = draft.allergyType;
+    _allergyStatus = draft.allergyStatus;
+    _severity = draft.severity;
+    _careItems = Set.of(draft.careItemIds);
+    _lastEpisode.text = draft.lastEpisode;
+    _reaction.text = draft.observedReaction;
+    _guidance.text = draft.allergyGuidance;
+    _notes.text = draft.allergyNotes;
+    _signs.text = draft.importantSigns;
+    _adaptations.text = draft.adaptations;
+    _justification.text = draft.justification;
+  }
+
+  bool _isCurrentCommand(
+    int generation,
+    String? requestedChildId,
+    HealthCareProfileFormSave onSaved,
+  ) =>
+      mounted &&
+      generation == _commandGeneration &&
+      widget.childId == requestedChildId &&
+      identical(widget.onSaved, onSaved);
+
+  void _resetDraft() {
+    _currentStep = _HealthCareProfileFormStep.child;
+    _childId = widget.childId ?? (widget.childOptions.isEmpty ? '' : widget.childOptions.first.id);
+    _allergyType = HealthCareAllergyType.food;
+    _allergyStatus = HealthCareAllergyStatus.active;
+    _severity = HealthCareEpisodeSeverity.moderate;
+    _careItems = <String>{};
+    for (final controller in _textControllers) {
+      controller.clear();
+    }
+  }
+
+  HealthCareProfileDraft get _draft => HealthCareProfileDraft(
+    childId: _childId,
+    allergyType: _allergyType,
+    allergyStatus: _allergyStatus,
+    lastEpisode: _lastEpisode.text,
+    severity: _severity,
+    observedReaction: _reaction.text,
+    allergyGuidance: _guidance.text,
+    allergyNotes: _notes.text,
+    careItemIds: _careItems,
+    importantSigns: _signs.text,
+    adaptations: _adaptations.text,
+    justification: _justification.text,
+  );
+
+  void _markDirty() {
+    if (_draftReady && !_dirty && mounted) setState(() => _dirty = true);
+  }
+
+  void _change(VoidCallback change) => setState(() {
+    change();
+    _dirty = true;
+  });
+
+  Future<void> _requestCancel() async {
+    if (!_dirty) {
+      widget.onCancel();
+      return;
+    }
+    final discard = await showDialog<bool>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (dialogContext) => CoeloAdminDialogShell(
+        dialogKey: const Key('health-care-profile-confirm-exit-dialog'),
+        title: 'Sair sem salvar?',
+        closeTooltip: 'Fechar confirmação',
+        body: const Text('As alterações feitas neste perfil de cuidado serão descartadas.'),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: const Text('Continuar editando'),
+        ),
+        primaryAction: FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+          ),
+          child: const Text('Sair sem salvar'),
+        ),
+      ),
+    );
+    if (discard == true && mounted) widget.onCancel();
   }
 
   List<SuperadminFormStep> get _steps => [
@@ -114,6 +321,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
 
   bool get _hasRequiredContract =>
       widget.onSaved != null &&
+      _draftReady &&
       widget.childOptions.isNotEmpty &&
       widget.childOptions.any((option) => option.id == _childId);
 
@@ -126,6 +334,15 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
 
   @override
   Widget build(BuildContext context) {
+    if (_loadingDraft) {
+      return SuperadminShell(
+        logout: widget.logout,
+        currentDestination: 'health-care-profiles',
+        title: 'Editar perfil de cuidado',
+        subtitle: 'Registre apenas informações permanentes de saúde e cuidado da criança.',
+        child: const Center(child: CircularProgressIndicator()),
+      ).withHealthCareResponsiveSurface();
+    }
     if (!_hasRequiredContract) {
       return SuperadminShell(
         logout: widget.logout,
@@ -135,10 +352,14 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
         child: CoeloStatePanel(
           key: const Key('health-care-profile-form-unavailable'),
           title: 'Cadastro indisponível',
-          message: 'Os dados das crianças e o comando de persistência ainda não estão disponíveis.',
+          message:
+              _loadError ??
+              'Os dados das crianças e o comando de persistência ainda não estão disponíveis.',
           icon: Icons.cloud_off_outlined,
-          actionLabel: 'Voltar a Perfis de cuidado',
-          onAction: widget.onCancel,
+          actionLabel: _loadError != null ? 'Tentar novamente' : 'Voltar a Perfis de cuidado',
+          onAction: _loadError != null && widget.childId != null
+              ? () => _loadDraft(widget.childId!)
+              : widget.onCancel,
         ),
       ).withHealthCareResponsiveSurface();
     }
@@ -148,7 +369,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       currentDestination: 'health-care-profiles',
       title: widget.childId == null ? 'Criar perfil de cuidado' : 'Editar perfil de cuidado',
       subtitle: 'Registre apenas informações permanentes de saúde e cuidado da criança.',
-      onCancel: widget.onCancel,
+      onCancel: _requestCancel,
       onSave: _saving ? null : _save,
       saveLabel: widget.childId == null ? 'Criar perfil' : 'Salvar alterações',
       saving: _saving,
@@ -174,7 +395,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                           .map((option) => option.id)
                           .toList(growable: false),
                       optionLabel: _childLabel,
-                      onChanged: (value) => setState(() => _childId = value),
+                      onChanged: (value) => _change(() => _childId = value),
                       prefixIcon: Icons.child_care_rounded,
                     )
                   : _LockedIdentity(label: 'Criança', value: _childLabel(_childId)),
@@ -193,7 +414,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                         value: _allergyType,
                         options: HealthCareAllergyType.values,
                         optionLabel: _allergyTypeLabel,
-                        onChanged: (value) => setState(() => _allergyType = value),
+                        onChanged: (value) => _change(() => _allergyType = value),
                         prefixIcon: Icons.health_and_safety_outlined,
                       ),
                       CoeloAdminSingleSelectField<HealthCareAllergyStatus>(
@@ -201,7 +422,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                         value: _allergyStatus,
                         options: HealthCareAllergyStatus.values,
                         optionLabel: _allergyStatusLabel,
-                        onChanged: (value) => setState(() => _allergyStatus = value),
+                        onChanged: (value) => _change(() => _allergyStatus = value),
                         prefixIcon: Icons.flag_outlined,
                       ),
                       CoeloFormTextField(
@@ -214,7 +435,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                         value: _severity,
                         options: HealthCareEpisodeSeverity.values,
                         optionLabel: _severityLabel,
-                        onChanged: (value) => setState(() => _severity = value),
+                        onChanged: (value) => _change(() => _severity = value),
                         prefixIcon: Icons.monitor_heart_outlined,
                       ),
                     ],
@@ -261,7 +482,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                         .toList(growable: false),
                     selectedValues: _careItems,
                     optionLabel: _careItemLabel,
-                    onChanged: (values) => setState(() => _careItems = values),
+                    onChanged: (values) => _change(() => _careItems = values),
                     searchable: true,
                     searchHintText: 'Buscar característica',
                   ),
@@ -282,12 +503,44 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                       ),
                     ],
                   ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                  CoeloFormTextField(
+                    controller: _justification,
+                    labelText: widget.childId == null
+                        ? 'Justificativa do cadastro'
+                        : 'Justificativa da alteração',
+                    prefixIcon: Icons.edit_note_outlined,
+                    maxLines: 3,
+                    errorText: _validationError,
+                  ),
                 ],
               ),
             ),
           if (_currentStep == _HealthCareProfileFormStep.review)
             Column(
               children: [
+                if (_validationError case final message?) ...[
+                  Semantics(
+                    liveRegion: true,
+                    child: Container(
+                      key: const Key('health-care-profile-save-error'),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(CoeloSpacing.space4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(CoeloRadius.md),
+                      ),
+                      child: Text(
+                        message,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: CoeloSpacing.space4),
+                ],
                 _ReviewSection(
                   title: 'Criança',
                   onEdit: () => _selectStep(_HealthCareProfileFormStep.child.index),
@@ -318,6 +571,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                     ),
                     ('Sinais importantes', _signs.text),
                     ('Adaptações e orientações', _adaptations.text),
+                    ('Justificativa', _justification.text),
                   ],
                 ),
               ],

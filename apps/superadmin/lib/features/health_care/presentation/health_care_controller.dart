@@ -3,7 +3,16 @@ import 'package:flutter/foundation.dart';
 import '../domain/health_care_repository.dart';
 import '../domain/health_care.dart';
 
-enum HealthCareLoadState { loading, ready, empty, noResults, error, unauthorized, minimized }
+enum HealthCareLoadState {
+  loading,
+  ready,
+  empty,
+  noResults,
+  error,
+  unavailable,
+  unauthorized,
+  minimized,
+}
 
 enum HealthCareDirectoryDisplay { cards, table }
 
@@ -27,6 +36,7 @@ final class HealthCareController extends ChangeNotifier {
   HealthCareLoadState _state = HealthCareLoadState.loading;
   HealthCareDirectoryDisplay _display = HealthCareDirectoryDisplay.cards;
   Object? _error;
+  var _loadGeneration = 0;
 
   bool get isMinimized => _actor?.profile == HealthCareAccessProfile.minimized;
   HealthCareDirectoryQuery get query => _query;
@@ -60,10 +70,13 @@ final class HealthCareController extends ChangeNotifier {
             .toSet();
 
   Future<void> load() async {
+    final generation = ++_loadGeneration;
     if (_actor == null) {
       _page = null;
       _error = null;
-      _state = HealthCareLoadState.unauthorized;
+      _state = repository is UnavailableHealthCareRepository
+          ? HealthCareLoadState.unavailable
+          : HealthCareLoadState.unauthorized;
       notifyListeners();
       return;
     }
@@ -71,13 +84,16 @@ final class HealthCareController extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      _page = await repository.fetchDirectory(_query, actor: actor);
+      final page = await repository.fetchDirectory(_query, actor: actor);
+      if (generation != _loadGeneration) return;
+      _page = page;
       _state = isMinimized
           ? HealthCareLoadState.minimized
           : (_page!.items.isEmpty
                 ? (_hasFilters ? HealthCareLoadState.noResults : HealthCareLoadState.empty)
                 : HealthCareLoadState.ready);
     } on Object catch (error) {
+      if (generation != _loadGeneration) return;
       _error = error;
       _state = HealthCareLoadState.error;
     }

@@ -21,7 +21,7 @@ void main() {
           logout: unavailableSuperadminLogout,
           childOptions: _profileChildren,
           onCancel: () {},
-          onSaved: () async {},
+          onSaved: (_) async {},
         ),
       ),
     );
@@ -92,11 +92,11 @@ void main() {
 
     await tester.tap(find.text('Vigência').last);
     await tester.pumpAndSettle();
-    expect(find.text('Data inicial'), findsOneWidget);
+    expect(find.text('Data de início'), findsOneWidget);
 
     await tester.tap(find.text('Documento').last);
     await tester.pumpAndSettle();
-    expect(find.text('Nome ou referência do documento'), findsOneWidget);
+    expect(find.text('Prescrição'), findsOneWidget);
 
     await tester.tap(find.text('Revisão').last);
     await tester.pumpAndSettle();
@@ -114,7 +114,7 @@ void main() {
           logout: unavailableSuperadminLogout,
           childOptions: _profileChildren,
           onCancel: () {},
-          onSaved: () async {},
+          onSaved: (_) async {},
         ),
         HealthMedicationPlanFormPage(
           logout: unavailableSuperadminLogout,

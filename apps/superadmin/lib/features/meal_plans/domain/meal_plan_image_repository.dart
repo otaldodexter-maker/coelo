@@ -126,3 +126,19 @@ final class MealPlanImageConflictException extends MealPlanImageException {
 final class MealPlanImageUnavailableException extends MealPlanImageException {
   const MealPlanImageUnavailableException();
 }
+
+final class UnavailableMealPlanImageRepository implements MealPlanImageRepository {
+  const UnavailableMealPlanImageRepository();
+
+  @override
+  Future<MealPlanImageAsset> upload(MealPlanImageUploadRequest request) =>
+      Future.error(const MealPlanImageUnavailableException());
+
+  @override
+  Future<Uri> createSignedReadUrl(String assetId) =>
+      Future.error(const MealPlanImageUnavailableException());
+
+  @override
+  Future<void> delete({required String assetId, required String requestId}) =>
+      Future.error(const MealPlanImageUnavailableException());
+}

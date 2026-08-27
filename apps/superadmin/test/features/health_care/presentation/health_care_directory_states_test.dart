@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care_repository.dart';
@@ -38,7 +40,7 @@ void main() {
     }
   });
 
-  testWidgets('unauthorized state never exposes the create action', (tester) async {
+  testWidgets('unavailable state is distinct and never exposes the create action', (tester) async {
     final controller = HealthCareController(const UnavailableHealthCareRepository());
     addTearDown(controller.dispose);
     await tester.pumpWidget(
@@ -52,11 +54,70 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.text('Perfis de cuidado indisponíveis'), findsOneWidget);
     expect(find.byType(CoeloAdminListingToolbar), findsNothing);
     expect(find.byKey(const Key('health-care-profiles-directory-scroll')), findsNothing);
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
   });
+
+  test('stale directory response cannot replace a newer filtered response', () async {
+    final repository = _RacingDirectoryRepository();
+    final controller = HealthCareController(repository);
+    addTearDown(controller.dispose);
+
+    final first = controller.load();
+    await Future<void>.delayed(Duration.zero);
+    final second = controller.setSearch('Bia');
+    await Future<void>.delayed(Duration.zero);
+    repository.completeSecond('Bia');
+    await second;
+    repository.completeFirst('Ana');
+    await first;
+
+    expect(controller.query.search, 'Bia');
+    expect(controller.items.single.displayName, 'Bia');
+  });
+}
+
+final class _RacingDirectoryRepository implements HealthCareRepository {
+  final _requests = <Completer<HealthCareDirectoryPage>>[];
+
+  @override
+  HealthCareActor get defaultActor =>
+      HealthCareActor(id: 'test-actor', profile: HealthCareAccessProfile.owner);
+
+  @override
+  Future<HealthCareDirectoryPage> fetchDirectory(
+    HealthCareDirectoryQuery query, {
+    required HealthCareActor actor,
+  }) {
+    final completer = Completer<HealthCareDirectoryPage>();
+    _requests.add(completer);
+    return completer.future;
+  }
+
+  void completeFirst(String name) => _requests.first.complete(_page(name));
+  void completeSecond(String name) => _requests.last.complete(_page(name));
+
+  HealthCareDirectoryPage _page(String name) => HealthCareDirectoryPage(
+    items: [
+      HealthCareChildSummary(
+        id: name,
+        personId: name,
+        displayName: name,
+        operationalStatus: HealthCareOperationalStatus.active,
+        medicationCount: 0,
+        activeAllergyCount: 0,
+        pendingAcknowledgementCount: 0,
+      ),
+    ],
+    totalCount: 1,
+    page: 0,
+    pageSize: 11,
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _DirectoryRepository implements HealthCareRepository {

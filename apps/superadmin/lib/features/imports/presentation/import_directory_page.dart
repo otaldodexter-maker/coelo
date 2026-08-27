@@ -23,6 +23,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
   var _page = const ImportJobPage(items: <ImportJob>[]);
   final _cursors = <String?>[null];
   var _index = 0;
+  var _loadGeneration = 0;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
 
   @override
   void dispose() {
+    _loadGeneration++;
     _search.dispose();
     super.dispose();
   }
@@ -39,6 +41,7 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
   bool get _hasFilters => _search.text.trim().isNotEmpty || _entities.isNotEmpty || _format != null;
 
   Future<void> _load({bool reset = false, String? cursor}) async {
+    final generation = ++_loadGeneration;
     if (reset) {
       _cursors
         ..clear()
@@ -57,13 +60,13 @@ final class _ImportDirectoryPageState extends State<ImportDirectoryPage> {
         cursor: cursor ?? _cursors[_index],
       );
       final result = await widget.repository.fetchPage(query);
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _page = result;
         _loading = false;
       });
     } on Object {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _page = const ImportJobPage(items: <ImportJob>[]);
         _loading = false;

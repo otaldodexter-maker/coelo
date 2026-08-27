@@ -39,6 +39,7 @@ final class FormsOverviewPage extends StatefulWidget {
 final class _FormsOverviewPageState extends State<FormsOverviewPage> {
   FormOverview? _overview;
   FormApiException? _failure;
+  int _loadGeneration = 0;
 
   @override
   void initState() {
@@ -46,9 +47,26 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
     unawaited(_load());
   }
 
+  @override
+  void didUpdateWidget(covariant FormsOverviewPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.formId != widget.formId || !identical(oldWidget.api, widget.api)) {
+      unawaited(_load());
+    }
+  }
+
+  @override
+  void dispose() {
+    _loadGeneration++;
+    super.dispose();
+  }
+
   Future<void> _load() async {
     final api = widget.api;
+    final formId = widget.formId;
+    final generation = ++_loadGeneration;
     if (api == null) {
+      if (!mounted || generation != _loadGeneration) return;
       setState(
         () => _failure = const FormApiException(
           FormApiFailureKind.unavailable,
@@ -62,12 +80,18 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
       _overview = null;
     });
     try {
-      final result = await api.getOverview(widget.formId);
-      if (mounted) setState(() => _overview = result);
+      final result = await api.getOverview(formId);
+      if (_isCurrentLoad(generation, api, formId)) setState(() => _overview = result);
     } on FormApiException catch (error) {
-      if (mounted) setState(() => _failure = error);
+      if (_isCurrentLoad(generation, api, formId)) setState(() => _failure = error);
     }
   }
+
+  bool _isCurrentLoad(int generation, FormsApi api, String formId) =>
+      mounted &&
+      generation == _loadGeneration &&
+      identical(api, widget.api) &&
+      formId == widget.formId;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(

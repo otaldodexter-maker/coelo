@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/overview/forms_overview_page.dart';
@@ -61,6 +63,66 @@ void main() {
     }
     addTearDown(() => tester.binding.setSurfaceSize(null));
   });
+
+  testWidgets('route A cannot overwrite route B when responses finish out of order', (
+    tester,
+  ) async {
+    final api = _OrderedOverviewApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormsOverviewPage(api: api, formId: 'form-a'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormsOverviewPage(api: api, formId: 'form-b'),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    api.forId('form-b').complete(_overview('form-b', 'Formulário B'));
+    await tester.pump();
+    expect(find.text('Formulário B'), findsOneWidget);
+
+    api.forId('form-a').complete(_overview('form-a', 'Formulário A'));
+    await tester.pump();
+    expect(find.text('Formulário B'), findsOneWidget);
+    expect(find.text('Formulário A'), findsNothing);
+  });
+}
+
+FormOverview _overview(String id, String title) => FormOverview(
+  definition: FormDefinition(
+    id: id,
+    institutionId: 'institution-1',
+    kind: FormKind.form,
+    identityMode: FormIdentityMode.identified,
+    responseUnit: FormResponseUnit.person,
+    title: title,
+    managementVersion: 1,
+    sections: const [],
+  ),
+  applicationCount: 0,
+  occurrenceCount: 0,
+  responseCount: 0,
+);
+
+final class _OrderedOverviewApi implements FormsApi {
+  final _requests = <String, Completer<FormOverview>>{};
+
+  Completer<FormOverview> forId(String id) => _requests[id]!;
+
+  @override
+  Future<FormOverview> getOverview(String formId) =>
+      (_requests[formId] = Completer<FormOverview>()).future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _Api implements FormsApi {

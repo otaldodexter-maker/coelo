@@ -7,13 +7,15 @@ import '../domain/import_job.dart';
 import '../domain/import_repository.dart';
 
 final class ImportWizardController extends ChangeNotifier {
+  static const supportedEntities = <ImportEntity>{ImportEntity.units};
+
   ImportWizardController({
     required this.repository,
     ImportEntity? initialEntity,
     String? initialContext,
     ImportStrategy? initialStrategy,
     this.stepInterval = const Duration(seconds: 2),
-  }) : entity = initialEntity ?? ImportEntity.units,
+  }) : entity = supportedEntities.contains(initialEntity) ? initialEntity! : ImportEntity.units,
        strategy = initialStrategy ?? ImportStrategy.createOnly,
        file = ImportFileFixture.csv,
        context = initialContext ?? 'Unidades';
@@ -31,15 +33,25 @@ final class ImportWizardController extends ChangeNotifier {
   bool selectingFile = false;
   Future<ImportJob>? _draft;
   String? _draftCacheKey;
+  bool _preparingDraft = false;
+  bool _confirming = false;
   Timer? _timer;
   var _disposed = false;
+  var _generation = 0;
 
   Map<String, String> get mapping => job?.mapping ?? const {};
-  bool get canConfirm => entity == ImportEntity.units && sourceFile != null && !selectingFile;
+  bool get canConfirm =>
+      entity == ImportEntity.units && sourceFile != null && !selectingFile && !_confirming;
 
-  Future<ImportJob> get draft {
+  Future<ImportJob>? get preparedDraft => _draft;
+
+  Future<bool> _prepareDraft() async {
+    if (_preparingDraft) return false;
     final key = '${entity.name}|${strategy.name}|${file.name}|$context';
-    if (_draft != null && _draftCacheKey == key) return _draft!;
+    if (_draft != null && _draftCacheKey == key) return true;
+    _preparingDraft = true;
+    sourceFileError = null;
+    final generation = _generation;
     final next = repository.createDraft(
       entity: entity,
       strategy: strategy,
@@ -48,17 +60,32 @@ final class ImportWizardController extends ChangeNotifier {
     );
     _draft = next;
     _draftCacheKey = key;
-    return next;
+    try {
+      await next;
+      return !_disposed && generation == _generation;
+    } on ImportRepositoryUnavailableException {
+      if (generation != _generation) return false;
+      _draft = null;
+      _draftCacheKey = null;
+      sourceFileError = 'Importação indisponível neste ambiente.';
+      return false;
+    } finally {
+      _preparingDraft = false;
+      if (!_disposed) notifyListeners();
+    }
   }
 
   void _invalidateDraft() {
+    _generation++;
     _timer?.cancel();
     _draft = null;
     _draftCacheKey = null;
+    _confirming = false;
     job = null;
   }
 
   void selectEntity(ImportEntity value) {
+    if (!supportedEntities.contains(value)) return;
     if (entity == value) return;
     entity = value;
     _invalidateDraft();
@@ -131,11 +158,16 @@ final class ImportWizardController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void next() {
-    if (currentStep < 5) {
-      currentStep++;
+  Future<void> next() async {
+    if (currentStep >= 5 || _preparingDraft) return;
+    if (currentStep == 1 && sourceFile == null) {
+      sourceFileError = 'Selecione um arquivo CSV ou XLSX antes de continuar.';
       notifyListeners();
+      return;
     }
+    if ((currentStep == 1 || currentStep == 3) && !await _prepareDraft()) return;
+    currentStep++;
+    notifyListeners();
   }
 
   void previous() => goToStep(currentStep - 1);
@@ -147,21 +179,31 @@ final class ImportWizardController extends ChangeNotifier {
   }
 
   void confirm() {
-    if (job != null || !canConfirm) return;
+    if (job != null || !canConfirm || _draft == null) return;
     unawaited(_confirm());
   }
 
   Future<void> _confirm() async {
+    _confirming = true;
+    notifyListeners();
+    final generation = _generation;
     try {
-      final draftJob = await draft;
-      if (_disposed) return;
-      job = await repository.save(draftJob, sourceFile: sourceFile);
-      if (_disposed) return;
+      final draftJob = await _draft!;
+      if (_disposed || generation != _generation) return;
+      final saved = await repository.save(draftJob, sourceFile: sourceFile);
+      if (_disposed || generation != _generation) return;
+      job = saved;
       notifyListeners();
       _schedulePoll();
     } on ImportRepositoryUnavailableException {
+      if (_disposed || generation != _generation) return;
       sourceFileError = 'Não foi possível processar o arquivo com segurança. Tente novamente.';
       if (!_disposed) notifyListeners();
+    } finally {
+      if (!_disposed && generation == _generation) {
+        _confirming = false;
+        notifyListeners();
+      }
     }
   }
 
@@ -174,9 +216,13 @@ final class ImportWizardController extends ChangeNotifier {
   Future<void> _poll() async {
     final current = job;
     if (_disposed || current == null) return;
+    final generation = _generation;
     try {
-      job = await repository.update(current);
+      final updated = await repository.update(current);
+      if (_disposed || generation != _generation || job?.id != current.id) return;
+      job = updated;
     } on ImportRepositoryUnavailableException {
+      if (_disposed || generation != _generation || job?.id != current.id) return;
       sourceFileError = 'Não foi possível atualizar o processamento. Tente novamente.';
     }
     if (_disposed) return;
@@ -187,6 +233,7 @@ final class ImportWizardController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _generation++;
     _timer?.cancel();
     super.dispose();
   }

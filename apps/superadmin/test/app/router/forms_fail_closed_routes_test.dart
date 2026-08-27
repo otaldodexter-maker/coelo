@@ -5,6 +5,7 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
+import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,9 +20,7 @@ void main() {
     '/forms/form-1/responses',
     '/forms/form-1/responses/response-1',
   ];
-  const developmentPaths = [
-    '/dev/forms/new',
-    '/dev/forms/form-1/edit',
+  const unavailableDevelopmentPaths = [
     '/dev/forms/form-1/test',
     '/dev/forms/form-1/monitor',
     '/dev/forms/form-1/occurrences/occurrence-1/respond',
@@ -29,7 +28,7 @@ void main() {
     '/dev/forms/form-1/responses/response-1',
   ];
 
-  testWidgets('production and development dormant routes are 503 with zero API calls', (
+  testWidgets('production and unavailable development routes are 503 with zero API calls', (
     tester,
   ) async {
     final session = SuperadminSession()..signIn();
@@ -48,7 +47,7 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
 
-    for (final path in [...productionPaths, ...developmentPaths]) {
+    for (final path in [...productionPaths, ...unavailableDevelopmentPaths]) {
       router.go(path);
       await tester.pumpAndSettle();
 
@@ -60,6 +59,62 @@ void main() {
         reason: path,
       );
       expect(api.calls, 0, reason: path);
+    }
+  });
+
+  testWidgets('development create and edit routes open the isolated local editor', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final api = _TripwireFormsApi();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      formsApi: api,
+      allowDevelopmentPreview: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    for (final path in const ['/dev/forms/new', '/dev/forms/form-1/edit']) {
+      router.go(path);
+      await tester.pumpAndSettle();
+
+      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+      expect(find.byType(FormsEditorPage), findsOneWidget, reason: path);
+      expect(find.text('Prévia de desenvolvimento'), findsOneWidget, reason: path);
+      expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
+      expect(api.calls, 0, reason: path);
+    }
+  });
+
+  testWidgets('development directory and overview never read the production API', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final api = _TripwireFormsApi();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      formsApi: api,
+      allowDevelopmentPreview: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    for (final path in const ['/dev/forms', '/dev/forms/form-1']) {
+      router.go(path);
+      await tester.pumpAndSettle();
+
+      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+      expect(api.calls, 0, reason: path);
+      expect(find.textContaining('não est'), findsWidgets, reason: path);
     }
   });
 
@@ -79,10 +134,10 @@ void main() {
     addTearDown(session.dispose);
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-    router.go(developmentPaths.first);
+    router.go('/dev/forms/new');
     await tester.pumpAndSettle();
 
-    expect(router.routeInformationProvider.value.uri.path, isNot(developmentPaths.first));
+    expect(router.routeInformationProvider.value.uri.path, isNot('/dev/forms/new'));
     expect(api.calls, 0);
   });
 }

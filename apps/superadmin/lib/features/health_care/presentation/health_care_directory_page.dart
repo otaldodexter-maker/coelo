@@ -91,6 +91,19 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
               ),
             ),
           )
+        : widget.controller.state == HealthCareLoadState.unavailable
+        ? LayoutBuilder(
+            builder: (context, constraints) => Padding(
+              padding: EdgeInsets.all(_directoryInset(constraints.maxWidth)),
+              child: const CoeloStatePanel(
+                key: Key('health-care-profiles-unavailable'),
+                title: 'Perfis de cuidado indisponíveis',
+                message:
+                    'A integração necessária para consultar estes dados ainda não está disponível.',
+                icon: Icons.cloud_off_outlined,
+              ),
+            ),
+          )
         : LayoutBuilder(
             builder: (context, constraints) {
               final padding = _directoryInset(constraints.maxWidth);
@@ -289,6 +302,11 @@ final class _HealthCareProfileDirectoryPageState extends State<HealthCareProfile
         HealthCareLoadState.unauthorized => const CoeloStatePanel(
           title: 'Sem permissão',
           message: 'O contexto não autoriza esta consulta.',
+        ),
+        HealthCareLoadState.unavailable => const CoeloStatePanel(
+          title: 'Perfis de cuidado indisponíveis',
+          message: 'A integração necessária para consultar estes dados ainda não está disponível.',
+          icon: Icons.cloud_off_outlined,
         ),
         _ => const SizedBox.shrink(),
       };

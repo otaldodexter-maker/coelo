@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_directory_page.dart';
@@ -109,6 +111,35 @@ void main() {
     expect(find.byKey(const Key('forms-directory-pagination-footer')), findsOneWidget);
     expect(find.byType(CoeloAdminPagination), findsOneWidget);
   });
+
+  testWidgets('an older query response cannot replace the latest search', (tester) async {
+    final api = _OrderedFormsApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: FormsDirectoryPage(api: api)),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('forms-directory-view-cards')));
+    await tester.pump();
+
+    await tester.enterText(find.byKey(const Key('forms-directory-search')), 'novo');
+    await tester.pump(const Duration(milliseconds: 351));
+    expect(api.calls, 2);
+
+    api.second.complete(
+      FormCursorPage(items: [_itemWithTitle('Resultado novo')], nextCursor: null),
+    );
+    await tester.pump();
+    expect(find.text('Resultado novo'), findsWidgets);
+
+    api.first.complete(
+      FormCursorPage(items: [_itemWithTitle('Resultado antigo')], nextCursor: null),
+    );
+    await tester.pump();
+    expect(find.text('Resultado novo'), findsWidgets);
+    expect(find.text('Resultado antigo'), findsNothing);
+  });
 }
 
 final _item = FormDirectoryItem(
@@ -121,6 +152,32 @@ final _item = FormDirectoryItem(
   updatedAt: DateTime(2026, 8, 13),
   managementVersion: 2,
 );
+
+FormDirectoryItem _itemWithTitle(String title) => FormDirectoryItem(
+  id: title,
+  title: title,
+  kind: FormKind.form,
+  status: FormStatus.published,
+  operationalStatus: FormOperationalStatus.scheduled,
+  identityMode: FormIdentityMode.identified,
+  updatedAt: DateTime(2026, 8, 13),
+  managementVersion: 1,
+);
+
+final class _OrderedFormsApi implements FormsApi {
+  final first = Completer<FormCursorPage<FormDirectoryItem>>();
+  final second = Completer<FormCursorPage<FormDirectoryItem>>();
+  int calls = 0;
+
+  @override
+  Future<FormCursorPage<FormDirectoryItem>> listDirectory(FormDirectoryQuery query) {
+    calls++;
+    return calls == 1 ? first.future : second.future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 final class _FormsApi implements FormsApi {
   _FormsApi({this.page, this.unauthorized = false});

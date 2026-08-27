@@ -102,10 +102,12 @@ final class _StepBody extends StatelessWidget {
   final ImportWizardController controller;
   @override
   Widget build(BuildContext context) {
-    final draft = controller.draft;
-    final withDraft = FutureBuilder<ImportJob>(
-      future: draft,
+    Widget withDraft() => FutureBuilder<ImportJob>(
+      future: controller.preparedDraft,
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.none) {
+          return const Center(child: Text('Prepare a importação para continuar.'));
+        }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -125,10 +127,10 @@ final class _StepBody extends StatelessWidget {
       child: switch (controller.currentStep) {
         0 => _EntityStep(controller: controller),
         1 => _FileStep(controller: controller),
-        2 => withDraft,
+        2 => withDraft(),
         3 => _StrategyStep(controller: controller),
-        4 => withDraft,
-        _ => withDraft,
+        4 => withDraft(),
+        _ => withDraft(),
       },
     );
   }
@@ -155,7 +157,7 @@ final class _EntityStep extends StatelessWidget {
           return Wrap(
             spacing: CoeloSpacing.space3,
             runSpacing: CoeloSpacing.space3,
-            children: ImportEntity.values
+            children: ImportWizardController.supportedEntities
                 .map(
                   (entity) => SizedBox(
                     width: optionWidth,
