@@ -3038,3 +3038,137 @@ da simples soma das 207 ações.
   forma segura no fluxo contratado e não ampliam autoridade remota.
 - **Tempo usado:** aproximadamente 5 h acumuladas. **Tempo restante estimado:**
   8–17 dias focados; backlog integral não calculável ainda.
+
+### Checkpoint seguro 35 — RED contratual da fundação Auth
+
+- **Lote:** Auth, sessão e contexto institucional; migration e pgTAP permanecem
+  em elaboração, sem commit e sem promoção de ação.
+- **Ações tratadas:** fundação privada, exclusão simétrica dos realms, sessão
+  revalidada, lifecycle terminal, Owner AAL2, escopo, audit v1/v2, bootstrap e
+  resolução institucional. Nenhuma das 207 ações recebeu estado E2E.
+- **Migrations/RPCs alteradas:** draft local
+  `20260827233000_superadmin_internal_auth_context.sql`; wrappers
+  `superadmin_auth_bootstrap_context()` e
+  `superadmin_auth_resolve_institution_context(uuid)`; teste
+  `superadmin_internal_auth_context_test.sql`. Canônico/mirror foram preparados
+  e verificados em 104/104 somente para o replay local.
+- **Evidências e testes:** stage descartável explícito até `20260812001975`,
+  seguido por `20260827214000` e pelo draft Auth, aplicou sem erro. O pgTAP
+  mínimo sem JWT passou 13/13: envelope exato, duas chamadas, correlações
+  distintas, zero mutação/audit pré-sessão, ACLs, tabelas privadas, RLS forçada
+  e zero policies. O teardown deixou zero recurso Docker e removeu o projeto
+  temporário.
+- **Compatibilidade audit:** o detalhe, a lista e a materialização de export
+  foram substituídos forward-only para preservar atores v1 e representar ator
+  interno v2 por `kind`, ID opaco e rótulo genérico. O replay após esse ajuste
+  aplicou novamente sem erro e manteve 13/13; falta um pgTAP comportamental de
+  cadeia mista que prove nome/kind/ID/filtro e row de export, portanto esse P1
+  continua aberto e não foi promovido.
+- **Estado local/remoto:** `RED contratual`; não é `local-green`,
+  `remote-green` nem `done`. Não houve DDL, DML operacional, Auth, Storage,
+  Edge ou deploy remoto.
+- **Bloqueio:** OQ-037. Uma sessão válida sem link interno, ou uma identidade
+  sem membership, deve ser negada e auditada pela spec 039, mas não possui os
+  três IDs obrigatórios do ator audit v2. Não foi criado ator `system`, pessoa
+  sintética, `service_role` ou ID falso. Faltam ainda testes com sessão real,
+  AAL1/AAL2, cross-app, cross-tenant, lifecycle, concorrência e cadeia mista.
+- **Tempo usado:** aproximadamente 6 h acumuladas. **Tempo restante estimado:**
+  8–17 dias focados, sujeito à decisão OQ-037; backlog integral não calculável.
+
+### Checkpoint seguro 36 — proveniência individual 12002010/02020/02110
+
+- **Lote:** investigação read-only de três migrations locais posteriores ao RED
+  de Child Safety; nenhuma migration foi promovida.
+- **20260812002010:** origem única no commit `3f2e97ba`, blob
+  `0ba4e6b3...`, SHA-256 LF `2fb32c1b...`. Depende da tabela
+  `unit_import_source_attestations`, criada pela órfã `20260811222209`, que
+  consta no ledger remoto. A contraprova read-only associou o remoto ao blob
+  original `feeb4bcc...` por marcadores e tamanho normalizado; os blobs
+  `1f94...`/`39dab...` são hardenings posteriores, não o conteúdo aplicado.
+  O remoto não possui `public.import_files.retention_expires_at`, nem a
+  função/trigger de `12002010`; a coluna nasce somente na local-only
+  `20260812001000`, e Child Safety bloqueia a ordem antes de `12002010`.
+  Aplicação isolada não é segura. O pgTAP histórico tem somente três asserts
+  estruturais: não prova checksum/24 h; o `coalesce` preserva retenção anterior
+  e o trigger não cobre update isolado do checksum.
+- **20260812002020:** mesma origem `3f2e97ba`, blob `aa6b8f2e...`, SHA-256 LF
+  `14d6b988...`. Revisão remota estritamente read-only confirmou que
+  `superadmin_preview_unit_import_from_edge`,
+  `superadmin_materialize_unit_export_from_edge` e
+  `superadmin_unit_export_page_v2` existem como `SECURITY DEFINER`, owner
+  `postgres`, `search_path=''`, com `EXECUTE` efetivo para `PUBLIC`, `anon`,
+  `authenticated` e `service_role`; `authenticated` também possui `USAGE` em
+  `app_private`. Preview/materialize recebem `job_id`, carregam
+  `job.created_by` e instalam claims desse ator/AAL2 sem validar o caller,
+  formando risco P0 de impersonação/BOLA por UUID se alcançáveis pela Data API.
+  A reachability HTTP ainda não foi provada. A migration histórica não corrige
+  o remoto: seus dois primeiros `REVOKE` citam helpers inexistentes lá e
+  abortam antes das três funções expostas. Também é incompleta localmente:
+  `12001000` cria oito helpers privados e `12002020` revoga somente dois,
+  deixando inclusive payload/list/get e guards fora da closure. O hardening
+  `20260827214000` é prospectivo e não remove ACLs existentes. Classificação:
+  **P0 remoto pendente de correção/deploy autorizado; BLOQUEAR a migration
+  histórica**. Próximo pacote local deve ser forward-only, com inventário e
+  allowlist por assinatura, revogação completa de papéis clientes/servidor e
+  pgTAP de ACL/chamadas negativas; nenhum remoto foi alterado.
+- **20260812002110:** origem única no commit `ceebc9ef`, blob `c47861fe...`,
+  SHA-256 LF `c10e315f...` e CRLF `88d1b96b...`. O ledger remoto não contém a
+  versão nem qualquer overload da RPC. A coluna `processing_state` existe no
+  remoto, mas os quatro helpers exigidos vêm somente da local-only
+  `20260812001000`, então a migration isolada não aplica. Mesmo no replay ela
+  preserva o overload de cinco argumentos, aceita `page_size` nulo como limite
+  ilimitado, não exige cursor pareado e não limita cardinalidade dos arrays; o
+  pgTAP histórico é somente estrutural. Classificação: BLOQUEAR/preservar.
+- **Estado:** as três permanecem `local-only-head`, dependentes e sem
+  equivalência remota. Não promover isoladamente nem em lote. Próximo gate
+  seguro: proveniência/fingerprint individual de `20260811222209` e de sua
+  cadeia, antes de qualquer replay integral Import/Export.
+- **Ambiente/cleanup:** somente Git, manifests e recoveries locais; zero Docker,
+  DDL/DML/Auth/Storage/Edge/deploy remoto. Conhecimento: `no-op`.
+- **Tempo usado:** aproximadamente 6 h 30 min acumulados. **Tempo restante:**
+  8–17 dias focados para o recorte principal; backlog integral não calculável.
+
+### Checkpoint seguro 37 — closure forward-only de ACL Import/Export
+
+- **Lote:** correção local mínima do P0 remoto identificado no checkpoint 36;
+  nenhuma ação funcional, importação/exportação ou E2E foi promovida.
+- **Migration e teste:** adicionada
+  `20260827222000_unit_import_export_private_acl_closure.sql`, sem restaurar a
+  histórica bloqueada `20260812002020`. A função privada de reconciliação exige
+  owner `postgres`, valida `search_path=''`, revoga `PUBLIC`, `anon`,
+  `authenticated` e `service_role` de toda implementação privada presente e
+  reaplica somente a allowlist pública comprovada: sete gateways para
+  `authenticated`, quatro workers para `service_role` e dois gateways legados
+  sem papel cliente. O overload legado `fail(uuid,text)`, o helper de trigger e
+  a attestation local-only permanecem apenas em deny condicional.
+- **Evidências:** inventário remoto estritamente read-only confirmou igualdade
+  funcional de 15 assinaturas `app_private` e 13 `public`, owner `postgres` e
+  `search_path=''`. O pgTAP cria o perfil remoto de forma transacional, injeta
+  grants adversariais, executa a reconciliação duas vezes e compara o catálogo
+  real com o manifesto nos dois sentidos, rejeitando overloads extras. Também
+  prova ACL para os quatro papéis, metadata das privadas e três chamadas por
+  UUID negadas a `authenticated`.
+- **Testes executados:** stage Docker isolado até `20260812001975`, com
+  preflight de Grupos, `20260827214000` e a nova migration. Um RED intermediário
+  revelou que `regprocedure` omitia o schema `public` e que o harness não
+  convertia `not ok` em falha; ambos foram corrigidos. Replay final: 73/73
+  asserts verdes, rollback das fixtures, teardown completo e zero container,
+  volume, rede ou diretório `coelo_acl_*` residual.
+- **Manifesto:** 105 migrations canônicas verificadas contra o mirror. Migration
+  e mirror SHA-256 idêntico
+  `AB34496EE66A0D848AAAA9B2C22147E3F09958CE4F0E534C273CA7FE3CFCD107`;
+  pgTAP SHA-256
+  `61B61F280E03AB1F14236B146989E8874279601C6B8C2488414D09CC68AC79A9`.
+  `git diff --check` e secret scan focal verdes.
+- **Estado local/remoto:** `local-green` somente para a closure ACL. O remoto
+  não foi alterado e ainda mantém o P0 nas três implementações privadas e no
+  helper de branding até aplicação forward-only explicitamente autorizada.
+  Portanto não é `remote-green`, `done` nem prova comportamental de
+  importação/exportação.
+- **Bloqueios e pendências:** revisão independente final e integração seletiva
+  do commit ainda são gates. Auth permanece RED por OQ-037. As migrations
+  `12002010`, `12002020` e `12002110` permanecem BLOQUEADAS; import/export
+  continua fora do recorte funcional e fail-closed.
+- **Tempo usado:** aproximadamente 7 h 15 min acumulados. **Tempo restante:**
+  8–17 dias focados para o recorte principal, sujeito à OQ-037; backlog
+  integral não calculável.
