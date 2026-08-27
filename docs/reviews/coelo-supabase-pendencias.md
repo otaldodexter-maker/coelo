@@ -2858,3 +2858,52 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 2 h 20 min acumulados. **Tempo restante
   estimado:** 8–17 dias focados para Auth/contexto + Instituições, Unidades,
   Grupos e Pessoas; backlog integral não calculável ainda.
+
+### Checkpoint seguro 31 — dependência de Grupos comprovada
+
+- **Lote:** reconciliação individual de
+  `20260811151254_group_management_security.sql`; nenhuma ação funcional foi
+  promovida.
+- **Ações tratadas:** somente `SUP-GEN-002` e `SUP-GEN-016`. Auth, Flutter e as
+  outras 83 candidatas não foram alterados.
+- **Migrations, RPCs ou Functions alteradas:** adicionada à fonte canônica a
+  versão remota `20260811151254` a partir do único blob Git/recovery
+  `f5bd2182b05bec2ee58cc00e9d5360b463c5faf8`, proveniente do commit
+  `4496cb3a27da37413cf978ab9600fca560b829b2`. Nenhuma outra recovery foi
+  promovida.
+- **Evidências:** o ledger remoto foi consultado somente por `SELECT` e contém
+  140 statements. A canonicalização SQL-aware por statement produziu, no
+  remoto e no arquivo local, o mesmo SHA-256 agregado
+  `204b839b9b570ed82283f8b1de1ff567d49acd54cfbc17991558f0993da67322`;
+  os 140 tokens ordenados e as extremidades também coincidem. O arquivo tem
+  80.959 bytes, SHA-256 raw
+  `8666c997a8a04e13a404c20f46bfbcaae0cb12b8b5dbb64623fbfff4cfcd993f`
+  e LF-normalized
+  `507a70ad88f595088c6ce9146e31e27f4c9bf9e86e63f8e093ee5066638c3ef3`.
+- **Manifesto:** canônico e mirror foram verificados 102/102. O gerador negou
+  contagem 101, gerou duas vezes o mesmo sidecar id
+  `71a32a4e03b07f8729a6c5fa31c253c28b9790834cb0c35c4bd2da92d07bbd90`;
+  CSV com 144.572 bytes, 380 linhas e SHA-256
+  `09f6708208c59bc56c8c2bb55e343acfcd9236e79a665cedda9c65097328dcb1`;
+  meta com 1.128 bytes e SHA-256
+  `f5953f574924118eec0bb68c31dfc2b9ee76278af0cc9fb65d3934f8cefb15d3`.
+- **Testes executados:** prova de proveniência independente; comparação por
+  statement remoto/local; mirror Prepare/Verify 102/102; negativo/positivo do
+  gerador; geração determinística dupla; replay Docker isolado afetado uma vez;
+  teardown nominal.
+- **Estado local/remoto:** o replay aplicou `20260811151254`,
+  `20260811215451`, `20260812000847` e todo o bloco Import/Export até
+  `20260812001975`. O próximo RED é SQLSTATE `23502` em
+  `20260812002000_child_safety_schema.sql`: três inserts em
+  `platform_permissions` não fornecem `module_label`. No projeto remoto
+  `evvbomzejfijozbtgvpt` houve somente leitura; zero migration, DDL, DML
+  operacional, Auth, Storage, Edge ou deploy.
+- **Cleanup:** projeto Docker `coelo_replay_20260827_05`, rede dedicada e
+  diretório temporário foram removidos; zero container, volume ou rede residual.
+- **Bloqueios e pendências:** Auth SQL permanece bloqueado até o replay
+  reconciliar. O próximo pacote deve identificar individualmente a migration
+  remota que satisfaz `platform_permissions.module_label`; não reconstruir
+  versões órfãs nem promover recovery em lote.
+- **Tempo usado:** aproximadamente 3 h acumuladas. **Tempo restante estimado:**
+  8–17 dias focados para Auth/contexto + Instituições, Unidades, Grupos e
+  Pessoas; backlog integral não calculável ainda.
