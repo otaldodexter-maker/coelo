@@ -230,6 +230,58 @@ void main() {
     expect(tester.widget(contentTransition), isA<KeyedSubtree>());
   });
 
+  testWidgets('keeps Principal previews inside the shell content surface', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(_app(router));
+
+    for (final route in const [
+      SuperadminRoutes.devPrincipalHappens,
+      SuperadminRoutes.devPrincipalForYou,
+      SuperadminRoutes.devPrincipalMoments,
+      SuperadminRoutes.devPrincipalNow,
+      SuperadminRoutes.devPrincipalProfile,
+      SuperadminRoutes.devPrincipalHappensPublish,
+      SuperadminRoutes.devPrincipalMomentsPublish,
+      SuperadminRoutes.devPrincipalNowPublication,
+    ]) {
+      router.go(route);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      final sidebar = find.byKey(const Key('superadmin-sidebar'));
+      final content = find.byKey(const Key('superadmin-floating-content'));
+      expect(sidebar, findsOneWidget, reason: route);
+      expect(content, findsOneWidget, reason: route);
+      expect(
+        tester.getRect(content).left,
+        greaterThan(tester.getRect(sidebar).right),
+        reason: route,
+      );
+    }
+  });
+
+  testWidgets('injects content fixtures only in the development Notices route', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devNotices);
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
+    expect(find.text('Volta às aulas com acolhimento'), findsWidgets);
+  });
+
   testWidgets('keeps the development preview trigger available in conversations', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
