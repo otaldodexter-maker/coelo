@@ -11,6 +11,7 @@ import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 import 'communication_type_badge.dart';
+import 'notice_popup_preview.dart';
 import 'notice_preview_dialog.dart';
 
 enum _NoticeStatusFilter { all, draft, scheduled, active, paused, ended, canceled }
@@ -66,6 +67,7 @@ final class NoticeDirectoryPage extends StatefulWidget {
     required this.repository,
     this.onCreate,
     this.onEdit,
+    this.enableInlinePreview = false,
     this.viewState = NoticeDirectoryViewState.content,
     super.key,
   });
@@ -73,6 +75,7 @@ final class NoticeDirectoryPage extends StatefulWidget {
   final NoticeRepository repository;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+  final bool enableInlinePreview;
   final NoticeDirectoryViewState viewState;
 
   @override
@@ -97,6 +100,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   bool _runningAction = false;
   NoticeDirectoryViewState _state = NoticeDirectoryViewState.loading;
   String? _errorMessage;
+  String? _selectedPreviewId;
 
   @override
   void initState() {
@@ -129,6 +133,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             child: _content(
               context,
               compact: compact,
+              allowInlinePreview: false,
               all: const <PlatformNotice>[],
               notices: const <PlatformNotice>[],
             ),
@@ -170,7 +175,13 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                     Expanded(
-                      child: _content(context, compact: compact, all: all, notices: notices),
+                      child: _content(
+                        context,
+                        compact: compact,
+                        allowInlinePreview: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
+                        all: all,
+                        notices: notices,
+                      ),
                     ),
                   ],
                 ),
@@ -238,6 +249,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   Widget _content(
     BuildContext context, {
     required bool compact,
+    bool allowInlinePreview = true,
     required List<PlatformNotice> all,
     required List<PlatformNotice> notices,
   }) => switch (widget.viewState == NoticeDirectoryViewState.content ? _state : widget.viewState) {
@@ -276,9 +288,72 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         icon: Icons.search_off_rounded,
       ),
     ),
-    NoticeDirectoryViewState.content =>
-      compact ? _cards(context, notices: notices, compact: true) : _table(context, notices),
+    NoticeDirectoryViewState.content => _directoryContent(
+      context,
+      compact: compact,
+      allowInlinePreview: allowInlinePreview,
+      notices: notices,
+    ),
   };
+
+  Widget _directoryContent(
+    BuildContext context, {
+    required bool compact,
+    required bool allowInlinePreview,
+    required List<PlatformNotice> notices,
+  }) {
+    if (compact) return _cards(context, notices: notices, compact: true);
+    if (!widget.enableInlinePreview || !allowInlinePreview) return _table(context, notices);
+    final selected = notices.firstWhere(
+      (notice) => notice.id == _selectedPreviewId,
+      orElse: () => notices.first,
+    );
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(child: _table(context, notices, onSelected: _selectPreview)),
+        const SizedBox(width: CoeloSpacing.space6),
+        SizedBox(width: 360, child: _inlinePreview(context, selected)),
+      ],
+    );
+  }
+
+  Widget _inlinePreview(BuildContext context, PlatformNotice notice) => DecoratedBox(
+    key: const Key('notice-directory-inline-preview'),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Prévia no app', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(
+            '${notice.type.label} · ${notice.targetDevice.label}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+          Expanded(
+            child: NoticePopupPreview(
+              notice: notice,
+              device: NoticeTargetDevice.mobile,
+              checkboxChecked: false,
+              onCheckboxChanged: null,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  void _selectPreview(PlatformNotice notice) {
+    if (_selectedPreviewId == notice.id) return;
+    setState(() => _selectedPreviewId = notice.id);
+  }
 
   Widget _stateWithCreate({required bool compact, required Widget state}) {
     final children = <Widget>[_createAction(), state];
@@ -344,7 +419,11 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     );
   }
 
-  Widget _table(BuildContext context, List<PlatformNotice> notices) => Column(
+  Widget _table(
+    BuildContext context,
+    List<PlatformNotice> notices, {
+    ValueChanged<PlatformNotice>? onSelected,
+  }) => Column(
     children: [
       CoeloAdminCreateAction(
         key: const Key('create-notice-banner'),
@@ -425,7 +504,9 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             ],
             headerHeight: 56,
             rowHeight: 72,
-            onRowPressed: widget.onEdit == null ? null : (notice) => widget.onEdit!(notice.id),
+            onRowPressed:
+                onSelected ??
+                (widget.onEdit == null ? null : (notice) => widget.onEdit!(notice.id)),
           ),
         ),
       ),
@@ -770,6 +851,9 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _items = result.items;
+        if (!_items.any((notice) => notice.id == _selectedPreviewId)) {
+          _selectedPreviewId = _items.firstOrNull?.id;
+        }
         _nextCursorOccurredAt = result.nextCursorOccurredAt;
         _nextCursorId = result.nextCursorId;
         _state = NoticeDirectoryViewState.content;

@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart'
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_directory_page.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
+import 'package:coelo_superadmin/features/notices/presentation/notice_popup_preview.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,53 @@ void main() {
 
     await _pumpDirectory(tester, repository: repository, size: const Size(1024, 800));
     expect(find.byType(CoeloAdminResizableTable<PlatformNotice>), findsOneWidget);
+  });
+
+  testWidgets('shows a selectable right preview only when explicitly enabled', (tester) async {
+    final repository = _repository()
+      ..create(_draft(1, type: CommunicationType.content))
+      ..create(_draft(2, type: CommunicationType.content));
+
+    await _pumpDirectory(
+      tester,
+      repository: repository,
+      inlinePreview: true,
+      size: const Size(1440, 900),
+    );
+    await tester.tap(find.text('Conteúdos').first);
+    await tester.pump();
+
+    expect(find.byKey(const Key('notice-directory-inline-preview')), findsOneWidget);
+    expect(find.byType(NoticePopupPreview), findsOneWidget);
+    expect(find.text('Prévia no app'), findsOneWidget);
+    expect(find.text('Aviso 2'), findsWidgets);
+
+    await tester.tap(find.text('Aviso 1').first);
+    await tester.pump();
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('notice-directory-inline-preview')),
+        matching: find.text('Aviso 1'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('keeps the canonical table without a side preview below large width', (tester) async {
+    final repository = _repository()..create(_draft(1, type: CommunicationType.content));
+
+    await _pumpDirectory(
+      tester,
+      repository: repository,
+      inlinePreview: true,
+      size: const Size(768, 900),
+    );
+    await tester.tap(find.text('Conteúdos').first);
+    await tester.pump();
+
+    expect(find.byType(CoeloAdminResizableTable<PlatformNotice>), findsOneWidget);
+    expect(find.byKey(const Key('notice-directory-inline-preview')), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps creation and edition outside the paginated directory', (tester) async {
@@ -171,6 +219,7 @@ Future<void> _pumpDirectory(
   required FakeNoticeRepository repository,
   VoidCallback? onCreate,
   ValueChanged<String>? onEdit,
+  bool inlinePreview = false,
   Size size = const Size(1440, 900),
 }) async {
   tester.view.devicePixelRatio = 1;
@@ -180,7 +229,12 @@ Future<void> _pumpDirectory(
     MaterialApp(
       theme: CoeloTheme.light,
       home: Scaffold(
-        body: NoticeDirectoryPage(repository: repository, onCreate: onCreate, onEdit: onEdit),
+        body: NoticeDirectoryPage(
+          repository: repository,
+          onCreate: onCreate,
+          onEdit: onEdit,
+          enableInlinePreview: inlinePreview,
+        ),
       ),
     ),
   );
