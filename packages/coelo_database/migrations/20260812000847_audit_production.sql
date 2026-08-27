@@ -7,13 +7,15 @@ alter table audit.audit_logs force row level security;
 revoke all on table audit.audit_logs from public, anon, authenticated;
 
 insert into public.platform_permissions(
-  code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status
+  code,module_code,screen_code,action_code,description,risk_level,requires_mfa,status,
+  module_label,screen_label,action_label
 ) values
-  ('audit.read','audit','logs','read','Ler a trilha de auditoria dentro do escopo autorizado.','high',false,'active'),
-  ('audit.export','audit','logs','export','Exportar a trilha de auditoria dentro do escopo autorizado.','critical',true,'active')
+  ('audit.read','audit','logs','read','Ler a trilha de auditoria dentro do escopo autorizado.','high',false,'active','Auditoria','Logs','Ver'),
+  ('audit.export','audit','logs','export','Exportar a trilha de auditoria dentro do escopo autorizado.','critical',true,'active','Auditoria','Logs','Exportar')
 on conflict(code) do update set
   description=excluded.description,risk_level=excluded.risk_level,
-  requires_mfa=excluded.requires_mfa,status='active',updated_at=now();
+  requires_mfa=excluded.requires_mfa,status='active',module_label=excluded.module_label,
+  screen_label=excluded.screen_label,action_label=excluded.action_label,updated_at=now();
 
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
 select role_record.id,permission_record.id,'allow','active'
@@ -400,14 +402,14 @@ stable
 security definer
 set search_path=''
 as $$
-declare actor uuid:=app_private.current_person_id();authorization jsonb;
+declare actor uuid:=app_private.current_person_id();v_authorization jsonb;
 begin
   if (select auth.uid()) is null or actor is null then
     raise insufficient_privilege using message=case when p_permission_code='audit.read' then 'audit.read required' else 'audit.export and AAL2 required' end;
   end if;
-  authorization:=app_private.audit_authorization_scope(actor,p_permission_code);
-  if (not coalesce((authorization->>'global')::boolean,false)
-      and jsonb_array_length(coalesce(authorization->'institution_ids','[]'::jsonb))=0)
+  v_authorization:=app_private.audit_authorization_scope(actor,p_permission_code);
+  if (not coalesce((v_authorization->>'global')::boolean,false)
+      and jsonb_array_length(coalesce(v_authorization->'institution_ids','[]'::jsonb))=0)
     or (p_require_aal2 and not app_private.has_mfa_aal2()) then
     raise insufficient_privilege using message=case when p_permission_code='audit.read' then 'audit.read required' else 'audit.export and AAL2 required' end;
   end if;
@@ -461,10 +463,10 @@ stable
 security definer
 set search_path=''
 as $$
-declare result jsonb;actor uuid;authorization jsonb;export_authorization jsonb;
+declare result jsonb;actor uuid;v_authorization jsonb;export_authorization jsonb;
 begin
   actor:=app_private.audit_assert_permission('audit.read',false);
-  authorization:=app_private.audit_authorization_scope(actor,'audit.read');
+  v_authorization:=app_private.audit_authorization_scope(actor,'audit.read');
   export_authorization:=app_private.audit_authorization_scope(actor,'audit.export');
   perform app_private.audit_validate_list_filters(p_search,p_actor_ids,p_context_kinds,
     p_action_codes,p_resource_types,p_outcomes,p_origins,p_from,p_to,
@@ -475,9 +477,9 @@ begin
     from audit.audit_logs log_record
     left join public.people person on person.id=log_record.actor_person_id
     left join public.institutions institution on institution.id=log_record.institution_id
-    where (((authorization->>'global')::boolean
-        and (log_record.institution_id is null or not((authorization->'denied_institution_ids')?log_record.institution_id::text)))
-      or (log_record.institution_id is not null and (authorization->'institution_ids')?log_record.institution_id::text))
+    where (((v_authorization->>'global')::boolean
+        and (log_record.institution_id is null or not((v_authorization->'denied_institution_ids')?log_record.institution_id::text)))
+      or (log_record.institution_id is not null and (v_authorization->'institution_ids')?log_record.institution_id::text))
       and (p_institution_id is null or log_record.institution_id=p_institution_id)
       and (p_actor_ids is null or cardinality(p_actor_ids)=0 or log_record.actor_person_id=any(p_actor_ids))
       and (p_context_kinds is null or cardinality(p_context_kinds)=0 or log_record.context_kind=any(p_context_kinds))
@@ -635,7 +637,7 @@ volatile
 security definer
 set search_path=''
 as $$
-declare actor uuid;request_hash bytea;job public.import_jobs%rowtype;result jsonb;authorization jsonb;
+declare actor uuid;request_hash bytea;job public.import_jobs%rowtype;result jsonb;v_authorization jsonb;
 begin
   actor:=app_private.audit_assert_permission('audit.export',true);
   perform app_private.audit_assert_permission('audit.read',false);
@@ -643,7 +645,7 @@ begin
     raise invalid_parameter_value using message='invalid audit export request';
   end if;
   perform app_private.audit_validate_export_filters(p_filters);
-  authorization:=jsonb_build_object(
+  v_authorization:=jsonb_build_object(
     'read',app_private.audit_authorization_scope(actor,'audit.read'),
     'export',app_private.audit_authorization_scope(actor,'audit.export')
   );
@@ -670,7 +672,7 @@ begin
   values(p_idempotency_key,request_hash,'audit_export','audit_logs',p_format,'pt-BR','pt-BR',
     'draft','PENDENTE',jsonb_build_object('phase','queued','filters',p_filters,
       'storage_bucket','coelo-operations','retention_expires_at',now()+interval '24 hours',
-      'authorization_snapshot',authorization,'formula_neutralization',true,'pii_included',true),actor)
+      'authorization_snapshot',v_authorization,'formula_neutralization',true,'pii_included',true),actor)
   returning * into job;
   insert into public.import_results(import_job_id) values(job.id);
   insert into audit.audit_logs(actor_person_id,actor_role_code,mfa_aal,action_code,object_type,
