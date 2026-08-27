@@ -1,12 +1,32 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _profileChildren = [
+  HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
+  HealthCareProfileChildOption(id: 'child-demo-b', label: 'Criança Demo B'),
+];
+
 void main() {
+  testWidgets('profile form is unavailable without injected data and save command', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthCareProfileFormPage(logout: unavailableSuperadminLogout, onCancel: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('health-care-profile-form-unavailable')), findsOneWidget);
+    expect(find.textContaining('Demo'), findsNothing);
+    expect(find.byType(SuperadminFormActionFooter), findsNothing);
+  });
+
   testWidgets('profile create is a responsive full page with canonical fields', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -16,6 +36,7 @@ void main() {
         theme: CoeloTheme.light,
         home: HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           onCancel: () {},
           onSaved: () async {},
         ),
@@ -28,6 +49,7 @@ void main() {
     await tester.tap(find.text('Orientações de cuidado'));
     await tester.pumpAndSettle();
     expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
     expect(find.byType(RadioListTile), findsNothing);
@@ -40,6 +62,7 @@ void main() {
         theme: CoeloTheme.light,
         home: HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           childId: 'child-demo-a',
           onCancel: () {},
           onSaved: () async {},
@@ -93,6 +116,7 @@ void main() {
       for (final page in <Widget>[
         HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           onCancel: () {},
           onSaved: () async {},
         ),
@@ -139,6 +163,7 @@ void main() {
       for (final page in <Widget>[
         HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           onCancel: () {},
           onSaved: () async {},
         ),

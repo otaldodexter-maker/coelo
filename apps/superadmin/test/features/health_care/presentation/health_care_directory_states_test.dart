@@ -52,17 +52,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.text('Sem permissão'),
-      240,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('health-care-profiles-directory-scroll')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
     expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.byType(CoeloAdminListingToolbar), findsNothing);
+    expect(find.byKey(const Key('health-care-profiles-directory-scroll')), findsNothing);
     expect(find.byType(CoeloAdminCreateAction), findsNothing);
   });
 }

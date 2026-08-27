@@ -13,6 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _profileChildren = [
+  HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
+];
+
 void main() {
   setUpAll(_loadGoldenFonts);
 
@@ -143,6 +147,7 @@ void main() {
             )
           : HealthCareProfileFormPage(
               logout: unavailableSuperadminLogout,
+              childOptions: _profileChildren,
               onCancel: () {},
               onSaved: () async {},
               childId: configuration.dark ? 'child-demo-a' : null,

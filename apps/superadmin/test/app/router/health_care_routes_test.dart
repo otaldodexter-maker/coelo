@@ -9,8 +9,8 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
+import 'package:coelo_superadmin/features/health_care/presentation/health_care_form_pages.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_directory_page.dart';
-import 'package:coelo_superadmin/features/health_care/presentation/health_medication_plan_form_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -174,6 +174,30 @@ void main() {
       expect(find.byType(routeCase.page), findsOneWidget, reason: routeCase.path);
       expect(repository.calls, 0, reason: routeCase.path);
     }
+  });
+
+  testWidgets('care profile fixtures are injected only by development routes', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      allowDevelopmentPreview: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    router.go('/health-care/profiles/new');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('health-care-profile-form-unavailable')), findsOneWidget);
+
+    router.go('/dev/health-care/profiles/new');
+    await tester.pumpAndSettle();
+    expect(find.byType(HealthCareProfileFormPage), findsOneWidget);
+    expect(find.byKey(const Key('health-care-profile-form-unavailable')), findsNothing);
   });
 
   test('router source wires directories and forms without detail pages', () {

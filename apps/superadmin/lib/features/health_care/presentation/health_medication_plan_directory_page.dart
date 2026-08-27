@@ -5,7 +5,6 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
 import 'health_care_file_actions.dart';
@@ -39,6 +38,9 @@ final class HealthMedicationPlanDirectoryPage extends StatefulWidget {
     required this.logout,
     this.onCreate,
     this.onPlanSelected,
+    this.onImport,
+    this.onExportCsv,
+    this.onExportXlsx,
     super.key,
   });
 
@@ -46,6 +48,9 @@ final class HealthMedicationPlanDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onPlanSelected;
+  final VoidCallback? onImport;
+  final VoidCallback? onExportCsv;
+  final VoidCallback? onExportXlsx;
 
   @override
   State<HealthMedicationPlanDirectoryPage> createState() =>
@@ -55,7 +60,6 @@ final class HealthMedicationPlanDirectoryPage extends StatefulWidget {
 final class _HealthMedicationPlanDirectoryPageState
     extends State<HealthMedicationPlanDirectoryPage> {
   final _search = TextEditingController();
-  late final SuperadminActivityController _activityController;
   var _display = _MedicationDirectoryDisplay.cards;
   var _loading = true;
   Object? _loadError;
@@ -69,14 +73,12 @@ final class _HealthMedicationPlanDirectoryPageState
   @override
   void initState() {
     super.initState();
-    _activityController = SuperadminActivityController();
     _load();
   }
 
   @override
   void dispose() {
     _search.dispose();
-    _activityController.dispose();
     super.dispose();
   }
 
@@ -185,87 +187,102 @@ final class _HealthMedicationPlanDirectoryPageState
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
-    activityController: _activityController,
     currentDestination: 'health-medication-plans',
     title: 'Planos de medica\u00e7\u00e3o',
     subtitle: 'Vig\u00eancia, hor\u00e1rios, respons\u00e1veis e registros de doses.',
     showChatLauncher: false,
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final padding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
-            ? CoeloSpacing.space4
-            : CoeloSpacing.space6;
-        return Stack(
-          children: [
-            ListView(
-              key: const Key('health-medication-plans-directory-scroll'),
-              padding: EdgeInsets.fromLTRB(padding, padding, padding, CoeloSpacing.space24 * 2),
-              children: [
-                _toolbar(),
-                const SizedBox(height: CoeloSpacing.space4),
-                if (_loading)
-                  const CoeloStatePanel(
-                    title: 'Carregando',
-                    message: 'Buscando planos locais.',
-                    loading: true,
-                  )
-                else if (!widget.controller.canReadSensitive)
-                  const CoeloStatePanel(
-                    title: 'Resumo minimizado',
-                    message: 'Detalhes de medicamentos e doses foram omitidos neste perfil.',
-                  )
-                else if (_loadError != null)
-                  CoeloStatePanel(
-                    title: 'Não foi possível carregar',
-                    message: 'Tente novamente.',
-                    actionLabel: 'Tentar novamente',
-                    onAction: _load,
-                  )
-                else if (_filteredItems.isEmpty)
-                  CoeloStatePanel(
-                    title: 'Nenhum plano',
-                    message: _hasActiveFilters
-                        ? 'Revise a busca ou os filtros de plano e dose.'
-                        : 'Ainda não existem planos de medicação demonstrativos.',
-                    actionLabel: _hasActiveFilters ? null : 'Criar plano',
-                    onAction: _hasActiveFilters ? null : widget.onCreate,
-                  )
-                else
-                  LayoutBuilder(
-                    builder: (context, contentConstraints) =>
-                        _display == _MedicationDirectoryDisplay.cards
-                        ? _cards(contentConstraints)
-                        : _table(),
-                  ),
-              ],
-            ),
-            if (_showsPagination)
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SuperadminListingPaginationFooter(
-                  semanticKey: const Key('health-medication-plans-pagination-footer'),
-                  horizontalPadding: padding,
-                  child: CoeloAdminPagination(
-                    currentPage: _page + 1,
-                    totalPages: _totalPages,
-                    pageSize: _pageSize,
-                    pageSizeOptions: _display == _MedicationDirectoryDisplay.cards
-                        ? const [11, 20, 50, 100]
-                        : const [8, 20, 50, 100],
-                    onPrevious: _page == 0 ? null : () => setState(() => _page -= 1),
-                    onNext: _page + 1 >= _totalPages ? null : () => setState(() => _page += 1),
-                    onPageSelected: (value) => setState(() => _page = value - 1),
-                    onPageSizeChanged: (value) => setState(() {
-                      _page = 0;
-                      _pageSize = value;
-                    }),
-                  ),
-                ),
+    child: !widget.controller.canReadSensitive
+        ? LayoutBuilder(
+            builder: (context, constraints) => Padding(
+              padding: EdgeInsets.all(_directoryInset(constraints.maxWidth)),
+              child: const CoeloStatePanel(
+                key: Key('health-medication-plans-minimized'),
+                title: 'Resumo minimizado',
+                message: 'Detalhes de medicamentos e doses foram omitidos neste perfil.',
               ),
-          ],
-        );
-      },
-    ),
+            ),
+          )
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              final padding = _directoryInset(constraints.maxWidth);
+              return Stack(
+                children: [
+                  ListView(
+                    key: const Key('health-medication-plans-directory-scroll'),
+                    padding: EdgeInsets.fromLTRB(
+                      padding,
+                      padding,
+                      padding,
+                      CoeloSpacing.space24 * 2,
+                    ),
+                    children: [
+                      _toolbar(),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      if (_loading)
+                        const CoeloStatePanel(
+                          title: 'Carregando',
+                          message: 'Buscando planos locais.',
+                          loading: true,
+                        )
+                      else if (!widget.controller.canReadSensitive)
+                        const CoeloStatePanel(
+                          title: 'Resumo minimizado',
+                          message: 'Detalhes de medicamentos e doses foram omitidos neste perfil.',
+                        )
+                      else if (_loadError != null)
+                        CoeloStatePanel(
+                          title: 'Não foi possível carregar',
+                          message: 'Tente novamente.',
+                          actionLabel: 'Tentar novamente',
+                          onAction: _load,
+                        )
+                      else if (_filteredItems.isEmpty)
+                        CoeloStatePanel(
+                          title: 'Nenhum plano',
+                          message: _hasActiveFilters
+                              ? 'Revise a busca ou os filtros de plano e dose.'
+                              : 'Ainda não existem planos de medicação demonstrativos.',
+                          actionLabel: _hasActiveFilters ? null : 'Criar plano',
+                          onAction: _hasActiveFilters ? null : widget.onCreate,
+                        )
+                      else
+                        LayoutBuilder(
+                          builder: (context, contentConstraints) =>
+                              _display == _MedicationDirectoryDisplay.cards
+                              ? _cards(contentConstraints)
+                              : _table(),
+                        ),
+                    ],
+                  ),
+                  if (_showsPagination)
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SuperadminListingPaginationFooter(
+                        semanticKey: const Key('health-medication-plans-pagination-footer'),
+                        horizontalPadding: padding,
+                        child: CoeloAdminPagination(
+                          currentPage: _page + 1,
+                          totalPages: _totalPages,
+                          pageSize: _pageSize,
+                          pageSizeOptions: _display == _MedicationDirectoryDisplay.cards
+                              ? const [11, 20, 50, 100]
+                              : const [8, 20, 50, 100],
+                          onPrevious: _page == 0 ? null : () => setState(() => _page -= 1),
+                          onNext: _page + 1 >= _totalPages
+                              ? null
+                              : () => setState(() => _page += 1),
+                          onPageSelected: (value) => setState(() => _page = value - 1),
+                          onPageSizeChanged: (value) => setState(() {
+                            _page = 0;
+                            _pageSize = value;
+                          }),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
   ).withHealthCareResponsiveSurface();
 
   Widget _toolbar() => CoeloAdminListingToolbar(
@@ -315,9 +332,9 @@ final class _HealthMedicationPlanDirectoryPageState
         onTableViewSelected: (_) => _setDisplay(_MedicationDirectoryDisplay.table),
       ),
       HealthCareFileActions(
-        activityController: _activityController,
-        subject: 'Planos de medicação',
-        fileBaseName: 'planos-de-medicacao',
+        onImport: widget.onImport,
+        onExportCsv: widget.onExportCsv,
+        onExportXlsx: widget.onExportXlsx,
       ),
     ],
   );
@@ -335,22 +352,25 @@ final class _HealthMedicationPlanDirectoryPageState
       spacing: CoeloSpacing.space6,
       runSpacing: CoeloSpacing.space6,
       children: [
-        SizedBox(
-          width: width,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 240),
-            child: CoeloAdminCreateAction(
-              label: 'Criar plano de medica\u00e7\u00e3o',
-              onPressed: widget.onCreate,
+        if (_canCreate)
+          SizedBox(
+            width: width,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 240),
+              child: CoeloAdminCreateAction(
+                label: 'Criar plano de medica\u00e7\u00e3o',
+                onPressed: widget.onCreate,
+              ),
             ),
           ),
-        ),
         for (final item in _visibleItems)
           SizedBox(
             width: width,
             child: _MedicationPlanCard(
               item: item,
-              onPressed: () => widget.onPlanSelected?.call(item.id),
+              onPressed: widget.onPlanSelected == null
+                  ? null
+                  : () => widget.onPlanSelected!(item.id),
             ),
           ),
       ],
@@ -360,13 +380,15 @@ final class _HealthMedicationPlanDirectoryPageState
   Widget _table() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      CoeloAdminCreateAction(
-        label: 'Criar plano de medica\u00e7\u00e3o',
-        description: 'Cadastre vig\u00eancia, hor\u00e1rios e respons\u00e1veis.',
-        variant: CoeloAdminCreateActionVariant.banner,
-        onPressed: widget.onCreate,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
+      if (_canCreate) ...[
+        CoeloAdminCreateAction(
+          label: 'Criar plano de medica\u00e7\u00e3o',
+          description: 'Cadastre vig\u00eancia, hor\u00e1rios e respons\u00e1veis.',
+          variant: CoeloAdminCreateActionVariant.banner,
+          onPressed: widget.onCreate,
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
       CoeloAdminResizableTable<HealthMedicationPlanListItem>(
         items: _visibleItems,
         rowKey: (item) => item.id,
@@ -426,23 +448,29 @@ final class _HealthMedicationPlanDirectoryPageState
         ],
         headerHeight: 56,
         rowHeight: 64,
-        onRowPressed: (item) => widget.onPlanSelected?.call(item.id),
+        onRowPressed: widget.onPlanSelected == null
+            ? null
+            : (item) => widget.onPlanSelected!(item.id),
       ),
     ],
   );
+
+  bool get _canCreate => widget.controller.canEdit && widget.onCreate != null;
 }
 
 final class _MedicationPlanCard extends StatelessWidget {
   const _MedicationPlanCard({required this.item, required this.onPressed});
 
   final HealthMedicationPlanListItem item;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
     minHeight: 240,
     onPressed: onPressed,
-    semanticLabel: 'Abrir plano de ${item.version.name} para ${item.child.displayName}',
+    semanticLabel: onPressed == null
+        ? 'Plano de ${item.version.name} para ${item.child.displayName}'
+        : 'Abrir plano de ${item.version.name} para ${item.child.displayName}',
     child: Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space5),
       child: Column(
@@ -564,6 +592,12 @@ String _doseSituationLabel(HealthMedicationDoseSituation value) => switch (value
   HealthMedicationDoseSituation.paused => 'Pausada',
   HealthMedicationDoseSituation.late => 'Atrasada',
 };
+
+double _directoryInset(double width) => width >= CoeloBreakpoints.large.minWidth
+    ? CoeloSpacing.space10
+    : width >= CoeloBreakpoints.medium.minWidth
+    ? CoeloSpacing.space6
+    : CoeloSpacing.space4;
 
 String _reviewStatusLabel(HealthMedicationReviewStatus value) => switch (value) {
   HealthMedicationReviewStatus.requested => 'Solicitado',

@@ -5,6 +5,10 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _profileChildren = [
+  HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
+];
+
 void main() {
   testWidgets('profile form navigates four steps and retains entered values', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -15,6 +19,7 @@ void main() {
         theme: CoeloTheme.light,
         home: HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           onCancel: () {},
           onSaved: () async {},
         ),
@@ -107,6 +112,7 @@ void main() {
       for (final page in <Widget>[
         HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           onCancel: () {},
           onSaved: () async {},
         ),

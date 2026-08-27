@@ -253,6 +253,10 @@ GoRouter createSuperadminRouter({
   );
   final developmentActivityAboutRepository = DevelopmentActivityProfileAboutRepository();
   const blockedCareProfilesRepository = UnavailableHealthCareRepository();
+  const developmentCareProfileChildren = <HealthCareProfileChildOption>[
+    HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
+    HealthCareProfileChildOption(id: 'child-demo-b', label: 'Criança Demo B'),
+  ];
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
   FakePlatformUserRepository previewPlatformUsers() =>
@@ -1176,7 +1180,6 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => HealthCareProfileFormPage(
               logout: logout,
               onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
-              onSaved: () async => context.goNamed(SuperadminRoutes.healthCareProfilesName),
             ),
           ),
           GoRoute(
@@ -1194,7 +1197,6 @@ GoRouter createSuperadminRouter({
               logout: logout,
               childId: state.pathParameters['childId']!,
               onCancel: () => context.pop(),
-              onSaved: () async => context.pop(),
             ),
           ),
           GoRoute(
@@ -2175,6 +2177,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devHealthCareProfileCreateName,
             builder: (context, state) => HealthCareProfileFormPage(
               logout: _previewLogout,
+              childOptions: developmentCareProfileChildren,
               onCancel: () => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
               onSaved: () async => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
             ),
@@ -2192,6 +2195,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devHealthCareProfileEditName,
             builder: (context, state) => HealthCareProfileFormPage(
               logout: _previewLogout,
+              childOptions: developmentCareProfileChildren,
               childId: state.pathParameters['childId']!,
               onCancel: () => context.pop(),
               onSaved: () async => context.pop(),

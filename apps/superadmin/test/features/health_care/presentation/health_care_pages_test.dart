@@ -1,6 +1,4 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
-import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import '../support/health_care_fixture_repository.dart';
 import 'package:coelo_superadmin/features/health_care/domain/health_care.dart';
 import 'package:coelo_superadmin/features/health_care/presentation/health_care_controller.dart';
@@ -13,6 +11,10 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+const _profileChildren = [
+  HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
+];
 
 void main() {
   test('controller keeps identity filters independent from hierarchy filters', () async {
@@ -134,7 +136,61 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('profile directory exposes import and export file actions', (tester) async {
+  testWidgets('profile directory requires capability and real callbacks for actions', (
+    tester,
+  ) async {
+    await _setViewport(tester, const Size(1440, 900));
+    final controller = HealthCareController(
+      FixtureHealthCareRepository(),
+      actor: HealthCareActor(
+        id: 'reader-demo',
+        profile: HealthCareAccessProfile.sensitiveReader,
+        authorizedChildIds: const {'child-demo-a'},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await _pump(
+      tester,
+      HealthCareProfileDirectoryPage(
+        controller: controller,
+        logout: unavailableSuperadminLogout,
+        onCreate: () {},
+      ),
+    );
+
+    expect(find.byType(CoeloAdminCreateAction), findsNothing);
+    for (final card in tester.widgetList<CoeloAdminInteractiveCard>(
+      find.byType(CoeloAdminInteractiveCard),
+    )) {
+      expect(card.onPressed, isNull);
+    }
+
+    await tester.tap(find.byKey(const Key('health-care-profiles-view-table')));
+    await tester.pumpAndSettle();
+    final table = tester.widget<CoeloAdminResizableTable<HealthCareChildSummary>>(
+      find.byType(CoeloAdminResizableTable<HealthCareChildSummary>),
+    );
+    expect(table.onRowPressed, isNull);
+  });
+
+  testWidgets('profile directory uses expanded canonical inset', (tester) async {
+    await _setViewport(tester, const Size(1920, 1000));
+    final controller = HealthCareController(FixtureHealthCareRepository());
+    addTearDown(controller.dispose);
+
+    await _pump(
+      tester,
+      HealthCareProfileDirectoryPage(controller: controller, logout: unavailableSuperadminLogout),
+    );
+
+    final directory = tester.widget<ListView>(
+      find.byKey(const Key('health-care-profiles-directory-scroll')),
+    );
+    expect((directory.padding! as EdgeInsets).left, CoeloSpacing.space10);
+  });
+
+  testWidgets('profile directory keeps unavailable file actions disabled', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
     final controller = HealthCareController(FixtureHealthCareRepository());
     addTearDown(controller.dispose);
@@ -149,18 +205,15 @@ void main() {
     );
 
     expect(find.text('Arquivos'), findsOneWidget);
-    final profileShell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
     final profileFiles = tester.widget<HealthCareFileActions>(find.byType(HealthCareFileActions));
-    expect(identical(profileShell.activityController, profileFiles.activityController), isTrue);
-    await tester.tap(find.text('Arquivos'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Importar'), findsOneWidget);
-    expect(find.text('Exportar CSV'), findsOneWidget);
-    expect(find.text('Exportar XLSX'), findsOneWidget);
+    expect(profileFiles.onImport, isNull);
+    expect(profileFiles.onExportCsv, isNull);
+    expect(profileFiles.onExportXlsx, isNull);
+    final button = tester.widget<OutlinedButton>(find.byKey(const Key('coelo-admin-files-action')));
+    expect(button.onPressed, isNull);
   });
 
-  testWidgets('medication plan directory exposes import and export file actions', (tester) async {
+  testWidgets('medication directory keeps unavailable file actions disabled', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
     final controller = HealthCareController(FixtureHealthCareRepository());
     addTearDown(controller.dispose);
@@ -176,32 +229,27 @@ void main() {
     );
 
     expect(find.text('Arquivos'), findsOneWidget);
-    final medicationShell = tester.widget<SuperadminShell>(find.byType(SuperadminShell));
     final medicationFiles = tester.widget<HealthCareFileActions>(
       find.byType(HealthCareFileActions),
     );
-    expect(
-      identical(medicationShell.activityController, medicationFiles.activityController),
-      isTrue,
-    );
-    await tester.tap(find.text('Arquivos'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Importar'), findsOneWidget);
-    expect(find.text('Exportar CSV'), findsOneWidget);
-    expect(find.text('Exportar XLSX'), findsOneWidget);
+    expect(medicationFiles.onImport, isNull);
+    expect(medicationFiles.onExportCsv, isNull);
+    expect(medicationFiles.onExportXlsx, isNull);
+    final button = tester.widget<OutlinedButton>(find.byKey(const Key('coelo-admin-files-action')));
+    expect(button.onPressed, isNull);
   });
 
-  testWidgets('file export completes through the activity controller', (tester) async {
-    final activityController = SuperadminActivityController();
-    addTearDown(activityController.dispose);
+  testWidgets('file actions invoke only explicitly injected commands', (tester) async {
+    var imports = 0;
+    var csvExports = 0;
+    var xlsxExports = 0;
     await _pump(
       tester,
       Scaffold(
         body: HealthCareFileActions(
-          activityController: activityController,
-          subject: 'Perfis de cuidado',
-          fileBaseName: 'perfis-de-cuidado',
+          onImport: () => imports += 1,
+          onExportCsv: () => csvExports += 1,
+          onExportXlsx: () => xlsxExports += 1,
         ),
       ),
     );
@@ -211,9 +259,9 @@ void main() {
     await tester.tap(find.text('Exportar CSV'));
     await tester.pumpAndSettle();
 
-    expect(activityController.activities, hasLength(1));
-    expect(activityController.activities.single.kind, SuperadminActivityKind.export);
-    expect(activityController.activities.single.fileName, 'perfis-de-cuidado.csv');
+    expect(imports, 0);
+    expect(csvExports, 1);
+    expect(xlsxExports, 0);
   });
 
   for (final width in [375.0, 768.0]) {
@@ -236,6 +284,7 @@ void main() {
         ),
         HealthCareProfileFormPage(
           logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
           onCancel: () {},
           onSaved: () async {},
         ),

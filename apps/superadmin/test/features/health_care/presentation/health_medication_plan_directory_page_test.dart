@@ -86,7 +86,48 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Resumo minimizado'), findsOneWidget);
+    expect(find.byType(CoeloAdminListingToolbar), findsNothing);
     expect(find.text('Medicamento Demo'), findsNothing);
+  });
+
+  testWidgets('medication directory requires capability and real callbacks for actions', (
+    tester,
+  ) async {
+    final controller = HealthCareController(
+      FixtureHealthCareRepository(),
+      actor: HealthCareActor(
+        id: 'reader-demo',
+        profile: HealthCareAccessProfile.sensitiveReader,
+        authorizedChildIds: const {'child-demo-a'},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthMedicationPlanDirectoryPage(
+          controller: controller,
+          logout: unavailableSuperadminLogout,
+          onCreate: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminCreateAction), findsNothing);
+    for (final card in tester.widgetList<CoeloAdminInteractiveCard>(
+      find.byType(CoeloAdminInteractiveCard),
+    )) {
+      expect(card.onPressed, isNull);
+    }
+
+    await tester.tap(find.byKey(const Key('health-medication-plans-view-table')));
+    await tester.pumpAndSettle();
+    final table = tester.widget<CoeloAdminResizableTable<HealthMedicationPlanListItem>>(
+      find.byType(CoeloAdminResizableTable<HealthMedicationPlanListItem>),
+    );
+    expect(table.onRowPressed, isNull);
   });
 
   testWidgets('loads only medication plans authorized for the active context', (tester) async {
