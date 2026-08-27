@@ -52,6 +52,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   _MealPlanDirectoryDisplay _display = _MealPlanDirectoryDisplay.cards;
   _MealPlanDirectorySection _section = _MealPlanDirectorySection.mealPlans;
   bool _loading = true;
+  bool _unauthorized = false;
   bool _actionRunning = false;
   String? _errorMessage;
   int _page = 0;
@@ -86,72 +87,88 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final viewport = MediaQuery.sizeOf(context);
-    final compact = viewport.width < CoeloBreakpoints.medium.minWidth;
-    final horizontalPadding = compact ? CoeloSpacing.space4 : CoeloSpacing.space6;
     return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                horizontalPadding,
-                horizontalPadding,
-                0,
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+        final horizontalPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+            ? CoeloSpacing.space10
+            : compact
+            ? CoeloSpacing.space4
+            : CoeloSpacing.space6;
+        if (_unauthorized) {
+          return ListView(
+            padding: EdgeInsets.all(horizontalPadding),
+            children: const [
+              CoeloStatePanel(
+                key: Key('meal-plans-unauthorized'),
+                title: 'Acesso não autorizado',
+                message: 'Seu acesso a este escopo não está disponível.',
+                icon: Icons.lock_outline_rounded,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text('Card\u00e1pios', style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: CoeloSpacing.space1),
-                  Text(
-                    'Planeje refei\u00e7\u00f5es por per\u00edodo, escopo e origem com revis\u00e3o obrigat\u00f3ria antes da publica\u00e7\u00e3o.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  SuperadminUnderlineTabs<_MealPlanDirectorySection>(
-                    key: const Key('meal-plan-type-tabs'),
-                    selected: _section,
-                    tabs: const [
-                      SuperadminUnderlineTab(
-                        value: _MealPlanDirectorySection.mealPlans,
-                        label: 'Cardápios',
+            ],
+          );
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  horizontalPadding,
+                  horizontalPadding,
+                  0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _toolbar(compact: compact),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    SuperadminUnderlineTabs<_MealPlanDirectorySection>(
+                      key: const Key('meal-plan-type-tabs'),
+                      selected: _section,
+                      tabs: const [
+                        SuperadminUnderlineTab(
+                          value: _MealPlanDirectorySection.mealPlans,
+                          label: 'Cardápios',
+                        ),
+                        SuperadminUnderlineTab(
+                          value: _MealPlanDirectorySection.models,
+                          label: 'Modelos',
+                        ),
+                      ],
+                      onSelected: _selectSection,
+                    ),
+                    const SizedBox(height: CoeloSpacing.space4),
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, contentConstraints) =>
+                            _content(constraints: contentConstraints),
                       ),
-                      SuperadminUnderlineTab(
-                        value: _MealPlanDirectorySection.models,
-                        label: 'Modelos',
-                      ),
-                    ],
-                    onSelected: _selectSection,
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  _toolbar(compact: compact),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  Expanded(child: _content(constraints: constraints)),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (_totalPages >= 1 && _items.isNotEmpty)
-            SuperadminListingPaginationFooter(
-              semanticKey: const Key('meal-plans-pagination'),
-              horizontalPadding: horizontalPadding,
-              child: CoeloAdminPagination(
-                currentPage: _page + 1,
-                totalPages: _totalPages,
-                pageSize: _pageSize,
-                pageSizeOptions: _display == _MealPlanDirectoryDisplay.cards
-                    ? const [8, 12, 24, 50]
-                    : const [6, 12, 24, 50],
-                onPrevious: _page == 0 ? null : () => _setPage(_page - 1),
-                onNext: _page + _pageSize < _total ? () => _setPage(_page + 1) : null,
-                onPageSelected: (value) => _setPage(value - 1),
-                onPageSizeChanged: _setPageSize,
+            if (_totalPages >= 1 && _items.isNotEmpty)
+              SuperadminListingPaginationFooter(
+                semanticKey: const Key('meal-plans-pagination'),
+                horizontalPadding: horizontalPadding,
+                child: CoeloAdminPagination(
+                  currentPage: _page + 1,
+                  totalPages: _totalPages,
+                  pageSize: _pageSize,
+                  pageSizeOptions: _display == _MealPlanDirectoryDisplay.cards
+                      ? const [8, 12, 24, 50]
+                      : const [6, 12, 24, 50],
+                  onPrevious: _page == 0 ? null : () => _setPage(_page - 1),
+                  onNext: _page + 1 < _totalPages ? () => _setPage(_page + 1) : null,
+                  onPageSelected: (value) => _setPage(value - 1),
+                  onPageSizeChanged: _setPageSize,
+                ),
               ),
-            ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 
@@ -265,12 +282,11 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   );
 
   Widget _content({required BoxConstraints constraints}) => switch (_loading) {
-    true => _stateWithCreate(
-      state: const CoeloStatePanel(
-        title: 'Carregando card\u00e1pios',
-        message: 'Sincronizando card\u00e1pios, status e revis\u00e3o.',
-        loading: true,
-      ),
+    true => const CoeloStatePanel(
+      key: Key('meal-plans-loading'),
+      title: 'Carregando card\u00e1pios',
+      message: 'Sincronizando card\u00e1pios, status e revis\u00e3o.',
+      loading: true,
     ),
     false when _errorMessage != null => _stateWithCreate(
       state: CoeloStatePanel(
@@ -331,7 +347,11 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       variant: _display == _MealPlanDirectoryDisplay.table
           ? CoeloAdminCreateActionVariant.banner
           : CoeloAdminCreateActionVariant.tile,
-      onPressed: models ? widget.onCreateTemplate : () => widget.onCreate?.call(null),
+      onPressed: models
+          ? widget.onCreateTemplate
+          : widget.onCreate == null
+          ? null
+          : () => widget.onCreate!(null),
     );
   }
 
@@ -341,12 +361,12 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         : constraints.maxWidth >= 680
         ? 2
         : 1;
-    final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space4) / columns;
+    final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
       child: Wrap(
-        spacing: CoeloSpacing.space4,
-        runSpacing: CoeloSpacing.space4,
+        spacing: CoeloSpacing.space6,
+        runSpacing: CoeloSpacing.space6,
         children: [
           SizedBox(
             width: width,
@@ -362,6 +382,8 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
                 item: item,
                 scopeLabel: _scopeLabel(item.scopeLevel, item.scopeId),
                 sourceLabel: _sourceLabel(item.sourceType),
+                onOpen: _canEdit(item) ? () => _runAction(_DirectoryAction.edit, item) : null,
+                canDuplicate: widget.onCreate != null,
                 onAction: (action) => _runAction(action, item),
               ),
             ),
@@ -453,38 +475,41 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
             cellBuilder: (_, item) => _rowActionMenu(item),
           ),
         ],
-        onRowPressed: (item) =>
-            item.isTemplate ? widget.onEditTemplate?.call(item.id) : widget.onEdit?.call(item.id),
+        onRowPressed: _canEditSection ? _openItem : null,
       ),
     ],
   );
 
   Widget _rowActionMenu(MealPlan item) {
-    return CoeloAdminFlyout<_DirectoryAction>(
-      items: [
+    final items = <CoeloAdminFlyoutItem<_DirectoryAction>>[
+      if (_canEdit(item))
         const CoeloAdminFlyoutItem(
           value: _DirectoryAction.edit,
           icon: Icons.edit_outlined,
           label: 'Editar',
         ),
+      if (widget.onCreate != null)
         CoeloAdminFlyoutItem(
           value: _DirectoryAction.duplicate,
           icon: Icons.copy_all_outlined,
           label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar card\u00e1pio',
         ),
-        if (item.status == MealPlanStatus.draft)
-          const CoeloAdminFlyoutItem(
-            value: _DirectoryAction.review,
-            icon: Icons.rule_folder_outlined,
-            label: 'Enviar revis\u00e3o',
-          ),
-        if (_canPublish(item))
-          const CoeloAdminFlyoutItem(
-            value: _DirectoryAction.publish,
-            icon: Icons.publish_outlined,
-            label: 'Publicar',
-          ),
-      ],
+      if (item.status == MealPlanStatus.draft)
+        const CoeloAdminFlyoutItem(
+          value: _DirectoryAction.review,
+          icon: Icons.rule_folder_outlined,
+          label: 'Enviar revis\u00e3o',
+        ),
+      if (_canPublish(item))
+        const CoeloAdminFlyoutItem(
+          value: _DirectoryAction.publish,
+          icon: Icons.publish_outlined,
+          label: 'Publicar',
+        ),
+    ];
+    if (items.isEmpty) return const SizedBox.shrink();
+    return CoeloAdminFlyout<_DirectoryAction>(
+      items: items,
       onSelected: (action) => _runAction(action, item),
       builder: (context, controller) => IconButton(
         tooltip: 'A\u00e7\u00f5es',
@@ -507,6 +532,21 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       widget.onEditTemplate?.call(id);
     } else {
       widget.onEdit?.call(id);
+    }
+  }
+
+  bool get _canEditSection => _section == _MealPlanDirectorySection.models
+      ? widget.onEditTemplate != null
+      : widget.onEdit != null;
+
+  bool _canEdit(MealPlan item) =>
+      item.isTemplate ? widget.onEditTemplate != null : widget.onEdit != null;
+
+  void _openItem(MealPlan item) {
+    if (item.isTemplate) {
+      widget.onEditTemplate?.call(item.id);
+    } else {
+      widget.onEdit?.call(item.id);
     }
   }
 
@@ -615,6 +655,16 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         _items = page.items;
         _total = page.total;
         _errorMessage = null;
+        _unauthorized = false;
+        _loading = false;
+      });
+    } on MealPlanUnauthorizedException {
+      if (!mounted || requestVersion != _requestedVersion) return;
+      setState(() {
+        _items = const [];
+        _total = 0;
+        _errorMessage = null;
+        _unauthorized = true;
         _loading = false;
       });
     } on MealPlanRepositoryException catch (error) {
@@ -622,6 +672,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       setState(() {
         _items = const [];
         _errorMessage = error.message;
+        _unauthorized = false;
         _loading = false;
       });
     }
@@ -771,17 +822,21 @@ final class _MealPlanCard extends StatelessWidget {
     required this.item,
     required this.scopeLabel,
     required this.sourceLabel,
+    required this.onOpen,
+    required this.canDuplicate,
     required this.onAction,
   });
 
   final MealPlan item;
   final String scopeLabel;
   final String sourceLabel;
+  final VoidCallback? onOpen;
+  final bool canDuplicate;
   final ValueChanged<_DirectoryAction> onAction;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
-    onPressed: () => onAction(_DirectoryAction.edit),
+    onPressed: onOpen,
     semanticLabel: 'Abrir card\u00e1pio ${item.name}',
     minHeight: 220,
     child: Padding(
@@ -831,38 +886,44 @@ final class _MealPlanCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
-              CoeloAdminFlyout<_DirectoryAction>(
-                items: [
-                  const CoeloAdminFlyoutItem(
-                    value: _DirectoryAction.edit,
-                    label: 'Editar',
-                    icon: Icons.edit_outlined,
+              if (onOpen != null ||
+                  canDuplicate ||
+                  item.status == MealPlanStatus.draft ||
+                  _mealPlanCanPublish(item))
+                CoeloAdminFlyout<_DirectoryAction>(
+                  items: [
+                    if (onOpen != null)
+                      const CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.edit,
+                        label: 'Editar',
+                        icon: Icons.edit_outlined,
+                      ),
+                    if (canDuplicate)
+                      CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.duplicate,
+                        label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar card\u00e1pio',
+                        icon: Icons.copy_all_outlined,
+                      ),
+                    if (item.status == MealPlanStatus.draft)
+                      const CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.review,
+                        label: 'Enviar revis\u00e3o',
+                        icon: Icons.rate_review_outlined,
+                      ),
+                    if (_mealPlanCanPublish(item))
+                      const CoeloAdminFlyoutItem(
+                        value: _DirectoryAction.publish,
+                        label: 'Publicar',
+                        icon: Icons.publish_outlined,
+                      ),
+                  ],
+                  onSelected: onAction,
+                  builder: (context, controller) => IconButton(
+                    tooltip: 'A\u00e7\u00f5es',
+                    onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+                    icon: const Icon(Icons.more_horiz_rounded),
                   ),
-                  CoeloAdminFlyoutItem(
-                    value: _DirectoryAction.duplicate,
-                    label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar card\u00e1pio',
-                    icon: Icons.copy_all_outlined,
-                  ),
-                  if (item.status == MealPlanStatus.draft)
-                    const CoeloAdminFlyoutItem(
-                      value: _DirectoryAction.review,
-                      label: 'Enviar revis\u00e3o',
-                      icon: Icons.rate_review_outlined,
-                    ),
-                  if (_mealPlanCanPublish(item))
-                    const CoeloAdminFlyoutItem(
-                      value: _DirectoryAction.publish,
-                      label: 'Publicar',
-                      icon: Icons.publish_outlined,
-                    ),
-                ],
-                onSelected: onAction,
-                builder: (context, controller) => IconButton(
-                  tooltip: 'A\u00e7\u00f5es',
-                  onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-                  icon: const Icon(Icons.more_horiz_rounded),
                 ),
-              ),
             ],
           ),
         ],

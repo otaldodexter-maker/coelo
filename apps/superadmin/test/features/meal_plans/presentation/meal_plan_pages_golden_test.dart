@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_repository.dart';
 import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_image_repository.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_directory_page.dart';
 import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wizard_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +16,146 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUpAll(_loadGoldenFonts);
+
+  testWidgets('directory follows toolbar then tabs without a duplicate local header', (
+    tester,
+  ) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-directory-contract-root'),
+        child: MealPlanDirectoryPage(
+          repository: FakeMealPlanRepository(),
+          onCreate: (_) {},
+          onEdit: (_) {},
+          onCreateTemplate: () {},
+          onEditTemplate: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cardápios'), findsOneWidget);
+    final searchTop = tester.getTopLeft(find.byType(CoeloSearchField)).dy;
+    final tabsTop = tester.getTopLeft(find.byKey(const Key('meal-plan-type-tabs'))).dy;
+    expect(searchTop, lessThan(tabsTop));
+  });
+
+  testWidgets('wizard uses the canonical Superadmin form frame', (tester) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-wizard-frame-contract-root'),
+        child: MealPlanWizardPage(
+          repository: FakeMealPlanRepository(),
+          imageRepository: const _UnavailableMealPlanImageRepository(),
+          onSaved: () {},
+          onCancel: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+  });
+
+  testWidgets('last zero-based repository page disables next and preserves previous', (
+    tester,
+  ) async {
+    _configureDesktop(tester);
+    final repository = FakeMealPlanRepository(totalOverride: 25);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-pagination-contract-root'),
+        child: MealPlanDirectoryPage(repository: repository),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    pagination.onPageSelected!(3);
+    await tester.pumpAndSettle();
+
+    expect(repository.lastPageFilter?.page, 2);
+    pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    expect(pagination.currentPage, 3);
+    expect(pagination.totalPages, 3);
+    expect(pagination.onPrevious, isNotNull);
+    expect(pagination.onNext, isNull);
+  });
+
+  testWidgets('unauthorized directory is fail closed without controls or creation', (tester) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-unauthorized-contract-root'),
+        child: MealPlanDirectoryPage(
+          repository: FakeMealPlanRepository(
+            pageLoader: (_) => Future<MealPlanPage>.error(const MealPlanUnauthorizedException()),
+          ),
+          onCreate: (_) {},
+          onCreateTemplate: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('meal-plans-unauthorized')), findsOneWidget);
+    expect(find.byType(CoeloSearchField), findsNothing);
+    expect(find.byKey(const Key('meal-plan-type-tabs')), findsNothing);
+    expect(find.byType(CoeloAdminCreateAction), findsNothing);
+  });
+
+  testWidgets('loading never offers creation before permission is known', (tester) async {
+    _configureDesktop(tester);
+    final page = Completer<MealPlanPage>();
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-loading-contract-root'),
+        child: MealPlanDirectoryPage(
+          repository: FakeMealPlanRepository(pageLoader: (_) => page.future),
+          onCreate: (_) {},
+          onCreateTemplate: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('meal-plans-loading')), findsOneWidget);
+    expect(find.byType(CoeloAdminCreateAction), findsNothing);
+    page.complete(const MealPlanPage(items: [], total: 0, limit: 12, offset: 0));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('missing callbacks disable create and card interaction instead of no-op success', (
+    tester,
+  ) async {
+    _configureDesktop(tester);
+
+    await tester.pumpWidget(
+      _goldenApp(
+        boundaryKey: const Key('meal-plan-callback-contract-root'),
+        child: MealPlanDirectoryPage(repository: FakeMealPlanRepository()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final createActions = tester.widgetList<CoeloAdminCreateAction>(
+      find.byType(CoeloAdminCreateAction),
+    );
+    expect(createActions, isNotEmpty);
+    expect(createActions.every((action) => action.onPressed == null), isTrue);
+    final cards = tester.widgetList<CoeloAdminInteractiveCard>(
+      find.byType(CoeloAdminInteractiveCard),
+    );
+    expect(cards, isNotEmpty);
+    expect(cards.every((card) => card.onPressed == null), isTrue);
+  });
 
   testWidgets('matches the meal plan directory cards at desktop', (tester) async {
     _configureDesktop(tester);
@@ -269,6 +413,44 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    testWidgets('supports 200 percent text without overflow at ${width.toInt()}', (tester) async {
+      _configureSize(tester, Size(width, 1200));
+      final repository = FakeMealPlanRepository();
+
+      await tester.pumpWidget(
+        _goldenApp(
+          boundaryKey: Key('meal-plan-text-scale-directory-${width.toInt()}'),
+          textScale: 2,
+          child: MealPlanDirectoryPage(
+            repository: repository,
+            onCreate: (_) {},
+            onEdit: (_) {},
+            onCreateTemplate: () {},
+            onEditTemplate: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'directory width=$width textScale=2');
+
+      await tester.pumpWidget(
+        _goldenApp(
+          boundaryKey: Key('meal-plan-text-scale-wizard-${width.toInt()}'),
+          textScale: 2,
+          child: MealPlanWizardPage(
+            repository: repository,
+            imageRepository: const _UnavailableMealPlanImageRepository(),
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'wizard width=$width textScale=2');
+    });
+  }
 }
 
 void _configureDesktop(WidgetTester tester) => _configureSize(tester, const Size(1440, 1000));
@@ -280,7 +462,12 @@ void _configureSize(WidgetTester tester, Size size) {
   addTearDown(tester.view.resetPhysicalSize);
 }
 
-Widget _goldenApp({required Key boundaryKey, required Widget child, ThemeData? theme}) {
+Widget _goldenApp({
+  required Key boundaryKey,
+  required Widget child,
+  ThemeData? theme,
+  double textScale = 1,
+}) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: theme ?? CoeloTheme.light.copyWith(scaffoldBackgroundColor: Colors.white),
@@ -290,7 +477,7 @@ Widget _goldenApp({required Key boundaryKey, required Widget child, ThemeData? t
       child: MediaQuery(
         data: MediaQuery.of(
           context,
-        ).copyWith(disableAnimations: true, textScaler: TextScaler.noScaling),
+        ).copyWith(disableAnimations: true, textScaler: TextScaler.linear(textScale)),
         child: page!,
       ),
     ),
@@ -299,7 +486,7 @@ Widget _goldenApp({required Key boundaryKey, required Widget child, ThemeData? t
 }
 
 final class FakeMealPlanRepository implements MealPlanRepository {
-  FakeMealPlanRepository()
+  FakeMealPlanRepository({this.totalOverride, this.pageLoader})
     : mealPlans = [_publishedPlan, _reviewPlan],
       templates = [_template],
       audienceOptions = const MealPlanAudienceOptions(
@@ -347,17 +534,25 @@ final class FakeMealPlanRepository implements MealPlanRepository {
         ],
       );
 
+  final int? totalOverride;
+  final Future<MealPlanPage> Function(MealPlanListFilter filter)? pageLoader;
   final List<MealPlan> mealPlans;
   final List<MealPlanTemplate> templates;
   final MealPlanAudienceOptions audienceOptions;
+  MealPlanListFilter? lastPageFilter;
 
   @override
-  Future<MealPlanPage> fetchPage(MealPlanListFilter filter) async => MealPlanPage(
-    items: mealPlans,
-    total: mealPlans.length,
-    limit: filter.pageSize,
-    offset: filter.offset,
-  );
+  Future<MealPlanPage> fetchPage(MealPlanListFilter filter) async {
+    lastPageFilter = filter;
+    final loader = pageLoader;
+    if (loader != null) return loader(filter);
+    return MealPlanPage(
+      items: mealPlans,
+      total: totalOverride ?? mealPlans.length,
+      limit: filter.pageSize,
+      offset: filter.offset,
+    );
+  }
 
   @override
   Future<MealPlanPage> fetchTemplatePage(MealPlanListFilter filter) async => MealPlanPage(

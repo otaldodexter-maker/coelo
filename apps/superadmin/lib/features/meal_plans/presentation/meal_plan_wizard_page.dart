@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../domain/meal_plan_image_repository.dart';
 import '../domain/meal_plan_repository.dart';
@@ -130,45 +131,26 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
       final body = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_loading || _saving) const LinearProgressIndicator(minHeight: 2),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(compact ? CoeloSpacing.space4 : CoeloSpacing.space6),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 960),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(_title, style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: CoeloSpacing.space1),
-                      Text(_subtitle, style: Theme.of(context).textTheme.bodyMedium),
-                      const SizedBox(height: CoeloSpacing.space5),
-                      if (_error != null) ...[
-                        CoeloStatePanel(
-                          title: 'Revise esta etapa',
-                          message: _error!,
-                          icon: Icons.info_outline,
-                        ),
-                        const SizedBox(height: CoeloSpacing.space4),
-                      ],
-                      Text(_steps[_step], style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: CoeloSpacing.space1),
-                      Text('Etapa ${_step + 1} de ${_steps.length}'),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      if (_loading) const SizedBox(height: 240) else _stepContent(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          _footer(),
+          if (_loading || _saving) ...[
+            const LinearProgressIndicator(minHeight: 2),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
+          Text(_title, style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(_subtitle, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: CoeloSpacing.space5),
+          if (_error != null) ...[
+            CoeloStatePanel(title: 'Revise esta etapa', message: _error!, icon: Icons.info_outline),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
+          Text(_steps[_step], style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text('Etapa ${_step + 1} de ${_steps.length}'),
+          const SizedBox(height: CoeloSpacing.space4),
+          if (_loading) const SizedBox(height: 240) else _stepContent(),
         ],
       );
       final navigation = SuperadminFormStepNavigation(
@@ -191,24 +173,11 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           if (index <= _step) setState(() => _step = index);
         },
       );
-      if (compact) {
-        return Column(
-          children: [
-            navigation,
-            Expanded(child: body),
-          ],
-        );
-      }
-      return Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            navigation,
-            const SizedBox(width: CoeloSpacing.space6),
-            Expanded(child: body),
-          ],
-        ),
+      return SuperadminFormFrame(
+        navigation: navigation,
+        body: body,
+        footer: _footer(),
+        viewportWidth: constraints.maxWidth,
       );
     },
   );
