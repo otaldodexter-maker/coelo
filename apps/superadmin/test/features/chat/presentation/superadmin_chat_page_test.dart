@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/presentation/screens/superadmin_chat_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -55,6 +58,100 @@ void main() {
 
     expect(find.byKey(const Key('superadmin-chat-composer-field')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uses the canonical search field in the conversation inbox', (tester) async {
+    _viewport(tester, 1024);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-chat-search')), findsOneWidget);
+    expect(tester.widget(find.byKey(const Key('superadmin-chat-search'))), isA<CoeloSearchField>());
+  });
+
+  testWidgets('uses the compact directory inset around the chat workspace', (tester) async {
+    _viewport(tester, 375);
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    final inset = tester.widget<Padding>(find.byKey(const Key('superadmin-chat-content-inset')));
+    expect(inset.padding, const EdgeInsets.all(CoeloSpacing.space4));
+  });
+
+  testWidgets('debounces canonical inbox search before querying the repository', (tester) async {
+    _viewport(tester, 1024);
+    final repository = _ChatRepository.standard();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    final field = find.descendant(
+      of: find.byKey(const Key('superadmin-chat-search')),
+      matching: find.byType(EditableText),
+    );
+    await tester.enterText(field, 'família');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(repository.inboxQueries, hasLength(1));
+
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(repository.inboxQueries.last.search, 'família');
+  });
+
+  testWidgets('ignores an older inbox response after a newer search completes', (tester) async {
+    _viewport(tester, 1024);
+    final repository = _ControlledSearchRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'busca A';
+    search.onChanged('busca A');
+    await tester.pump(const Duration(milliseconds: 301));
+    expect(repository.pending, contains('busca A'));
+
+    search.controller.text = 'busca B';
+    search.onChanged('busca B');
+    await tester.pump(const Duration(milliseconds: 301));
+    expect(repository.pending, contains('busca B'));
+
+    repository.complete('busca B', title: 'Resultado B');
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Resultado B'), findsWidgets);
+
+    repository.complete('busca A', title: 'Resultado A');
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Resultado B'), findsWidgets);
+    expect(find.text('Resultado A'), findsNothing);
+  });
+
+  testWidgets('ignores an older automatic thread after a newer search completes', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _ControlledThreadSearchRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'busca A';
+    search.onChanged('busca A');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pump();
+    expect(repository.olderThread, isNotNull);
+
+    search.controller.text = 'busca B';
+    search.onChanged('busca B');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+    expect(repository.sharedThreadRequests, 2);
+
+    repository.olderThread!.complete(_threadPage('Thread A'));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Resultado B'), findsWidgets);
+    expect(find.text('Thread A'), findsNothing);
   });
 }
 
@@ -122,12 +219,16 @@ final class _ChatRepository implements ChatRepository {
   final ChatThreadPage thread;
   final List<String> markedConversationIds = [];
   final List<ChatSendMessageCommand> sent = [];
+  final List<ChatInboxQuery> inboxQueries = [];
 
   @override
   Future<int> fetchUnreadTotal() async => 0;
 
   @override
-  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => inbox;
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
+    inboxQueries.add(query);
+    return inbox;
+  }
 
   @override
   Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => thread;
@@ -155,3 +256,119 @@ final class _ChatRepository implements ChatRepository {
     );
   }
 }
+
+final class _ControlledSearchRepository implements ChatRepository {
+  final _fallback = _ChatRepository.standard();
+  final Map<String, Completer<ChatInboxPage>> pending = {};
+
+  void complete(String search, {required String title}) {
+    pending
+        .remove(search)!
+        .complete(
+          ChatInboxPage(
+            totalUnread: 0,
+            items: [
+              ChatConversationSummary(
+                id: 'conversation-$search',
+                title: title,
+                preview: 'Resultado de $search',
+                contextLabel: 'Contexto autorizado',
+                kind: 'group',
+                unreadCount: 0,
+                updatedAt: DateTime.utc(2026, 8, 27),
+                isReadOnly: false,
+              ),
+            ],
+          ),
+        );
+  }
+
+  @override
+  Future<int> fetchUnreadTotal() => _fallback.fetchUnreadTotal();
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) {
+    if (query.search.isEmpty) return _fallback.fetchInbox(query);
+    return (pending[query.search] = Completer<ChatInboxPage>()).future;
+  }
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async =>
+      const ChatThreadPage(items: []);
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
+      _fallback.markRead(conversationId: conversationId, upToMessageId: upToMessageId);
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      _fallback.refreshAfterRealtime(conversationId: conversationId);
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => _fallback.sendMessage(command);
+}
+
+final class _ControlledThreadSearchRepository implements ChatRepository {
+  final _fallback = _ChatRepository.standard();
+  Completer<ChatThreadPage>? olderThread;
+  var _sharedThreadRequests = 0;
+  int get sharedThreadRequests => _sharedThreadRequests;
+
+  @override
+  Future<int> fetchUnreadTotal() => _fallback.fetchUnreadTotal();
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async {
+    if (query.search.isEmpty) return _fallback.fetchInbox(query);
+    return ChatInboxPage(
+      totalUnread: 0,
+      items: [
+        ChatConversationSummary(
+          id: 'shared-conversation',
+          title: query.search == 'busca A' ? 'Resultado A' : 'Resultado B',
+          preview: 'Resultado de ${query.search}',
+          contextLabel: 'Contexto autorizado',
+          kind: 'group',
+          unreadCount: 0,
+          updatedAt: DateTime.utc(2026, 8, 27),
+          isReadOnly: false,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) {
+    if (query.conversationId != 'shared-conversation') return _fallback.fetchThread(query);
+    _sharedThreadRequests += 1;
+    if (_sharedThreadRequests == 1) {
+      return (olderThread = Completer<ChatThreadPage>()).future;
+    }
+    return Future.value(_threadPage('Thread B'));
+  }
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) =>
+      _fallback.markRead(conversationId: conversationId, upToMessageId: upToMessageId);
+
+  @override
+  Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
+      _fallback.refreshAfterRealtime(conversationId: conversationId);
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => _fallback.sendMessage(command);
+}
+
+ChatThreadPage _threadPage(String body) => ChatThreadPage(
+  items: [
+    ChatMessage(
+      id: 'message-$body',
+      conversationId: 'shared-conversation',
+      body: body,
+      authorName: 'Marina',
+      sentAt: DateTime.utc(2026, 8, 27),
+      isMine: false,
+      kind: 'text',
+    ),
+  ],
+);

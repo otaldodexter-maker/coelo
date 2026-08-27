@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -33,6 +34,8 @@ final class SuperadminChatPage extends StatefulWidget {
 final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   final _search = TextEditingController();
   final _composer = TextEditingController();
+  Timer? _searchDebounce;
+  int _inboxRequestGeneration = 0;
   late final ChatRepository _repository;
   ChatInboxState _inboxState = const ChatInboxState.loading();
   ChatConversationSummary? _selected;
@@ -49,6 +52,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _search.dispose();
     _composer.dispose();
     super.dispose();
@@ -63,22 +67,41 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   }
 
   Future<void> _loadInbox() async {
+    final requestGeneration = ++_inboxRequestGeneration;
+    final search = _search.text;
     setState(() => _inboxState = const ChatInboxState.loading());
     try {
-      final page = await _repository.fetchInbox(ChatInboxQuery(search: _search.text));
-      if (!mounted) return;
-      setState(() => _inboxState = ChatInboxState.loaded(page, search: _search.text));
-      if (page.items.isNotEmpty) await _select(page.items.first);
+      final page = await _repository.fetchInbox(ChatInboxQuery(search: search));
+      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      setState(() => _inboxState = ChatInboxState.loaded(page, search: search));
+      if (page.items.isNotEmpty) {
+        await _select(
+          page.items.first,
+          inboxRequestGeneration: requestGeneration,
+          inboxSearch: search,
+        );
+      }
     } on ChatUnauthorizedException catch (error) {
-      if (mounted) setState(() => _inboxState = ChatInboxState.unauthorized(error));
+      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      setState(() => _inboxState = ChatInboxState.unauthorized(error));
     } on ChatOfflineException catch (error) {
-      if (mounted) setState(() => _inboxState = ChatInboxState.offline(error));
+      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      setState(() => _inboxState = ChatInboxState.offline(error));
     } catch (error) {
-      if (mounted) setState(() => _inboxState = ChatInboxState.failure(error));
+      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      setState(() => _inboxState = ChatInboxState.failure(error));
     }
   }
 
-  Future<void> _select(ChatConversationSummary conversation) async {
+  Future<void> _select(
+    ChatConversationSummary conversation, {
+    int? inboxRequestGeneration,
+    String? inboxSearch,
+  }) async {
+    bool isCurrentAutomaticSelection() =>
+        inboxRequestGeneration == null ||
+        (inboxRequestGeneration == _inboxRequestGeneration && inboxSearch == _search.text);
+    if (!isCurrentAutomaticSelection()) return;
     setState(() {
       _selected = conversation;
       _thread = null;
@@ -88,7 +111,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       final thread = await _repository.fetchThread(
         ChatThreadQuery(conversationId: conversation.id),
       );
-      if (!mounted || _selected?.id != conversation.id) return;
+      if (!mounted || _selected?.id != conversation.id || !isCurrentAutomaticSelection()) {
+        return;
+      }
       setState(() => _thread = thread);
       if (thread.items.isNotEmpty) {
         await _repository.markRead(
@@ -97,7 +122,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         );
       }
     } catch (error) {
-      if (mounted && _selected?.id == conversation.id) setState(() => _threadError = error);
+      if (mounted && _selected?.id == conversation.id && isCurrentAutomaticSelection()) {
+        setState(() => _threadError = error);
+      }
     }
   }
 
@@ -133,6 +160,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   void _showNotice(String message) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 
+  void _scheduleInboxSearch() {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), _loadInbox);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SuperadminShell(
@@ -141,33 +173,46 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       subtitle: 'Comunicacao institucional privada e contextual.',
       currentDestination: 'conversations',
       onDestinationSelected: widget.onDestinationSelected,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.onBack != null) ...[
-            IconButton(
-              key: const Key('superadmin-chat-back'),
-              tooltip: 'Voltar',
-              onPressed: widget.onBack,
-              constraints: const BoxConstraints.tightFor(
-                width: CoeloSize.touchMin,
-                height: CoeloSize.touchMin,
-              ),
-              icon: const Icon(Icons.arrow_back_rounded),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final contentPadding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+              ? CoeloSpacing.space10
+              : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              ? CoeloSpacing.space6
+              : CoeloSpacing.space4;
+          return Padding(
+            key: const Key('superadmin-chat-content-inset'),
+            padding: EdgeInsets.all(contentPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.onBack != null) ...[
+                  IconButton(
+                    key: const Key('superadmin-chat-back'),
+                    tooltip: 'Voltar',
+                    onPressed: widget.onBack,
+                    constraints: const BoxConstraints.tightFor(
+                      width: CoeloSize.touchMin,
+                      height: CoeloSize.touchMin,
+                    ),
+                    icon: const Icon(Icons.arrow_back_rounded),
+                  ),
+                  const SizedBox(height: CoeloSpacing.space2),
+                ],
+                Expanded(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                    ),
+                    child: _body(),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: CoeloSpacing.space2),
-          ],
-          Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-              ),
-              child: _body(),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -243,18 +288,12 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space3),
-          child: TextField(
+          child: CoeloSearchField(
+            key: const Key('superadmin-chat-search'),
             controller: _search,
-            onSubmitted: (_) => _loadInbox(),
-            decoration: InputDecoration(
-              hintText: 'Buscar conversas',
-              prefixIcon: const Icon(Icons.search_rounded),
-              suffixIcon: IconButton(
-                tooltip: 'Buscar',
-                onPressed: _loadInbox,
-                icon: const Icon(Icons.arrow_forward_rounded),
-              ),
-            ),
+            onChanged: (_) => _scheduleInboxSearch(),
+            semanticLabel: 'Buscar conversas',
+            hintText: 'Buscar conversas',
           ),
         ),
         Expanded(
