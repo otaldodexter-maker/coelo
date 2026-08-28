@@ -913,6 +913,27 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.18 Cardápio/modelo — abertura e gate de padrão — 2026-08-28 13:44 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`, bloqueado antes do código de produção pela aprovação explícita de `pattern.coelo-time-picker`; V3 permanece 6/7 (85,71%). |
+| Tela e rota | Criar/editar Cardápio e Modelo em `/dev/meal-plans/...`; consumidores técnicos relacionados: Medicação e `CoeloDateTimeField`. |
+| Índice e baseline | Consulta `hora seletor cardápio time picker`; Criar/Editar Instituição, campos Coelo, ações de diálogo e `pattern.interaction-states`. |
+| Achado | Cardápio usa dois `CoeloFormTextField` HH:mm acima do nome do prato; Medicação usa `showTimePicker`; `CoeloDateTimeField` já contém diálogo Coelo privado. |
+| Proposta registrada | Referência pública `coelo-time-picker.md`, vínculo na skill e índice `pattern.coelo-time-picker` com status `proposed`; API mínima por extração no `coelo_ui_core`, sem token novo. |
+| Evidências exigidas após aprovação | Exemplo executável no catálogo; testes de teclado/foco/Escape/erro/semântica/200%; goldens aberto light/375 e dark/1440; matriz 375/768/1024/1440, light/dark e reduced motion. |
+| Bloqueio | A skill proíbe oficializar API pública ou gerar golden canônico sem aprovação explícita do Owner. Nenhum código de produto foi alterado. |
+| Tempo usado | 0 h 03 min no item; 2 h 24 min acumulados. |
+| Estimativa restante | 7 h 36 min da janela; 1–2 h após aprovação. |
+| Próximo item exato | Owner aprovar a extração/API/goldens descritos em `coelo-time-picker.md`; então escrever o RED público antes da implementação. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

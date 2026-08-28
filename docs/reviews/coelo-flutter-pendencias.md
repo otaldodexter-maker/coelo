@@ -2363,6 +2363,28 @@ os GREENs locais.
 | Próximo item exato | V3.18 Cardápio/modelo: promover `pattern.coelo-time-picker` antes do código, então implementar hora Coelo e detalhes. |
 | Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
 
+## 16.51. V3.18 Cardápio/modelo — abertura e gate de padrão — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`, bloqueado antes de produção pela aprovação explícita de `pattern.coelo-time-picker`. |
+| Tela e rota | Cardápio/Modelo `/dev/meal-plans/...`; extração também convergirá o diálogo privado de data/hora e o picker Material de Medicação. |
+| Arquivos alterados | Referência `coelo-time-picker.md`, `coelo-ui/SKILL.md`, índice do catálogo, spec e tracker. |
+| Inventário | Cardápio tem campos textuais HH:mm posicionados antes do nome; detalhes são campo simples. `CoeloDateTimeField` possui diálogo privado reaproveitável; Medicação usa `showTimePicker`. |
+| Proposta | `CoeloTimeField` + `showCoeloTimePicker` no `coelo_ui_core`; surface neutra, HH:mm 24 h, Cancelar/Aplicar, teclado, Escape e retorno de foco; sem novos tokens ou variantes futuras. |
+| Testes planejados | REDs públicos de abertura/retorno de foco/erro/disabled/semântica/200%; catálogo; goldens open light/375 e dark/1440; matriz V3.18 completa. |
+| Bloqueios | Aprovação visual/API humana obrigatória pela skill. Backend/Supabase e Assessments seguem fora do recorte. |
+| Tempo realmente usado | 0 h 03 min; 2 h 24 min acumulados, às 13:44 BRT. |
+| Estimativa restante | 7 h 36 min da janela; V3.18 requer 1–2 h após aprovação. |
+| Próximo item exato | Obter aprovação da extração/API/goldens; escrever primeiro RED em `coelo_ui_core`. |
+| Conhecimento capturado | `no-op`: proposta ainda não aprovada, portanto não entra em `docs/knowledge`. |
+
 ## 17. Histórico
 
 | Data | Mudança |
