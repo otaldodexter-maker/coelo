@@ -35,6 +35,7 @@ void main() {
     router.go('/notices');
     await tester.pumpAndSettle();
     expect(find.byType(SuperadminShell), findsWidgets);
+    expect(find.text('Nova comunicação'), findsNothing);
     await tester.widget<SuperadminShell>(find.byType(SuperadminShell).last).logout();
     expect(productionLogoutCalls, 1);
 
@@ -49,6 +50,7 @@ void main() {
     router.go('/dev/notices');
     await tester.pumpAndSettle();
     expect(find.byType(SuperadminShell), findsWidgets);
+    expect(find.text('Nova comunicação'), findsOneWidget);
     await tester.widget<SuperadminShell>(find.byType(SuperadminShell).last).logout();
     expect(productionLogoutCalls, 1);
   });

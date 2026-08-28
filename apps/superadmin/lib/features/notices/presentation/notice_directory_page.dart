@@ -90,7 +90,9 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   _CommunicationTypeFilter _typeFilter = _CommunicationTypeFilter.all;
   Timer? _searchDebounce;
   int _loadGeneration = 0;
+  int _commandGeneration = 0;
   final Map<String, String> _actionRequestIds = {};
+  final Set<(NavigatorState, Route<dynamic>)> _ownedOverlays = {};
   int _page = 1;
   int _pageSize = 24;
   List<PlatformNotice> _items = const [];
@@ -111,8 +113,38 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }
 
   @override
+  void didUpdateWidget(covariant NoticeDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    _searchDebounce?.cancel();
+    _dismissOwnedOverlays();
+    _loadGeneration++;
+    _commandGeneration++;
+    _search.clear();
+    _statusFilter = _NoticeStatusFilter.all;
+    _typeFilter = _CommunicationTypeFilter.all;
+    _actionRequestIds.clear();
+    _page = 1;
+    _pageSize = 24;
+    _items = const [];
+    _cursorHistory.clear();
+    _nextCursorOccurredAt = null;
+    _nextCursorId = null;
+    _currentCursorOccurredAt = null;
+    _currentCursorId = null;
+    _runningAction = false;
+    _selectedPreviewId = null;
+    _state = NoticeDirectoryViewState.loading;
+    _errorMessage = null;
+    _load(reset: true);
+  }
+
+  @override
   void dispose() {
     _searchDebounce?.cancel();
+    _dismissOwnedOverlays();
+    _loadGeneration++;
+    _commandGeneration++;
     _search.dispose();
     super.dispose();
   }
@@ -359,7 +391,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }
 
   Widget _stateWithCreate({required bool compact, required Widget state}) {
-    final children = <Widget>[_createAction(), state];
+    final children = <Widget>[if (widget.onCreate != null) _createAction(), state];
     if (compact) {
       return ListView.separated(
         key: const Key('notice-directory-state-list'),
@@ -398,7 +430,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     required bool compact,
   }) {
     final cards = <Widget>[
-      _createAction(),
+      if (widget.onCreate != null) _createAction(),
       ...notices.map((notice) => _noticeCard(context, notice)),
     ];
     if (compact) {
@@ -428,15 +460,17 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     ValueChanged<PlatformNotice>? onSelected,
   }) => Column(
     children: [
-      CoeloAdminCreateAction(
-        key: const Key('create-notice-banner'),
-        label: 'Nova comunicação',
-        description: 'Criar aviso, conteúdo, destaque ou item Para você.',
-        icon: Icons.post_add_rounded,
-        variant: CoeloAdminCreateActionVariant.banner,
-        onPressed: widget.onCreate,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
+      if (widget.onCreate != null) ...[
+        CoeloAdminCreateAction(
+          key: const Key('create-notice-banner'),
+          label: 'Nova comunicação',
+          description: 'Criar aviso, conteúdo, destaque ou item Para você.',
+          icon: Icons.post_add_rounded,
+          variant: CoeloAdminCreateActionVariant.banner,
+          onPressed: widget.onCreate,
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
       Expanded(
         child: SingleChildScrollView(
           child: CoeloAdminResizableTable<PlatformNotice>(
@@ -667,73 +701,103 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
 
   Future<void> _runAction(_NoticeCardAction action, PlatformNotice notice) async {
     if (_runningAction) return;
+    final generation = ++_commandGeneration;
+    final requestedRepository = widget.repository;
     final cancellationReason = action == _NoticeCardAction.cancel
         ? await _requestCancellationReason()
         : null;
+    if (!_isCurrentCommand(generation, requestedRepository)) return;
     if (action == _NoticeCardAction.cancel && cancellationReason == null) return;
     if (!mounted) return;
     setState(() => _runningAction = true);
-    final requestKey = '${notice.id}:${action.name}';
+    final requestKey = _actionIntentKey(action, notice, cancellationReason);
     final requestId = _actionRequestIds.putIfAbsent(requestKey, _requestId);
     try {
       switch (action) {
         case _NoticeCardAction.preview:
           _actionRequestIds.remove(requestKey);
-          await showNoticePreview(context, notice);
+          await _showOwnedDialog<void>(
+            barrierColor: Colors.black54,
+            builder: (_) => NoticePreviewDialog(notice: notice),
+          );
           return;
         case _NoticeCardAction.edit:
           _actionRequestIds.remove(requestKey);
           widget.onEdit?.call(notice.id);
           return;
         case _NoticeCardAction.publish:
-          final updated = await widget.repository.publish(
+          final updated = await requestedRepository.publish(
             notice,
             requestId: requestId,
             expectedVersion: notice.managementVersion,
           );
+          if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
           _refresh('Publicação agendada: ${updated.title}');
           return;
         case _NoticeCardAction.pause:
-          final updated = await widget.repository.changeStatus(
+          final updated = await requestedRepository.changeStatus(
             notice.id,
             requestId: requestId,
             status: NoticeStatus.paused,
             expectedVersion: notice.managementVersion,
           );
+          if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
           _refresh('Comunicação pausada: ${updated.title}');
           return;
         case _NoticeCardAction.resume:
-          final updated = await widget.repository.changeStatus(
+          final updated = await requestedRepository.changeStatus(
             notice.id,
             requestId: requestId,
             status: NoticeStatus.scheduled,
             expectedVersion: notice.managementVersion,
           );
+          if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
           _refresh('Reativação agendada: ${updated.title}');
           return;
         case _NoticeCardAction.cancel:
-          final updated = await widget.repository.changeStatus(
+          final updated = await requestedRepository.changeStatus(
             notice.id,
             requestId: requestId,
             status: NoticeStatus.cancelled,
             expectedVersion: notice.managementVersion,
             reason: cancellationReason,
           );
+          if (!_isCurrentCommand(generation, requestedRepository)) return;
           _actionRequestIds.remove(requestKey);
           _refresh('Comunicação inativada: ${updated.title}');
           return;
       }
     } on NoticeRepositoryException catch (error) {
-      _feedback(error.safeMessage);
+      if (_isCurrentCommand(generation, requestedRepository)) {
+        _feedback(error.safeMessage);
+      }
     } on Object {
-      _feedback(const NoticeUnexpectedException().safeMessage);
+      if (_isCurrentCommand(generation, requestedRepository)) {
+        _feedback(const NoticeUnexpectedException().safeMessage);
+      }
     } finally {
-      if (mounted) setState(() => _runningAction = false);
+      if (_isCurrentCommand(generation, requestedRepository)) {
+        setState(() => _runningAction = false);
+      }
     }
   }
+
+  bool _isCurrentCommand(int generation, NoticeRepository repository) =>
+      mounted && generation == _commandGeneration && identical(repository, widget.repository);
+
+  String _actionIntentKey(
+    _NoticeCardAction action,
+    PlatformNotice notice,
+    String? cancellationReason,
+  ) => [
+    notice.id,
+    action.name,
+    notice.managementVersion,
+    if (action == _NoticeCardAction.cancel) cancellationReason?.trim() ?? '',
+  ].join(':');
 
   void _refresh(String message) {
     _feedback(message);
@@ -779,8 +843,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
 
   Future<String?> _requestCancellationReason() async {
     final controller = TextEditingController();
-    final result = await showDialog<String>(
-      context: context,
+    final result = await _showOwnedDialog<String>(
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()?.scrim,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) {
@@ -836,8 +899,30 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     return result;
   }
 
+  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<T>(context: context, builder: builder, barrierColor: barrierColor);
+    final entry = (navigator, route as Route<dynamic>);
+    _ownedOverlays.add(entry);
+    try {
+      final result = await navigator.push<T>(route);
+      await route.completed;
+      return result;
+    } finally {
+      _ownedOverlays.remove(entry);
+    }
+  }
+
+  void _dismissOwnedOverlays() {
+    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
+      if (route.isActive) navigator.removeRoute(route);
+    }
+    _ownedOverlays.clear();
+  }
+
   Future<void> _load({required bool reset}) async {
     final generation = ++_loadGeneration;
+    final requestedRepository = widget.repository;
     if (reset) {
       _page = 1;
       _cursorHistory.clear();
@@ -851,8 +936,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       });
     }
     try {
-      final result = await widget.repository.fetchPage(_query);
-      if (!mounted || generation != _loadGeneration) return;
+      final result = await requestedRepository.fetchPage(_query);
+      if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
         _items = result.items;
         if (!_items.any((notice) => notice.id == _selectedPreviewId)) {
@@ -863,21 +948,21 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         _state = NoticeDirectoryViewState.content;
       });
     } on NoticeUnauthorizedException catch (error) {
-      if (!mounted || generation != _loadGeneration) return;
+      if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
         _items = const [];
         _errorMessage = error.safeMessage;
         _state = NoticeDirectoryViewState.forbidden;
       });
     } on NoticeRepositoryException catch (error) {
-      if (!mounted || generation != _loadGeneration) return;
+      if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
         _items = const [];
         _errorMessage = error.safeMessage;
         _state = NoticeDirectoryViewState.error;
       });
     } on Object {
-      if (!mounted || generation != _loadGeneration) return;
+      if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
         _items = const [];
         _errorMessage = const NoticeUnexpectedException().safeMessage;
@@ -885,6 +970,9 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       });
     }
   }
+
+  bool _isCurrentLoad(int generation, NoticeRepository repository) =>
+      mounted && generation == _loadGeneration && identical(repository, widget.repository);
 
   void _nextPage() {
     final nextId = _nextCursorId;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
@@ -5,6 +7,7 @@ import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_directory_page.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_popup_preview.dart';
+import 'package:coelo_superadmin/features/notices/presentation/notice_preview_dialog.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +34,184 @@ void main() {
     await tester.pump();
     expect(find.text('Aviso 2'), findsWidgets);
     expect(find.text('Aviso 1'), findsNothing);
+  });
+
+  testWidgets('repository swap clears tenant A before a late response', (tester) async {
+    final stalePage = Completer<NoticePage>();
+    final noticeA = _repository().create(_draft(91));
+    var loadsA = 0;
+    final repositoryA = _DeferredNoticeRepository((query) {
+      if (loadsA++ == 0) return Future.value(NoticePage(items: [noticeA]));
+      return stalePage.future;
+    });
+    final repositoryB = _DeferredNoticeRepository(
+      (_) => Future<NoticePage>.error(const NoticeUnauthorizedException()),
+    );
+
+    Widget app(NoticeRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(
+        body: NoticeDirectoryPage(
+          repository: repository,
+          canManageLifecycle: true,
+          onCreate: () {},
+          onEdit: (_) {},
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pumpAndSettle();
+    expect(find.text('Aviso 91'), findsWidgets);
+
+    await tester.enterText(find.byType(EditableText).first, 'Aviso');
+    await tester.pump(const Duration(milliseconds: 310));
+    expect(loadsA, 2);
+
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pumpAndSettle();
+    expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.text('Aviso 91'), findsNothing);
+    expect(find.byType(CoeloAdminListingToolbar), findsNothing);
+    expect(find.text('Nova comunicação'), findsNothing);
+
+    stalePage.complete(NoticePage(items: [noticeA.copyWith(title: 'Resposta tardia A')]));
+    await tester.pumpAndSettle();
+    expect(find.text('Resposta tardia A'), findsNothing);
+    expect(find.text('Sem permissão'), findsOneWidget);
+  });
+
+  testWidgets('late lifecycle command from tenant A cannot refresh tenant B', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 800);
+    addTearDown(tester.view.reset);
+    final pendingPublish = Completer<PlatformNotice>();
+    final noticeA = _repository().create(_draft(93));
+    final noticeB = _repository().create(_draft(94));
+    var loadsB = 0;
+    final repositoryA = _DeferredNoticeRepository(
+      (_) => Future.value(NoticePage(items: [noticeA])),
+      publishHandler: (_, {required requestId, required expectedVersion}) => pendingPublish.future,
+    );
+    final repositoryB = _DeferredNoticeRepository((_) async {
+      loadsB++;
+      return NoticePage(items: [noticeB]);
+    });
+
+    Widget app(NoticeRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true)),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Publicar').last);
+    await tester.pump();
+
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pumpAndSettle();
+    expect(find.text('Aviso 94'), findsWidgets);
+    expect(loadsB, 1);
+
+    pendingPublish.complete(noticeA.copyWith(status: NoticeStatus.active, managementVersion: 1));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Aviso 94'), findsWidgets);
+    expect(find.textContaining('Publicação agendada'), findsNothing);
+    expect(loadsB, 1);
+  });
+
+  testWidgets('repository swap dismisses tenant A preview overlay', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 800);
+    addTearDown(tester.view.reset);
+    final noticeA = _repository().create(_draft(95));
+    final repositoryA = _DeferredNoticeRepository(
+      (_) => Future.value(NoticePage(items: [noticeA])),
+    );
+    final repositoryB = _DeferredNoticeRepository(
+      (_) => Future<NoticePage>.error(const NoticeUnauthorizedException()),
+    );
+
+    Widget app(NoticeRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: Scaffold(
+        body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true),
+      ),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pré-visualizar popup').last);
+    await tester.pumpAndSettle();
+    expect(find.byType(NoticePreviewDialog), findsOneWidget);
+    expect(find.text('Aviso 95'), findsWidgets);
+
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pumpAndSettle();
+    expect(find.byType(NoticePreviewDialog), findsNothing);
+    expect(find.text('Aviso 95'), findsNothing);
+    expect(find.text('Sem permissão'), findsOneWidget);
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Ações da comunicação').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Inativar').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Inativar aviso'), findsWidgets);
+
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pumpAndSettle();
+    expect(find.text('Inativar aviso'), findsNothing);
+    expect(find.text('Sem permissão'), findsOneWidget);
+  });
+
+  testWidgets('cancellation request ids follow the normalized command payload', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 800);
+    addTearDown(tester.view.reset);
+    final notice = _repository().create(_draft(96));
+    final requestIds = <String>[];
+    final repository = _DeferredNoticeRepository(
+      (_) => Future.value(NoticePage(items: [notice])),
+      changeStatusHandler:
+          (_, {required requestId, required status, required expectedVersion, reason}) async {
+            requestIds.add(requestId);
+            throw const NoticeUnavailableException();
+          },
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    Future<void> cancelWith(String reason) async {
+      await tester.tap(find.byTooltip('Ações da comunicação').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Inativar').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('notice-inactivate-reason')), reason);
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('notice-inactivate-confirm')));
+      await tester.pumpAndSettle();
+    }
+
+    await cancelWith('Motivo original');
+    await cancelWith('Motivo alterado');
+    await cancelWith('  Motivo alterado  ');
+
+    expect(requestIds, hasLength(3));
+    expect(requestIds[1], isNot(requestIds[0]));
+    expect(requestIds[2], requestIds[1]);
   });
 
   testWidgets('uses the canonical large directory inset', (tester) async {
@@ -174,7 +355,7 @@ void main() {
 
   testWidgets('keeps Nova comunicação visible in empty and no-results states', (tester) async {
     final repository = _repository();
-    await _pumpDirectory(tester, repository: repository);
+    await _pumpDirectory(tester, repository: repository, onCreate: () {});
 
     expect(find.text('Nenhuma comunicação'), findsOneWidget);
     expect(find.text('Nova comunicação'), findsOneWidget);
@@ -189,7 +370,7 @@ void main() {
 
   testWidgets('keeps creation and retry actions when loading fails', (tester) async {
     final repository = _repository()..nextError = const NoticeUnexpectedException();
-    await _pumpDirectory(tester, repository: repository);
+    await _pumpDirectory(tester, repository: repository, onCreate: () {});
 
     expect(find.text('Não foi possível carregar'), findsOneWidget);
     expect(find.text('Nova comunicação'), findsOneWidget);
@@ -211,6 +392,21 @@ void main() {
     expect(find.byKey(const Key('notice-directory-content-inset')), findsOneWidget);
     expect(find.text('Todos'), findsNothing);
     expect(find.text('Nova comunicação'), findsNothing);
+  });
+
+  testWidgets('omits creation in empty and content states without a real callback', (tester) async {
+    final repository = _repository();
+    await _pumpDirectory(tester, repository: repository);
+
+    expect(find.text('Nenhuma comunicação'), findsOneWidget);
+    expect(find.text('Nova comunicação'), findsNothing);
+    expect(find.byType(CoeloAdminCreateAction), findsNothing);
+
+    final repositoryWithContent = _repository()..create(_draft(92));
+    await _pumpDirectory(tester, repository: repositoryWithContent);
+    expect(find.text('Aviso 92'), findsWidgets);
+    expect(find.text('Nova comunicação'), findsNothing);
+    expect(find.byType(CoeloAdminCreateAction), findsNothing);
   });
 }
 
@@ -262,3 +458,51 @@ NoticeDraft _draft(int index, {CommunicationType type = CommunicationType.notice
   audienceLabel: 'Todos',
   behavior: NoticeBehavior.dismissible,
 );
+
+final class _DeferredNoticeRepository implements NoticeRepository {
+  const _DeferredNoticeRepository(this._fetchPage, {this.publishHandler, this.changeStatusHandler});
+
+  final Future<NoticePage> Function(NoticeDirectoryQuery query) _fetchPage;
+  final Future<PlatformNotice> Function(
+    PlatformNotice notice, {
+    required String requestId,
+    required int expectedVersion,
+  })?
+  publishHandler;
+  final Future<PlatformNotice> Function(
+    String noticeId, {
+    required String requestId,
+    required NoticeStatus status,
+    required int expectedVersion,
+    String? reason,
+  })?
+  changeStatusHandler;
+
+  @override
+  Future<NoticePage> fetchPage(NoticeDirectoryQuery query) => _fetchPage(query);
+
+  @override
+  Future<PlatformNotice> publish(
+    PlatformNotice notice, {
+    required String requestId,
+    required int expectedVersion,
+  }) => publishHandler!(notice, requestId: requestId, expectedVersion: expectedVersion);
+
+  @override
+  Future<PlatformNotice> changeStatus(
+    String noticeId, {
+    required String requestId,
+    required NoticeStatus status,
+    required int expectedVersion,
+    String? reason,
+  }) => changeStatusHandler!(
+    noticeId,
+    requestId: requestId,
+    status: status,
+    expectedVersion: expectedVersion,
+    reason: reason,
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
