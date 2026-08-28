@@ -583,6 +583,48 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V2.10 Rotina diária — abertura — 2026-08-28 12:45 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V2 permanece 4/6 (66,67%). |
+| Tela e rota | Diretório de Rotina diária, Cards/Tabela e editor `/dev`. |
+| Baseline e índice | Instituições, `pattern.admin-directory`, `admin.interactive-card`, status expansível, filtros responsivos e transição estável. |
+| Inventário inicial | Diretório tipado, Cards/Tabela e edição já existem. Cards mostram nome/status/versão/origem/efetivo, mas não ações de duplicação nem criação de rotina a partir do modelo; o CTA genérico ainda diz `Criar item`. |
+| RED planejado | Exigir card de modelo com ação de duplicar e `Criar rotina por este modelo`, preservando abertura/edição e CTA tipado. Dados adicionais só serão acrescentados se o contrato atual não os expressar. |
+| Fora do recorte | Sem Supabase/backend; callbacks ausentes permanecem ocultos e fixtures `/dev` não anunciam persistência remota. |
+| Tempo usado | 1 h 24 min acumulados. |
+| Estimativa | 1–2 h para V2.10; 8 h 36 min restam na janela. |
+| Próximo item exato | RED no card de modelo exigindo ações de duplicação e criação por modelo, mantendo o card inteiro abrindo edição. |
+
+Percentuais: entrega V2 4/6 (66,67%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V2.10 Rotina diária — checkpoint local-green — 2026-08-28 12:56 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V2 = 5/6 (83,33%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Diretório de Rotina diária e editores `/dev/daily-routine`, `/dev/daily-routine/new?duplicateFrom=...` e `/dev/daily-routine/new?applicationFrom=...`. |
+| Arquivos alterados | `daily_routine_pages.dart`; `daily_routine_form_sections.dart`; router; testes de diretório e rotas; spec e rastreador. |
+| Correções | CTA tipado como `Criar modelo`; cards ricos preservam status, versão, origem e efetividade e agora oferecem `Duplicar modelo` e `Criar rotina por este modelo` somente quando há gestão/callback. Duplicação abre novo rascunho local pré-preenchido; criação por modelo abre aplicação local herdando versão e origem. |
+| Testes | REDs de callbacks/CTA e rotas reproduzidos. GREEN: 16/16 diretório+rotas; analyzer focado sem issues; validador visual e `git diff --check` verdes. |
+| Responsividade e acessibilidade | Cards ricos em 375/768/1024/1440 px com texto 200%, sem overflow; ações usam rótulos explícitos, ícones e alvos canônicos. Card inteiro continua abrindo edição e ações internas mantêm destinos próprios. |
+| Bloqueios | Produção continua sem mutações quando capability/callback não existem; nenhuma persistência remota ou sucesso falso foi introduzido. Inspeção/aceite visual humano pendentes. Assessments intocado. |
+| Tempo usado | 0 h 11 min no item; 1 h 35 min acumulados. |
+| Estimativa restante | 8 h 25 min da janela; V2.11 estimada em 1–2 h. |
+| Próximo item exato | V2.11 Acompanhamento do aluno: confirmar rota/superfície local existente, escrever RED para visibilidade, navegação e exemplos locais. |
+| Conhecimento | `no-op`: o contrato visual aprovado foi aplicado sem nova regra durável. |
+
+Percentuais: entrega V2 5/6 (83,33%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

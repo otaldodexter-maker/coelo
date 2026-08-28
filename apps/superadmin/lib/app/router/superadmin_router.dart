@@ -1168,6 +1168,8 @@ GoRouter createSuperadminRouter({
               entryType: state.extra is RoutineEntryKind
                   ? state.extra! as RoutineEntryKind
                   : RoutineEntryKind.model,
+              duplicateFromModelId: state.uri.queryParameters['duplicateFrom'],
+              applicationFromModelId: state.uri.queryParameters['applicationFrom'],
             ),
           ),
           GoRoute(
@@ -2203,6 +2205,15 @@ GoRouter createSuperadminRouter({
                 pathParameters: {'modelId': entry.id},
                 queryParameters: {'kind': entry.kind.name},
               ),
+              onDuplicateModel: (entry) => context.goNamed(
+                SuperadminRoutes.devDailyRoutineCreateName,
+                queryParameters: {'duplicateFrom': entry.id},
+              ),
+              onCreateFromModel: (entry) => context.goNamed(
+                SuperadminRoutes.devDailyRoutineCreateName,
+                queryParameters: {'applicationFrom': entry.id},
+                extra: RoutineEntryKind.application,
+              ),
             ),
           ),
           GoRoute(
@@ -2215,6 +2226,8 @@ GoRouter createSuperadminRouter({
               entryType: state.extra is RoutineEntryKind
                   ? state.extra! as RoutineEntryKind
                   : RoutineEntryKind.model,
+              duplicateFromModelId: state.uri.queryParameters['duplicateFrom'],
+              applicationFromModelId: state.uri.queryParameters['applicationFrom'],
             ),
           ),
           GoRoute(

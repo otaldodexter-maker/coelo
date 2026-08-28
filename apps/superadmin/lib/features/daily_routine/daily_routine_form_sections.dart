@@ -19,6 +19,8 @@ final class DailyRoutineWizardPage extends StatefulWidget {
     required this.logout,
     this.entryId,
     this.entryKind = RoutineEntryKind.model,
+    this.duplicateFromModelId,
+    this.applicationFromModelId,
     this.activityController,
     super.key,
   });
@@ -27,6 +29,8 @@ final class DailyRoutineWizardPage extends StatefulWidget {
   final LogoutAction logout;
   final String? entryId;
   final RoutineEntryKind entryKind;
+  final String? duplicateFromModelId;
+  final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
 
   @override
@@ -64,7 +68,9 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.repository != widget.repository ||
         oldWidget.entryId != widget.entryId ||
-        oldWidget.entryKind != widget.entryKind) {
+        oldWidget.entryKind != widget.entryKind ||
+        oldWidget.duplicateFromModelId != widget.duplicateFromModelId ||
+        oldWidget.applicationFromModelId != widget.applicationFromModelId) {
       _load();
     }
   }
@@ -117,29 +123,63 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     }
   }
 
-  Future<Object> _newEntry() async => switch (widget.entryKind) {
-    RoutineEntryKind.model => () async {
-      final capability = await widget.repository.fetchPage(
-        const RoutineDirectoryQuery(kind: RoutineEntryKind.model, pageSize: 1),
-      );
+  Future<Object> _newEntry() async {
+    final duplicateId = widget.duplicateFromModelId;
+    if (duplicateId != null) {
+      final source = await widget.repository.fetchModel(duplicateId);
       return RoutineModel(
         id: '',
-        name: '',
-        description: '',
+        name: '${source.name} (cópia)',
+        description: source.description,
         version: 1,
         status: RoutineModelStatus.draft,
-        sections: [],
+        sections: source.sections,
         expectedVersion: 0,
-        canManage: capability.canManage,
+        originScope: source.originScope,
+        institutionId: source.institutionId,
+        originUnitId: source.originUnitId,
+        canManage: source.canManage,
       );
-    }(),
-    RoutineEntryKind.application => throw const FormatException(
-      'Crie uma rotina aplicada a partir de um contexto autorizado.',
-    ),
-    RoutineEntryKind.launch => throw const FormatException(
-      'Selecione uma rotina aplicada autorizada para criar o lancamento.',
-    ),
-  };
+    }
+    final applicationModelId = widget.applicationFromModelId;
+    if (applicationModelId != null) {
+      final source = await widget.repository.fetchModel(applicationModelId);
+      return RoutineApplication(
+        id: '',
+        modelVersionId: '${source.id}:v${source.version}',
+        institutionId: source.institutionId ?? '',
+        unitId: source.originUnitId,
+        status: RoutineApplicationStatus.draft,
+        inheritanceMode: RoutineInheritanceMode.inherited,
+        effectiveVersion: source.version,
+        expectedVersion: 0,
+        canManage: source.canManage,
+      );
+    }
+    return switch (widget.entryKind) {
+      RoutineEntryKind.model => () async {
+        final capability = await widget.repository.fetchPage(
+          const RoutineDirectoryQuery(kind: RoutineEntryKind.model, pageSize: 1),
+        );
+        return RoutineModel(
+          id: '',
+          name: '',
+          description: '',
+          version: 1,
+          status: RoutineModelStatus.draft,
+          sections: [],
+          expectedVersion: 0,
+          canManage: capability.canManage,
+        );
+      }(),
+      RoutineEntryKind.application => throw const FormatException(
+        'Crie uma rotina aplicada a partir de um contexto autorizado.',
+      ),
+      RoutineEntryKind.launch => throw const FormatException(
+        'Selecione uma rotina aplicada autorizada para criar o lancamento.',
+      ),
+    };
+  }
 
   void _bind(Object entry) {
     if (entry case final RoutineModel model) {

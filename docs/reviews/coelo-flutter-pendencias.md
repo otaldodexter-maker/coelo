@@ -2028,6 +2028,48 @@ os GREENs locais.
 | Próximo item exato | V2.10 Rotina diária: RED de cards ricos, duplicação ou criação por modelo conforme o primeiro gap confirmado. |
 | Conhecimento capturado | `no-op`: contratos já aprovados foram aplicados sem nova regra durável. |
 
+## 16.35. V2.10 Rotina diária — abertura — 2026-08-28
+
+**Entrega atual V2:** 66,67% (4/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Diretório e editor de Rotina diária, produção e `/dev`. |
+| Inventário | Cards/Tabela e deep links tipados existem; card atual mostra status, versão, origem e efetivo. Não há duplicação, criação por modelo ou CTA tipado. |
+| Testes planejados | RED do card de modelo com duplicação e criação por modelo, sem perder abertura do card; matriz responsiva e rotas `/dev` depois do GREEN. |
+| Bloqueios | Nenhum local; backend e Assessments fora do recorte. |
+| Tempo realmente usado | 1 h 24 min acumulados, às 12:45 BRT. |
+| Estimativa restante | 1–2 h para V2.10; 8 h 36 min da janela. |
+| Próximo item exato | RED das duas ações no primeiro modelo. |
+| Conhecimento capturado | `no-op`: contrato aprovado no programa. |
+
+## 16.36. V2.10 Rotina diária — local-green — 2026-08-28
+
+**Entrega atual V2:** 83,33% (5/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Diretório e editores locais de Rotina diária em `/dev/daily-routine`. |
+| Arquivos alterados | `daily_routine_pages.dart`; `daily_routine_form_sections.dart`; `superadmin_router.dart`; testes de diretório/rotas; spec e tracker. |
+| Correções realizadas | CTA agora é `Criar modelo`; cards mantêm status, versão, origem e efetividade e mostram ações gerenciáveis de duplicação e criação de rotina por modelo. Rotas `/dev` criam rascunho duplicado e aplicação herdada do modelo com fixture local compartilhada. Produção continua sem ação quando a capability não foi fornecida. |
+| Testes e resultados | REDs reproduzidos; GREEN 16/16 diretório+rotas; analyzer focado, validador visual e diff-check verdes. |
+| Inspeções responsivas | Card rico em 375/768/1024/1440 com texto 200%; ações quebram linha sem overflow e preservam rótulo/ícone/alvo. |
+| Bloqueios | Persistência/backend fora do recorte; nenhum sucesso remoto simulado. Aceite visual humano pendente. Assessments intocado. |
+| Tempo realmente usado | 0 h 11 min; 1 h 35 min acumulados, às 12:56 BRT. |
+| Estimativa restante | 8 h 25 min da janela; V2.11 = 1–2 h. |
+| Próximo item exato | V2.11 Acompanhamento do aluno: inventário da rota visível e RED de navegação com exemplos locais. |
+| Conhecimento capturado | `no-op`: contrato já aprovado foi aplicado sem nova regra durável. |
+
 ## 17. Histórico
 
 

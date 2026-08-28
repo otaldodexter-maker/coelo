@@ -17,6 +17,8 @@ void main() {
     double textScale = 1,
     ValueChanged<RoutineDirectoryItem>? onEdit,
     ValueChanged<RoutineEntryKind>? onCreateEntry,
+    ValueChanged<RoutineDirectoryItem>? onDuplicateModel,
+    ValueChanged<RoutineDirectoryItem>? onCreateFromModel,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = Size(width, 1200);
@@ -34,6 +36,8 @@ void main() {
           logout: unavailableSuperadminLogout,
           onEdit: onEdit,
           onCreateEntry: onCreateEntry,
+          onDuplicateModel: onDuplicateModel,
+          onCreateFromModel: onCreateFromModel,
         ),
       ),
     );
@@ -101,6 +105,44 @@ void main() {
 
     expect(opened, isA<RoutineDirectoryItem>());
     expect((opened! as RoutineDirectoryItem).kind, RoutineEntryKind.application);
+  });
+
+  testWidgets('model cards expose local duplication and routine creation actions', (tester) async {
+    RoutineDirectoryItem? duplicated;
+    RoutineDirectoryItem? applied;
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async => RoutineDirectoryPage(
+          items: const [
+            RoutineDirectoryItem(
+              id: 'model-1',
+              kind: RoutineEntryKind.model,
+              name: 'Chegada acolhedora',
+              status: 'active',
+              version: 3,
+              originLabel: 'Instituto Horizonte',
+            ),
+          ],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalCount: 1,
+          canManage: true,
+        ),
+      ),
+      onCreateEntry: (_) {},
+      onDuplicateModel: (item) => duplicated = item,
+      onCreateFromModel: (item) => applied = item,
+    );
+
+    expect(find.text('Criar modelo'), findsOneWidget);
+    expect(find.text('Duplicar modelo'), findsOneWidget);
+    expect(find.text('Criar rotina por este modelo'), findsOneWidget);
+    await tester.tap(find.text('Duplicar modelo'));
+    await tester.tap(find.text('Criar rotina por este modelo'));
+
+    expect(duplicated?.id, 'model-1');
+    expect(applied?.id, 'model-1');
   });
   testWidgets('unauthorized page is fail closed and never exposes stale entries', (tester) async {
     await pumpPage(
@@ -348,6 +390,43 @@ void main() {
       expect(tester.takeException(), isNull, reason: 'width=$width textScale=2');
       expect(find.byKey(const Key('daily-routine-type-tabs')), findsOneWidget);
       expect(find.byKey(const Key('daily-routine-empty')), findsOneWidget);
+    }
+  });
+
+  testWidgets('rich model cards survive the responsive 200 percent matrix', (tester) async {
+    for (final width in const [375.0, 768.0, 1024.0, 1440.0]) {
+      await pumpPage(
+        tester,
+        FakeRoutineRepository(
+          pageLoader: (query) async => RoutineDirectoryPage(
+            items: const [
+              RoutineDirectoryItem(
+                id: 'model-responsive',
+                kind: RoutineEntryKind.model,
+                name: 'Rotina de acolhimento e chegada',
+                status: 'active',
+                version: 4,
+                originLabel: 'Instituto Horizonte',
+                effectiveLabel: 'Unidade Centro',
+              ),
+            ],
+            page: query.page,
+            pageSize: query.pageSize,
+            totalCount: 1,
+            canManage: true,
+          ),
+        ),
+        width: width,
+        textScale: 2,
+        onDuplicateModel: (_) {},
+        onCreateFromModel: (_) {},
+      );
+
+      expect(tester.takeException(), isNull, reason: 'width=$width textScale=2');
+      expect(find.text('Origem: Instituto Horizonte'), findsOneWidget);
+      expect(find.text('Efetivo: Unidade Centro'), findsOneWidget);
+      expect(find.text('Duplicar modelo'), findsOneWidget);
+      expect(find.text('Criar rotina por este modelo'), findsOneWidget);
     }
   });
 }

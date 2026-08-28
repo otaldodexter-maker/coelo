@@ -26,6 +26,8 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     this.onCreate,
     this.onCreateEntry,
     this.onEdit,
+    this.onDuplicateModel,
+    this.onCreateFromModel,
     this.onImport,
     this.onExport,
     this.activityController,
@@ -40,6 +42,8 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
   final VoidCallback? onCreate;
   final ValueChanged<RoutineEntryKind>? onCreateEntry;
   final ValueChanged<RoutineDirectoryItem>? onEdit;
+  final ValueChanged<RoutineDirectoryItem>? onDuplicateModel;
+  final ValueChanged<RoutineDirectoryItem>? onCreateFromModel;
   final VoidCallback? onImport;
   final VoidCallback? onExport;
   final SuperadminActivityController? activityController;
@@ -348,6 +352,29 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                             if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
                             if (item.effectiveLabel != null)
                               Text('Efetivo: ${item.effectiveLabel}'),
+                            if (_canManage && item.kind == RoutineEntryKind.model) ...[
+                              const SizedBox(height: CoeloSpacing.space3),
+                              Wrap(
+                                spacing: CoeloSpacing.space2,
+                                runSpacing: CoeloSpacing.space2,
+                                children: [
+                                  if (widget.onDuplicateModel != null)
+                                    TextButton.icon(
+                                      key: Key('daily-routine-duplicate-${item.id}'),
+                                      onPressed: () => widget.onDuplicateModel!(item),
+                                      icon: const Icon(Icons.content_copy_rounded),
+                                      label: const Text('Duplicar modelo'),
+                                    ),
+                                  if (widget.onCreateFromModel != null)
+                                    TextButton.icon(
+                                      key: Key('daily-routine-apply-${item.id}'),
+                                      onPressed: () => widget.onCreateFromModel!(item),
+                                      icon: const Icon(Icons.playlist_add_rounded),
+                                      label: const Text('Criar rotina por este modelo'),
+                                    ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -461,7 +488,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
 
   Widget _createAction({required Key key}) => CoeloAdminCreateAction(
     key: key,
-    label: 'Criar item',
+    label: 'Criar modelo',
     onPressed: _requestCreate,
     icon: Icons.add_task_rounded,
     variant: _display == _RoutineDisplay.cards
@@ -517,14 +544,18 @@ class DailyRoutineEditorPage extends StatefulWidget {
     required this.logout,
     this.modelId,
     this.entryType = RoutineEntryKind.model,
+    this.duplicateFromModelId,
+    this.applicationFromModelId,
     this.activityController,
     super.key,
-  });
+  }) : assert(duplicateFromModelId == null || applicationFromModelId == null);
 
   final RoutineRepository repository;
   final LogoutAction logout;
   final String? modelId;
   final RoutineEntryKind entryType;
+  final String? duplicateFromModelId;
+  final String? applicationFromModelId;
   final SuperadminActivityController? activityController;
 
   @override
@@ -538,6 +569,8 @@ class _DailyRoutineEditorPageState extends State<DailyRoutineEditorPage> {
     logout: widget.logout,
     entryId: widget.modelId,
     entryKind: widget.entryType,
+    duplicateFromModelId: widget.duplicateFromModelId,
+    applicationFromModelId: widget.applicationFromModelId,
     activityController: widget.activityController,
   );
 }

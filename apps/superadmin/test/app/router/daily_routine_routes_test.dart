@@ -60,6 +60,46 @@ void main() {
     expect(repository.calls, isEmpty);
   });
 
+  testWidgets('development model actions open seeded duplicate and application editors', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+      allowDevelopmentPreview: true,
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    router.go('/dev/daily-routine');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('daily-routine-duplicate-model-1')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('daily-routine-model-editor')), findsOneWidget);
+    final duplicateName = tester.widget<TextField>(
+      find.descendant(
+        of: find.byKey(const Key('daily-routine-name')),
+        matching: find.byType(TextField),
+      ),
+    );
+    expect(duplicateName.controller?.text, 'Rotina diária (cópia)');
+
+    router.go('/dev/daily-routine');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('daily-routine-apply-model-1')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('daily-routine-application-editor')), findsOneWidget);
+    final application = tester.widget<DailyRoutineEditorPage>(find.byType(DailyRoutineEditorPage));
+    expect(application.entryType, RoutineEntryKind.application);
+    expect(application.applicationFromModelId, 'model-1');
+  });
+
   testWidgets('production routes preserve the injected repository', (tester) async {
     final session = SuperadminSession()..signIn();
     final repository = _TrackingRoutineRepository();
