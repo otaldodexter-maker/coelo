@@ -62,6 +62,69 @@ void main() {
 
     expect(viewModel.query.search, isEmpty);
   });
+
+  test('clears the inactive collection when switching to Principal', () async {
+    final repository = _ImmediateRepository();
+    final viewModel = AccessProfileViewModel(repository);
+    addTearDown(viewModel.dispose);
+    await viewModel.load();
+    expect(viewModel.page.items, isNotEmpty);
+
+    await viewModel.setDomain(AccessProfileDomain.principal);
+
+    expect(viewModel.page.items, isEmpty);
+    expect(viewModel.capabilities, isNotEmpty);
+  });
+
+  test('unauthorized and dispose clear every sensitive snapshot without notifying', () async {
+    final repository = _ImmediateRepository();
+    final viewModel = AccessProfileViewModel(repository);
+    var notifications = 0;
+    viewModel.addListener(() => notifications += 1);
+    await viewModel.load();
+    await viewModel.setSearch('perfil sensível');
+    repository.unauthorized = true;
+
+    await viewModel.load();
+
+    expect(viewModel.state, AccessProfileLoadState.unauthorized);
+    expect(viewModel.page.items, isEmpty);
+    expect(viewModel.capabilities, isEmpty);
+    expect(viewModel.query, const AccessProfileQuery());
+    final beforeDispose = notifications;
+    viewModel.dispose();
+    expect(viewModel.page.items, isEmpty);
+    expect(viewModel.capabilities, isEmpty);
+    expect(viewModel.query, const AccessProfileQuery());
+    expect(notifications, beforeDispose);
+  });
+}
+
+final class _ImmediateRepository implements AccessProfileRepository {
+  bool unauthorized = false;
+
+  @override
+  bool get isDemo => false;
+
+  @override
+  Future<AccessProfilePage> fetchProfiles(AccessProfileQuery query) async {
+    if (unauthorized) throw const AccessProfileUnauthorizedException();
+    return const AccessProfilePage(items: [_platformProfile], totalCount: 1, page: 1, pageSize: 11);
+  }
+
+  @override
+  Future<List<PrincipalCapability>> fetchPrincipalCapabilities() async => const [
+    PrincipalCapability(
+      id: 'messages',
+      code: 'messages.read',
+      name: 'Ver comunicados',
+      description: 'Consulta autorizada.',
+      contextCount: 1,
+    ),
+  ];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _DelayedRepository implements AccessProfileRepository {
