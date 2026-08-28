@@ -2279,6 +2279,48 @@ os GREENs locais.
 | Próximo item exato | V3.16 Medicação: inventário da família `/dev/health-care/medication-plans` e primeiro RED. |
 | Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
 
+## 16.47. V3.16 Medicação — diretório, criação, detalhe e edição — abertura — 2026-08-28
+
+**Entrega atual V3:** 57,14% (4/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Medicação em `/dev/health-care/medication-plans`, lista/criação/detalhe/edição. |
+| Baseline consultado | Diretório Instituições, Cards/Tabela e wizard/rodapé canônicos. |
+| Testes planejados | RED do primeiro elo morto ou retorno instável na cadeia local. |
+| Bloqueios | Backend/Supabase, datas/espaçamento V3.17 e Assessments fora do recorte. |
+| Tempo realmente usado | 2 h 17 min acumulados, às 13:38 BRT. |
+| Estimativa restante | 1–2 h para V3.16; 7 h 43 min da janela. |
+| Próximo item exato | Inventário das rotas, repository dev, cards/linhas e callbacks. |
+| Conhecimento capturado | Pendente; não criar memória sem regra durável aprovada. |
+
+## 16.48. V3.16 Medicação — diretório, criação, detalhe e edição — local-green — 2026-08-28
+
+**Entrega atual V3:** 71,43% (5/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Medicação `/dev/health-care/medication-plans`: lista/criação/edição e deep link de detalhe compatível. |
+| Arquivos alterados | Router; teste integral de Health Care; spec e tracker. |
+| Correções realizadas | Card abre edição diretamente e não retorna à lista pelo redirect intermediário. Fixture local prova criação, reabertura, edição e versionamento; repository produtivo segue sem chamadas. |
+| Testes e resultados | RED do clique real; GREEN 37/37; analyzer focado e validador visual verdes. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200% pela matriz canônica; card/linha, wizard e rodapé preservados. |
+| Bloqueios | Goldens de Health Care já comparados no item anterior e não atualizados; backend/upload/E2E pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 01 min; 2 h 18 min acumulados, às 13:39 BRT. |
+| Estimativa restante | 7 h 42 min da janela; V3.17 = 1–2 h. |
+| Próximo item exato | V3.17 Medicação: RED de datas e espaçamento do wizard. |
+| Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
+
 ## 17. Histórico
 
 | Data | Mudança |

@@ -251,7 +251,7 @@ void main() {
     expect(find.textContaining('Casa'), findsNothing);
     expect(find.text('Não foi possível carregar'), findsNothing);
 
-    router.go('/dev/health-care/medication-plans/${saved.items.single.id}');
+    await tester.tap(find.text('Ibuprofeno').first);
     await tester.pumpAndSettle();
 
     expect(

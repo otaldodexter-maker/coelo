@@ -831,6 +831,47 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.16 Medicação — diretório, criação, detalhe e edição — abertura — 2026-08-28 13:38 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V3 permanece 4/7 (57,14%). |
+| Tela e rota | Família `/dev/health-care/medication-plans`, incluindo lista, criação, detalhe e edição local. |
+| Baseline e índice | Instituições/diretório, Cards/Tabela e wizard/rodapé canônicos; datas e espaçamento ficam para V3.17. |
+| RED planejado | Exercitar a cadeia de rotas e callbacks e registrar o primeiro elo morto ou retorno instável. |
+| Fora do recorte | Sem backend/Supabase, upload/download real, ajuste de datas do V3.17 ou Assessments. |
+| Tempo usado | 2 h 17 min acumulados. |
+| Estimativa | 1–2 h para V3.16; 7 h 43 min restam na janela. |
+| Próximo item exato | Inventariar rotas, repository dev, cards/linhas e callbacks de Medicação; então escrever o RED mínimo. |
+
+Percentuais: entrega V3 4/7 (57,14%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.16 Medicação — diretório, criação, detalhe e edição — checkpoint local-green — 2026-08-28 13:39 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V3 = 5/7 (71,43%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Diretório/criação `/dev/health-care/medication-plans`; card abre `/dev/health-care/medication-plans/:medicationId/edit`; deep link de detalhe continua compatível. |
+| Arquivos alterados | `superadmin_router.dart`; `health_care_routes_test.dart`; spec e rastreador. |
+| Correções | O card deixou de depender do redirect detalhe → edição e abre a edição local diretamente. Criação, gravação em fixture local, retorno ao diretório, reabertura, edição e nova versão permanecem demonstráveis sem chamar o repository produtivo. |
+| Testes | RED reproduziu retorno indevido à lista ao clicar no medicamento. GREEN: 37/37 testes de rotas, diretório, contrato de UI, opções externas e repositories dev; analyzer focado, validador visual e diff-check verdes. |
+| Responsividade e acessibilidade | Matriz de criação existente cobre 375/768/1024/1440 com texto 200%; card/linha mantêm semântica e CTA canônicos. O teste integral agora usa clique real no medicamento, seguido de edição e save. |
+| Goldens e bloqueios | Comparação imediatamente anterior já incluiu diretório/formulário de Medicação e permaneceu divergente contra referências pré-shell; nenhum código visual mudou neste item e nenhum golden foi atualizado. Backend, upload e E2E seguem fora do recorte; Assessments intocado. |
+| Tempo usado | 0 h 01 min no item; 2 h 18 min acumulados. |
+| Estimativa restante | 7 h 42 min da janela; V3.17 estimada em 1–2 h. |
+| Próximo item exato | V3.17 Medicação — datas e espaçamento do wizard: consultar os padrões de data/rodapé e escrever RED da primeira divergência. |
+| Conhecimento | `no-op`: correção de composição local, sem nova regra durável. |
+
+Percentuais: entrega V3 5/7 (71,43%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

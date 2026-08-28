@@ -2468,8 +2468,8 @@ GoRouter createSuperadminRouter({
               controller: HealthCareController(medicationPlanDirectoryPreviewRepository),
               logout: _previewLogout,
               onCreate: () => context.goNamed(SuperadminRoutes.devHealthMedicationPlanCreateName),
-              onPlanSelected: (medicationId) => context.pushNamed(
-                SuperadminRoutes.devHealthMedicationPlanDetailName,
+              onPlanSelected: (medicationId) => context.goNamed(
+                SuperadminRoutes.devHealthMedicationPlanEditName,
                 pathParameters: {'medicationId': medicationId},
               ),
             ),
