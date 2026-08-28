@@ -3,7 +3,7 @@ title: "Pendências Coelo — Supabase por tela e ação"
 source: "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; decisions/0020-backend-authorization-application-security.md; specs aprovadas por dominio; auditoria consolidada em 2026-08-26"
 status: "living"
 generated_at: "2026-08-26"
-updated_at: "2026-08-27"
+updated_at: "2026-08-28"
 action_count: 207
 family_count: 37
 ---
@@ -3406,3 +3406,41 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 4 h 30 min do orçamento adicional.
   **Tempo restante:** aproximadamente 5 h 30 min. ETA do recorte principal
   permanece 8–17 dias focados; backlog integral não calculável.
+
+### Checkpoint seguro 43 — Instituições: EDIT CORE v2 ROOT+ADDRESS
+
+- **Lote/ação tratada:** primeira fatia local de `institutions.edit`, limitada
+  à raiz da Instituição e ao endereço. A spec canônica
+  `042-superadmin-internal-institution-edit-core-v2.md` tem SHA-256
+  `273578B535516638FC7C8B339C9AB80F05C361C2C9802B0859B99763553A0FC0`.
+  O slice não promove a ação inteira nem a tela.
+- **Migration/teste:** a migration forward-only
+  `20260828000500_superadmin_internal_institution_edit_core.sql`, canônica e
+  mirror, tem SHA-256
+  `87996FEE97069C5B9B1C7A687E9A8CECC6C9A69A97029641A26357A7F7ACBD59`.
+  O pgTAP `superadmin_internal_institution_edit_core_test.sql` tem plano 47 e
+  SHA-256
+  `8167B71B80C529B65409AC72A8CCD6CE8A21D516AC1E89ADEF5355CC74573A4A`.
+  O manifesto terminou com 109 migrations canônicas e 109 mirrors idênticos.
+- **Provas locais:** o replay isolado executou 47 testes EDIT CORE e todos os
+  47 passaram. As regressões Auth 29/29, detalhe 26/26 e listagem/filtros 35/35
+  também passaram: 137 testes executados no conjunto e todos os 137 verdes.
+  Persistência na raiz/endereço e reload pelo detalhe v2 foram observados.
+- **Concorrência/idempotência:** a corrida real com requests distintos produziu
+  exatamente um sucesso e uma resposta `concurrent`; a corrida com request
+  duplicado produziu exatamente uma mutação e um replay. Receipt privado,
+  manifesto/hash, correlação, versões e auditoria 1:1 foram exercitados.
+  Falha de receipt ou append de auditoria aborta a operação (`fail-closed`).
+- **Ambiente/estado:** o teardown terminou sem container, volume, rede ou
+  diretório Docker residual. Houve zero mutação remota, deploy, Flutter ou E2E;
+  portanto o máximo comprovado é `local-green`, nunca `remote-green` ou `done`.
+  O progresso geral de produto/E2E permanece 0/207 ações verificadas.
+- **Fora de escopo/bloqueado:** contacts, criação/ativação, plano, branding,
+  representantes/admins, status, domínio e documento. Contacts exigem um
+  protocolo comum e versionado com os demais writers antes de entrar neste
+  comando; não se deve contornar a concorrência reescrevendo o fluxo vigente.
+- **Tempo adicional:** aproximadamente 7 h 30 min de um orçamento de cerca de
+  10 h; restante aproximado de 2 h 30 min. São referências operacionais, não
+  medição exata nem ETA do backlog integral.
+- **Gate de conhecimento:** `no-op`. Nenhuma regra durável nova foi derivada
+  para `docs/knowledge`; a fonte canônica permanece a spec 042.

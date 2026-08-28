@@ -3,7 +3,7 @@ title: "Pendências Coelo — Flutter integrado ao Supabase"
 source: "AGENTS.md; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/2026-08-25-coelo-supabase-screen-integration.md; Git HEAD 4937389e2d60e5266faed6d2449cb7c47523d9a4"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-27"
+updated_at: "2026-08-28"
 action_count: 202
 flutter_action_count: 207
 family_count: 37
@@ -865,6 +865,7 @@ reexecutada se código, schema, policy, configuração ou ambiente mudou.
 | 2026-08-26 17:04–17:05 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, reautorização pós-complete | Terceira autorização foi inserida após conclusão e antes da signed URL; vínculo revogado não chega ao Storage. Pós-sucesso 4/4, Deno 37/44, `deno check` GREEN. Os três rastreadores foram sincronizados. | Gate local concluído; 7 REDs permanecem, ação integrada `blocked-supabase`, produção `Unavailable`, zero remoto mutável e zero E2E. Próximo gate: worker-only delegation. | recorte 6/7; ETA restante 2 h 45 min |
 | 2026-08-26 17:05–17:10 BRT | Flutter + Supabase + Integrador | Unidades — `units.export`, delegação worker-only | Segredo interno dedicado protege hub→worker; JWT direto recebe 403 antes de RPC. Unit-export 41/47, import hub 22/23, Flutter 45/45; README registra configuração coordenada. Os três rastreadores foram sincronizados. | Pacote principal local 7/7 concluído; ação integrada continua `blocked-supabase`, produção `Unavailable`, segredo/deploy remoto não autorizados, zero E2E. Próximo seguro: decidir grants/retention/cleanup antes de extensão. | recorte 7/7; ETA do pacote principal 0 min |
 | 2026-08-26 17:10–17:12 BRT | Integrador | Encerramento e handoff | Recorte 100,00% (7/7), restante 0,00% (0/7); backlog integrado 0,00% (0/207), restante 100,00% (207/207). Handoff nominal enviado à tarefa Final Higenização. | Tempo mensurável 28 min desde o marcador 16:44; inventário anterior não calculável com precisão. Nenhuma ação integrada foi promovida; extensões exigem decisão/migration/configuração ou autorização remota. | pacote principal encerrado; residual local 6–15 h + remoto 6–10 h |
+| 2026-08-28 | Supabase + Integrador | Instituições — Checkpoint seguro 43, `institutions.edit` ROOT+ADDRESS | Backend local: spec 042 SHA-256 `273578B5…`, migration canônica/mirror `20260828000500` SHA-256 `87996FEE…`, pgTAP SHA-256 `8167B71B…` plano 47. Replay 47/47 e regressões Auth 29/29 + detalhe 26/26 + listagem/filtros 35/35 totalizaram 137 testes, todos verdes. Corridas reais provaram 1 sucesso/1 concurrent e request duplicado com 1 mutação/1 replay; persistência/detail reload, receipt, idempotência e auditoria fail-closed foram exercitados. Mirror 109/109 e teardown sem resíduos Docker. | Máximo `local-green`: zero remoto, Flutter ou E2E; integrado nunca concluído e produto permanece 0/207. Contacts, create/activation, plan, branding, reps/admins, status/domain/document ficam fora; contact exige protocolo comum/versionado. Knowledge `no-op`, fonte canônica spec 042. | aproximadamente 7 h 30 min de cerca de 10 h; restante aproximado 2 h 30 min, sem precisão falsa |
 | contínuo | Integrador | Auth — `auth.mfa` | 15/15 testes do pacote `coelo_auth` verdes confirmam o contrato booleano atual; ele não carrega evento, AAL atual/próximo nem downgrade. Owner obrigatório e vários gates backend AAL2 já existem; OQ-006 mantém os demais perfis privilegiados em decisão aberta. | Especificar step-up Flutter para o Owner sem esperar OQ-006; decidir demais papéis separadamente e provar AAL1 negado/AAL2 permitido por ação. | Owner 1–2 d + E2E 1 d; decisão dos demais 0,5 d |
 | contínuo | Integrador | `units.import` e `units.export` | Cadeia local mapeada e endurecida por partes: widgets → gateway → RPCs/Edges → RLS/Storage. O auth scope produtivo continua injetando gateway Unavailable; há zero E2E. | Não compor até fechar decisões e REDs restantes. Depois: migration lifecycle autorizada, regressão local, staging/remoto, tenant A/B, sessão/vínculo revogado, arquivos reais, URL/expiração, reload e cleanup. | 11–18 h local + 6–10 h remoto; Completa 3–5 d |
 | contínuo | Final Higenização | Git/worktrees | Ciente dos ownerships; nenhum stage/commit global autorizado pelos owners. | Preservar paths ativos e receber handoff nominal antes de consolidar. | conforme handoff |
@@ -884,6 +885,12 @@ Somente depois executar regressão local fresca, staging/remoto autorizado e E2E
 Flutter–Supabase com tenant A/B, sessão/vínculo revogado, arquivos reais,
 expiração e reload. Migration, SQL mutante e deploy remoto exigem autorização
 explícita separada.
+
+Para Instituições, o Checkpoint seguro 43 prova somente o backend local da fatia
+ROOT+ADDRESS de `institutions.edit`: 47/47 no pacote, 137/137 com regressões,
+concorrência real e reload persistido. Não houve Flutter, remoto ou E2E; o
+tracker integrado permanece aberto, sem ação promovida, e a métrica geral segue
+0/207. Contacts só pode avançar após protocolo comum e versionado entre writers.
 
 **Gate estrutural deste checkpoint:** os três rastreadores possuem os mesmos 207
 `action_id`; cada rastreador contém 207 linhas únicas, zero duplicadas, e o
@@ -971,6 +978,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 
 | Data | Mudança |
 |---|---|
+| 2026-08-28 | Checkpoint seguro 43 registrou `institutions.edit` ROOT+ADDRESS somente no backend local: spec 042, migration/mirror `20260828000500`, pgTAP plano 47, replay 47/47, regressões totalizando 137/137, concorrência real, persistência/detail reload, receipt/idempotência e auditoria fail-closed. Manifesto 109/109 e teardown sem resíduos. Zero remoto, Flutter ou E2E; integrado nunca concluído, 0/207 ações verificadas. Contacts e os demais domínios fora do slice permanecem bloqueados; knowledge `no-op`, fonte canônica spec 042. |
 | 2026-08-27 | Instituições ganhou listagem/filtros v2 somente no backend local: spec 041 refinou a spec 040, RPCs internas provaram escopo, MFA, roles, busca literal, paginação, 17 sorts, filtros/opções visible-only, ACL e audit. Replay isolado passou 35/35 e regressões Auth 29/29 + detalhe 26/26; page size Flutter 500/cutover, remoto e E2E permanecem pendentes, sem promoção das 207 ações. |
 | 2026-08-27 | Instituições ganhou somente detalhe/reload v2 no backend local: contrato técnico 040 aprovado, RPC aditiva com identidade interna, allowlist Owner/Operations/Auditor, Support/Content fail-closed, MFA, cross-tenant, auditoria e reload. Replay isolado passou 26/26 e P0/P1=0; contratos Flutter/legados não foram alterados, list/filter e escrita permanecem pendentes, zero remoto/E2E e as 207 ações integradas seguem sem promoção. |
 | 2026-08-27 | Fundação Auth/Supabase permaneceu RED contratual e sem promoção integrada: o draft local aplicou no stage truncado com hardening ACL e o pgTAP mínimo passou 13/13, mas OQ-037 impede fechar a auditoria de sessão válida sem vínculo interno sem inventar ator. Migration/teste seguem sem commit, zero remoto/Flutter/E2E e as 207 ações integradas permanecem inalteradas. |
