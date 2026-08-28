@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import '../../core/guards/superadmin_session.dart';
 import '../../core/config/superadmin_app_config.dart';
 import '../../core/config/superadmin_auth_scope.dart' show UnavailableMealPlanImageRepository;
@@ -76,10 +77,13 @@ import '../../features/groups/presentation/group_form_page.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
 import '../../features/health_care/domain/health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_health_care_repository.dart';
+import '../../features/health_care/data/dev/dev_medication_plan_health_care_repository.dart';
+import '../../features/health_care/data/dev/dev_medication_plan_repository.dart';
 import '../../features/health_care/domain/medication_plan_repository.dart';
 import '../../features/health_care/presentation/health_care_controller.dart';
 import '../../features/health_care/presentation/health_care_directory_page.dart';
 import '../../features/health_care/presentation/health_care_form_pages.dart';
+import '../../features/health_care/presentation/health_medication_form_sections.dart';
 import '../../features/health_care/presentation/health_medication_plan_directory_page.dart';
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
@@ -199,6 +203,7 @@ GoRouter createSuperadminRouter({
   RoutineRepository routineRepository = const UnavailableRoutineRepository(),
   AuditRepository auditRepository = const UnavailableAuditRepository(),
   MedicationPlanRepository medicationPlanRepository = const UnavailableMedicationPlanRepository(),
+  DevMedicationPlanRepository? developmentMedicationPlanRepository,
   MealPlanRepository mealPlanRepository = const UnavailableMealPlanRepository(),
   MealPlanImageRepository mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
   FormsApi? formsApi,
@@ -270,10 +275,77 @@ GoRouter createSuperadminRouter({
   DevHealthCareRepository? cachedCareProfilesPreviewRepository;
   DevHealthCareRepository careProfilesPreviewRepository() =>
       cachedCareProfilesPreviewRepository ??= DevHealthCareRepository.content();
+  final medicationPlansPreviewRepository =
+      developmentMedicationPlanRepository ?? DevMedicationPlanRepository();
   const developmentCareProfileChildren = <HealthCareProfileChildOption>[
     HealthCareProfileChildOption(id: 'child-demo-a', label: 'Criança Demo A'),
     HealthCareProfileChildOption(id: 'child-demo-b', label: 'Criança Demo B'),
   ];
+  const developmentMedicationChildren = <HealthCareFormChoice>[
+    HealthCareFormChoice(id: 'child-demo-a', label: 'Criança Demo A'),
+    HealthCareFormChoice(id: 'child-demo-b', label: 'Criança Demo B'),
+  ];
+  final medicationPlanDirectoryPreviewRepository = DevMedicationPlanHealthCareRepository(
+    medicationPlans: medicationPlansPreviewRepository,
+    childLabels: {for (final child in developmentMedicationChildren) child.id: child.label},
+  );
+  final medicationPlanLoadFutures = <String, Future<MedicationPlanDetail>>{};
+
+  Future<HealthMedicationPlanSaveReceipt> saveDevelopmentMedicationPlanDraft(
+    HealthMedicationPlanFormDraft draft,
+  ) async {
+    const timezone = 'America/Sao_Paulo';
+    final time = draft.time;
+    final saved = await medicationPlansPreviewRepository.save(
+      MedicationPlanSaveCommand(
+        requestId: draft.requestId!,
+        planId: draft.planId,
+        childPersonId: draft.childId,
+        expectedVersion: draft.expectedVersion,
+        medicationName: draft.medicationName,
+        doseAmount: draft.doseAmount,
+        doseUnit: draft.doseUnit,
+        administrationRoute: draft.administrationRoute,
+        validFrom: draft.validFrom!,
+        validUntil: draft.validUntil,
+        reason: 'Prévia local de desenvolvimento',
+        scopeKind: 'institution',
+        institutionId: 'institution-dev',
+        timezone: timezone,
+        schedules: [
+          MedicationScheduleDraft(
+            timeOfDay: time == null
+                ? '08:00'
+                : '${time.hour.toString().padLeft(2, '0')}:'
+                      '${time.minute.toString().padLeft(2, '0')}',
+            weekdays: draft.weekdays.isEmpty ? const {1, 2, 3, 4, 5} : draft.weekdays,
+            timezone: timezone,
+          ),
+        ],
+      ),
+    );
+    return HealthMedicationPlanSaveReceipt(planId: saved.id, version: saved.currentVersion);
+  }
+
+  HealthMedicationPlanFormDraft developmentMedicationDraft(MedicationPlanDetail detail) {
+    final schedule = detail.schedules.first;
+    final timeParts = schedule.timeOfDay.split(':');
+    return HealthMedicationPlanFormDraft(
+      planId: detail.id,
+      expectedVersion: detail.currentVersion,
+      childId: detail.childPersonId,
+      medicationName: detail.medicationName,
+      doseAmount: detail.doseAmount,
+      doseUnit: detail.doseUnit,
+      administrationRoute: detail.administrationRoute,
+      validFrom: detail.validFrom,
+      validUntil: detail.validUntil,
+      time: TimeOfDay(hour: int.parse(timeParts.first), minute: int.parse(timeParts.last)),
+      weekdays: schedule.weekdays,
+      responsibleIds: const {},
+    );
+  }
+
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
   FakePlatformUserRepository previewPlatformUsers() =>
@@ -1215,10 +1287,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.healthCareProfileDetail,
             name: SuperadminRoutes.healthCareProfileDetailName,
-            redirect: (context, state) => context.namedLocation(
-              SuperadminRoutes.healthCareProfileEditName,
-              pathParameters: {'childId': state.pathParameters['childId']!},
-            ),
+            redirect: (context, state) => _productionMutationUnavailablePath,
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfileEdit,
@@ -2228,7 +2297,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devHealthMedicationPlans,
             name: SuperadminRoutes.devHealthMedicationPlansName,
             builder: (context, state) => HealthMedicationPlanDirectoryPage(
-              controller: HealthCareController(blockedCareProfilesRepository),
+              controller: HealthCareController(medicationPlanDirectoryPreviewRepository),
               logout: _previewLogout,
               onCreate: () => context.goNamed(SuperadminRoutes.devHealthMedicationPlanCreateName),
               onPlanSelected: (medicationId) => context.pushNamed(
@@ -2242,7 +2311,9 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devHealthMedicationPlanCreateName,
             builder: (context, state) => HealthMedicationPlanFormPage(
               logout: _previewLogout,
+              childOptions: developmentMedicationChildren,
               onCancel: () => context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
+              onDraftSaved: saveDevelopmentMedicationPlanDraft,
               onSaved: () async => context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
             ),
           ),
@@ -2257,12 +2328,51 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devHealthMedicationPlanEdit,
             name: SuperadminRoutes.devHealthMedicationPlanEditName,
-            builder: (context, state) => HealthMedicationPlanFormPage(
-              logout: _previewLogout,
-              medicationId: state.pathParameters['medicationId']!,
-              onCancel: () => context.pop(),
-              onSaved: () async => context.pop(),
-            ),
+            builder: (context, state) {
+              final medicationId = state.pathParameters['medicationId']!;
+              final load = medicationPlanLoadFutures.putIfAbsent(
+                medicationId,
+                () => medicationPlansPreviewRepository.fetchDetail(medicationId),
+              );
+              return FutureBuilder<MedicationPlanDetail>(
+                future: load,
+                builder: (context, snapshot) {
+                  final detail = snapshot.data;
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(
+                      child: CoeloStatePanel(
+                        title: 'Carregando plano',
+                        message: 'Buscando os dados locais do plano.',
+                        loading: true,
+                      ),
+                    );
+                  }
+                  if (detail == null) {
+                    return CoeloStatePanel(
+                      title: 'Não foi possível carregar o plano',
+                      message: 'Volte à listagem e tente novamente.',
+                      actionLabel: 'Voltar',
+                      onAction: () =>
+                          context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
+                    );
+                  }
+                  return HealthMedicationPlanFormPage(
+                    key: ValueKey('dev-medication-edit-$medicationId'),
+                    logout: _previewLogout,
+                    medicationId: medicationId,
+                    childId: detail.childPersonId,
+                    initialDraft: developmentMedicationDraft(detail),
+                    childOptions: developmentMedicationChildren,
+                    onCancel: () => context.goNamed(SuperadminRoutes.devHealthMedicationPlansName),
+                    onDraftSaved: saveDevelopmentMedicationPlanDraft,
+                    onSaved: () async {
+                      medicationPlanLoadFutures.remove(medicationId);
+                      context.goNamed(SuperadminRoutes.devHealthMedicationPlansName);
+                    },
+                  );
+                },
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.devPeople,

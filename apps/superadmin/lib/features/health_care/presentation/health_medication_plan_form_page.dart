@@ -13,6 +13,53 @@ import 'health_medication_form_sections.dart';
 
 enum _Step { medicine, validity, schedule, document, review }
 
+var _medicationFormRequestSequence = 0;
+
+String _nextMedicationFormRequestId() => 'medication-form-${++_medicationFormRequestSequence}';
+
+@immutable
+final class HealthMedicationPlanFormDraft {
+  const HealthMedicationPlanFormDraft({
+    required this.childId,
+    required this.medicationName,
+    required this.doseAmount,
+    required this.doseUnit,
+    required this.administrationRoute,
+    required this.weekdays,
+    required this.responsibleIds,
+    this.requestId,
+    this.planId,
+    this.expectedVersion = 0,
+    this.validFrom,
+    this.validUntil,
+    this.time,
+  });
+
+  final String childId;
+  final String medicationName;
+  final num doseAmount;
+  final String doseUnit;
+  final String administrationRoute;
+  final String? requestId;
+  final String? planId;
+  final int expectedVersion;
+  final DateTime? validFrom;
+  final DateTime? validUntil;
+  final TimeOfDay? time;
+  final Set<int> weekdays;
+  final Set<String> responsibleIds;
+}
+
+final class HealthMedicationPlanSaveReceipt {
+  const HealthMedicationPlanSaveReceipt({required this.planId, required this.version});
+
+  final String planId;
+  final int version;
+}
+
+typedef HealthMedicationPlanDraftSave =
+    Future<HealthMedicationPlanSaveReceipt> Function(HealthMedicationPlanFormDraft draft);
+
 final class HealthMedicationPlanFormPage extends StatefulWidget {
   const HealthMedicationPlanFormPage({
     required this.logout,
@@ -20,8 +67,10 @@ final class HealthMedicationPlanFormPage extends StatefulWidget {
     required this.onSaved,
     this.medicationId,
     this.childId,
+    this.initialDraft,
     this.childOptions = const [],
     this.responsibleOptions = const [],
+    this.onDraftSaved,
     this.onChangeChild,
     this.onPickMedicationImage,
     this.onPickPrescription,
@@ -33,8 +82,10 @@ final class HealthMedicationPlanFormPage extends StatefulWidget {
   final Future<void> Function() onSaved;
   final String? medicationId;
   final String? childId;
+  final HealthMedicationPlanFormDraft? initialDraft;
   final List<HealthCareFormChoice> childOptions;
   final List<HealthCareFormChoice> responsibleOptions;
+  final HealthMedicationPlanDraftSave? onDraftSaved;
   final VoidCallback? onChangeChild;
   final VoidCallback? onPickMedicationImage;
   final VoidCallback? onPickPrescription;
@@ -53,19 +104,53 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   var _weekdays = <int>{};
   var _responsibles = <String>{};
   var _saving = false;
+  var _retrySave = false;
+  String? _saveError;
   double _footerHeight = 0;
   final _name = TextEditingController();
   final _dose = TextEditingController();
   final _unit = TextEditingController();
+  late String _requestId;
+  var _requestWasSubmitted = false;
+  String? _persistedPlanId;
+  var _expectedVersion = 0;
+  HealthMedicationPlanFormDraft? _pendingSubmission;
+  var _draftChangedAfterSubmission = false;
 
   bool get _editing => widget.medicationId != null;
   bool get _hasExternalChild =>
       _childId != null && widget.childOptions.any((option) => option.id == _childId);
+  num? get _parsedDose => num.tryParse(_dose.text.trim().replaceAll(',', '.'));
+  DateTime get _effectiveStartsAt => _startsAt ?? DateUtils.dateOnly(DateTime.now());
+  String? get _validityError => _endsAt?.isBefore(_effectiveStartsAt) ?? false
+      ? 'A data de término não pode ser anterior à data de início.'
+      : null;
+  bool get _hasValidMedicine =>
+      _hasExternalChild &&
+      _name.text.trim().isNotEmpty &&
+      (_parsedDose ?? 0) > 0 &&
+      _unit.text.trim().isNotEmpty;
+  bool get _canAdvance => _hasValidMedicine;
 
   @override
   void initState() {
     super.initState();
-    _childId = widget.childId ?? widget.childOptions.firstOrNull?.id;
+    final draft = widget.initialDraft;
+    _requestId = draft?.requestId ?? _nextMedicationFormRequestId();
+    _persistedPlanId = draft?.planId ?? widget.medicationId;
+    _expectedVersion = draft?.expectedVersion ?? 0;
+    _childId = widget.childId ?? draft?.childId ?? widget.childOptions.firstOrNull?.id;
+    if (draft != null) {
+      _name.text = draft.medicationName;
+      _dose.text = draft.doseAmount.toString();
+      _unit.text = draft.doseUnit;
+      _route = draft.administrationRoute;
+      _startsAt = draft.validFrom;
+      _endsAt = draft.validUntil;
+      _time = draft.time;
+      _weekdays = Set.of(draft.weekdays);
+      _responsibles = Set.of(draft.responsibleIds);
+    }
   }
 
   @override
@@ -96,12 +181,124 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
 
   Future<void> _save() async {
     if (_saving) return;
-    setState(() => _saving = true);
+    final retryWithoutEdits = _retrySave;
+    final validityError = _validityError;
+    if (validityError != null) {
+      setState(() {
+        _saveError = validityError;
+        _retrySave = false;
+      });
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _saveError = null;
+      _retrySave = false;
+    });
     try {
+      final onDraftSaved = widget.onDraftSaved;
+      if (onDraftSaved != null) {
+        final childId = _childId;
+        final medicationName = _name.text.trim();
+        final doseAmount = _parsedDose;
+        final doseUnit = _unit.text.trim();
+        if (childId == null ||
+            medicationName.isEmpty ||
+            doseAmount == null ||
+            doseAmount <= 0 ||
+            doseUnit.isEmpty) {
+          throw ArgumentError('Invalid medication plan draft.');
+        }
+        final pendingSubmission = _pendingSubmission;
+        if (pendingSubmission != null) {
+          final pendingMatchesCurrent =
+              retryWithoutEdits &&
+              !_draftChangedAfterSubmission &&
+              _matchesCurrentDraft(pendingSubmission);
+          final receipt = await onDraftSaved(pendingSubmission);
+          _applyReceipt(receipt);
+          _pendingSubmission = null;
+          if (pendingMatchesCurrent) {
+            _requestWasSubmitted = false;
+            await widget.onSaved();
+            return;
+          }
+          if (pendingSubmission.requestId == _requestId) {
+            _requestId = _nextMedicationFormRequestId();
+          }
+        }
+        final draft = HealthMedicationPlanFormDraft(
+          requestId: _requestId,
+          planId: _persistedPlanId,
+          expectedVersion: _expectedVersion,
+          childId: childId,
+          medicationName: medicationName,
+          doseAmount: doseAmount,
+          doseUnit: doseUnit,
+          administrationRoute: _route,
+          validFrom: _effectiveStartsAt,
+          validUntil: _endsAt,
+          time: _time,
+          weekdays: Set.unmodifiable(_weekdays),
+          responsibleIds: Set.unmodifiable(_responsibles),
+        );
+        _requestWasSubmitted = true;
+        _pendingSubmission = draft;
+        _draftChangedAfterSubmission = false;
+        final receipt = await onDraftSaved(draft);
+        _applyReceipt(receipt);
+        _pendingSubmission = null;
+        _draftChangedAfterSubmission = false;
+        _requestWasSubmitted = false;
+      }
       await widget.onSaved();
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _saveError = 'Não foi possível salvar o plano de medicação. Tente novamente.';
+          _retrySave = true;
+        });
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  void _applyReceipt(HealthMedicationPlanSaveReceipt receipt) {
+    _persistedPlanId = receipt.planId;
+    _expectedVersion = receipt.version;
+  }
+
+  bool _matchesCurrentDraft(HealthMedicationPlanFormDraft draft) =>
+      draft.childId == _childId &&
+      draft.medicationName == _name.text.trim() &&
+      draft.doseAmount == _parsedDose &&
+      draft.doseUnit == _unit.text.trim() &&
+      draft.administrationRoute == _route &&
+      draft.validFrom == _effectiveStartsAt &&
+      draft.validUntil == _endsAt &&
+      draft.time == _time &&
+      _sameValues(draft.weekdays, _weekdays) &&
+      _sameValues(draft.responsibleIds, _responsibles);
+
+  void _updateDraft(VoidCallback update) {
+    setState(() {
+      update();
+      if (_pendingSubmission != null) {
+        _draftChangedAfterSubmission = true;
+        _requestId = _nextMedicationFormRequestId();
+        _requestWasSubmitted = false;
+      } else if (_requestWasSubmitted) {
+        _requestId = _nextMedicationFormRequestId();
+        _requestWasSubmitted = false;
+      }
+      _retrySave = false;
+      _saveError = null;
+    });
+  }
+
+  void _selectStep(int index) {
+    setState(() => _step = _Step.values[index]);
   }
 
   @override
@@ -118,7 +315,7 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
         navigation: SuperadminFormStepNavigation(
           steps: _steps,
           currentIndex: _step.index,
-          onStepSelected: (index) => setState(() => _step = _Step.values[index]),
+          onStepSelected: _selectStep,
         ),
         body: _body(),
         footer: SuperadminFormActionFooter(
@@ -134,14 +331,17 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
                 child: const Text('Anterior'),
               ),
             FilledButton(
-              onPressed: !_hasExternalChild
+              key: const Key('health-medication-primary-action'),
+              onPressed: !_canAdvance
                   ? null
                   : _step == _Step.review
                   ? (_saving ? null : _save)
                   : () => setState(() => _step = _Step.values[_step.index + 1]),
               child: Text(
                 _step == _Step.review
-                    ? (_editing ? 'Salvar alterações' : 'Criar plano')
+                    ? _retrySave
+                          ? 'Tentar novamente'
+                          : (_editing ? 'Salvar alterações' : 'Criar plano')
                     : 'Continuar',
               ),
             ),
@@ -154,6 +354,30 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   Widget _body() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      if (_saveError case final error?) ...[
+        Semantics(
+          key: const Key('health-medication-save-error'),
+          container: true,
+          liveRegion: true,
+          label: error,
+          child: ExcludeSemantics(
+            child: Container(
+              padding: const EdgeInsets.all(CoeloSpacing.space3),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.errorContainer,
+                borderRadius: BorderRadius.circular(CoeloRadius.md),
+              ),
+              child: Text(
+                error,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
       Text(_title, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space1),
       Text(_description, style: Theme.of(context).textTheme.bodyMedium),
@@ -210,26 +434,34 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
       CoeloMedicationChildSelector(
         options: widget.childOptions,
         selectedId: _childId,
-        onChanged: (value) => setState(() => _childId = value),
+        onChanged: (value) => _updateDraft(() => _childId = value),
       ),
     CoeloFormTextField(
+      fieldKey: const Key('health-medication-name'),
       controller: _name,
       labelText: 'Nome do medicamento',
       prefixIcon: Icons.medication_outlined,
+      onChanged: (_) => _updateDraft(() {}),
     ),
     CoeloFormTextField(
       controller: _dose,
       labelText: 'Dose',
       prefixIcon: Icons.straighten_rounded,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      onChanged: (_) => _updateDraft(() {}),
     ),
-    CoeloFormTextField(controller: _unit, labelText: 'Unidade', prefixIcon: Icons.science_outlined),
+    CoeloFormTextField(
+      controller: _unit,
+      labelText: 'Unidade',
+      prefixIcon: Icons.science_outlined,
+      onChanged: (_) => _updateDraft(() {}),
+    ),
     CoeloAdminSingleSelectField<String>(
       label: 'Via',
       value: _route,
       options: const ['oral', 'nasal', 'topical', 'inhaled'],
       optionLabel: _routeLabel,
-      onChanged: (value) => setState(() => _route = value),
+      onChanged: (value) => _updateDraft(() => _route = value),
       prefixIcon: Icons.route_outlined,
     ),
     _attachment(
@@ -244,29 +476,32 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
     CoeloMedicationDateField(
       label: 'Data de início',
       value: _startsAt,
-      onChanged: (value) => setState(() => _startsAt = value),
+      onChanged: (value) => _updateDraft(() => _startsAt = value),
     ),
     CoeloMedicationDateField(
       label: 'Data de término',
       value: _endsAt,
-      onChanged: (value) => setState(() => _endsAt = value),
+      onChanged: (value) => _updateDraft(() => _endsAt = value),
     ),
   ]);
 
   Widget _schedule() => Column(
     children: [
       _grid([
-        CoeloMedicationTimeField(value: _time, onChanged: (value) => setState(() => _time = value)),
+        CoeloMedicationTimeField(
+          value: _time,
+          onChanged: (value) => _updateDraft(() => _time = value),
+        ),
         CoeloMedicationWeekdaySelector(
           selectedValues: _weekdays,
-          onChanged: (values) => setState(() => _weekdays = values),
+          onChanged: (values) => _updateDraft(() => _weekdays = values),
         ),
       ]),
       const SizedBox(height: CoeloSpacing.space5),
       CoeloMedicationResponsibleSelector(
         options: widget.responsibleOptions,
         selectedIds: _responsibles,
-        onChanged: (values) => setState(() => _responsibles = values),
+        onChanged: (values) => _updateDraft(() => _responsibles = values),
       ),
     ],
   );
@@ -285,7 +520,7 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
       _row('Nome do medicamento', _name.text),
       _row('Dose', '${_dose.text} ${_unit.text}'.trim()),
       _row('Via', _routeLabel(_route)),
-      _row('Vigência', '${_date(_startsAt)} a ${_date(_endsAt)}'),
+      _row('Vigência', '${_date(_effectiveStartsAt)} a ${_date(_endsAt)}'),
       _row('Horário', _time == null ? '' : _time!.format(context)),
       _row('Dias da semana', _weekdays.map(_weekday).join(', ')),
       _row(
@@ -350,6 +585,9 @@ String _routeLabel(String value) => switch (value) {
   'inhaled' => 'Inalatória',
   _ => 'Outra',
 };
+
+bool _sameValues<T>(Set<T> left, Set<T> right) =>
+    left.length == right.length && left.containsAll(right);
 String _date(DateTime? value) => value == null
     ? 'Não informada'
     : '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
