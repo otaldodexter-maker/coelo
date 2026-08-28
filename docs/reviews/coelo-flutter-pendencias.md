@@ -1603,7 +1603,26 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de Card–Table, equivalência de ações/status, troca de store e matriz responsiva, além de gates e review independente. |
 | Estimativa restante | O próximo lote Flutter deve ser independente; o fechamento de Agenda depende das decisões e contratos registrados. |
 
+## 16.17. Formulários / Diretório — Card–Table e isolamento de API — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Diretório de Formulários; busca, filtros, paginação, cards e tabela. |
+| Arquivos modificados | forms_directory_page.dart; forms_directory_page_test.dart; este tracker. |
+| Correções realizadas | Cards tornou-se a visão inicial; cada card usa altura mínima 216, padding horizontal 6/vertical 4 e status expansível localizado sem excluir a semântica filha. A tabela canônica preserva chip de status. Troca de FormsApi cancela debounce e generation A, limpa busca, situação, período, página, cursores, mensagem e projeção antes de uma única consulta B vazia. A matriz non-golden alterna Cards e Table em 375/768/1024/1440 a 100/200%. |
+| Estado atual | local-green. Gate focado 7/7 e conjunto directory+dormant+lifecycle 14/14; analyzer dos dois paths sem issues; formatter, validador visual, diff-check e credential scan verdes. Review independente final: GREEN, P0=0/P1=0. |
+| Bloqueios | Produção criar/editar continua fail-closed em 503; nenhum card Criar foi exposto. Capability autoritativa, persistência, RLS, cross-tenant e E2E permanecem fora. |
+| Conhecimento capturado | Nenhum conhecimento durável novo; o lote aplica ao diretório a baseline Card–Table já aprovada e reforça a fronteira de privacidade A→B. |
+| Pendências restantes | Integrar contratos produtivos e autorização; executar inspeção visual humana, goldens autorizados e evidência integrada; manter 0/207 E2E. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de query/debounce/cursor A→B, anatomia/status e matriz Cards/Table, gates e review independente. |
+| Estimativa restante | O próximo lote Flutter deve ser independente; o fechamento E2E de Formulários depende dos contratos produtivos registrados. |
+
 ## 17. Histórico
+
 
 | Data | Mudança |
 |---|---|
