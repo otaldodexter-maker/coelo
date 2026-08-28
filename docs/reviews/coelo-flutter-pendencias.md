@@ -2195,8 +2195,49 @@ os GREENs locais.
 | Próximo item exato | V3.14 Perfis e modelos de acesso: inventário de lista/criação/detalhe/edição. |
 | Conhecimento capturado | `no-op`: requisito já aprovado, sem regra durável nova. |
 
-## 17. Histórico
+## 16.43. V3.14 Perfis e modelos de acesso — abertura — 2026-08-28
 
+**Entrega atual V3:** 28,57% (2/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Perfis e permissões/Modelos de perfil em `/dev`. |
+| Baseline consultado | `access-profiles-superadmin`, Instituições, diretório e wizard/rodapé canônicos. |
+| Testes planejados | RED do primeiro elo ausente em lista → criação → detalhe → edição local. |
+| Bloqueios | Backend/Supabase e Assessments fora do recorte. |
+| Tempo realmente usado | 1 h 55 min acumulados, às 13:16 BRT. |
+| Estimativa restante | 1–2 h para V3.14; 8 h 05 min da janela. |
+| Próximo item exato | Inventário de rotas, callbacks e repository local. |
+| Conhecimento capturado | Pendente; não criar memória sem regra durável aprovada. |
+
+## 16.44. V3.14 Perfis e modelos de acesso — local-green — 2026-08-28
+
+**Entrega atual V3:** 42,86% (3/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Perfis `/dev/profiles` e Modelos `/dev/profile-models`, com lista/criação/detalhe/edição. |
+| Arquivos alterados | Router/rotas; três páginas Access Profiles; novo teste de rotas; spec e tracker. |
+| Correções realizadas | O menu `/dev` deixou de cair nas rotas produtivas 503. Oito rotas locais usam dois repositórios fake separados e ligam CTA, card, detalhe e edição. Modelos reutilizam o diretório/wizard canônico com título, CTA e destination próprios. Produção/backend não foram promovidos. |
+| Testes e resultados | RED das oito rotas ausentes; GREEN 25/25 não-golden; analyzer focado, validador visual e diff-check verdes. Primeira chamada do validador sem argumentos falhou por uso e foi repetida com repo/allowlist corretos. |
+| Inspeções responsivas | Matriz 375/768/1024/1440 × texto 100%/200% verde em Cards/Tabela, sem overflow; cliques CTA/card/edição exercitados. |
+| Bloqueios | Goldens antigos comparados e não atualizados: divergências 4,36%–79,97%, concentradas no shell V1; aceite humano, backend e E2E pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 08 min; 2 h 03 min acumulados, às 13:24 BRT. |
+| Estimativa restante | 7 h 57 min da janela; V3.15 = 1–2 h. |
+| Próximo item exato | V3.15 Perfis de cuidado: inventário de criação/edição pelo wizard canônico e primeiro RED. |
+| Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
+
+## 17. Histórico
 
 | Data | Mudança |
 |---|---|

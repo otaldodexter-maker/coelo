@@ -42,6 +42,8 @@ final class AccessProfileFormPage extends StatefulWidget {
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
+    this.entityLabel = 'perfil',
+    this.currentDestination = 'profiles',
     super.key,
   });
 
@@ -54,6 +56,8 @@ final class AccessProfileFormPage extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
+  final String entityLabel;
+  final String currentDestination;
 
   @override
   State<AccessProfileFormPage> createState() => _AccessProfileFormPageState();
@@ -163,13 +167,13 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   }
 
   Future<void> _requestExit() async {
-    if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: 'perfil')) {
+    if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
       widget.onCancel();
     }
   }
 
   Future<void> _requestDestination(String destination) async {
-    if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: 'perfil')) {
+    if (!_isDirty || await showInstitutionExitDialog(context, entityLabel: widget.entityLabel)) {
       widget.onDestinationSelected?.call(destination);
     }
   }
@@ -359,9 +363,9 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   @override
   Widget build(BuildContext context) => SuperadminShell(
     logout: widget.logout,
-    title: _editing ? 'Editar perfil' : 'Criar perfil',
+    title: _editing ? 'Editar ${widget.entityLabel}' : 'Criar ${widget.entityLabel}',
     subtitle: '${widget.domain.title} · configure identidade, escopo e permissões.',
-    currentDestination: 'profiles',
+    currentDestination: widget.currentDestination,
     activityController: _activityController,
     showChatLauncher: widget.onConversationsOpen != null,
     chatLauncherBottomInset: _footerHeight == 0 ? 0 : _footerHeight + CoeloSpacing.space4,

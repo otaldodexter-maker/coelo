@@ -749,6 +749,47 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.14 Perfis e modelos de acesso — abertura — 2026-08-28 13:16 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V3 permanece 2/7 (28,57%). |
+| Tela e rota | Perfis e permissões + Modelos de perfil; lista, criação, detalhe e edição `/dev`. |
+| Baseline e índice | Instituições, `pattern.admin-directory`, `access-profiles-superadmin`, wizard canônico e rodapé universal. |
+| RED planejado | Inventariar rotas/callbacks/repositório local e exigir o primeiro elo ausente entre lista, criação, detalhe e edição. |
+| Fora do recorte | Sem autorização backend, Supabase ou Assessments. |
+| Tempo usado | 1 h 55 min acumulados. |
+| Estimativa | 1–2 h para V3.14; 8 h 05 min restam na janela. |
+| Próximo item exato | Mapear Access Profiles/Models e testes de rotas, então escrever RED do primeiro clique morto. |
+
+Percentuais: entrega V3 2/7 (28,57%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.14 Perfis e modelos de acesso — checkpoint local-green — 2026-08-28 13:24 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V3 = 3/7 (42,86%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Perfis e permissões em `/dev/profiles`; Modelos de perfil em `/dev/profile-models`; ambas as famílias incluem lista, criação, detalhe e edição locais. |
+| Arquivos alterados | `superadmin_routes.dart`; `superadmin_router.dart`; páginas de diretório, formulário e detalhe de Access Profiles; `access_profile_preview_routes_test.dart`; spec e rastreador. |
+| Correções | O shell `/dev` deixou de enviar Perfis/Modelos às rotas produtivas 503. Foram declaradas oito rotas locais, com repositórios fake separados e cacheados, callbacks reais de lista → criar/detalhe → editar e identidade lateral correta. Modelos reutilizam a anatomia canônica com título, CTA e wizard próprios; produção permanece fail-closed. |
+| Testes | RED inicial falhou pelas oito constantes ausentes. GREEN: 25/25 testes não-golden de rotas, domínio, fake, view model e páginas; analyzers focados sem issues; validador visual e diff-check verdes. A primeira chamada do validador omitiu os dois argumentos obrigatórios e foi repetida corretamente. |
+| Responsividade e acessibilidade | Matriz canônica das páginas passou em 375/768/1024/1440 com texto 100%/200%, Cards/Tabela e ausência de overflow. Cliques de CTA/card/edição foram exercitados; wizard e shell preservam foco, teclado, Escape, alvos e reduced motion já cobertos pelos componentes canônicos. |
+| Goldens e bloqueios | Comparação dos goldens existentes foi executada sem atualização: referências antigas divergiram 4,36%–79,97%, sobretudo pelo shell V1; 16 comparações do diretório e 3 cenários adicionais falharam. Nenhum golden foi promovido. Aceite humano, backend e E2E permanecem pendentes; Assessments intocado. |
+| Tempo usado | 0 h 08 min no item; 2 h 03 min acumulados. |
+| Estimativa restante | 7 h 57 min da janela; V3.15 estimada em 1–2 h. |
+| Próximo item exato | V3.15 Perfis de cuidado: inventariar criação/edição no wizard canônico e escrever RED do primeiro elo ausente. |
+| Conhecimento | `no-op`: apenas composição local com contratos e fixtures já aprovados; nenhuma regra durável nova. |
+
+Percentuais: entrega V3 3/7 (42,86%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

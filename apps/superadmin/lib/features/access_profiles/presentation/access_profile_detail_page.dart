@@ -24,6 +24,7 @@ final class AccessProfileDetailPage extends StatefulWidget {
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
+    this.currentDestination = 'profiles',
     super.key,
   });
 
@@ -37,6 +38,7 @@ final class AccessProfileDetailPage extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
+  final String currentDestination;
 
   @override
   State<AccessProfileDetailPage> createState() => _AccessProfileDetailPageState();
@@ -184,7 +186,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     logout: widget.logout,
     title: _profile?.name ?? 'Detalhes do perfil',
     subtitle: widget.domain.title,
-    currentDestination: 'profiles',
+    currentDestination: widget.currentDestination,
     activityController: _activityController,
     showChatLauncher: widget.onConversationsOpen != null,
     onDestinationSelected: widget.onDestinationSelected,
