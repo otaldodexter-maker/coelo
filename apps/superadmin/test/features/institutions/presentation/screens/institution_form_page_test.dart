@@ -1046,9 +1046,7 @@ void main() {
     await tester.tap(colorPicker);
     await tester.pumpAndSettle();
 
-    final dialog = tester.widget<AlertDialog>(
-      find.byKey(const Key('advanced-color-picker-dialog')),
-    );
+    final dialog = tester.widget<Dialog>(find.byKey(const Key('advanced-color-picker-dialog')));
     expect(dialog.backgroundColor, CoeloTheme.light.colorScheme.surface);
     expect(dialog.surfaceTintColor, Colors.transparent);
     expect(find.byKey(const Key('advanced-color-picker-area')), findsOneWidget);
@@ -1295,7 +1293,11 @@ void main() {
       ),
       findsOneWidget,
     );
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Enviar convite'));
+    final sendInvitation = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Enviar convite'),
+    );
+    expect(sendInvitation.onPressed, isNotNull);
+    sendInvitation.onPressed!();
     await tester.pumpAndSettle();
 
     final emailField = tester.widget<EditableText>(
