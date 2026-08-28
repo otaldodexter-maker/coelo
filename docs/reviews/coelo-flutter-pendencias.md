@@ -1343,6 +1343,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | 28 min de wall-clock confiável, medidos de 21:12 a 21:40; inventário paralelo anterior sem marco único não foi somado. |
 | Estimativa restante | O pacote de 9 paths não possui P0/P1 conhecido após review. O recorte maior continua não calculável até decisões de produto, contratos backend/capabilities, ambiente integrado e inspeção visual humana. |
 
+## 16.2. Matriz shell/Principal e wizard — 2026-08-27
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Telas alteradas ou regredidas | Acontece; Para Você; Momentos; Agora; Perfil; Publicar Acontece/Momentos/Agora; Criar/Editar Instituição. |
+| Arquivos modificados | `principal_for_you_preview_page.dart`; `persistent_shell_routes_test.dart`; `principal_happens_preview_route_test.dart`; `principal_for_you_preview_route_test.dart`; `principal_now_preview_route_test.dart`; `principal_profile_preview_route_test.dart`; `principal_moments_publication_route_test.dart`; `institution_form_page_test.dart`. |
+| Correções realizadas | Matriz route-level prova oito rotas dentro de um único shell persistente e do contêiner direito em 375/768/1024/1440 e texto 100%/200%; Para Você ganhou `Flexible` no título editorial após overflow real de 30 px em 768/200%; Publicar Momentos passou a comprovar `SuperadminFormFrame`, navegação de etapas e footer canônicos; o teste do seletor de cor foi alinhado ao `Dialog` do `CoeloAdminDialogShell` e o fluxo de convite ficou determinístico sem alterar produção. |
+| Estado atual | `local-green`. Matriz do shell 1/1; cinco arquivos de rotas Principal 19/19; suíte completa Criar/Editar Instituição 46/46; analyzer dos 8 paths e `git diff --check` verdes. Nenhum golden, router, backend ou fixture produtiva foi alterado. |
+| Bloqueios | O arquivo amplo `persistent_shell_routes_test.dart` conserva dois REDs preexistentes fora deste delta, ligados a expectativas anteriores ao fail-closed produtivo; o novo teste foi executado isoladamente e ficou verde. Publicação, mídia e rotas produtivas Principal continuam bloqueadas pelas decisões/contratos já registrados. |
+| Pendências restantes | Inspeção visual humana final; integração/E2E; decisões de produto/backend. Não há outro overflow conhecido nas oito rotas cobertas pela matriz atual. |
+| Tempo usado | 17 min de wall-clock confiável neste lote, medidos de 21:40 a 21:57. |
+| Estimativa restante | Nenhuma correção adicional é conhecida neste recorte de shell/Principal após os gates; o total de 207 ações E2E permanece não calculável pelos bloqueios externos já descritos. |
+
 ## 17. Histórico
 
 | Data | Mudança |
