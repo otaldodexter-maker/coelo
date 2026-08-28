@@ -30,8 +30,6 @@ class SuperadminLoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final isEnabled = !viewModel.isLoading;
     final visibilityLabel = viewModel.isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha';
 
@@ -87,23 +85,108 @@ class SuperadminLoginForm extends StatelessWidget {
             },
           ),
           const SizedBox(height: CoeloSpacing.space2),
-          CheckboxListTile(
+          _KeepSessionOpenControl(
             value: viewModel.keepSessionOpen,
-            onChanged: isEnabled
-                ? (value) => viewModel.setKeepSessionOpen(value: value ?? false)
-                : null,
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
-            title: Text(
-              'Manter sessão aberta',
-              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface),
-            ),
+            enabled: isEnabled,
+            onChanged: (value) => viewModel.setKeepSessionOpen(value: value),
           ),
           const SizedBox(height: CoeloSpacing.space3),
           LoginSubmitButton(isLoading: viewModel.isLoading, onPressed: onSubmit),
           const SizedBox(height: CoeloSpacing.space2),
           LoginForgotPasswordButton(onPressed: isEnabled ? onForgotPassword : null),
         ],
+      ),
+    );
+  }
+}
+
+class _KeepSessionOpenControl extends StatefulWidget {
+  const _KeepSessionOpenControl({
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  State<_KeepSessionOpenControl> createState() => _KeepSessionOpenControlState();
+}
+
+class _KeepSessionOpenControlState extends State<_KeepSessionOpenControl> {
+  final FocusNode _focusNode = FocusNode(debugLabel: 'Manter sessão aberta');
+  bool _focused = false;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    if (widget.enabled) widget.onChanged(!widget.value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final actionColors = theme.extension<CoeloActionColors>()!;
+    final radius = BorderRadius.circular(CoeloRadius.sm);
+
+    return Semantics(
+      key: const ValueKey('superadmin-login-keep-session'),
+      container: true,
+      checked: widget.value,
+      enabled: widget.enabled,
+      label: 'Manter sessão aberta',
+      onTap: widget.enabled ? _toggle : null,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+        child: DecoratedBox(
+          key: _focused ? const ValueKey('superadmin-login-keep-session-focus-ring') : null,
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: _focused ? Border.all(color: actionColors.focusRing, width: 2) : null,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: radius,
+            child: InkWell(
+              key: const ValueKey('superadmin-login-keep-session-control'),
+              focusNode: _focusNode,
+              canRequestFocus: widget.enabled,
+              borderRadius: radius,
+              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+              onFocusChange: (focused) => setState(() => _focused = focused),
+              onTap: widget.enabled ? _toggle : null,
+              child: ExcludeSemantics(
+                child: Row(
+                  children: [
+                    ExcludeFocus(
+                      child: Checkbox(
+                        value: widget.value,
+                        onChanged: widget.enabled ? (_) => _toggle() : null,
+                        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                      ),
+                    ),
+                    const SizedBox(width: CoeloSpacing.space1),
+                    Expanded(
+                      child: Text(
+                        'Manter sessão aberta',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: widget.enabled ? colors.onSurface : colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

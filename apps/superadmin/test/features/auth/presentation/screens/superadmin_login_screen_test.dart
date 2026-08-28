@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/presentation/screens/superadmin_login_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -217,12 +218,93 @@ void main() {
     expect(passwordField().obscureText, isFalse);
     expect(find.byTooltip('Ocultar senha'), findsOneWidget);
 
-    var checkbox = tester.widget<CheckboxListTile>(find.byType(CheckboxListTile));
+    final keepSession = find.byKey(const ValueKey('superadmin-login-keep-session'));
+    var checkbox = tester.widget<Checkbox>(
+      find.descendant(of: keepSession, matching: find.byType(Checkbox)),
+    );
     expect(checkbox.value, isFalse);
     await tester.tap(find.text('Manter sessão aberta'));
     await tester.pump();
-    checkbox = tester.widget<CheckboxListTile>(find.byType(CheckboxListTile));
+    checkbox = tester.widget<Checkbox>(
+      find.descendant(of: keepSession, matching: find.byType(Checkbox)),
+    );
     expect(checkbox.value, isTrue);
+  });
+
+  testWidgets('keeps the session row free from gray hover overlays', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final row = find.byKey(const ValueKey('superadmin-login-keep-session'));
+    final inkWell = tester.widget<InkWell>(
+      find.descendant(of: row, matching: find.byType(InkWell)),
+    );
+
+    expect(
+      inkWell.overlayColor?.resolve(const <WidgetState>{WidgetState.hovered}),
+      Colors.transparent,
+    );
+  });
+
+  testWidgets('toggles keep-session from control, label, row, and keyboard', (tester) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final row = find.byKey(const ValueKey('superadmin-login-keep-session'));
+    bool value() =>
+        tester.widget<Checkbox>(find.descendant(of: row, matching: find.byType(Checkbox))).value!;
+
+    expect(value(), isFalse);
+    await tester.tap(find.descendant(of: row, matching: find.byType(Checkbox)));
+    await tester.pump();
+    expect(value(), isTrue);
+
+    await tester.tap(find.text('Manter sessão aberta'));
+    await tester.pump();
+    expect(value(), isFalse);
+
+    await tester.tapAt(tester.getTopRight(row) - const Offset(8, -24));
+    await tester.pump();
+    expect(value(), isTrue);
+
+    tester
+        .widget<InkWell>(find.byKey(const ValueKey('superadmin-login-keep-session-control')))
+        .focusNode!
+        .requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+    expect(value(), isFalse);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(value(), isTrue);
+  });
+
+  testWidgets('exposes one checkbox semantic target and a visible keyboard focus ring', (
+    tester,
+  ) async {
+    final session = SuperadminSession();
+    addTearDown(session.dispose);
+
+    await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
+
+    final row = find.byKey(const ValueKey('superadmin-login-keep-session'));
+    final control = tester.widget<InkWell>(
+      find.byKey(const ValueKey('superadmin-login-keep-session-control')),
+    );
+    control.focusNode!.requestFocus();
+    await tester.pump();
+
+    final semantics = tester.getSemantics(row);
+    expect(semantics.label, contains('Manter sessão aberta'));
+    expect(semantics.flagsCollection.isChecked, CheckedState.isFalse);
+    expect(tester.getSize(row).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+    expect(find.byKey(const ValueKey('superadmin-login-keep-session-focus-ring')), findsOneWidget);
   });
 
   testWidgets('shows loading and safe authentication feedback', (tester) async {
@@ -308,6 +390,33 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
+  });
+
+  testWidgets('keeps the session control usable across the V1 responsive matrix', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    for (final width in <double>[375, 768, 1024, 1440]) {
+      for (final theme in <ThemeData>[CoeloTheme.light, CoeloTheme.dark]) {
+        tester.view.physicalSize = Size(width, 900);
+        final session = SuperadminSession();
+        addTearDown(session.dispose);
+
+        await pumpLogin(
+          tester,
+          session: session,
+          login: unavailableSuperadminLogin,
+          textScaler: const TextScaler.linear(2),
+          theme: theme,
+        );
+
+        final row = find.byKey(const ValueKey('superadmin-login-keep-session'));
+        expect(row, findsOneWidget);
+        expect(tester.getSize(row).height, greaterThanOrEqualTo(CoeloSize.touchMin));
+        expect(tester.takeException(), isNull);
+      }
+    }
   });
 
   testWidgets('renders from the Coelo dark theme', (tester) async {

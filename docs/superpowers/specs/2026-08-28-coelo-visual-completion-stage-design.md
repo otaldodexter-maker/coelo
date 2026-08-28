@@ -325,3 +325,45 @@ de iniciar código, apresentar V1 como primeiro pacote, sua ETA e os critérios 
 aceite. Se o Owner pedir pausa, atualizar esta spec e o checkpoint correspondente
 no mesmo turno. O plano de implementação detalhado só deve ser escrito depois da
 revisão desta spec pelo Owner.
+
+## Checkpoint de execução V1 — 2026-08-28 11:21 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress` — 0/5 entregáveis V1 `local-green` ou `accepted` (0,00%). |
+| Recorte | Login → Conversas → Menu lateral → Shell/contêiner → Arquivos, nesta ordem. |
+| Rotas iniciais | Login; `/communication/conversations`; shell persistente; diretórios administrativos com ações de arquivo pertinentes. |
+| Fora de escopo | V2–V5, revisão arquitetural profunda, componentização ampla, Supabase, migrations, RLS, RPCs, Edge Functions, Storage/R2, persistência/publicação/download reais e os quatro arquivos dirty de Avaliações. |
+| Evidência inicial | Baseline focado com 96/96 testes verdes; novos REDs são obrigatórios porque o baseline não cobre todos os comportamentos solicitados. |
+| Inspeções exigidas | 375/768/1024/1440 px, texto a 200%, light/dark, teclado, foco, Escape, semântica, alvos de toque e reduced motion. |
+| Tempo usado | 0 h de execução no início deste checkpoint. |
+| Orçamento e ETA | 10 h autorizadas; V1 estimada em 10–14 h. Parar em checkpoint seguro se a janela terminar. |
+| Bloqueios | Nenhum no início. Alterações concorrentes de Avaliações permanecem intocadas. |
+| Próximo item exato | Criar REDs do Login para hover, clique por controle/rótulo/linha e foco/teclado; então aplicar a correção mínima local. |
+
+Percentuais de abertura: programa visual 0/31 `accepted` (0,00%); Flutter
+`local-green` 84/207 (40,58%); Flutter `verified` 0/207 (0,00%);
+Supabase `local-green` 3/37 (8,11%); Supabase `done` 0/37 (0,00%);
+integração `verified_e2e` 0/202 (0,00%); projeto `strict_done` 0/229
+(0,00%). As duas últimas métricas medem conclusão integral e não anulam a
+evidência local já obtida.
+
+### V1.1 Login — checkpoint local-green — 2026-08-28 11:29 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; 1/5 entregáveis V1 (20,00%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Login do Superadmin. |
+| Arquivos alterados | `superadmin_login_form.dart`; `superadmin_login_screen_test.dart`; spec e rastreador. |
+| Correções | “Manter sessão aberta” virou uma única superfície sem overlay cinza; controle, rótulo e linha alternam o valor; Space/Enter, semântica de checkbox, foco primário visível e alvo mínimo de 48 px foram preservados. |
+| Testes | RED reproduzido em três cenários; GREEN 18/18. Analyzer focado sem issues; formatter e `git diff --check` verdes. |
+| Responsividade | 375/768/1024/1440 px, light/dark e texto a 200%; sem overflow. |
+| Bloqueios | Inspeção visual humana e aceite permanecem pendentes; nenhum bloqueio de código local. |
+| Tempo usado | 0 h 07 min. |
+| Estimativa restante | 9 h 53 min da janela autorizada; 9 h 53 min–13 h 53 min pela faixa original da V1. |
+| Próximo item exato | Conversas: escrever REDs para launcher/item lateral, saída de Conversas para destino antes não mapeado e ausência de launcher visível sem callback. |
+
+Percentuais: programa visual 0/31 `accepted` (0,00%); Flutter `local-green`
+84/207 (40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37
+(8,11%); Supabase `done` 0/37; integração 0/202; projeto estrito 0/229.
+E2E e estrito medem conclusão integral e não anulam este GREEN local.

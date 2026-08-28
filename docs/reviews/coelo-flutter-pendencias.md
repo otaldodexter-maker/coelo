@@ -1688,6 +1688,54 @@ Conversas, menu/shell e ações de arquivo dentro da janela aprovada. Revisão
 profunda e componentização vêm após o aceite visual, sem ampliar silenciosamente
 o recorte.
 
+## 16.20. V1 — Fundação e navegação local — abertura — 2026-08-28
+
+**Entrega atual:** 0,00% (0/5 entregáveis `local-green` ou `accepted`).
+
+**Programa visual:** 0,00% (0/31 entregáveis `accepted`).
+
+**Flutter local:** 40,58% (84/207 ações `local-green`). **Flutter verified:**
+0,00% (0/207). **Supabase local:** 8,11% (3/37 famílias `local-green`).
+**Supabase concluído:** 0,00% (0/37). **Integração E2E:** 0,00% (0/202).
+**Projeto estrito:** 0,00% (0/229). E2E e estrito medem conclusão integral e
+não anulam trabalho local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Login; Conversas em `/communication/conversations`; menu e shell persistentes; ações de arquivo nos diretórios pertinentes. |
+| Arquivos alterados | Esta spec e este rastreador antes do código. Os arquivos dirty de Avaliações estão fora do recorte. |
+| Correções realizadas | Contrato operacional V1 registrado; nenhuma correção de produção ainda. |
+| Testes e resultados | Baseline focado Login + Chat routes + Navegação + Shell: 96/96 verdes. |
+| Inspeções responsivas | Pendentes: 375/768/1024/1440, texto 200%, light/dark, teclado/foco/Escape/semântica/alvos e reduced motion. |
+| Bloqueios | Nenhum. Backend e E2E permanecem deliberadamente fora do recorte. |
+| Tempo usado | 0 h de execução no início, às 11:21 BRT. |
+| Estimativa restante | 10–14 h para V1; janela autorizada de 10 h. |
+| Próximo item exato | Login: escrever REDs para hover sem cinza, clique em controle/rótulo/linha, foco visível e teclado. |
+| Conhecimento capturado | `no-op`: a execução aplica a spec canônica já aprovada. |
+
+## 16.21. V1.1 Login — interação de sessão — 2026-08-28
+
+**Entrega atual:** 20,00% (1/5 entregáveis `local-green` ou `accepted`).
+**Programa visual:** 0,00% (0/31 `accepted`). **Flutter local:** 40,58%
+(84/207). **Flutter verified:** 0/207. **Supabase local:** 3/37 (8,11%).
+**Supabase done:** 0/37. **Integração:** 0/202. **Projeto estrito:** 0/229.
+As duas últimas métricas medem conclusão integral e não anulam o GREEN local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Login do Superadmin. |
+| Arquivos alterados | `superadmin_login_form.dart`; `superadmin_login_screen_test.dart`; spec e tracker. |
+| Correções realizadas | Controle local único para “Manter sessão aberta”, sem hover cinza, acionável por checkbox, rótulo, linha, Space e Enter, com foco Coelo visível, semântica e alvo de 48 px. |
+| Testes e resultados | Três REDs iniciais; suíte final 18/18; analyzer focado sem issues; formatter e diff-check verdes. |
+| Inspeções responsivas | 375/768/1024/1440 em light/dark, texto 200%, além do cenário compacto 320×568; sem overflow. |
+| Bloqueios | Somente inspeção/aceite visual humano; backend e E2E seguem fora do recorte. |
+| Tempo realmente usado | 0 h 07 min. |
+| Estimativa restante | 9 h 53 min da janela; 9 h 53 min–13 h 53 min pela faixa V1. |
+| Próximo item exato | Conversas: REDs de launcher/item lateral, navegação de saída e callback ausente. |
+| Conhecimento capturado | `no-op`: aplicação de `pattern.interaction-states` e `pattern.selection-controls` já aprovados. |
+
 ## 17. Histórico
 
 
