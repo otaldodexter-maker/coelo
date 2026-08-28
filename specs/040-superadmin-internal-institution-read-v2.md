@@ -44,6 +44,11 @@ Todas retornam o envelope da spec 039, são `VOLATILE SECURITY DEFINER`,
 
 ### Diretório
 
+> Substituída para listagem e filtros pela spec 041. Esta seção preserva apenas
+> o histórico do contrato inicial; a spec 041 é canônica para assinatura,
+> limites, validação, erros e opções. Detalhe/reload desta spec não foi
+> substituído.
+
 ```sql
 public.superadmin_institution_directory_v2(
   p_filters jsonb default '{}'::jsonb,
