@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui' show PointerDeviceKind;
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -224,14 +225,188 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.byType(SuperadminFormFrame), findsNothing);
+    expect(find.text('Publicação indisponível'), findsOneWidget);
+  });
+
+  testWidgets('troca A por B e ignora load e picker tardios de A', (tester) async {
+    final repositoryA = _DeferredRepository();
+    final repositoryB = InMemoryHappensPublicationRepository()
+      ..savedDraft = HappensPostDraft(caption: 'Conteúdo B');
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalHappensPublicationPage(
+          repository: repositoryA,
+          publicationContext: HappensPublicationContext.demo,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('happens-publication-loading')), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalHappensPublicationPage(
+          repository: repositoryB,
+          publicationContext: const HappensPublicationContext(
+            institutionId: 'institution-b',
+            institutionName: 'Instituição B',
+            unitId: 'unit-b',
+            unitName: 'Unidade B',
+            groupId: 'group-b',
+            groupName: 'Grupo B',
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _continue(tester);
+    expect(find.text('Conteúdo B'), findsOneWidget);
+
+    repositoryA.loaded.complete(HappensPostDraft(caption: 'Conteúdo A'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Conteúdo B'), findsOneWidget);
+    expect(find.text('Conteúdo A'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('descarta picker tardio quando o contexto muda', (tester) async {
+    final pickerA = Completer<List<HappensMediaDraft>>();
+    final repositoryA = InMemoryHappensPublicationRepository();
+    final repositoryB = InMemoryHappensPublicationRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalHappensPublicationPage(
+          repository: repositoryA,
+          mediaPicker: () => pickerA.future,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Adicionar fotos ou vídeos'));
+    await tester.pump();
     expect(
       tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Continuar')).onPressed,
       isNull,
     );
-    expect(
-      tester.widget<TextButton>(find.widgetWithText(TextButton, 'Cancelar')).onPressed,
-      isNull,
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalHappensPublicationPage(
+          repository: repositoryB,
+          publicationContext: const HappensPublicationContext(
+            institutionId: 'institution-b',
+            institutionName: 'Instituição B',
+            unitId: 'unit-b',
+            unitName: 'Unidade B',
+            groupId: 'group-b',
+            groupName: 'Grupo B',
+          ),
+        ),
+      ),
     );
+    await tester.pumpAndSettle();
+    pickerA.complete([_media('a')]);
+    await tester.pumpAndSettle();
+
+    expect(find.text('1/1'), findsNothing);
+    expect(find.byTooltip('Remover mídia 1'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('permite retry de publish após falha recuperável', (tester) async {
+    final repository = _FailOncePublishRepository();
+    var completed = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalHappensPublicationPage(
+          repository: repository,
+          onCompleted: (_) => completed++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _continue(tester);
+    await tester.enterText(find.byKey(const Key('happens-caption')), 'Legenda');
+    await _continue(tester);
+    await tester.tap(find.text('Famílias').first);
+    await _continue(tester);
+
+    await tester.tap(find.text('Publicar no Acontece').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Não foi possível publicar agora.'), findsOneWidget);
+    expect(
+      tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Publicar no Acontece'))
+          .onPressed,
+      isNotNull,
+    );
+
+    await tester.tap(find.text('Publicar no Acontece').last);
+    await tester.pumpAndSettle();
+    expect(repository.publishCalls, 2);
+    expect(completed, 1);
+  });
+
+  testWidgets('mantém o wizard para retry de save vazio', (tester) async {
+    final repository = _FailOnceSaveRepository();
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalHappensPublicationPage(repository: repository)),
+    );
+    await tester.pumpAndSettle();
+    await _continue(tester);
+    await _continue(tester);
+    await _continue(tester);
+
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.text('Não foi possível salvar o rascunho.'), findsOneWidget);
+    expect(
+      tester
+          .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Salvar rascunho'))
+          .onPressed,
+      isNotNull,
+    );
+
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(repository.saveCalls, 2);
+  });
+
+  testWidgets('mantém corpo e foco bloqueados durante save', (tester) async {
+    final repository = _DeferredRepository()..loaded.complete(null);
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalHappensPublicationPage(repository: repository)),
+    );
+    await tester.pumpAndSettle();
+    await _continue(tester);
+    await tester.enterText(find.byKey(const Key('happens-caption')), 'Legenda A');
+    await _continue(tester);
+    await tester.tap(find.text('Famílias').first);
+    await _continue(tester);
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<AbsorbPointer>(find.byKey(const Key('happens-publication-body-lock')))
+          .absorbing,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<ExcludeFocus>(find.byKey(const Key('happens-publication-body-focus-lock')))
+          .excluding,
+      isTrue,
+    );
+    expect(repository.saveCalls, 1);
+
+    repository.saved.complete(HappensPostDraft(id: 'draft-1', caption: 'Legenda A', version: 1));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 }
 
@@ -289,6 +464,112 @@ final class _UnauthorizedRepository implements HappensPublicationRepository {
   @override
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) =>
       throw UnimplementedError();
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+}
+
+final class _DeferredRepository implements HappensPublicationRepository {
+  final loaded = Completer<HappensPostDraft?>();
+  final saved = Completer<HappensPostDraft>();
+  var saveCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) => loaded.future;
+
+  @override
+  Future<HappensPostDraft> saveDraft(HappensPublicationContext context, HappensPostDraft draft) {
+    saveCalls++;
+    return saved.future;
+  }
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+}
+
+final class _FailOncePublishRepository implements HappensPublicationRepository {
+  final delegate = InMemoryHappensPublicationRepository();
+  var publishCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) =>
+      delegate.loadDraft(context);
+
+  @override
+  Future<HappensPostDraft> saveDraft(HappensPublicationContext context, HappensPostDraft draft) =>
+      delegate.saveDraft(context, draft);
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => delegate.prepareMedia(context, postId, media, displayOrder);
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      delegate.finalizeMedia(intent, media);
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) =>
+      delegate.removeMedia(context, media);
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) {
+    publishCalls++;
+    if (publishCalls == 1) throw Exception('transient');
+    return delegate.publish(context, draft);
+  }
+}
+
+final class _FailOnceSaveRepository implements HappensPublicationRepository {
+  var saveCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async => null;
+
+  @override
+  Future<HappensPostDraft> saveDraft(
+    HappensPublicationContext context,
+    HappensPostDraft draft,
+  ) async {
+    saveCalls++;
+    if (saveCalls == 1) throw Exception('transient');
+    return draft.copyWith(id: 'draft-1', version: 1);
+  }
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
 
   @override
   Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>

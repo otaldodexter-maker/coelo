@@ -191,6 +191,88 @@ void main() {
       expect(repository.prepareCalls['a'], 1);
       expect(repository.prepareCalls['b'], 2);
     });
+
+    test('ignores a load completion after dispose', () async {
+      final repository = _DeferredLoadRepository();
+      final controller = HappensPublicationController(
+        repository: repository,
+        context: HappensPublicationContext.demo,
+      );
+      var notifications = 0;
+      controller.addListener(() => notifications++);
+
+      final load = controller.load();
+      expect(notifications, 1);
+      controller.dispose();
+      repository.loaded.complete(HappensPostDraft(caption: 'stale'));
+
+      await load;
+      expect(notifications, 1);
+    });
+
+    test('blocks edits and concurrent commands while saving', () async {
+      final repository = _BlockingRepository();
+      final controller = HappensPublicationController(
+        repository: repository,
+        context: HappensPublicationContext.demo,
+      )..setCaption('Legenda A');
+
+      final save = controller.saveDraft();
+      await repository.saveStarted.future;
+      controller.setCaption('Legenda B');
+      await controller.saveDraft();
+
+      expect(controller.state.draft.caption, 'Legenda A');
+      expect(repository.saveCalls, 1);
+      repository.saved.complete(controller.state.draft.copyWith(id: 'draft-1', version: 1));
+      await save;
+      expect(controller.operationInFlight, isFalse);
+    });
+
+    test('rearms autosave after an async media removal', () async {
+      final repository = _DeferredRemoveRepository();
+      final controller =
+          HappensPublicationController(
+              repository: repository,
+              context: HappensPublicationContext.demo,
+              autosaveDelay: const Duration(milliseconds: 10),
+            )
+            ..setAutosave(true)
+            ..addMedia(_media('a'));
+
+      final removal = controller.removeMedia(0);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(repository.saveCalls, 0);
+
+      repository.removed.complete();
+      await removal;
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      expect(repository.saveCalls, 1);
+      expect(repository.lastSaved?.media, isEmpty);
+    });
+
+    test('checkpoints the saved identity before a publish retry', () async {
+      final repository = _FailOnceAfterSaveRepository();
+      final controller =
+          HappensPublicationController(
+              repository: repository,
+              context: HappensPublicationContext.demo,
+            )
+            ..setCaption('Legenda')
+            ..toggleAudience(HappensAudienceKind.families);
+
+      expect(await controller.publish(), isNull);
+      expect(controller.state.draft.id, 'draft-1');
+      expect(controller.state.draft.version, 1);
+
+      expect(await controller.publish(), isNotNull);
+      expect(repository.createCalls, 1);
+      expect(repository.savedInputs.map((draft) => (draft.id, draft.version)), [
+        (null, 0),
+        ('draft-1', 1),
+      ]);
+    });
   });
 }
 
@@ -329,4 +411,122 @@ final class _BlockingRepository implements HappensPublicationRepository {
       publishAt: DateTime.utc(2030),
     );
   }
+}
+
+final class _DeferredLoadRepository implements HappensPublicationRepository {
+  final loaded = Completer<HappensPostDraft?>();
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) => loaded.future;
+
+  @override
+  Future<HappensPostDraft> saveDraft(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+}
+
+final class _DeferredRemoveRepository implements HappensPublicationRepository {
+  final removed = Completer<void>();
+  HappensPostDraft? lastSaved;
+  var saveCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async => null;
+
+  @override
+  Future<HappensPostDraft> saveDraft(
+    HappensPublicationContext context,
+    HappensPostDraft draft,
+  ) async {
+    saveCalls++;
+    lastSaved = draft.copyWith(id: 'draft-1', version: draft.version + 1);
+    return lastSaved!;
+  }
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) =>
+      removed.future;
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+}
+
+final class _FailOnceAfterSaveRepository implements HappensPublicationRepository {
+  final savedInputs = <HappensPostDraft>[];
+  var createCalls = 0;
+  var publishCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async => null;
+
+  @override
+  Future<HappensPostDraft> saveDraft(
+    HappensPublicationContext context,
+    HappensPostDraft draft,
+  ) async {
+    savedInputs.add(draft);
+    if (draft.id == null) createCalls++;
+    return draft.copyWith(id: draft.id ?? 'draft-$createCalls', version: draft.version + 1);
+  }
+
+  @override
+  Future<HappensPublication> publish(
+    HappensPublicationContext context,
+    HappensPostDraft draft,
+  ) async {
+    publishCalls++;
+    if (publishCalls == 1) throw Exception('response_lost');
+    return HappensPublication(
+      id: draft.id!,
+      status: HappensPostStatus.published,
+      publishAt: DateTime.utc(2030),
+    );
+  }
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
 }

@@ -36,12 +36,18 @@ class PrincipalHappensPublicationPage extends StatefulWidget {
 }
 
 class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublicationPage> {
-  late final HappensPublicationController controller;
+  late HappensPublicationController controller;
   var _step = 0;
+  var _pageGeneration = 0;
+  var _pickerInFlight = false;
 
   @override
   void initState() {
     super.initState();
+    _createController();
+  }
+
+  void _createController() {
     controller = HappensPublicationController(
       repository: widget.repository,
       context: widget.publicationContext,
@@ -49,17 +55,47 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
   }
 
   @override
+  void didUpdateWidget(covariant PrincipalHappensPublicationPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        _sameContext(oldWidget.publicationContext, widget.publicationContext)) {
+      return;
+    }
+    _pageGeneration += 1;
+    controller.dispose();
+    _step = 0;
+    _pickerInFlight = false;
+    _createController();
+  }
+
+  @override
   void dispose() {
+    _pageGeneration += 1;
     controller.dispose();
     super.dispose();
   }
 
   Future<void> _pick() async {
-    final picked = widget.mediaPicker == null
-        ? await _defaultPicker()
-        : await widget.mediaPicker!();
-    for (final media in picked) {
-      controller.addMedia(media);
+    if (_pickerInFlight || controller.operationInFlight) return;
+    final generation = _pageGeneration;
+    final requestedController = controller;
+    setState(() => _pickerInFlight = true);
+    try {
+      final picked = widget.mediaPicker == null
+          ? await _defaultPicker()
+          : await widget.mediaPicker!();
+      if (!mounted ||
+          generation != _pageGeneration ||
+          !identical(controller, requestedController)) {
+        return;
+      }
+      for (final media in picked) {
+        controller.addMedia(media);
+      }
+    } finally {
+      if (mounted && generation == _pageGeneration && identical(controller, requestedController)) {
+        setState(() => _pickerInFlight = false);
+      }
     }
   }
 
@@ -88,10 +124,39 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
     animation: controller,
     builder: (context, _) {
       final state = controller.state;
+      if (state.phase == HappensPublicationPhase.loading) {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator(key: Key('happens-publication-loading'))),
+        );
+      }
+      if (state.phase == HappensPublicationPhase.unauthorized) {
+        return Scaffold(
+          body: CoeloStatePanel(
+            title: 'Publicação indisponível',
+            message: state.message ?? 'Você não pode publicar neste contexto.',
+            icon: Icons.lock_outline_rounded,
+          ),
+        );
+      }
+      if (state.phase == HappensPublicationPhase.failure &&
+          state.failureSource == HappensPublicationFailureSource.load) {
+        return Scaffold(
+          body: CoeloStatePanel(
+            title: 'Não foi possível carregar',
+            message: state.message ?? 'Tente novamente.',
+            icon: Icons.cloud_off_outlined,
+            actionLabel: 'Tentar novamente',
+            onAction: controller.load,
+          ),
+        );
+      }
       final actionsEnabled =
           !controller.operationInFlight &&
+          !_pickerInFlight &&
           (state.phase == HappensPublicationPhase.editing ||
-              state.phase == HappensPublicationPhase.saved);
+              state.phase == HappensPublicationPhase.saved ||
+              state.phase == HappensPublicationPhase.failure);
+      final surfaceLocked = controller.operationInFlight || _pickerInFlight;
       final colors = Theme.of(context).colorScheme;
       return Scaffold(
         backgroundColor: colors.surface,
@@ -107,29 +172,43 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
           builder: (context, constraints) => SuperadminFormFrame(
             viewportWidth: constraints.maxWidth,
             scrollKey: Key('happens-publication-step-$_step'),
-            navigation: SuperadminFormStepNavigation(
-              steps: [
-                for (var index = 0; index < _publicationSteps.length; index++)
-                  SuperadminFormStep(
-                    label: _publicationSteps[index],
-                    status: index == _step
-                        ? SuperadminFormStepStatus.current
-                        : index < _step
-                        ? SuperadminFormStepStatus.complete
-                        : SuperadminFormStepStatus.incomplete,
-                    enabled: actionsEnabled && index <= _step,
-                  ),
-              ],
-              currentIndex: _step,
-              onStepSelected: (index) {
-                if (actionsEnabled) setState(() => _step = index);
-              },
+            navigation: ExcludeFocus(
+              excluding: surfaceLocked,
+              child: AbsorbPointer(
+                absorbing: surfaceLocked,
+                child: SuperadminFormStepNavigation(
+                  steps: [
+                    for (var index = 0; index < _publicationSteps.length; index++)
+                      SuperadminFormStep(
+                        label: _publicationSteps[index],
+                        status: index == _step
+                            ? SuperadminFormStepStatus.current
+                            : index < _step
+                            ? SuperadminFormStepStatus.complete
+                            : SuperadminFormStepStatus.incomplete,
+                        enabled: actionsEnabled && index <= _step,
+                      ),
+                  ],
+                  currentIndex: _step,
+                  onStepSelected: (index) {
+                    if (actionsEnabled) setState(() => _step = index);
+                  },
+                ),
+              ),
             ),
-            body: _WizardBody(
-              controller: controller,
-              step: _step,
-              onPick: _pick,
-              publicationContext: widget.publicationContext,
+            body: ExcludeFocus(
+              key: const Key('happens-publication-body-focus-lock'),
+              excluding: surfaceLocked,
+              child: AbsorbPointer(
+                key: const Key('happens-publication-body-lock'),
+                absorbing: surfaceLocked,
+                child: _WizardBody(
+                  controller: controller,
+                  step: _step,
+                  onPick: _pick,
+                  publicationContext: widget.publicationContext,
+                ),
+              ),
             ),
             footer: SuperadminFormActionFooter(
               tertiaryAction: TextButton(
@@ -158,7 +237,15 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
                   FilledButton.icon(
                     onPressed: actionsEnabled
                         ? () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            final generation = _pageGeneration;
+                            final requestedController = controller;
                             final result = await controller.publish();
+                            if (!mounted ||
+                                generation != _pageGeneration ||
+                                !identical(controller, requestedController)) {
+                              return;
+                            }
                             if (result != null) widget.onCompleted?.call(result);
                           }
                         : null,
@@ -181,6 +268,14 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
       context,
     ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
   }
+
+  bool _sameContext(HappensPublicationContext a, HappensPublicationContext b) =>
+      a.institutionId == b.institutionId &&
+      a.institutionName == b.institutionName &&
+      a.unitId == b.unitId &&
+      a.unitName == b.unitName &&
+      a.groupId == b.groupId &&
+      a.groupName == b.groupName;
 }
 
 class _WizardBody extends StatelessWidget {
