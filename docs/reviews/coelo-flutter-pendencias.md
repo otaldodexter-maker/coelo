@@ -1567,6 +1567,24 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de repository A→B, dependências capturadas, resposta tardia, contexto local, ownership pre-push e unauthorized. |
 | Estimativa restante | Próximo lote Flutter deve ser independente; fechamento E2E depende da troca contextual produtiva e autorização. |
 
+## 16.15. Convites — Card–Table e isolamento de contexto — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Diretório de Convites; busca/filtros, cards, tabela, flyout, revogação e link de reenvio. |
+| Arquivos modificados | platform_invite.dart; invite_directory_page.dart; invite_directory_widgets.dart; testes de domínio, diretório e responsividade; checkpoint fonte e projeção de conhecimento. |
+| Correções realizadas | A visão inicial agora usa cards e oferece a tabela canônica pelo toggle de diretório. Cards usam paginação 11, grid de largura canônica, padding 6/4, status expansível e card Criar persistente nos estados recuperáveis; tabela usa paginação 8, chip e banner. Troca de repository cancela debounce, invalida load/comando, fecha overlays próprios e limpa busca, filtros, paginação, busy, ledger e dados A antes de carregar B. Comandos capturam repository/generation antes do primeiro await; confirmações, links, feedback e refresh tardios de A não atingem B. |
+| Estado atual | local-green. Gate focado ampliado 30/30 e suíte Invites non-golden 43/43; analyzer dos seis paths sem issues; formatter, validador visual, git diff --check e secret scan verdes. Revisão independente final: GREEN, P0=0/P1=0. Nenhum backend, router produtivo ou golden foi alterado. |
+| Bloqueios | Capability autoritativa, RLS, persistência/entrega real, auditoria, resposta remota ambígua e validação cross-tenant permanecem fora. O resultado local não constitui E2E. |
+| Conhecimento capturado | O checkpoint anterior foi atualizado para registrar que a decisão de tabela única foi substituída pelo pedido posterior Card–Table; docs/knowledge/team/superadmin-invites-directory.md projeta a baseline e a fronteira A→B. |
+| Pendências restantes | Inspeção visual humana, goldens autorizados e evidência integrada das 207 ações. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de swap/debounce, overlays/comandos cross-context e matriz 375/768/1024/1440 a 100/200%. |
+| Estimativa restante | Próximo lote Flutter deve ser independente; o fechamento E2E de Convites depende dos contratos produtivos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |

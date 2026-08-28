@@ -3,10 +3,31 @@ title: "Handoff da refatoração de UI/UX de Convites do Superadmin"
 source: "Solicitação aprovada do Owner Coelo em 2026-08-04; plano aprovado nesta atividade"
 status: "complete"
 generated_at: "2026-08-04"
-updated_at: "2026-08-05"
+updated_at: "2026-08-28"
 ---
 
 # Handoff da refatoração de UI/UX de Convites do Superadmin
+
+## Atualização aprovada em 2026-08-28
+
+O pedido posterior e explícito do Owner Coelo substitui a decisão intermediária
+de “diretório exclusivamente em tabela”. Convites passa a seguir a baseline
+vigente de Instituições: cards como visão inicial e tabela canônica como visão
+alternativa selecionável pelo toggle compartilhado. Em largura compacta, os
+cards evitam forçar leitura horizontal; filtros e flyout permanecem os mesmos
+nas duas visões.
+
+Cards usam 11 itens por página, grid de colunas com largura próxima de 340 px,
+padding horizontal 6/vertical 4 e status expansível; tabela usa 8 itens por
+página e chip de status. Quando a criação é autorizada, o card Criar permanece
+visível também em empty, no-results e falha recuperável; tabela usa o banner.
+Nenhuma superfície de criação aparece em unauthorized ou sem callback real.
+
+A troca de repository/contexto é uma fronteira de privacidade: busca, filtros,
+paginação, ledger, busy e overlays do contexto anterior são limpos antes do
+novo load. Confirmação de revogação e link de reenvio pertencem ao navigator e
+repository que os originaram e não podem sobreviver ou produzir feedback no
+contexto seguinte.
 
 ## Encerramento
 
@@ -30,7 +51,8 @@ Refatorar exclusivamente a experiência de Convites em `apps/superadmin`: diret�
 ## Decisões de produto e UI/UX a preservar
 
 - Contexto: `apps/superadmin`, preview local `/dev`; nenhum envio, token, persistência ou autorização produtiva.
-- Diretório exclusivamente em tabela; não restaurar cards nem toggle Cards/Tabela.
+- Decisão de 2026-08-04 substituída em 2026-08-28: usar cards como visão
+  inicial e tabela como alternativa, com o toggle compartilhado de diretório.
 - Baseline: Instituições para diretório/tabela; Importações para composição; Criar/Editar Instituição para formulário; Menu/Flyouts para ações; Popup de Bug para confirmação.
 - Não existe modo Editar: o repositório atual não possui operação de atualização de convite/rascunho.
 - Revogação somente para `InviteStatus.pending`; reenvio para `pending` e `expired`.
