@@ -1445,6 +1445,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu testes de retry/403, regressão focada e duas revisões independentes. |
 | Estimativa restante | Próximo sublote seguro: receipt/idempotência do save de Avisos; ETA E2E depende dos contratos externos registrados. |
 
+## 16.8. Comunicação/Avisos — receipts ambíguos do formulário — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Criar/Editar Comunicação/Aviso; comandos Salvar rascunho e Publicar. |
+| Arquivos modificados | `notice_form_controller.dart`; `notice_form_controller_test.dart`. |
+| Correções realizadas | Save ambíguo preserva request ID e payload exatos, reconcilia o receipt persistido e atualiza o mesmo aviso com nova intenção quando o draft mudou. Publicação ambígua preserva uma intenção tipada através de edições, replaya primeiro o comando original, valida ID/versão/status e só então salva/publica a edição sobre a versão reconciliada. Edição durante qualquer replay invalida o follow-up automático. Receipts impossíveis falham fechado; falhas determinísticas descartam a intenção e falhas transitórias a preservam. |
+| Estado atual | `local-green`. Regressão focada fresca 16/16 e suíte não-golden de Avisos 79/79; analyzer dos dois arquivos sem issues; formatter, `git diff --check` e secret scan verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0. Nenhum backend, adapter produtivo ou golden foi alterado. |
+| Bloqueios | Criação/edição/publicação produtiva continua condicionada à capability autoritativa e aos contratos backend/RLS. Este pacote prova somente comportamento Flutter local e fail-closed; não constitui E2E. |
+| Pendências restantes | Persistência produtiva, autorização integrada, mídia, resposta remota perdida real e validação cross-tenant continuam nos rastreadores backend/integrado. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de save/publish ambíguos, gates não-golden e duas rodadas de revisão independente. |
+| Estimativa restante | Próximo lote Flutter deve ser independente deste formulário; ETA E2E continua dependente dos contratos externos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
