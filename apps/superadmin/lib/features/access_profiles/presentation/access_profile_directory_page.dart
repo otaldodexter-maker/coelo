@@ -40,7 +40,7 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
 }
 
 final class _AccessProfileDirectoryPageState extends State<AccessProfileDirectoryPage> {
-  late final AccessProfileViewModel _viewModel;
+  late AccessProfileViewModel _viewModel;
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
   double _footerHeight = 0;
@@ -51,7 +51,18 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
     _viewModel = AccessProfileViewModel(widget.repository);
     _searchController = TextEditingController();
     _activityController = SuperadminActivityController();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _viewModel.load());
+    _scheduleLoad(_viewModel);
+  }
+
+  @override
+  void didUpdateWidget(covariant AccessProfileDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    _viewModel.dispose();
+    _viewModel = AccessProfileViewModel(widget.repository);
+    _searchController.clear();
+    _footerHeight = 0;
+    _scheduleLoad(_viewModel);
   }
 
   @override
@@ -60,6 +71,13 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
     _searchController.dispose();
     _activityController.dispose();
     super.dispose();
+  }
+
+  void _scheduleLoad(AccessProfileViewModel viewModel) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !identical(_viewModel, viewModel)) return;
+      viewModel.load();
+    });
   }
 
   @override
@@ -77,8 +95,8 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
     child: _AccessProfileDirectoryContent(
       viewModel: _viewModel,
       searchController: _searchController,
-      onCreate: widget.onCreate ?? (_) {},
-      onOpen: widget.onOpen ?? (_, _) {},
+      onCreate: widget.onCreate,
+      onOpen: widget.onOpen,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() < .5) return;
         setState(() => _footerHeight = height);
@@ -98,8 +116,8 @@ final class _AccessProfileDirectoryContent extends StatefulWidget {
 
   final AccessProfileViewModel viewModel;
   final TextEditingController searchController;
-  final ValueChanged<AccessProfileDomain> onCreate;
-  final void Function(AccessProfileDomain domain, String profileId) onOpen;
+  final ValueChanged<AccessProfileDomain>? onCreate;
+  final void Function(AccessProfileDomain domain, String profileId)? onOpen;
   final ValueChanged<double> onFooterHeightChanged;
 
   @override
@@ -140,6 +158,18 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
       return AnimatedBuilder(
         animation: widget.viewModel,
         builder: (context, child) {
+          if (widget.viewModel.state == AccessProfileLoadState.unauthorized) {
+            _measureFooter(false);
+            return const Padding(
+              padding: EdgeInsets.all(CoeloSpacing.space4),
+              child: CoeloStatePanel(
+                key: Key('access-profile-unauthorized'),
+                title: 'Acesso não autorizado',
+                message: 'Você não possui permissão para consultar esta central.',
+                icon: Icons.lock_outline_rounded,
+              ),
+            );
+          }
           final query = widget.viewModel.query;
           final showPagination =
               query.domain != AccessProfileDomain.principal &&
@@ -187,8 +217,8 @@ final class _AccessProfileDirectoryContentState extends State<_AccessProfileDire
                   _AccessProfileResults(
                     viewModel: widget.viewModel,
                     compact: constraints.maxWidth < CoeloBreakpoints.medium.minWidth,
-                    onCreate: () => widget.onCreate(query.domain),
-                    onOpen: (id) => widget.onOpen(query.domain, id),
+                    onCreate: widget.onCreate == null ? null : () => widget.onCreate!(query.domain),
+                    onOpen: widget.onOpen == null ? null : (id) => widget.onOpen!(query.domain, id),
                   ),
                 ],
               ),
@@ -368,8 +398,8 @@ final class _AccessProfileResults extends StatelessWidget {
 
   final AccessProfileViewModel viewModel;
   final bool compact;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onOpen;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -391,7 +421,7 @@ final class _AccessProfileResults extends StatelessWidget {
               ? 'O catálogo contextual não retornou capacidades.'
               : 'Crie o primeiro perfil para começar.',
           icon: Icons.manage_accounts_outlined,
-          actionLabel: viewModel.query.domain == AccessProfileDomain.principal
+          actionLabel: viewModel.query.domain == AccessProfileDomain.principal || onCreate == null
               ? null
               : 'Criar perfil',
           onAction: viewModel.query.domain == AccessProfileDomain.principal ? null : onCreate,
@@ -461,24 +491,26 @@ final class _AccessProfileCards extends StatelessWidget {
   const _AccessProfileCards({required this.items, required this.onCreate, required this.onOpen});
 
   final List<AccessProfile> items;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onOpen;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onOpen;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final columns = math.max(1, (constraints.maxWidth / 340).floor());
       final cards = <Widget>[
-        ConstrainedBox(
-          key: const Key('create-access-profile-card'),
-          constraints: const BoxConstraints(minHeight: 216),
-          child: CoeloAdminCreateAction(
-            label: 'Criar perfil',
-            icon: Icons.manage_accounts_outlined,
-            onPressed: onCreate,
+        if (onCreate != null)
+          ConstrainedBox(
+            key: const Key('create-access-profile-card'),
+            constraints: const BoxConstraints(minHeight: 216),
+            child: CoeloAdminCreateAction(
+              label: 'Criar perfil',
+              icon: Icons.manage_accounts_outlined,
+              onPressed: onCreate!,
+            ),
           ),
-        ),
-        for (final item in items) _AccessProfileCard(item: item, onPressed: () => onOpen(item.id)),
+        for (final item in items)
+          _AccessProfileCard(item: item, onPressed: onOpen == null ? null : () => onOpen!(item.id)),
       ];
       return Column(
         key: const Key('access-profile-card-grid'),
@@ -511,14 +543,14 @@ final class _AccessProfileCard extends StatelessWidget {
   const _AccessProfileCard({required this.item, required this.onPressed});
 
   final AccessProfile item;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return CoeloAdminInteractiveCard(
       surfaceKey: Key('access-profile-card-${item.id}'),
-      semanticLabel: 'Abrir perfil ${item.name}',
+      semanticLabel: onPressed == null ? 'Perfil ${item.name}' : 'Abrir perfil ${item.name}',
       minHeight: 216,
       onPressed: onPressed,
       child: Padding(
@@ -639,20 +671,22 @@ final class _AccessProfileTable extends StatelessWidget {
 
   final List<AccessProfile> items;
   final AccessProfileTableView tableView;
-  final VoidCallback onCreate;
-  final ValueChanged<String> onOpen;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onOpen;
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      CoeloAdminCreateAction(
-        key: const Key('create-access-profile-banner'),
-        label: 'Criar perfil',
-        description: 'Adicionar novo perfil de acesso ao sistema.',
-        variant: CoeloAdminCreateActionVariant.banner,
-        onPressed: onCreate,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
+      if (onCreate != null) ...[
+        CoeloAdminCreateAction(
+          key: const Key('create-access-profile-banner'),
+          label: 'Criar perfil',
+          description: 'Adicionar novo perfil de acesso ao sistema.',
+          variant: CoeloAdminCreateActionVariant.banner,
+          onPressed: onCreate!,
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
       CoeloAdminResizableTable<AccessProfile>(
         key: const Key('access-profile-table'),
         items: items,
@@ -735,7 +769,7 @@ final class _AccessProfileTable extends StatelessWidget {
               ],
         headerHeight: 56,
         rowHeight: 64,
-        onRowPressed: (item) => onOpen(item.id),
+        onRowPressed: onOpen == null ? null : (item) => onOpen!(item.id),
       ),
     ],
   );

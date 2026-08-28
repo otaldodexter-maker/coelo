@@ -45,6 +45,11 @@ final class AccessProfileViewModel extends ChangeNotifier {
 
   Future<void> load() async {
     final requestGeneration = ++_requestGeneration;
+    if (query.domain == AccessProfileDomain.principal) {
+      page = const AccessProfilePage.empty();
+    } else {
+      capabilities = const [];
+    }
     state = AccessProfileLoadState.loading;
     errorMessage = null;
     notifyListeners();
@@ -68,6 +73,7 @@ final class AccessProfileViewModel extends ChangeNotifier {
       }
     } on AccessProfileUnauthorizedException catch (error) {
       if (!_isCurrent(requestGeneration)) return;
+      _clearSensitiveState(resetQuery: true);
       errorMessage = error.message;
       state = AccessProfileLoadState.unauthorized;
     } on AccessProfileConflictException catch (error) {
@@ -76,10 +82,12 @@ final class AccessProfileViewModel extends ChangeNotifier {
       state = AccessProfileLoadState.conflict;
     } on AccessProfileException catch (error) {
       if (!_isCurrent(requestGeneration)) return;
+      _clearSensitiveState();
       errorMessage = error.message;
       state = AccessProfileLoadState.failure;
     } on Object {
       if (!_isCurrent(requestGeneration)) return;
+      _clearSensitiveState();
       errorMessage = 'Tente novamente em instantes.';
       state = AccessProfileLoadState.failure;
     }
@@ -164,11 +172,21 @@ final class AccessProfileViewModel extends ChangeNotifier {
 
   bool _isCurrent(int requestGeneration) => !_disposed && requestGeneration == _requestGeneration;
 
+  void _clearSensitiveState({bool resetQuery = false}) {
+    page = const AccessProfilePage.empty();
+    capabilities = const [];
+    if (resetQuery) {
+      query = const AccessProfileQuery();
+      tableView = AccessProfileTableView.grouped;
+    }
+  }
+
   @override
   void dispose() {
     _disposed = true;
     _requestGeneration++;
     _searchGeneration++;
+    _clearSensitiveState(resetQuery: true);
     super.dispose();
   }
 }
