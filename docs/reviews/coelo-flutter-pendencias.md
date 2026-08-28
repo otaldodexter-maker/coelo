@@ -1462,6 +1462,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de save/publish ambíguos, gates não-golden e duas rodadas de revisão independente. |
 | Estimativa restante | Próximo lote Flutter deve ser independente deste formulário; ETA E2E continua dependente dos contratos externos registrados. |
 
+## 16.9. Conversas — lifecycle, isolamento e envio idempotente — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Conversas; seleção/reseleção de conversa e envio de mensagem. |
+| Arquivos modificados | `superadmin_chat_page.dart`; `superadmin_chat_page_test.dart`. |
+| Correções realizadas | Troca de repository/contexto limpa estado e PII antes de carregar o novo contexto e descarta inbox, thread, `markRead` e envio tardios do contexto anterior. O envio é single-flight e mantém intenção tipada com `idempotencyKey` estável em falha transitória ou ambígua; mudança real de conversa, repository ou corpo cria nova intenção. Reselecionar a mesma conversa válida preserva busy/intenção e não inicia refetch capaz de sobrescrever uma mensagem recém-confirmada; thread ausente ou com erro continua permitindo retry. |
+| Estado atual | `local-green`. Suíte Chat não-golden fresca 32/32; analyzer dos dois arquivos sem issues; formatter e `git diff --check` verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0. Nenhum backend, router produtivo ou golden foi alterado. |
+| Bloqueios | Persistência produtiva, autorização/RLS, resposta remota perdida real, realtime e validação cross-tenant permanecem fora deste pacote. O resultado local não constitui E2E. |
+| Pendências restantes | Refresh manual de uma thread válida não é acionado por reseleção; refresh/realtime permanecem caminhos próprios. Evidência E2E das 207 ações e inspeção visual humana continuam pendentes. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de swap A→B, reseleção A→A, retry ambíguo, suíte focada e duas revisões independentes. |
+| Estimativa restante | Próximo lote seguro: lifecycle de save/publicação de Momentos; ETA E2E continua dependente dos contratos externos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
