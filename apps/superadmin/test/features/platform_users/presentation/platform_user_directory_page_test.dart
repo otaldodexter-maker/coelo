@@ -25,6 +25,7 @@ void main() {
           repository: repository,
           capability: PlatformUserCapability.owner,
           logout: () async => const LogoutResult.success(),
+          onCreate: () {},
           onView: (id) => openedId = id,
         ),
       ),
@@ -143,6 +144,100 @@ void main() {
     expect(find.byKey(const Key('platform-user-card-grid')), findsOneWidget);
   });
 
+  testWidgets('repository and capability swap clear every context A query', (tester) async {
+    final pageKey = GlobalKey();
+    final repositoryA = _LifecycleRepository.immediate('Contexto A');
+    final repositoryB = _LifecycleRepository.immediate('Contexto B');
+
+    await tester.pumpWidget(
+      _directoryApp(
+        key: pageKey,
+        repository: repositoryA,
+        capability: PlatformUserCapability.owner,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto A Exclusivo'), findsWidgets);
+
+    await tester.enterText(find.byKey(const Key('platform-user-search')), 'busca de A');
+    await tester.pump(const Duration(milliseconds: 301));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('platform-user-view-table')));
+    await tester.pumpAndSettle();
+
+    await tester.pumpWidget(
+      _directoryApp(
+        key: pageKey,
+        repository: repositoryB,
+        capability: PlatformUserCapability.unauthorized,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto A Exclusivo'), findsNothing);
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(repositoryB.queries, isEmpty);
+
+    await tester.pumpWidget(
+      _directoryApp(
+        key: pageKey,
+        repository: repositoryB,
+        capability: PlatformUserCapability.owner,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repositoryB.queries, hasLength(1));
+    final query = repositoryB.queries.single;
+    expect(query.search, isEmpty);
+    expect(query.profileIds, isEmpty);
+    expect(query.statuses, isEmpty);
+    expect(query.scopes, isEmpty);
+    expect(query.page, 1);
+    expect(query.view, PlatformUserDirectoryView.cards);
+    expect(query.pageSize, PlatformUserQuery.cardsPageSize);
+    expect(find.text('Contexto B Exclusivo'), findsWidgets);
+    expect(find.text('Contexto A Exclusivo'), findsNothing);
+  });
+
+  testWidgets('late repository A response cannot repaint repository B', (tester) async {
+    final pageKey = GlobalKey();
+    final repositoryA = _LifecycleRepository.pending('Contexto A');
+    final repositoryB = _LifecycleRepository.pending('Contexto B');
+
+    await tester.pumpWidget(
+      _directoryApp(
+        key: pageKey,
+        repository: repositoryA,
+        capability: PlatformUserCapability.owner,
+      ),
+    );
+    await tester.pump();
+    expect(repositoryA.queries, hasLength(1));
+
+    await tester.pumpWidget(
+      _directoryApp(
+        key: pageKey,
+        repository: repositoryB,
+        capability: PlatformUserCapability.owner,
+      ),
+    );
+    await tester.pump();
+    expect(repositoryB.queries, hasLength(1));
+
+    repositoryB.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Contexto B Exclusivo'), findsWidgets);
+
+    repositoryA.complete();
+    await tester.pump();
+    expect(find.text('Contexto B Exclusivo'), findsWidgets);
+    expect(find.text('Contexto A Exclusivo'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('renders loading, empty, error, and no-results states', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -189,7 +284,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).first, 'sem correspondência');
+    await tester.enterText(find.byKey(const Key('platform-user-search')), 'sem correspondência');
     await tester.pump(const Duration(milliseconds: 301));
     await tester.pumpAndSettle();
     expect(find.text('Nenhum resultado encontrado'), findsOneWidget);
@@ -217,6 +312,107 @@ void main() {
     expect(find.byKey(const Key('platform-user-pagination-footer')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('keeps cards and table stable across the responsive matrix', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    for (final width in const [375.0, 768.0, 1024.0, 1440.0]) {
+      for (final scale in const [1.0, 2.0]) {
+        await tester.binding.setSurfaceSize(Size(width, 1000));
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: PlatformUserDirectoryPage(
+              repository: FakePlatformUserRepository(),
+              capability: PlatformUserCapability.owner,
+              logout: unavailableSuperadminLogout,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('platform-user-card-grid')), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: width.toString());
+
+        await tester.tap(find.byKey(const Key('platform-user-view-table')));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('platform-user-directory-table')), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: width.toString());
+
+        await tester.tap(find.byKey(const Key('platform-user-view-cards')));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('platform-user-card-grid')), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: width.toString());
+      }
+    }
+  });
+}
+
+Widget _directoryApp({
+  required Key key,
+  required PlatformUserRepository repository,
+  required PlatformUserCapability capability,
+}) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: PlatformUserDirectoryPage(
+    key: key,
+    repository: repository,
+    capability: capability,
+    logout: unavailableSuperadminLogout,
+  ),
+);
+
+final class _LifecycleRepository implements PlatformUserRepository {
+  _LifecycleRepository._(this._record, this._pending);
+
+  factory _LifecycleRepository.immediate(String name) =>
+      _LifecycleRepository._(_recordNamed(name), false);
+
+  factory _LifecycleRepository.pending(String name) =>
+      _LifecycleRepository._(_recordNamed(name), true);
+
+  final PlatformUserRecord _record;
+  final bool _pending;
+  final queries = <PlatformUserQuery>[];
+  final _completion = Completer<PlatformUserPage>();
+
+  void complete() {
+    if (!_completion.isCompleted) _completion.complete(_page());
+  }
+
+  PlatformUserPage _page() => PlatformUserPage(
+    items: [_record],
+    totalCount: 1,
+    page: queries.last.page,
+    pageSize: queries.last.pageSize,
+  );
+
+  @override
+  Future<PlatformUserPage> fetchPage(PlatformUserQuery query) {
+    queries.add(query);
+    return _pending ? _completion.future : Future.value(_page());
+  }
+
+  @override
+  List<PlatformAccessProfile> get profiles => PlatformAccessProfiles.values;
+
+  @override
+  List<PlatformUserRecord> get records => [_record];
+
+  @override
+  PlatformUserRecord? findById(String id) => id == _record.id ? _record : null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+PlatformUserRecord _recordNamed(String name) {
+  final source = FakePlatformUserRepository().records.first;
+  return source.copyWith(
+    identity: source.identity.copyWith(firstName: name, lastName: 'Exclusivo', displayName: ''),
+  );
 }
 
 final class _ScenarioRepository implements PlatformUserRepository {
