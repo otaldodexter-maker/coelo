@@ -625,7 +625,7 @@ após liberação; o esforço Flutter permanece o registrado no rastreador próp
 | 23 | `momentos` | `local-green`: `momentos.view`; `blocked-decision`: `momentos.create`, `momentos.publish`, `momentos.remove` | `blocked-decision`: todos os 4 IDs | `blocked-decision`: todos os 4 IDs | Momentos UI → metadata repository → Supabase RLS + worker R2 → audience/removal/audit | E2; contrato de publicação/mídia/retenção não aprovado; decisão 1–2 d + 3–5 d + E2E. |
 | 24 | `principal_profile` | `local-green`: `principal.for-you`, `principal.profile-view`; `blocked-decision`: `principal.profile-edit` | `blocked-decision`: todos os 3 IDs | `blocked-decision`: todos os 3 IDs | Principal UI → context/profile repository → RLS de pessoa/vínculo → audit/reload | E2; campos permitidos, ownership e edição produtiva não definidos; decisão 1 d + 2–4 d + E2E. |
 | 25 | `child_safety` | `local-green`: `child-safety.list`, `child-safety.child`, `child-safety.create`, `child-safety.edit`; `audited`: `child-safety.suspend` | `audited`: todos os 5 IDs | `not-reviewed`: todos os 5 IDs | Safety UI → repository → RPC sensível → RLS/Storage privado → notification/audit/reload | E0/E1/E2; falta ledger, AAL2/capability, ownership, suspensão, evidência e A/B; 2–4 d + E2E 1 d. |
-| 26 | `health_care` | `local-green`: `health-care.list`, `health-care.create`, `health-care.edit`; `blocked-decision`: `health-care.detail` | `fail-closed`: todos os 4 IDs | `blocked-supabase`: todos os 4 IDs | Health UI → Unavailable/repository → RPC sensível → RLS/Storage privado → history/audit | E0/E2; base legal, minimização, retenção, detalhe e arquivos produtivos abertos; decisão 1–2 d + 4–6 d + E2E. |
+| 26 | `health_care` | `local-green`: `health-care.list`, `health-care.create`, `health-care.edit`; estado Flutter de `health-care.detail` pertence ao rastreador Flutter | `fail-closed`: todos os 4 IDs; trabalho Supabase local liberado pelo Owner em 2026-08-28 | `blocked-supabase`: todos os 4 IDs | Health UI → Unavailable/repository → RPC sensível → RLS/Storage privado → history/audit | E0/E2; implementar backend técnico com dados sintéticos, minimização e isolamento; jurídico/retenção ficam como gate posterior de produção, não bloqueio do trabalho local; depois cutover + E2E. |
 | 27 | `medication` | `blocked-decision`: todos os 5 IDs | `blocked-decision`: todos os 5 IDs | `blocked-decision`: todos os 5 IDs | Medication UI → contrato futuro → RPC sensível → RLS/Storage → evidence/audit | E2; OQ-040, base legal, prescrição, dose e retenção abertas; decisão externa + 5–8 d + E2E. |
 | 28 | `imports` | `local-green`: `imports.create`; `audited`: `imports.list`, `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status`, `imports.download` | `fail-closed`: todos os 7 IDs | `blocked-supabase`: todos os 7 IDs | Imports UI → domain gateway → Edge allowlist → job/Storage → status/ticket/audit/cleanup | E0/E2; hub real atende Units, facade genérica diverge; publicar handlers permitidos e testar limites, replay, partial failure e A/B; 3–5 d + E2E 1–2 d. |
 | 29 | `profile_files` | `audited`: todos os 6 IDs | `fail-closed`: todos os 6 IDs | `blocked-supabase`: todos os 6 IDs | Access files UI → gateway worker-only futuro → RPCs protegidas → Storage privado → ticket sanitizado/audit | E0/E1/E2; P0 em conclusão/status/assinatura e exposição bucket/path; decisão 1 d + 3–5 d + E2E 1 d. |
@@ -1087,7 +1087,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   restante integrado: nao calculavel sem cutover Flutter, contratos restantes
   e prova remota autorizada.
 
-### Checkpoint integrado 48 - Convites e Perfis de cuidado sem promocao
+### Checkpoint integrado 48 - Convites e estado historico de Perfis de cuidado
 
 - Convites recebeu apenas spec 047 `draft-for-review`, OQ-039 e inventario de
   proveniencia. RED executavel, SQL, capability, backfill, Flutter e cutover
@@ -1103,6 +1103,10 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   recoveries locais sensiveis nao promovidas e Flutter produtivo indisponivel.
   Nenhuma regra juridica, retencao ou autoridade sobre saude infantil foi
   inferida.
+- Decisao superveniente do Owner Coelo em 2026-08-28: o juridico sera tratado
+  depois e nao bloqueia o trabalho Supabase local de Perfis de cuidado. O
+  estado integrado continua aberto porque ainda faltam spec tecnica, backend,
+  cutover Flutter e E2E; nao por bloqueio juridico desta etapa.
 - O snapshot remoto usado foi estritamente SELECT-only; zero migration,
   DDL/DML, Auth, Storage, Edge ou deploy. Nenhum Docker/pgTAP foi executado
   porque o contrato bloqueou RED/SQL.
@@ -1110,3 +1114,34 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   `remote-green`. O proximo gate exige decisoes canonicas, implementacao
   backend local revisada, consolidacao e autorizacao explicita do Eng
   Integrador.
+
+### Checkpoint integrado 49 - Assiduidade sem promocao
+
+- Assiduidade recebeu somente spec 048 `draft-for-review`, OQ-040 e
+  inventario/proveniencia. RED, SQL/migration, capability e cutover continuam
+  bloqueados.
+- O Flutter produtivo injeta `SupabaseAttendanceRepository`, mas chama
+  dashboard local-only e RPCs de chamada ausentes do remoto. Nenhum fluxo foi
+  promovido ou testado E2E.
+- A fundacao remota e people-based. Definicoes, ACLs e policies provam um P0
+  backend: `platform.read` alcanca o ramo manage, confirmacao/reversao e
+  participantes esperados sem escopo institucional do ator. Nenhum DML/HTTP
+  foi executado, nenhum incidente foi afirmado e nenhuma policy/grant foi
+  revogada. A correcao e o cutover permanecem pacotes separados.
+- Dashboard, listagem, exportacao, criar/marcar/concluir/reabrir/corrigir,
+  agendamento e cancelamento permanecem fora deste pacote.
+- Estado integrado segue 0/207 E2E, sem `local-green`, `remote-green`,
+  deploy ou `done`. O proximo gate exige decisoes OQ-040, backend local
+  revisado, consolidacao e autorizacao do Eng Integrador.
+
+### Checkpoint integrado 50 - Perfis de cuidado B+C sem integração
+
+- A spec 049 draft delimita backend exclusivamente Superadmin: Owner global e
+  assignments restritivos por instituicao/unidade, com autorizacao por
+  capabilities de Perfis de Acesso. Nenhum Admin ou Principal foi incluído.
+- Nao houve Flutter, repository produtivo, RPC implantada, persistencia remota,
+  reload de UI ou E2E. O estado integrado permanece 0/207 e nenhuma acao foi
+  promovida.
+- O proximo gate integrado so começa depois de spec aprovada, backend
+  local-green consolidado e autorizacao do Eng Integrador. A implementacao
+  Supabase continua registrada exclusivamente no rastreador backend.

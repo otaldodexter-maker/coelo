@@ -123,7 +123,7 @@ retirar teste, autorização, RLS ou evidência para fazer a estimativa caber.
 | RLS, grants e `SECURITY DEFINER` | `Avançada` | 1–3 dias por domínio | Falha pode permitir acesso indevido entre tenants. |
 | Auth, MFA e revogação | `Avançada` | 2–5 dias | Afeta identidade, sessão e comandos privilegiados. |
 | Storage privado e URLs assinadas | `Avançada` | 1–3 dias por domínio | Envolve ownership, expiração e dados privados. |
-| Saúde, segurança infantil e medicação | `Completa` após decisões | 3–7 dias por domínio | Dados sensíveis e gates jurídicos não aceitam pacote parcial. |
+| Saúde, segurança infantil e medicação | `Completa`; Perfis de cuidado liberado para trabalho local | 3–7 dias por domínio | Perfis de cuidado pode avançar com dados sintéticos e gates técnicos; produção com dados reais e os demais domínios conservam seus gates próprios. |
 | Declaração de backend concluído | `Completa` | Recalcular pelo recorte | Exige regressão, remoto, auditoria e cleanup. |
 
 ## 2. Regra de conclusão
@@ -779,7 +779,7 @@ do `action_id` não contém `reload`.
 | 23 | `momentos` | `blocked-decision`: `momentos.view`, `momentos.create`, `momentos.publish`, `momentos.remove` | UI/preview não constitui backend; nenhuma prova remota registrada. | Aprovar publicação, audiência, mídia, remoção/retenção e auditoria; implementar e testar A/B. | decisão 1–2 d + 3–5 d |
 | 24 | `principal_profile` | `blocked-decision`: `principal.for-you`, `principal.profile-view`, `principal.profile-edit` | Superfície de preview sem contrato produtivo completo. | Definir dados permitidos por contexto, ownership e campos editáveis; implementar leitura/escrita minimizada com RLS. | decisão 1 d + 2–4 d |
 | 25 | `child_safety` | `audited`: `child-safety.list`, `child-safety.child`, `child-safety.create`, `child-safety.edit`, `child-safety.suspend` | Migração de lint local inspecionada; sem ledger/remoto/E2E sensível. | Reconciliar enum/status e ledger; testar ownership, AAL2, capability, evidência privada, suspensão, notificação e A/B. | 2–4 d |
-| 26 | `health_care` | `fail-closed`: `health-care.list`, `health-care.create`, `health-care.detail`, `health-care.edit` | Contratos e UI auditados; repository/file actions produtivos não aprovados. | Manter Unavailable; fechar base legal, minimização, histórico, mídia privada, auditoria, retenção e E2E. | decisão 1–2 d + 4–6 d |
+| 26 | `health_care` | `fail-closed`: `health-care.list`, `health-care.create`, `health-care.detail`, `health-care.edit` | Contratos e UI auditados; repository/file actions produtivos ainda não implementados. O Owner liberou o trabalho Supabase local em 2026-08-28 sem esperar a etapa jurídica posterior. | Especificar e implementar backend interno com minimização, histórico, mídia privada, auditoria, tenant A/B e dados sintéticos; manter retenção jurídica e produção com dados reais como gates separados. | 4–6 d locais + remoto/E2E separado |
 | 27 | `medication` | `blocked-decision`: `medication.list`, `medication.create`, `medication.detail`, `medication.edit`, `medication.evidence` | Repository/contrato produtivo ausente ou stale; OQ-040 jurídica/retenção aberta. | Decidir base legal, prescrição, dose, evidência, retenção e responsabilidade; só então especificar backend. | decisão externa + 5–8 d |
 | 28 | `imports` | `fail-closed`: `imports.list`, `imports.create`, `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status`, `imports.download` | Hub genérico real atende Units; facade histórica diverge em endpoints e não suporta Access Profiles. | Publicar catálogo allowlist por domínio; testar create-only, MIME/encoding/limites, replay, partial failure, URL/expiry e cleanup. | 3–5 d |
 | 29 | `profile_files` | `fail-closed`: `profile-files.import`, `profile-files.preview`, `profile-files.confirm`, `profile-files.status`, `profile-files.export`, `profile-files.download` | RPCs locais auditadas: bucket privado e ACLs restritas; P0 em `file_complete`, `file_job`, assinatura de import e vazamento bucket/path. | Aprovar gateway worker-only; permitir conclusão só de export com AAL2/capability/membership/expiry revalidados; sanitizar DTO e testar revogação/reuso. | decisão 1 d + 3–5 d |
@@ -3652,7 +3652,7 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`; a fonte canonica duravel e a spec 046 e
   nenhum comportamento remoto/integrado foi projetado em `docs/knowledge`.
 
-### Checkpoint seguro 48 - Convites draft/proveniencia e Perfis de cuidado bloqueados
+### Checkpoint seguro 48 - Convites draft/proveniencia e estado historico de Perfis de cuidado
 
 - **Lote/acoes tratadas:** somente inventario read-only, spec 047
   `draft-for-review` e OQ-039 para Convites. Nenhuma acao de listar,
@@ -3680,6 +3680,13 @@ da simples soma das 207 ações.
   `20260812123500` e `20260812124000` lidam com saude infantil sensivel,
   autorizacao people-based e regras juridicas/retencao nao aprovadas. Nenhuma
   recovery, tabela, policy, RPC ou grant foi restaurado ou alterado.
+- **Supercessao em 2026-08-28:** por decisao explicita posterior do Owner
+  Coelo, a pendencia juridica deixou de bloquear o trabalho Supabase local de
+  Perfis de cuidado. Permanece somente a necessidade tecnica de selecionar a
+  proveniencia, substituir a autoridade people-based pelo principal interno,
+  escrever a spec tecnica e provar RLS, tenant A/B, auditoria, persistencia e
+  reload com dados sinteticos. A decisao nao autorizou dado real, deploy ou
+  mutacao remota e nao definiu retencao.
 - **Evidencias/testes:** revisoes read-only de proveniencia e contrato pelo Eng
   Sup e contraprova independente. Nenhum Docker ou pgTAP foi executado porque
   RED/SQL ficaram explicitamente bloqueados; o mirror permanece no baseline
@@ -3689,8 +3696,107 @@ da simples soma das 207 ações.
   Edge, migration, DDL/DML ou deploy remoto. Nenhuma das 207 acoes integradas
   foi promovida.
 - **Tempo usado:** nao mensurado com precisao neste lote. **Tempo restante:**
-  nao calculavel; depende das decisoes OQ-039, juridicas de Perfis de cuidado,
-  contratos de cutover e futura prova remota autorizada.
+  nao calculavel; Convites depende da OQ-039; Perfis de cuidado depende agora
+  somente da spec tecnica, proveniencia, implementacao local, cutover e futura
+  prova remota autorizada.
 - **Gate de conhecimento:** `no-op`; a fonte canonica e a spec 047 draft mais
   OQ-039. Nenhum comportamento aprovado/implantado novo foi projetado em
+  `docs/knowledge`.
+
+### Checkpoint seguro 49 - Assiduidade draft/proveniencia
+
+- **Lote/acoes tratadas:** inventario read-only, OQ-040 e spec 048
+  `draft-for-review` para futuro detalhe/reload de chamada. Nenhuma acao de
+  listar, detalhar, criar, marcar, concluir, reabrir, corrigir, cancelar,
+  exportar ou agendar foi implementada ou promovida.
+- **Fundacao:** `20260724152731` esta no ledger remoto; commit
+  `b6c4095a85ea454ee9febc61a9b8aac2862d46d2`, blob
+  `9539cb6a4fddd0d1d211497c2a95ef30ebdf07fe` e SHA-256
+  `D8F99E587330EB4EC8F30525097A25667CC593B0CB03722DC89B1CDF47269AE6`.
+  Sua autoridade e people-based e nao serve ao principal interno.
+- **Dashboard/cadeia:** `20260825171221` e canônica local, mas ausente do
+  ledger remoto; SHA-256
+  `E3A93182083FE3EE80A500D1FB91DBEB7195E9C01A6D239C3D5EB4F0DA9C1128`.
+  As RPCs de chamada esperadas pelo Flutter aparecem somente na cadeia
+  local/recovery removida `11231000..12150100`, misturada com Rotina,
+  people-based, receipts de Pessoa e audit v1. Nada foi restaurado.
+- **P0 remoto de autorizacao:** Flutter injeta
+  `SupabaseAttendanceRepository` e chama RPCs inexistentes no remoto. Separado
+  desse gap, o snapshot SELECT-only provou que
+  `can_access_attendance_child(..., require_manage)` aceita `platform.read`
+  antes de diferenciar gestao. A permission tem grants ativos para os cinco
+  papeis de plataforma e o helper alcanca confirmacao/reversao e a policy
+  `ALL` de participantes esperados. Definicoes, ACLs e policies tornam a
+  autorizacao SQL cross-tenant por ID factual; nenhum DML/HTTP foi executado e
+  nenhum incidente foi afirmado. O hardening forward-only e pacote separado,
+  ainda sem autorizacao de deploy.
+- **Decisoes:** capability interna, matriz/AAL, scope platform/institution,
+  shape infantil/DTO e cutover permanecem abertas. Dashboard/list/export,
+  writes, schedule e cancel sao pacotes separados.
+- **Evidencias/testes:** inventario e proveniencia read-only com contraprova
+  independente concluida. O review confirmou o P0 SQL factual em helper,
+  wrappers, policy e grants, sem executar DML/HTTP. Nenhum Docker/pgTAP foi
+  executado porque RED e SQL/migration estao bloqueados; baseline mirror
+  permanece 112/112.
+- **Estado:** `blocked-contract/provenance`, apenas documental; nao
+  `local-green`, `remote-green`, deployable, `done` ou E2E. Zero
+  migration, DDL/DML, Auth, Storage, Edge, Flutter ou deploy remoto.
+- **Tempo usado:** nao mensurado com precisao. **Tempo restante:** nao
+  calculavel; depende da OQ-040, cutover e prova remota autorizada.
+- **Gate de conhecimento:** `no-op`; spec 048 draft e OQ-040 sao as fontes
+  canonicas desta investigacao, sem comportamento aprovado novo em
+  `docs/knowledge`.
+
+### Checkpoint seguro 50 - Perfis de cuidado B+C exclusivamente Superadmin
+
+- **Decisao/recorte:** o Owner Coelo selecionou B+C apenas para o Superadmin:
+  Owner interno com alcance global e diretorio tambem restritivo por
+  instituicao/unidade. Admin e Principal nao recebem gateway, papel ou
+  autoridade. A spec 049 foi redigida como `draft-for-review`; nenhum RED
+  executavel, migration ou SQL de implementacao foi iniciado.
+- **Capacidades:** o desenho usa `care_profiles.read`,
+  `care_profiles.manage` e `care_profiles.archive`, todas criticas e com AAL2.
+  Owner recebe grants explicitos iniciais e protecao da ultima cadeia global;
+  nao existe bypass por nome. Os demais perfis futuros dependem do catalogo e
+  grants de Perfis de Acesso; o comando produtivo de governanca permanece
+  follow-up.
+- **Escopo:** a membership da spec 039 continua somente
+  `platform|institution`. Unidade e materializada por assignment privado Care
+  `platform|institution|unit`, sempre como restricao adicional. Sem assignment
+  ativo o acesso e negado; suspensao/revogacao nunca faz fallback para escopo
+  mais amplo. FK composta valida unidade e instituicao.
+- **Contrato proposto:** diretorio, detalhe/reload, create, edit e archive
+  terminal; schema versionado, revisoes imutaveis, receipts privados,
+  concorrencia por `expected_version`, auditoria v2/v3 e envelope seguro. A
+  saida omite medicamentos, doses, alergias estruturadas, arquivos, contato,
+  nascimento, Auth IDs e payload clinico em audit.
+- **Seguranca:** autoridade exclusiva de
+  `require_superadmin_internal_context`; `people`, memberships legadas,
+  claims/filtros do cliente e `service_role` nao autorizam. Tabelas usam FORCE
+  RLS, zero policies permissivas/grants; wrappers publicos somente
+  `authenticated`; helpers privados sem EXECUTE de cliente.
+- **Proveniencia:** as migrations historicas `20260812123500`,
+  `20260812124000`, `20260813182000` e `20260813184051` nao serao restauradas:
+  sao people-based, local-only e/ou ativam regras nao aprovadas. O pacote sera
+  forward-only e reconstruido sob a spec 039.
+- **Review:** Eng Sup classificou GREEN para a spec 049 e RED estrutural
+  futuro desde que unit seja assignment privado; ampliar enum/membership Auth
+  global dentro de Care e P0. A spec escrita ainda aguarda revisao do Owner
+  antes do plano TDD e do SQL.
+- **Estado e ambiente:** `draft-for-review`; nao `local-green`,
+  `remote-green`, deployable, E2E ou `done`. Zero Docker, pgTAP, migration,
+  DDL/DML, Auth, Storage, Edge, Flutter ou mutacao remota. O ledger e o mirror
+  permanecem no ultimo baseline aceito 112/112.
+- **Progresso:** geral estrito continua 0/228 unidades `done`; o rastreador
+  integrado continua 0/207 E2E. O recorte Care concluiu somente desenho e
+  proveniencia; implementacao, testes, consolidacao, cutover e remoto seguem
+  pendentes.
+- **Proximo passo seguro:** revisar/aprovar a spec 049; depois escrever plano,
+  RED estrutural e migration forward-only em lote local isolado. Produção com
+  dados reais e release gates continuam separados, sem inferir retencao.
+- **Tempo usado:** nao mensurado com precisao. **Tempo restante:** estimativa
+  inicial de 3-5 dias focados para schema+CRUD+pgTAP local completo; cutover
+  Flutter, remoto e E2E sao estimados separadamente apos seus contratos.
+- **Gate de conhecimento:** `no-op`; a fonte canonica nova e a spec 049 draft.
+  Nenhum comportamento implantado ou integrado foi projetado em
   `docs/knowledge`.

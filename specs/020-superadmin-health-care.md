@@ -1,6 +1,6 @@
 ---
 title: "Saúde e Cuidado no Superadmin"
-source: "pedido aprovado em 2026-08-04; docs/product/prd-master.md; docs/data/data-model.md; docs/security/lgpd-security-media.md; specs/019-superadmin-people-directory.md; decisions/0010-private-media-r2.md; decisions/0015-contextual-people-authorizations-attendance.md"
+source: "pedido aprovado em 2026-08-04; docs/product/prd-master.md; docs/data/data-model.md; docs/security/lgpd-security-media.md; specs/019-superadmin-people-directory.md; decisions/0010-private-media-r2.md; decisions/0015-contextual-people-authorizations-attendance.md; decisão superveniente do Owner Coelo em 2026-08-28"
 status: "approved-for-demonstrative-ui"
 generated_at: "2026-08-04"
 ---
@@ -100,3 +100,15 @@ e shell.
 `OQ-003` mantém base legal e retenção pendentes. Documentos dependem do
 contrato R2. Schema, RLS, RPCs e concorrência exigem spec técnica e revisão
 humana antes de qualquer migration.
+
+## Decisão superveniente para o backend
+
+Em 2026-08-28, o Owner Coelo determinou que as pendências jurídicas de Perfis
+de cuidado serão tratadas posteriormente e não bloqueiam a implementação
+Supabase local do domínio. Essa autorização permite preparar e testar spec
+técnica, schema, RLS, grants e RPCs com dados exclusivamente sintéticos.
+
+A decisão não define prazo de retenção, base legal, regra clínica ou nova
+permissão e não autoriza uso de dados reais nem mutação remota. A implementação
+continua obrigada a validar sessão, principal interno, membership, contexto da
+criança, hierarquia, capability e isolamento entre instituições no backend.
