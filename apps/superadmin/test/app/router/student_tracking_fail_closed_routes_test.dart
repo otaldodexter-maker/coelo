@@ -39,7 +39,11 @@ void main() {
       router.go(path);
       await tester.pumpAndSettle();
 
-      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        path.startsWith('/dev/') ? path : '/errors/mutation-capability-unavailable',
+        reason: path,
+      );
       expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
       expect(
         tester.widget<SuperadminErrorScreen>(find.byType(SuperadminErrorScreen)).kind,

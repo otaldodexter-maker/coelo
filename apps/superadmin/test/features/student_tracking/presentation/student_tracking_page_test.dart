@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/student_tracking/domain/student_tracking.dart';
 import 'package:coelo_superadmin/features/student_tracking/presentation/student_tracking_page.dart';
@@ -49,6 +51,78 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Acesso negado'), findsOneWidget);
     expect(find.text('Tentar novamente'), findsOneWidget);
+  });
+
+  testWidgets('repository swap clears A before rendering fail-closed B', (tester) async {
+    final pageKey = GlobalKey();
+    final repositoryA = _Repository(primaryName: 'Criança exclusiva A');
+    final repositoryB = _Repository(error: const StudentTrackingDeniedException());
+
+    await tester.pumpWidget(
+      _app(
+        StudentTrackingPage(
+          key: pageKey,
+          repository: repositoryA,
+          logout: unavailableSuperadminLogout,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Criança exclusiva A'), findsWidgets);
+
+    await tester.pumpWidget(
+      _app(
+        StudentTrackingPage(
+          key: pageKey,
+          repository: repositoryB,
+          logout: unavailableSuperadminLogout,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Criança exclusiva A'), findsNothing);
+    await tester.pumpAndSettle();
+
+    expect(repositoryB.childrenCalls, 1);
+    expect(find.text('Acesso negado'), findsOneWidget);
+    expect(find.byKey(const Key('student-tracking-tabs')), findsNothing);
+    expect(find.text('Criança exclusiva A'), findsNothing);
+  });
+
+  testWidgets('late repository A snapshot cannot repaint repository B', (tester) async {
+    final pageKey = GlobalKey();
+    final repositoryA = _PendingSnapshotRepository();
+    final repositoryB = _Repository(primaryName: 'Criança exclusiva B');
+
+    await tester.pumpWidget(
+      _app(
+        StudentTrackingPage(
+          key: pageKey,
+          repository: repositoryA,
+          logout: unavailableSuperadminLogout,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(repositoryA.snapshotCalls, 1);
+
+    await tester.pumpWidget(
+      _app(
+        StudentTrackingPage(
+          key: pageKey,
+          repository: repositoryB,
+          logout: unavailableSuperadminLogout,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Criança exclusiva B'), findsWidgets);
+
+    repositoryA.snapshot.complete(_trackingSnapshot('child-a', 'Criança exclusiva A'));
+    await tester.pump();
+    expect(find.text('Criança exclusiva B'), findsWidgets);
+    expect(find.text('Criança exclusiva A'), findsNothing);
   });
 
   for (final brightness in Brightness.values) {
@@ -192,21 +266,29 @@ final class _Repository implements StudentTrackingRepository {
   String? lastActivityId;
   String? lastPeriodId;
   String? lastChildContextId;
-  _Repository({this.error, this.noData = false, this.emptySections = false});
+  _Repository({
+    this.error,
+    this.noData = false,
+    this.emptySections = false,
+    this.primaryName = 'Lia',
+  });
   final Object? error;
   final bool noData;
   final bool emptySections;
+  final String primaryName;
+  int childrenCalls = 0;
   @override
   Future<StudentTrackingChildPage> fetchChildren({
     String? query,
     StudentTrackingCursor? after,
     int limit = 20,
   }) async {
+    childrenCalls += 1;
     if (error case final value?) throw value;
     return StudentTrackingChildPage(
-      items: const [
-        StudentTrackingChild(id: 'child', name: 'Lia', institutionName: 'Colégio'),
-        StudentTrackingChild(id: 'child-2', name: 'Caio', institutionName: 'Colégio'),
+      items: [
+        StudentTrackingChild(id: 'child', name: primaryName, institutionName: 'Colégio'),
+        const StudentTrackingChild(id: 'child-2', name: 'Caio', institutionName: 'Colégio'),
       ],
     );
   }
@@ -222,7 +304,7 @@ final class _Repository implements StudentTrackingRepository {
     lastChildContextId = childContextId;
     lastActivityId = activityId;
     lastPeriodId = periodId;
-    final childName = childContextId == 'child-2' ? 'Caio' : 'Lia';
+    final childName = childContextId == 'child-2' ? 'Caio' : primaryName;
     if (noData) {
       return StudentTrackingSnapshot(
         child: StudentTrackingChild(
@@ -336,3 +418,56 @@ final class _Repository implements StudentTrackingRepository {
     );
   }
 }
+
+final class _PendingSnapshotRepository implements StudentTrackingRepository {
+  final snapshot = Completer<StudentTrackingSnapshot>();
+  int snapshotCalls = 0;
+
+  @override
+  Future<StudentTrackingChildPage> fetchChildren({
+    String? query,
+    StudentTrackingCursor? after,
+    int limit = 20,
+  }) async => StudentTrackingChildPage(
+    items: const [
+      StudentTrackingChild(
+        id: 'child-a',
+        name: 'Criança exclusiva A',
+        institutionName: 'Colégio A',
+      ),
+    ],
+  );
+
+  @override
+  Future<StudentTrackingSnapshot> fetchSnapshot({
+    required String childContextId,
+    String? activityId,
+    String? periodId,
+    StudentTrackingAgendaCursor? agendaAfter,
+    int agendaLimit = 20,
+  }) {
+    snapshotCalls += 1;
+    return snapshot.future;
+  }
+}
+
+StudentTrackingSnapshot _trackingSnapshot(String childId, String childName) =>
+    StudentTrackingSnapshot(
+      child: StudentTrackingChild(id: childId, name: childName, institutionName: 'Colégio'),
+      contexts: const [],
+      periods: const [],
+      assessments: const [],
+      competencies: const [],
+      categoryScores: const [],
+      development: const [],
+      attendance: const StudentTrackingAttendance(
+        total: 0,
+        present: 0,
+        justifiedAbsences: 0,
+        unjustifiedAbsences: 0,
+        late: 0,
+        percentage: 0,
+      ),
+      agenda: const [],
+      pendingNotices: 0,
+    );
