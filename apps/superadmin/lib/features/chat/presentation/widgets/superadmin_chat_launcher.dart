@@ -265,11 +265,13 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
       1 => '1 mensagem nao lida',
       _ => '$unreadCount mensagens nao lidas',
     };
-    final shape = CircleBorder(
-      side: BorderSide(
-        color: highlighted ? colors.onPrimary.withValues(alpha: 0.72) : colors.outlineVariant,
-      ),
+    final isCompact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth;
+    final borderSide = BorderSide(
+      color: highlighted ? colors.onPrimary.withValues(alpha: 0.72) : colors.outlineVariant,
     );
+    final OutlinedBorder shape = isCompact
+        ? CircleBorder(side: borderSide)
+        : StadiumBorder(side: borderSide);
     final badge = Badge(
       isLabelVisible: unreadCount > 0,
       label: Text(unreadCount > 9 ? '9+' : '$unreadCount'),
@@ -311,9 +313,28 @@ final class _SuperadminChatLauncherState extends State<SuperadminChatLauncher> {
                     onTap: _openConversations,
                     customBorder: shape,
                     overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                    child: SizedBox.square(
-                      dimension: CoeloSize.touchMin,
-                      child: Center(child: badge),
+                    child: SizedBox(
+                      width: isCompact ? CoeloSize.touchMin : null,
+                      height: CoeloSize.touchMin,
+                      child: isCompact
+                          ? Center(child: badge)
+                          : Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  badge,
+                                  const SizedBox(width: CoeloSpacing.space2),
+                                  Text(
+                                    'Mens.',
+                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                      color: colors.onPrimary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                     ),
                   ),
                 ),

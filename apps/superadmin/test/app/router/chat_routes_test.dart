@@ -42,6 +42,35 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devInstitutions);
   });
 
+  testWidgets('launcher in the persistent shell opens the conversations URI', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devInstitutions);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+    expect(launcher, findsOneWidget);
+    await tester.tap(launcher);
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
+    expect(launcher, findsNothing);
+  });
+
   testWidgets('opens protected conversations for an authenticated session', (tester) async {
     final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
