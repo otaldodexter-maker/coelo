@@ -229,8 +229,8 @@ silenciosamente.
 6. Se nada atender, seguir o
    [contrato de proposta](references/component-proposal.md) e aguardar aprovação.
    Para captura isolada de hora, consultar também a
-   [proposta do seletor de hora Coelo](references/coelo-time-picker.md); enquanto
-   seu frontmatter estiver `proposed`, não consumi-la em produção.
+   [contrato do seletor de hora Coelo](references/coelo-time-picker.md); somente
+   consumi-lo quando seu frontmatter estiver `approved` ou `implemented`.
 7. Registrar o padrão aprovado antes do código.
 8. Implementar; atualizar índice, catálogo, exemplos e testes.
 9. Executar a [verificação proporcional](references/verification.md) e relatar

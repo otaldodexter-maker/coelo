@@ -934,6 +934,23 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.18 Cardápio/modelo — aprovação do padrão — 2026-08-28 14:40 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; contrato/API de `pattern.coelo-time-picker` aprovados visualmente pelo Owner; V3 permanece 6/7 (85,71%). |
+| Evidência aprovada | Prévia mobile light/375 e desktop dark/1440 com campo abaixo do nome, diálogo surface, `HH:mm`, fechar negativo e ações Cancelar/Aplicar. |
+| Decisão | Extrair `CoeloTimeField` e `showCoeloTimePicker` para `coelo_ui_core`, sem novos tokens; migrar Cardápio/Modelo, `CoeloDateTimeField` e o picker Material de Medicação. |
+| Limite do aceite | Desbloqueia implementação; não concede `local-green` ou `accepted` sem testes, catálogo, goldens e inspeções reais. |
+| Tempo usado | 2 h 24 min acumulados; janela restante 7 h 36 min. |
+| Próximo item exato | Escrever RED público do campo/picker antes do código de produção. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

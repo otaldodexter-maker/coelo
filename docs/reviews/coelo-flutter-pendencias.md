@@ -2385,6 +2385,26 @@ os GREENs locais.
 | Próximo item exato | Obter aprovação da extração/API/goldens; escrever primeiro RED em `coelo_ui_core`. |
 | Conhecimento capturado | `no-op`: proposta ainda não aprovada, portanto não entra em `docs/knowledge`. |
 
+## 16.52. V3.18 Cardápio/modelo — aprovação do padrão — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`; bloqueio de aprovação removido. |
+| Aprovação | Owner aprovou a imagem mobile light/375 + desktop dark/1440 e autorizou a API mínima `CoeloTimeField`/`showCoeloTimePicker`. |
+| Arquivos alterados | Referência pública, skill, índice, spec e tracker. |
+| Escopo desbloqueado | RED→GREEN no core; catálogo e goldens; Cardápio/Modelo; convergência de `CoeloDateTimeField` e Medicação. |
+| Bloqueios restantes | `local-green` exige testes/goldens/inspeções reais; `accepted` do entregável exige nova aprovação visual da implementação. Backend/Supabase e Assessments permanecem fora. |
+| Tempo realmente usado | 2 h 24 min acumulados, às 14:40 BRT. |
+| Estimativa restante | 7 h 36 min da janela; V3.18 = 1–2 h. |
+| Próximo item exato | RED público do seletor em `packages/coelo_ui_core/test`. |
+| Conhecimento capturado | `no-op`: decisão visual pertence à fonte canônica da skill/spec. |
+
 ## 17. Histórico
 
 | Data | Mudança |

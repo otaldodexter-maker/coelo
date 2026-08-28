@@ -1,13 +1,15 @@
 ---
 source: "docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md"
-status: "proposed"
+status: "approved"
 generated_at: "2026-08-28"
 ---
 
-# Proposta — seletor de hora Coelo
+# Seletor de hora Coelo
 
-Esta referência registra uma proposta, não um padrão aprovado. Nenhum consumidor
-deve adotá-la antes da aprovação visual explícita do Owner.
+Contrato visual e API mínima aprovados explicitamente pelo Owner em 2026-08-28,
+com base na prévia mobile light/375 e desktop dark/1440. A implementação e os
+goldens ainda precisam passar pelos gates locais antes de o padrão ser marcado
+como `implemented`.
 
 ## Problema e consumidores
 
@@ -92,8 +94,8 @@ Future<TimeOfDay?> showCoeloTimePicker({
 - Medicação substitui `showTimePicker` pelo mesmo campo, sem mudar domínio nem
   persistência.
 
-## Decisão necessária
+## Decisão registrada
 
-O Owner precisa aprovar explicitamente esta extração para `coelo_ui_core`, a API
-mínima acima e os dois goldens propostos. Até essa aprovação, o índice permanece
-`proposed` e V3.18 fica bloqueado antes do código de produção.
+O Owner aprovou explicitamente a extração para `coelo_ui_core`, a API mínima e
+os dois goldens propostos. A aprovação desbloqueia RED→GREEN, catálogo e
+migração; não concede `local-green` nem `accepted` sem as evidências previstas.
