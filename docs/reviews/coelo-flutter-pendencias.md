@@ -2112,6 +2112,48 @@ os GREENs locais.
 | Próximo item exato | V3.12 Segurança infantil: inventário de diretório/wizard e primeiro RED de navegação. |
 | Conhecimento capturado | `no-op`: comportamento read-only já aprovado; apenas fixture local segura. |
 
+## 16.39. V3.12 Segurança infantil — abertura — 2026-08-28
+
+**Entrega atual V3:** 0,00% (0/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Diretório e wizard de Segurança infantil, produção e `/dev`. |
+| Baseline consultado | Instituições, Cards/Tabela, filtros/flyouts, wizard canônico e rodapé universal. |
+| Testes planejados | RED do primeiro ponto morto entre diretório, criação, revisão e edição; matriz responsiva e regressão depois do GREEN. |
+| Bloqueios | Backend/Supabase e Assessments fora do recorte. |
+| Tempo realmente usado | 1 h 42 min acumulados, às 13:03 BRT. |
+| Estimativa restante | 1–2 h para V3.12; 8 h 18 min da janela. |
+| Próximo item exato | Inventário de rotas, callbacks e passos do wizard. |
+| Conhecimento capturado | Pendente do inventário; não criar memória sem regra durável aprovada. |
+
+## 16.40. V3.12 Segurança infantil — local-green — 2026-08-28
+
+**Entrega atual V3:** 14,29% (1/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Diretório, criação, detalhe e edição de Segurança infantil em `/dev`. |
+| Arquivos alterados | `dev_child_safety_repository.dart`; `superadmin_routes.dart`; `superadmin_router.dart`; `safety_routes_test.dart`; spec e tracker. |
+| Correções realizadas | Repositório local ganhou três exemplos e busca de crianças; rota de edição `/dev` foi declarada; detalhe liga cadastro e edição; wizard de quatro passos permanece canônico e localmente salvável. Produção permanece sem mutation callbacks quando indisponíveis. |
+| Testes e resultados | RED reproduzido; GREEN 20 testes funcionais Segurança/rotas; analyzer focado, validador visual e diff-check verdes. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%, light/dark; cards/tabela, detalhe e wizard cobertos. Rota integral exercitada em 375. |
+| Bloqueios | Golden antigo diverge 9,84%, concentrado no shell alterado na V1; resultado atual inspecionado e não promovido. Backend/E2E e aceite humano pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 05 min; 1 h 46 min acumulados, às 13:07 BRT. |
+| Estimativa restante | 8 h 14 min da janela; V3.13 = 1–2 h. |
+| Próximo item exato | V3.13 Usuários internos: inventário de edição, máscara de CPF e calendário Coelo. |
+| Conhecimento capturado | `no-op`: sem regra durável nova. |
+
 ## 17. Histórico
 
 

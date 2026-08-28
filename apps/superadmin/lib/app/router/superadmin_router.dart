@@ -216,7 +216,9 @@ GoRouter createSuperadminRouter({
 }) {
   final resolvedChildSafetyController =
       childSafetyController ?? ChildSafetyController(const UnavailableChildSafetyRepository());
-  final developmentChildSafetyController = ChildSafetyController(DevChildSafetyRepository());
+  final developmentChildSafetyController = ChildSafetyController(
+    DevChildSafetyRepository.content(),
+  );
   final productionSupportController = supportController;
   final developmentSupportController = _createDevelopmentSupportController();
   final accountActivities = SuperadminActivityController();
@@ -2427,8 +2429,37 @@ GoRouter createSuperadminRouter({
               controller: developmentChildSafetyController,
               logout: _previewLogout,
               onBack: () => context.goNamed(SuperadminRoutes.devSafetyName),
+              onCreate: () => context.goNamed(
+                SuperadminRoutes.devSafetyCreateName,
+                queryParameters: {'childId': state.pathParameters['childId']!},
+              ),
+              onEdit: (authorizationId) => context.goNamed(
+                SuperadminRoutes.devSafetyEditName,
+                pathParameters: {
+                  'childId': state.pathParameters['childId']!,
+                  'authorizationId': authorizationId,
+                },
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devSafetyEdit,
+            name: SuperadminRoutes.devSafetyEditName,
+            builder: (context, state) => ChildSafetyWizardPage(
+              controller: developmentChildSafetyController,
+              childId: state.pathParameters['childId'],
+              authorizationId: state.pathParameters['authorizationId'],
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(
+                SuperadminRoutes.devSafetyChildName,
+                pathParameters: {'childId': state.pathParameters['childId']!},
+              ),
+              onSaved: () => context.goNamed(
+                SuperadminRoutes.devSafetyChildName,
+                pathParameters: {'childId': state.pathParameters['childId']!},
+              ),
             ),
           ),
           GoRoute(

@@ -667,6 +667,47 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.12 Segurança infantil — abertura — 2026-08-28 13:03 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V3 = 0/7 (0,00%). |
+| Tela e rota | Diretório, criação e edição de Segurança infantil, produção e `/dev`. |
+| Baseline e índice | Instituições, `pattern.admin-directory`, Cards/Tabela, filtros/flyouts, Criar/Editar Instituição e `SuperadminFormActionFooter`. |
+| RED planejado | Inventariar rotas, estados, cards e passos do wizard; exigir navegação local completa no primeiro ponto morto encontrado, preservando fail-closed produtivo. |
+| Fora do recorte | Sem Supabase, persistência remota ou mudanças nos arquivos protegidos de Assessments. |
+| Tempo usado | 1 h 42 min acumulados. |
+| Estimativa | 1–2 h para V3.12; 8 h 18 min restam na janela. |
+| Próximo item exato | Mapear implementação/testes de Segurança infantil e escrever o primeiro RED de diretório → criação → revisão/edição. |
+
+Percentuais: entrega V3 0/7 (0,00%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.12 Segurança infantil — checkpoint local-green — 2026-08-28 13:07 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V3 = 1/7 (14,29%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | `/dev/safety`, `/dev/safety/new`, `/dev/safety/children/:childId` e nova rota local de edição de autorização. |
+| Arquivos alterados | `dev_child_safety_repository.dart`; rotas e router; novo teste de rotas; spec e rastreador. |
+| Correções | Fixture `/dev` passou a ter três crianças, autorizações pendente/aprovada/ausente e opções pesquisáveis. Diretório → criação, diretório → detalhe → cadastro e detalhe → diálogo → edição agora são navegáveis; wizard canônico de quatro passos e rodapé universal foram preservados. |
+| Testes | RED de rota de edição/fixture reproduzido. GREEN: 20 testes funcionais de Segurança/rotas; analyzer focado sem issues; validador visual e diff-check verdes. |
+| Responsividade e acessibilidade | Suíte existente cobre diretório 375/768/1024/1440, texto 200%, light/dark; detalhe em cards/tabela e wizard com seletores Coelo, foco e alvos. Fluxo de rota foi exercitado em 375 px. |
+| Golden e bloqueios | Golden antigo do diretório divergiu 9,84%; não atualizado. Inspeção do resultado mostrou diretório íntegro e diferença concentrada na geometria/itens do shell já alterados na V1. Aceite humano continua pendente. Produção/backend intocados; Assessments intocado. |
+| Tempo usado | 0 h 05 min no item; 1 h 46 min acumulados. |
+| Estimativa restante | 8 h 14 min da janela; V3.13 estimada em 1–2 h. |
+| Próximo item exato | V3.13 Usuários internos: consultar índice, inventariar edição, CPF e calendário; escrever RED do primeiro contrato ausente. |
+| Conhecimento | `no-op`: fixture e rotas aplicam o contrato já aprovado; nenhuma regra durável nova. |
+
+Percentuais: entrega V3 1/7 (14,29%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

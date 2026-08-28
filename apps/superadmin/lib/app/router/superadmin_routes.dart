@@ -245,6 +245,8 @@ abstract final class SuperadminRoutes {
   static const devSafetyCreateName = 'dev-safety-create';
   static const devSafetyChild = '/dev/safety/children/:childId';
   static const devSafetyChildName = 'dev-safety-child';
+  static const devSafetyEdit = '/dev/safety/children/:childId/authorizations/:authorizationId/edit';
+  static const devSafetyEditName = 'dev-safety-edit';
   static const devCatalog = '/dev/catalog';
   static const devCatalogName = 'dev-catalog';
   static const devPlans = '/dev/plans';
