@@ -1321,6 +1321,28 @@ recorte (`CheckboxListTile` em Instituições e `InkWell` em Pessoas).
 | Tempo usado | Não calculável com precisão: implementação e revisões ocorreram em frentes paralelas e atravessaram retomadas sem um único marco confiável. |
 | Estimativa restante | Não calculável até existirem decisões de produto, contratos backend/capabilities, ambiente integrado e inspeção visual humana. |
 
+## 16.1. Correções visuais focadas — 2026-08-27, lote 10 h
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+Este lote corrige divergências locais reproduzidas sem promover rota `/dev`,
+teste de widget ou inspeção de código a evidência ponta a ponta. O recorte
+estrito abaixo ficou `local-green` após revisão independente; backend, Auth,
+RLS, migrations, mídia remota e goldens permaneceram intocados.
+
+| Campo | Registro factual |
+|---|---|
+| Telas alteradas | Conversas; Unidades; Criar/Editar Instituição; Agenda > Permissões. |
+| Arquivos modificados | `superadmin_chat_launcher.dart`; `chat_routes_test.dart`; `superadmin_chat_launcher_test.dart`; `unit_directory_cards.dart`; `unit_directory_page_test.dart`; `institution_form_sections.dart`; `institution_form_page_test.dart`; `agenda_permissions_page.dart`; `agenda_management_test.dart`. |
+| Correções realizadas | Launcher circular apenas no compacto e cápsula `Mens.` em `medium+`, com drag/teclado preservados e navegação shell→Conversas provada; card informativo de Unidade preserva um único anúncio de status sem botão ou ação falsa; representantes sugeridos usam `CoeloAdminMultiSelectField<String>` com nome e e-mail, `Esc`, retorno de foco e `Aplicar`; tabela de Permissões usa linha de 88 px, célula compacta, reflow para cards com texto ampliado e uma única autoridade semântica por toggle. |
+| Estado atual | `local-green`. Chat 74/74; Unidades 16/16; Agenda 6/6; Instituições 2/2 focados; analyzer dos 9 paths e validador visual verdes; `git diff --check` verde; revisão independente sem P0/P1. |
+| Bloqueios | A suíte completa de Instituições mantém um RED preexistente no teste do seletor avançado de cor (`Dialog` versus cast para `AlertDialog`), fora deste delta. Duas expectativas do `persistent_shell_routes_test.dart` permanecem incompatíveis com o redirecionamento produtivo fail-closed; 62 casos da regressão ampliada passaram e 2 ficaram RED sem tocar router/shell. O contrato documental do launcher diverge entre arraste persistido e launcher fixo; o arraste existente foi preservado conforme pedido explícito do usuário. |
+| Pendências restantes | Prova integrada/E2E das 207 ações; inspeção visual humana; decisões e contratos de produto/backend já listados; ampliar a matriz route-level do shell/Principal sem alterar produção salvo RED reproduzido. |
+| Tempo usado | 28 min de wall-clock confiável, medidos de 21:12 a 21:40; inventário paralelo anterior sem marco único não foi somado. |
+| Estimativa restante | O pacote de 9 paths não possui P0/P1 conhecido após review. O recorte maior continua não calculável até decisões de produto, contratos backend/capabilities, ambiente integrado e inspeção visual humana. |
+
 ## 17. Histórico
 
 | Data | Mudança |
