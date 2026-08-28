@@ -1428,6 +1428,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu cinco REDs, correções incrementais, suíte 75/75 e duas rodadas de review. |
 | Estimativa restante | Próximo sublote seguro: formulário de Avisos; a ETA E2E permanece dependente dos contratos externos registrados. |
 
+## 16.7. Comunicação/Avisos — estados de load do formulário — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Criar/Editar Comunicação/Aviso. |
+| Arquivos modificados | `notice_form_controller.dart`; `notice_form_page.dart`; `notice_form_page_test.dart`. |
+| Correções realizadas | Loading e falha de carregamento retornam uma superfície de estado antes de montar `SuperadminFormFrame`, navegação de etapas ou footer mutante. Edição com falha transitória oferece retry generation-safe no mesmo local; 403 e not-found continuam sem retry e sem affordance de salvar/publicar. Sucesso reidrata o wizard canônico. |
+| Estado atual | `local-green`. Regressão focada fresca 25/25; analyzer dos três arquivos sem issues; formatter, validador visual canônico e `git diff --check` verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0 no delta. Nenhum backend, adapter produtivo ou golden foi alterado. |
+| Bloqueios | Criação/edição produtiva continua 503 sem capability autoritativa; persistência real, autorização integrada, mídia e E2E permanecem fora deste pacote. |
+| Pendências restantes | Reconciliação de save ambíguo após edição permanece P1 separado e não foi promovida por este GREEN. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu testes de retry/403, regressão focada e duas revisões independentes. |
+| Estimativa restante | Próximo sublote seguro: receipt/idempotência do save de Avisos; ETA E2E depende dos contratos externos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
