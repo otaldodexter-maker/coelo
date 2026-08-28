@@ -56,9 +56,10 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   bool _actionRunning = false;
   String? _errorMessage;
   int _page = 0;
-  int _pageSize = 12;
+  int _pageSize = 11;
   int _total = 0;
   int _requestedVersion = 1;
+  int _actionGeneration = 0;
 
   MealPlanStatus? _statusFilter;
   MealPlanSourceType? _sourceFilter;
@@ -74,7 +75,41 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   }
 
   @override
+  void didUpdateWidget(covariant MealPlanDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    _requestedVersion += 1;
+    _actionGeneration += 1;
+    _search.clear();
+    _institution.clear();
+    _unit.clear();
+    _classId.clear();
+    _personId.clear();
+    _periodStart.clear();
+    _periodEnd.clear();
+    setState(() {
+      _display = _MealPlanDirectoryDisplay.cards;
+      _section = _MealPlanDirectorySection.mealPlans;
+      _loading = true;
+      _unauthorized = false;
+      _actionRunning = false;
+      _errorMessage = null;
+      _page = 0;
+      _pageSize = 11;
+      _total = 0;
+      _statusFilter = null;
+      _sourceFilter = null;
+      _hasConflictFilter = null;
+      _requiresReviewFilter = null;
+      _items = const [];
+    });
+    _load(reset: true);
+  }
+
+  @override
   void dispose() {
+    _requestedVersion += 1;
+    _actionGeneration += 1;
     _search.dispose();
     _institution.dispose();
     _unit.dispose();
@@ -158,8 +193,8 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
                   totalPages: _totalPages,
                   pageSize: _pageSize,
                   pageSizeOptions: _display == _MealPlanDirectoryDisplay.cards
-                      ? const [8, 12, 24, 50]
-                      : const [6, 12, 24, 50],
+                      ? const [11, 20, 50, 100]
+                      : const [8, 20, 50, 100],
                   onPrevious: _page == 0 ? null : () => _setPage(_page - 1),
                   onNext: _page + 1 < _totalPages ? () => _setPage(_page + 1) : null,
                   onPageSelected: (value) => _setPage(value - 1),
@@ -260,6 +295,8 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     ],
     actions: [
       SuperadminDirectoryViewToggle<_MealPlanDirectoryDisplay>(
+        cardsKey: const Key('meal-plan-directory-view-cards'),
+        tableKey: const Key('meal-plan-directory-view-table'),
         cardsSelected: _display == _MealPlanDirectoryDisplay.cards,
         groupedView: _MealPlanDirectoryDisplay.table,
         selectedTableView: _MealPlanDirectoryDisplay.table,
@@ -269,14 +306,8 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
             label: 'Agrupado',
           ),
         ],
-        onCardsSelected: () => setState(() {
-          _display = _MealPlanDirectoryDisplay.cards;
-          _page = 0;
-        }),
-        onTableViewSelected: (_) => setState(() {
-          _display = _MealPlanDirectoryDisplay.table;
-          _page = 0;
-        }),
+        onCardsSelected: () => _setDisplay(_MealPlanDirectoryDisplay.cards),
+        onTableViewSelected: (_) => _setDisplay(_MealPlanDirectoryDisplay.table),
       ),
     ],
   );
@@ -338,9 +369,14 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 
   Widget _createAction() {
     final models = _section == _MealPlanDirectorySection.models;
+    final compactLargeText =
+        MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth &&
+        MediaQuery.textScalerOf(context).scale(1) >= 2;
     return CoeloAdminCreateAction(
       label: models ? 'Criar modelo de cardápio' : 'Criar cardápio',
-      description: models
+      description: compactLargeText
+          ? null
+          : models
           ? 'Monte uma base reutilizável simples ou completa.'
           : 'Defina modelo-base, período, público e refeições.',
       icon: models ? Icons.collections_bookmark_rounded : Icons.restaurant_menu_rounded,
@@ -365,6 +401,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
       child: Wrap(
+        key: const Key('meal-plan-directory-card-grid'),
         spacing: CoeloSpacing.space6,
         runSpacing: CoeloSpacing.space6,
         children: [
@@ -392,92 +429,91 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     );
   }
 
-  Widget _table({required BoxConstraints constraints}) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      _createAction(),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminResizableTable<MealPlan>(
-        items: _items,
-        rowKey: (meal) => meal.id,
-        headerHeight: 56,
-        rowHeight: 66,
-        pinnedColumn: CoeloAdminTableColumn(
-          id: 'name',
-          label: _section == _MealPlanDirectorySection.models ? 'Modelo' : 'Card\u00e1pio',
-          initialWidth: 260,
-          minWidth: 200,
-          maxWidth: 360,
-          cellBuilder: (_, item) => Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis),
+  Widget _table({required BoxConstraints constraints}) => SingleChildScrollView(
+    padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _createAction(),
+        const SizedBox(height: CoeloSpacing.space4),
+        SizedBox(
+          height: math.max(160, constraints.maxHeight - CoeloSpacing.space24),
+          child: CoeloAdminResizableTable<MealPlan>(
+            items: _items,
+            rowKey: (meal) => meal.id,
+            headerHeight: 56,
+            rowHeight: MediaQuery.textScalerOf(context).scale(1) >= 1.75 ? 88 : 66,
+            pinnedColumn: CoeloAdminTableColumn(
+              id: 'name',
+              label: _section == _MealPlanDirectorySection.models ? 'Modelo' : 'Card\u00e1pio',
+              initialWidth: 260,
+              minWidth: 200,
+              maxWidth: 360,
+              cellBuilder: (_, item) =>
+                  Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis),
+            ),
+            columns: [
+              CoeloAdminTableColumn(
+                id: 'scope',
+                label: 'Abrang\u00eancia',
+                initialWidth: 220,
+                minWidth: 160,
+                maxWidth: 320,
+                cellBuilder: (_, item) => Text(_scopeLabel(item.scopeLevel, item.scopeId)),
+              ),
+              CoeloAdminTableColumn(
+                id: 'status',
+                label: 'Status',
+                initialWidth: 180,
+                minWidth: 140,
+                maxWidth: 220,
+                cellBuilder: (_, item) => _MealPlanStatusChip(status: item.status),
+              ),
+              CoeloAdminTableColumn(
+                id: 'period',
+                label: 'Per\u00edodo',
+                initialWidth: 220,
+                minWidth: 180,
+                maxWidth: 280,
+                cellBuilder: (_, item) => Text(
+                  '${_dateLabel(item.startDate)} a ${_dateLabel(item.endDate)}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              CoeloAdminTableColumn(
+                id: 'origin',
+                label: 'Origem',
+                initialWidth: 150,
+                minWidth: 120,
+                maxWidth: 200,
+                cellBuilder: (_, item) => Text(_sourceLabel(item.sourceType)),
+              ),
+              CoeloAdminTableColumn(
+                id: 'conflict',
+                label: 'Conflito',
+                initialWidth: 120,
+                minWidth: 110,
+                maxWidth: 160,
+                cellBuilder: (_, item) => Text(
+                  item.conflictState ? 'Com conflito' : 'Sem conflito',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              CoeloAdminTableColumn(
+                id: 'actions',
+                label: '',
+                initialWidth: 120,
+                minWidth: 100,
+                maxWidth: 140,
+                cellBuilder: (_, item) => _rowActionMenu(item),
+              ),
+            ],
+            onRowPressed: _canEditSection ? _openItem : null,
+          ),
         ),
-        columns: [
-          CoeloAdminTableColumn(
-            id: 'scope',
-            label: 'Abrang\u00eancia',
-            initialWidth: 220,
-            minWidth: 160,
-            maxWidth: 320,
-            cellBuilder: (_, item) => Text(_scopeLabel(item.scopeLevel, item.scopeId)),
-          ),
-          CoeloAdminTableColumn(
-            id: 'status',
-            label: 'Status',
-            initialWidth: 180,
-            minWidth: 140,
-            maxWidth: 220,
-            cellBuilder: (_, item) {
-              final statusColors = Theme.of(context).extension<CoeloStatusColors>()!;
-              return CoeloAdminExpandableStatusIndicator(
-                label: _statusLabel(item.status),
-                semanticLabel: 'Status: ${_statusLabel(item.status)}',
-                backgroundColor: statusColors.infoContainer,
-                foregroundColor: statusColors.onInfoContainer,
-              );
-            },
-          ),
-          CoeloAdminTableColumn(
-            id: 'period',
-            label: 'Per\u00edodo',
-            initialWidth: 220,
-            minWidth: 180,
-            maxWidth: 280,
-            cellBuilder: (_, item) => Text(
-              '${_dateLabel(item.startDate)} a ${_dateLabel(item.endDate)}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          CoeloAdminTableColumn(
-            id: 'origin',
-            label: 'Origem',
-            initialWidth: 150,
-            minWidth: 120,
-            maxWidth: 200,
-            cellBuilder: (_, item) => Text(_sourceLabel(item.sourceType)),
-          ),
-          CoeloAdminTableColumn(
-            id: 'conflict',
-            label: 'Conflito',
-            initialWidth: 120,
-            minWidth: 110,
-            maxWidth: 160,
-            cellBuilder: (_, item) => Text(
-              item.conflictState ? 'Com conflito' : 'Sem conflito',
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          CoeloAdminTableColumn(
-            id: 'actions',
-            label: '',
-            initialWidth: 120,
-            minWidth: 100,
-            maxWidth: 140,
-            cellBuilder: (_, item) => _rowActionMenu(item),
-          ),
-        ],
-        onRowPressed: _canEditSection ? _openItem : null,
-      ),
-    ],
+      ],
+    ),
   );
 
   Widget _rowActionMenu(MealPlan item) {
@@ -556,33 +592,31 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 
   Future<void> _requestReview(MealPlan item) async {
     await _runActionWithFeedback(
-      action: () => widget.repository.submitForReview(item.id, _requestId(), item.revision),
+      action: (repository) => repository.submitForReview(item.id, _requestId(), item.revision),
       successMessage: 'Revis\u00e3o solicitada com sucesso.',
       refresh: true,
     );
   }
 
   Future<void> _publish(MealPlan item) async {
-    List<MealPlanConflict> conflicts;
-    try {
-      conflicts = await _resolveLocalConflicts(item);
-    } on MealPlanRepositoryException catch (error) {
-      _feedback(error.message);
-      return;
-    }
-    if (conflicts.isNotEmpty) {
-      _feedback('N\u00e3o \u00e9 poss\u00edvel publicar com conflito n\u00e3o resolvido.');
-      return;
-    }
     await _runActionWithFeedback(
-      action: () => widget.repository.publish(item.id, _requestId(), item.revision),
+      preflight: (repository) async {
+        final conflicts = await _resolveLocalConflicts(repository, item);
+        return conflicts.isEmpty;
+      },
+      preflightFailureMessage:
+          'N\u00e3o \u00e9 poss\u00edvel publicar com conflito n\u00e3o resolvido.',
+      action: (repository) => repository.publish(item.id, _requestId(), item.revision),
       successMessage: 'Card\u00e1pio publicado.',
       refresh: true,
     );
   }
 
-  Future<List<MealPlanConflict>> _resolveLocalConflicts(MealPlan item) async {
-    return widget.repository.checkConflicts(
+  Future<List<MealPlanConflict>> _resolveLocalConflicts(
+    MealPlanRepository repository,
+    MealPlan item,
+  ) async {
+    return repository.checkConflicts(
       scopeLevel: item.scopeLevel.name,
       scopeId: item.scopeId,
       startDate: item.startDate,
@@ -617,24 +651,41 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
   }
 
   Future<void> _runActionWithFeedback({
-    required Future<MealPlan> Function() action,
+    Future<bool> Function(MealPlanRepository repository)? preflight,
+    String? preflightFailureMessage,
+    required Future<MealPlan> Function(MealPlanRepository repository) action,
     required String successMessage,
     required bool refresh,
   }) async {
     if (_actionRunning) return;
+    final repository = widget.repository;
+    final generation = ++_actionGeneration;
     setState(() => _actionRunning = true);
     try {
-      await action();
+      final canContinue = await preflight?.call(repository) ?? true;
+      if (!_isCurrentAction(generation, repository)) return;
+      if (!canContinue) {
+        if (preflightFailureMessage != null) _feedback(preflightFailureMessage);
+        return;
+      }
+      await action(repository);
+      if (!_isCurrentAction(generation, repository)) return;
       _feedback(successMessage);
       if (refresh) {
         await _load(reset: true);
       }
     } on MealPlanRepositoryException catch (error) {
+      if (!_isCurrentAction(generation, repository)) return;
       _feedback(error.message);
     } finally {
-      if (mounted) setState(() => _actionRunning = false);
+      if (_isCurrentAction(generation, repository)) {
+        setState(() => _actionRunning = false);
+      }
     }
   }
+
+  bool _isCurrentAction(int generation, MealPlanRepository repository) =>
+      mounted && generation == _actionGeneration && identical(repository, widget.repository);
 
   bool _canPublish(MealPlan item) => _mealPlanCanPublish(item);
 
@@ -644,13 +695,14 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       _page = 0;
     }
     final requestVersion = ++_requestedVersion;
+    final repository = widget.repository;
     setState(() => _loading = true);
     final filter = _query;
     try {
       final page = _section == _MealPlanDirectorySection.models
-          ? await widget.repository.fetchTemplatePage(filter)
-          : await widget.repository.fetchPage(filter);
-      if (!mounted || requestVersion != _requestedVersion) return;
+          ? await repository.fetchTemplatePage(filter)
+          : await repository.fetchPage(filter);
+      if (!_isCurrentLoad(requestVersion, repository)) return;
       setState(() {
         _items = page.items;
         _total = page.total;
@@ -659,7 +711,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         _loading = false;
       });
     } on MealPlanUnauthorizedException {
-      if (!mounted || requestVersion != _requestedVersion) return;
+      if (!_isCurrentLoad(requestVersion, repository)) return;
       setState(() {
         _items = const [];
         _total = 0;
@@ -668,7 +720,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         _loading = false;
       });
     } on MealPlanRepositoryException catch (error) {
-      if (!mounted || requestVersion != _requestedVersion) return;
+      if (!_isCurrentLoad(requestVersion, repository)) return;
       setState(() {
         _items = const [];
         _errorMessage = error.message;
@@ -677,6 +729,9 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       });
     }
   }
+
+  bool _isCurrentLoad(int requestVersion, MealPlanRepository repository) =>
+      mounted && requestVersion == _requestedVersion && identical(repository, widget.repository);
 
   Future<void> _loadFromState() => _load(reset: true);
 
@@ -692,6 +747,16 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
       _page = 0;
     });
     _load();
+  }
+
+  void _setDisplay(_MealPlanDirectoryDisplay display) {
+    if (_display == display) return;
+    setState(() {
+      _display = display;
+      _pageSize = display == _MealPlanDirectoryDisplay.cards ? 11 : 8;
+      _page = 0;
+    });
+    _load(reset: true);
   }
 
   void _debouncedLoad() => _load(reset: true);
@@ -773,16 +838,6 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
     }
   }
 
-  String _statusLabel(MealPlanStatus value) => switch (value) {
-    MealPlanStatus.draft => 'Rascunho',
-    MealPlanStatus.inReview => 'Em revis\u00e3o',
-    MealPlanStatus.scheduled => 'Agendado',
-    MealPlanStatus.published => 'Publicado',
-    MealPlanStatus.updated => 'Atualizado',
-    MealPlanStatus.ended => 'Encerrado',
-    MealPlanStatus.archived => 'Arquivado',
-  };
-
   String _sourceLabel(MealPlanSourceType value) => switch (value) {
     MealPlanSourceType.global => 'Modelo global',
     MealPlanSourceType.institution => 'Institui\u00e7\u00e3o',
@@ -836,11 +891,15 @@ final class _MealPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
+    key: Key('meal-plan-card-${item.id}'),
+    surfaceKey: Key('meal-plan-card-surface-${item.id}'),
     onPressed: onOpen,
-    semanticLabel: 'Abrir card\u00e1pio ${item.name}',
-    minHeight: 220,
+    minHeight: 216,
     child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space6,
+        vertical: CoeloSpacing.space4,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -855,7 +914,7 @@ final class _MealPlanCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: CoeloSpacing.space2),
-              _MealPlanStatusChip(status: item.status),
+              _MealPlanStatusIndicator(item: item),
             ],
           ),
           const SizedBox(height: CoeloSpacing.space3),
@@ -942,19 +1001,58 @@ final class _MealPlanStatusChip extends StatelessWidget {
   final MealPlanStatus status;
 
   @override
-  Widget build(BuildContext context) => CoeloAdminExpandableStatusIndicator(
-    label: _statusLabel(status),
-    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-    foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-  );
+  Widget build(BuildContext context) {
+    final (background, foreground) = _statusColors(context, status);
+    return CoeloStatusChip(
+      label: _mealPlanStatusLabel(status),
+      backgroundColor: background,
+      foregroundColor: foreground,
+    );
+  }
+}
 
-  String _statusLabel(MealPlanStatus value) => switch (value) {
-    MealPlanStatus.draft => 'Rascunho',
-    MealPlanStatus.inReview => 'Em revis\u00e3o',
-    MealPlanStatus.scheduled => 'Agendado',
-    MealPlanStatus.published => 'Publicado',
-    MealPlanStatus.updated => 'Atualizado',
-    MealPlanStatus.ended => 'Encerrado',
-    MealPlanStatus.archived => 'Arquivado',
+final class _MealPlanStatusIndicator extends StatelessWidget {
+  const _MealPlanStatusIndicator({required this.item});
+
+  final MealPlan item;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = _mealPlanStatusLabel(item.status);
+    final (background, foreground) = _statusColors(context, item.status);
+    return CoeloAdminExpandableStatusIndicator(
+      label: label,
+      semanticLabel: 'Status: $label',
+      surfaceKey: Key('meal-plan-card-status-${item.id}'),
+      backgroundColor: background,
+      foregroundColor: foreground,
+    );
+  }
+}
+
+(Color, Color) _statusColors(BuildContext context, MealPlanStatus status) {
+  final colors =
+      Theme.of(context).extension<CoeloStatusColors>() ??
+      (Theme.brightnessOf(context) == Brightness.dark
+          ? CoeloStatusColors.dark
+          : CoeloStatusColors.light);
+  return switch (status) {
+    MealPlanStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
+    MealPlanStatus.inReview => (colors.warningContainer, colors.onWarningContainer),
+    MealPlanStatus.scheduled => (colors.warningContainer, colors.onWarningContainer),
+    MealPlanStatus.published => (colors.successContainer, colors.onSuccessContainer),
+    MealPlanStatus.updated => (colors.infoContainer, colors.onInfoContainer),
+    MealPlanStatus.ended => (colors.historyContainer, colors.onHistoryContainer),
+    MealPlanStatus.archived => (colors.historyContainer, colors.onHistoryContainer),
   };
 }
+
+String _mealPlanStatusLabel(MealPlanStatus value) => switch (value) {
+  MealPlanStatus.draft => 'Rascunho',
+  MealPlanStatus.inReview => 'Em revis\u00e3o',
+  MealPlanStatus.scheduled => 'Agendado',
+  MealPlanStatus.published => 'Publicado',
+  MealPlanStatus.updated => 'Atualizado',
+  MealPlanStatus.ended => 'Encerrado',
+  MealPlanStatus.archived => 'Arquivado',
+};
