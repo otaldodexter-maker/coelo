@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../view_models/login_view_model.dart';
 import 'login_forgot_password_button.dart';
@@ -151,16 +152,27 @@ class _KeepSessionOpenControlState extends State<_KeepSessionOpenControl> {
             borderRadius: radius,
             border: _focused ? Border.all(color: actionColors.focusRing, width: 2) : null,
           ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: radius,
-            child: InkWell(
-              key: const ValueKey('superadmin-login-keep-session-control'),
-              focusNode: _focusNode,
-              canRequestFocus: widget.enabled,
-              borderRadius: radius,
-              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              onFocusChange: (focused) => setState(() => _focused = focused),
+          child: FocusableActionDetector(
+            key: const ValueKey('superadmin-login-keep-session-control'),
+            focusNode: _focusNode,
+            enabled: widget.enabled,
+            mouseCursor: widget.enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+            shortcuts: const <ShortcutActivator, Intent>{
+              SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+              SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            },
+            actions: <Type, Action<Intent>>{
+              ActivateIntent: CallbackAction<ActivateIntent>(
+                onInvoke: (_) {
+                  _toggle();
+                  return null;
+                },
+              ),
+            },
+            onFocusChange: (focused) => setState(() => _focused = focused),
+            child: GestureDetector(
+              key: const ValueKey('superadmin-login-keep-session-hit-target'),
+              behavior: HitTestBehavior.opaque,
               onTap: widget.enabled ? _toggle : null,
               child: ExcludeSemantics(
                 child: Row(

@@ -238,14 +238,8 @@ void main() {
     await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
 
     final row = find.byKey(const ValueKey('superadmin-login-keep-session'));
-    final inkWell = tester.widget<InkWell>(
-      find.descendant(of: row, matching: find.byType(InkWell)),
-    );
-
-    expect(
-      inkWell.overlayColor?.resolve(const <WidgetState>{WidgetState.hovered}),
-      Colors.transparent,
-    );
+    expect(find.descendant(of: row, matching: find.byType(InkWell)), findsNothing);
+    expect(find.byKey(const ValueKey('superadmin-login-keep-session-hit-target')), findsOneWidget);
   });
 
   testWidgets('toggles keep-session from control, label, row, and keyboard', (tester) async {
@@ -272,7 +266,9 @@ void main() {
     expect(value(), isTrue);
 
     tester
-        .widget<InkWell>(find.byKey(const ValueKey('superadmin-login-keep-session-control')))
+        .widget<FocusableActionDetector>(
+          find.byKey(const ValueKey('superadmin-login-keep-session-control')),
+        )
         .focusNode!
         .requestFocus();
     await tester.pump();
@@ -294,7 +290,7 @@ void main() {
     await pumpLogin(tester, session: session, login: unavailableSuperadminLogin);
 
     final row = find.byKey(const ValueKey('superadmin-login-keep-session'));
-    final control = tester.widget<InkWell>(
+    final control = tester.widget<FocusableActionDetector>(
       find.byKey(const ValueKey('superadmin-login-keep-session-control')),
     );
     control.focusNode!.requestFocus();

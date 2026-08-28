@@ -7,7 +7,6 @@
     { "path": "apps/superadmin/lib/features/institutions/presentation/widgets/institution_directory_toolbar.dart", "symbol": "MenuItemButton", "maxOccurrences": 1, "reason": "Item aprovado da toolbar de Instituicoes, mantido intacto como baseline visual canonica." },
     { "path": "apps/superadmin/lib/features/institutions/presentation/widgets/institution_form_sections.dart", "symbol": "InkWell", "maxOccurrences": 1, "reason": "Interacao existente no formulario aprovado de Instituicoes; manter visual intacto." },
     { "path": "apps/superadmin/lib/features/support/presentation/widgets/support_kanban.dart", "symbol": "MenuAnchor", "maxOccurrences": 1, "reason": "Ancora legada do kanban de suporte; preservar ate review visual dedicado." },
-    { "path": "apps/superadmin/lib/features/support/presentation/widgets/support_kanban.dart", "symbol": "MenuItemButton", "maxOccurrences": 2, "reason": "Dois itens legados do kanban de suporte; preservar ate review visual dedicado." },
-    { "path": "apps/superadmin/lib/features/auth/presentation/widgets/superadmin_login_form.dart", "symbol": "CheckboxListTile", "maxOccurrences": 1, "reason": "Implementacao existente da baseline visual aprovada do Login; preservar intacta e bloquear novas copias cruas." }
+    { "path": "apps/superadmin/lib/features/support/presentation/widgets/support_kanban.dart", "symbol": "MenuItemButton", "maxOccurrences": 2, "reason": "Dois itens legados do kanban de suporte; preservar ate review visual dedicado." }
   ]
 }
