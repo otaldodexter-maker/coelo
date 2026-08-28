@@ -1496,6 +1496,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de concorrência, receipt stale, loading, erros, dispose, teclado/foco e revisões independentes. |
 | Estimativa restante | Próximo lote Flutter deve ser independente deste fluxo; ETA E2E continua dependente dos contratos externos registrados. |
 
+## 16.11. Agora — lifecycle local de carregar, salvar e publicar — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Publicar Agora; carregar rascunho, editar mídia/áudio, salvar e publicar na composição local `/dev`. |
+| Arquivos modificados | `now_publication_controller.dart`; `principal_now_publication_page.dart`; testes do controller e da página. |
+| Correções realizadas | Load, save e publish compartilham lifecycle single-flight e descartam continuações após dispose. Checkpoints confirmados reconciliam ID, versão e metadados remotos sem apagar crop, capa, direitos ou legenda editados durante o comando. Troca de repository ou contexto completo — tenant, escopos, labels, audiências e capability — recria o controller, limpa A e carrega B. Dialogs e bottom sheets são registrados antes do `push`, encerrados pelo navigator proprietário em swap/dispose e têm callbacks vinculados à geração/controller de origem. Loading não monta formulário; comandos bloqueiam ponteiro, foco e teclado conforme o estado. |
+| Estado atual | `local-green`. Suíte Agora não-golden fresca 43/43; analyzer dos quatro paths sem issues; formatter e `git diff --check` verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0. Nenhum backend, router produtivo ou golden foi alterado. |
+| Bloqueios | O contrato `NowPublicationRepository` não recebe requestId e o adapter produtivo gera novas chaves por chamada; retry após resposta remota ambígua ainda não possui reconciliação/idempotência comprovada. Persistência produtiva, autorização/RLS, mídia R2 real e validação cross-tenant continuam fora deste pacote. O resultado local não constitui E2E. |
+| Pendências restantes | Definir e implementar o contrato server-side/adapter de idempotência para save/upload/publish, com receipt/replay e testes de resposta perdida; executar evidência E2E das 207 ações, inspeção visual humana e goldens quando autorizados. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de load/swap, single-flight, checkpoints, edição concorrente, dispose, foco/teclado e ownership de overlays antes do primeiro frame, além de duas revisões independentes. |
+| Estimativa restante | Próximo lote Flutter deve ser independente deste fluxo; o fechamento E2E de Agora depende do contrato integrado de idempotência, mídia e autorização. |
+
 ## 17. Histórico
 
 | Data | Mudança |
