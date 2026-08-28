@@ -310,6 +310,85 @@ void main() {
     expect(find.byType(CoeloAdminResizableTable<AttendanceDashboardCallRow>), findsOneWidget);
   });
 
+  testWidgets('dashboard replaces its repository without retaining the previous context', (
+    tester,
+  ) async {
+    final gateA = Completer<void>();
+    final gateB = Completer<void>();
+    final repository = FakeAttendanceRepository.seeded();
+    final dashboardA = _DashboardRepository(
+      canCreate: true,
+      label: 'Instituição A',
+      dashboardDelay: gateA.future,
+    );
+    final dashboardB = _DashboardRepository(
+      canCreate: true,
+      label: 'Instituição B',
+      dashboardDelay: gateB.future,
+    );
+    addTearDown(repository.dispose);
+
+    Widget page(AttendanceDashboardRepository dashboard) => _app(
+      AttendanceDashboardPage(
+        repository: repository,
+        dashboardRepository: dashboard,
+        permissions: const AttendancePermissions.owner(),
+        logout: unavailableSuperadminLogout,
+        onCreate: null,
+        onOpenCall: null,
+      ),
+    );
+
+    await tester.pumpWidget(page(dashboardA));
+    await tester.pump();
+    await tester.pumpWidget(page(dashboardB));
+    await tester.pump();
+
+    gateB.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição B'), findsWidgets);
+    expect(find.text('Instituição A'), findsNothing);
+
+    gateA.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Instituição B'), findsWidgets);
+    expect(find.text('Instituição A'), findsNothing);
+  });
+
+  testWidgets('repository swap clears the search text from the previous context', (tester) async {
+    final repository = FakeAttendanceRepository.seeded();
+    final dashboardA = _DashboardRepository(canCreate: true, label: 'Instituição A');
+    final dashboardB = _DashboardRepository(canCreate: true, label: 'Instituição B');
+    addTearDown(repository.dispose);
+
+    Widget page(AttendanceDashboardRepository dashboard) => _app(
+      AttendanceDashboardPage(
+        repository: repository,
+        dashboardRepository: dashboard,
+        permissions: const AttendancePermissions.owner(),
+        logout: unavailableSuperadminLogout,
+        onCreate: null,
+        onOpenCall: null,
+      ),
+    );
+
+    await tester.pumpWidget(page(dashboardA));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(CoeloSearchField), 'Instituição A');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<CoeloSearchField>(find.byType(CoeloSearchField)).controller.text,
+      'Instituição A',
+    );
+
+    await tester.pumpWidget(page(dashboardB));
+    await tester.pumpAndSettle();
+    expect(tester.widget<CoeloSearchField>(find.byType(CoeloSearchField)).controller.text, isEmpty);
+    expect(find.text('Instituição B'), findsWidgets);
+    expect(find.text('Instituição A'), findsNothing);
+  });
+
   testWidgets('read-only administrator has no write action', (tester) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
@@ -1138,9 +1217,16 @@ AttendanceContextOptions _contextOptions(String suffix) => AttendanceContextOpti
 );
 
 final class _DashboardRepository implements AttendanceDashboardRepository {
-  _DashboardRepository({required this.canCreate, this.includePreviousSeries = false});
+  _DashboardRepository({
+    required this.canCreate,
+    this.includePreviousSeries = false,
+    this.label = 'Instituto Horizonte',
+    this.dashboardDelay,
+  });
   final bool canCreate;
   final bool includePreviousSeries;
+  final String label;
+  final Future<void>? dashboardDelay;
   bool failNext = false;
 
   AttendanceDashboardAccess get _access => AttendanceDashboardAccess(
@@ -1154,6 +1240,7 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
 
   @override
   Future<AttendanceDashboardSnapshot> fetchDashboard(AttendanceDashboardQuery query) async {
+    await dashboardDelay;
     if (failNext) {
       failNext = false;
       throw StateError('offline');
@@ -1169,7 +1256,7 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
       kind: AttendanceRankingKind.institutions,
       total: 4,
       direction: query.rankingDirection,
-      items: [AttendanceRankingItem(id: 'institution-1', label: 'Instituto Horizonte', rate: rate)],
+      items: [AttendanceRankingItem(id: 'institution-1', label: label, rate: rate)],
     );
     return AttendanceDashboardSnapshot(
       access: _access,
@@ -1222,7 +1309,7 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
         items: [
           AttendanceDashboardCallRow(
             id: 'call-1',
-            context: 'Instituto Horizonte · Unidade Centro · Turma Sol',
+            context: '$label · Unidade Centro · Turma Sol',
             date: query.periodEnd,
             responsible: 'Equipe pedagógica',
             present: 19,
@@ -1255,7 +1342,7 @@ final class _DashboardRepository implements AttendanceDashboardRepository {
         pageSize: query.pageSize,
         totalItems: 2,
       ),
-      contextLabel: 'Todas as instituições',
+      contextLabel: label,
     );
   }
 

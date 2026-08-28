@@ -29,7 +29,7 @@ class AttendanceDashboardPage extends StatefulWidget {
   final AttendancePermissions permissions;
   final LogoutAction logout;
   final VoidCallback? onCreate;
-  final ValueChanged<String> onOpenCall;
+  final ValueChanged<String>? onOpenCall;
   final SuperadminActivityController? activityController;
 
   @override
@@ -37,19 +37,35 @@ class AttendanceDashboardPage extends StatefulWidget {
 }
 
 class _AttendanceDashboardPageState extends State<AttendanceDashboardPage> {
-  late final AttendanceDashboardController? _controller;
+  AttendanceDashboardController? _controller;
+  AttendanceDashboardRepository? _dashboardRepository;
   late final DateTime _today;
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final repository =
-        widget.dashboardRepository ??
-        (widget.repository is AttendanceDashboardRepository
-            ? widget.repository as AttendanceDashboardRepository
-            : null);
     _today = DateUtils.dateOnly(DateTime.now());
+    _replaceController(_resolveDashboardRepository(widget));
+  }
+
+  @override
+  void didUpdateWidget(covariant AttendanceDashboardPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final repository = _resolveDashboardRepository(widget);
+    if (!identical(repository, _dashboardRepository)) _replaceController(repository);
+  }
+
+  AttendanceDashboardRepository? _resolveDashboardRepository(AttendanceDashboardPage value) =>
+      value.dashboardRepository ??
+      (value.repository is AttendanceDashboardRepository
+          ? value.repository as AttendanceDashboardRepository
+          : null);
+
+  void _replaceController(AttendanceDashboardRepository? repository) {
+    _controller?.dispose();
+    _searchController.clear();
+    _dashboardRepository = repository;
     _controller = repository == null
         ? null
         : AttendanceDashboardController(
@@ -134,7 +150,7 @@ class _DashboardStateView extends StatelessWidget {
   final double inset;
   final AttendancePermissions permissions;
   final VoidCallback? onCreate;
-  final ValueChanged<String> onOpenCall;
+  final ValueChanged<String>? onOpenCall;
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +261,7 @@ class _DashboardContent extends StatelessWidget {
   final double inset;
   final AttendancePermissions permissions;
   final VoidCallback? onCreate;
-  final ValueChanged<String> onOpenCall;
+  final ValueChanged<String>? onOpenCall;
 
   bool get _wide => maxWidth >= CoeloBreakpoints.large.minWidth;
   bool get _twoColumns => maxWidth >= CoeloBreakpoints.expanded.minWidth;
@@ -1022,7 +1038,7 @@ class _CallsSection extends StatelessWidget {
   final AttendanceDashboardSnapshot snapshot;
   final AttendanceDashboardController controller;
   final TextEditingController searchController;
-  final ValueChanged<String> onOpenCall;
+  final ValueChanged<String>? onOpenCall;
 
   @override
   Widget build(BuildContext context) => _SectionSurface(
@@ -1093,21 +1109,22 @@ class _CallsSection extends StatelessWidget {
               _column('late', 'Atrasos', 100, (item) => '${item.late}'),
               _column('presence', 'Presença', 120, (item) => _rateLabel(item.presence)),
               _column('status', 'Status', 130, (item) => _statusLabel(item.status)),
-              CoeloAdminTableColumn<AttendanceDashboardCallRow>(
-                id: 'actions',
-                label: 'Ações',
-                initialWidth: CoeloSize.touchMin * 2,
-                minWidth: CoeloSize.touchMin * 2,
-                maxWidth: CoeloSize.touchMin * 3,
-                cellBuilder: (context, item) => item.canOpen
-                    ? IconButton(
-                        key: ValueKey('attendance-open-${item.id}'),
-                        tooltip: 'Abrir chamada',
-                        onPressed: () => onOpenCall(item.id),
-                        icon: const Icon(Icons.open_in_new_rounded),
-                      )
-                    : const SizedBox.shrink(),
-              ),
+              if (onOpenCall != null)
+                CoeloAdminTableColumn<AttendanceDashboardCallRow>(
+                  id: 'actions',
+                  label: 'Ações',
+                  initialWidth: CoeloSize.touchMin * 2,
+                  minWidth: CoeloSize.touchMin * 2,
+                  maxWidth: CoeloSize.touchMin * 3,
+                  cellBuilder: (context, item) => item.canOpen
+                      ? IconButton(
+                          key: ValueKey('attendance-open-${item.id}'),
+                          tooltip: 'Abrir chamada',
+                          onPressed: () => onOpenCall!(item.id),
+                          icon: const Icon(Icons.open_in_new_rounded),
+                        )
+                      : const SizedBox.shrink(),
+                ),
             ],
             headerHeight: CoeloSize.touchMin,
             rowHeight: CoeloSize.touchMin,

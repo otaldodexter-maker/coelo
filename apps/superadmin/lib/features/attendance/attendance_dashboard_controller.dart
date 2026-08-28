@@ -144,6 +144,7 @@ final class AttendanceDashboardController extends ChangeNotifier {
     _setState(AttendanceDashboardLoading(previous));
     try {
       final access = _access ?? await repository.fetchAccess();
+      if (!_isCurrent(generation)) return;
       if (!access.canRead) throw const AttendanceDashboardUnauthorized();
       _access = access;
       final scopedQuery = _query.enforce(access);

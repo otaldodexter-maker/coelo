@@ -93,6 +93,13 @@ void main() {
     router.go('/dev/attendance');
     await tester.pumpAndSettle();
     expect(find.text('Nova chamada'), findsOneWidget);
+    expect(find.text('Ações'), findsOneWidget);
+    expect(find.byKey(const ValueKey('attendance-open-call-progress')), findsOneWidget);
+    tester
+        .widget<IconButton>(find.byKey(const ValueKey('attendance-open-call-progress')))
+        .onPressed!();
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/dev/attendance/calls/call-progress');
   });
 
   testWidgets('development attendance routes never use the production repository', (tester) async {
@@ -158,6 +165,8 @@ void main() {
       expect(repository.calls, routeCase.expectedCalls, reason: routeCase.path);
       if (routeCase.path == '/attendance') {
         expect(find.text('Nova chamada'), findsNothing);
+        expect(find.text('Ações'), findsNothing);
+        expect(find.byKey(const ValueKey('attendance-open-call-progress')), findsNothing);
       } else {
         expect(
           router.routeInformationProvider.value.uri.path,

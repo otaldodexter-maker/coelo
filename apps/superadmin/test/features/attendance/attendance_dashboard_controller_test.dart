@@ -56,6 +56,8 @@ void main() {
     );
 
     final firstLoad = controller.load();
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.dashboardQueries, hasLength(1));
     final secondLoad = controller.changeGranularity(AttendanceDashboardGranularity.weekly);
     second.complete(
       _snapshot(initialQuery.copyWith(granularity: AttendanceDashboardGranularity.weekly)),
@@ -66,6 +68,43 @@ void main() {
 
     final ready = controller.state as AttendanceDashboardReady;
     expect(ready.snapshot.query.granularity, AttendanceDashboardGranularity.weekly);
+  });
+
+  test('ignores obsolete access before mutating query or loading dashboard', () async {
+    final firstAccess = Completer<AttendanceDashboardAccess>();
+    final secondAccess = Completer<AttendanceDashboardAccess>();
+    final repository = _DashboardRepository(
+      accessResponses: [firstAccess.future, secondAccess.future],
+    );
+    final controller = AttendanceDashboardController(
+      repository: repository,
+      initialQuery: initialQuery,
+    );
+
+    final firstLoad = controller.load();
+    final secondLoad = controller.changeGranularity(AttendanceDashboardGranularity.weekly);
+    const currentAccess = AttendanceDashboardAccess(
+      scope: AttendanceDashboardScope.institution,
+      institutionId: 'institution-b',
+      canRead: true,
+    );
+    secondAccess.complete(currentAccess);
+    await secondLoad;
+
+    const obsoleteAccess = AttendanceDashboardAccess(
+      scope: AttendanceDashboardScope.institution,
+      institutionId: 'institution-a',
+      canRead: true,
+    );
+    firstAccess.complete(obsoleteAccess);
+    await firstLoad;
+
+    final ready = controller.state as AttendanceDashboardReady;
+    expect(controller.access, same(currentAccess));
+    expect(controller.query.institutionId, 'institution-b');
+    expect(controller.query.granularity, AttendanceDashboardGranularity.weekly);
+    expect(ready.snapshot.query.institutionId, 'institution-b');
+    expect(repository.dashboardQueries, hasLength(1));
   });
 
   test('status, sort and page size reset pagination and reload once each', () async {
@@ -106,19 +145,27 @@ void main() {
 }
 
 final class _DashboardRepository implements AttendanceDashboardRepository {
-  _DashboardRepository({this.error, this.responses = const []});
+  _DashboardRepository({this.error, this.responses = const [], this.accessResponses = const []});
 
   final Object? error;
   final List<Future<AttendanceDashboardSnapshot>> responses;
+  final List<Future<AttendanceDashboardAccess>> accessResponses;
+  var _accessRequestCount = 0;
   final dashboardQueries = <AttendanceDashboardQuery>[];
 
   @override
-  Future<AttendanceDashboardAccess> fetchAccess() async => const AttendanceDashboardAccess(
-    scope: AttendanceDashboardScope.platform,
-    canRead: true,
-    canCreateCall: true,
-    canExport: true,
-  );
+  Future<AttendanceDashboardAccess> fetchAccess() {
+    final index = _accessRequestCount++;
+    if (index < accessResponses.length) return accessResponses[index];
+    return Future.value(
+      const AttendanceDashboardAccess(
+        scope: AttendanceDashboardScope.platform,
+        canRead: true,
+        canCreateCall: true,
+        canExport: true,
+      ),
+    );
+  }
 
   @override
   Future<AttendanceDashboardSnapshot> fetchDashboard(AttendanceDashboardQuery query) {
