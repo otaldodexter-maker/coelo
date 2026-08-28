@@ -1377,6 +1377,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Cerca de 1 h 30 min de wall-clock desde 21:57; o encerramento exato não foi recuperado pelo shell. Inclui três ciclos de review independente e correção dos P1 encontrados. |
 | Estimativa restante | Nenhum desvio estrutural adicional é conhecido nas cinco rotas cobertas; o total E2E continua não calculável pelos bloqueios externos já registrados. |
 
+## 16.4. Assiduidade Dashboard e contraprova de Principal — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Telas alteradas ou regredidas | Dashboard de Assiduidade; contraprova sem alteração de Acontece, Para Você, Momentos, Agora, Perfil e três publicações. |
+| Arquivos modificados | `superadmin_router.dart`; `attendance_dashboard_controller.dart`; `attendance_dashboard_page.dart`; `attendance_routes_test.dart`; `attendance_dashboard_controller_test.dart`; `attendance_pages_test.dart`. |
+| Correções realizadas | Produção deixa de exibir botão, coluna ou cabeçalho de abrir chamada quando a rota mutante está indisponível; `/dev` preserva a ação e a navegação local. Reloads fora de ordem validam a geração antes de alterar access/query. Trocar repository/contexto dispõe o controller anterior, cancela seu debounce, limpa a busca e carrega somente o contexto novo; resposta tardia de A não aparece em B. |
+| Estado atual | `local-green`. REDs reproduzidos; regressão conjunta fresca 44/44; analyzer dos seis arquivos sem issues; formatter e `git diff --check` verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0. Principal passou contraprova non-golden separada de 62/62, confirmando shell único, `embedded` e wizard canônico; nenhum arquivo Principal mudou. |
+| Bloqueios | Abrir/criar chamada em produção permanece 503 sem capability autoritativa. Backend, autorização integrada, dois goldens do dashboard e E2E continuam fora do pacote. |
+| Pendências restantes | Clock do dashboard ainda não é injetável; banner de refresh-error não possui matriz própria 375/1440 a 200%; inspeção visual humana e contratos integrados permanecem necessários. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu inventário paralelo, três REDs, duas rodadas de review e gates focados. |
+| Estimativa restante | O próximo lote seguro é Rotina diária ou Comunicação/Avisos para fechar troca de repository/contexto; a ETA E2E continua não calculável sem backend e decisões de capability. |
+
 ## 17. Histórico
 
 | Data | Mudança |
