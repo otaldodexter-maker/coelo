@@ -271,7 +271,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 6.3 | Editar Pessoa | `people.edit` | Carga, vínculos, erro e dirty state ainda abertos. | `local-green` | B | I | A | C | Avançada | 2.5 h | Abrir/editar/salvar/falhar/abandonar, 375–1440. |
 | 6.4 | Pessoas / Vínculos | `people.links` | Atividade e vínculos dependem de contrato; estados parciais. | `audited` | B | I | A | C | Avançada após decisão | 2 h + decisão | Fluxos permitidos/indisponíveis claros, foco, erro e reload. |
 | 6.5 | Pessoas / Recarregar | `people.reload` | Retry, paginação e filtros não têm prova atual. | `audited` | B | I | A | C | Avançada | 2 h | Erro/retry preservando consulta, página e sem duplicação. |
-| 7.1 | Perfis de acesso / Lista | `access-profiles.list` | Diretório e capability precisam revalidação. | `audited` | B | I | A | C | Avançada | 2 h | Lista/estados/filtros/negação e 200%. |
+| 7.1 | Perfis de acesso / Lista | `access-profiles.list` | Lifecycle A→B, callbacks reais, limpeza de PII, estado unauthorized e matriz responsiva passaram localmente; capability produtiva e E2E permanecem fora. | `local-green` | B | I | A | C | Avançada | 2 h | Integrar capability/repository produtivos, executar cross-tenant, goldens autorizados e evidência E2E. |
 | 7.2 | Criar perfil de acesso | `access-profiles.create` | Access Extended e Imports bloqueiam contrato. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Fluxo aprovado, validação, erro, capacidade e regressão visual. |
 | 7.3 | Perfil de acesso / Detalhe | `access-profiles.detail` | Detalhe e acesso direto ainda parciais. | `audited` | B | I | A | C | Avançada | 2 h | Abrir/link direto/not-found/unauthorized e 200%. |
 | 7.4 | Editar perfil de acesso | `access-profiles.edit` | Contrato estendido e permissões bloqueados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Carga/edição/conflito/erro sem ampliar permissão pela UI. |
@@ -1620,6 +1620,24 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Pendências restantes | Integrar contratos produtivos e autorização; executar inspeção visual humana, goldens autorizados e evidência integrada; manter 0/207 E2E. |
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de query/debounce/cursor A→B, anatomia/status e matriz Cards/Table, gates e review independente. |
 | Estimativa restante | O próximo lote Flutter deve ser independente; o fechamento E2E de Formulários depende dos contratos produtivos registrados. |
+
+## 16.18. Perfis de acesso / Diretório — lifecycle e fail-closed local — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Diretório de Perfis de acesso; troca de repository, estados de autorização, callbacks de criar/abrir e retenção local de dados. |
+| Arquivos modificados | `access_profile_directory_page.dart`; `access_profile_view_model.dart`; testes da página e do view model; este tracker. |
+| Correções realizadas | Troca de repository descarta o view model A, limpa busca/footer e carrega B com generation própria; resposta A tardia não repinta. Callbacks ausentes permanecem nulos, portanto criação e abertura ficam ausentes ou informativas, sem falso sucesso. O view model limpa a coleção inativa, snapshots e consulta sensível em unauthorized/dispose. Unauthorized retorna antes da toolbar, tabs, filtros, toggle, cards, tabela e paginação, mantendo somente o painel 403. A matriz non-golden alterna Cards e Table em 375/768/1024/1440 a 100/200%. |
+| Estado atual | `local-green`. Suíte Access Profiles non-golden 23/23; analyzer dos quatro paths sem issues; formatter 0 mudanças; validador visual, `git diff --check` e secret scan verdes. Review independente final: GREEN, P0=0/P1=0. |
+| Bloqueios | Capability autoritativa, repository produtivo, criação/edição/atribuição/exclusão, RLS, validação cross-tenant, goldens e E2E permanecem fora. O resultado local não constitui E2E. |
+| Conhecimento capturado | `no-op`: o lote aplica a baseline Instituições e a regra fail-closed já aprovadas; nenhuma regra durável nova foi decidida. |
+| Pendências restantes | Integrar contratos produtivos e autorização; executar inspeção visual humana, goldens autorizados e evidência integrada; manter 0/207 E2E. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs A→B, resposta tardia, callbacks ausentes/reais, limpeza de PII, unauthorized state-only, matriz responsiva, gates e review independente. |
+| Estimativa restante | O fechamento E2E de Perfis de acesso depende dos contratos produtivos e decisões registradas. |
 
 ## 17. Histórico
 
