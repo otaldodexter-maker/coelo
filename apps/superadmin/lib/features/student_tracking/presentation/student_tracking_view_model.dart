@@ -58,54 +58,64 @@ final class StudentTrackingViewModel extends ChangeNotifier {
   StudentTrackingContext? selectedContext;
   StudentTrackingPeriod? selectedPeriod;
   StudentTrackingSnapshot? snapshot;
+  var _generation = 0;
+  var _disposed = false;
 
   Future<void> load() async {
-    _setState(const StudentTrackingLoading());
+    final generation = ++_generation;
+    _clearSensitiveState();
+    _setState(const StudentTrackingLoading(), generation);
     try {
       final page = await _repository.fetchChildren();
+      if (!_isCurrent(generation)) return;
       _children = page.items;
       if (_children.isEmpty) {
-        _setState(const StudentTrackingNoChildren());
+        _setState(const StudentTrackingNoChildren(), generation);
         return;
       }
       selectedChild = _children.first;
-      await _loadSelection(autoSelect: true);
+      await _loadSelection(generation, autoSelect: true);
     } on Exception catch (error) {
-      _handleFailure(error);
+      _handleFailure(error, generation);
     }
   }
 
   Future<void> selectChild(StudentTrackingChild child) async {
+    final generation = ++_generation;
     selectedChild = child;
     selectedContext = null;
     selectedPeriod = null;
     snapshot = null;
-    _setState(const StudentTrackingLoading());
+    _setState(const StudentTrackingLoading(), generation);
     try {
-      await _loadSelection(autoSelect: true);
+      await _loadSelection(generation, autoSelect: true);
     } on Exception catch (error) {
-      _handleFailure(error);
+      _handleFailure(error, generation);
     }
   }
 
   Future<void> selectContext(StudentTrackingContext context) async {
+    final generation = ++_generation;
     selectedContext = context;
     selectedPeriod = null;
-    _setState(const StudentTrackingLoading());
+    snapshot = null;
+    _setState(const StudentTrackingLoading(), generation);
     try {
-      await _loadSelection(autoSelect: true);
+      await _loadSelection(generation, autoSelect: true);
     } on Exception catch (error) {
-      _handleFailure(error);
+      _handleFailure(error, generation);
     }
   }
 
   Future<void> selectPeriod(StudentTrackingPeriod period) async {
+    final generation = ++_generation;
     selectedPeriod = period;
-    _setState(const StudentTrackingLoading());
+    snapshot = null;
+    _setState(const StudentTrackingLoading(), generation);
     try {
-      await _loadSelection();
+      await _loadSelection(generation);
     } on Exception catch (error) {
-      _handleFailure(error);
+      _handleFailure(error, generation);
     }
   }
 
@@ -114,17 +124,20 @@ final class StudentTrackingViewModel extends ChangeNotifier {
       await load();
       return;
     }
-    _setState(const StudentTrackingLoading());
+    final generation = ++_generation;
+    snapshot = null;
+    _setState(const StudentTrackingLoading(), generation);
     try {
-      await _loadSelection();
+      await _loadSelection(generation);
     } on Exception catch (error) {
-      _handleFailure(error);
+      _handleFailure(error, generation);
     }
   }
 
   Future<void> retry() => load();
 
-  Future<void> _loadSelection({bool autoSelect = false}) async {
+  Future<void> _loadSelection(int generation, {bool autoSelect = false}) async {
+    if (!_isCurrent(generation)) return;
     final child = selectedChild;
     if (child == null) return;
     var next = await _repository.fetchSnapshot(
@@ -132,10 +145,11 @@ final class StudentTrackingViewModel extends ChangeNotifier {
       activityId: selectedContext?.id,
       periodId: selectedPeriod?.id,
     );
+    if (!_isCurrent(generation)) return;
     if (autoSelect && selectedContext == null) {
       if (next.contexts.isEmpty) {
         snapshot = next;
-        _setState(const StudentTrackingNoContext());
+        _setState(const StudentTrackingNoContext(), generation);
         return;
       }
       selectedContext = next.contexts.first;
@@ -143,6 +157,7 @@ final class StudentTrackingViewModel extends ChangeNotifier {
         childContextId: child.id,
         activityId: selectedContext!.id,
       );
+      if (!_isCurrent(generation)) return;
     }
     if (autoSelect && selectedPeriod == null && next.periods.isNotEmpty) {
       selectedPeriod = next.periods.first;
@@ -151,34 +166,50 @@ final class StudentTrackingViewModel extends ChangeNotifier {
         activityId: selectedContext?.id,
         periodId: selectedPeriod!.id,
       );
+      if (!_isCurrent(generation)) return;
     }
     snapshot = next;
-    _setState(const StudentTrackingReady());
+    _setState(const StudentTrackingReady(), generation);
   }
 
-  void _handleFailure(Exception error) {
+  void _handleFailure(Exception error, int generation) {
+    if (!_isCurrent(generation)) return;
+    _clearSensitiveState();
     switch (error) {
       case StudentTrackingRevokedException():
-        snapshot = null;
-        selectedChild = null;
-        selectedContext = null;
-        selectedPeriod = null;
-        _children = const [];
-        _setState(const StudentTrackingRevoked());
+        _setState(const StudentTrackingRevoked(), generation);
       case StudentTrackingUnavailableException():
-        snapshot = null;
-        _setState(const StudentTrackingUnavailable());
+        _setState(const StudentTrackingUnavailable(), generation);
       case StudentTrackingOfflineException():
-        _setState(const StudentTrackingOffline());
+        _setState(const StudentTrackingOffline(), generation);
       case StudentTrackingDeniedException():
-        _setState(const StudentTrackingDenied());
+        _setState(const StudentTrackingDenied(), generation);
       default:
-        _setState(const StudentTrackingFailure());
+        _setState(const StudentTrackingFailure(), generation);
     }
   }
 
-  void _setState(StudentTrackingState value) {
+  void _clearSensitiveState() {
+    snapshot = null;
+    selectedChild = null;
+    selectedContext = null;
+    selectedPeriod = null;
+    _children = const [];
+  }
+
+  bool _isCurrent(int generation) => !_disposed && generation == _generation;
+
+  void _setState(StudentTrackingState value, int generation) {
+    if (!_isCurrent(generation)) return;
     _state = value;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _generation += 1;
+    _clearSensitiveState();
+    super.dispose();
   }
 }

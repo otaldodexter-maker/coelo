@@ -29,7 +29,7 @@ final class StudentTrackingPage extends StatefulWidget {
 }
 
 final class _StudentTrackingPageState extends State<StudentTrackingPage> {
-  late final StudentTrackingViewModel _viewModel;
+  late StudentTrackingViewModel _viewModel;
   StudentTrackingTab _tab = StudentTrackingTab.overview;
   DateTime _displayedMonth = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime _selectedDate = DateTime.now();
@@ -37,14 +37,37 @@ final class _StudentTrackingPageState extends State<StudentTrackingPage> {
   @override
   void initState() {
     super.initState();
-    _viewModel = StudentTrackingViewModel(widget.repository);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _viewModel.load());
+    _viewModel = _createViewModel(widget.repository);
+    _scheduleLoad(_viewModel);
+  }
+
+  @override
+  void didUpdateWidget(covariant StudentTrackingPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    _viewModel.dispose();
+    _viewModel = _createViewModel(widget.repository);
+    _tab = StudentTrackingTab.overview;
+    final now = DateTime.now();
+    _displayedMonth = DateTime(now.year, now.month);
+    _selectedDate = now;
+    _scheduleLoad(_viewModel);
   }
 
   @override
   void dispose() {
     _viewModel.dispose();
     super.dispose();
+  }
+
+  StudentTrackingViewModel _createViewModel(StudentTrackingRepository repository) =>
+      StudentTrackingViewModel(repository);
+
+  void _scheduleLoad(StudentTrackingViewModel viewModel) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !identical(_viewModel, viewModel)) return;
+      viewModel.load();
+    });
   }
 
   @override
