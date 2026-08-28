@@ -40,12 +40,21 @@ autoriza contexto, não invalida cache e não representa a futura implementaçã
 produtiva da ADR 0012. Dados e vínculos demonstrativos não correspondem a
 pessoas ou tenants reais.
 
+Troca de repository, dados de apoio ou relógio invalida o carregamento anterior,
+limpa a projeção e só aplica a resposta do novo contexto. O seletor preserva o
+contexto ativo apenas quando o mesmo ID existe nos novos dados; caso contrário,
+usa o primeiro contexto novo. Bottom sheets pertencem ao contexto que as abriu
+e são encerradas antes de exibir outro conjunto de dados. Acesso negado usa
+estado próprio, sem conteúdo anterior e sem retry.
+
 ## Evidência
 
 O preview executável fica em `/dev/principal-for-you` no Superadmin e é
 alcançável a partir de Acontece. Testes cobrem prioridade, estados vazios,
 callbacks, seletor de contexto, limites 600/839/840/1024, texto a 200% e reduced
-motion. Goldens preservam 375/768/1440 light, 1440 dark e seletor aberto.
+motion. Também há contraprovas A→B, resposta tardia, 403 sem retry e sheet
+encerrada no swap. Goldens preservam 375/768/1440 light, 1440 dark e seletor
+aberto.
 
 ## Fora de escopo
 

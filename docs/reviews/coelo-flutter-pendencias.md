@@ -1549,6 +1549,24 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs A→B, dispose, picker tardio, autosave/removal, failure origin, checkpoint de save e duas revisões independentes. |
 | Estimativa restante | Próximo lote Flutter deve ser independente; o fechamento E2E de Acontece depende dos contratos produtivos registrados. |
 
+## 16.14. Para Você — lifecycle e privacidade local — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Para Você; carregamento de Comunicações e seletor local de contexto. |
+| Arquivos modificados | `principal_for_you_route_page.dart`; `principal_for_you_preview_page.dart`; testes homônimos; spec canônica, projeção de conhecimento e tracker. |
+| Correções realizadas | Troca de repository, dados de apoio ou relógio inicia generation B, limpa A e captura todas as dependências antes do await; respostas e erros tardios são descartados. `NoticeUnauthorizedException` monta estado 403 sem preview nem retry. O preview preserva contexto somente por ID ainda presente em B, usando o objeto novo; sheets são registradas antes do push, removidas em swap/dispose e seus retornos validam generation e membership atual. |
+| Estado atual | `local-green`. Suíte non-golden completa de Para Você 24/24; analyzer do feature e testes sem issues; formatter, validador visual, memória e `git diff --check` verdes. Review independente final: GREEN, P0=0/P1=0. Nenhum backend, router produtivo ou golden foi alterado. |
+| Bloqueios | O seletor continua demonstrativo/local e não autoriza nem persiste a troca produtiva da ADR 0012. Contrato remoto, RLS, cross-tenant e E2E permanecem fora. |
+| Conhecimento capturado | A spec fonte e `docs/knowledge/team/principal-for-you-preview.md` registram limpeza A→B, preservação somente por ID válido, ownership de sheet e 403 sem retry. |
+| Pendências restantes | Provar integração produtiva, autorização e contexto remoto; executar goldens autorizados, inspeção visual humana e evidência E2E; manter 0/207. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de repository A→B, dependências capturadas, resposta tardia, contexto local, ownership pre-push e unauthorized. |
+| Estimativa restante | Próximo lote Flutter deve ser independente; fechamento E2E depende da troca contextual produtiva e autorização. |
+
 ## 17. Histórico
 
 | Data | Mudança |

@@ -32,3 +32,9 @@ O container de rota consulta `NoticeRepository` pelos tipos produtivos e status
 ativo, aplica a projeção e trata carregamento, ausência de comunicações e falha
 com retry. A ausência de conteúdo editorial não remove os atalhos e o contexto
 útil do hub.
+
+Ao trocar repository, dados de apoio ou relógio, a rota limpa o resultado
+anterior e só aceita a geração nova. O seletor mantém um contexto apenas quando
+seu ID ainda existe nos dados recebidos, fecha sheets pertencentes ao contexto
+anterior e nunca aplica uma seleção tardia em outro contexto. Acesso negado é
+fail-closed, sem conteúdo anterior e sem ação de retry.
