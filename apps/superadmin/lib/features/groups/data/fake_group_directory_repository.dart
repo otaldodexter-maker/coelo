@@ -22,6 +22,14 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
               status: index % 3 == 0 ? GroupStatus.draft : GroupStatus.active,
               createdAt: now,
               updatedAt: now,
+              studentCount: 18 + index,
+              activityIds: [
+                for (var activity = 0; activity < 3 + index % 3; activity += 1)
+                  'fixture-activity-${index + 1}-${activity + 1}',
+              ],
+              teacherOrResponsibleNames: index.isEven
+                  ? const ['Ana Souza', 'Marcos Lima']
+                  : const ['Beatriz Nunes'],
             ),
           );
           index += 1;

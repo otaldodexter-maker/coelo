@@ -434,6 +434,49 @@ GREEN. A suíte final de Shell, Navegação, Conversas, rotas persistentes e rot
 de Atividades passou 106/106. O comportamento e os percentuais não mudaram;
 tempo acumulado: 0 h 45 min.
 
+### V2.6 Turmas/Grupos — abertura — 2026-08-28 12:06 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V1 terminou 5/5 `local-green`; V2 inicia 0/6 `local-green` ou `accepted` (0,00%). |
+| Tela e rota | Diretório de Turmas/Grupos em produção e `/dev`, visão Cards como primeiro recorte. |
+| Contrato visual consultado | `pattern.admin-directory`, `admin.interactive-card`, `pattern.institution-card-status`, `pattern.compact-directory-cards`, `pattern.responsive-directory-filters` e `pattern.stable-route-content-transition`; Instituições permanece baseline. |
+| Correção pretendida | Cada card deve mostrar tipo, quantidade de alunos, quantidade de atividades e professores/responsáveis com fixtures locais seguras, sem copiar identidade externa ou introduzir backend. |
+| RED esperado | O teste atual prova que Atividades, Responsáveis e Crianças/Alunos não aparecem no card; será invertido para exigir a anatomia aprovada e dados locais explícitos. |
+| Responsividade | Revalidar 375/768/1024/1440, texto 200%, light/dark, foco, teclado, alvo e reduced motion do card canônico. |
+| Bloqueios | Nenhum de código no início; `accepted` continua dependente de inspeção visual humana. Assessments permanece intocado. |
+| Tempo usado | 0 h 45 min acumulados. |
+| Estimativa | 1–2 h para V2.6; 9 h 15 min restam na janela inicial. |
+| Próximo item exato | Alterar o teste do primeiro card para exigir tipo, alunos, atividades e professores/responsáveis; executar RED antes do código. |
+
+Percentuais: entrega V2 0/6 (0,00%); programa visual 0/31 `accepted`
+(0,00%); Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207;
+Supabase `local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202;
+projeto estrito 0/229. E2E e estrito medem conclusão integral e não anulam a
+V1 localmente concluída.
+
+### V2.6 Turmas/Grupos — checkpoint local-green — 2026-08-28 12:13 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V2 = 1/6 (16,67%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Diretório de Turmas/Grupos, visão Cards, produção e `/dev`. |
+| Arquivos alterados | `group_directory.dart`; `fake_group_directory_repository.dart`; `group_directory_page.dart`; `group_directory_page_test.dart`; spec e tracker. |
+| Correções | Cards canônicos agora mostram tipo da turma, alunos, atividades e professores/responsáveis; fixtures locais fornecem contagens e nomes seguros; produção sem dados exibe valores honestos via defaults, sem backend simulado. Alturas responsivas preservam alinhamento entre card e tile de criação. |
+| Testes | RED de campos ausentes reproduzido. GREEN: 19/19 Grupos e 8/8 card/status compartilhados; analyzer focado, validador administrativo e diff-check verdes. |
+| Responsividade | Testes cobrem 375/768/1024/1440 e texto 200%; goldens foram comparados em quatro larguras, light/dark. Inspeção das saídas light 375/768/1440 confirmou leitura e ausência de corte interno. Foco, teclado, alvo e reduced motion vêm do card/status canônicos e passaram 8/8. |
+| Goldens e bloqueios | 16 referências antigas de Cards/Tabela divergem 22,53%–40,14% pelas mudanças deliberadas de V2.6 e Arquivos V1. Não foram atualizadas automaticamente; exigem aprovação visual humana. Isso impede `accepted`, não o GREEN comportamental local. |
+| Tempo usado | 0 h 07 min no item; 0 h 52 min acumulados. |
+| Estimativa restante | 9 h 08 min da janela inicial; V2.7 estimada em 1–2 h após inventário. |
+| Próximo item exato | V2.7: inventariar criação/edição administrativa e escrever RED para adoção universal de `SuperadminFormActionFooter`, usando Criar/Editar Instituição como baseline. |
+| Conhecimento | `no-op`: aplicação do contrato visual e comportamento já aprovados. |
+
+Percentuais: entrega V2 1/6 `local-green` ou `accepted` (16,67%); programa
+visual 0/31 `accepted` (0,00%); Flutter `local-green` 84/207 (40,58%);
+Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%); Supabase `done`
+0/37; integração 0/202; projeto estrito 0/229. E2E e estrito medem conclusão
+integral e não anulam a V1 nem o V2.6 locais.
+
 Percentuais de fechamento local da onda: entrega atual 5/5 `local-green` ou
 `accepted` (100,00%); programa visual 0/31 `accepted` (0,00%); Flutter
 `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase

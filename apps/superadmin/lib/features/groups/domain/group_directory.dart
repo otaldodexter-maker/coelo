@@ -42,6 +42,8 @@ final class GroupRecord {
     this.effectiveAccess = const [],
     this.activityIds = const [],
     this.invites = const [],
+    this.studentCount = 0,
+    this.teacherOrResponsibleNames = const [],
   });
 
   final String id;
@@ -65,6 +67,8 @@ final class GroupRecord {
   final List<GroupEffectiveAccess> effectiveAccess;
   final List<String> activityIds;
   final List<GroupDirectoryInviteBinding> invites;
+  final int studentCount;
+  final List<String> teacherOrResponsibleNames;
 
   String get groupTypeLabel => groupTypeLabelFor(groupType);
   String get statusLabel =>
@@ -97,6 +101,8 @@ final class GroupRecord {
     List<GroupEffectiveAccess>? effectiveAccess,
     List<String>? activityIds,
     List<GroupDirectoryInviteBinding>? invites,
+    int? studentCount,
+    List<String>? teacherOrResponsibleNames,
   }) {
     if (institutionId != null && institutionId != this.institutionId) {
       throw ArgumentError('Changing an existing group institution is not supported.');
@@ -126,6 +132,8 @@ final class GroupRecord {
       effectiveAccess: effectiveAccess ?? this.effectiveAccess,
       activityIds: activityIds ?? this.activityIds,
       invites: invites ?? this.invites,
+      studentCount: studentCount ?? this.studentCount,
+      teacherOrResponsibleNames: teacherOrResponsibleNames ?? this.teacherOrResponsibleNames,
     );
   }
 }
@@ -169,6 +177,9 @@ final class GroupDirectoryItem {
   String get groupTypeLabel => record.groupTypeLabel;
   GroupStatus get status => record.status;
   String get statusLabel => record.statusLabel;
+  int get studentCount => record.studentCount;
+  int get activityCount => record.activityIds.length;
+  List<String> get teacherOrResponsibleNames => record.teacherOrResponsibleNames;
 }
 
 enum GroupDirectorySortColumn { name, institutionName, unitName, groupType, status }

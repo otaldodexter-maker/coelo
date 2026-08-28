@@ -47,13 +47,18 @@ void main() {
       findsOneWidget,
     );
     final firstCard = find.byKey(Key('group-card-${first.id}'));
+    expect(find.descendant(of: firstCard, matching: find.text('Alunos')), findsOneWidget);
+    expect(find.descendant(of: firstCard, matching: find.text('18 alunos')), findsOneWidget);
+    expect(find.descendant(of: firstCard, matching: find.text('Atividades')), findsOneWidget);
+    expect(find.descendant(of: firstCard, matching: find.text('3 atividades')), findsOneWidget);
     expect(
-      find.descendant(of: firstCard, matching: find.text('Equipe institucional')),
-      findsNothing,
+      find.descendant(of: firstCard, matching: find.text('Professores / responsáveis')),
+      findsOneWidget,
     );
-    expect(find.descendant(of: firstCard, matching: find.text('Atividades')), findsNothing);
-    expect(find.descendant(of: firstCard, matching: find.text('Responsáveis')), findsNothing);
-    expect(find.descendant(of: firstCard, matching: find.text('Crianças')), findsNothing);
+    expect(
+      find.descendant(of: firstCard, matching: find.text('Ana Souza e Marcos Lima')),
+      findsOneWidget,
+    );
 
     expect(
       tester.getSize(find.byType(CoeloAdminCreateAction)).height,

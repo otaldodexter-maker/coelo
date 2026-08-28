@@ -1854,6 +1854,50 @@ Navegação, Conversas, rotas persistentes e Atividades ficou 106/106. Tempo
 acumulado: 0 h 45 min; próximo item continua sendo o commit de Arquivos e depois
 V2.6.
 
+## 16.27. V2.6 Turmas/Grupos — cards ricos — abertura — 2026-08-28
+
+**Entrega atual V2:** 0,00% (0/6 `local-green` ou `accepted`). **Programa
+visual:** 0/31 `accepted`. **Flutter local:** 84/207 (40,58%). **Flutter
+verified:** 0/207. **Supabase local:** 3/37 (8,11%). **Supabase done:** 0/37.
+**Integração:** 0/202. **Projeto estrito:** 0/229. E2E e estrito medem
+conclusão integral e não anulam a V1 localmente concluída.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`; V1 ficou 5/5 `local-green`, sem `accepted` humano. |
+| Tela e rota | Diretório de Turmas/Grupos, Cards, produção e `/dev`. |
+| Arquivos alterados | Spec e tracker antes do RED; código/teste de Grupos será registrado no GREEN. |
+| Correções realizadas | Nenhuma nesta abertura. Índice `coelo-ui` consultado para diretório, card interativo, status, cards compactos, filtros responsivos e transição estável. |
+| Testes e resultados | O teste existente ainda afirma a ausência de Atividades, Responsáveis e Crianças/Alunos; será convertido em RED explícito. |
+| Inspeções responsivas | Pendentes: 375/768/1024/1440, texto 200%, light/dark, foco, teclado, alvo e reduced motion. |
+| Bloqueios | Nenhum local; aceite visual humano pendente. Assessments fora do recorte. |
+| Tempo realmente usado | 0 h 45 min acumulados, às 12:06 BRT. |
+| Estimativa restante | 1–2 h para V2.6; 9 h 15 min da janela inicial. |
+| Próximo item exato | RED do primeiro card exigindo tipo, alunos, atividades e professores/responsáveis com fixtures locais seguras. |
+| Conhecimento capturado | `no-op`: o comportamento já está aprovado na spec canônica. |
+
+## 16.28. V2.6 Turmas/Grupos — cards ricos — local-green — 2026-08-28
+
+**Entrega atual V2:** 16,67% (1/6 `local-green` ou `accepted`). **Programa
+visual:** 0/31 `accepted`. **Flutter local:** 84/207 (40,58%). **Flutter
+verified:** 0/207. **Supabase local:** 3/37 (8,11%). **Supabase done:** 0/37.
+**Integração:** 0/202. **Projeto estrito:** 0/229. E2E e estrito medem
+conclusão integral e não anulam V1/V2.6 locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Diretório de Turmas/Grupos, Cards, produção e `/dev`. |
+| Arquivos alterados | `group_directory.dart`; `fake_group_directory_repository.dart`; `group_directory_page.dart`; `group_directory_page_test.dart`; spec e tracker. |
+| Correções realizadas | Card de Instituições preservado como baseline; Turmas ganhou tipo, alunos, atividades e professores/responsáveis com fixtures locais seguras, plurais honestos e alinhamento com o tile de criação. |
+| Testes e resultados | RED reproduzido. GREEN 19/19 Grupos + 8/8 card/status canônicos; analyzer, validador administrativo e diff-check verdes. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%, light/dark por comparação de golden; saídas light 375/768/1440 inspecionadas. Foco, teclado, alvo e reduced motion verdes nos componentes compartilhados. |
+| Bloqueios | 16 goldens antigos divergem 22,53%–40,14% devido às mudanças esperadas de Cards e Arquivos. Nenhum foi atualizado; aprovação visual humana é necessária para novos baselines e `accepted`. Assessments intocado. |
+| Tempo realmente usado | 0 h 07 min; 0 h 52 min acumulados, às 12:13 BRT. |
+| Estimativa restante | 9 h 08 min da janela; V2.7 inicialmente 1–2 h. |
+| Próximo item exato | V2.7: inventário e RED do rodapé universal de criação/edição com `SuperadminFormActionFooter`. |
+| Conhecimento capturado | `no-op`: comportamento já aprovado na spec. |
+
 ## 17. Histórico
 
 

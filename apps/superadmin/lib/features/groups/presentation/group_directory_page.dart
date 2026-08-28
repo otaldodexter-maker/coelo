@@ -588,6 +588,7 @@ final class _GroupCards extends StatelessWidget {
       builder: (context, constraints) {
         final columns = math.max(1, (constraints.maxWidth / 340).floor());
         final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+        final cardHeight = MediaQuery.textScalerOf(context).scale(1) >= 2 ? 440.0 : 336.0;
         return Wrap(
           spacing: CoeloSpacing.space6,
           runSpacing: CoeloSpacing.space6,
@@ -595,8 +596,9 @@ final class _GroupCards extends StatelessWidget {
             for (final child in children)
               SizedBox(
                 width: width,
+                height: cardHeight,
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 216),
+                  constraints: BoxConstraints(minHeight: cardHeight),
                   child: child,
                 ),
               ),
@@ -620,7 +622,7 @@ final class _GroupCard extends StatelessWidget {
     return CoeloAdminInteractiveCard(
       key: Key('group-card-${item.id}'),
       surfaceKey: Key('group-card-surface-${item.id}'),
-      minHeight: 216,
+      minHeight: 336,
       onPressed: onPressed,
       semanticLabel: 'Editar turma ${item.name}',
       child: Padding(
@@ -684,12 +686,40 @@ final class _GroupCard extends StatelessWidget {
               label: 'Tipo da turma',
               value: item.groupTypeLabel,
             ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _GroupDetail(
+              icon: Icons.school_outlined,
+              label: 'Alunos',
+              value: _countLabel(item.studentCount, singular: 'aluno', plural: 'alunos'),
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _GroupDetail(
+              icon: Icons.local_activity_outlined,
+              label: 'Atividades',
+              value: _countLabel(item.activityCount, singular: 'atividade', plural: 'atividades'),
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _GroupDetail(
+              icon: Icons.supervisor_account_outlined,
+              label: 'Professores / responsáveis',
+              value: _namesLabel(item.teacherOrResponsibleNames),
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+String _countLabel(int count, {required String singular, required String plural}) =>
+    '$count ${count == 1 ? singular : plural}';
+
+String _namesLabel(List<String> names) => switch (names) {
+  [] => 'Não informados',
+  [final name] => name,
+  [final first, final second] => '$first e $second',
+  _ => '${names.take(names.length - 1).join(', ')} e ${names.last}',
+};
 
 final class _CardContextLine extends StatelessWidget {
   const _CardContextLine({required this.label, required this.value});
