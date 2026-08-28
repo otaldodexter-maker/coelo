@@ -3479,11 +3479,15 @@ da simples soma das 207 ações.
   append `fail-closed` foram exercitadas. Ledgers de dependências e alvo
   passaram; teardown terminou sem container, volume, rede ou diretório
   temporário residual.
-- **P0 legado separado:** grants/RLS de `unit_addresses` e
-  `unit_contacts` ainda permitem `SELECT` direto sem o mesmo escopo do wrapper.
-  Esse domínio/cutover legado não foi concluído por este slice e continua
-  bloqueando promoção ampla; o contrato novo não o mascara nem o declara
-  resolvido.
+- **Drift remoto separado:** a contraprova read-only mostrou que o remoto nao
+  usa a policy global inicialmente inferida do HEAD. `unit_addresses` e
+  `unit_contacts` estao FORCE RLS e usam `units.read` escopada a instituicao;
+  a capability existe com grants Owner/Operations no realm legado. O acesso
+  direto continua fora do gateway/audit interno, mas nao houve prova de
+  cross-tenant fora do escopo. O slice permanece `local-green` e agora tambem
+  `blocked-schema/provenance`: o remoto usa `unit_type_id/unit_types`, enquanto
+  DETAIL v2 local usa `institution_type_id/institution_types`.
+
 - **Ambiente/estado:** zero mutação remota, deploy, Flutter ou E2E. O máximo
   comprovado é `local-green` somente no backend; tela e integração não estão
   concluídas e o progresso geral de produto/E2E permanece 0/207 ações.
@@ -3492,3 +3496,48 @@ da simples soma das 207 ações.
 - **Gate de conhecimento:** `no-op`. Os scripts `Search`/`Test` da memória não
   existem nesta checkout; nenhuma projeção foi inventada e a fonte canônica
   permanece a spec 043.
+
+### Checkpoint seguro 45 - Units/Profile About: proveniencia e drift remotos
+
+- **Lote/acoes tratadas:** somente inventario read-only de
+  `20260811214000/11214500/11214600/11215451`,
+  `20260821192000/21200000`, grants, policies, helpers e schema remoto. Nenhuma
+  acao de produto foi promovida; 0/207 E2E permanece inalterado.
+- **Proveniencia:** `11214000` equivale 140/140 ao blob original
+  `c8f1f45e...`, `11214500` 50/50 ao blob `15a10f55...` e `11214600`
+  4/4 ao blob `dca067c9...`. `11215451` e `text-conflict` e nao possui
+  variante inspecionada equivalente. Profile/About `21192000` equivale 35/35
+  ao hardened `4e3a89b3...`; `21200000` equivale 5/5 a `17096406...`.
+  O original `e8c2086e...` e o local-only regressivo `25193131/a53cdc0f...`
+  nao sao fontes implantadas validas.
+- **Estado fisico remoto:** `units.read/create/update` e RPCs legadas existem;
+  `units.read` esta ativa e concedida a Owner/Operations. As tabelas filhas
+  estao FORCE RLS com `SELECT authenticated` e policies escopadas por
+  `has_scoped_platform_permission('units.read', institution_id)`. O remoto usa
+  `units.unit_type_id NOT NULL -> unit_types(id)`; ADR 0016/spec 017/spec 043 e
+  DETAIL v2 local usam `institution_type_id/institution_types`.
+- **Autoridade e risco:** helpers/RPCs Units e Profile/About derivam
+  `current_person_id()` e memberships/atores people-based; nao validam o
+  principal interno/sessao da spec 039. O acesso direto e alcancavel para ator
+  legado valido, mas nao houve prova de exploracao HTTP ou BOLA/cross-tenant
+  fora do escopo. `save_profile_about` escreve contato fora de
+  `units.management_version`; `25193131` regride draft/publicacao/AAL2/erro
+  seguro e permanece bloqueada.
+- **Arquivos/migrations/RPCs alterados:** somente a spec 044, OQ-032 e
+  rastreadores foram corrigidos documentalmente. Zero SQL, migration, funcao,
+  grant, policy, Flutter ou mirror alterado.
+- **Evidencias/testes:** comparacao individual por statement e SHA-256,
+  catalogo/ledger remoto somente por SELECT e dois reviews Eng Sup P0/P1.
+  Nenhum replay/Docker foi executado porque SQL esta RED e proibido neste lote.
+- **Estado local/remoto:** DETAIL v2 continua `local-green +
+  blocked-schema/provenance`; Design A esta `blocked-provenance/drift`.
+  Nenhum estado e `remote-green`, deployable ou E2E. Zero mutacao remota.
+- **Bloqueios/pendencias:** decidir sem inferencia
+  `unit_types/unit_type_id` versus
+  `institution_types/institution_type_id`; reconciliar dados, FKs, indices,
+  capability/matriz e realms de forma forward-only; criar writer interno
+  versionado para contato; nao restaurar recoveries ou `11215451` por nome.
+- **Tempo usado:** nao mensurado com precisao neste inventario. **Tempo
+  restante:** nao calculavel ate a decisao de schema/autoridade.
+- **Gate de conhecimento:** `no-op`; a spec 044 bloqueada e OQ-032 registram a
+  divergencia, sem projetar comportamento novo em `docs/knowledge`.

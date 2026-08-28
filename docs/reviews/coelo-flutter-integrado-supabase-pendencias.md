@@ -893,11 +893,16 @@ tracker integrado permanece aberto, sem ação promovida, e a métrica geral seg
 0/207. Contacts só pode avançar após protocolo comum e versionado entre writers.
 
 Para Unidades, o Checkpoint seguro 44 prova somente o backend local de
-detail/reload v2: UNIT 31/31 e regressões Auth 29/29, detalhe de Instituição
-26/26, listagem/filtros 35/35 e EDIT CORE 47/47, totalizando 168/168. Não houve
-Flutter, remoto ou E2E e nenhuma ação foi promovida. O P0 legado de `SELECT`
-direto/RLS sem escopo equivalente em `unit_addresses` e `unit_contacts` mantém
-domínio e cutover incompletos; a métrica geral permanece 0/207.
+detail/reload v2: UNIT 31/31 e regressoes Auth 29/29, detalhe de Instituicao
+26/26, listagem/filtros 35/35 e EDIT CORE 47/47, totalizando 168/168. Nao houve
+Flutter, remoto mutavel ou E2E e nenhuma acao foi promovida. A contraprova
+read-only posterior preserva esse estado como `local-green`, mas acrescenta
+`blocked-schema/provenance`: o remoto implantado usa
+`unit_type_id/unit_types`, enquanto DETAIL local usa
+`institution_type_id/institution_types`. As tabelas filhas remotas estao
+FORCE RLS e usam `units.read` escopada no realm legado; nao houve prova de
+cross-tenant fora do escopo. Design A permanece bloqueado e a metrica geral
+continua 0/207.
 
 **Gate estrutural deste checkpoint:** os três rastreadores possuem os mesmos 207
 `action_id`; cada rastreador contém 207 linhas únicas, zero duplicadas, e o
@@ -1016,3 +1021,23 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 | 2026-08-27 | Notices permaneceu bloqueado após auditoria individual de `20260812002900`: migration e consumidora `12003000` estão fora do ledger; o enum remoto mantém cinco labels legados, enquanto as specs divergem sobre o ciclo final. A ACL SQL remota de `platform_notices` é excessiva para `anon`/`authenticated`, inclusive `TRUNCATE`, mas nenhuma reachability HTTP foi afirmada. OQ-038 foi aberta; nenhum Flutter, migration, deploy, ação ou E2E foi promovido. |
 | 2026-08-27 | O hardening forward-only `20260827222500` fechou localmente o acesso direto de `PUBLIC`/`anon`/`authenticated` às cinco tabelas Platform Notice e forçou RLS sem ativar enum/RPC/worker. RED confirmou grants/FORCE inseguros; GREEN passou 35/35, mirror 106/106 e cleanup total. O remoto não foi alterado e continua vulnerável até deploy autorizado; Notice permanece bloqueado, sem Flutter, sem E2E e sem promoção das 207 ações. |
 | 2026-08-27 | Fundação Auth/Supabase avançou somente para `local-green`: a opção A aprovada criou ator auditável v3 `auth_session` para negações após sessão válida sem vínculo completo, preservou cadeia v1/v2, isolou principal/link/membership internos e expôs apenas bootstrap/resolução autenticados. Replay truncado + hardening ACL + Auth passou 29/29 com ledger e cleanup; P0/P1=0 em review independente. Nenhum Flutter ou remoto foi alterado, login/refresh/logout/AAL2 e cross-tenant reais continuam pendentes, zero E2E foi executado e as 207 ações integradas permanecem inalteradas. |
+
+### Checkpoint integrado 45 - drift Units/Profile About sem promocao
+
+- O backend local de DETAIL/RELOAD mantem os testes 168/168 ja aceitos, sem
+  repeticao, mas nao e aplicavel ao remoto atual antes de reconciliar
+  `unit_type_id/unit_types` versus
+  `institution_type_id/institution_types`.
+- O remoto materializa `units.read/create/update` e RPCs people-based; o
+  Flutter produtivo continua `UnavailableUnitDirectoryRepository` e nao chama
+  os RPCs legados de create/update.
+- A proveniencia read-only fechou `11214000/11214500/11214600` e
+  Profile/About `21192000/21200000`; `11215451` permanece text-conflict e
+  `25193131` e local-only regressiva.
+- Nenhuma tela Flutter, migration, grant, policy, funcao, deploy ou estado
+  remoto foi alterado. Integracao/E2E permanece aberta em 0/207.
+- Estado: DETAIL `local-green + blocked-schema/provenance`; Design A
+  `blocked-provenance/drift`; zero `remote-green`.
+- Proximo gate integrado: decisao canonica de schema/capability/realm, pacote
+  forward-only revisado e so entao handoff ao Eng Integrador. Tempo restante:
+  nao calculavel.
