@@ -3541,3 +3541,58 @@ da simples soma das 207 ações.
   restante:** nao calculavel ate a decisao de schema/autoridade.
 - **Gate de conhecimento:** `no-op`; a spec 044 bloqueada e OQ-032 registram a
   divergencia, sem projetar comportamento novo em `docs/knowledge`.
+
+### Checkpoint seguro 46 - Grupos: detalhe/reload v2 interno
+
+- **Lote/acoes tratadas:** contrato aditivo local para `groups.detail` e
+  `groups.reload`, sem promover a tela ou a acao integrada. A spec 045 limita
+  a leitura a Owner/Operations por `groups.read`; Owner exige AAL2 e
+  Auditor/Support/Content permanecem `fail-closed`. O escopo
+  platform/institution vem exclusivamente da membership interna da spec 039.
+- **Contrato/output:** a RPC `superadmin_group_detail_v2(uuid)` retorna somente
+  raiz fisica da Turma, Instituicao/Unidade, tipo textual, status, flags de
+  heranca, versao e timestamps. Membros, convites, atividades, branding,
+  acesso efetivo, contadores, arquivos e Auth ficam omitidos. ID inexistente ou
+  cross-scope retorna o mesmo `SAI_PERMISSION_DENIED`, sem oracle.
+- **Migration/teste:** `20260828003500_superadmin_internal_group_detail.sql`
+  tem 8.587 bytes e SHA-256
+  `F4F3CCACF25B28F0C1FD1BEF3F32FD25EBD572549FEBB04FDBA74DADF549C334`.
+  O pgTAP `superadmin_internal_group_detail_test.sql` tem 41.649 bytes,
+  plano 33 e SHA-256
+  `CAFB534048A76658A626466F31740D5B8E87B49C2F96A1BA247DD3207301D609`.
+  A spec 045 tem 11.572 bytes e SHA-256
+  `11865CD1E85FADBF9F5103796F3D13B101D5532D7D4FD2EA47075B6BE0240880`.
+- **Autorizacao/DDL:** o preflight exige owner `postgres`, Auth interno,
+  `groups.unit_id NOT NULL`, FK composta validada, `groups.read` ativa sem MFA
+  intrinseco e grants ativos exatos Owner/Operations. Nomes v2 preexistentes
+  sao rejeitados para impedir overload residual. Helper privado nao tem EXECUTE
+  de cliente/service e o wrapper publico concede somente a `authenticated`.
+- **Provas locais:** o RED foi confirmado antes da migration. Depois, Groups
+  passou 33/33; regressões Auth 29/29, Instituicao detalhe 26/26,
+  listagem/filtros 35/35, EDIT CORE 47/47 e Unidade 31/31 tambem passaram:
+  201 testes executados e todos os 201 verdes. Foram cobertos Owner/Operations,
+  AAL, roles negados, sessoes invalidas, lifecycle, role/permission/grant
+  inativos, grant revogado e efeito `deny`, cross-app/cross-tenant,
+  persistencia/reload, shape, audit v2/v3 e append adversarial `fail-closed`.
+  Fixtures ficaram em transacao com rollback.
+- **Replay/mirror:** o stage final usou baseline ate `20260812001975` e somente
+  as dependencies ACL/Auth/Instituicoes/Unidade allowlisted antes de Groups.
+  A tentativa anterior pela cadeia completa parou no RED historico Child Safety
+  `23502`; apos corrigir o staging, ela nao foi repetida. Prepare/Verify fechou
+  111 migrations canonicas e 111 mirrors idênticos; teardown final deixou zero
+  container, volume, rede ou diretorio temporario.
+- **Proveniencia/remoto:** `20260811151254` permanece a unica base Groups com
+  equivalencia formal 140/140. As seis migrations remotas posteriores ausentes
+  do HEAD seguem apenas candidatas individuais, sem promocao/restauracao. Uma
+  consulta remota agregada confirmou zero linhas Groups, sem PII; nenhuma
+  migration, DDL, DML, Auth, Storage, Edge ou deploy remoto foi executado.
+- **Estado/bloqueios:** maximo `local-green`. Nao e `remote-green`, deployable,
+  `done` ou E2E. Flutter produtivo continua sem repository Supabase de Grupos.
+  OQ-031, list/filter, create/edit/status/archive/delete, membros, convites,
+  atividades, arquivos e import/export permanecem abertos; nenhuma das 207
+  acoes integradas foi promovida.
+- **Tempo usado:** nao mensurado com precisao neste lote. **Tempo restante:**
+  nao calculavel para o backlog integral; depende de OQ-031, proveniencia das
+  migrations remotas ausentes, Flutter e futura prova remota autorizada.
+- **Gate de conhecimento:** `no-op`; a fonte canonica duravel e a spec 045 e
+  nenhum comportamento remoto/integrado foi projetado em `docs/knowledge`.

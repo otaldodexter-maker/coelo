@@ -1041,3 +1041,24 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Proximo gate integrado: decisao canonica de schema/capability/realm, pacote
   forward-only revisado e so entao handoff ao Eng Integrador. Tempo restante:
   nao calculavel.
+
+### Checkpoint integrado 46 - Grupos detail/reload somente backend local
+
+- Backend Groups DETAIL/RELOAD v2 ficou `local-green`: RED especifico seguido
+  de 33/33 e regressoes totalizando 201/201, com Auth/sessao/MFA, roles,
+  cross-app/cross-tenant, lifecycle, persistencia/reload, ACL e audit v2/v3.
+- A RPC usa `groups.read` e allowlist Owner/Operations; Owner exige AAL2.
+  Auditor, Support e Content ficam `fail-closed`; missing/cross-scope retornam
+  a mesma negativa sem dados.
+- Flutter produtivo continua em `UnavailableGroupDirectoryRepository`; nenhum
+  repository, tela, rota, contrato integrado ou E2E foi alterado/testado.
+- List/filter, create/edit/status/archive/delete, membros, convites, atividades,
+  arquivos/import/export e OQ-031 permanecem abertos. As seis migrations Groups
+  remotas ausentes do HEAD continuam bloqueadas por proveniencia individual.
+- Estado remoto factual: somente SELECT agregado/read-only; zero migration,
+  deploy ou mutacao. O pacote nao e `remote-green`, deployable ou `done` e nao
+  promove nenhuma das 207 acoes integradas; progresso E2E permanece 0/207.
+- Mirror local verificado 111/111 e teardown sem residuos. Handoff Flutter fica
+  permitido somente depois da consolidacao e de autorizacao do Eng Integrador.
+  Tempo restante integrado: nao calculavel sem cutover Flutter, OQ-031 e prova
+  remota autorizada.
