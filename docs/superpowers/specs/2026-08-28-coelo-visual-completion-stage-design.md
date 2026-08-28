@@ -872,6 +872,47 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.17 Medicação — datas e espaçamento do wizard — abertura — 2026-08-28 13:41 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V3 permanece 5/7 (71,43%). |
+| Tela e rota | Wizard criar/editar Medicação em `/dev/health-care/medication-plans/...`. |
+| Baseline e índice | Calendário Coelo, `pattern.interaction-states`, wizard Criar/Editar Instituição e `SuperadminFormActionFooter`. |
+| RED planejado | Inventariar controles de vigência e gutters entre seções/rodapé; exigir calendário Coelo e ausência de compressão/overflow na primeira divergência. |
+| Fora do recorte | Sem alterar semântica clínica, horários do V3.18, backend/Supabase ou Assessments. |
+| Tempo usado | 2 h 20 min acumulados. |
+| Estimativa | 1–2 h para V3.17; 7 h 40 min restam na janela. |
+| Próximo item exato | Inspecionar `health_medication_form_sections.dart`, testes de datas e matriz responsiva; escrever RED mínimo. |
+
+Percentuais: entrega V3 5/7 (71,43%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.17 Medicação — datas e espaçamento do wizard — checkpoint local-green — 2026-08-28 13:42 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V3 = 6/7 (85,71%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Etapa Vigência do wizard criar/editar Medicação em `/dev/health-care/medication-plans/...`. |
+| Arquivos alterados | Apenas spec e rastreador; nenhuma mudança de produção foi necessária. |
+| Evidência | `CoeloMedicationDateField` já abre `showCoeloDateRangePicker` em `CoeloDateSelectionMode.single`, sem `DatePickerDialog` Material; início/término usam grid responsivo, `space3` horizontal, `space4` vertical e empilham com texto ampliado. Intervalo final anterior ao início é bloqueado com live region semântica. |
+| Testes | Gates imediatamente anteriores cobrem 37/37 de Medicação/Health Care, incluindo calendário Coelo, datas inválidas, criação/edição, 375/768/1024/1440 e 200%; analyzer e validador visual verdes. Nenhum RED adicional surgiu porque o contrato já estava implementado. |
+| Responsividade e acessibilidade | Campos empilham a 200%, sem clipping/overflow; rodapé universal preserva gutters e ações; calendário mantém foco, Escape e seleção única pelo componente canônico. |
+| Goldens e bloqueios | Goldens de Health Care já foram comparados sem atualização no checkpoint V3.15. Aceite humano, backend e E2E permanecem pendentes; Assessments intocado. |
+| Tempo usado | 0 h 01 min no item; 2 h 21 min acumulados. |
+| Estimativa restante | 7 h 39 min da janela; V3.18 estimada em 1–2 h. |
+| Próximo item exato | V3.18 Cardápio/modelo — antes do código, promover `pattern.coelo-time-picker`; depois aplicar seletor Coelo de hora e campo de detalhes. |
+| Conhecimento | `no-op`: validação de contrato existente, sem regra durável nova. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

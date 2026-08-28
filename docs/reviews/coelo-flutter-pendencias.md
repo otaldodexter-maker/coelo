@@ -2321,6 +2321,48 @@ os GREENs locais.
 | Próximo item exato | V3.17 Medicação: RED de datas e espaçamento do wizard. |
 | Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
 
+## 16.49. V3.17 Medicação — datas e espaçamento do wizard — abertura — 2026-08-28
+
+**Entrega atual V3:** 71,43% (5/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Wizard criar/editar Medicação `/dev/health-care/medication-plans/...`. |
+| Baseline consultado | Calendário Coelo, estados de interação, wizard de Instituições e rodapé universal. |
+| Testes planejados | RED do primeiro campo de vigência cru ou gutter/overflow divergente. |
+| Bloqueios | Horários V3.18, backend/Supabase e Assessments fora do recorte. |
+| Tempo realmente usado | 2 h 20 min acumulados, às 13:41 BRT. |
+| Estimativa restante | 1–2 h para V3.17; 7 h 40 min da janela. |
+| Próximo item exato | Inventário de `health_medication_form_sections.dart` e testes de datas/responsividade. |
+| Conhecimento capturado | Pendente; não criar memória sem regra durável aprovada. |
+
+## 16.50. V3.17 Medicação — datas e espaçamento do wizard — local-green — 2026-08-28
+
+**Entrega atual V3:** 85,71% (6/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Vigência do wizard Medicação em criação/edição `/dev`. |
+| Arquivos alterados | Spec e tracker; produção `no-op`. |
+| Correções realizadas | Nenhuma necessária: datas já usam calendário Coelo single-date; intervalo inválido é bloqueado semanticamente; grid e rodapé já seguem gutters canônicos. |
+| Testes e resultados | Evidência do gate V3.16: 37/37, analyzer e validador verdes; cobertura explícita de calendário Coelo, datas inválidas e matriz responsiva. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%, empilhamento sem clipping/overflow e rodapé universal. |
+| Bloqueios | Goldens antigos já comparados sem promoção; aceite humano, backend e E2E pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 01 min; 2 h 21 min acumulados, às 13:42 BRT. |
+| Estimativa restante | 7 h 39 min da janela; V3.18 = 1–2 h. |
+| Próximo item exato | V3.18 Cardápio/modelo: promover `pattern.coelo-time-picker` antes do código, então implementar hora Coelo e detalhes. |
+| Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
+
 ## 17. Histórico
 
 | Data | Mudança |
