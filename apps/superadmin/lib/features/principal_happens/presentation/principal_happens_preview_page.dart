@@ -98,10 +98,11 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
   @override
   void didUpdateWidget(covariant PrincipalHappensPreviewPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.feedRepository != widget.feedRepository ||
+    if (!identical(oldWidget.feedRepository, widget.feedRepository) ||
         oldWidget.feedScope != widget.feedScope ||
-        oldWidget.mixedFeedRepository != widget.mixedFeedRepository ||
-        oldWidget.mixedFeedScope != widget.mixedFeedScope) {
+        !identical(oldWidget.mixedFeedRepository, widget.mixedFeedRepository) ||
+        oldWidget.mixedFeedScope != widget.mixedFeedScope ||
+        !identical(oldWidget.mediaRepository, widget.mediaRepository)) {
       _loadFeed();
     }
   }
@@ -112,16 +113,22 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
     final repository = widget.feedRepository;
     final scope = widget.feedScope;
     final request = ++_feedRequest;
+    setState(() {
+      _remotePosts = null;
+      _mixedItems = null;
+      _likedPosts.clear();
+      _savedPosts.clear();
+      _feedError = null;
+      _feedLoading =
+          mixedRepository != null && mixedScope != null || repository != null && scope != null;
+    });
     if (mixedRepository != null && mixedScope != null) {
-      setState(() {
-        _feedLoading = true;
-        _feedError = null;
-      });
       try {
         final page = await mixedRepository.list(mixedScope);
         if (!mounted || request != _feedRequest) return;
         setState(() {
           _mixedItems = page.items;
+          _remotePosts = null;
           _feedLoading = false;
         });
       } on Object catch (error) {
@@ -134,21 +141,14 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
       return;
     }
     if (repository == null || scope == null) {
-      _remotePosts = null;
-      _mixedItems = null;
-      _feedError = null;
-      _feedLoading = false;
       return;
     }
-    setState(() {
-      _feedLoading = true;
-      _feedError = null;
-    });
     try {
       final posts = await repository.listVisiblePosts(scope);
       if (!mounted || request != _feedRequest) return;
       setState(() {
         _remotePosts = posts;
+        _mixedItems = null;
         _feedLoading = false;
       });
     } on Object catch (error) {
