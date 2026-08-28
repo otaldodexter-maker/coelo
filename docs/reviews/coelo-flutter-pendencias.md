@@ -1585,6 +1585,24 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de swap/debounce, overlays/comandos cross-context e matriz 375/768/1024/1440 a 100/200%. |
 | Estimativa restante | Próximo lote Flutter deve ser independente; o fechamento E2E de Convites depende dos contratos produtivos registrados. |
 
+## 16.16. Agenda / Eventos — Card–Table e lifecycle local — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Agenda > Eventos em /dev/agenda/events; nenhuma rota produtiva foi habilitada. |
+| Arquivos modificados | agenda_events_page.dart; agenda_management_test.dart; este tracker. |
+| Correções realizadas | Cards tornou-se a visão inicial com paginação 11, grid definido pelas constraints, card Criar e status expansível; a tabela canônica usa paginação 8, banner Criar, chip e o mesmo flyout de ações. A troca de AgendaPrototypeStore limpa busca, tipo, status e página antes de projetar o novo contexto. A matriz non-golden cobre 375/768/1024/1440 a 100/200%. |
+| Estado atual | local-green do protótipo. Gate focado 10/10 e quatro arquivos Agenda non-golden explícitos 24/24; analyzer dos dois paths sem issues; formatter, validador visual, git diff --check e credential scan verdes. Review independente final: GREEN, P0=0/P1=0. |
+| Bloqueios | Agenda continua blocked-decision: spec, capability autoritativa, persistência, RLS, recorrência/conflitos, autorização cross-tenant e integração produtiva permanecem fora. Uma execução por diretório alcançou seis goldens legados sem tag e encontrou divergências; nenhuma imagem foi atualizada e os artefatos temporários foram removidos. O resultado local não constitui E2E. |
+| Conhecimento capturado | Nenhum conhecimento durável novo: o lote converge a UI local à baseline Card–Table já aprovada e não decide o contrato de Agenda. |
+| Pendências restantes | Decidir o contrato canônico de Agenda; implementar backend e autorização; executar inspeção visual humana e goldens quando autorizados; manter 0/207 E2E até evidência integrada. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de Card–Table, equivalência de ações/status, troca de store e matriz responsiva, além de gates e review independente. |
+| Estimativa restante | O próximo lote Flutter deve ser independente; o fechamento de Agenda depende das decisões e contratos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
