@@ -3651,3 +3651,46 @@ da simples soma das 207 ações.
   restantes, cutover Flutter, reconciliacao remota e prova autorizada.
 - **Gate de conhecimento:** `no-op`; a fonte canonica duravel e a spec 046 e
   nenhum comportamento remoto/integrado foi projetado em `docs/knowledge`.
+
+### Checkpoint seguro 48 - Convites draft/proveniencia e Perfis de cuidado bloqueados
+
+- **Lote/acoes tratadas:** somente inventario read-only, spec 047
+  `draft-for-review` e OQ-039 para Convites. Nenhuma acao de listar,
+  detalhar/reload, criar, reenviar, revogar, aceitar ou entregar foi
+  implementada ou promovida.
+- **Proveniencia Convites:** `20260811233609` e recuperavel pelo blob
+  `840e4cab50a3b37929822ca88ed3919ae7d2e8b2`, SHA-256 LF
+  `D387F117DDE47462787F89D94026464FAA0956FFB6D7CF576D89A1CD888B1077`,
+  mas foi removida do HEAD, esta ausente do ledger remoto e usa
+  `current_person_id()`, People, receipts/outbox e audit v1. A prova historica
+  60/60 pertence a cadeia composta com teste hardened e `20260813123901`,
+  nao a migration isolada.
+- **Decisoes Convites:** capability dedicada versus eventual `platform.read`,
+  matriz/delegacao, scope platform/institution, dominio do convite, issuer
+  interno nullable sem backfill, shape minimizada, `channels` legado
+  `unknown` e ACL/cutover continuam abertas. A autoridade atual bloqueia RED
+  executavel, migration/SQL, capability e backfill; `11233609` nao foi
+  restaurada.
+- **Risco legado separado:** o snapshot remoto SELECT-only tem RLS habilitada
+  sem FORCE, self-read people-based e grants que alcancam colunas sensiveis.
+  Isso exige inventario e cutover antes de hardening; nao foi alegada BOLA
+  comportamental nem feita qualquer mutacao remota.
+- **Perfis de cuidado:** inventario independente classificou todo o dominio
+  `blocked-decision + blocked-provenance`. As recoveries local-only
+  `20260812123500` e `20260812124000` lidam com saude infantil sensivel,
+  autorizacao people-based e regras juridicas/retencao nao aprovadas. Nenhuma
+  recovery, tabela, policy, RPC ou grant foi restaurado ou alterado.
+- **Evidencias/testes:** revisoes read-only de proveniencia e contrato pelo Eng
+  Sup e contraprova independente. Nenhum Docker ou pgTAP foi executado porque
+  RED/SQL ficaram explicitamente bloqueados; o mirror permanece no baseline
+  previamente verificado 112/112.
+- **Estado:** documental/proveniencia apenas, nao `local-green`,
+  `remote-green`, deployable, `done` ou E2E. Zero Flutter, Auth, Storage,
+  Edge, migration, DDL/DML ou deploy remoto. Nenhuma das 207 acoes integradas
+  foi promovida.
+- **Tempo usado:** nao mensurado com precisao neste lote. **Tempo restante:**
+  nao calculavel; depende das decisoes OQ-039, juridicas de Perfis de cuidado,
+  contratos de cutover e futura prova remota autorizada.
+- **Gate de conhecimento:** `no-op`; a fonte canonica e a spec 047 draft mais
+  OQ-039. Nenhum comportamento aprovado/implantado novo foi projetado em
+  `docs/knowledge`.

@@ -1086,3 +1086,27 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   somente depois da consolidacao e de autorizacao do Eng Integrador. Tempo
   restante integrado: nao calculavel sem cutover Flutter, contratos restantes
   e prova remota autorizada.
+
+### Checkpoint integrado 48 - Convites e Perfis de cuidado sem promocao
+
+- Convites recebeu apenas spec 047 `draft-for-review`, OQ-039 e inventario de
+  proveniencia. RED executavel, SQL, capability, backfill, Flutter e cutover
+  permanecem bloqueados; a migration historica people-based nao foi restaurada.
+- As mencoes anteriores a Convites `local-green` e 60/60 neste rastreador
+  descrevem somente a cadeia composta historica people-based, incluindo
+  delivery/hardening posterior. Elas nao provam o contrato interno v2 nem
+  representam estado `local-green` atual.
+- O Flutter produtivo continua em `UnavailableInviteRepository`; as rotas
+  `/dev` permanecem demonstrativas. Nenhum detalhe, reload, emissao, reenvio,
+  revogacao, aceite ou delivery foi testado ponta a ponta.
+- Perfis de cuidado permanece `blocked-decision + blocked-provenance`, com
+  recoveries locais sensiveis nao promovidas e Flutter produtivo indisponivel.
+  Nenhuma regra juridica, retencao ou autoridade sobre saude infantil foi
+  inferida.
+- O snapshot remoto usado foi estritamente SELECT-only; zero migration,
+  DDL/DML, Auth, Storage, Edge ou deploy. Nenhum Docker/pgTAP foi executado
+  porque o contrato bloqueou RED/SQL.
+- Estado integrado permanece 0/207 E2E, sem acao promovida a `done` ou
+  `remote-green`. O proximo gate exige decisoes canonicas, implementacao
+  backend local revisada, consolidacao e autorizacao explicita do Eng
+  Integrador.
