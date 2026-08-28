@@ -1,11 +1,13 @@
 ---
 title: "Pendências Coelo — Flutter por tela e ação"
-source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD 6dedcb79c02fd997eae0f0c5727bf63acb51be3d"
+source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD 6dedcb79c02fd997eae0f0c5727bf63acb51be3d"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-27"
+updated_at: "2026-08-28"
 action_count: 207
 family_count: 37
+visual_program_count: 31
+visual_program_accepted_count: 0
 ---
 
 # Pendências Coelo — Flutter por tela e ação
@@ -1639,11 +1641,59 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs A→B, resposta tardia, callbacks ausentes/reais, limpeza de PII, unauthorized state-only, matriz responsiva, gates e review independente. |
 | Estimativa restante | O fechamento E2E de Perfis de acesso depende dos contratos produtivos e decisões registradas. |
 
+## 16.19. Programa de conclusão visual aprovado — 2026-08-28
+
+**Spec canônica:**
+`docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md`.
+
+**Entrega documental — Concluída:** 100,00% (1/1 spec registrada).
+
+**Programa visual — Aceito visualmente:** 0,00% (0/31 entregáveis).
+
+**Flutter local — `local-green`:** 40,58% (84/207 ações). Esse número registra
+evidência local e não significa que 84 ações estejam concluídas ponta a ponta.
+
+**Flutter `verified`:** 0,00% (0/207 ações). O estado exige todos os gates
+Flutter da seção 2, inclusive inspeção visual e regressões aplicáveis.
+
+**Integração E2E:** 0,00% (0/202 ações), conforme o rastreador integrado. Esta
+métrica não deve mais ser apresentada como “progresso Flutter”.
+
+**Supabase `done`:** 0,00% (0/37 famílias). Há 8,11% (3/37 famílias) em
+`local-green`, evidência local que ainda não constitui backend remoto concluído.
+
+**Projeto estrito ponta a ponta:** 0,00% (0/229 unidades estritas), conforme o
+rastreador integrado. Esse percentual mede somente conclusão integral; ele não
+apaga os 84 itens Flutter e três famílias Supabase já verdes localmente.
+
+| Campo | Registro factual |
+|---|---|
+| Modalidade | Macrotema + telas específicas: conclusão visual e navegação local antes de revisão profunda ou backend. |
+| Objetivo | Fechar 31 entregáveis visuais em cinco ondas, usando os 69 anexos como referências de anatomia/comportamento e preservando a identidade Coelo. |
+| Incluído | Login; Conversas; menu/shell; arquivos; Turmas; rodapés; Atividades/modelos; Assiduidade; Rotina diária; Acompanhamento; Segurança infantil; Usuários internos; Perfis/modelos de acesso; Cuidado; Medicação; Cardápios; Formulários; Importações; Comunicações; Circulares; Acontece; Agora; Para você; Momentos; Perfil e publicadores. |
+| Fora de escopo | Componentização profunda, Supabase, migrations, RLS, RPCs, Storage/R2, autorização produtiva, publicação real e E2E remoto. Saúde/Cuidado permanece liberado para UI local. |
+| Ordem | V1 Fundação → V2 Estrutura/Operação → V3 Acessos/Cuidado → V4 Formulários/Comunicação → V5 Principal/Mídia → regressão transversal → componentização profunda → integração. |
+| Critério de parada | Onda aceita com evidência; limite de tempo; conflito canônico; regressão sem correção segura; ou pedido do Owner. Toda pausa atualiza spec e tracker no mesmo turno. |
+| Evidências | RED→GREEN, 375/768/1024/1440, light/dark, texto 200%, teclado/foco/semântica, comparação visual, analyzer, testes focados, validador visual e diff-check. |
+| Estado atual | `approved-design`; nenhuma correção de código desta nova etapa foi iniciada. O delta concorrente de Avaliações permanece intocado. |
+| Padrões UI existentes | Baselines aprovadas, interação sem cinza, Cards/Tabela, arquivos, calendário, wizard e `SuperadminFormActionFooter`. |
+| Gaps `coelo-ui` | Promover antes do uso: construtor de perguntas, seletor Coelo de hora, viewer social fullscreen e perfil rico do Principal. |
+| ETA inicial | 104–160 h para as cinco ondas e regressão transversal; V1 = 10–14 h. Recalcular depois de V1 com custo observado. |
+
+### Ordem de retomada obrigatória
+
+Quando o Owner perguntar o próximo trabalho, responder primeiro com esta etapa e
+começar por V1. A primeira entrega de implementação deve abranger Login,
+Conversas, menu/shell e ações de arquivo dentro da janela aprovada. Revisão
+profunda e componentização vêm após o aceite visual, sem ampliar silenciosamente
+o recorte.
+
 ## 17. Histórico
 
 
 | Data | Mudança |
 |---|---|
+| 2026-08-28 | Registrado o programa visual aprovado de 31 entregáveis em cinco ondas. Separadas as métricas de programa visual, Flutter local, Flutter verified e integração E2E; `0/207 E2E` deixa de representar o progresso Flutter. Nenhum código/backend foi alterado. |
 | 2026-08-26 | `groups.import`/`groups.export`: removidos do formulário os dois botões e SnackBars que simulavam sucesso sem arquivo, gateway ou job. RED→GREEN focado 1/1 e suíte `group_form_page_test.dart` 8/8; analyzer focado e global sem erros/warnings. Estado máximo `audited`/fail-closed; fluxos reais de import/export, autorização, Storage, remoto e E2E continuam pendentes. |
 | 2026-08-26 | `units.people-export`: removido o botão produtivo que apenas mostrava SnackBar sem gerar job, arquivo ou URL. RED focado reproduziu a ação falsa; GREEN focado 1/1 e suíte `unit_form_page_test.dart` 24/24. Estado máximo fail-closed/`blocked-decision`; funcional real exige capability e snapshot próprios de Pessoas escopados à unidade, backend/Storage, tenant A/B, revogação, cleanup, remoto e E2E. |
 | 2026-08-26 | `units.access-denied`: pacote Flutter local omitiu toolbar/filtros/tabs/arquivos/criar/conteúdo/paginação no estado final `unauthorized`, preservando o `createAction` anterior. Handoff registrou 23 testes finais aprovados e esta frente executou uma suíte ampliada de 25 testes, todos aprovados; analyzer ficou em 0 erros/0 warnings/45 infos. Estado máximo `local-green`; pré-resposta, cache/revogação, tenant A/B, deep link, backend/RLS e E2E permanecem abertos. |
