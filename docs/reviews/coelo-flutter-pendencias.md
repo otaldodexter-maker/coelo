@@ -1780,6 +1780,28 @@ conclusão integral e não anulam evidência local.
 | Próximo item exato | Shell: provar instância/geometria estáveis e contêiner direito amplo na matriz obrigatória. |
 | Conhecimento capturado | `no-op`: aplica a regra de navegação já aprovada na spec. |
 
+## 16.24. V1.4 Shell e contêiner — geometria persistente — 2026-08-28
+
+**Entrega atual:** 80,00% (4/5 `local-green` ou `accepted`). **Programa
+visual:** 0/31 `accepted`. **Flutter local:** 84/207 (40,58%). **Flutter
+verified:** 0/207. **Supabase local:** 3/37 (8,11%). **Supabase done:** 0/37.
+**Integração:** 0/202. **Projeto estrito:** 0/229. E2E e estrito medem
+conclusão integral e não anulam evidência local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Instituições → Conversas → Pessoas em `/dev`, dentro do host persistente. |
+| Arquivos alterados | Teste de rotas persistentes; spec e tracker. Nenhum arquivo de produção. |
+| Correções realizadas | Nenhuma necessária: o novo gate comprovou instância e geometria estáveis, superfície direita ampla e gutters canônicos. |
+| Testes e resultados | Cenário novo 1/1; suíte persistent shell 15/15; analyzer sem issues; formatter verde. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%; light/dark e reduced motion cobertos pela suíte Shell 70/70 anterior. |
+| Bloqueios | Inspeção/aceite humano; nenhum bloqueio local. |
+| Tempo realmente usado | 0 h 03 min; 0 h 21 min acumulados. |
+| Estimativa restante | 9 h 39 min da janela; 9 h 39 min–13 h 39 min pela faixa V1. |
+| Próximo item exato | Arquivos: REDs de visibilidade e indisponibilidade honesta, começando por Instituições. |
+| Conhecimento capturado | `no-op`: prova adicional de `pattern.stable-route-content-transition` já aprovado. |
+
 ## 17. Histórico
 
 

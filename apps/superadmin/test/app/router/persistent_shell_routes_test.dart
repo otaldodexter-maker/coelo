@@ -224,6 +224,48 @@ void main() {
     expect(tester.widget(contentTransition), isA<KeyedSubtree>());
   });
 
+  testWidgets('keeps a wide stable host from institutions through conversations and people', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    for (final width in <double>[375, 768, 1024, 1440]) {
+      tester.view.physicalSize = Size(width, 1000);
+      final session = SuperadminSession();
+      final router = _router(session);
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+
+      router.go(SuperadminRoutes.devInstitutions);
+      await tester.pumpWidget(
+        _app(router, disableAnimations: true, textScaler: const TextScaler.linear(2)),
+      );
+      await tester.pumpAndSettle();
+
+      final shell = find.byKey(const Key('superadmin-persistent-shell'));
+      final initialShellState = tester.state(shell);
+      final surface = find.byKey(const Key('superadmin-floating-content'));
+      final initialSurfaceRect = width >= CoeloBreakpoints.expanded.minWidth
+          ? tester.getRect(surface)
+          : null;
+
+      for (final route in <String>[SuperadminRoutes.devConversations, SuperadminRoutes.devPeople]) {
+        router.go(route);
+        await tester.pumpAndSettle();
+
+        expect(tester.state(shell), same(initialShellState), reason: '$route at $width px');
+        expect(tester.takeException(), isNull, reason: '$route at $width px / text 200%');
+        if (initialSurfaceRect != null) {
+          final currentSurfaceRect = tester.getRect(surface);
+          expect(currentSurfaceRect, initialSurfaceRect, reason: route);
+          expect(currentSurfaceRect.width, greaterThan(width * 0.55), reason: route);
+          expect(currentSurfaceRect.right, closeTo(width - CoeloSpacing.space3, 1), reason: route);
+        }
+      }
+    }
+  });
+
   testWidgets('keeps Principal previews inside the shell content surface', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));

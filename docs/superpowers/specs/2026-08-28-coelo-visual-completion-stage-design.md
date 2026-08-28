@@ -388,6 +388,26 @@ Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
 Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
 estrito medem conclusão integral e não anulam este GREEN local.
 
+### V1.4 Shell e contêiner — checkpoint local-green — 2026-08-28 11:42 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; 4/5 entregáveis V1 (80,00%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | `/dev/institutions` → `/dev/communication/conversations` → `/dev/access/people` no host persistente. |
+| Arquivos alterados | `persistent_shell_routes_test.dart`; spec e rastreador. Nenhum código de produção precisou mudar. |
+| Validação | Mesma instância do shell e mesma geometria do contêiner entre rotas; em 1024/1440 o conteúdo direito ocupa mais de 55% da largura e termina no gutter canônico. |
+| Testes | Novo cenário focado 1/1 e suíte integral de rotas persistentes 15/15; analyzer focado sem issues; formatter verde. |
+| Responsividade | 375/768/1024/1440 px com texto 200%; light/dark e reduced motion permanecem verdes na suíte conjunta do shell do checkpoint anterior. |
+| Bloqueios | Inspeção visual humana e aceite pendentes; nenhum bloqueio local ou correção segura adicional encontrada. |
+| Tempo usado | 0 h 03 min neste entregável; 0 h 21 min acumulados. |
+| Estimativa restante | 9 h 39 min da janela autorizada; 9 h 39 min–13 h 39 min pela faixa original. |
+| Próximo item exato | Arquivos: REDs em Instituições, Turmas/Grupos e Pessoas para manter ações visíveis e retornar exatamente `Indisponível nesta etapa`, sem atividade, arquivo, URL ou sucesso falso. |
+
+Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
+(40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%);
+Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
+estrito medem conclusão integral e não anulam este GREEN local.
+
 ### V1.3 Menu lateral — checkpoint local-green — 2026-08-28 11:39 BRT
 
 | Campo | Registro |
