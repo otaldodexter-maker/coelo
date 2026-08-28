@@ -1802,6 +1802,58 @@ conclusão integral e não anulam evidência local.
 | Próximo item exato | Arquivos: REDs de visibilidade e indisponibilidade honesta, começando por Instituições. |
 | Conhecimento capturado | `no-op`: prova adicional de `pattern.stable-route-content-transition` já aprovado. |
 
+## 16.25. Programa V1–V5 confirmado; V1.5 Arquivos em RED — 2026-08-28
+
+**Entrega atual:** 80,00% (4/5 `local-green` ou `accepted`); Arquivos está
+`in-progress`. **Programa visual:** 0/31 `accepted`. **Flutter local:** 84/207
+(40,58%). **Flutter verified:** 0/207. **Supabase local:** 3/37 (8,11%).
+**Supabase done:** 0/37. **Integração:** 0/202. **Projeto estrito:** 0/229.
+E2E e estrito medem conclusão integral e não anulam evidência local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`; fase RED de Arquivos concluída, GREEN pendente. O Owner confirmou que o escopo total autorizado vai da V1 à V5; 10 h é checkpoint inicial, não encerramento do programa. |
+| Tela e rota | Instituições; Turmas/Grupos; Pessoas; Cuidado/Medicação; Segurança; Atividades; Rotina diária; Suporte; Pessoas da Unidade. |
+| Arquivos alterados | Testes focados das nove superfícies; spec e este tracker. Nenhum arquivo de produção neste checkpoint. |
+| Correções realizadas | Ainda nenhuma de produção. O contrato de teste passou a exigir `CoeloAdminFileActions` visível e indisponibilidade honesta quando não existe capability real. |
+| Testes e resultados | O conjunto RED falhou como esperado por ações ocultas em sete superfícies, mensagem de sucesso simulada em Suporte e exportação ausente em Pessoas da Unidade. A execução também encontrou expectativas antigas de launcher sem callback em Cuidado e Atividades; os fixtures serão corrigidos para injetar a capability. |
+| Inspeções responsivas | Pendentes do GREEN: 375/768/1024/1440, texto 200%, light/dark, teclado, Escape, retorno de foco e alvos. |
+| Regressões e bloqueios | Golden de Segurança divergiu 9,84% antes das mudanças de produção. É proibido atualizá-lo automaticamente; requer inspeção e aceite visual humano. Os testes não-golden continuam seguros. Avaliações permanecem fora do diff autorizado. |
+| Tempo realmente usado | 0 h 27 min acumulados, às 11:48 BRT. |
+| Estimativa restante | 9 h 33 min da janela inicial. Programa V1–V5: 104–160 h, executado por checkpoints seguros. |
+| Próximo item exato | GREEN de Instituições; depois as demais superfícies de Arquivos. Após V1, iniciar V2.6 Turmas/Grupos, sem saltar ondas. |
+| Conhecimento capturado | `no-op`: a indisponibilidade honesta, `admin.file-actions` e a ordem V1–V5 já estão aprovadas na fonte canônica. |
+
+## 16.26. V1.5 Arquivos — fechamento local-green — 2026-08-28
+
+**Entrega atual:** 100,00% (5/5 `local-green` ou `accepted`). **Programa
+visual:** 0/31 `accepted`. **Flutter local:** 84/207 (40,58%). **Flutter
+verified:** 0/207. **Supabase local:** 3/37 (8,11%). **Supabase done:** 0/37.
+**Integração:** 0/202. **Projeto estrito:** 0/229. E2E e estrito medem
+conclusão integral e não anulam o trabalho Flutter local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Instituições; Turmas/Grupos; Pessoas; Cuidado/Medicação; Segurança; Atividades; Rotina diária; Suporte; Pessoas da Unidade; Atividades em produção e `/dev`. |
+| Arquivos alterados | `institution_file_actions.dart`; `group_directory_page.dart`; `person_file_actions.dart`; `health_care_file_actions.dart`; `safety_pages.dart`; `activity_directory_page.dart`; `daily_routine_pages.dart`; `support_page.dart`; `unit_local_management_section.dart`; router e repository `/dev` de Atividades; testes correspondentes; spec e tracker. |
+| Correções realizadas | Ações pertinentes ficaram visíveis via `CoeloAdminFileActions`; capability real continua sendo executada; fallback mostra exatamente `Indisponível nesta etapa`. Removidos sucesso falso de Suporte, prévia fictícia de Pessoas da Unidade e export/download `dev.invalid` de Atividades. |
+| Testes e resultados | REDs confirmaram ações ocultas e sucessos falsos. GREEN: 17/17 + 86/86 + 5/5 + 3/3 não-golden de Segurança + 2/2 do flyout = 113 testes relevantes. Escape fecha o flyout e devolve foco. Analyzer focado e diff-check verdes. |
+| Inspeções responsivas | Matrizes existentes/focadas cobrem 375/768/1024/1440, light/dark e texto 200%; Segurança 200% foi reexecutada. Alvos de toque, teclado, Escape e foco usam o componente canônico. |
+| Bloqueios | Golden legado de Segurança divergiu 9,84% antes do GREEN. Não foi atualizado; exige inspeção e aprovação visual humana. `accepted` segue 0/31. Arquivos dirty de Avaliações permanecem fora do recorte. |
+| Tempo realmente usado | 0 h 39 min acumulados, às 12:00 BRT. |
+| Estimativa restante | 9 h 21 min da janela inicial; V2–V5 seguem autorizadas e em ordem. |
+| Próximo item exato | Gates finais/commit da V1; depois V2.6 Turmas/Grupos — cards com tipo, alunos, atividades e professores/responsáveis. |
+| Conhecimento capturado | `no-op`: apenas regras já aprovadas foram aplicadas. |
+
+Gate adicional às 12:06 BRT: o validador administrativo encontrou no Login o
+`InkWell` cru introduzido no primeiro GREEN e a allowlist de `CheckboxListTile`
+já obsoleta. Ambos foram corrigidos sem ampliar o comportamento: Login 18/18,
+anatomia responsiva preservada e validador GREEN. A suíte final de Shell,
+Navegação, Conversas, rotas persistentes e Atividades ficou 106/106. Tempo
+acumulado: 0 h 45 min; próximo item continua sendo o commit de Arquivos e depois
+V2.6.
+
 ## 17. Histórico
 
 

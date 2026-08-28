@@ -112,6 +112,7 @@ void main() {
           logout: () async => const LogoutResult.success(),
           onCreate: () {},
           onView: (_) {},
+          onDestinationSelected: (_) {},
         ),
       ),
     );
@@ -134,6 +135,31 @@ void main() {
     expect(find.byKey(const Key('activity-detail-status-activity-10')), findsOneWidget);
   });
 
+  testWidgets('keeps unavailable file actions visible without reporting success', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ActivityDirectoryPage(
+          repository: FakeActivityDirectoryRepository(),
+          logout: unavailableSuperadminLogout,
+          onView: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+    await tester.tap(find.text('Exportar CSV'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+  });
+
   testWidgets('switches to the canonical resizable table and keeps sticky pagination', (
     tester,
   ) async {
@@ -152,6 +178,7 @@ void main() {
           logout: () async => const LogoutResult.success(),
           onCreate: () {},
           onView: (_) {},
+          onDestinationSelected: (_) {},
         ),
       ),
     );

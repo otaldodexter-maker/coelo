@@ -426,6 +426,30 @@ final class _GroupToolbar extends StatelessWidget {
                     onCardsSelected: () => onDisplayChanged(GroupDirectoryDisplay.cards),
                     onTableViewSelected: onTableViewChanged,
                   ),
+                  const SizedBox(width: CoeloSpacing.space2),
+                  CoeloAdminFileActions(
+                    compact: compact,
+                    actions: [
+                      CoeloAdminFileAction(
+                        key: const Key('group-files-import'),
+                        label: 'Importar',
+                        icon: Icons.upload_file_outlined,
+                        onPressed: () => _showUnavailable(context),
+                      ),
+                      CoeloAdminFileAction(
+                        key: const Key('group-files-export-csv'),
+                        label: 'Exportar CSV',
+                        icon: Icons.table_rows_outlined,
+                        onPressed: () => _showUnavailable(context),
+                      ),
+                      CoeloAdminFileAction(
+                        key: const Key('group-files-export-xlsx'),
+                        label: 'Exportar XLSX',
+                        icon: Icons.grid_on_outlined,
+                        onPressed: () => _showUnavailable(context),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -433,6 +457,10 @@ final class _GroupToolbar extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showUnavailable(BuildContext context) {
+    showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
   }
 }
 

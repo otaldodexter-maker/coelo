@@ -3,6 +3,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../app/shell/superadmin_notice.dart';
+
 enum UnitLocalManagementKind { administrators, people, invitations, groups, activities }
 
 final class UnitLocalEntry {
@@ -116,11 +118,21 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
               icon: const Icon(Icons.person_search_rounded),
               label: const Text('Buscar usuário'),
             ),
-            OutlinedButton.icon(
-              key: const Key('unit-import-people'),
-              onPressed: _showImportPreview,
-              icon: const Icon(Icons.upload_file_rounded),
-              label: const Text('Importar CSV/XLSX'),
+            CoeloAdminFileActions(
+              actions: [
+                CoeloAdminFileAction(
+                  key: const Key('unit-import-people'),
+                  label: 'Importar CSV/XLSX',
+                  icon: Icons.upload_file_rounded,
+                  onPressed: _showFileUnavailable,
+                ),
+                CoeloAdminFileAction(
+                  key: const Key('unit-export-people'),
+                  label: 'Exportar CSV/XLSX',
+                  icon: Icons.download_outlined,
+                  onPressed: _showFileUnavailable,
+                ),
+              ],
             ),
           ],
         ],
@@ -267,22 +279,9 @@ final class _UnitLocalManagementSectionState extends State<UnitLocalManagementSe
     widget.onChanged();
   }
 
-  Future<void> _showImportPreview() => showDialog<void>(
-    context: context,
-    barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-    builder: (dialogContext) => CoeloAdminDialogShell(
-      dialogKey: const Key('unit-import-preview'),
-      title: 'Importar pessoas',
-      body: const Text(
-        'Demonstração local: CSV e XLSX exibiriam aqui a prévia, os vínculos e os Perfis de Acesso antes da confirmação.',
-      ),
-      primaryAction: FilledButton(
-        onPressed: () => Navigator.of(dialogContext).pop(),
-        child: const Text('Entendi'),
-      ),
-    ),
-  );
-
+  void _showFileUnavailable() {
+    showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
+  }
 }
 
 final class _EmptyMessage extends StatelessWidget {

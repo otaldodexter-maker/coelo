@@ -171,7 +171,7 @@ void main() {
     }
   });
 
-  testWidgets('does not expose file actions without a canonical backend contract', (tester) async {
+  testWidgets('keeps file actions visible with honest unavailability', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -184,9 +184,15 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
-    expect(find.text('Importar turmas'), findsNothing);
-    expect(find.text('Exportar turmas'), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+    await tester.tap(find.text('Exportar XLSX'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
   });
 
   testWidgets('uses only dependent units after selecting an institution', (tester) async {
@@ -212,7 +218,7 @@ void main() {
     expect(find.text('Ativos'), findsOneWidget);
   });
 
-  testWidgets('never exposes demo import or export actions', (tester) async {
+  testWidgets('never reports demo import or export success', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -226,9 +232,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
-    expect(find.text('Importar turmas'), findsNothing);
-    expect(find.text('Exportar turmas'), findsNothing);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Importar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+    expect(
+      find.textContaining(RegExp('sucesso|concluída|linhas', caseSensitive: false)),
+      findsNothing,
+    );
   });
 
   testWidgets('inherits the approved Bug, profile and tour overlays from the shell', (

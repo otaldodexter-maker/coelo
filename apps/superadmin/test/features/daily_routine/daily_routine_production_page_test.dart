@@ -218,6 +218,29 @@ void main() {
     expect(searchTop, lessThan(tabsTop));
   });
 
+  testWidgets('keeps unavailable configuration files visible with honest feedback', (tester) async {
+    await pumpPage(
+      tester,
+      FakeRoutineRepository(
+        pageLoader: (query) async => RoutineDirectoryPage(
+          items: const [],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalCount: 0,
+          canManage: true,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar configuração'), findsOneWidget);
+    expect(find.text('Exportar configuração'), findsOneWidget);
+    await tester.tap(find.text('Exportar configuração'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+  });
+
   testWidgets('read-only notice follows toolbar and tabs without changing directory order', (
     tester,
   ) async {

@@ -156,8 +156,14 @@ void main() {
     expect(find.text('Marina Oliveira'), findsOneWidget);
 
     await _tapVisible(tester, find.byKey(const Key('step-pessoas')));
-    expect(find.byKey(const Key('unit-import-people')), findsOneWidget);
-    expect(find.byKey(const Key('unit-export-people')), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar CSV/XLSX'), findsOneWidget);
+    expect(find.text('Exportar CSV/XLSX'), findsOneWidget);
+    await tester.tap(find.text('Exportar CSV/XLSX'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
     expect(find.byKey(const Key('unit-search-person')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Tabela de Pessoas da unidade')), findsOneWidget);
   });

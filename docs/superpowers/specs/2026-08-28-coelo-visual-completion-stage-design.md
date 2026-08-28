@@ -333,7 +333,8 @@ revisão desta spec pelo Owner.
 | Status | `in-progress` — 0/5 entregáveis V1 `local-green` ou `accepted` (0,00%). |
 | Recorte | Login → Conversas → Menu lateral → Shell/contêiner → Arquivos, nesta ordem. |
 | Rotas iniciais | Login; `/communication/conversations`; shell persistente; diretórios administrativos com ações de arquivo pertinentes. |
-| Fora de escopo | V2–V5, revisão arquitetural profunda, componentização ampla, Supabase, migrations, RLS, RPCs, Edge Functions, Storage/R2, persistência/publicação/download reais e os quatro arquivos dirty de Avaliações. |
+| Programa autorizado | V1–V5, 31 entregáveis, rigorosamente em ordem. V2 começa assim que V1 ficar `local-green`; a janela inicial de 10 h é checkpoint, não encerramento das ondas seguintes. |
+| Fora do recorte V1 | Durante V1: revisão arquitetural profunda, componentização ampla, Supabase, migrations, RLS, RPCs, Edge Functions, Storage/R2, persistência/publicação/download reais e os quatro arquivos dirty de Avaliações. V2–V5 permanecem no programa, apenas aguardam a conclusão sequencial da V1. |
 | Evidência inicial | Baseline focado com 96/96 testes verdes; novos REDs são obrigatórios porque o baseline não cobre todos os comportamentos solicitados. |
 | Inspeções exigidas | 375/768/1024/1440 px, texto a 200%, light/dark, teclado, foco, Escape, semântica, alvos de toque e reduced motion. |
 | Tempo usado | 0 h de execução no início deste checkpoint. |
@@ -387,6 +388,58 @@ Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
 (40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%);
 Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
 estrito medem conclusão integral e não anulam este GREEN local.
+
+### V1.5 Arquivos — checkpoint RED — 2026-08-28 11:48 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; 4/5 entregáveis V1 (80,00%). `accepted` continua reservado à aprovação visual humana. |
+| Telas e rotas | Instituições, Turmas/Grupos, Pessoas, Cuidado/Medicação, Segurança, Atividades, Rotina diária, Suporte e Pessoas da Unidade. |
+| Arquivos alterados | Testes focados das nove superfícies; spec e rastreador. Nenhum arquivo de produção alterado neste checkpoint. |
+| REDs confirmados | Ações pertinentes estavam escondidas sem callback em sete superfícies; Suporte anunciava exportação preparada sem arquivo; Pessoas da Unidade não expunha exportação. Os testes agora exigem ações visíveis e a mensagem exata `Indisponível nesta etapa`, sem atividade, URL, arquivo, chamada remota ou persistência falsa. |
+| Regressões encontradas | Testes antigos de Cuidado e Atividades ainda esperavam launcher mesmo sem capability de navegação; serão alinhados ao contrato V1.2 injetando callback quando o launcher for parte do cenário. O golden de Segurança divergiu 9,84% antes da correção de produção; não será atualizado automaticamente. |
+| Testes | RED conjunto executado e falhas esperadas observadas nas nove superfícies. A execução ampla foi interrompida depois de capturar os REDs e a divergência do golden; GREEN focado e regressão não-golden permanecem pendentes. |
+| Bloqueios | Golden de Segurança requer inspeção/aceite visual humano para qualquer atualização. Não bloqueia as correções locais não-golden. Avaliações permanecem intocadas. |
+| Tempo usado | 0 h 27 min acumulados. |
+| Estimativa restante | 9 h 33 min da janela inicial; programa V1–V5 permanece estimado em 104–160 h e seguirá por checkpoints. |
+| Próximo item exato | Implementar primeiro o fallback canônico de Instituições; depois Turmas/Grupos, Pessoas, Cuidado/Segurança, Atividades/Rotina, Suporte e Pessoas da Unidade. Concluída V1, iniciar V2.6 Turmas/Grupos. |
+
+Percentuais: programa visual 0/31 `accepted` (0,00%); Flutter
+`local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202;
+projeto estrito 0/229. E2E e estrito medem conclusão integral e não anulam
+o progresso Flutter local.
+
+### V1.5 Arquivos — checkpoint local-green — 2026-08-28 12:00 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; 5/5 entregáveis V1 (100,00%). `accepted` depende de aprovação visual humana. |
+| Telas e rotas | Instituições, Turmas/Grupos, Pessoas, Cuidado/Medicação, Segurança, Atividades, Rotina diária, Suporte e Pessoas da Unidade; produção e `/dev` de Atividades. |
+| Arquivos alterados | Widgets/páginas das nove superfícies; router e repository `/dev` de Atividades; testes focados; spec e rastreador. |
+| Correções | `CoeloAdminFileActions` permanece visível quando pertinente; callbacks reais continuam operacionais; ausência de capability retorna exatamente `Indisponível nesta etapa`. Suporte deixou de anunciar exportação preparada, Pessoas da Unidade deixou de abrir prévia fictícia e a exportação `/dev` de Atividades deixou de produzir `dev.invalid`. Nenhuma operação cria atividade concluída, arquivo, URL, chamada remota ou persistência falsa. |
+| Testes | REDs observados antes do código. GREEN: 17/17 Instituições+Pessoas+Grupos; 86/86 Cuidado+Suporte+Atividades+Rotina+Unidade; 5/5 repository `/dev`; 3/3 gates não-golden de Segurança; 2/2 gates do flyout, incluindo Escape e retorno de foco. Total relevante: 113 testes verdes. Analyzer focado e `git diff --check` sem issues. |
+| Responsividade e acessibilidade | Cobertura existente e focada em 375/768/1024/1440, light/dark e texto 200%; alvos canônicos; flyout por teclado, Escape e retorno de foco verdes. |
+| Bloqueios | Golden legado de Segurança divergiu 9,84% antes do GREEN e não foi atualizado automaticamente; requer inspeção/aceite visual humano. Avaliações continuam intocadas. |
+| Tempo usado | 0 h 39 min acumulados. |
+| Estimativa restante | 9 h 21 min da janela inicial; programa restante V2–V5 mantém ordem e será recalculado após os gates. |
+| Próximo item exato | Gates finais V1 e commit seguro; em seguida V2.6 Turmas/Grupos: cards com tipo, alunos, atividades e professores/responsáveis. |
+| Conhecimento | `no-op`: foram aplicadas regras duráveis já aprovadas (`admin.file-actions` e indisponibilidade honesta). |
+
+Gate adicional às 12:06 BRT: o validador administrativo inicialmente falhou
+porque o Login ainda continha `InkWell` cru e uma exceção obsoleta de
+`CheckboxListTile`. A interação foi migrada para primitives focáveis sem overlay,
+a allowlist obsoleta foi removida, Login voltou a 18/18 e o validador ficou
+GREEN. A suíte final de Shell, Navegação, Conversas, rotas persistentes e rotas
+de Atividades passou 106/106. O comportamento e os percentuais não mudaram;
+tempo acumulado: 0 h 45 min.
+
+Percentuais de fechamento local da onda: entrega atual 5/5 `local-green` ou
+`accepted` (100,00%); programa visual 0/31 `accepted` (0,00%); Flutter
+`local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
 
 ### V1.4 Shell e contêiner — checkpoint local-green — 2026-08-28 11:42 BRT
 

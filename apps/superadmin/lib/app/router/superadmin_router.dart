@@ -489,24 +489,6 @@ GoRouter createSuperadminRouter({
         .toList(growable: false);
   }
 
-  Future<ActivityDirectoryExportResult> exportActivities(
-    ActivityDirectoryExportRequest request,
-    ActivityCommandRepository repository,
-  ) async {
-    final result = await repository.requestExport(
-      request.query,
-      format: request.format == ActivityDirectoryExportFormat.csv
-          ? ActivityCommandExportFormat.csv
-          : ActivityCommandExportFormat.xlsx,
-    );
-    if (!await openDownloadUrl(result.downloadUrl)) {
-      throw const ActivityCommandUnavailableException();
-    }
-    return ActivityDirectoryExportResult(
-      fileName: 'atividades-${request.tableView.name}.${request.format.name}',
-    );
-  }
-
   return GoRouter(
     initialLocation: SuperadminRoutes.login,
     refreshListenable: session,
@@ -1946,12 +1928,8 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.devActivityDetailName,
                 pathParameters: {'activityId': id},
               ),
-              onExportRequested: (request) =>
-                  exportActivities(request, developmentActivityCommandRepository),
-              onImportRequested: () async => context.goNamed(
-                SuperadminRoutes.importCreateName,
-                extra: ImportCreationPreset.activities,
-              ),
+              onExportRequested: null,
+              onImportRequested: null,
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
               onBugReportSubmitted: developmentSupportController.submitReport,

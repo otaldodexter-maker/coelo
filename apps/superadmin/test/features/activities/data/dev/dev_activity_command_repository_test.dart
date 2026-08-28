@@ -62,6 +62,15 @@ void main() {
       throwsA(isA<ActivityCommandUnauthorizedException>()),
     );
   });
+
+  test('development export never fabricates a completed download', () async {
+    final repository = DevActivityCommandRepository(store: DevActivitySessionStore.empty());
+
+    await expectLater(
+      repository.requestExport(ActivityDirectoryQuery(), format: ActivityCommandExportFormat.csv),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+  });
 }
 
 ActivitySaveCommand _command(

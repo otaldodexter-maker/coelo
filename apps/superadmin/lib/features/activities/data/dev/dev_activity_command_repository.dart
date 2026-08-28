@@ -14,7 +14,6 @@ final class DevActivityCommandRepository implements ActivityCommandRepository {
   var _nextId = 1;
   var _nextTemplateId = 1;
   var _nextLocationId = 1;
-  var _nextExportId = 1;
 
   @override
   Future<ActivitySaveResult> save(ActivitySaveCommand command) async {
@@ -77,10 +76,7 @@ final class DevActivityCommandRepository implements ActivityCommandRepository {
   Future<ActivityExportResult> requestExport(
     ActivityDirectoryQuery query, {
     required ActivityCommandExportFormat format,
-  }) async => ActivityExportResult(
-    jobId: 'dev-export-${_nextExportId++}',
-    downloadUrl: 'https://dev.invalid/activities.${format.name}',
-  );
+  }) async => throw const ActivityCommandUnavailableException();
 
   Map<String, Object?> _commandPayload(ActivitySaveCommand command) => {
     'activity_id': command.activityId,

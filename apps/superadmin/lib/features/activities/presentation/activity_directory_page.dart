@@ -282,7 +282,11 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
 
   Future<void> _export(ActivityDirectoryExportFormat format) async {
     final exporter = widget.onExportRequested;
-    if (exporter == null || _fileActionLabel != null) return;
+    if (_fileActionLabel != null) return;
+    if (exporter == null) {
+      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
+      return;
+    }
     setState(() => _fileActionLabel = 'Exportando atividades...');
     try {
       final result = await exporter(
@@ -312,7 +316,11 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
 
   Future<void> _openImport() async {
     final openImport = widget.onImportRequested;
-    if (openImport == null || _fileActionLabel != null) return;
+    if (_fileActionLabel != null) return;
+    if (openImport == null) {
+      showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
+      return;
+    }
     setState(() => _fileActionLabel = 'Abrindo importação...');
     try {
       await openImport();
@@ -419,8 +427,8 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
                       onDisplayChanged: widget.onDisplayChanged,
                       onTableViewChanged: widget.onTableViewChanged,
                       fileActionLabel: _fileActionLabel,
-                      onExport: widget.onExportRequested == null ? null : _export,
-                      onImport: widget.onImportRequested == null ? null : _openImport,
+                      onExport: _export,
+                      onImport: _openImport,
                     )
                   else
                     CoeloAdminListingToolbar(
@@ -729,31 +737,28 @@ final class _ActivityToolbar extends StatelessWidget {
               liveRegion: true,
               child: Text(fileActionLabel!, key: const Key('activity-file-action-loading')),
             )
-          else if (onExport != null || onImport != null)
+          else
             CoeloAdminFileActions(
               compact: compact,
               actions: [
-                if (onImport != null)
-                  CoeloAdminFileAction(
-                    key: const Key('activity-files-import'),
-                    label: 'Importar',
-                    icon: Icons.upload_file_outlined,
-                    onPressed: onImport!,
-                  ),
-                if (onExport != null) ...[
-                  CoeloAdminFileAction(
-                    key: const Key('activity-files-export-csv'),
-                    label: 'Exportar CSV',
-                    icon: Icons.table_rows_outlined,
-                    onPressed: () => onExport!(ActivityDirectoryExportFormat.csv),
-                  ),
-                  CoeloAdminFileAction(
-                    key: const Key('activity-files-export-xlsx'),
-                    label: 'Exportar XLSX',
-                    icon: Icons.grid_on_outlined,
-                    onPressed: () => onExport!(ActivityDirectoryExportFormat.xlsx),
-                  ),
-                ],
+                CoeloAdminFileAction(
+                  key: const Key('activity-files-import'),
+                  label: 'Importar',
+                  icon: Icons.upload_file_outlined,
+                  onPressed: onImport!,
+                ),
+                CoeloAdminFileAction(
+                  key: const Key('activity-files-export-csv'),
+                  label: 'Exportar CSV',
+                  icon: Icons.table_rows_outlined,
+                  onPressed: () => onExport!(ActivityDirectoryExportFormat.csv),
+                ),
+                CoeloAdminFileAction(
+                  key: const Key('activity-files-export-xlsx'),
+                  label: 'Exportar XLSX',
+                  icon: Icons.grid_on_outlined,
+                  onPressed: () => onExport!(ActivityDirectoryExportFormat.xlsx),
+                ),
               ],
             ),
         ],

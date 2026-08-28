@@ -3,6 +3,8 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../app/shell/superadmin_notice.dart';
+
 import '../../app/activity/superadmin_activity.dart';
 import '../../app/shell/superadmin_shell.dart';
 import '../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
@@ -217,28 +219,31 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             onCardsSelected: () => updateDirectory(() => _display = _RoutineDisplay.cards),
             onTableViewSelected: (_) => updateDirectory(() => _display = _RoutineDisplay.table),
           ),
-          if (widget.onImport != null || widget.onExport != null)
-            CoeloAdminFileActions(
-              compact: compact,
-              actions: [
-                if (widget.onImport != null)
-                  CoeloAdminFileAction(
-                    label: 'Importar configuracao',
-                    icon: Icons.upload_file_outlined,
-                    onPressed: widget.onImport!,
-                  ),
-                if (widget.onExport != null)
-                  CoeloAdminFileAction(
-                    label: 'Exportar configuracao',
-                    icon: Icons.download_outlined,
-                    onPressed: widget.onExport!,
-                  ),
-              ],
-            ),
+          CoeloAdminFileActions(
+            compact: compact,
+            actions: [
+              CoeloAdminFileAction(
+                key: const Key('daily-routine-files-import'),
+                label: 'Importar configuração',
+                icon: Icons.upload_file_outlined,
+                onPressed: widget.onImport ?? () => _showUnavailable(context),
+              ),
+              CoeloAdminFileAction(
+                key: const Key('daily-routine-files-export'),
+                label: 'Exportar configuração',
+                icon: Icons.download_outlined,
+                onPressed: widget.onExport ?? () => _showUnavailable(context),
+              ),
+            ],
+          ),
         ],
       ),
     ),
   );
+
+  void _showUnavailable(BuildContext context) {
+    showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
+  }
 
   Widget _content() {
     final state = _controller.state;

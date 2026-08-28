@@ -116,7 +116,7 @@ void main() {
     );
 
     expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
-    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     expect(find.textContaining('Demonstra\u00e7\u00e3o local'), findsNothing);
     expect(find.text('Todos'), findsOneWidget);
     expect(find.text('Em Implanta\u00e7\u00e3o'), findsOneWidget);
@@ -190,7 +190,7 @@ void main() {
     expect((directory.padding! as EdgeInsets).left, CoeloSpacing.space10);
   });
 
-  testWidgets('profile directory keeps unavailable file actions disabled', (tester) async {
+  testWidgets('profile directory explains unavailable file actions', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
     final controller = HealthCareController(FixtureHealthCareRepository());
     addTearDown(controller.dispose);
@@ -209,11 +209,17 @@ void main() {
     expect(profileFiles.onImport, isNull);
     expect(profileFiles.onExportCsv, isNull);
     expect(profileFiles.onExportXlsx, isNull);
-    final button = tester.widget<OutlinedButton>(find.byKey(const Key('coelo-admin-files-action')));
-    expect(button.onPressed, isNull);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+    await tester.tap(find.text('Importar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
   });
 
-  testWidgets('medication directory keeps unavailable file actions disabled', (tester) async {
+  testWidgets('medication directory explains unavailable file actions', (tester) async {
     await _setViewport(tester, const Size(1440, 900));
     final controller = HealthCareController(FixtureHealthCareRepository());
     addTearDown(controller.dispose);
@@ -235,8 +241,11 @@ void main() {
     expect(medicationFiles.onImport, isNull);
     expect(medicationFiles.onExportCsv, isNull);
     expect(medicationFiles.onExportXlsx, isNull);
-    final button = tester.widget<OutlinedButton>(find.byKey(const Key('coelo-admin-files-action')));
-    expect(button.onPressed, isNull);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Exportar XLSX'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
   });
 
   testWidgets('file actions invoke only explicitly injected commands', (tester) async {

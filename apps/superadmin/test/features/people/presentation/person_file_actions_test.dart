@@ -6,12 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('hides file actions when no real callbacks are available', (tester) async {
+  testWidgets('keeps unavailable file actions visible with honest feedback', (tester) async {
     await tester.pumpWidget(_app());
 
-    expect(find.byKey(const Key('coelo-admin-files-action')), findsNothing);
-    expect(find.text('Importar'), findsNothing);
-    expect(find.text('Exportar CSV'), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Importar'), findsOneWidget);
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    expect(find.text('Exportar XLSX'), findsOneWidget);
+    await tester.tap(find.text('Importar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
   });
 
   testWidgets('shows ordered actions and delegates export with the selected view', (tester) async {

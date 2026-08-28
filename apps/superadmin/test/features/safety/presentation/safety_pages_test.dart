@@ -68,6 +68,23 @@ void main() {
     expect(find.textContaining('Todos ('), findsNothing);
   });
 
+  testWidgets('keeps unavailable export visible with honest feedback', (tester) async {
+    final controller = ChildSafetyController(_Repository(), searchDebounce: Duration.zero);
+    addTearDown(controller.dispose);
+    await controller.load();
+    await tester.pumpWidget(
+      _app(SafetyLandingPage(controller: controller, logout: _logout, onOpenChild: (_) {})),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('coelo-admin-files-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Exportar CSV'), findsOneWidget);
+    await tester.tap(find.text('Exportar CSV'));
+    await tester.pumpAndSettle();
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+  });
+
   testWidgets('paginated directory keeps controls in a sticky footer', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

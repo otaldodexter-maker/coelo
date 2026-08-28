@@ -274,7 +274,7 @@ void main() {
     await tester.tap(find.text('Exportar CSV'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 250));
-    expect(find.textContaining('Exportação CSV da lista filtrada'), findsOneWidget);
+    expect(find.text('Indisponível nesta etapa'), findsOneWidget);
   });
 
   testWidgets('double click opens full-screen details without firing single click', (tester) async {
