@@ -54,7 +54,7 @@ void main() {
     expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
     expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
     expect(find.byType(RadioListTile), findsNothing);
     expect(find.text('Criança'), findsWidgets);
   });
@@ -466,50 +466,47 @@ void main() {
   });
 
   for (final textScale in [1.0, 2.0]) {
-    testWidgets('mobile launchers clear both form footers at ${textScale}x text', (tester) async {
-      await tester.binding.setSurfaceSize(const Size(375, 1000));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'forms without a conversation destination omit the launcher at ${textScale}x text',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(375, 1000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      for (final page in <Widget>[
-        HealthCareProfileFormPage(
-          logout: unavailableSuperadminLogout,
-          childOptions: _profileChildren,
-          onCancel: () {},
-          onSaved: (_) async {},
-        ),
-        HealthMedicationPlanFormPage(
-          logout: unavailableSuperadminLogout,
-          onCancel: () {},
-          onSaved: () async {},
-        ),
-      ]) {
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: CoeloTheme.light,
-            builder: (context, child) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
-              child: child!,
-            ),
-            home: page,
+        for (final page in <Widget>[
+          HealthCareProfileFormPage(
+            logout: unavailableSuperadminLogout,
+            childOptions: _profileChildren,
+            onCancel: () {},
+            onSaved: (_) async {},
           ),
-        );
-        await tester.pumpAndSettle();
+          HealthMedicationPlanFormPage(
+            logout: unavailableSuperadminLogout,
+            onCancel: () {},
+            onSaved: () async {},
+          ),
+        ]) {
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: CoeloTheme.light,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+                child: child!,
+              ),
+              home: page,
+            ),
+          );
+          await tester.pumpAndSettle();
 
-        final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
-        final footer = find.byType(SuperadminFormActionFooter);
-        final primaryAction = find.widgetWithText(FilledButton, 'Continuar');
-        final reason = '${page.runtimeType} at ${textScale}x';
-        expect(launcher, findsOneWidget, reason: reason);
-        expect(footer, findsOneWidget, reason: reason);
-        expect(primaryAction, findsOneWidget, reason: reason);
-        expect(tester.getRect(launcher).overlaps(tester.getRect(footer)), isFalse, reason: reason);
-        expect(
-          tester.getRect(launcher).overlaps(tester.getRect(primaryAction)),
-          isFalse,
-          reason: reason,
-        );
-      }
-    });
+          final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
+          final footer = find.byType(SuperadminFormActionFooter);
+          final primaryAction = find.widgetWithText(FilledButton, 'Continuar');
+          final reason = '${page.runtimeType} at ${textScale}x';
+          expect(launcher, findsNothing, reason: reason);
+          expect(footer, findsOneWidget, reason: reason);
+          expect(primaryAction, findsOneWidget, reason: reason);
+        }
+      },
+    );
   }
 
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {

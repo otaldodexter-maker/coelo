@@ -2419,8 +2419,8 @@ GoRouter createSuperadminRouter({
               controller: HealthCareController(careProfilesPreviewRepository()),
               logout: _previewLogout,
               onCreate: () => context.goNamed(SuperadminRoutes.devHealthCareProfileCreateName),
-              onChildSelected: (childId) => context.pushNamed(
-                SuperadminRoutes.devHealthCareProfileDetailName,
+              onChildSelected: (childId) => context.goNamed(
+                SuperadminRoutes.devHealthCareProfileEditName,
                 pathParameters: {'childId': childId},
               ),
             ),
@@ -2454,11 +2454,11 @@ GoRouter createSuperadminRouter({
               childOptions: developmentCareProfileChildren,
               childId: state.pathParameters['childId']!,
               loadDraft: careProfilesPreviewRepository().loadCareProfileDraft,
-              onCancel: () => context.pop(),
+              onCancel: () => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
               onSaved: (draft) async {
                 await careProfilesPreviewRepository().saveCareProfileDraft(draft);
               },
-              onSaveSucceeded: context.pop,
+              onSaveSucceeded: () => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
             ),
           ),
           GoRoute(

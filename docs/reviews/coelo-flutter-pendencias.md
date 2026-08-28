@@ -2237,6 +2237,48 @@ os GREENs locais.
 | Próximo item exato | V3.15 Perfis de cuidado: inventário de criação/edição pelo wizard canônico e primeiro RED. |
 | Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
 
+## 16.45. V3.15 Perfis de cuidado — abertura — 2026-08-28
+
+**Entrega atual V3:** 42,86% (3/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Perfis de cuidado em `/dev/health-care/profiles`, da lista à edição. |
+| Baseline consultado | Wizard/formulário de Instituições, rodapé universal e diretório canônico. |
+| Testes planejados | RED do primeiro elo ausente na navegação integral e regressão do wizard responsivo. |
+| Bloqueios | Backend/Supabase, Medicação e Assessments fora do recorte. |
+| Tempo realmente usado | 2 h 05 min acumulados, às 13:26 BRT. |
+| Estimativa restante | 1–2 h para V3.15; 7 h 55 min da janela. |
+| Próximo item exato | Inventário das páginas, callbacks, etapas e testes de Perfis de cuidado. |
+| Conhecimento capturado | Pendente; não criar memória sem regra durável aprovada. |
+
+## 16.46. V3.15 Perfis de cuidado — local-green — 2026-08-28
+
+**Entrega atual V3:** 57,14% (4/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Perfis de cuidado: diretório, criação e edição em `/dev/health-care/profiles`. |
+| Arquivos alterados | Router; novo teste integral de rota; ajuste de regressão dos formulários; spec e tracker. |
+| Correções realizadas | Card abre diretamente a edição local; cancelamento e save retornam ao diretório sem depender de redirect/stack. Wizard de quatro passos e rodapé universal preservados; launcher sem destino permanece oculto. Produção não foi alterada. |
+| Testes e resultados | RED do card/rota; GREEN 37/37 focados; analyzer e validador visual verdes. Três testes legados de launcher foram corrigidos para o contrato fail-closed V1. Analyzer lançado uma vez no cwd do Catálogo falhou por path e foi repetido no Superadmin. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%, light/dark, wizard, rodapé e ausência de overflow. CTA/card/edição/cancelamento exercitados. |
+| Bloqueios | Quatro cenários de golden antigo falharam sem atualização; exemplos do diretório 9,52%–18,37% por mudanças já existentes do shell. Aceite humano, backend e E2E pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 10 min; 2 h 15 min acumulados, às 13:36 BRT. |
+| Estimativa restante | 7 h 45 min da janela; V3.16 = 1–2 h. |
+| Próximo item exato | V3.16 Medicação: inventário da família `/dev/health-care/medication-plans` e primeiro RED. |
+| Conhecimento capturado | `no-op`: nenhuma regra durável nova. |
+
 ## 17. Histórico
 
 | Data | Mudança |

@@ -790,6 +790,47 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.15 Perfis de cuidado — abertura — 2026-08-28 13:26 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V3 permanece 3/7 (42,86%). |
+| Tela e rota | Diretório, criação, detalhe e edição de Perfis de cuidado em `/dev/health-care/profiles`. |
+| Baseline e índice | Criar/Editar Instituição, wizard e `SuperadminFormActionFooter`; diretório Instituições/Cards-Tabela quando aplicável. |
+| RED planejado | Exercitar a rota integral e registrar o primeiro elo ausente entre diretório, criação, detalhe e edição pelo wizard canônico. |
+| Fora do recorte | Sem persistência remota, Supabase, Medicação ou Assessments. |
+| Tempo usado | 2 h 05 min acumulados. |
+| Estimativa | 1–2 h para V3.15; 7 h 55 min restam na janela. |
+| Próximo item exato | Inventariar páginas, callbacks, etapas e testes de Perfis de cuidado; então escrever o RED mínimo. |
+
+Percentuais: entrega V3 3/7 (42,86%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.15 Perfis de cuidado — checkpoint local-green — 2026-08-28 13:36 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V3 = 4/7 (57,14%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Diretório `/dev/health-care/profiles`, criação e edição `/dev/health-care/profiles/:childId/edit`. |
+| Arquivos alterados | `superadmin_router.dart`; novo `care_profile_preview_routes_test.dart`; ajuste de regressão em `health_care_form_pages_test.dart`; spec e rastreador. |
+| Correções | Card do diretório agora abre diretamente a edição local e cancelar/salvar edição retorna de forma determinística ao diretório, sem depender de stack/redirect intermediário. Criação e edição preservam o wizard canônico de quatro passos e `SuperadminFormActionFooter`. Produção continua inalterada/fail-closed. |
+| Testes | RED reproduziu o card sem estabilizar a rota de edição. GREEN ampliado: 37/37 testes de rotas, diretório, wizard, formulário e repositório dev; analyzer focado sem issues; validador visual e diff-check verdes. Três expectativas legadas que exigiam launcher sem callback foram alinhadas ao contrato V1 fail-closed. O analyzer foi inicialmente chamado no cwd do Catálogo e repetido no Superadmin. |
+| Responsividade e acessibilidade | 375/768/1024/1440 com texto 200%, light/dark, quatro passos, rodapé, ausência de overflow e launcher omitido quando não há destino. Card mantém semântica de botão e o fluxo exercita CTA, edição, cancelamento e retorno. |
+| Goldens e bloqueios | Quatro cenários de golden foram comparados sem atualização e falharam contra referências antigas; exemplos do diretório ficaram entre 9,52% e 18,37%, coerentes com o shell V1. Nenhum golden foi promovido. Aceite humano, backend e E2E permanecem pendentes; Assessments intocado. |
+| Tempo usado | 0 h 10 min no item; 2 h 15 min acumulados. |
+| Estimativa restante | 7 h 45 min da janela; V3.16 estimada em 1–2 h. |
+| Próximo item exato | V3.16 Medicação — diretório, criação, detalhe e edição local: inventariar a família `/dev/health-care/medication-plans` e escrever RED do primeiro elo ausente. |
+| Conhecimento | `no-op`: correção aplica contratos V1 e wizard já aprovados; nenhuma regra durável nova. |
+
+Percentuais: entrega V3 4/7 (57,14%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |
