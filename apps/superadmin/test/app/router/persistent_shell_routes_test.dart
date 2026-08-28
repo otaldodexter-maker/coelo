@@ -266,6 +266,83 @@ void main() {
     }
   });
 
+  testWidgets('keeps Principal routes in one responsive shell surface at 100 and 200 percent', (
+    tester,
+  ) async {
+    addTearDown(tester.view.reset);
+    final session = SuperadminSession();
+    final router = _router(session);
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    const routes = <({String path, Key contentKey})>[
+      (path: SuperadminRoutes.devPrincipalHappens, contentKey: Key('principal-happens-feed')),
+      (path: SuperadminRoutes.devPrincipalForYou, contentKey: Key('principal-for-you-scroll')),
+      (path: SuperadminRoutes.devPrincipalMoments, contentKey: Key('principal-moments-page-view')),
+      (path: SuperadminRoutes.devPrincipalNow, contentKey: Key('principal-now-story')),
+      (path: SuperadminRoutes.devPrincipalProfile, contentKey: Key('principal-profile-scroll')),
+      (
+        path: SuperadminRoutes.devPrincipalHappensPublish,
+        contentKey: Key('happens-publication-step-0'),
+      ),
+      (
+        path: SuperadminRoutes.devPrincipalMomentsPublish,
+        contentKey: Key('moments-publication-scroll'),
+      ),
+      (
+        path: SuperadminRoutes.devPrincipalNowPublication,
+        contentKey: Key('now-publication-step-0'),
+      ),
+    ];
+
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1200);
+      tester.view.devicePixelRatio = 1;
+      for (final textScale in [1.0, 2.0]) {
+        router.go(routes.first.path);
+        await tester.pumpWidget(_app(router, textScaler: TextScaler.linear(textScale)));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        final shell = find.byKey(const Key('superadmin-persistent-shell'));
+        expect(shell, findsOneWidget, reason: '$width px at ${textScale * 100}%');
+        final initialShellState = tester.state(shell);
+
+        for (final route in routes) {
+          router.go(route.path);
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 500));
+
+          final reason = '${route.path} at $width px and ${textScale * 100}%';
+          expect(shell, findsOneWidget, reason: reason);
+          expect(tester.state(shell), same(initialShellState), reason: reason);
+          expect(tester.takeException(), isNull, reason: reason);
+
+          final pageContent = find.byKey(route.contentKey);
+          expect(pageContent, findsOneWidget, reason: reason);
+          final contentRect = tester.getRect(pageContent);
+          expect(contentRect.left, greaterThanOrEqualTo(0), reason: reason);
+          expect(contentRect.top, greaterThanOrEqualTo(0), reason: reason);
+          expect(contentRect.right, lessThanOrEqualTo(width), reason: reason);
+          expect(contentRect.bottom, lessThanOrEqualTo(1200), reason: reason);
+
+          if (width >= CoeloBreakpoints.expanded.minWidth) {
+            final sidebar = find.byKey(const Key('superadmin-sidebar'));
+            final surface = find.byKey(const Key('superadmin-floating-content'));
+            expect(sidebar, findsOneWidget, reason: reason);
+            expect(surface, findsOneWidget, reason: reason);
+            final sidebarRect = tester.getRect(sidebar);
+            final surfaceRect = tester.getRect(surface);
+            expect(surfaceRect.left, greaterThan(sidebarRect.right), reason: reason);
+            expect(contentRect.left, greaterThanOrEqualTo(surfaceRect.left), reason: reason);
+            expect(contentRect.top, greaterThanOrEqualTo(surfaceRect.top), reason: reason);
+            expect(contentRect.right, lessThanOrEqualTo(surfaceRect.right), reason: reason);
+            expect(contentRect.bottom, lessThanOrEqualTo(surfaceRect.bottom), reason: reason);
+          }
+        }
+      }
+    }
+  });
+
   testWidgets('injects content fixtures only in the development Notices route', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -379,12 +456,14 @@ Future<void> _pumpUntilFound(WidgetTester tester, Finder finder) async {
   expect(finder, findsOneWidget);
 }
 
-Widget _app(GoRouter router, {bool disableAnimations = false}) {
+Widget _app(GoRouter router, {bool disableAnimations = false, TextScaler? textScaler}) {
   return MaterialApp.router(
     theme: CoeloTheme.light,
     routerConfig: router,
     builder: (context, child) => MediaQuery(
-      data: MediaQuery.of(context).copyWith(disableAnimations: disableAnimations),
+      data: MediaQuery.of(
+        context,
+      ).copyWith(disableAnimations: disableAnimations, textScaler: textScaler),
       child: child!,
     ),
   );
