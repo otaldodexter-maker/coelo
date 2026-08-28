@@ -3255,3 +3255,56 @@ da simples soma das 207 ações.
   autorização, transições, persistência/reload e E2E.
 - **Tempo usado:** aproximadamente 8 h 15 min acumulados. **Tempo restante:**
   8–17 dias focados, sujeito às OQ-037/OQ-038; backlog integral não calculável.
+### Checkpoint seguro 40 — fundação Auth, sessão e contexto interno
+
+- **Lote:** implementação local da opção A aprovada para Auth/Sessão do
+  Superadmin, sem alterar Flutter e sem criar, alterar ou consultar dados de
+  usuários remotos. OQ-037 foi fechada na fonte canônica antes do SQL.
+- **Contrato implementado:** principal, vínculo Auth e membership internos
+  vivem em `app_private`, separados de `people`, `person_auth_links` e
+  `platform_memberships`. O contexto deriva somente de `auth.uid()` e do
+  `session_id` revalidado contra `auth.sessions` do mesmo usuário e dentro de
+  `not_after`; Owner exige AAL2 e os demais papéis seguem `requires_mfa`.
+  Instituição e escopo vêm da membership privada, nunca de claims ou filtros do
+  cliente. Os wrappers públicos de bootstrap e resolução retornam envelope JSON
+  estável e são executáveis somente por `authenticated`.
+- **Autorização e lifecycle:** tabelas privadas usam RLS habilitada e forçada,
+  sem policies ou grants de cliente. Locks consultivos simétricos impedem corrida
+  entre realms; vínculos e memberships revogados são terminais; escopo respeita
+  `max_scope_kind`; a proteção do último Owner considera role, membership e
+  auth_link ativos, AAL e escopo funcional. Helpers privilegiados são
+  `SECURITY DEFINER`, owner `postgres`, `search_path=''` e sem EXECUTE para
+  `PUBLIC`, `anon`, `authenticated` ou `service_role`.
+- **Auditoria:** eventos históricos v1 permanecem verificáveis; v2 representa
+  ator interno completo; v3 `auth_session` registra obrigatoriamente negações
+  após sessão válida ainda sem vínculo/membership, apenas com hash de sessão de
+  32 bytes e contexto minimizado. IDs pessoais/internos e role ficam nulos no
+  v3. Falha do append aborta a RPC. Detalhe, lista, busca e export exibem
+  “Sessão autenticada” sem expor o hash.
+- **Migration/teste:** adicionada
+  `20260827233000_superadmin_internal_auth_context.sql` e o pgTAP
+  `superadmin_internal_auth_context_test.sql`. Migration e mirror têm 67.165
+  bytes e SHA-256
+  `B65E44866C7E148A06CE2C0A96D9C5B1CB377AB0947BA251EE795F103FF0A577`;
+  teste tem 23.602 bytes e SHA-256
+  `236651B5F76BEC2E6E955724F95EF65C9014ABA22B2764CB62E47D2A18B39832`.
+- **Testes executados:** replay Docker DB-only e isolado no baseline até
+  `20260812001975`, seguido por `20260827214000` e a migration Auth via
+  `migration up --local`; o ledger local confirmou as duas versões. Um RED de
+  harness e um parêntese excedente no pgTAP foram corrigidos. Gate final:
+  29/29 testes passaram, incluindo envelope, ACL/RLS, sessões ausente/expirada,
+  ator incompleto v3, correlação 1:1, digest/cadeia v1-v2-v3, append fail-closed,
+  leitores sem hash e metadata dos definers. Teardown terminou com zero
+  container, volume, rede ou diretório temporário residual.
+- **Estado local/remoto:** `local-green` para o recorte testado; 106 migrations
+  canônicas e mirror reconciliadas. O remoto não recebeu migration, Auth, DDL,
+  DML, Storage, Edge ou deploy; logo não é `remote-green`, `done` nem prova E2E.
+- **Pendências:** ainda faltam integração GoTrue/PostgREST com login, refresh,
+  logout, revogação e AAL2 reais; fixtures completas de Owner e memberships para
+  bootstrap/resolução positivos, cross-tenant e concorrência multi-conexão;
+  integração posterior com Flutter. OQ-038 de Notices continua aberta.
+- **Revisão independente:** Eng Sup confirmou P0=0/P1=0 nos hashes finais e
+  recomendou commit após staging explícito dos blobs corrigidos.
+- **Tempo usado:** aproximadamente 1 h 30 min neste lote. **Tempo restante:**
+  cerca de 8 h 30 min do orçamento adicional corrente; ETA do recorte principal
+  continua 8–17 dias focados e o backlog integral não é calculável.
