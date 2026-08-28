@@ -477,6 +477,48 @@ Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%); Supabase `done`
 0/37; integração 0/202; projeto estrito 0/229. E2E e estrito medem conclusão
 integral e não anulam a V1 nem o V2.6 locais.
 
+### V2.7 Rodapé universal — abertura — 2026-08-28 12:13 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V2 permanece 1/6 (16,67%). |
+| Superfícies | Criação, edição, editor e wizard administrativos do Superadmin; dialogs e páginas somente leitura ficam fora por contrato. |
+| Baseline e índice | Criar/Editar Instituição, `pattern.form-controls`, `superadmin.form-action-footer`, `pattern.form-frame-geometry` e `pattern.action-hierarchy`. |
+| Inventário inicial | Todos os arquivos reais nomeados `form_page`, `form_pages` ou `wizard_page` já consomem `SuperadminFormActionFooter`; wrappers e páginas de resposta/diretório não são formulários de criação/edição. Nenhuma correção de produção foi demonstrada até aqui. |
+| Evidência planejada | Gate de adoção explícito para as superfícies atuais, suíte do footer em 375/1024 e texto 200%, mais amostra de formulários/wizards em 375/768/1024/1440. |
+| Bloqueios | Nenhum; se o gate não encontrar infrator real, o item será `local-green` por evidência, sem reescrita artificial. |
+| Tempo usado | 0 h 52 min acumulados. |
+| Estimativa | 0 h 30–1 h após o inventário; 9 h 08 min restam na janela. |
+| Próximo item exato | Adicionar e executar o gate de adoção do footer canônico, preservando as exclusões semânticas de páginas que não criam/editam. |
+
+Percentuais: entrega V2 1/6 (16,67%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+local.
+
+### V2.7 Rodapé universal — checkpoint local-green — 2026-08-28 12:17 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V2 = 2/6 (33,33%). `accepted` depende de aprovação visual humana. |
+| Superfícies | 23 consumidores atuais de criação/edição/editor/wizard do Superadmin; Assessments apenas lido pelo gate, sem alteração. |
+| Arquivos alterados | Novo `superadmin_form_action_footer_adoption_test.dart`; spec e tracker. Nenhum código de produção. |
+| Resultado | O inventário não encontrou formulário administrativo real reconstruindo o footer localmente. Seis páginas sem o componente são diretórios, respostas, testes ou wrappers que delegam ao formulário canônico. |
+| Testes | Gate de adoção 2/2; componente 5/5; matrizes focadas de Turmas e Unidades 2/2; total 9/9. Analyzer focado e diff-check verdes. |
+| Responsividade | Componente validado em compacto, constraints intermediárias, 1024 e texto 200%; consumidores de Turmas/Unidades cobrem 375/768/1024/1440, light/dark e 200%. |
+| Bloqueios | Nenhum local; `accepted` visual humano pendente. Assessment dirty não foi modificado, formatado ou staged. |
+| Tempo usado | 0 h 04 min no item; 0 h 56 min acumulados. |
+| Estimativa restante | 9 h 04 min da janela; V2.8 estimada em 1–2 h após o RED. |
+| Próximo item exato | V2.8 Atividades/Modelos: provar abrir edição, duplicar solicitando novo nome e criar modelo pelo wizard sem vínculos. |
+| Conhecimento | `no-op`: o gate torna executável um contrato já aprovado. |
+
+Percentuais: entrega V2 2/6 (33,33%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam os GREENs
+locais.
+
 Percentuais de fechamento local da onda: entrega atual 5/5 `local-green` ou
 `accepted` (100,00%); programa visual 0/31 `accepted` (0,00%); Flutter
 `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase

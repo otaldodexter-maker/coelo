@@ -1898,6 +1898,50 @@ conclusão integral e não anulam V1/V2.6 locais.
 | Próximo item exato | V2.7: inventário e RED do rodapé universal de criação/edição com `SuperadminFormActionFooter`. |
 | Conhecimento capturado | `no-op`: comportamento já aprovado na spec. |
 
+## 16.29. V2.7 Rodapé universal — abertura — 2026-08-28
+
+**Entrega atual V2:** 16,67% (1/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+o trabalho local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Formulários/wizards reais de criação e edição do Superadmin. |
+| Arquivos alterados | Spec e tracker antes do gate; nenhum código de produção. |
+| Inventário | Todos os `form_page`, `form_pages` e `wizard_page` reais já consomem `SuperadminFormActionFooter`. Páginas de resposta, teste, overview, diretório e wrappers que delegam ao formulário não são infratoras. |
+| Testes e resultados | Pendentes: gate de adoção, suíte do componente e amostra responsiva de consumidores. |
+| Inspeções responsivas | Planejadas em 375/768/1024/1440 e texto 200%; light/dark conforme testes/goldens existentes. |
+| Bloqueios | Nenhum; sem produção a corrigir até aqui. |
+| Tempo realmente usado | 0 h 52 min acumulados, às 12:13 BRT. |
+| Estimativa restante | 0 h 30–1 h para V2.7; 9 h 08 min da janela. |
+| Próximo item exato | Gate explícito de adoção universal do footer canônico. |
+| Conhecimento capturado | `no-op`: baseline já documentada no índice `coelo-ui`. |
+
+## 16.30. V2.7 Rodapé universal — local-green — 2026-08-28
+
+**Entrega atual V2:** 33,33% (2/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual pendente. |
+| Tela e rota | 23 superfícies atuais de criação/edição/editor/wizard do Superadmin. |
+| Arquivos alterados | `superadmin_form_action_footer_adoption_test.dart`; spec e tracker. Nenhuma produção. |
+| Correções realizadas | Nenhuma necessária: todos os formulários reais já usam `SuperadminFormActionFooter`; seis candidatos sem footer são semanticamente diretório/resposta/teste/wrapper. |
+| Testes e resultados | Adoção 2/2 + footer 5/5 + matrizes Turmas/Unidades 2/2 = 9/9; analyzer e diff-check verdes. |
+| Inspeções responsivas | Compacto/intermediário/1024 e texto 200% no componente; consumidores em 375/768/1024/1440, light/dark e 200%. |
+| Bloqueios | Nenhum local; Assessment foi apenas lido pelo gate e continua intocado. |
+| Tempo realmente usado | 0 h 04 min; 0 h 56 min acumulados, às 12:17 BRT. |
+| Estimativa restante | 9 h 04 min da janela; V2.8 = 1–2 h inicial. |
+| Próximo item exato | V2.8 Atividades/Modelos: edição, duplicação com novo nome e modelo sem vínculos. |
+| Conhecimento capturado | `no-op`: contrato aprovado ganhou gate executável. |
+
 ## 17. Histórico
 
 
