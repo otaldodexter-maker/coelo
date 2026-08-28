@@ -86,7 +86,9 @@ void main() {
     expect(find.byKey(const Key('support-page-content')), findsOneWidget);
   });
 
-  testWidgets('opens institution forms without route movement', (tester) async {
+  testWidgets('keeps production institution mutations fail closed without transitions', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signIn();
@@ -106,23 +108,15 @@ void main() {
     await tester.pumpAndSettle();
 
     router.go(SuperadminRoutes.institutionCreate);
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     final form = find.byKey(const Key('institution-form-scroll'));
-    expect(form, findsOneWidget);
-    final slides = tester.widgetList<SlideTransition>(
-      find.ancestor(of: form, matching: find.byType(SlideTransition)),
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/errors/mutation-capability-unavailable',
     );
-    final fades = tester.widgetList<FadeTransition>(
-      find.ancestor(of: form, matching: find.byType(FadeTransition)),
-    );
-    final scales = tester.widgetList<ScaleTransition>(
-      find.ancestor(of: form, matching: find.byType(ScaleTransition)),
-    );
-    expect(slides.map((transition) => transition.position.value), everyElement(Offset.zero));
-    expect(fades.map((transition) => transition.opacity.value), everyElement(1));
-    expect(scales.map((transition) => transition.scale.value), everyElement(1));
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
+    expect(form, findsNothing);
   });
 
   testWidgets('propagates the activity footer inset through the persistent host', (tester) async {
@@ -413,12 +407,13 @@ void main() {
     final router = _router(session);
     addTearDown(router.dispose);
     addTearDown(session.dispose);
-    router.go(SuperadminRoutes.unitCreate);
+    router.go(SuperadminRoutes.institutions);
     await tester.pumpWidget(_app(router));
     await tester.pumpAndSettle();
 
     Future<void> selectDestination({required String query, required String destination}) async {
       final search = find.byKey(const Key('superadmin-navigation-search'));
+      expect(search, findsOneWidget);
       await tester.enterText(search, query);
       await tester.pumpAndSettle();
       final destinationFinder = find.byKey(Key('superadmin-navigation-$destination'));
