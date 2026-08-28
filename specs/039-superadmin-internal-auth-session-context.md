@@ -267,16 +267,31 @@ reconstrói esse mapeamento a partir de SQLSTATE ou de mensagem técnica.
 
 ## Auditoria e observabilidade
 
-Cada bootstrap, resolução institucional e comando de domínio registra em `audit` um evento append-only
-com: `actor_kind = 'superadmin_internal'`, `actor_internal_identity_id`,
-`actor_internal_auth_link_id`, `actor_internal_membership_id`, `session_id_hash`, `action_code`,
-`permission_code`, `aal`, `outcome`, `reason_code`, `correlation_id`,
+Cada bootstrap, resolução institucional e comando de domínio registra em `audit`
+um evento append-only. Quando identidade, link e membership internos já foram
+validados, o contrato v2 usa `actor_kind = 'superadmin_internal'`,
+`actor_internal_identity_id`, `actor_internal_auth_link_id`,
+`actor_internal_membership_id`, `session_id_hash`, `action_code`,
+`permission_code`, `mfa_aal`, `outcome`, `reason_code`, `correlation_id`,
 `object_type`, `object_id` opaco e `occurred_at`.
+
+**Decisão aprovada em 2026-08-27:** uma negativa posterior à validação de uma
+sessão Auth, mas anterior à identificação completa do ator interno, usa o
+contrato v3 tipado `actor_kind = 'auth_session'`. Nesse contrato,
+`actor_person_id`, os IDs legados e todos os três IDs internos permanecem
+`NULL`; o evento guarda somente `session_id_hash` com 32 bytes, `mfa_aal`,
+permissão, ação, motivo, correlação, contexto minimizado, resultado e os campos
+append-only comuns. `payload_contract_version` e `hash_version` são 3 e o
+digest cobre todos esses campos. O leitor apresenta **Sessão autenticada** e
+nunca devolve, filtra ou exporta o hash. O hash é dado pseudônimo; esta decisão
+não infere prazo de retenção.
 
 O audit existente deve receber campos internos explícitos ou um ator tipado antes
 de qualquer domínio migrar. Não preencher `actor_person_id` com pessoa sintética
 e não sobrecarregar `actor_membership_id` legado. Tentativas negadas são
-auditadas depois de validar a sessão, com minimização equivalente. Rotação de
+auditadas depois de validar a sessão, usando v3 até existir ator interno completo
+e v2 depois disso. Após a sessão válida, falha ao anexar o evento aborta a RPC;
+ela nunca devolve uma negativa de negócio sem o audit obrigatório. Rotação de
 segredo, refresh token, JWT, e-mail, nome, CPF, payload completo, cabeçalho e
 endereço de rede não entram em logs, analytics, erro ou evidência de teste.
 
@@ -368,8 +383,9 @@ implementação para no primeiro bloqueio abaixo:
    a proveniência ou aprovar reparo de compatibilidade forward-only;
 2. canônico/mirror/ledger local/remoto ainda exigem reconciliação e o banco local
    compartilhado não é prova de reset limpo;
-3. a extensão de `audit.audit_logs` para ator interno tipado deve ser desenhada
-   na mesma migration da fundação, sem falsificar `actor_person_id`;
+3. a extensão de `audit.audit_logs` deve implementar na mesma migration da
+   fundação os contratos v2 `superadmin_internal` e v3 `auth_session`, sem
+   falsificar `actor_person_id` e sem expor `session_id_hash` nos leitores;
 4. OQ-006 continua aberta para a política de MFA de demais perfis: esta spec só
    aplica o catálogo `requires_mfa` já aprovado e não inventa novos requisitos;
 5. recuperação/reset, convite e transições de provisionamento continuam fora de

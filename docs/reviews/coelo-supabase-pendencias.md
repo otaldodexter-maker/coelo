@@ -3172,3 +3172,86 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 7 h 15 min acumulados. **Tempo restante:**
   8–17 dias focados para o recorte principal, sujeito à OQ-037; backlog
   integral não calculável.
+
+### Checkpoint seguro 38 — Notices 12002900 bloqueada e ACL remota excessiva
+
+- **Lote:** proveniência e segurança read-only de
+  `20260812002900_notices_status_values.sql`; nenhuma migration ou ação de
+  Avisos foi promovida.
+- **Proveniência:** único blob Git
+  `2310e04d135659d4bb3eb9571d8d57ec949f52dc`, commit `ca550887`, pai
+  `3f2e97ba`. Git/LF e recovery têm 286 bytes e SHA-256
+  `D21D79D7D40A24EF063E9903BF7C560C1F0D61C4AA6C2E7B2911B67A00128F23`;
+  checkout CRLF tem 290 bytes e SHA-256
+  `C2416311DC7CDF259990B68D795F486D3FDBB61E86285ED23C7676942DCE390C`.
+  As cópias são EOL-equivalentes, sem variante semântica.
+- **Remoto read-only:** o ledger não contém `12002900` nem `12003000`; o enum
+  contém exatamente `draft`, `scheduled`, `published`, `expired`, `archived`,
+  `platform_notices` tem zero rows e nenhuma função remota consome a tabela. A
+  ACL SQL raw concede ALL a `anon`, `authenticated` e `service_role`; RLS está
+  habilitada, não forçada, com uma policy SELECT para `authenticated` por
+  `platform.read`. `has_table_privilege` confirmou `TRUNCATE` para
+  `anon`/`authenticated` e `INSERT` para `anon`. Isso prova privilégio SQL
+  efetivo excessivo, não reachability HTTP/PostgREST de `TRUNCATE`.
+- **Classificação:** BLOQUEAR/preservar `12002900`. Ela só acrescenta três
+  labels por `ALTER TYPE ... ADD VALUE`, operação sem rollback simples, e não
+  corrige grants/RLS. A closure nasce somente na local-only/text-conflict
+  `12003000`; aplicá-la isoladamente contornaria o RED anterior de Child Safety
+  e criaria falsa aparência de avanço seguro.
+- **Contrato/testes:** OQ-038 registra o conflito entre o ciclo de seis estados
+  da spec técnica e os cinco estados legados da spec de banco. Acrescentar os
+  labels produziria oito valores, sem mapping para `published`/`archived` e em
+  ordem física inadequada. Não existe pgTAP focal de enum exato, transições de
+  pausa/retomada/inativação ou matriz ACL completa.
+- **Próximo pacote seguro:** primeiro, hardening forward-only independente de
+  ACL/RLS das tabelas Notice, sem ativar o domínio; depois, somente após decisão
+  OQ-038, migrations coordenadas para expansão/migração do enum e contrato
+  produtivo, com testes de transição, negativos e autorização.
+- **Ambiente/estado:** somente Git e SELECT remoto redigido; zero Docker,
+  DDL/DML/Auth/Storage/Edge/deploy remoto. Não é `local-green`, `remote-green`
+  nem `done`. Conhecimento atualizado somente em `docs/open-questions.md`.
+- **Tempo usado:** aproximadamente 7 h 45 min acumulados. **Tempo restante:**
+  8–17 dias focados, sujeito às OQ-037/OQ-038; backlog integral não calculável.
+
+### Checkpoint seguro 39 — hardening local das tabelas Platform Notice
+
+- **Lote:** fechamento forward-only da superfície SQL excessiva encontrada no
+  checkpoint 38, sem ativar enum, RPC, worker ou ação de Avisos.
+- **Migration/teste:** adicionada
+  `20260827222500_harden_platform_notice_table_access.sql` e o pgTAP
+  `platform_notice_table_access_hardening_test.sql`. O preflight exige owner
+  `postgres` e as cinco relações exatas: `public.platform_notices`,
+  `notice_rules`, `notice_media`, `notice_receipts` e
+  `analytics.notice_events`. A migration revoga ALL somente de `PUBLIC`, `anon`
+  e `authenticated`, habilita e força RLS; preserva `service_role`, as cinco
+  policies SELECT existentes, schemas, enum e objetos de Assiduidade.
+- **RED:** stage truncado sem a migration reprovou FORCE RLS nas cinco tabelas
+  e ACL nas quatro tabelas `public`; confirmou a mesma causa do inventário
+  remoto. Um erro de tipo `name[]` no assert do enum foi corrigido antes do
+  GREEN e não foi contado como prova funcional.
+- **GREEN:** stage Docker isolado até `20260812001975`, seguido por preflight de
+  Grupos, hardening default ACL `20260827214000`, closure Import/Export
+  `20260827222000` e a nova migration, passou 35/35 asserts. Foram provados
+  owner/RLS, zero privilégio de `PUBLIC`/`anon`/`authenticated` por
+  `aclexplode` e pela matriz efetiva dos sete privilégios de tabela,
+  compatibilidade deliberada de `service_role` nos mesmos sete privilégios,
+  preservação das cinco policies esperadas, enum legado inalterado e
+  SELECT/TRUNCATE negados a `anon`/`authenticated`. Rollback das
+  fixtures e teardown deixaram zero container, volume, rede ou temp.
+- **Manifesto:** 106 migrations canônicas verificadas contra o mirror.
+  Migration/mirror com 1.682 bytes e SHA-256
+  `939BE71754D85151C4773507E0256C7E6FA7787F7CFC6839A186871FB2B1FF7F`;
+  pgTAP com 4.071 bytes e SHA-256
+  `0653A4F8652868B2231381E8F81453BB8C78352FAE490644A9C76DE11B69C8BF`.
+  Diff-check e secret scan focal verdes.
+- **Estado local/remoto:** `local-green` somente para o hardening focal. O
+  remoto não recebeu a migration e continua com grants excessivos até deploy
+  explicitamente autorizado; não é `remote-green`, `done` nem integração de
+  Avisos. A histórica `12002900` continua BLOQUEADA e OQ-038 aberta.
+- **Bloqueios/pendências:** review independente do snapshot final concluiu
+  P0=0/P1=0; falta integração seletiva. Depois do hardening remoto autorizado,
+  qualquer funcionalidade
+  Notice ainda exige decisão do enum, contrato consolidado, RPC/worker,
+  autorização, transições, persistência/reload e E2E.
+- **Tempo usado:** aproximadamente 8 h 15 min acumulados. **Tempo restante:**
+  8–17 dias focados, sujeito às OQ-037/OQ-038; backlog integral não calculável.
