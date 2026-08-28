@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
@@ -13,6 +16,17 @@ import '../domain/now_media_metadata.dart';
 
 typedef NowMediaPicker = Future<NowMediaDraft?> Function();
 typedef NowAudioPicker = Future<NowAudioDraft?> Function();
+
+bool _sameContext(NowPublicationContext left, NowPublicationContext right) =>
+    left.tenantId == right.tenantId &&
+    left.institutionId == right.institutionId &&
+    left.unitId == right.unitId &&
+    left.groupId == right.groupId &&
+    left.institutionName == right.institutionName &&
+    left.unitName == right.unitName &&
+    left.groupName == right.groupName &&
+    setEquals(left.allowedAudiences, right.allowedAudiences) &&
+    left.capabilities.maxVideoDuration == right.capabilities.maxVideoDuration;
 
 final class PrincipalNowPublicationPage extends StatefulWidget {
   const PrincipalNowPublicationPage({
@@ -39,20 +53,41 @@ final class PrincipalNowPublicationPage extends StatefulWidget {
 }
 
 final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicationPage> {
-  late final NowPublicationController controller;
+  late NowPublicationController controller;
   late final TextEditingController captionController;
   var _currentStep = 0;
+  var _pickerGeneration = 0;
+  var _overlayGeneration = 0;
+  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
 
   @override
   void initState() {
     super.initState();
-    controller = NowPublicationController(
-      repository: widget.repository,
-      context: widget.publicationContext,
-    );
     captionController = TextEditingController();
+    controller = _createController();
     controller.addListener(_synchronizeLoadedDraft);
-    controller.load();
+    unawaited(controller.load());
+  }
+
+  NowPublicationController _createController() =>
+      NowPublicationController(repository: widget.repository, context: widget.publicationContext);
+
+  @override
+  void didUpdateWidget(covariant PrincipalNowPublicationPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        _sameContext(oldWidget.publicationContext, widget.publicationContext)) {
+      return;
+    }
+    _pickerGeneration += 1;
+    _dismissOwnedOverlays();
+    controller.removeListener(_synchronizeLoadedDraft);
+    controller.dispose();
+    captionController.value = TextEditingValue.empty;
+    _currentStep = 0;
+    controller = _createController();
+    controller.addListener(_synchronizeLoadedDraft);
+    unawaited(controller.load());
   }
 
   void _synchronizeLoadedDraft() {
@@ -67,14 +102,63 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
 
   @override
   void dispose() {
+    _pickerGeneration += 1;
+    _dismissOwnedOverlays();
     controller.removeListener(_synchronizeLoadedDraft);
     captionController.dispose();
     controller.dispose();
     super.dispose();
   }
 
+  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<T>(context: context, builder: builder);
+    final entry = (navigator, route as Route<dynamic>);
+    _ownedOverlays.add(entry);
+    try {
+      final result = await navigator.push<T>(route);
+      await route.completed;
+      return result;
+    } finally {
+      _ownedOverlays.remove(entry);
+    }
+  }
+
+  Future<T?> _showOwnedBottomSheet<T>({
+    required WidgetBuilder builder,
+    required Color backgroundColor,
+  }) async {
+    final navigator = Navigator.of(context);
+    final route = ModalBottomSheetRoute<T>(
+      builder: builder,
+      capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
+      backgroundColor: backgroundColor,
+      showDragHandle: true,
+      isScrollControlled: false,
+    );
+    final entry = (navigator, route as Route<dynamic>);
+    _ownedOverlays.add(entry);
+    try {
+      final result = await navigator.push<T>(route);
+      await route.completed;
+      return result;
+    } finally {
+      _ownedOverlays.remove(entry);
+    }
+  }
+
+  void _dismissOwnedOverlays() {
+    _overlayGeneration += 1;
+    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
+      if (route.isActive) navigator.removeRoute(route);
+    }
+    _ownedOverlays.clear();
+  }
+
   Future<void> _pickMedia() async {
+    final generation = _pickerGeneration;
     final media = await (widget.mediaPicker?.call() ?? _defaultMediaPicker());
+    if (!mounted || generation != _pickerGeneration) return;
     if (media != null) controller.setMedia(media);
   }
 
@@ -105,7 +189,9 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   }
 
   Future<void> _pickAudio() async {
+    final generation = _pickerGeneration;
     final audio = await (widget.audioPicker?.call() ?? _defaultAudioPicker());
+    if (!mounted || generation != _pickerGeneration) return;
     if (audio != null) {
       controller.setAudio(audio);
       if (mounted) await _showAudioRights();
@@ -131,51 +217,78 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: controller,
-    builder: (context, _) => LayoutBuilder(
-      builder: (context, constraints) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body: SafeArea(
-          top: !widget.embedded,
-          bottom: !widget.embedded,
-          left: !widget.embedded,
-          right: !widget.embedded,
-          child: SuperadminFormFrame(
-            viewportWidth: constraints.maxWidth,
-            navigation: SuperadminFormStepNavigation(
-              steps: [
-                SuperadminFormStep(
-                  label: 'Mídia',
-                  status: _currentStep == 0
-                      ? SuperadminFormStepStatus.current
-                      : SuperadminFormStepStatus.complete,
+    builder: (context, _) {
+      if (controller.state.phase == NowPublicationPhase.loading) {
+        return const Material(
+          child: Center(child: CircularProgressIndicator(key: Key('now-publication-loading'))),
+        );
+      }
+      final busy = {
+        NowPublicationPhase.uploading,
+        NowPublicationPhase.saving,
+        NowPublicationPhase.publishing,
+      }.contains(controller.state.phase);
+      return LayoutBuilder(
+        builder: (context, constraints) => Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          body: SafeArea(
+            top: !widget.embedded,
+            bottom: !widget.embedded,
+            left: !widget.embedded,
+            right: !widget.embedded,
+            child: SuperadminFormFrame(
+              viewportWidth: constraints.maxWidth,
+              navigation: ExcludeFocus(
+                key: const Key('now-publication-navigation-focus-lock'),
+                excluding: busy,
+                child: AbsorbPointer(
+                  absorbing: busy,
+                  child: SuperadminFormStepNavigation(
+                    steps: [
+                      SuperadminFormStep(
+                        label: 'Mídia',
+                        status: _currentStep == 0
+                            ? SuperadminFormStepStatus.current
+                            : SuperadminFormStepStatus.complete,
+                      ),
+                      SuperadminFormStep(
+                        label: 'Detalhes',
+                        status: _currentStep == 1
+                            ? SuperadminFormStepStatus.current
+                            : SuperadminFormStepStatus.incomplete,
+                        enabled: _currentStep == 1,
+                      ),
+                    ],
+                    currentIndex: _currentStep,
+                    onStepSelected: (step) {
+                      if (step <= _currentStep) setState(() => _currentStep = step);
+                    },
+                  ),
                 ),
-                SuperadminFormStep(
-                  label: 'Detalhes',
-                  status: _currentStep == 1
-                      ? SuperadminFormStepStatus.current
-                      : SuperadminFormStepStatus.incomplete,
-                  enabled: _currentStep == 1,
+              ),
+              scrollKey: Key('now-publication-step-$_currentStep'),
+              body: ExcludeFocus(
+                key: const Key('now-publication-body-focus-lock'),
+                excluding: busy,
+                child: AbsorbPointer(
+                  key: const Key('now-publication-body-lock'),
+                  absorbing: busy,
+                  child: _stepBody(),
                 ),
-              ],
-              currentIndex: _currentStep,
-              onStepSelected: (step) {
-                if (step <= _currentStep) setState(() => _currentStep = step);
-              },
-            ),
-            scrollKey: Key('now-publication-step-$_currentStep'),
-            body: _stepBody(),
-            footer: _PublicationFooter(
-              currentStep: _currentStep,
-              controller: controller,
-              onCancel: widget.onClose ?? () => Navigator.maybePop(context),
-              onPrevious: () => setState(() => _currentStep = 0),
-              onContinue: () => setState(() => _currentStep = 1),
-              onCompleted: widget.onCompleted,
+              ),
+              footer: _PublicationFooter(
+                currentStep: _currentStep,
+                controller: controller,
+                onCancel: widget.onClose ?? () => Navigator.maybePop(context),
+                onPrevious: () => setState(() => _currentStep = 0),
+                onContinue: () => setState(() => _currentStep = 1),
+                onCompleted: widget.onCompleted,
+              ),
             ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 
   Widget _stepBody() => Column(
@@ -208,9 +321,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   );
 
   Future<void> _showTextEditor() async {
-    final text = TextEditingController(text: controller.state.draft.overlayText);
-    await showDialog<void>(
-      context: context,
+    final requestedController = controller;
+    final generation = _overlayGeneration;
+    final text = TextEditingController(text: requestedController.state.draft.overlayText);
+    await _showOwnedDialog<void>(
       builder: (context) => _NowDialog(
         title: 'Texto sobre a mídia',
         body: CoeloFormTextField(
@@ -220,7 +334,11 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
           hintText: 'Digite uma mensagem curta',
           prefixIcon: Icons.text_fields_rounded,
           maxLength: 60,
-          onChanged: controller.setOverlayText,
+          onChanged: (value) {
+            if (generation == _overlayGeneration && identical(requestedController, controller)) {
+              requestedController.setOverlayText(value);
+            }
+          },
         ),
         actions: [
           FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Concluir')),
@@ -256,11 +374,11 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     required double max,
     required ValueChanged<double> onChanged,
   }) async {
+    final requestedController = controller;
+    final generation = _overlayGeneration;
     final current = ValueNotifier(value);
-    await showModalBottomSheet<void>(
-      context: context,
+    await _showOwnedBottomSheet<void>(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      showDragHandle: true,
       builder: (context) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space5),
@@ -279,7 +397,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
                   max: max,
                   onChanged: (next) {
                     current.value = next;
-                    onChanged(next);
+                    if (generation == _overlayGeneration &&
+                        identical(requestedController, controller)) {
+                      onChanged(next);
+                    }
                   },
                 ),
                 FilledButton(
@@ -295,33 +416,40 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     current.dispose();
   }
 
-  Future<void> _showAudioRights() => showDialog<void>(
-    context: context,
-    builder: (context) => _NowDialog(
-      title: 'Usar áudio próprio',
-      body: const Text('Confirme que você tem autorização para usar este áudio.'),
-      actions: [
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.error,
-            side: BorderSide(color: Theme.of(context).colorScheme.error),
+  Future<void> _showAudioRights() async {
+    final requestedController = controller;
+    final generation = _overlayGeneration;
+    await _showOwnedDialog<void>(
+      builder: (context) => _NowDialog(
+        title: 'Usar áudio próprio',
+        body: const Text('Confirme que você tem autorização para usar este áudio.'),
+        actions: [
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              side: BorderSide(color: Theme.of(context).colorScheme.error),
+            ),
+            onPressed: () {
+              if (generation == _overlayGeneration && identical(requestedController, controller)) {
+                requestedController.removeAudio();
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('Remover'),
           ),
-          onPressed: () {
-            controller.removeAudio();
-            Navigator.pop(context);
-          },
-          child: const Text('Remover'),
-        ),
-        FilledButton(
-          onPressed: () {
-            controller.confirmAudioRights(true);
-            Navigator.pop(context);
-          },
-          child: const Text('Confirmar direitos'),
-        ),
-      ],
-    ),
-  );
+          FilledButton(
+            onPressed: () {
+              if (generation == _overlayGeneration && identical(requestedController, controller)) {
+                requestedController.confirmAudioRights(true);
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('Confirmar direitos'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 final class _MediaAndTools extends StatelessWidget {

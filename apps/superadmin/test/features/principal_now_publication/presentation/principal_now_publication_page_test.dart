@@ -33,6 +33,210 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('shows only progress while the initial draft is loading', (tester) async {
+    final repository = _DeferredPageNowRepository();
+    await tester.pumpWidget(MaterialApp(home: PrincipalNowPublicationPage(repository: repository)));
+    await tester.pump();
+
+    expect(find.byKey(const Key('now-publication-loading')), findsOneWidget);
+    expect(find.byType(SuperadminFormFrame), findsNothing);
+    expect(find.byType(SuperadminFormStepNavigation), findsNothing);
+    expect(find.byType(SuperadminFormActionFooter), findsNothing);
+
+    repository.loadCompleter.complete(null);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('repository swap clears A and ignores its late load', (tester) async {
+    final repositoryA = _DeferredPageNowRepository();
+    final repositoryB = _DeferredPageNowRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalNowPublicationPage(repository: repositoryA)),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalNowPublicationPage(repository: repositoryB)),
+    );
+    repositoryB.loadCompleter.complete(const NowPublicationDraft(caption: 'Contexto B'));
+    await tester.pumpAndSettle();
+    repositoryA.loadCompleter.complete(const NowPublicationDraft(caption: 'Contexto A'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    final field = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('now-caption-field')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(field.controller.text, 'Contexto B');
+    expect(find.text('Contexto A'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('full context swap reloads even when repository and scope ids match', (tester) async {
+    final repository = _ContextQueueNowRepository();
+    const contextA = NowPublicationContext(
+      tenantId: 'tenant-a',
+      institutionId: 'institution',
+      unitId: 'unit',
+      groupId: 'group',
+      institutionName: 'Instituição A',
+      unitName: 'Unidade A',
+      groupName: 'Grupo A',
+      allowedAudiences: {NowAudience.families},
+    );
+    const contextB = NowPublicationContext(
+      tenantId: 'tenant-b',
+      institutionId: 'institution',
+      unitId: 'unit',
+      groupId: 'group',
+      institutionName: 'Instituição B',
+      unitName: 'Unidade B',
+      groupName: 'Grupo B',
+      allowedAudiences: {NowAudience.schoolStaff},
+      capabilities: NowPlanCapabilities(maxVideoDuration: Duration(seconds: 10)),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalNowPublicationPage(repository: repository, publicationContext: contextA),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalNowPublicationPage(repository: repository, publicationContext: contextB),
+      ),
+    );
+    expect(repository.contexts, [contextA, contextB]);
+    repository.completers[1].complete(const NowPublicationDraft(caption: 'Contexto B'));
+    await tester.pumpAndSettle();
+    repository.completers[0].complete(const NowPublicationDraft(caption: 'Contexto A'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    final field = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('now-caption-field')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(field.controller.text, 'Contexto B');
+    expect(find.text('Contexto A'), findsNothing);
+  });
+
+  testWidgets('context swap dismisses owned editor and cannot mutate B', (tester) async {
+    final repository = InMemoryNowPublicationRepository();
+    const contextB = NowPublicationContext(
+      tenantId: 'tenant-b',
+      institutionId: 'institution-b',
+      unitId: 'unit-b',
+      groupId: 'group-b',
+      institutionName: 'Instituição B',
+      unitName: 'Unidade B',
+      groupName: 'Grupo B',
+      allowedAudiences: {NowAudience.families},
+    );
+    Future<NowMediaDraft?> pickMedia() async => NowMediaDraft.image(
+      localId: 'media',
+      name: 'foto.png',
+      mimeType: 'image/png',
+      bytes: Uint8List.fromList([1]),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalNowPublicationPage(repository: repository, mediaPicker: pickMedia),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Adicionar mídia'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Texto'));
+    await tester.tap(find.byTooltip('Texto'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('now-overlay-field')), 'Segredo A');
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalNowPublicationPage(
+          repository: repository,
+          publicationContext: contextB,
+          mediaPicker: pickMedia,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('now-overlay-field')), findsNothing);
+    expect(find.text('Segredo A'), findsNothing);
+
+    await tester.tap(find.text('Adicionar mídia'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Texto'));
+    await tester.tap(find.byTooltip('Texto'));
+    await tester.pumpAndSettle();
+    final field = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('now-overlay-field')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(field.controller.text, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final overlay in <({String tooltip, String visibleText})>[
+    (tooltip: 'Texto', visibleText: 'Texto sobre a mídia'),
+    (tooltip: 'Cortar', visibleText: 'Cortar mídia'),
+  ]) {
+    testWidgets('context swap owns ${overlay.tooltip} route before its first build', (
+      tester,
+    ) async {
+      final repository = _ContextQueueNowRepository();
+      final media = NowMediaDraft.image(
+        localId: 'media-a',
+        name: 'foto-a.png',
+        mimeType: 'image/png',
+        bytes: Uint8List.fromList([1]),
+      );
+      const contextB = NowPublicationContext(
+        tenantId: 'tenant-b',
+        institutionId: 'institution-b',
+        unitId: 'unit-b',
+        groupId: 'group-b',
+        institutionName: 'Instituição B',
+        unitName: 'Unidade B',
+        groupName: 'Grupo B',
+        allowedAudiences: {NowAudience.families},
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(home: PrincipalNowPublicationPage(repository: repository)),
+      );
+      repository.completers.single.complete(
+        NowPublicationDraft(media: media, overlayText: 'Conteúdo privado A'),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip(overlay.tooltip));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: PrincipalNowPublicationPage(repository: repository, publicationContext: contextB),
+        ),
+      );
+      repository.completers[1].complete(null);
+      await tester.pumpAndSettle();
+
+      expect(find.text(overlay.visibleText), findsNothing);
+      expect(find.text('Conteúdo privado A'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   Future<void> pumpPage(WidgetTester tester, Size size) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -289,6 +493,74 @@ void main() {
     repository.finishSave();
     await tester.pumpAndSettle();
   });
+}
+
+final class _DeferredPageNowRepository implements NowPublicationRepository {
+  final loadCompleter = Completer<NowPublicationDraft?>();
+
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) => loadCompleter.future;
+
+  @override
+  Future<NowPublicationDraft> saveDraft(
+    NowPublicationContext context,
+    NowPublicationDraft draft,
+  ) async => draft;
+
+  @override
+  Future<NowMediaDraft> uploadMedia(
+    NowPublicationContext context,
+    String publicationId,
+    NowMediaDraft media,
+  ) async => media;
+
+  @override
+  Future<NowAudioDraft> uploadAudio(
+    NowPublicationContext context,
+    String publicationId,
+    NowAudioDraft audio,
+  ) async => audio;
+
+  @override
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+      NowPublication(id: draft.id!, publishAt: draft.publishAt);
+}
+
+final class _ContextQueueNowRepository implements NowPublicationRepository {
+  final contexts = <NowPublicationContext>[];
+  final completers = <Completer<NowPublicationDraft?>>[];
+
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) {
+    contexts.add(context);
+    final completer = Completer<NowPublicationDraft?>();
+    completers.add(completer);
+    return completer.future;
+  }
+
+  @override
+  Future<NowPublicationDraft> saveDraft(
+    NowPublicationContext context,
+    NowPublicationDraft draft,
+  ) async => draft;
+
+  @override
+  Future<NowMediaDraft> uploadMedia(
+    NowPublicationContext context,
+    String publicationId,
+    NowMediaDraft media,
+  ) async => media;
+
+  @override
+  Future<NowAudioDraft> uploadAudio(
+    NowPublicationContext context,
+    String publicationId,
+    NowAudioDraft audio,
+  ) async => audio;
+
+  @override
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+      NowPublication(id: draft.id!, publishAt: draft.publishAt);
 }
 
 final class _BlockingRepository implements NowPublicationRepository {

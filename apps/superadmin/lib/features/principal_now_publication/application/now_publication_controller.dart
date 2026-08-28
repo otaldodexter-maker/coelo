@@ -33,13 +33,23 @@ final class NowPublicationController extends ChangeNotifier {
   final NowPublicationRepository repository;
   final NowPublicationContext context;
   NowPublicationState _state;
+  var _loadGeneration = 0;
+  var _editGeneration = 0;
+  var _loadInFlight = false;
+  var _commandInFlight = false;
+  var _publishingIntent = false;
+  var _disposed = false;
 
   NowPublicationState get state => _state;
 
   Future<void> load() async {
+    if (_disposed || _loadInFlight || _commandInFlight) return;
+    final generation = ++_loadGeneration;
+    _loadInFlight = true;
     _emit(_state.copyWith(phase: NowPublicationPhase.loading, clearMessage: true));
     try {
       final draft = await repository.loadDraft(context);
+      if (!_isCurrentLoad(generation)) return;
       _emit(
         NowPublicationState(
           draft: draft ?? const NowPublicationDraft(),
@@ -47,6 +57,7 @@ final class NowPublicationController extends ChangeNotifier {
         ),
       );
     } on NowPublicationUnauthorized {
+      if (!_isCurrentLoad(generation)) return;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.unauthorized,
@@ -54,12 +65,15 @@ final class NowPublicationController extends ChangeNotifier {
         ),
       );
     } on Exception {
+      if (!_isCurrentLoad(generation)) return;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.failure,
           message: 'Não foi possível carregar o rascunho.',
         ),
       );
+    } finally {
+      _loadInFlight = false;
     }
   }
 
@@ -104,25 +118,43 @@ final class NowPublicationController extends ChangeNotifier {
       _edit(_state.draft.copyWith(publishAt: value, clearPublishAt: value == null));
 
   Future<void> saveDraft() async {
+    if (_disposed || _loadInFlight || _commandInFlight) return;
+    final snapshot = _state.draft;
+    final generation = _editGeneration;
+    _commandInFlight = true;
     _emit(_state.copyWith(phase: NowPublicationPhase.saving, clearMessage: true));
     try {
-      var saved = await repository.saveDraft(context, _state.draft);
+      var saved = await repository.saveDraft(context, snapshot);
+      if (_disposed) return;
+      _applyCheckpoint(saved, NowPublicationPhase.saving);
       final media = saved.media;
       if (media != null && media.remoteAssetId == null) {
         final publicationId = saved.id;
         if (publicationId == null) throw Exception('draft_id_required_for_upload');
         saved = saved.copyWith(media: await repository.uploadMedia(context, publicationId, media));
-        _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saving));
+        if (_disposed) return;
+        _applyCheckpoint(saved, NowPublicationPhase.saving);
       }
       final audio = saved.audio;
       if (audio != null && audio.remoteAssetId == null) {
         final publicationId = saved.id;
         if (publicationId == null) throw Exception('draft_id_required_for_upload');
         saved = saved.copyWith(audio: await repository.uploadAudio(context, publicationId, audio));
-        _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saving));
+        if (_disposed) return;
+        _applyCheckpoint(saved, NowPublicationPhase.saving);
       }
-      _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saved));
+      if (generation == _editGeneration) {
+        _emit(NowPublicationState(draft: saved, phase: NowPublicationPhase.saved));
+      } else {
+        _emit(
+          NowPublicationState(
+            draft: _mergeCheckpoint(_state.draft, saved),
+            phase: NowPublicationPhase.editing,
+          ),
+        );
+      }
     } on NowPublicationConflict {
+      if (_disposed) return;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.conflict,
@@ -130,6 +162,7 @@ final class NowPublicationController extends ChangeNotifier {
         ),
       );
     } on NowPublicationUnauthorized {
+      if (_disposed) return;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.unauthorized,
@@ -137,43 +170,56 @@ final class NowPublicationController extends ChangeNotifier {
         ),
       );
     } on Exception {
+      if (_disposed) return;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.failure,
           message: 'Não foi possível salvar o rascunho.',
         ),
       );
+    } finally {
+      _commandInFlight = false;
     }
   }
 
   Future<NowPublication?> publish() async {
+    if (_disposed || _loadInFlight || _commandInFlight) return null;
     final issues = _state.draft.validate(context);
     if (issues.isNotEmpty) {
       _emit(_state.copyWith(message: _messageFor(issues.first)));
       return null;
     }
+    final snapshot = _state.draft;
+    _commandInFlight = true;
+    _publishingIntent = true;
     _emit(_state.copyWith(phase: NowPublicationPhase.uploading, clearMessage: true));
     try {
-      var draft = _state.draft;
+      var draft = snapshot;
       if (draft.id == null) {
         draft = await repository.saveDraft(context, draft);
+        if (_disposed) return null;
+        _applyCheckpoint(draft, NowPublicationPhase.uploading);
       }
       final publicationId = draft.id!;
       final media = draft.media!;
       if (media.remoteAssetId == null) {
         draft = draft.copyWith(media: await repository.uploadMedia(context, publicationId, media));
-        _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.uploading));
+        if (_disposed) return null;
+        _applyCheckpoint(draft, NowPublicationPhase.uploading);
       }
       final audio = draft.audio;
       if (audio != null && audio.remoteAssetId == null) {
         draft = draft.copyWith(audio: await repository.uploadAudio(context, publicationId, audio));
-        _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.uploading));
+        if (_disposed) return null;
+        _applyCheckpoint(draft, NowPublicationPhase.uploading);
       }
       _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.publishing));
       final result = await repository.publish(context, draft);
+      if (_disposed) return null;
       _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.success));
       return result;
     } on NowPublicationConflict {
+      if (_disposed) return null;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.conflict,
@@ -181,6 +227,7 @@ final class NowPublicationController extends ChangeNotifier {
         ),
       );
     } on NowPublicationUnauthorized {
+      if (_disposed) return null;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.unauthorized,
@@ -188,22 +235,74 @@ final class NowPublicationController extends ChangeNotifier {
         ),
       );
     } on Exception {
+      if (_disposed) return null;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.failure,
           message: 'Não foi possível publicar no Agora.',
         ),
       );
+    } finally {
+      _publishingIntent = false;
+      _commandInFlight = false;
     }
     return null;
   }
 
-  void _edit(NowPublicationDraft draft) =>
-      _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.editing));
+  void _edit(NowPublicationDraft draft) {
+    if (_disposed || _loadInFlight || _publishingIntent) return;
+    _editGeneration += 1;
+    final phase = _commandInFlight ? _state.phase : NowPublicationPhase.editing;
+    _emit(NowPublicationState(draft: draft, phase: phase));
+  }
+
+  bool _isCurrentLoad(int generation) => !_disposed && generation == _loadGeneration;
+
+  void _applyCheckpoint(NowPublicationDraft checkpoint, NowPublicationPhase phase) {
+    _emit(NowPublicationState(draft: _mergeCheckpoint(_state.draft, checkpoint), phase: phase));
+  }
+
+  NowPublicationDraft _mergeCheckpoint(
+    NowPublicationDraft current,
+    NowPublicationDraft checkpoint,
+  ) {
+    var merged = current.copyWith(id: checkpoint.id, version: checkpoint.version);
+    final currentMedia = current.media;
+    final checkpointMedia = checkpoint.media;
+    if (currentMedia != null &&
+        checkpointMedia != null &&
+        currentMedia.localId == checkpointMedia.localId) {
+      merged = merged.copyWith(
+        media: currentMedia.copyWith(
+          remoteAssetId: checkpointMedia.remoteAssetId,
+          remoteUrl: checkpointMedia.remoteUrl,
+        ),
+      );
+    }
+    final currentAudio = current.audio;
+    final checkpointAudio = checkpoint.audio;
+    if (currentAudio != null &&
+        checkpointAudio != null &&
+        currentAudio.localId == checkpointAudio.localId) {
+      merged = merged.copyWith(
+        audio: currentAudio.copyWith(remoteAssetId: checkpointAudio.remoteAssetId),
+      );
+    }
+    return merged;
+  }
 
   void _emit(NowPublicationState state) {
+    if (_disposed) return;
     _state = state;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _loadGeneration += 1;
+    _editGeneration += 1;
+    super.dispose();
   }
 }
 

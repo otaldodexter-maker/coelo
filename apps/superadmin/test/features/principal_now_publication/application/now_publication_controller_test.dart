@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/principal_now_publication/application/now_publication_controller.dart';
@@ -177,6 +178,200 @@ void main() {
     expect(repository.audioUploads, 2);
     expect(controller.state.phase, NowPublicationPhase.saved);
   });
+
+  test('blocks save while loading and ignores completion after dispose', () async {
+    final repository = _DeferredNowRepository();
+    final controller = NowPublicationController(
+      repository: repository,
+      context: NowPublicationContext.demo,
+    );
+    addTearDown(() {
+      if (!repository.saveCompleter.isCompleted) {
+        repository.saveCompleter.complete(const NowPublicationDraft());
+      }
+      if (!repository.loadCompleter.isCompleted) {
+        repository.loadCompleter.complete(null);
+      }
+    });
+
+    final load = controller.load();
+    final save = controller.saveDraft();
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.saveCalls, 0);
+    await save;
+
+    controller.dispose();
+    repository.loadCompleter.complete(
+      const NowPublicationDraft(id: 'draft-a', caption: 'Tenant A', version: 1),
+    );
+    await expectLater(load, completes);
+  });
+
+  test('keeps edits and a single save while a receipt is pending', () async {
+    final repository = _DeferredNowRepository();
+    final controller = NowPublicationController(
+      repository: repository,
+      context: NowPublicationContext.demo,
+    );
+    repository.loadCompleter.complete(const NowPublicationDraft());
+    await controller.load();
+    controller.setCaption('Legenda A');
+
+    final first = controller.saveDraft();
+    controller.setCaption('Legenda B');
+    final duplicate = controller.saveDraft();
+
+    expect(repository.saveCalls, 1);
+    repository.saveCompleter.complete(
+      repository.savedSnapshots.single.copyWith(id: 'draft-1', version: 1),
+    );
+    await Future.wait([first, duplicate]);
+
+    expect(controller.state.draft.caption, 'Legenda B');
+    expect(controller.state.draft.id, 'draft-1');
+    expect(controller.state.draft.version, 1);
+    expect(controller.state.phase, NowPublicationPhase.editing);
+  });
+
+  test('merges remote checkpoint fields without losing current media edits', () async {
+    final repository = _DeferredNowRepository();
+    final controller = NowPublicationController(
+      repository: repository,
+      context: NowPublicationContext.demo,
+    );
+    repository.loadCompleter.complete(const NowPublicationDraft());
+    await controller.load();
+    controller.setMedia(
+      NowMediaDraft.image(
+        localId: 'media-a',
+        name: 'foto.png',
+        mimeType: 'image/png',
+        bytes: Uint8List.fromList([1]),
+      ),
+    );
+    controller.setAudio(
+      NowAudioDraft(
+        localId: 'audio-a',
+        name: 'audio.mp3',
+        mimeType: 'audio/mpeg',
+        bytes: Uint8List.fromList([2]),
+      ),
+    );
+
+    final save = controller.saveDraft();
+    controller.setCrop(scale: 1.7, x: 0.2, y: -0.1);
+    controller.setCoverPosition(0.6);
+    controller.confirmAudioRights(true);
+    final snapshot = repository.savedSnapshots.single;
+    repository.saveCompleter.complete(
+      snapshot.copyWith(
+        id: 'draft-1',
+        version: 1,
+        media: snapshot.media!.copyWith(
+          remoteAssetId: 'media-remote',
+          remoteUrl: 'https://signed.invalid/media',
+        ),
+        audio: snapshot.audio!.copyWith(remoteAssetId: 'audio-remote'),
+      ),
+    );
+    await save;
+
+    expect(controller.state.draft.media?.cropScale, 1.7);
+    expect(controller.state.draft.media?.cropX, 0.2);
+    expect(controller.state.draft.media?.cropY, -0.1);
+    expect(controller.state.draft.media?.coverPosition, 0.6);
+    expect(controller.state.draft.media?.remoteAssetId, 'media-remote');
+    expect(controller.state.draft.media?.remoteUrl, 'https://signed.invalid/media');
+    expect(controller.state.draft.audio?.rightsConfirmed, isTrue);
+    expect(controller.state.draft.audio?.remoteAssetId, 'audio-remote');
+  });
+
+  test('keeps the last confirmed checkpoint when a later upload fails', () async {
+    final repository = _CheckpointNowRepository();
+    final controller = NowPublicationController(
+      repository: repository,
+      context: NowPublicationContext.demo,
+    );
+    await controller.load();
+    controller.setMedia(
+      NowMediaDraft.image(
+        localId: 'media',
+        name: 'foto.png',
+        mimeType: 'image/png',
+        bytes: Uint8List.fromList([1]),
+      ),
+    );
+
+    await controller.saveDraft();
+
+    expect(controller.state.phase, NowPublicationPhase.failure);
+    expect(controller.state.draft.id, 'draft-1');
+    expect(controller.state.draft.version, 1);
+  });
+}
+
+final class _DeferredNowRepository implements NowPublicationRepository {
+  final loadCompleter = Completer<NowPublicationDraft?>();
+  final saveCompleter = Completer<NowPublicationDraft>();
+  final savedSnapshots = <NowPublicationDraft>[];
+  var saveCalls = 0;
+
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) => loadCompleter.future;
+
+  @override
+  Future<NowPublicationDraft> saveDraft(NowPublicationContext context, NowPublicationDraft draft) {
+    saveCalls += 1;
+    savedSnapshots.add(draft);
+    return saveCompleter.future;
+  }
+
+  @override
+  Future<NowMediaDraft> uploadMedia(
+    NowPublicationContext context,
+    String publicationId,
+    NowMediaDraft media,
+  ) async => media;
+
+  @override
+  Future<NowAudioDraft> uploadAudio(
+    NowPublicationContext context,
+    String publicationId,
+    NowAudioDraft audio,
+  ) async => audio;
+
+  @override
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+      NowPublication(id: draft.id!, publishAt: draft.publishAt);
+}
+
+final class _CheckpointNowRepository implements NowPublicationRepository {
+  @override
+  Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async => null;
+
+  @override
+  Future<NowPublicationDraft> saveDraft(
+    NowPublicationContext context,
+    NowPublicationDraft draft,
+  ) async => draft.copyWith(id: 'draft-1', version: 1);
+
+  @override
+  Future<NowMediaDraft> uploadMedia(
+    NowPublicationContext context,
+    String publicationId,
+    NowMediaDraft media,
+  ) async => throw Exception('offline');
+
+  @override
+  Future<NowAudioDraft> uploadAudio(
+    NowPublicationContext context,
+    String publicationId,
+    NowAudioDraft audio,
+  ) async => audio;
+
+  @override
+  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft) async =>
+      throw UnimplementedError();
 }
 
 final class _CountingRepository implements NowPublicationRepository {
