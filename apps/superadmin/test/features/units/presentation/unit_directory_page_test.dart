@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
@@ -8,7 +10,6 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_director
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -334,7 +335,7 @@ void main() {
 
     await tester.tap(find.text('Em Implantação'));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel('Status: Rascunho'), findsWidgets);
+    expect(find.bySemanticsLabel('Status: Rascunho'), findsOneWidget);
     expect(find.bySemanticsLabel('Status: Ativa'), findsNothing);
   });
 
@@ -356,6 +357,27 @@ void main() {
 
     expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
     expect(find.byType(CoeloAdminExpandableStatusIndicator), findsWidgets);
+  });
+
+  testWidgets('informational unit cards expose no edit affordance', (tester) async {
+    final repository = FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository());
+    final firstItem = (await repository.fetchPage(domain.UnitDirectoryQuery())).items.first;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitDirectoryPage(
+          repository: repository,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final semantics = tester
+        .getSemantics(find.byKey(Key('unit-card-semantics-${firstItem.id}')))
+        .getSemanticsData();
+    expect(semantics.flagsCollection.isButton, isFalse);
+    expect(semantics.hasAction(SemanticsAction.tap), isFalse);
   });
 
   testWidgets('keeps the table scrollable, sortable, and resizable', (tester) async {

@@ -82,7 +82,7 @@ final class _UnitCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final (statusBackground, statusForeground) = unitStatusColors(context, item.status);
-    return CoeloAdminInteractiveCard(
+    final card = CoeloAdminInteractiveCard(
       key: Key('unit-card-${item.id}'),
       surfaceKey: Key('unit-card-surface-${item.id}'),
       minHeight: 216,
@@ -132,7 +132,7 @@ final class _UnitCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: CoeloSpacing.space2),
-                CoeloAdminExpandableStatusIndicator(
+                _statusIndicator(
                   label: item.status.label,
                   backgroundColor: statusBackground,
                   foregroundColor: statusForeground,
@@ -191,6 +191,31 @@ final class _UnitCard extends StatelessWidget {
         ),
       ),
     );
+    if (onPressed != null) return card;
+    return Semantics(
+      key: Key('unit-card-semantics-${item.id}'),
+      container: true,
+      explicitChildNodes: true,
+      child: card,
+    );
+  }
+
+  Widget _statusIndicator({
+    required String label,
+    required Color backgroundColor,
+    required Color foregroundColor,
+    required String semanticLabel,
+    required Key surfaceKey,
+  }) {
+    final indicator = CoeloAdminExpandableStatusIndicator(
+      label: label,
+      backgroundColor: backgroundColor,
+      foregroundColor: foregroundColor,
+      semanticLabel: semanticLabel,
+      surfaceKey: surfaceKey,
+    );
+    if (onPressed != null) return indicator;
+    return Semantics(container: true, explicitChildNodes: true, child: indicator);
   }
 }
 
