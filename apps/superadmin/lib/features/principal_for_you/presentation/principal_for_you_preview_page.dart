@@ -30,6 +30,8 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
 
 final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPreviewPage> {
   late PrincipalForYouContext? _activeContext;
+  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
+  var _overlayGeneration = 0;
 
   PrincipalForYouPreviewData get _data => widget.data ?? PrincipalForYouPreviewData.demo;
 
@@ -37,6 +39,22 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
   void initState() {
     super.initState();
     _activeContext = _data.contexts.firstOrNull;
+  }
+
+  @override
+  void didUpdateWidget(covariant PrincipalForYouPreviewPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.data, widget.data)) return;
+    _dismissOwnedOverlays();
+    final activeId = _activeContext?.id;
+    _activeContext = _data.contexts.where((context) => context.id == activeId).firstOrNull;
+    _activeContext ??= _data.contexts.firstOrNull;
+  }
+
+  @override
+  void dispose() {
+    _dismissOwnedOverlays();
+    super.dispose();
   }
 
   void _feedback(String label) {
@@ -50,15 +68,42 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
 
   Future<void> _showContextSelector() async {
     if (_data.contexts.length < 2) return;
-    final selected = await showModalBottomSheet<PrincipalForYouContext>(
-      context: context,
-      useSafeArea: true,
+    final generation = _overlayGeneration;
+    final contexts = List<PrincipalForYouContext>.unmodifiable(_data.contexts);
+    final navigator = Navigator.of(context);
+    final route = ModalBottomSheetRoute<PrincipalForYouContext>(
+      builder: (context) => _ContextSheet(contexts: contexts, selected: _activeContext),
+      capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       showDragHandle: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       constraints: const BoxConstraints(maxWidth: 640),
-      builder: (context) => _ContextSheet(contexts: _data.contexts, selected: _activeContext),
+      isScrollControlled: false,
+      useSafeArea: true,
     );
-    if (selected != null && mounted) setState(() => _activeContext = selected);
+    final entry = (navigator, route as Route<dynamic>);
+    _ownedOverlays.add(entry);
+    try {
+      final selected = await navigator.push(route);
+      await route.completed;
+      if (selected != null &&
+          mounted &&
+          generation == _overlayGeneration &&
+          _data.contexts.any((context) => context.id == selected.id)) {
+        setState(
+          () => _activeContext = _data.contexts.firstWhere((context) => context.id == selected.id),
+        );
+      }
+    } finally {
+      _ownedOverlays.remove(entry);
+    }
+  }
+
+  void _dismissOwnedOverlays() {
+    _overlayGeneration += 1;
+    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
+      if (route.isActive) navigator.removeRoute(route);
+    }
+    _ownedOverlays.clear();
   }
 
   @override

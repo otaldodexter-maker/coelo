@@ -1,3 +1,4 @@
+import 'package:coelo_superadmin/features/principal_for_you/domain/principal_for_you_preview_data.dart';
 import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,70 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('resets the active context when data changes', (tester) async {
+    final dataA = _dataWithContexts(const [
+      PrincipalForYouContext(id: 'a1', label: 'Família A1', family: 'Família A1', childCount: 1),
+      PrincipalForYouContext(id: 'a2', label: 'Família A2', family: 'Família A2', childCount: 1),
+    ]);
+    final dataB = _dataWithContexts(const [
+      PrincipalForYouContext(id: 'b1', label: 'Família B', family: 'Família B', childCount: 1),
+    ]);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouPreviewPage(data: dataA),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-for-you-context-trigger')).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Família A2'));
+    await tester.pumpAndSettle();
+    expect(find.text('Família A2'), findsWidgets);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouPreviewPage(data: dataB),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Família B'), findsWidgets);
+    expect(find.text('Família A1'), findsNothing);
+    expect(find.text('Família A2'), findsNothing);
+  });
+
+  testWidgets('dismisses an owned context sheet before data B is shown', (tester) async {
+    final dataA = _dataWithContexts(const [
+      PrincipalForYouContext(id: 'a1', label: 'Contexto A1', family: 'Contexto A1', childCount: 1),
+      PrincipalForYouContext(id: 'a2', label: 'Contexto A2', family: 'Contexto A2', childCount: 1),
+    ]);
+    final dataB = _dataWithContexts(const [
+      PrincipalForYouContext(id: 'b1', label: 'Contexto B', family: 'Família B', childCount: 1),
+    ]);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouPreviewPage(data: dataA),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-for-you-context-trigger')).first);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouPreviewPage(data: dataB),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-for-you-context-sheet')), findsNothing);
+    expect(find.text('Contexto A1'), findsNothing);
+    expect(find.text('Contexto A2'), findsNothing);
+    expect(find.text('Família B'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final width in [600.0, 839.0, 840.0, 1024.0]) {
     testWidgets('has no layout exception at ${width.toInt()} px', (tester) async {
       await pumpPage(tester, Size(width, 1000));
@@ -111,3 +176,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 }
+
+PrincipalForYouPreviewData _dataWithContexts(List<PrincipalForYouContext> contexts) =>
+    PrincipalForYouPreviewData(
+      highlights: PrincipalForYouPreviewData.demo.highlights,
+      shortcuts: PrincipalForYouPreviewData.demo.shortcuts,
+      editorialItems: PrincipalForYouPreviewData.demo.editorialItems,
+      dayItems: PrincipalForYouPreviewData.demo.dayItems,
+      contexts: contexts,
+    );
