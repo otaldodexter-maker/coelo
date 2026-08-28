@@ -23,6 +23,8 @@ void main() {
   });
 
   test('calculates immutable server pagination and active filters', () {
+    expect(InviteDirectoryQuery.cardPageSizes, [11, 20, 50, 100]);
+    expect(InviteDirectoryQuery.tablePageSizes, [8, 20, 50, 100]);
     final statuses = {InviteStatus.pending};
     final query = InviteDirectoryQuery(
       search: '  Aurora  ',

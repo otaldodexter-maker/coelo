@@ -3,10 +3,15 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../domain/platform_invite.dart';
 import 'invite_presentation_support.dart';
 
 enum InviteRowAction { details, resend, revoke }
+
+enum InviteDirectoryDisplay { cards, table }
+
+enum InviteDirectoryTableView { all }
 
 final class InviteDirectoryToolbar extends StatelessWidget {
   const InviteDirectoryToolbar({
@@ -16,6 +21,8 @@ final class InviteDirectoryToolbar extends StatelessWidget {
     required this.onSearchChanged,
     required this.onStatusesChanged,
     required this.onChannelsChanged,
+    required this.display,
+    required this.onDisplayChanged,
     this.onClear,
     super.key,
   });
@@ -26,6 +33,8 @@ final class InviteDirectoryToolbar extends StatelessWidget {
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<Set<InviteStatus>> onStatusesChanged;
   final ValueChanged<Set<InviteChannel>> onChannelsChanged;
+  final InviteDirectoryDisplay display;
+  final ValueChanged<InviteDirectoryDisplay> onDisplayChanged;
   final VoidCallback? onClear;
 
   @override
@@ -78,10 +87,201 @@ final class InviteDirectoryToolbar extends StatelessWidget {
               label: const Text('Limpar filtros'),
             ),
         ],
-        actions: const [],
+        actions: [
+          SuperadminDirectoryViewToggle<InviteDirectoryTableView>(
+            key: const Key('invite-display-toggle'),
+            cardsKey: const Key('invite-view-cards'),
+            tableKey: const Key('invite-view-table'),
+            cardsSelected: display == InviteDirectoryDisplay.cards,
+            groupedView: InviteDirectoryTableView.all,
+            selectedTableView: InviteDirectoryTableView.all,
+            tableViews: const [
+              SuperadminDirectoryTableViewOption(
+                value: InviteDirectoryTableView.all,
+                label: 'Todos os convites',
+              ),
+            ],
+            onCardsSelected: () => onDisplayChanged(InviteDirectoryDisplay.cards),
+            onTableViewSelected: (_) => onDisplayChanged(InviteDirectoryDisplay.table),
+          ),
+        ],
       );
     },
   );
+}
+
+final class InviteDirectoryCards extends StatelessWidget {
+  const InviteDirectoryCards({
+    required this.items,
+    required this.busyInviteId,
+    required this.onAction,
+    this.allowCommands = false,
+    this.onCreate,
+    this.onOpen,
+    super.key,
+  });
+
+  final List<PlatformInvite> items;
+  final String? busyInviteId;
+  final VoidCallback? onCreate;
+  final ValueChanged<String>? onOpen;
+  final bool allowCommands;
+  final void Function(PlatformInvite, InviteRowAction) onAction;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final columns = (constraints.maxWidth / 340).floor().clamp(1, 99);
+      final cardWidth = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+      return Wrap(
+        key: const Key('invite-card-grid'),
+        spacing: CoeloSpacing.space6,
+        runSpacing: CoeloSpacing.space6,
+        children: [
+          if (onCreate != null)
+            SizedBox(
+              width: cardWidth,
+              child: ConstrainedBox(
+                key: const Key('invite-create-card'),
+                constraints: const BoxConstraints(minHeight: 216),
+                child: CoeloAdminCreateAction(
+                  label: 'Novo convite',
+                  description: 'Escolha contexto, perfil, destinatário e canais.',
+                  icon: Icons.mark_email_unread_outlined,
+                  onPressed: onCreate!,
+                ),
+              ),
+            ),
+          for (final invite in items)
+            SizedBox(
+              width: cardWidth,
+              child: _InviteCard(
+                invite: invite,
+                busy: busyInviteId == invite.id,
+                onOpen: onOpen == null ? null : () => onOpen!(invite.id),
+                allowCommands: allowCommands,
+                onSelected: (action) => onAction(invite, action),
+              ),
+            ),
+        ],
+      );
+    },
+  );
+}
+
+final class _InviteCard extends StatelessWidget {
+  const _InviteCard({
+    required this.invite,
+    required this.busy,
+    required this.onOpen,
+    required this.allowCommands,
+    required this.onSelected,
+  });
+
+  final PlatformInvite invite;
+  final bool busy;
+  final VoidCallback? onOpen;
+  final bool allowCommands;
+  final ValueChanged<InviteRowAction> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return CoeloAdminInteractiveCard(
+      key: Key('invite-card-${invite.id}'),
+      surfaceKey: Key('invite-card-surface-${invite.id}'),
+      minHeight: 216,
+      onPressed: onOpen,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    invite.recipientMasked,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                _InviteCardStatus(inviteId: invite.id, status: invite.status),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            Text(invite.scope.label, style: theme.textTheme.bodyMedium),
+            Text(
+              invite.profile.label,
+              style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            Text(
+              invite.channels.map((value) => value.label).join(' + '),
+              style: theme.textTheme.labelMedium,
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const Divider(),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Expira em ${formatInviteDate(invite.expiresAt)}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                  ),
+                ),
+                _InviteRowActions(
+                  invite: invite,
+                  busy: busy,
+                  showDetails: onOpen != null,
+                  allowCommands: allowCommands,
+                  onSelected: onSelected,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _InviteCardStatus extends StatelessWidget {
+  const _InviteCardStatus({required this.inviteId, required this.status});
+
+  final String inviteId;
+  final InviteStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColors =
+        Theme.of(context).extension<CoeloStatusColors>() ??
+        (Theme.brightnessOf(context) == Brightness.dark
+            ? CoeloStatusColors.dark
+            : CoeloStatusColors.light);
+    final (background, foreground) = switch (status) {
+      InviteStatus.pending => (statusColors.warningContainer, statusColors.onWarningContainer),
+      InviteStatus.accepted => (statusColors.successContainer, statusColors.onSuccessContainer),
+      InviteStatus.expired => (statusColors.historyContainer, statusColors.onHistoryContainer),
+      InviteStatus.revoked => (statusColors.errorContainer, statusColors.onErrorContainer),
+    };
+    return CoeloAdminExpandableStatusIndicator(
+      label: status.label,
+      backgroundColor: background,
+      foregroundColor: foreground,
+      semanticLabel: 'Status: ${status.label}',
+      surfaceKey: Key('invite-card-status-$inviteId'),
+    );
+  }
 }
 
 final class InviteDirectoryTable extends StatelessWidget {

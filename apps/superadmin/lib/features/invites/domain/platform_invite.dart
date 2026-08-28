@@ -185,7 +185,9 @@ final class PlatformInvite {
 }
 
 final class InviteDirectoryQuery {
-  static const allowedPageSizes = <int>[8, 20, 50, 100];
+  static const cardPageSizes = <int>[11, 20, 50, 100];
+  static const tablePageSizes = <int>[8, 20, 50, 100];
+  static const allowedPageSizes = <int>[8, 11, 20, 50, 100];
 
   InviteDirectoryQuery({
     this.search = '',

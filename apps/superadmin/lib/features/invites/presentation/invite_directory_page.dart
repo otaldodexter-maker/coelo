@@ -11,7 +11,6 @@ import '../../../shared/presentation/widgets/superadmin_listing_pagination_foote
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_invite.dart';
 import 'invite_directory_widgets.dart';
-import 'invite_presentation_support.dart';
 import 'invite_request_id.dart';
 
 final class InviteDirectoryPage extends StatefulWidget {
@@ -44,9 +43,12 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   Timer? _searchDebounce;
   String? _busyInviteId;
   final Map<String, String> _actionRequestIds = {};
+  final Set<_OwnedInviteOverlay> _ownedOverlays = {};
   var _page = 1;
-  var _pageSize = 20;
+  var _pageSize = 11;
   var _requestEpoch = 0;
+  var _commandGeneration = 0;
+  var _display = InviteDirectoryDisplay.cards;
   final _footerKey = GlobalKey();
   var _footerHeight = 0.0;
   var _footerMeasurementScheduled = false;
@@ -69,8 +71,17 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   void didUpdateWidget(covariant InviteDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.repository, widget.repository)) {
+      _searchDebounce?.cancel();
+      _requestEpoch++;
+      _commandGeneration++;
+      _dismissOwnedOverlays();
+      _searchController.clear();
+      _statuses.clear();
+      _channels.clear();
       _page = 1;
+      _busyInviteId = null;
       _actionRequestIds.clear();
+      _snapshot = const InviteDirectorySnapshot.loading();
       unawaited(_load());
     }
   }
@@ -78,6 +89,9 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    _requestEpoch++;
+    _commandGeneration++;
+    _dismissOwnedOverlays();
     _searchController.dispose();
     super.dispose();
   }
@@ -138,27 +152,26 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       widget.onOpen?.call(invite.id);
       return;
     }
-    if (!widget.allowCommands) return;
+    if (!widget.allowCommands || _busyInviteId != null) return;
+    final repository = widget.repository;
+    final generation = _commandGeneration;
     if (action == InviteRowAction.revoke) {
-      final confirmed = await showInviteRevokeConfirmation(
-        context,
-        recipientMasked: invite.recipientMasked,
-      );
-      if (!confirmed || !mounted) return;
+      final confirmed = await _showRevokeConfirmation(invite.recipientMasked);
+      if (!confirmed || !_isCurrentCommand(generation, repository)) return;
     }
     final requestKey = '${action.name}:${invite.id}';
     final requestId = _actionRequestIds.putIfAbsent(requestKey, newInviteRequestId);
     setState(() => _busyInviteId = invite.id);
     try {
       final result = switch (action) {
-        InviteRowAction.resend => await widget.repository.resend(
+        InviteRowAction.resend => await repository.resend(
           InviteResendCommand(
             inviteId: invite.id,
             requestId: requestId,
             expectedVersion: invite.managementVersion,
           ),
         ),
-        InviteRowAction.revoke => await widget.repository.revoke(
+        InviteRowAction.revoke => await repository.revoke(
           InviteRevokeCommand(
             inviteId: invite.id,
             requestId: requestId,
@@ -168,10 +181,12 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
         ),
         InviteRowAction.details => throw StateError('Ação já tratada.'),
       };
-      if (!mounted) return;
+      if (!_isCurrentCommand(generation, repository)) return;
       _clearActionRequestId(requestKey, requestId);
-      if (result.link case final link?) await _showLink(link);
-      if (mounted) {
+      if (result.link case final link?) {
+        await _showLink(link, generation: generation, repository: repository);
+      }
+      if (_isCurrentCommand(generation, repository)) {
         _feedback(
           action == InviteRowAction.resend
               ? 'Reenvio solicitado. A entrega depende do provedor.'
@@ -180,26 +195,39 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
         await _load(showLoading: false);
       }
     } on InviteConflictException {
+      if (!_isCurrentCommand(generation, repository)) return;
       _clearActionRequestId(requestKey, requestId);
       if (mounted) _feedback('O convite mudou. Atualize e tente novamente.', error: true);
       await _load(showLoading: false);
     } on InviteUnauthorizedException {
+      if (!_isCurrentCommand(generation, repository)) return;
       _clearActionRequestId(requestKey, requestId);
       if (mounted) _feedback('Ação não autorizada.', error: true);
     } on Object {
-      if (mounted) _feedback('Não foi possível concluir a ação.', error: true);
+      if (_isCurrentCommand(generation, repository)) {
+        _feedback('Não foi possível concluir a ação.', error: true);
+      }
     } finally {
-      if (mounted) setState(() => _busyInviteId = null);
+      if (_isCurrentCommand(generation, repository)) {
+        setState(() => _busyInviteId = null);
+      }
     }
   }
+
+  bool _isCurrentCommand(int generation, InviteRepository repository) =>
+      mounted && generation == _commandGeneration && identical(repository, widget.repository);
 
   void _clearActionRequestId(String key, String requestId) {
     if (_actionRequestIds[key] == requestId) _actionRequestIds.remove(key);
   }
 
-  Future<void> _showLink(Uri link) async {
-    await showDialog<void>(
-      context: context,
+  Future<void> _showLink(
+    Uri link, {
+    required int generation,
+    required InviteRepository repository,
+  }) async {
+    if (!_isCurrentCommand(generation, repository)) return;
+    await _showOwnedDialog<void>(
       builder: (dialogContext) => CoeloAdminDialogShell(
         title: 'Novo link do convite',
         body: SelectableText(link.toString(), key: const Key('invite-resend-link')),
@@ -218,6 +246,60 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> _showRevokeConfirmation(String recipientMasked) async {
+    final colors = Theme.of(context).colorScheme;
+    return await _showOwnedDialog<bool>(
+          builder: (dialogContext) => CoeloAdminDialogShell(
+            dialogKey: const Key('invite-revoke-dialog'),
+            closeButtonKey: const Key('invite-revoke-dialog-close'),
+            title: 'Revogar convite?',
+            body: Text(
+              'O convite para $recipientMasked deixará de poder ser aceito. '
+              'Esta ação será registrada na auditoria.',
+            ),
+            secondaryAction: OutlinedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            primaryAction: FilledButton(
+              key: const Key('invite-revoke-confirm'),
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.error,
+                foregroundColor: colors.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Revogar convite'),
+            ),
+          ),
+        ) ??
+        false;
+  }
+
+  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final overlay = Theme.of(context).extension<CoeloOverlayColors>();
+    final route = DialogRoute<T>(
+      context: context,
+      barrierColor: overlay?.scrim ?? Colors.black54,
+      builder: builder,
+    );
+    final owned = _OwnedInviteOverlay(navigator, route);
+    _ownedOverlays.add(owned);
+    try {
+      unawaited(navigator.push<T>(route));
+      return await route.completed;
+    } finally {
+      _ownedOverlays.remove(owned);
+    }
+  }
+
+  void _dismissOwnedOverlays() {
+    for (final owned in _ownedOverlays.toList(growable: false)) {
+      if (owned.route.isActive) owned.navigator.removeRoute(owned.route);
+    }
+    _ownedOverlays.clear();
   }
 
   void _feedback(String message, {bool error = false}) {
@@ -267,17 +349,21 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
                         ..clear()
                         ..addAll(values);
                     }),
+                    display: _display,
+                    onDisplayChanged: _changeDisplay,
                     onClear: _query.hasActiveFilters ? _clearFilters : null,
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
-                  if (_snapshot.state != InviteDirectoryLoadState.unauthorized) ...[
+                  if (_snapshot.state != InviteDirectoryLoadState.unauthorized &&
+                      _display == InviteDirectoryDisplay.table &&
+                      widget.onCreate != null) ...[
                     CoeloAdminCreateAction(
                       key: const Key('invite-create-action'),
                       label: 'Novo convite',
                       description: 'Escolha contexto, perfil, destinatário e canais.',
                       icon: Icons.mark_email_unread_outlined,
                       variant: CoeloAdminCreateActionVariant.banner,
-                      onPressed: widget.onCreate,
+                      onPressed: widget.onCreate!,
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
                   ],
@@ -322,26 +408,30 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       message: 'Buscando dados autorizados.',
       icon: Icons.hourglass_top_rounded,
     ),
-    InviteDirectoryLoadState.empty => CoeloStatePanel(
-      title: 'Nenhum convite',
-      message: 'Crie o primeiro convite para iniciar o acompanhamento.',
-      icon: Icons.mail_outline_rounded,
-      actionLabel: widget.onCreate == null ? null : 'Novo convite',
-      onAction: widget.onCreate,
+    InviteDirectoryLoadState.empty => _withCardsCreate(
+      const CoeloStatePanel(
+        title: 'Nenhum convite',
+        message: 'Crie o primeiro convite para iniciar o acompanhamento.',
+        icon: Icons.mail_outline_rounded,
+      ),
     ),
-    InviteDirectoryLoadState.noResults => CoeloStatePanel(
-      title: 'Nenhum resultado',
-      message: 'Ajuste a busca ou os filtros.',
-      icon: Icons.search_off_rounded,
-      actionLabel: 'Limpar filtros',
-      onAction: _clearFilters,
+    InviteDirectoryLoadState.noResults => _withCardsCreate(
+      CoeloStatePanel(
+        title: 'Nenhum resultado',
+        message: 'Ajuste a busca ou os filtros.',
+        icon: Icons.search_off_rounded,
+        actionLabel: 'Limpar filtros',
+        onAction: _clearFilters,
+      ),
     ),
-    InviteDirectoryLoadState.failure => CoeloStatePanel(
-      title: 'Convites indisponíveis',
-      message: 'Não foi possível carregar os convites.',
-      icon: Icons.error_outline_rounded,
-      actionLabel: 'Tentar novamente',
-      onAction: _load,
+    InviteDirectoryLoadState.failure => _withCardsCreate(
+      CoeloStatePanel(
+        title: 'Convites indisponíveis',
+        message: 'Não foi possível carregar os convites.',
+        icon: Icons.error_outline_rounded,
+        actionLabel: 'Tentar novamente',
+        onAction: _load,
+      ),
     ),
     InviteDirectoryLoadState.unauthorized => const CoeloStatePanel(
       title: 'Acesso não autorizado',
@@ -351,13 +441,53 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     InviteDirectoryLoadState.ready => _ready(_snapshot.page!),
   };
 
-  Widget _ready(InviteDirectoryResult page) => InviteDirectoryTable(
-    items: page.items,
-    busyInviteId: _busyInviteId,
-    onOpen: widget.onOpen,
-    allowCommands: widget.allowCommands,
-    onAction: _handleAction,
-  );
+  Widget _ready(InviteDirectoryResult page) => switch (_display) {
+    InviteDirectoryDisplay.cards => InviteDirectoryCards(
+      items: page.items,
+      busyInviteId: _busyInviteId,
+      onCreate: widget.onCreate,
+      onOpen: widget.onOpen,
+      allowCommands: widget.allowCommands,
+      onAction: _handleAction,
+    ),
+    InviteDirectoryDisplay.table => InviteDirectoryTable(
+      items: page.items,
+      busyInviteId: _busyInviteId,
+      onOpen: widget.onOpen,
+      allowCommands: widget.allowCommands,
+      onAction: _handleAction,
+    ),
+  };
+
+  Widget _withCardsCreate(Widget statePanel) {
+    if (_display != InviteDirectoryDisplay.cards || widget.onCreate == null) {
+      return statePanel;
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InviteDirectoryCards(
+          items: const [],
+          busyInviteId: null,
+          onCreate: widget.onCreate,
+          allowCommands: false,
+          onAction: _handleAction,
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        statePanel,
+      ],
+    );
+  }
+
+  void _changeDisplay(InviteDirectoryDisplay display) {
+    if (_display == display) return;
+    setState(() {
+      _display = display;
+      _page = 1;
+      _pageSize = display == InviteDirectoryDisplay.cards ? 11 : 8;
+    });
+    unawaited(_load());
+  }
 
   Widget _pagination(InviteDirectoryResult page, {required double horizontalPadding}) =>
       SuperadminListingPaginationFooter(
@@ -371,7 +501,9 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
           currentPage: page.page,
           totalPages: page.totalPages,
           pageSize: page.pageSize,
-          pageSizeOptions: InviteDirectoryQuery.allowedPageSizes,
+          pageSizeOptions: _display == InviteDirectoryDisplay.cards
+              ? InviteDirectoryQuery.cardPageSizes
+              : InviteDirectoryQuery.tablePageSizes,
           onPageSizeChanged: (value) {
             setState(() {
               _pageSize = value;
@@ -422,4 +554,11 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
       if ((_footerHeight - height).abs() >= 0.5) setState(() => _footerHeight = height);
     });
   }
+}
+
+final class _OwnedInviteOverlay {
+  const _OwnedInviteOverlay(this.navigator, this.route);
+
+  final NavigatorState navigator;
+  final Route<dynamic> route;
 }
