@@ -2070,6 +2070,48 @@ os GREENs locais.
 | Próximo item exato | V2.11 Acompanhamento do aluno: inventário da rota visível e RED de navegação com exemplos locais. |
 | Conhecimento capturado | `no-op`: contrato já aprovado foi aplicado sem nova regra durável. |
 
+## 16.37. V2.11 Acompanhamento do aluno — abertura — 2026-08-28
+
+**Entrega atual V2:** 83,33% (5/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | `Acompanhamento de alunos`, produção e `/dev/students`. |
+| Inventário | Página read-only e testes canônicos existem, mas `/dev/students` usa repository indisponível e não demonstra os exemplos locais pedidos. Produção está corretamente fail-closed. |
+| Testes planejados | RED de rota `/dev` com aluno, contexto e indicadores locais, sem tocar repository produtivo; regressão da suíte read-only e matriz responsiva. |
+| Bloqueios | Commands de gestão e backend permanecem fora do recorte; Assessments intocado. |
+| Tempo realmente usado | 1 h 37 min acumulados, às 12:58 BRT. |
+| Estimativa restante | 1–2 h para V2.11; 8 h 23 min da janela. |
+| Próximo item exato | RED da fixture navegável em `/dev/students`. |
+| Conhecimento capturado | `no-op`: o contrato read-only já é canônico. |
+
+## 16.38. V2.11 Acompanhamento do aluno — local-green — 2026-08-28
+
+**Entrega atual V2:** 100,00% (6/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; V2 completa localmente; aceite visual humano pendente. |
+| Tela e rota | Acompanhamento do aluno em `/students` e `/dev/students`; gestão segue indisponível. |
+| Arquivos alterados | `development_student_tracking_repository.dart`; `superadmin_router.dart`; `student_tracking_fail_closed_routes_test.dart`; spec e tracker. |
+| Correções realizadas | Rota `/dev` deixou o estado indisponível e passou a carregar fixture read-only com duas crianças, contextos, períodos e exemplos completos de acompanhamento. Repository produtivo não é chamado e rotas de gestão continuam fail-closed. |
+| Testes e resultados | RED reproduzido; GREEN 45/45 Acompanhamento+rotas+navegação; analyzer focado, validador visual e diff-check verdes. Invocação inicial do validador no cwd errado falhou por caminho; repetição correta em `apps/catalog` saiu 0. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%, light/dark, teclado e reduced motion pela suíte canônica; seletores e tabs cobertos. |
+| Bloqueios | Gerenciamento, backend e E2E fora do recorte; aceite humano pendente. Assessments intocado. |
+| Tempo realmente usado | 0 h 04 min; 1 h 41 min acumulados, às 13:02 BRT. |
+| Estimativa restante | 8 h 19 min da janela; V3.12 = 1–2 h. |
+| Próximo item exato | V3.12 Segurança infantil: inventário de diretório/wizard e primeiro RED de navegação. |
+| Conhecimento capturado | `no-op`: comportamento read-only já aprovado; apenas fixture local segura. |
+
 ## 17. Histórico
 
 

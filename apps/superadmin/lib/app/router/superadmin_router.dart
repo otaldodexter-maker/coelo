@@ -14,6 +14,7 @@ import '../dev_menu/development_activity_fixture_repository.dart';
 import '../dev_menu/development_attendance_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
 import '../dev_menu/development_routine_repository.dart';
+import '../dev_menu/development_student_tracking_repository.dart';
 import '../activity/superadmin_activity.dart';
 import '../prototype/superadmin_prototype_store.dart';
 import '../../features/activities/data/dev/dev_activity_command_repository.dart';
@@ -2177,7 +2178,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devStudents,
             name: SuperadminRoutes.devStudentsName,
             builder: (context, state) => StudentTrackingPage(
-              repository: const UnavailableStudentTrackingRepository(),
+              repository: const DevelopmentStudentTrackingRepository(),
               logout: _previewLogout,
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),

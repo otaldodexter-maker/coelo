@@ -625,6 +625,48 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V2.11 Acompanhamento do aluno — abertura — 2026-08-28 12:58 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V2 permanece 5/6 (83,33%). |
+| Tela e rota | Item lateral `Acompanhamento de alunos`, rota produtiva e `/dev/students`. |
+| Baseline e índice | Instituições, `pattern.admin-directory`, estados explícitos, conteúdo responsivo e transição estável. |
+| Inventário inicial | Superfície read-only canônica e 22 testes já existem; produção permanece fail-closed. A rota `/dev/students` injeta hoje `UnavailableStudentTrackingRepository`, portanto fica visível mas sem os exemplos locais exigidos. |
+| RED planejado | Exigir que a rota `/dev/students` carregue fixture segura, mostre aluno/contexto/indicadores e permaneça navegável pelo shell; produção continua usando o repository injetado e sem comandos de gerenciamento. |
+| Fora do recorte | Sem vincular, transferir, editar, revogar, Supabase ou mutações reais. Assessments permanece intocado. |
+| Tempo usado | 1 h 37 min acumulados. |
+| Estimativa | 1–2 h para V2.11; 8 h 23 min restam na janela. |
+| Próximo item exato | RED de rota provando conteúdo local em `/dev/students` e ausência de chamada ao repository produtivo. |
+
+Percentuais: entrega V2 5/6 (83,33%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V2.11 Acompanhamento do aluno — checkpoint local-green — 2026-08-28 13:02 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V2 = 6/6 (100,00%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | `Acompanhamento de alunos`, produção e `/dev/students`; rotas de gerenciamento continuam indisponíveis. |
+| Arquivos alterados | Nova fixture `development_student_tracking_repository.dart`; router; teste de rotas; spec e rastreador. |
+| Correções | `/dev/students` agora apresenta duas crianças e exemplos locais read-only de contextos, períodos, avaliações, competências, desenvolvimento, assiduidade, agenda, boletim e recomendação. Produção preserva repository injetado; `/students/:id/manage` e `/dev/students/:id/manage` continuam fail-closed. |
+| Testes | RED reproduziu estado indisponível em `/dev`. GREEN: 45/45 Acompanhamento+rotas+navegação; analyzer focado sem issues; validador visual e diff-check verdes. A primeira chamada do validador usou o diretório incorreto e foi imediatamente repetida no Catálogo com saída 0. |
+| Responsividade e acessibilidade | Suíte canônica cobre 375/768/1024/1440, texto 200%, light/dark, teclado e reduced motion; seletores de criança/contexto/período e tabs permanecem navegáveis. |
+| Bloqueios | Gestão, comandos, backend e E2E permanecem fora do recorte. Aceite visual humano pendente. Assessments intocado. |
+| Tempo usado | 0 h 04 min no item; 1 h 41 min acumulados. |
+| Estimativa restante | 8 h 19 min da janela; próximo item V3.12 estimado em 1–2 h. |
+| Próximo item exato | V3.12 Segurança infantil: consultar índice, inventariar diretório/wizard/rotas `/dev` e escrever RED do primeiro passo não navegável. |
+| Conhecimento | `no-op`: fixture demonstra o contrato read-only já aprovado; nenhuma regra durável nova. |
+
+Percentuais: entrega V2 6/6 (100,00%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

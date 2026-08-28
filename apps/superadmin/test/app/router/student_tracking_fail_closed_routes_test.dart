@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('development students and both manage routes stay fail-closed', (tester) async {
+  testWidgets('development students use local examples while manage routes stay fail-closed', (
+    tester,
+  ) async {
     final session = SuperadminSession()..signIn();
     final repository = _TripwireStudentTrackingRepository();
     final router = createSuperadminRouter(
@@ -32,7 +34,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(StudentTrackingPage), findsOneWidget);
-    expect(find.byKey(const Key('student-tracking-unavailable')), findsOneWidget);
+    expect(find.byKey(const Key('student-tracking-unavailable')), findsNothing);
+    expect(find.text('Lia Martins'), findsWidgets);
+    expect(find.text('2 itens'), findsOneWidget);
+    expect(find.text('8.8/10'), findsOneWidget);
     expect(repository.calls, 0);
 
     for (final path in const ['/students/child-1/manage', '/dev/students/child-1/manage']) {
