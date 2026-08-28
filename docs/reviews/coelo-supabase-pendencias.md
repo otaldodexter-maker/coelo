@@ -3596,3 +3596,58 @@ da simples soma das 207 ações.
   migrations remotas ausentes, Flutter e futura prova remota autorizada.
 - **Gate de conhecimento:** `no-op`; a fonte canonica duravel e a spec 045 e
   nenhum comportamento remoto/integrado foi projetado em `docs/knowledge`.
+
+### Checkpoint seguro 47 - Pessoas: detalhe/reload core v2 interno
+
+- **Lote/acoes tratadas:** contrato aditivo local para `people.detail` e
+  `people.reload`. A spec 046 limita a leitura ao Owner em AAL2 por
+  `people.read`; Operations, Auditor, Support e Content permanecem
+  `fail-closed`. O escopo platform/institution e derivado exclusivamente da
+  membership interna da spec 039, sem usar `current_person_id()` ou
+  `platform_memberships` como autoridade.
+- **Contrato/output:** `superadmin_person_detail_v2(uuid)` retorna somente
+  nomes essenciais, tipo/status, estado Auth coarse sem IDs, memberships e
+  contextos infantis hierarquicos minimizados e `updated_at`. Nascimento,
+  endereco, contato, documentos, e-mail, `auth_user_id`, sessao, guardian e
+  summaries de plataforma ficam omitidos. ID ausente, apagado ou cross-scope
+  converge em `SAI_PERMISSION_DENIED`, sem oracle.
+- **Migration/spec/teste:** a spec 046 tem 17.575 bytes e SHA-256
+  `E8BA681EF7FBE3A4AE72E0CDF3EBF7CE51A089DA9944D52E1472BF07AF63A355`.
+  A migration `20260828005000_superadmin_internal_person_detail.sql` tem
+  18.329 bytes e SHA-256
+  `2076B1792A975A1328F6869984C1A01281B67DF84414B45E37DF92476329C7E3`.
+  O pgTAP `superadmin_internal_person_detail_test.sql` tem 54.417 bytes,
+  plano 42 e SHA-256
+  `0B19FC78E5AC4378B62369CDB5A559E8CF7980FA2071A8B7A2B65DF71DAC2A95`.
+- **Autorizacao e concorrencia:** sessao/Auth interno, capability/grant/role,
+  AAL2, lifecycle e escopo sao revalidados no backend. A visibilidade,
+  projecao e `FOR SHARE` da pessoa ocorrem na mesma instrucao/snapshot; nao ha
+  promessa de versionamento de leitura ou lock de todas as linhas
+  autorizadoras. Adulto, crianca e service usam ramos tipados; hierarquias e
+  ciclos invalidos, expirados, revogados ou inativos sao excluidos.
+- **Provas locais:** RED pre-migration confirmado. O replay final passou
+  Pessoas 42/42 e regressao Auth 29/29, total focal 71/71. Foram cobertos
+  Owner AAL2/AAL1, scope platform/institution, cross-app/cross-tenant,
+  sessao divergente/expirada, role/capability/grant inativos ou revogados,
+  efeito deny, lifecycle, hierarquia adulterada, multipath deterministico,
+  minimizacao, persistencia/reload, audit v2/v3 correlacionado e append
+  adversarial `fail-closed`. Fixtures ficaram em transacao com rollback.
+- **Replay/mirror/cleanup:** projeto Docker descartavel com identidade e portas
+  proprias; baseline ate `20260812001975`, depois ACL/Auth e Pessoas por
+  `migration up --local`. Ledger local reconciliado; Prepare/Verify fechou
+  112 migrations canonicas e 112 mirrors identicos. Teardown final deixou
+  zero container, volume, rede ou diretorio temporario.
+- **Estado local/remoto/integrado:** maximo `local-green`. Zero migration,
+  DDL/DML, Auth, Storage, Edge ou deploy remoto; nao e `remote-green`,
+  deployable, `done` ou E2E. O Flutter produtivo ainda chama gateways Pessoas
+  legados people-based; cutover e regressao integrada permanecem P0 separado.
+  Nenhuma das 207 acoes integradas foi promovida.
+- **Bloqueios/pendencias:** list/filter/options, create/edit, vinculos,
+  import/export e activity filter permanecem fora. Grants/RLS legados amplos
+  exigem inventario e cutover compativel, sem revogacao neste pacote. OQ-033 e
+  OQ-036 permanecem abertas nos respectivos recortes.
+- **Tempo usado:** nao mensurado com precisao neste lote. **Tempo restante:**
+  nao calculavel para o backlog integral; depende dos contratos Pessoas
+  restantes, cutover Flutter, reconciliacao remota e prova autorizada.
+- **Gate de conhecimento:** `no-op`; a fonte canonica duravel e a spec 046 e
+  nenhum comportamento remoto/integrado foi projetado em `docs/knowledge`.

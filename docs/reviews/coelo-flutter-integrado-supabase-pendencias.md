@@ -1062,3 +1062,27 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   permitido somente depois da consolidacao e de autorizacao do Eng Integrador.
   Tempo restante integrado: nao calculavel sem cutover Flutter, OQ-031 e prova
   remota autorizada.
+
+### Checkpoint integrado 47 - Pessoas detail/reload somente backend local
+
+- Backend Pessoas DETAIL/RELOAD CORE v2 ficou `local-green`: RED especifico,
+  Pessoas 42/42 e regressao Auth 29/29, total focal 71/71, com sessao/MFA,
+  lifecycle, role/capability/grant, cross-app/cross-tenant, hierarquia,
+  minimizacao, persistencia/reload, ACL e audit v2/v3.
+- A RPC usa `people.read`, Owner-only e AAL2. O escopo platform/institution e
+  derivado do principal interno; Operations, Auditor, Support e Content ficam
+  `fail-closed`, e missing/cross-scope retornam a mesma negativa sem dados.
+- O output backend omite nascimento, endereco, contato, documentos, e-mail,
+  Auth/session IDs e summaries nao aprovados. O estado Auth e apenas coarse e
+  os vinculos retornados sao filtrados por lifecycle e hierarquia.
+- Flutter produtivo continua nos gateways Pessoas legados people-based. Nenhum
+  repository, tela, rota, contrato Flutter ou E2E foi alterado/testado; o
+  cutover continua P0 separado e o progresso integrado permanece 0/207.
+- List/filter/options, create/edit, vinculos, import/export, activity filter,
+  OQ-033 e OQ-036 permanecem abertos. Grants/RLS legados nao foram revogados.
+- Estado remoto: zero migration, deploy ou mutacao. O pacote nao e
+  `remote-green`, deployable ou `done`, e nao promove nenhuma acao integrada.
+- Mirror local verificado 112/112 e teardown sem residuos. Handoff Flutter
+  somente depois da consolidacao e de autorizacao do Eng Integrador. Tempo
+  restante integrado: nao calculavel sem cutover Flutter, contratos restantes
+  e prova remota autorizada.
