@@ -1411,6 +1411,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu RED, correção, 37 testes e duas revisões independentes. |
 | Estimativa restante | O próximo lote seguro é Comunicação/Avisos, com foco em troca de repository/ID e comandos assíncronos; a ETA E2E continua dependente dos bloqueios externos registrados. |
 
+## 16.6. Comunicação/Avisos — isolamento do diretório — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Diretório de Comunicação/Avisos; composição produtiva e `/dev` da rota. |
+| Arquivos modificados | `notice_directory_page.dart`; `notice_directory_page_test.dart`; `notice_logout_wiring_test.dart`. |
+| Correções realizadas | Troca de repository/tenant invalida loads e comandos anteriores, cancela debounce, limpa busca, filtros, cursores, preview, ledger e busy antes de carregar B. Resposta ou comando atrasado de A não mostra feedback, não recarrega nem altera B. Preview e diálogo de inativação pertencentes à página são removidos no swap/dispose; o fechamento termina antes do descarte de controllers. Request IDs são estáveis apenas para intenção idêntica e mudam quando ação, versão ou motivo normalizado mudam. Criar comunicação é omitido sem callback real: produção não promete uma rota 503, enquanto `/dev` preserva a ação local. |
+| Estado atual | `local-green`. REDs reproduzidos antes das correções; regressão não-golden fresca 75/75; analyzer dos três arquivos sem issues; formatter aplicado; validador visual canônico e `git diff --check` verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0. Nenhum backend, adapter produtivo ou golden foi alterado. |
+| Bloqueios | Capabilities produtivas de criação/lifecycle continuam indisponíveis e fail-closed; backend, autorização integrada, mídia e E2E permanecem fora deste pacote. |
+| Pendências restantes | Formulário de Avisos ainda requer sublote próprio para estado de load sem footer mutante, retry transitório e reconciliação de resposta ambígua antes de edição subsequente. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu cinco REDs, correções incrementais, suíte 75/75 e duas rodadas de review. |
+| Estimativa restante | Próximo sublote seguro: formulário de Avisos; a ETA E2E permanece dependente dos contratos externos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
