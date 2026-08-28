@@ -49,6 +49,61 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalProfile);
   });
 
+  testWidgets('keeps Acontece embedded in one responsive shell at 200 percent text', (
+    tester,
+  ) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 1000));
+      router.go(SuperadminRoutes.devPrincipalHappens);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          key: ValueKey(width),
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          routerConfig: router,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final page = tester.widget<PrincipalHappensPreviewPage>(
+        find.byType(PrincipalHappensPreviewPage),
+      );
+      expect(page.embedded, isTrue, reason: '$width');
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
+      final content = find.byKey(const Key('superadmin-content-transition'));
+      expect(content, findsOneWidget);
+      expect(
+        find.descendant(of: content, matching: find.byType(PrincipalHappensPreviewPage)),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('principal-happens-local-title')), findsNothing);
+      expect(tester.takeException(), isNull, reason: '$width');
+
+      if (width == 1440) {
+        final sidebar = find.byKey(const Key('superadmin-sidebar'));
+        expect(sidebar, findsOneWidget);
+        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
+        expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
+      }
+    }
+  });
+
   testWidgets('composes the Acontece publisher inside the persistent shell container', (
     tester,
   ) async {
