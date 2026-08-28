@@ -102,22 +102,10 @@ CoeloNavigationNode _screen(
 final coeloSuperadminNavigation = <CoeloNavigationNode>[
   _leaf('home', 'Home', Icons.home_outlined, routeName: 'home'),
   _screen('structure', 'Estrutura', Icons.account_balance_outlined, [
-    _screen('institutions', 'Instituições', Icons.account_balance_outlined, [
-      _leaf('institution-create', 'Criar instituição', Icons.add_business_outlined),
-    ]),
-    _screen('units', 'Unidades', Icons.apartment_outlined, [
-      _leaf('unit-create', 'Criar unidade', Icons.add_home_work_outlined),
-    ]),
-    _screen('groups', 'Turmas', Icons.groups_outlined, [
-      _leaf('group-create', 'Criar turma', Icons.group_add_outlined),
-    ]),
+    _screen('institutions', 'Instituições', Icons.account_balance_outlined, const []),
+    _screen('units', 'Unidades', Icons.apartment_outlined, const []),
+    _screen('groups', 'Turmas', Icons.groups_outlined, const []),
     _screen('activities', 'Atividades', Icons.local_activity_outlined, [
-      _leaf(
-        'activity-create',
-        'Criar atividade',
-        Icons.add_task_outlined,
-        capability: 'activities.create',
-      ),
       _leaf('assessment-entry', 'Lançar avaliações', Icons.edit_note_outlined),
       _leaf('assessment-closing', 'Fechamento de avaliações', Icons.lock_clock_outlined),
     ]),
@@ -131,62 +119,47 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
         capability: 'attendance.create',
       ),
     ]),
-    _screen('daily-routine', 'Rotina diária', Icons.view_agenda_outlined, [
-      _leaf('daily-routine-create', 'Criar item', Icons.add_box_outlined),
-    ]),
+    _screen('daily-routine', 'Rotina diária', Icons.view_agenda_outlined, const []),
     _leaf('students', 'Acompanhamento de alunos', Icons.school_outlined),
   ]),
   _screen('access', 'Acessos', Icons.manage_accounts_outlined, [
-    _screen('people', 'Pessoas', Icons.people_outline, [
-      _leaf('person-create', 'Criar pessoa', Icons.person_add_outlined),
-    ]),
-    _screen('safety', 'Segurança da criança', Icons.shield_outlined, [
-      _leaf('safety-create', 'Criar autorização', Icons.add_moderator_outlined),
-    ]),
-    _screen('internal-users', 'Usuários internos', Icons.badge_outlined, [
-      _leaf('internal-user-create', 'Criar usuário interno', Icons.person_add_alt_outlined),
-    ], availability: _developmentOnly),
+    _screen('people', 'Pessoas', Icons.people_outline, const []),
+    _screen('safety', 'Segurança da criança', Icons.shield_outlined, const []),
+    _screen(
+      'internal-users',
+      'Usuários internos',
+      Icons.badge_outlined,
+      const [],
+      availability: _developmentOnly,
+    ),
     _screen('profiles', 'Perfis e permissões', Icons.admin_panel_settings_outlined, const []),
     _screen('profile-models', 'Modelos de perfil', Icons.view_list_outlined, const []),
   ]),
   _screen('health-care', 'Saúde e Cuidado', Icons.health_and_safety_outlined, [
-    _screen('health-care-profiles', 'Perfis de cuidado', Icons.child_care_outlined, [
-      _leaf('health-care-profile-create', 'Criar perfil de cuidado', Icons.add_circle_outline),
-    ]),
-    _screen('health-medication-plans', 'Planos de medicação', Icons.medication_outlined, [
-      _leaf('health-medication-plan-create', 'Criar plano de medicação', Icons.add_circle_outline),
-    ]),
+    _screen('health-care-profiles', 'Perfis de cuidado', Icons.child_care_outlined, const []),
+    _screen('health-medication-plans', 'Planos de medicação', Icons.medication_outlined, const []),
   ]),
   _screen('operations', 'Operação', Icons.tune_outlined, [
-    _screen('plans', 'Planos', Icons.loyalty_outlined, [
-      _leaf('plan-create', 'Criar plano', Icons.add_circle_outline),
-    ], availability: _developmentOnly),
-    _screen('meal-plans', 'Cardápios', Icons.restaurant_menu_outlined, [
-      _leaf('meal-plan-create', 'Criar cardápio', Icons.add_circle_outline),
-      _leaf('meal-plan-model-create', 'Criar modelo de cardápio', Icons.library_add_outlined),
-    ], availability: _developmentOnly),
-    _screen('forms', 'Formulários', Icons.dynamic_form_outlined, [
-      _leaf('form-create', 'Criar formulário', Icons.add_box_outlined),
-    ]),
-    _screen('import', 'Importações', Icons.upload_file_outlined, [
-      _leaf('import-create', 'Criar importação', Icons.file_upload_outlined),
-    ]),
+    _screen('plans', 'Planos', Icons.loyalty_outlined, const [], availability: _developmentOnly),
+    _screen(
+      'meal-plans',
+      'Cardápios',
+      Icons.restaurant_menu_outlined,
+      const [],
+      availability: _developmentOnly,
+    ),
+    _screen('forms', 'Formulários', Icons.dynamic_form_outlined, const []),
+    _screen('import', 'Importações', Icons.upload_file_outlined, const []),
     _screen('agenda', 'Agenda', Icons.calendar_month_outlined, [
-      _screen('events', 'Eventos', Icons.event_outlined, [
-        _leaf('event-create', 'Criar evento', Icons.event_available_outlined),
-      ]),
+      _screen('events', 'Eventos', Icons.event_outlined, const []),
       _leaf('requests', 'Solicitações', Icons.inbox_outlined),
       _leaf('permissions', 'Permissões', Icons.rule_outlined),
     ], availability: _developmentOnly),
   ]),
   _screen('communication', 'Comunicação', Icons.forum_outlined, [
     _leaf('conversations', 'Conversas', Icons.chat_bubble_outline),
-    _screen('invites', 'Convites', Icons.mail_outline, [
-      _leaf('invite-create', 'Criar convite', Icons.mark_email_unread_outlined),
-    ]),
-    _screen('notices', 'Comunicações', Icons.campaign_outlined, [
-      _leaf('notice-create', 'Criar comunicação', Icons.add_comment_outlined),
-    ]),
+    _screen('invites', 'Convites', Icons.mail_outline, const []),
+    _screen('notices', 'Comunicações', Icons.campaign_outlined, const []),
   ]),
   _screen('governance', 'Governança', Icons.verified_user_outlined, [
     _leaf('support', 'Suporte e implantação', Icons.support_agent_outlined),

@@ -387,3 +387,23 @@ Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
 (40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%);
 Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
 estrito medem conclusão integral e não anulam este GREEN local.
+
+### V1.3 Menu lateral — checkpoint local-green — 2026-08-28 11:39 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; 3/5 entregáveis V1 (60,00%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Árvore lateral, busca inline e busca recolhida; CTAs próprios das telas mantêm as rotas de criação fora do menu. |
+| Arquivos alterados | `superadmin_navigation.dart`; `superadmin_navigation_test.dart`; spec e rastreador. |
+| Correções | Removidas 18 entradas genéricas `Criar ...`; preservadas `Nova chamada`, `Publicar no Acontece`, `Publicar em Momentos` e `Publicar no Agora`; rotas de criação não foram removidas do router. |
+| Testes | RED reproduziu IDs/rótulos e buscas antigos; GREEN navegação 15/15 e conjunto Navegação+Chat 20/20. Analyzer focado sem issues; formatter verde. |
+| Interação | Busca, breadcrumbs, teclado, foco e Escape foram exercitados; callbacks centrais do lote anterior cobrem os destinos visíveis preservados. |
+| Bloqueios | Inspeção visual humana e aceite pendentes; nenhum bloqueio local. |
+| Tempo usado | 0 h 04 min neste entregável; 0 h 18 min acumulados. |
+| Estimativa restante | 9 h 42 min da janela autorizada; 9 h 42 min–13 h 42 min pela faixa original. |
+| Próximo item exato | Shell/contêiner: validar Instituições → Conversas → outro diretório na mesma instância e medir a superfície direita em 375/768/1024/1440 com texto 200%. |
+
+Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
+(40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%);
+Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
+estrito medem conclusão integral e não anulam este GREEN local.

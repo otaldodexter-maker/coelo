@@ -1758,6 +1758,28 @@ conclusão integral e não anulam evidência local.
 | Próximo item exato | Menu: RED para remover `Criar ...` e preservar `Nova chamada`/três `Publicar ...`. |
 | Conhecimento capturado | `no-op`: aplicação de `pattern.stable-route-content-transition` já aprovado. |
 
+## 16.23. V1.3 Menu lateral — hierarquia operacional — 2026-08-28
+
+**Entrega atual:** 60,00% (3/5 `local-green` ou `accepted`). **Programa
+visual:** 0/31 `accepted`. **Flutter local:** 84/207 (40,58%). **Flutter
+verified:** 0/207. **Supabase local:** 3/37 (8,11%). **Supabase done:** 0/37.
+**Integração:** 0/202. **Projeto estrito:** 0/229. E2E e estrito medem
+conclusão integral e não anulam evidência local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Menu lateral expandido/recolhido e busca; rotas de criação continuam acessíveis somente pelos CTAs das telas. |
+| Arquivos alterados | `superadmin_navigation.dart`; teste de navegação; spec e tracker. |
+| Correções realizadas | Dezoito rótulos genéricos `Criar ...` removidos; `Nova chamada` e três publicações preservadas com capabilities fail-closed. |
+| Testes e resultados | RED de árvore/busca; navegação 15/15 e regressão Navegação+Chat 20/20; analyzer sem issues; formatter verde. |
+| Inspeções de interação | Busca inline/recolhida, breadcrumbs, teclado, foco e Escape. A matriz responsiva do shell segue verde no checkpoint anterior. |
+| Bloqueios | Inspeção/aceite humano; nenhum bloqueio local. |
+| Tempo realmente usado | 0 h 04 min; 0 h 18 min acumulados. |
+| Estimativa restante | 9 h 42 min da janela; 9 h 42 min–13 h 42 min pela faixa V1. |
+| Próximo item exato | Shell: provar instância/geometria estáveis e contêiner direito amplo na matriz obrigatória. |
+| Conhecimento capturado | `no-op`: aplica a regra de navegação já aprovada na spec. |
+
 ## 17. Histórico
 
 

@@ -34,22 +34,36 @@ void main() {
     );
   });
 
-  test('guards activity creation with an explicit capability', () {
-    final node = coeloNavigationNodeById('activity-create')!;
-
-    expect(node.capability, 'activities.create');
-    expect(
-      node.isAvailable(CoeloNavigationEnvironment.production, canAccess: (_) => false),
-      isFalse,
-    );
+  test('omits every generic creation destination from the navigation tree', () {
+    for (final id in const <String>[
+      'institution-create',
+      'unit-create',
+      'group-create',
+      'activity-create',
+      'daily-routine-create',
+      'person-create',
+      'safety-create',
+      'internal-user-create',
+      'health-care-profile-create',
+      'health-medication-plan-create',
+      'plan-create',
+      'meal-plan-create',
+      'meal-plan-model-create',
+      'form-create',
+      'import-create',
+      'event-create',
+      'invite-create',
+      'notice-create',
+    ]) {
+      expect(coeloNavigationNodeById(id), isNull, reason: id);
+    }
   });
 
   test('mutation destinations fail closed without a capability resolver', () {
     for (final id in const [
-      'institution-create',
-      'person-create',
-      'form-create',
-      'notice-create',
+      'attendance-create',
+      'principal-happens-publish',
+      'principal-moments-publish',
       'principal-now-publish',
     ]) {
       final node = coeloNavigationNodeById(id)!;
@@ -68,56 +82,38 @@ void main() {
       'Home',
       'Estrutura',
       'Instituições',
-      'Criar instituição',
       'Unidades',
-      'Criar unidade',
       'Turmas',
-      'Criar turma',
       'Atividades',
-      'Criar atividade',
       'Lançar avaliações',
       'Fechamento de avaliações',
       'Acompanhamento',
       'Assiduidade',
       'Nova chamada',
       'Rotina diária',
-      'Criar item',
       'Acompanhamento de alunos',
       'Acessos',
       'Pessoas',
-      'Criar pessoa',
       'Segurança da criança',
-      'Criar autorização',
       'Usuários internos',
-      'Criar usuário interno',
       'Perfis e permissões',
       'Modelos de perfil',
       'Saúde e Cuidado',
       'Perfis de cuidado',
-      'Criar perfil de cuidado',
       'Planos de medicação',
-      'Criar plano de medicação',
       'Operação',
       'Planos',
-      'Criar plano',
       'Cardápios',
-      'Criar cardápio',
-      'Criar modelo de cardápio',
       'Formulários',
-      'Criar formulário',
       'Importações',
-      'Criar importação',
       'Agenda',
       'Eventos',
-      'Criar evento',
       'Solicitações',
       'Permissões',
       'Comunicação',
       'Conversas',
       'Convites',
-      'Criar convite',
       'Comunicações',
-      'Criar comunicação',
       'Governança',
       'Suporte e implantação',
       'Auditoria',
@@ -136,6 +132,7 @@ void main() {
     final labels = coeloSuperadminNavigation.expand(flatten).toSet();
     expect(labels.where((label) => label.contains('Menu')), isEmpty);
     expect(labels.where((label) => label.startsWith('Editar')), isEmpty);
+    expect(labels.where((label) => label.startsWith('Criar ')), isEmpty);
     expect(labels.where((label) => label.contains('Detalhe')), isEmpty);
     expect(labels.where((label) => RegExp(r'\b(403|404|500|503)\b').hasMatch(label)), isEmpty);
     expect(labels, isNot(contains('Configurações')));
@@ -143,11 +140,8 @@ void main() {
     expect(labels, isNot(contains('Criar modelo de perfil')));
   });
 
-  test('searches accents, case and create/publish actions with breadcrumbs', () {
-    expect(
-      searchCoeloNavigation('CRIAR', canAccess: (_) => true).map((result) => result.node.label),
-      contains('Criar instituição'),
-    );
+  test('searches accents, case and retained actions with breadcrumbs', () {
+    expect(searchCoeloNavigation('CRIAR', canAccess: (_) => true), isEmpty);
     expect(
       searchCoeloNavigation('cardapio').map((result) => result.node.label),
       contains('Cardápios'),
@@ -211,7 +205,7 @@ void main() {
     );
   });
 
-  testWidgets('navigable parents also reveal their child actions', (tester) async {
+  testWidgets('navigable parents do not reveal generic creation actions', (tester) async {
     String? selected;
     await tester.pumpWidget(
       MaterialApp(
@@ -233,7 +227,7 @@ void main() {
     await tester.pump();
 
     expect(selected, 'institutions');
-    expect(find.byKey(const Key('superadmin-navigation-institution-create')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-navigation-institution-create')), findsNothing);
   });
 
   testWidgets('restores the expansion state after clearing navigation search', (tester) async {
@@ -257,14 +251,14 @@ void main() {
     expect(find.byKey(const Key('superadmin-navigation-institution-create')), findsNothing);
 
     final search = find.byKey(const Key('superadmin-navigation-search'));
-    await tester.enterText(search, 'criar instituição');
+    await tester.enterText(search, 'nova chamada');
     await tester.pump();
-    expect(find.byKey(const Key('superadmin-navigation-institution-create')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-navigation-attendance-create')), findsOneWidget);
 
     await tester.enterText(search, '');
     await tester.pump();
     expect(find.byKey(const Key('superadmin-navigation-institutions')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-navigation-institution-create')), findsNothing);
+    expect(find.byKey(const Key('superadmin-navigation-attendance-create')), findsNothing);
   });
 
   testWidgets('navigation items support keyboard activation and visible focus', (tester) async {
@@ -313,12 +307,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-navigation-search-dialog')), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), 'CRIAR instituição');
+    await tester.enterText(find.byType(TextField), 'nova chamada');
     await tester.pump();
-    expect(find.bySemanticsLabel('Estrutura › Instituições › Criar instituição'), findsOneWidget);
-    await tester.tap(find.text('Criar instituição'));
+    expect(find.bySemanticsLabel('Acompanhamento › Assiduidade › Nova chamada'), findsOneWidget);
+    await tester.tap(find.text('Nova chamada'));
     await tester.pumpAndSettle();
-    expect(selected, 'institution-create');
+    expect(selected, 'attendance-create');
     expect(find.byKey(const Key('superadmin-navigation-search-dialog')), findsNothing);
   });
 
