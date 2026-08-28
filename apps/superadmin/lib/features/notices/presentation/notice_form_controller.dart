@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,34 @@ import 'package:flutter/material.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
+
+final class _PendingNoticeSave {
+  const _PendingNoticeSave({
+    required this.requestId,
+    required this.draft,
+    required this.fingerprint,
+    required this.noticeId,
+    required this.expectedVersion,
+  });
+
+  final String requestId;
+  final NoticeDraft draft;
+  final String fingerprint;
+  final String? noticeId;
+  final int? expectedVersion;
+}
+
+final class _PendingNoticePublish {
+  const _PendingNoticePublish({
+    required this.requestId,
+    required this.notice,
+    required this.draftFingerprint,
+  });
+
+  final String requestId;
+  final PlatformNotice notice;
+  final String draftFingerprint;
+}
 
 enum NoticeFormStep { identity, content, audience, schedule, review }
 
@@ -97,8 +126,8 @@ final class NoticeFormController extends ChangeNotifier {
   bool isLoadingAudience = false;
   String? audienceErrorMessage;
   String? _saveRequestId;
-  String? _publishRequestId;
-  PlatformNotice? _pendingPublishNotice;
+  _PendingNoticeSave? _pendingSave;
+  _PendingNoticePublish? _pendingPublish;
   int _audienceLoadGeneration = 0;
   int _loadGeneration = 0;
   int _commandGeneration = 0;
@@ -570,27 +599,51 @@ final class NoticeFormController extends ChangeNotifier {
     if (isSaving) return null;
     final generation = ++_commandGeneration;
     final requestedRepository = repository;
-    final requestId = _saveRequestId ??= _newRequestId();
     isSaving = true;
     errorMessage = null;
     notifyListeners();
     try {
+      if (_pendingSave case final pending?) {
+        final receipt = await _submitSave(requestedRepository, pending);
+        if (!_canFinishCommand(requestedRepository)) return null;
+        _validateSaveReceipt(pending, receipt);
+        final unchanged = pending.fingerprint == _draftFingerprint(draft);
+        _pendingSave = null;
+        _saveRequestId = null;
+        _reconcileSaveReceipt(receipt);
+        if (!_isCurrentCommand(generation, requestedRepository)) return null;
+        if (unchanged) {
+          _applyNotice(receipt);
+          return receipt;
+        }
+      }
+
       final current = savedNotice;
       final requestedNoticeId = current?.id ?? _noticeId;
-      final notice = await requestedRepository.saveDraft(
-        draft,
-        requestId: requestId,
+      final requestedDraft = draft;
+      final intent = _PendingNoticeSave(
+        requestId: _saveRequestId ??= _newRequestId(),
+        draft: requestedDraft,
+        fingerprint: _draftFingerprint(requestedDraft),
         noticeId: requestedNoticeId,
         expectedVersion: current?.managementVersion,
       );
-      if (!_isCurrentCommand(generation, requestedRepository)) return null;
-      if (requestedNoticeId != null && notice.id != requestedNoticeId) {
-        throw const NoticeUnexpectedException();
-      }
+      _pendingSave = intent;
+      _saveRequestId = intent.requestId;
+      final notice = await _submitSave(requestedRepository, intent);
+      if (!_canFinishCommand(requestedRepository)) return null;
+      _validateSaveReceipt(intent, notice);
+      _pendingSave = null;
       _saveRequestId = null;
+      _reconcileSaveReceipt(notice);
+      if (!_isCurrentCommand(generation, requestedRepository)) return null;
       _applyNotice(notice);
       return notice;
     } on NoticeRepositoryException catch (error) {
+      if (_isDeterministicCommandFailure(error)) {
+        _pendingSave = null;
+        _saveRequestId = null;
+      }
       if (!_isCurrentCommand(generation, requestedRepository)) return null;
       errorMessage = error.safeMessage;
       return null;
@@ -606,29 +659,119 @@ final class NoticeFormController extends ChangeNotifier {
     }
   }
 
+  Future<PlatformNotice> _submitSave(
+    NoticeRepository requestedRepository,
+    _PendingNoticeSave intent,
+  ) => requestedRepository.saveDraft(
+    intent.draft,
+    requestId: intent.requestId,
+    noticeId: intent.noticeId,
+    expectedVersion: intent.expectedVersion,
+  );
+
+  void _validateSaveReceipt(_PendingNoticeSave intent, PlatformNotice notice) {
+    final expectedReceiptVersion = (intent.expectedVersion ?? -1) + 1;
+    if ((intent.noticeId != null && notice.id != intent.noticeId) ||
+        notice.managementVersion != expectedReceiptVersion) {
+      _pendingSave = null;
+      _saveRequestId = null;
+      throw const NoticeUnexpectedException();
+    }
+  }
+
+  void _reconcileSaveReceipt(PlatformNotice notice) {
+    savedNotice = notice;
+    _noticeId = notice.id;
+  }
+
+  bool _isDeterministicCommandFailure(NoticeRepositoryException error) =>
+      error is NoticeUnauthorizedException ||
+      error is NoticeNotFoundException ||
+      error is NoticeConflictException ||
+      error is NoticeValidationException ||
+      error is NoticeMediaDecisionRequiredException;
+
+  String _draftFingerprint(NoticeDraft value) => jsonEncode({
+    'type': value.type.name,
+    'title': value.title,
+    'message': value.message,
+    'priority': value.priority.name,
+    'audience': value.audience.name,
+    'audienceLabel': value.audienceLabel,
+    'behavior': value.behavior.name,
+    'mandatory': value.mandatory,
+    'targetDevice': value.targetDevice.name,
+    'contentFormat': value.contentFormat.name,
+    'audienceRoleLabel': value.audienceRoleLabel,
+    'backgroundColorValue': value.backgroundColorValue,
+    'textColorValue': value.textColorValue,
+    'buttonColorValue': value.buttonColorValue,
+    'popupSize': value.popupSize.name,
+    'hasOuterInset': value.hasOuterInset,
+    'audienceSelection': value.audienceSelection.toJson(),
+    'buttonLabel': value.buttonLabel,
+    'linkLabel': value.linkLabel,
+    'recurrence': value.recurrence.name,
+    'intervalDays': value.intervalDays,
+    'weeklyDays': value.weeklyDays,
+    'dayOfMonth': value.dayOfMonth,
+    'recurrenceUntil': value.recurrenceUntil?.toUtc().toIso8601String(),
+    'imageOrientation': value.imageOrientation.name,
+    'backgroundTone': value.backgroundTone.name,
+    'textTone': value.textTone.name,
+    'startsAt': value.startsAt?.toUtc().toIso8601String(),
+    'endsAt': value.endsAt?.toUtc().toIso8601String(),
+  });
+
   Future<PlatformNotice?> saveAndPublish() async {
-    final saved = _pendingPublishNotice ?? await saveDraft();
+    if (isSaving || _isDisposed) return null;
+    if (_pendingPublish case final pending?) {
+      final published = await _runPublishIntent(pending, applyFields: false);
+      if (published == null) return null;
+      if (pending.draftFingerprint == _draftFingerprint(draft)) {
+        _applyNotice(published);
+        return published;
+      }
+      return saveAndPublish();
+    }
+
+    final saved = await saveDraft();
     if (saved == null || _isDisposed) return null;
+    final intent = _PendingNoticePublish(
+      requestId: _newRequestId(),
+      notice: saved,
+      draftFingerprint: _draftFingerprint(draft),
+    );
+    return _runPublishIntent(intent, applyFields: true);
+  }
+
+  Future<PlatformNotice?> _runPublishIntent(
+    _PendingNoticePublish intent, {
+    required bool applyFields,
+  }) async {
     final generation = ++_commandGeneration;
     final requestedRepository = repository;
-    _pendingPublishNotice = saved;
-    final requestId = _publishRequestId ??= _newRequestId();
+    _pendingPublish = intent;
     isSaving = true;
     errorMessage = null;
     notifyListeners();
     try {
       final published = await requestedRepository.publish(
-        saved,
-        requestId: requestId,
-        expectedVersion: saved.managementVersion,
+        intent.notice,
+        requestId: intent.requestId,
+        expectedVersion: intent.notice.managementVersion,
       );
+      if (!_canFinishCommand(requestedRepository)) return null;
+      _validatePublishReceipt(intent.notice, published);
+      _pendingPublish = null;
+      _reconcileSaveReceipt(published);
       if (!_isCurrentCommand(generation, requestedRepository)) return null;
-      if (published.id != saved.id) throw const NoticeUnexpectedException();
-      _publishRequestId = null;
-      _pendingPublishNotice = null;
-      _applyNotice(published);
+      if (applyFields) _applyNotice(published);
       return published;
     } on NoticeRepositoryException catch (error) {
+      if (_isDeterministicCommandFailure(error)) {
+        _pendingPublish = null;
+      }
       if (!_isCurrentCommand(generation, requestedRepository)) return null;
       errorMessage = error.safeMessage;
       return null;
@@ -641,6 +784,17 @@ final class NoticeFormController extends ChangeNotifier {
         isSaving = false;
         notifyListeners();
       }
+    }
+  }
+
+  void _validatePublishReceipt(PlatformNotice requested, PlatformNotice published) {
+    final validStatus =
+        published.status == NoticeStatus.active || published.status == NoticeStatus.scheduled;
+    if (published.id != requested.id ||
+        published.managementVersion != requested.managementVersion + 1 ||
+        !validStatus) {
+      _pendingPublish = null;
+      throw const NoticeUnexpectedException();
     }
   }
 
@@ -667,8 +821,6 @@ final class NoticeFormController extends ChangeNotifier {
   void _invalidatePendingCommands() {
     _commandGeneration++;
     _saveRequestId = null;
-    _publishRequestId = null;
-    _pendingPublishNotice = null;
   }
 
   static bool _validInteger(TextEditingController controller, int min, int max) {
