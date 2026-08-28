@@ -4,10 +4,12 @@ import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/account/data/user_preferences_repository.dart';
 import 'package:coelo_superadmin/features/account/domain/user_preferences.dart';
 import 'package:coelo_superadmin/features/account/presentation/screens/settings_page.dart';
+import 'package:coelo_superadmin/features/account/presentation/screens/profile_page.dart';
 import 'package:coelo_superadmin/features/account/presentation/user_preferences_controller.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
+import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +18,48 @@ void main() {
   test('declares protected profile and settings locations', () {
     expect(SuperadminRoutes.profile, '/profile');
     expect(SuperadminRoutes.settings, '/settings');
+  });
+
+  testWidgets('production profile fails closed without mounting the local editor', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.profile);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ProfilePage), findsNothing);
+    expect(find.byType(SuperadminErrorScreen), findsOneWidget);
+    expect(find.text('503'), findsOneWidget);
+  });
+
+  testWidgets('dev profile mounts only its isolated local controller', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devProfile);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.byType(SuperadminErrorScreen), findsNothing);
+    expect(find.text('Meu perfil'), findsOneWidget);
   });
 
   testWidgets('dev settings uses an isolated in-memory controller', (tester) async {

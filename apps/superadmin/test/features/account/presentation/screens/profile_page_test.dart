@@ -42,6 +42,20 @@ final class _DeferredProfileRepository implements AccountProfileRepository {
   Future<void> save(AccountProfile profile) async {}
 }
 
+final class _QueuedProfileRepository implements AccountProfileRepository {
+  final loads = <Completer<AccountProfile>>[];
+
+  @override
+  Future<AccountProfile> load() {
+    final completer = Completer<AccountProfile>();
+    loads.add(completer);
+    return completer.future;
+  }
+
+  @override
+  Future<void> save(AccountProfile profile) async {}
+}
+
 void main() {
   testWidgets('hydrates the form once when a profile arrives after the page mounts', (
     tester,
@@ -104,6 +118,41 @@ void main() {
     expect(_fieldValue(tester, const Key('account-first-name-field')), 'Rascunho');
   });
 
+  testWidgets('shows a recoverable load failure and retry hydrates the profile', (tester) async {
+    final repository = _QueuedProfileRepository();
+    final activities = SuperadminActivityController();
+    final controller = AccountController(repository: repository, activities: activities);
+    final firstLoad = controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ProfilePage(controller: controller, logout: () async => const LogoutResult.success()),
+      ),
+    );
+    repository.loads.single.completeError(StateError('offline'));
+    await firstLoad;
+    await tester.pump();
+
+    expect(find.text('Não foi possível carregar o perfil'), findsOneWidget);
+    expect(find.byKey(const Key('account-first-name-field')), findsNothing);
+
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pump();
+    expect(repository.loads, hasLength(2));
+    repository.loads.last.complete(
+      AccountProfile.prototype().copyWith(firstName: 'Perfil recuperado'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Perfil recuperado');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('shows personal data, access and security cards', (tester) async {
     final activities = SuperadminActivityController();
     final controller = AccountController(
@@ -152,6 +201,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byKey(const Key('account-initials-field')), 'abc');
+    await tester.pump();
     await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
     tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
     await tester.pump();
@@ -175,6 +225,7 @@ void main() {
     await _pumpProfilePage(tester, controller);
 
     await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Maria');
+    await tester.pump();
     await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
     tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
     await tester.pumpAndSettle();
@@ -192,7 +243,7 @@ void main() {
     expect(find.text('Perfil atualizado.'), findsOneWidget);
   });
 
-  testWidgets('resets a photo avatar as a draft and saves the derived initials', (tester) async {
+  testWidgets('cancels every dirty field and restores the last confirmed profile', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final activities = SuperadminActivityController();
@@ -217,29 +268,237 @@ void main() {
 
     await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Maria');
     await tester.enterText(find.byKey(const Key('account-last-name-field')), 'Silva');
+    await tester.enterText(find.byKey(const Key('account-email-field')), 'maria@coelo.me');
+    await tester.enterText(
+      find.byKey(const Key('account-mobile-phone-field')),
+      '+55 11 90000-0000',
+    );
+    await tester.enterText(find.byKey(const Key('account-initials-field')), 'MS');
     await tester.ensureVisible(find.byKey(const Key('account-reset-profile')));
     await tester.tap(find.byKey(const Key('account-reset-profile')));
     await tester.pump();
 
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('account-avatar-initials')),
-        matching: find.text('MS'),
-      ),
-      findsOneWidget,
-    );
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Owner');
+    expect(_fieldValue(tester, const Key('account-last-name-field')), 'Coelo');
+    expect(_fieldValue(tester, const Key('account-email-field')), 'owner@coelo.me');
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 11 99999-0000');
+    expect(_fieldValue(tester, const Key('account-initials-field')), 'XX');
     final beforeSave = await repository.load();
     expect(beforeSave.avatar.mode, AccountAvatarMode.photo);
     expect(beforeSave.avatar.backgroundColor, Colors.black);
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('account-reset-profile'))).onPressed,
+      isNull,
+    );
+  });
 
-    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
-    tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed!();
+  testWidgets('clears tenant A draft and overlay before hydrating controller B', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final activitiesA = SuperadminActivityController();
+    final activitiesB = SuperadminActivityController();
+    final controllerA = AccountController(
+      repository: InMemoryAccountProfileRepository(
+        initial: AccountProfile.prototype().copyWith(
+          firstName: 'Perfil A',
+          email: 'perfil-a@coelo.me',
+          avatar: const AccountAvatar(
+            mode: AccountAvatarMode.initials,
+            initials: 'AA',
+            backgroundColor: Colors.red,
+          ),
+        ),
+      ),
+      activities: activitiesA,
+    );
+    final controllerB = AccountController(
+      repository: InMemoryAccountProfileRepository(
+        initial: AccountProfile.prototype().copyWith(
+          firstName: 'Perfil B',
+          email: 'perfil-b@coelo.me',
+          avatar: const AccountAvatar(
+            mode: AccountAvatarMode.initials,
+            initials: 'BB',
+            backgroundColor: Colors.blue,
+          ),
+        ),
+      ),
+      activities: activitiesB,
+    );
+    await controllerA.load();
+    await controllerB.load();
+    addTearDown(() {
+      controllerA.dispose();
+      controllerB.dispose();
+      activitiesA.dispose();
+      activitiesB.dispose();
+    });
+
+    await _pumpProfilePage(tester, controllerA);
+    await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Rascunho A');
+    await tester.tap(find.byKey(const Key('account-avatar-color-picker')));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ProfilePage(
+          controller: controllerB,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
-    final saved = await repository.load();
-    expect(saved.avatar.mode, AccountAvatarMode.initials);
-    expect(saved.avatar.initials, 'MS');
-    expect(saved.avatar.backgroundColor, AccountAvatar.defaultBackgroundColor);
+    expect(find.text('Cor da sigla'), findsNothing);
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Perfil B');
+    expect(_fieldValue(tester, const Key('account-email-field')), 'perfil-b@coelo.me');
+    expect(_fieldValue(tester, const Key('account-initials-field')), 'BB');
+    expect(find.text('Rascunho A'), findsNothing);
+    expect(find.text('perfil-a@coelo.me'), findsNothing);
+  });
+
+  testWidgets('keeps only B when late reload A completes after controller swap', (tester) async {
+    final repositoryA = _QueuedProfileRepository();
+    final repositoryB = _QueuedProfileRepository();
+    final activitiesA = SuperadminActivityController();
+    final activitiesB = SuperadminActivityController();
+    final controllerA = AccountController(repository: repositoryA, activities: activitiesA);
+    final controllerB = AccountController(repository: repositoryB, activities: activitiesB);
+    final initialA = controllerA.load();
+    repositoryA.loads.single.complete(
+      AccountProfile.prototype().copyWith(firstName: 'Perfil A', email: 'a@coelo.me'),
+    );
+    await initialA;
+    addTearDown(() {
+      controllerA.dispose();
+      controllerB.dispose();
+      activitiesA.dispose();
+      activitiesB.dispose();
+    });
+
+    await _pumpProfilePage(tester, controllerA);
+    await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Rascunho A');
+    final lateA = controllerA.load();
+    final loadB = controllerB.load();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ProfilePage(
+          controller: controllerB,
+          logout: () async => const LogoutResult.success(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byKey(const Key('account-first-name-field')), findsNothing);
+    repositoryB.loads.single.complete(
+      AccountProfile.prototype().copyWith(firstName: 'Perfil B', email: 'b@coelo.me'),
+    );
+    await loadB;
+    await tester.pump();
+    repositoryA.loads.last.complete(
+      AccountProfile.prototype().copyWith(firstName: 'A tardio', email: 'late-a@coelo.me'),
+    );
+    await lateA;
+    await tester.pumpAndSettle();
+
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Perfil B');
+    expect(_fieldValue(tester, const Key('account-email-field')), 'b@coelo.me');
+    expect(find.text('Rascunho A'), findsNothing);
+    expect(find.text('A tardio'), findsNothing);
+    expect(find.text('late-a@coelo.me'), findsNothing);
+  });
+
+  testWidgets('same controller reload replaces A with B and returns to pristine', (tester) async {
+    final repository = _QueuedProfileRepository();
+    final activities = SuperadminActivityController();
+    final controller = AccountController(repository: repository, activities: activities);
+    final loadA = controller.load();
+    repository.loads.single.complete(
+      AccountProfile.prototype().copyWith(
+        firstName: 'Perfil A',
+        email: 'a@coelo.me',
+        avatar: const AccountAvatar(
+          mode: AccountAvatarMode.initials,
+          initials: 'AA',
+          backgroundColor: Colors.red,
+        ),
+      ),
+    );
+    await loadA;
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+    await tester.enterText(find.byKey(const Key('account-first-name-field')), 'Rascunho A');
+
+    final loadB = controller.load();
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byKey(const Key('account-first-name-field')), findsNothing);
+    repository.loads.last.complete(
+      AccountProfile.prototype().copyWith(
+        firstName: 'Perfil B',
+        email: 'b@coelo.me',
+        avatar: const AccountAvatar(
+          mode: AccountAvatarMode.initials,
+          initials: 'BB',
+          backgroundColor: Colors.blue,
+        ),
+      ),
+    );
+    await loadB;
+    await tester.pumpAndSettle();
+
+    expect(_fieldValue(tester, const Key('account-first-name-field')), 'Perfil B');
+    expect(_fieldValue(tester, const Key('account-email-field')), 'b@coelo.me');
+    expect(_fieldValue(tester, const Key('account-initials-field')), 'BB');
+    expect(find.text('Rascunho A'), findsNothing);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('email request and cancel rehydrate the confirmed pristine snapshot', (tester) async {
+    final activities = SuperadminActivityController();
+    final controller = AccountController(
+      repository: InMemoryAccountProfileRepository(),
+      activities: activities,
+    );
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+
+    await tester.enterText(find.byKey(const Key('account-email-field')), 'novo@coelo.me');
+    await tester.pump();
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+
+    expect(_fieldValue(tester, const Key('account-email-field')), 'owner@coelo.me');
+    expect(find.text('novo@coelo.me · Aguardando aprovação'), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('account-save-profile'))).onPressed,
+      isNull,
+    );
+
+    await tester.ensureVisible(find.text('Cancelar solicitação'));
+    await tester.tap(find.text('Cancelar solicitação'));
+    await tester.pumpAndSettle();
+
+    expect(_fieldValue(tester, const Key('account-email-field')), 'owner@coelo.me');
+    expect(find.textContaining('Aguardando aprovação'), findsNothing);
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('account-reset-profile'))).onPressed,
+      isNull,
+    );
   });
 
   testWidgets('aligns the personal card with the access and security column on wide screens', (
@@ -328,7 +587,48 @@ void main() {
     expect(find.byKey(const Key('account-save-profile')), findsOneWidget);
   });
 
-  testWidgets('uses a canonical close action and balanced footer in the password dialog', (
+  for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+    for (final textScale in [1.0, 2.0]) {
+      testWidgets('renders profile at ${width.toInt()}px and ${textScale.toInt()}00 percent', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(Size(width, 1200));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final activities = SuperadminActivityController();
+        final controller = AccountController(
+          repository: InMemoryAccountProfileRepository(),
+          activities: activities,
+        );
+        await controller.load();
+        addTearDown(() {
+          controller.dispose();
+          activities.dispose();
+        });
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+              child: child!,
+            ),
+            home: ProfilePage(
+              controller: controller,
+              logout: () async => const LogoutResult.success(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.byKey(const Key('account-personal-card')), findsOneWidget);
+        await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+        expect(find.byKey(const Key('account-save-profile')), findsOneWidget);
+      });
+    }
+  }
+
+  testWidgets('does not collect password secrets while the capability is unavailable', (
     tester,
   ) async {
     final activities = SuperadminActivityController();
@@ -343,82 +643,13 @@ void main() {
     });
     await _pumpProfilePage(tester, controller);
 
-    final changePassword = find.descendant(
-      of: find.byKey(const Key('account-security-card')),
-      matching: find.byType(OutlinedButton),
+    final unavailable = tester.widget<OutlinedButton>(
+      find.byKey(const Key('account-password-unavailable')),
     );
-    await tester.ensureVisible(changePassword);
-    tester.widget<OutlinedButton>(changePassword).onPressed!();
-    await tester.pumpAndSettle();
-
-    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
-    final close = find.byKey(const Key('account-password-close'));
-    expect(close, findsOneWidget);
-    final closeButton = tester.widget<IconButton>(close);
-    expect(closeButton.tooltip, 'Fechar alteração de senha');
-    expect(
-      closeButton.style?.foregroundColor?.resolve(const {}),
-      Theme.of(tester.element(close)).colorScheme.error,
-    );
-    expect(
-      tester.widget<Icon>(find.descendant(of: close, matching: find.byType(Icon))).icon,
-      Icons.close_rounded,
-    );
-    expect(tester.getSize(close), const Size.square(CoeloSize.touchMin));
-
-    final cancel = find.byKey(const Key('account-password-cancel'));
-    final submit = find.byKey(const Key('account-password-submit'));
-    expect(cancel, findsOneWidget);
-    expect(submit, findsOneWidget);
-    expect(tester.getSize(cancel).width, tester.getSize(submit).width);
-
-    await tester.tap(close);
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('account-password-close')), findsNothing);
-  });
-
-  testWidgets('balances password actions at 200 percent text on compact screens', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(375, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final activities = SuperadminActivityController();
-    final controller = AccountController(
-      repository: InMemoryAccountProfileRepository(),
-      activities: activities,
-    );
-    await controller.load();
-    addTearDown(() {
-      controller.dispose();
-      activities.dispose();
-    });
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
-          child: child!,
-        ),
-        home: ProfilePage(controller: controller, logout: () async => const LogoutResult.success()),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    final changePassword = find.descendant(
-      of: find.byKey(const Key('account-security-card')),
-      matching: find.byType(OutlinedButton),
-    );
-    await tester.ensureVisible(changePassword);
-    tester.widget<OutlinedButton>(changePassword).onPressed!();
-    await tester.pumpAndSettle();
-
-    final cancel = find.byKey(const Key('account-password-cancel'));
-    final submit = find.byKey(const Key('account-password-submit'));
-    expect(tester.takeException(), isNull);
-    expect(cancel, findsOneWidget);
-    expect(submit, findsOneWidget);
-    expect(tester.getSize(cancel).height, greaterThanOrEqualTo(CoeloSize.touchMin));
-    expect(tester.getSize(submit).height, greaterThanOrEqualTo(CoeloSize.touchMin));
-    expect(tester.getSize(cancel).width, tester.getSize(submit).width);
+    expect(unavailable.onPressed, isNull);
+    expect(find.text('Alteração de senha indisponível nesta versão.'), findsOneWidget);
+    expect(find.byKey(const Key('account-password-dialog')), findsNothing);
+    expect(find.text('Senha atual'), findsNothing);
   });
 
   testWidgets('uses the canonical shell and balanced actions for avatar crop', (tester) async {

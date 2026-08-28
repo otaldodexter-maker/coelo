@@ -7,12 +7,18 @@ Future<Color?> showSuperadminAdvancedColorPicker(
   BuildContext context, {
   required Color initialColor,
   required String title,
-}) {
-  return showDialog<Color>(
+  void Function(NavigatorState navigator, Route<dynamic> route)? onRouteCreated,
+}) async {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final route = DialogRoute<Color>(
     context: context,
     builder: (context) =>
         _SuperadminAdvancedColorPickerDialog(initialColor: initialColor, title: title),
   );
+  onRouteCreated?.call(navigator, route);
+  final result = await navigator.push<Color>(route);
+  await route.completed;
+  return result;
 }
 
 final class _SuperadminAdvancedColorPickerDialog extends StatefulWidget {

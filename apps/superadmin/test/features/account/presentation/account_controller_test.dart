@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/features/account/data/account_profile_repository.dart';
 import 'package:coelo_superadmin/features/account/domain/account_profile.dart';
@@ -38,6 +40,33 @@ final class _FailOnDemandAccountProfileRepository implements AccountProfileRepos
   }
 }
 
+final class _DeferredAccountProfileRepository implements AccountProfileRepository {
+  _DeferredAccountProfileRepository({AccountProfile? initial})
+    : profile = initial ?? AccountProfile.prototype();
+
+  AccountProfile profile;
+  final loadCompleters = <Completer<AccountProfile>>[];
+  final saveCompleters = <Completer<void>>[];
+  final savedProfiles = <AccountProfile>[];
+  var loadCalls = 0;
+
+  @override
+  Future<AccountProfile> load() {
+    loadCalls += 1;
+    final completer = Completer<AccountProfile>();
+    loadCompleters.add(completer);
+    return completer.future;
+  }
+
+  @override
+  Future<void> save(AccountProfile next) {
+    savedProfiles.add(next);
+    final completer = Completer<void>();
+    saveCompleters.add(completer);
+    return completer.future.then((_) => profile = next);
+  }
+}
+
 void main() {
   late InMemoryAccountProfileRepository repository;
   late SuperadminActivityController activities;
@@ -53,6 +82,123 @@ void main() {
   tearDown(() {
     controller.dispose();
     activities.dispose();
+  });
+
+  test('load exposes typed failure and retry reaches ready', () async {
+    final deferred = _DeferredAccountProfileRepository();
+    final deferredActivities = SuperadminActivityController();
+    final deferredController = AccountController(
+      repository: deferred,
+      activities: deferredActivities,
+    );
+    addTearDown(() {
+      deferredController.dispose();
+      deferredActivities.dispose();
+    });
+
+    final first = deferredController.load();
+    expect(deferredController.state.phase, AccountControllerPhase.loading);
+    expect(deferredController.profile, isNull);
+    deferred.loadCompleters.single.completeError(StateError('offline'));
+    await first;
+
+    expect(deferredController.state.phase, AccountControllerPhase.failure);
+    expect(deferredController.message, 'Não foi possível carregar o perfil. Tente novamente.');
+
+    final retry = deferredController.load();
+    expect(deferredController.state.phase, AccountControllerPhase.loading);
+    deferred.loadCompleters.last.complete(deferred.profile);
+    await retry;
+
+    expect(deferredController.state.phase, AccountControllerPhase.ready);
+    expect(deferredController.profile, deferred.profile);
+    expect(deferredController.message, isNull);
+  });
+
+  test('pending loads ignore every completion after dispose', () async {
+    final deferred = _DeferredAccountProfileRepository();
+    final deferredActivities = SuperadminActivityController();
+    final deferredController = AccountController(
+      repository: deferred,
+      activities: deferredActivities,
+    );
+    var notifications = 0;
+    deferredController.addListener(() => notifications += 1);
+
+    final first = deferredController.load();
+    final second = deferredController.load();
+    expect(deferred.loadCalls, 2);
+    final beforeDispose = notifications;
+    deferredController.dispose();
+    for (final completer in deferred.loadCompleters) {
+      completer.complete(deferred.profile);
+    }
+    await Future.wait([first, second]);
+
+    expect(notifications, beforeDispose);
+    deferredActivities.dispose();
+  });
+
+  test('new reload supersedes an older pending load', () async {
+    final deferred = _DeferredAccountProfileRepository();
+    final deferredActivities = SuperadminActivityController();
+    final deferredController = AccountController(
+      repository: deferred,
+      activities: deferredActivities,
+    );
+    addTearDown(() {
+      deferredController.dispose();
+      deferredActivities.dispose();
+    });
+
+    final loadA = deferredController.load();
+    final loadB = deferredController.load();
+    expect(deferred.loadCalls, 2);
+    deferred.loadCompleters[1].complete(
+      deferred.profile.copyWith(firstName: 'Perfil B', email: 'b@coelo.me'),
+    );
+    await loadB;
+    deferred.loadCompleters[0].complete(
+      deferred.profile.copyWith(firstName: 'Perfil A tardio', email: 'a@coelo.me'),
+    );
+    await loadA;
+
+    expect(deferredController.profile!.firstName, 'Perfil B');
+    expect(deferredController.profile!.email, 'b@coelo.me');
+    expect(deferredController.state.updateOrigin, AccountProfileUpdateOrigin.load);
+  });
+
+  test('profile mutations share one lock and discard completion after dispose', () async {
+    final deferred = _DeferredAccountProfileRepository(
+      initial: AccountProfile.prototype().requestEmailChange('pending@coelo.me'),
+    );
+    final deferredActivities = SuperadminActivityController();
+    final deferredController = AccountController(
+      repository: deferred,
+      activities: deferredActivities,
+    );
+    final load = deferredController.load();
+    deferred.loadCompleters.single.complete(deferred.profile);
+    await load;
+
+    final save = deferredController.saveProfile(
+      firstName: 'Maria',
+      lastName: 'Silva',
+      email: 'maria@coelo.me',
+      mobilePhone: '+55 11 98888-7777',
+      avatar: deferredController.profile!.avatar,
+    );
+    final cancel = deferredController.cancelEmailChange();
+    expect(deferred.savedProfiles, hasLength(1));
+    expect(deferredController.busy, isTrue);
+    expect(deferred.savedProfiles.single.emailChange?.requestedEmail, 'maria@coelo.me');
+
+    deferredController.dispose();
+    deferred.saveCompleters.single.complete();
+    await Future.wait([save, cancel]);
+
+    expect(deferredActivities.activities, isEmpty);
+    deferredActivities.dispose();
   });
 
   test('requests an email change and publishes an actionable activity', () async {

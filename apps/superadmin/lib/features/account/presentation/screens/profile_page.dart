@@ -1,7 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
@@ -38,6 +38,10 @@ class _ProfilePageState extends State<ProfilePage> {
   String? _imageError;
   String? _saveError;
   var _hasHydratedInitialProfile = false;
+  var _hydratedProfileRevision = -1;
+  var _updatingDraft = false;
+  var _asyncGeneration = 0;
+  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
 
   @override
   void initState() {
@@ -47,22 +51,125 @@ class _ProfilePageState extends State<ProfilePage> {
     _email = TextEditingController();
     _mobilePhone = TextEditingController();
     _initials = TextEditingController();
-    _hydrateInitialProfile(widget.controller.profile);
-  }
-
-  void _hydrateInitialProfile(AccountProfile? profile) {
-    if (profile == null || _hasHydratedInitialProfile) return;
-    _firstName.text = profile.firstName;
-    _lastName.text = profile.lastName;
-    _email.text = profile.email;
-    _mobilePhone.text = profile.mobilePhone;
-    _initials.text = profile.avatar.initials;
-    _avatar = profile.avatar;
-    _hasHydratedInitialProfile = true;
+    for (final field in [_firstName, _lastName, _email, _mobilePhone, _initials]) {
+      field.addListener(_onDraftChanged);
+    }
+    _hydrateConfirmedState(widget.controller.state);
   }
 
   @override
+  void didUpdateWidget(covariant ProfilePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.controller, widget.controller)) return;
+    _asyncGeneration += 1;
+    _dismissOwnedOverlays();
+    _clearDraft();
+    _hydrateConfirmedState(widget.controller.state);
+  }
+
+  void _onDraftChanged() {
+    if (!_updatingDraft && mounted) setState(() {});
+  }
+
+  void _hydrateConfirmedState(AccountControllerState state) {
+    final profile = state.profile;
+    if (profile == null) {
+      if (state.phase == AccountControllerPhase.loading && _hasHydratedInitialProfile) {
+        _clearDraft();
+      }
+      return;
+    }
+    if (_hasHydratedInitialProfile && state.profileRevision == _hydratedProfileRevision) return;
+    if (_hasHydratedInitialProfile && state.updateOrigin == AccountProfileUpdateOrigin.save) {
+      _hydratedProfileRevision = state.profileRevision;
+      return;
+    }
+    _restoreConfirmed(profile, revision: state.profileRevision);
+  }
+
+  void _restoreConfirmed(AccountProfile profile, {required int revision}) {
+    _updatingDraft = true;
+    try {
+      _firstName.text = profile.firstName;
+      _lastName.text = profile.lastName;
+      _email.text = profile.email;
+      _mobilePhone.text = profile.mobilePhone;
+      _initials.text = profile.avatar.initials;
+    } finally {
+      _updatingDraft = false;
+    }
+    _avatar = profile.avatar;
+    _imageError = null;
+    _saveError = null;
+    _hasHydratedInitialProfile = true;
+    _hydratedProfileRevision = revision;
+  }
+
+  void _clearDraft() {
+    _hasHydratedInitialProfile = false;
+    _hydratedProfileRevision = -1;
+    _updatingDraft = true;
+    try {
+      _firstName.clear();
+      _lastName.clear();
+      _email.clear();
+      _mobilePhone.clear();
+      _initials.clear();
+    } finally {
+      _updatingDraft = false;
+    }
+    _avatar = null;
+    _imageError = null;
+    _saveError = null;
+  }
+
+  bool _isDirty(AccountProfile profile) {
+    final avatar = _avatar;
+    return _firstName.text != profile.firstName ||
+        _lastName.text != profile.lastName ||
+        _email.text != profile.email ||
+        _mobilePhone.text != profile.mobilePhone ||
+        _initials.text != profile.avatar.initials ||
+        avatar == null ||
+        avatar.mode != profile.avatar.mode ||
+        avatar.initials != profile.avatar.initials ||
+        avatar.backgroundColor != profile.avatar.backgroundColor ||
+        avatar.photoScale != profile.avatar.photoScale ||
+        avatar.photoOffset != profile.avatar.photoOffset ||
+        !listEquals(avatar.photoBytes, profile.avatar.photoBytes);
+  }
+
+  bool _matchesDraft({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String mobilePhone,
+    required String initials,
+    required AccountAvatar avatar,
+  }) =>
+      _firstName.text == firstName &&
+      _lastName.text == lastName &&
+      _email.text == email &&
+      _mobilePhone.text == mobilePhone &&
+      _initials.text == initials &&
+      _sameAvatar(_avatar, avatar);
+
+  bool _sameAvatar(AccountAvatar? first, AccountAvatar second) =>
+      first != null &&
+      first.mode == second.mode &&
+      first.initials == second.initials &&
+      first.backgroundColor == second.backgroundColor &&
+      first.photoScale == second.photoScale &&
+      first.photoOffset == second.photoOffset &&
+      listEquals(first.photoBytes, second.photoBytes);
+
+  @override
   void dispose() {
+    _asyncGeneration += 1;
+    _dismissOwnedOverlays();
+    for (final field in [_firstName, _lastName, _email, _mobilePhone, _initials]) {
+      field.removeListener(_onDraftChanged);
+    }
     _firstName.dispose();
     _lastName.dispose();
     _email.dispose();
@@ -72,6 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _pickPhoto() async {
+    final generation = _asyncGeneration;
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['png', 'jpg', 'jpeg', 'webp'],
@@ -79,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
       allowMultiple: false,
       dialogTitle: 'Escolher foto de perfil',
     );
-    if (!mounted || result == null) return;
+    if (!mounted || generation != _asyncGeneration || result == null) return;
     final file = result.files.single;
     if (file.size > 2 * 1024 * 1024) {
       setState(() => _imageError = 'A imagem deve ter no máximo 2 MB.');
@@ -90,12 +198,11 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() => _imageError = 'Não foi possível ler esta imagem.');
       return;
     }
-    final adjusted = await showDialog<AvatarCropResult>(
-      context: context,
+    final adjusted = await _showOwnedDialog<AvatarCropResult>(
       barrierColor: Colors.black54,
       builder: (context) => AvatarCropDialog(bytes: bytes),
     );
-    if (adjusted != null && mounted) {
+    if (adjusted != null && mounted && generation == _asyncGeneration) {
       setState(() {
         _imageError = null;
         _avatar = _avatar!.copyWith(
@@ -109,50 +216,99 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _chooseColor() async {
+    final generation = _asyncGeneration;
+    (NavigatorState, Route<dynamic>)? entry;
     final selected = await showSuperadminAdvancedColorPicker(
       context,
       initialColor: _avatar!.backgroundColor,
       title: 'Cor da sigla',
+      onRouteCreated: (navigator, route) {
+        entry = (navigator, route);
+        _ownedOverlays.add(entry!);
+      },
     );
-    if (selected != null && mounted) {
+    if (entry case final owned?) _ownedOverlays.remove(owned);
+    if (selected != null && mounted && generation == _asyncGeneration) {
       setState(() => _avatar = _avatar!.copyWith(backgroundColor: selected));
     }
+  }
+
+  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = DialogRoute<T>(context: context, builder: builder, barrierColor: barrierColor);
+    final entry = (navigator, route as Route<dynamic>);
+    _ownedOverlays.add(entry);
+    try {
+      final result = await navigator.push<T>(route);
+      await route.completed;
+      return result;
+    } finally {
+      _ownedOverlays.remove(entry);
+    }
+  }
+
+  void _dismissOwnedOverlays() {
+    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
+      if (route.isActive) navigator.removeRoute(route);
+    }
+    _ownedOverlays.clear();
   }
 
   Future<void> _save() async {
     final valid = _formKey.currentState?.validate() ?? false;
     if (!valid || widget.controller.busy) return;
+    final controller = widget.controller;
+    final generation = _asyncGeneration;
+    final submittedBaseRevision = controller.state.profileRevision;
     final normalizedInitials = _initials.text.trim().toUpperCase();
     _initials.value = TextEditingValue(
       text: normalizedInitials,
       selection: TextSelection.collapsed(offset: normalizedInitials.length),
     );
+    final submittedFirstName = _firstName.text;
+    final submittedLastName = _lastName.text;
+    final submittedEmail = _email.text;
+    final submittedMobilePhone = _mobilePhone.text;
+    final submittedInitials = _initials.text;
+    final submittedAvatar = _avatar!.copyWith(initials: normalizedInitials);
+    _avatar = submittedAvatar;
     try {
-      await widget.controller.saveProfile(
-        firstName: _firstName.text,
-        lastName: _lastName.text,
-        email: _email.text,
-        mobilePhone: _mobilePhone.text,
-        avatar: _avatar!.copyWith(initials: normalizedInitials),
+      await controller.saveProfile(
+        firstName: submittedFirstName,
+        lastName: submittedLastName,
+        email: submittedEmail,
+        mobilePhone: submittedMobilePhone,
+        avatar: submittedAvatar,
       );
-      if (mounted) setState(() => _saveError = null);
+      if (mounted && generation == _asyncGeneration && identical(controller, widget.controller)) {
+        setState(() {
+          _saveError = null;
+          final confirmed = controller.profile;
+          if (confirmed != null &&
+              controller.state.profileRevision > submittedBaseRevision &&
+              _matchesDraft(
+                firstName: submittedFirstName,
+                lastName: submittedLastName,
+                email: submittedEmail,
+                mobilePhone: submittedMobilePhone,
+                initials: submittedInitials,
+                avatar: submittedAvatar,
+              )) {
+            _restoreConfirmed(confirmed, revision: controller.state.profileRevision);
+          }
+        });
+      }
     } catch (_) {
-      if (mounted) {
+      if (mounted && generation == _asyncGeneration && identical(controller, widget.controller)) {
         setState(() => _saveError = 'Não foi possível salvar o perfil. Tente novamente.');
       }
     }
   }
 
   void _reset() {
-    final reset = _avatar!.resetFor(_firstName.text, _lastName.text);
-    _initials.value = TextEditingValue(
-      text: reset.initials,
-      selection: TextSelection.collapsed(offset: reset.initials.length),
-    );
-    setState(() {
-      _imageError = null;
-      _avatar = reset;
-    });
+    final profile = widget.controller.profile;
+    if (profile == null) return;
+    setState(() => _restoreConfirmed(profile, revision: widget.controller.state.profileRevision));
   }
 
   @override
@@ -167,101 +323,128 @@ class _ProfilePageState extends State<ProfilePage> {
       listenable: widget.controller,
       builder: (context, child) {
         final profile = widget.controller.profile;
-        _hydrateInitialProfile(profile);
+        _hydrateConfirmedState(widget.controller.state);
         if (profile == null || _avatar == null) {
+          if (widget.controller.state.phase == AccountControllerPhase.failure) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(CoeloSpacing.space5),
+                child: CoeloStatePanel(
+                  title: 'Não foi possível carregar o perfil',
+                  message: 'Tente novamente.',
+                  icon: Icons.cloud_off_outlined,
+                  actionLabel: 'Tentar novamente',
+                  onAction: widget.controller.load,
+                ),
+              ),
+            );
+          }
           return const Center(child: CircularProgressIndicator());
         }
-        return Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(CoeloSpacing.space5),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (widget.controller.message ?? _saveError case final message?)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-                        child: MaterialBanner(
-                          content: Text(message),
-                          actions: const [SizedBox.shrink()],
-                        ),
-                      ),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final wide = constraints.maxWidth >= 840;
-                        final personal = _SectionCard(
-                          cardKey: const Key('account-personal-card'),
-                          title: 'Dados pessoais',
-                          description: 'Sua identidade exibida no Superadmin.',
-                          child: _PersonalDataForm(
-                            firstName: _firstName,
-                            lastName: _lastName,
-                            email: _email,
-                            mobilePhone: _mobilePhone,
-                            initials: _initials,
-                            avatar: _avatar!,
-                            imageError: _imageError,
-                            emailChange: profile.emailChange,
-                            onPickPhoto: _pickPhoto,
-                            onRemovePhoto: () => setState(
-                              () => _avatar = _avatar!.copyWith(
-                                mode: AccountAvatarMode.initials,
-                                clearPhoto: true,
-                              ),
+        final dirty = _isDirty(profile);
+        return ExcludeFocus(
+          excluding: widget.controller.busy,
+          child: AbsorbPointer(
+            absorbing: widget.controller.busy,
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(CoeloSpacing.space5),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1120),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (widget.controller.message ?? _saveError case final message?)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+                            child: MaterialBanner(
+                              content: Text(message),
+                              actions: const [SizedBox.shrink()],
                             ),
-                            onChooseColor: _chooseColor,
-                            onCancelEmailChange: widget.controller.cancelEmailChange,
                           ),
-                        );
-                        final access = _AccessCard(
-                          cardKey: const Key('account-access-card'),
-                          access: profile.access,
-                        );
-                        final security = _SecurityCard(
-                          cardKey: const Key('account-security-card'),
-                          controller: widget.controller,
-                        );
-                        return wide
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(flex: 3, child: personal),
-                                  const SizedBox(width: CoeloSpacing.space5),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                      key: const Key('account-profile-side-column'),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: [
-                                          access,
-                                          const SizedBox(height: CoeloSpacing.space5),
-                                          security,
-                                        ],
-                                      ),
-                                    ),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final wide =
+                                constraints.maxWidth >= 840 &&
+                                MediaQuery.textScalerOf(context).scale(1) < 1.5;
+                            final personal = _SectionCard(
+                              cardKey: const Key('account-personal-card'),
+                              title: 'Dados pessoais',
+                              description: 'Sua identidade exibida no Superadmin.',
+                              child: _PersonalDataForm(
+                                firstName: _firstName,
+                                lastName: _lastName,
+                                email: _email,
+                                mobilePhone: _mobilePhone,
+                                initials: _initials,
+                                avatar: _avatar!,
+                                imageError: _imageError,
+                                emailChange: profile.emailChange,
+                                onPickPhoto: _pickPhoto,
+                                onRemovePhoto: () => setState(
+                                  () => _avatar = _avatar!.copyWith(
+                                    mode: AccountAvatarMode.initials,
+                                    clearPhoto: true,
                                   ),
-                                ],
-                              )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  personal,
-                                  const SizedBox(height: CoeloSpacing.space5),
-                                  access,
-                                  const SizedBox(height: CoeloSpacing.space5),
-                                  security,
-                                ],
-                              );
-                      },
+                                ),
+                                onChooseColor: _chooseColor,
+                                onCancelEmailChange: widget.controller.cancelEmailChange,
+                              ),
+                            );
+                            final access = _AccessCard(
+                              cardKey: const Key('account-access-card'),
+                              access: profile.access,
+                            );
+                            final security = _SecurityCard(
+                              cardKey: const Key('account-security-card'),
+                            );
+                            return wide
+                                ? Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(flex: 3, child: personal),
+                                      const SizedBox(width: CoeloSpacing.space5),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          key: const Key('account-profile-side-column'),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            children: [
+                                              access,
+                                              const SizedBox(height: CoeloSpacing.space5),
+                                              security,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      personal,
+                                      const SizedBox(height: CoeloSpacing.space5),
+                                      access,
+                                      const SizedBox(height: CoeloSpacing.space5),
+                                      security,
+                                    ],
+                                  );
+                          },
+                        ),
+                        const SizedBox(height: CoeloSpacing.space5),
+                        _FormFooter(
+                          busy: widget.controller.busy,
+                          dirty: dirty,
+                          onReset: _reset,
+                          onSave: _save,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: CoeloSpacing.space5),
-                    _FormFooter(busy: widget.controller.busy, onReset: _reset, onSave: _save),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -331,8 +514,8 @@ class _PersonalDataForm extends StatelessWidget {
         ),
       ],
       const SizedBox(height: CoeloSpacing.space5),
-      Builder(
-        builder: (context) {
+      LayoutBuilder(
+        builder: (context, constraints) {
           final fields = [
             CoeloFormTextField(
               fieldKey: const Key('account-first-name-field'),
@@ -349,7 +532,9 @@ class _PersonalDataForm extends StatelessWidget {
               validator: _requiredName,
             ),
           ];
-          return MediaQuery.sizeOf(context).width >= 600
+          final compact =
+              constraints.maxWidth < 600 || MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+          return !compact
               ? Row(
                   children: [
                     Expanded(child: fields.first),
@@ -368,6 +553,7 @@ class _PersonalDataForm extends StatelessWidget {
       ),
       const SizedBox(height: CoeloSpacing.space4),
       CoeloFormTextField(
+        fieldKey: const Key('account-email-field'),
         controller: email,
         labelText: 'E-mail',
         prefixIcon: Icons.email_outlined,
@@ -384,9 +570,12 @@ class _PersonalDataForm extends StatelessWidget {
       ),
       if (emailChange?.status == EmailChangeStatus.pending) ...[
         const SizedBox(height: CoeloSpacing.space2),
-        Row(
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space1,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Expanded(child: Text('${emailChange!.requestedEmail} · Aguardando aprovação')),
+            Text('${emailChange!.requestedEmail} · Aguardando aprovação'),
             TextButton(onPressed: onCancelEmailChange, child: const Text('Cancelar solicitação')),
           ],
         ),
@@ -405,6 +594,7 @@ class _PersonalDataForm extends StatelessWidget {
             validator: (value) => AccountAvatar.validateInitials(value ?? ''),
           );
           final chooseColorButton = OutlinedButton.icon(
+            key: const Key('account-avatar-color-picker'),
             onPressed: onChooseColor,
             icon: DecoratedBox(
               decoration: BoxDecoration(
@@ -515,24 +705,21 @@ class _AccessCard extends StatelessWidget {
 }
 
 class _SecurityCard extends StatelessWidget {
-  const _SecurityCard({required this.controller, required this.cardKey});
-  final AccountController controller;
+  const _SecurityCard({required this.cardKey});
   final Key cardKey;
 
   @override
   Widget build(BuildContext context) => _SectionCard(
     cardKey: cardKey,
     title: 'Segurança',
-    description: 'Atualize sua senha de acesso.',
+    description: 'Alteração de senha indisponível nesta versão.',
     child: Align(
       alignment: Alignment.centerLeft,
       child: OutlinedButton.icon(
-        onPressed: () => showDialog<void>(
-          context: context,
-          builder: (context) => _PasswordDialog(controller: controller),
-        ),
+        key: const Key('account-password-unavailable'),
+        onPressed: null,
         icon: const Icon(Icons.lock_outline_rounded),
-        label: const Text('Alterar senha'),
+        label: const Text('Indisponível'),
       ),
     ),
   );
@@ -580,8 +767,14 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _FormFooter extends StatelessWidget {
-  const _FormFooter({required this.busy, required this.onReset, required this.onSave});
+  const _FormFooter({
+    required this.busy,
+    required this.dirty,
+    required this.onReset,
+    required this.onSave,
+  });
   final bool busy;
+  final bool dirty;
   final VoidCallback onReset;
   final VoidCallback onSave;
 
@@ -598,17 +791,19 @@ class _FormFooter extends StatelessWidget {
         builder: (context, constraints) {
           final resetButton = OutlinedButton.icon(
             key: const Key('account-reset-profile'),
-            onPressed: busy ? null : onReset,
-            icon: const Icon(Icons.restart_alt_rounded),
-            label: const Text('Redefinir'),
+            onPressed: busy || !dirty ? null : onReset,
+            icon: const Icon(Icons.undo_rounded),
+            label: const Text('Cancelar alterações'),
           );
           final saveButton = FilledButton.icon(
             key: const Key('account-save-profile'),
-            onPressed: busy ? null : onSave,
+            onPressed: busy || !dirty ? null : onSave,
             icon: const Icon(Icons.save_outlined),
             label: const Text('Salvar alterações'),
           );
-          return constraints.maxWidth < 480
+          final stacked =
+              constraints.maxWidth < 480 || MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+          return stacked
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -625,93 +820,6 @@ class _FormFooter extends StatelessWidget {
       ),
     ),
   );
-}
-
-class _PasswordDialog extends StatefulWidget {
-  const _PasswordDialog({required this.controller});
-  final AccountController controller;
-
-  @override
-  State<_PasswordDialog> createState() => _PasswordDialogState();
-}
-
-class _PasswordDialogState extends State<_PasswordDialog> {
-  final current = TextEditingController();
-  final next = TextEditingController();
-  final confirmation = TextEditingController();
-  String? error;
-
-  @override
-  void dispose() {
-    current.dispose();
-    next.dispose();
-    confirmation.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final cancelButton = OutlinedButton(
-      key: const Key('account-password-cancel'),
-      onPressed: Navigator.of(context).pop,
-      child: const Text('Cancelar'),
-    );
-    final submitButton = FilledButton(
-      key: const Key('account-password-submit'),
-      onPressed: () async {
-        final result = await widget.controller.changePassword(
-          currentPassword: current.text,
-          newPassword: next.text,
-          confirmation: confirmation.text,
-        );
-        if (!context.mounted) return;
-        if (result == null) {
-          Navigator.of(context).pop();
-        } else {
-          setState(() => error = result);
-        }
-      },
-      child: const Text('Alterar senha'),
-    );
-    return CoeloAdminDialogShell(
-      dialogKey: const Key('account-password-dialog'),
-      title: 'Alterar senha',
-      closeTooltip: 'Fechar alteração de senha',
-      closeButtonKey: const Key('account-password-close'),
-      maxWidth: 520,
-      secondaryAction: cancelButton,
-      primaryAction: submitButton,
-      body: SizedBox(
-        width: 440,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CoeloFormTextField(
-              controller: current,
-              labelText: 'Senha atual',
-              prefixIcon: Icons.lock_outline,
-              obscureText: true,
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            CoeloFormTextField(
-              controller: next,
-              labelText: 'Nova senha',
-              prefixIcon: Icons.password_rounded,
-              obscureText: true,
-            ),
-            const SizedBox(height: CoeloSpacing.space4),
-            CoeloFormTextField(
-              controller: confirmation,
-              labelText: 'Confirmar nova senha',
-              prefixIcon: Icons.password_rounded,
-              obscureText: true,
-              errorText: error,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 String? _requiredName(String? value) =>
