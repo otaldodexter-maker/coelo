@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/daily_routine/daily_routine.dart';
 import 'package:coelo_superadmin/features/daily_routine/daily_routine_pages.dart';
@@ -116,6 +118,83 @@ void main() {
     expect(find.byKey(const Key('daily-routine-search')), findsNothing);
     expect(find.byKey(const Key('daily-routine-type-tabs')), findsNothing);
     expect(find.textContaining('private object exists'), findsNothing);
+  });
+
+  testWidgets('repository swap clears the previous tenant before a late response', (tester) async {
+    final staleResponse = Completer<RoutineDirectoryPage>();
+    var loadsA = 0;
+    final repositoryA = FakeRoutineRepository(
+      pageLoader: (query) async {
+        if (loadsA++ > 0) return staleResponse.future;
+        return RoutineDirectoryPage(
+          items: const [
+            RoutineDirectoryItem(
+              id: 'routine-a',
+              kind: RoutineEntryKind.model,
+              name: 'Rotina privada A',
+              status: 'active',
+              version: 1,
+            ),
+          ],
+          page: query.page,
+          pageSize: query.pageSize,
+          totalCount: 1,
+          canManage: true,
+        );
+      },
+    );
+    final repositoryB = FakeRoutineRepository(
+      pageLoader: (_) async => throw const RoutineRepositoryException(
+        RoutineRepositoryFailureKind.unauthorized,
+        'tenant B denied',
+      ),
+    );
+
+    Widget app(RoutineRepository repository) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: DailyRoutineDirectoryPage(
+        repository: repository,
+        logout: unavailableSuperadminLogout,
+        onCreateEntry: (_) {},
+        onEdit: (_) {},
+      ),
+    );
+
+    await tester.pumpWidget(app(repositoryA));
+    await tester.pumpAndSettle();
+    expect(find.text('Rotina privada A'), findsOneWidget);
+    expect(find.byKey(const Key('daily-routine-create-tile')), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('daily-routine-search')), 'privada');
+    await tester.pump();
+    await tester.pumpWidget(app(repositoryB));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('daily-routine-unauthorized')), findsOneWidget);
+    expect(find.text('Rotina privada A'), findsNothing);
+    expect(find.byKey(const Key('daily-routine-search')), findsNothing);
+    expect(find.byKey(const Key('daily-routine-create-tile')), findsNothing);
+
+    staleResponse.complete(
+      const RoutineDirectoryPage(
+        items: [
+          RoutineDirectoryItem(
+            id: 'routine-a-late',
+            kind: RoutineEntryKind.model,
+            name: 'Resposta tardia A',
+            status: 'active',
+            version: 2,
+          ),
+        ],
+        page: 1,
+        pageSize: 11,
+        totalCount: 1,
+        canManage: true,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Resposta tardia A'), findsNothing);
+    expect(find.byKey(const Key('daily-routine-unauthorized')), findsOneWidget);
   });
 
   testWidgets('directory follows toolbar then tabs ordering from the approved baseline', (

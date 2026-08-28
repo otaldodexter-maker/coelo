@@ -65,6 +65,20 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   }
 
   @override
+  void didUpdateWidget(covariant DailyRoutineDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository)) return;
+    _controller
+      ..removeListener(_refresh)
+      ..dispose();
+    _search.clear();
+    _lastCanManage = false;
+    _selectedType = RoutineEntryKind.model;
+    _controller = RoutineDirectoryController(widget.repository)..addListener(_refresh);
+    _controller.load();
+  }
+
+  @override
   void dispose() {
     _controller
       ..removeListener(_refresh)
