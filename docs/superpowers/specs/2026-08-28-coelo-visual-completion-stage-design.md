@@ -708,6 +708,47 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
 Flutter local.
 
+### V3.13 Usuários internos — abertura — 2026-08-28 13:08 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V3 permanece 1/7 (14,29%). |
+| Tela e rota | Diretório, criação e edição de usuários internos/plataforma, produção e `/dev`. |
+| Baseline e índice | Instituições, `pattern.admin-directory`, Criar/Editar Instituição, controles de formulário e `SuperadminFormActionFooter`. |
+| RED planejado | Inventariar deep link de edição, campo CPF e datas; exigir máscara visual de CPF e calendário Coelo no primeiro gap confirmado. |
+| Fora do recorte | Sem persistência remota, Supabase ou Assessments. |
+| Tempo usado | 1 h 47 min acumulados. |
+| Estimativa | 1–2 h para V3.13; 8 h 13 min restam na janela. |
+| Próximo item exato | Localizar página/testes/rotas de usuários internos e escrever RED de edição+CPF+data. |
+
+Percentuais: entrega V3 1/7 (14,29%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.13 Usuários internos — checkpoint local-green — 2026-08-28 13:15 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V3 = 2/7 (28,57%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Criação e edição `/dev/internal-users/...`; diretório e detalhe preservados. |
+| Arquivos alterados | `platform_user_form_page.dart`; `CoeloDateRangeField`; testes de formulário e componente; spec e rastreador. |
+| Correções | CPF agora formata progressivamente `000.000.000-00` em criação/edição e continua validado por dígitos. Nascimento deixou o campo textual e usa o calendário Coelo existente em modo público de seleção única, opcional, limitado até hoje. Deep link de edição permaneceu funcional. |
+| Testes | REDs de máscara/calendário reproduzidos. GREEN: 28/28 Usuários internos não-golden+rotas; 11/11 calendário Coelo; analyzers focados sem issues; validador visual e diff-check verdes. Comandos inicialmente lançados do cwd incorreto falharam apenas por resolução de caminho e foram repetidos nos projetos corretos. |
+| Responsividade e acessibilidade | Suítes cobrem 375/768/1024/1440 e 200%; calendário mantém teclado, Escape e retorno de foco. Inspeção das saídas create light 375 e edit dark 1440 confirmou máscara, calendário, rodapé e ausência de corte. |
+| Goldens e bloqueios | Referências existentes divergiram de 0,41% a 47,07%; não atualizadas. Deltas pequenos de create/edit refletem o novo controle; deltas grandes do diretório permanecem ligados ao shell V1. Aceite humano pendente. Produção/backend e Assessments intocados. |
+| Tempo usado | 0 h 08 min no item; 1 h 54 min acumulados. |
+| Estimativa restante | 8 h 06 min da janela; V3.14 estimada em 1–2 h. |
+| Próximo item exato | V3.14 Perfis e modelos de acesso: inventariar lista/criação/detalhe/edição local e escrever RED da primeira rota ausente. |
+| Conhecimento | `no-op`: seleção única ampliou componente existente e aplicou requisito aprovado, sem nova regra durável. |
+
+Percentuais: entrega V3 2/7 (28,57%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 ### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
 
 | Campo | Registro |

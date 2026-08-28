@@ -19,6 +19,7 @@ class CoeloDateRangeField extends StatefulWidget {
     this.errorText,
     this.showQuickRanges = true,
     this.labelText = 'Período',
+    this.selectionMode = CoeloDateSelectionMode.range,
     super.key,
   });
 
@@ -32,6 +33,7 @@ class CoeloDateRangeField extends StatefulWidget {
   final String? errorText;
   final bool showQuickRanges;
   final String labelText;
+  final CoeloDateSelectionMode selectionMode;
 
   @override
   State<CoeloDateRangeField> createState() => _CoeloDateRangeFieldState();
@@ -56,6 +58,7 @@ class _CoeloDateRangeFieldState extends State<CoeloDateRangeField> {
       selectableDayPredicate: widget.selectableDayPredicate,
       currentDate: widget.currentDate,
       showQuickRanges: widget.showQuickRanges,
+      selectionMode: widget.selectionMode,
     );
     if (!mounted) return;
     if (result != widget.value) widget.onChanged(result);
@@ -70,7 +73,11 @@ class _CoeloDateRangeFieldState extends State<CoeloDateRangeField> {
       enabled: widget.enabled,
       label: widget.labelText,
       value: value == null
-          ? 'Nenhum período selecionado'
+          ? widget.selectionMode == CoeloDateSelectionMode.single
+                ? 'Nenhuma data selecionada'
+                : 'Nenhum período selecionado'
+          : widget.selectionMode == CoeloDateSelectionMode.single
+          ? _full(value.start)
           : '${_full(value.start)} até ${_full(value.end)}',
       child: FocusableActionDetector(
         focusNode: _focusNode,
@@ -103,7 +110,11 @@ class _CoeloDateRangeFieldState extends State<CoeloDateRangeField> {
             ),
             child: Text(
               value == null
-                  ? 'Selecione um período'
+                  ? widget.selectionMode == CoeloDateSelectionMode.single
+                        ? 'Selecione uma data'
+                        : 'Selecione um período'
+                  : widget.selectionMode == CoeloDateSelectionMode.single
+                  ? _numeric(value.start)
                   : '${_numeric(value.start)} – ${_numeric(value.end)}',
             ),
           ),
@@ -131,13 +142,16 @@ Future<DateTimeRange?> showCoeloDateRangePicker({
       backgroundColor: Theme.of(dialogContext).colorScheme.surface,
       surfaceTintColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(CoeloSpacing.space4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+      ),
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 760, maxHeight: 760),
         child: CoeloDateRangePicker(
           value: initial,
-          onChanged: (next) => Navigator.of(dialogContext).pop(next ?? const _ClearResult()),
+          onChanged: (next) =>
+              Navigator.of(dialogContext).pop(next ?? const _ClearResult()),
           firstDate: firstDate,
           lastDate: lastDate,
           selectableDayPredicate: selectableDayPredicate,
@@ -215,7 +229,11 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
       (widget.selectableDayPredicate?.call(value) ?? true);
 
   bool _rangeAllowed(DateTime start, DateTime end) {
-    for (var cursor = start; !cursor.isAfter(end); cursor = cursor.add(const Duration(days: 1))) {
+    for (
+      var cursor = start;
+      !cursor.isAfter(end);
+      cursor = cursor.add(const Duration(days: 1))
+    ) {
       if (!_selectable(cursor)) return false;
     }
     return true;
@@ -282,7 +300,8 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
   String get _headerTitle => switch (_view) {
     _CalendarView.days => _title(_month),
     _CalendarView.months => '${_month.year}',
-    _CalendarView.years => '${(_month.year ~/ 10) * 10}–${((_month.year ~/ 10) * 10) + 9}',
+    _CalendarView.years =>
+      '${(_month.year ~/ 10) * 10}–${((_month.year ~/ 10) * 10) + 9}',
   };
 
   @override
@@ -290,7 +309,9 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
     final colors = Theme.of(context).colorScheme;
     final error = widget.errorText ?? _selectionError;
     return Shortcuts(
-      shortcuts: const {SingleActivator(LogicalKeyboardKey.escape): DismissIntent()},
+      shortcuts: const {
+        SingleActivator(LogicalKeyboardKey.escape): DismissIntent(),
+      },
       child: Actions(
         actions: {
           DismissIntent: CallbackAction<DismissIntent>(
@@ -321,7 +342,9 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
                           Expanded(
                             child: TextButton(
                               key: const ValueKey('coelo-date-range-title'),
-                              onPressed: _view == _CalendarView.years ? null : _advanceView,
+                              onPressed: _view == _CalendarView.years
+                                  ? null
+                                  : _advanceView,
                               child: Text(
                                 _headerTitle,
                                 textAlign: TextAlign.center,
@@ -354,7 +377,11 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
                           children: [
                             Expanded(child: _calendar(_month)),
                             const SizedBox(width: CoeloSpacing.space6),
-                            Expanded(child: _calendar(DateTime(_month.year, _month.month + 1))),
+                            Expanded(
+                              child: _calendar(
+                                DateTime(_month.year, _month.month + 1),
+                              ),
+                            ),
                           ],
                         ),
                         _CalendarView.days => _calendar(_month),
@@ -365,7 +392,10 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
                         const SizedBox(height: CoeloSpacing.space3),
                         Semantics(
                           liveRegion: true,
-                          child: Text(error, style: TextStyle(color: colors.error)),
+                          child: Text(
+                            error,
+                            style: TextStyle(color: colors.error),
+                          ),
                         ),
                       ],
                       const SizedBox(height: CoeloSpacing.space4),
@@ -387,7 +417,10 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
       children: [
-        OutlinedButton(onPressed: () => _quick(_today, _today), child: const Text('Hoje')),
+        OutlinedButton(
+          onPressed: () => _quick(_today, _today),
+          child: const Text('Hoje'),
+        ),
         OutlinedButton(
           onPressed: () => _quick(sunday, sunday.add(const Duration(days: 6))),
           child: const Text('Esta semana'),
@@ -411,7 +444,11 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
     );
     final apply = FilledButton(
       key: const ValueKey('coelo-date-range-apply'),
-      onPressed: widget.enabled && _start != null && _end != null && _selectionError == null
+      onPressed:
+          widget.enabled &&
+              _start != null &&
+              _end != null &&
+              _selectionError == null
           ? () => widget.onChanged(DateTimeRange(start: _start!, end: _end!))
           : null,
       child: const Text('Aplicar'),
@@ -456,7 +493,9 @@ class _CoeloDateRangePickerState extends State<CoeloDateRangePicker> {
           !DateTime(_month.year, monthNumber + 1, 0).isBefore(_first) &&
           !DateTime(_month.year, monthNumber).isAfter(_last);
       return TextButton(
-        key: ValueKey('coelo-month-${_month.year}-${monthNumber.toString().padLeft(2, '0')}'),
+        key: ValueKey(
+          'coelo-month-${_month.year}-${monthNumber.toString().padLeft(2, '0')}',
+        ),
         onPressed: enabled
             ? () => setState(() {
                 _month = DateTime(_month.year, monthNumber);
@@ -525,7 +564,15 @@ class _CalendarMonth extends StatelessWidget {
         const SizedBox(height: CoeloSpacing.space2),
         Row(
           children: [
-            for (final value in const ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'])
+            for (final value in const [
+              'Dom',
+              'Seg',
+              'Ter',
+              'Qua',
+              'Qui',
+              'Sex',
+              'Sáb',
+            ])
               Expanded(child: Center(child: Text(value))),
           ],
         ),
@@ -554,7 +601,9 @@ class _CalendarMonth extends StatelessWidget {
                 key: ValueKey('coelo-date-${_key(value)}'),
                 onPressed: selectable(value) ? () => onSelected(value) : null,
                 style: ButtonStyle(
-                  minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
+                  minimumSize: const WidgetStatePropertyAll(
+                    Size.square(CoeloSize.touchMin),
+                  ),
                   padding: const WidgetStatePropertyAll(EdgeInsets.zero),
                   foregroundColor: WidgetStateProperty.resolveWith((states) {
                     if (selected) return colors.onPrimary;
@@ -563,7 +612,9 @@ class _CalendarMonth extends StatelessWidget {
                         states.contains(WidgetState.pressed)) {
                       return colors.primary;
                     }
-                    return value.month == month.month ? colors.onSurface : colors.onSurfaceVariant;
+                    return value.month == month.month
+                        ? colors.onSurface
+                        : colors.onSurfaceVariant;
                   }),
                   backgroundColor: WidgetStateProperty.resolveWith((states) {
                     if (selected) return colors.primary;
@@ -580,9 +631,13 @@ class _CalendarMonth extends StatelessWidget {
                         : BorderSide.none,
                   ),
                   shape: WidgetStatePropertyAll(
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.full)),
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(CoeloRadius.full),
+                    ),
                   ),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                  overlayColor: const WidgetStatePropertyAll(
+                    Colors.transparent,
+                  ),
                 ),
                 child: Text('${value.day}'),
               ),
@@ -601,9 +656,11 @@ class _ClearResult {
 enum _CalendarView { days, months, years }
 
 DateTime _day(DateTime value) => DateTime(value.year, value.month, value.day);
-DateTimeRange? _normalize(DateTimeRange? value) =>
-    value == null ? null : DateTimeRange(start: _day(value.start), end: _day(value.end));
-bool _same(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
+DateTimeRange? _normalize(DateTimeRange? value) => value == null
+    ? null
+    : DateTimeRange(start: _day(value.start), end: _day(value.end));
+bool _same(DateTime a, DateTime b) =>
+    a.year == b.year && a.month == b.month && a.day == b.day;
 String _key(DateTime value) =>
     '${value.year.toString().padLeft(4, '0')}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
 String _numeric(DateTime value) =>
@@ -645,7 +702,10 @@ Widget coeloDateRangePickerLightPreview() => MaterialApp(
   theme: CoeloTheme.light,
   home: Scaffold(
     body: CoeloDateRangePicker(
-      value: DateTimeRange(start: DateTime(2026, 8, 13), end: DateTime(2026, 8, 18)),
+      value: DateTimeRange(
+        start: DateTime(2026, 8, 13),
+        end: DateTime(2026, 8, 18),
+      ),
       onChanged: (_) {},
       firstDate: DateTime(2025),
       lastDate: DateTime(2027, 12, 31),
@@ -659,7 +719,10 @@ Widget coeloDateRangePickerCompactPreview() => MaterialApp(
   theme: CoeloTheme.light,
   home: Scaffold(
     body: CoeloDateRangePicker(
-      value: DateTimeRange(start: DateTime(2026, 8, 13), end: DateTime(2026, 8, 18)),
+      value: DateTimeRange(
+        start: DateTime(2026, 8, 13),
+        end: DateTime(2026, 8, 18),
+      ),
       onChanged: (_) {},
       firstDate: DateTime(2025),
       lastDate: DateTime(2027, 12, 31),
@@ -673,7 +736,10 @@ Widget coeloDateRangePickerDarkPreview() => MaterialApp(
   theme: CoeloTheme.dark,
   home: Scaffold(
     body: CoeloDateRangePicker(
-      value: DateTimeRange(start: DateTime(2026, 8, 13), end: DateTime(2026, 8, 18)),
+      value: DateTimeRange(
+        start: DateTime(2026, 8, 13),
+        end: DateTime(2026, 8, 18),
+      ),
       onChanged: (_) {},
       firstDate: DateTime(2025),
       lastDate: DateTime(2027, 12, 31),

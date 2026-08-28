@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_act
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,10 +32,20 @@ void main() {
 
     expect(find.textContaining('acesso interno exclusivo ao Superadmin'), findsWidgets);
     expect(find.byKey(const Key('platform-user-birth-date')), findsOneWidget);
+    expect(find.byType(CoeloDateRangeField), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     await tester.enterText(find.byKey(const Key('platform-user-first-name')), 'Lia');
     await tester.enterText(find.byKey(const Key('platform-user-last-name')), 'Coelo');
     await tester.enterText(find.byKey(const Key('platform-user-cpf')), '52998224725');
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('platform-user-cpf'))).controller!.text,
+      '529.982.247-25',
+    );
+    await tester.tap(find.byKey(const Key('platform-user-birth-date')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('coelo-date-range-title')), findsOneWidget);
+    await tester.tap(find.byTooltip('Fechar seletor de período'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 
@@ -112,6 +123,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    final cpf = tester.widget<TextFormField>(find.byKey(const Key('platform-user-cpf')));
+    expect(cpf.controller!.text, matches(RegExp(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$')));
+    expect(find.byType(CoeloDateRangeField), findsOneWidget);
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 

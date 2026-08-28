@@ -50,7 +50,6 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
   final _displayName = TextEditingController();
-  final _birthDate = TextEditingController();
   final _cpf = TextEditingController();
   final _email = TextEditingController();
   final _mobile = TextEditingController();
@@ -73,6 +72,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   PlatformUserScope _scope = PlatformUserScope.limited;
   Set<String> _scopeIds = {};
   List<int>? _avatarBytes;
+  DateTime? _birthDateValue;
   bool _saving = false;
   bool _dirty = false;
   double _footerHeight = 0;
@@ -90,8 +90,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       _firstName.text = record.firstName;
       _lastName.text = record.lastName;
       _displayName.text = record.identity.displayName;
-      _birthDate.text = _formatInputDate(record.identity.birthDate);
-      _cpf.text = record.identity.cpf;
+      _birthDateValue = record.identity.birthDate;
+      _cpf.text = _formatCpfInput(record.identity.cpf);
       _email.text = record.email;
       _mobile.text = record.identity.mobile;
       _additionalPhone.text = record.identity.additionalPhone;
@@ -119,7 +119,6 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     _firstName.dispose();
     _lastName.dispose();
     _displayName.dispose();
-    _birthDate.dispose();
     _cpf.dispose();
     _email.dispose();
     _mobile.dispose();
@@ -185,7 +184,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       firstName: _firstName.text,
       lastName: _lastName.text,
       displayName: _displayName.text,
-      birthDate: _parseInputDate(_birthDate.text),
+      birthDate: _birthDateValue,
       cpf: _cpf.text,
       professionalEmail: _email.text,
       mobile: _mobile.text,
@@ -412,13 +411,21 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
             Icons.badge_outlined,
             key: const Key('platform-user-display-name'),
           ),
-          _field(
-            _birthDate,
-            'Data de nascimento (opcional)',
-            Icons.cake_outlined,
+          CoeloDateRangeField(
             key: const Key('platform-user-birth-date'),
-            keyboardType: TextInputType.datetime,
-            validator: _validateBirthDate,
+            value: _birthDateValue == null
+                ? null
+                : DateTimeRange(start: _birthDateValue!, end: _birthDateValue!),
+            onChanged: (value) {
+              setState(() => _birthDateValue = value?.start);
+              _changed();
+            },
+            firstDate: DateTime(1900),
+            lastDate: DateTime.now(),
+            currentDate: DateTime.now(),
+            showQuickRanges: false,
+            selectionMode: CoeloDateSelectionMode.single,
+            labelText: 'Data de nascimento (opcional)',
           ),
         ]),
         const SizedBox(height: CoeloSpacing.space4),
@@ -429,6 +436,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
             Icons.fingerprint,
             key: const Key('platform-user-cpf'),
             keyboardType: TextInputType.number,
+            inputFormatters: const [_CpfInputFormatter()],
             validator: (value) =>
                 value == null || !isValidPlatformUserCpf(value) ? 'Informe um CPF válido.' : null,
           ),
@@ -684,6 +692,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     TextInputType? keyboardType,
     int maxLines = 1,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
   }) => CoeloFormTextField(
     fieldKey: key,
     controller: controller,
@@ -692,6 +701,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     enabled: enabled,
     keyboardType: keyboardType,
     maxLines: maxLines,
+    inputFormatters: inputFormatters,
     onChanged: _changed,
     validator: validator,
   );
@@ -793,27 +803,27 @@ final class _CancelIntent extends Intent {
   const _CancelIntent();
 }
 
-String _formatInputDate(DateTime? date) {
-  if (date == null) return '';
-  return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+final class _CpfInputFormatter extends TextInputFormatter {
+  const _CpfInputFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final digits = normalizePlatformUserDigits(newValue.text);
+    final formatted = _formatCpfInput(digits.length > 11 ? digits.substring(0, 11) : digits);
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
 }
 
-DateTime? _parseInputDate(String value) {
-  final parts = value.trim().split('/');
-  if (parts.length != 3) return null;
-  final day = int.tryParse(parts[0]);
-  final month = int.tryParse(parts[1]);
-  final year = int.tryParse(parts[2]);
-  if (day == null || month == null || year == null) return null;
-  final date = DateTime(year, month, day);
-  if (date.day != day || date.month != month || date.year != year) return null;
-  return date;
-}
-
-String? _validateBirthDate(String? value) {
-  if (value == null || value.trim().isEmpty) return null;
-  final date = _parseInputDate(value);
-  if (date == null) return 'Use o formato DD/MM/AAAA.';
-  if (date.isAfter(DateTime(2026, 8, 5))) return 'A data não pode ser futura.';
-  return null;
+String _formatCpfInput(String value) {
+  final digits = normalizePlatformUserDigits(value);
+  final buffer = StringBuffer();
+  for (var index = 0; index < digits.length && index < 11; index++) {
+    if (index == 3 || index == 6) buffer.write('.');
+    if (index == 9) buffer.write('-');
+    buffer.write(digits[index]);
+  }
+  return buffer.toString();
 }

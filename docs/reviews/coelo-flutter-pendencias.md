@@ -2154,6 +2154,47 @@ os GREENs locais.
 | Próximo item exato | V3.13 Usuários internos: inventário de edição, máscara de CPF e calendário Coelo. |
 | Conhecimento capturado | `no-op`: sem regra durável nova. |
 
+## 16.41. V3.13 Usuários internos — abertura — 2026-08-28
+
+**Entrega atual V3:** 14,29% (1/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Usuários internos/plataforma, diretório e formulário `/dev`. |
+| Testes planejados | RED de deep link de edição, máscara de CPF e calendário Coelo conforme gaps reais. |
+| Bloqueios | Backend/Supabase e Assessments fora do recorte. |
+| Tempo realmente usado | 1 h 47 min acumulados, às 13:08 BRT. |
+| Estimativa restante | 1–2 h para V3.13; 8 h 13 min da janela. |
+| Próximo item exato | Inventário de arquivos, rotas e controles de CPF/data. |
+| Conhecimento capturado | Pendente; não criar memória sem regra durável aprovada. |
+
+## 16.42. V3.13 Usuários internos — local-green — 2026-08-28
+
+**Entrega atual V3:** 28,57% (2/7). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Criação/edição de Usuários internos em `/dev/internal-users`. |
+| Arquivos alterados | `platform_user_form_page.dart`; `coelo_date_range_picker.dart`; testes correspondentes; spec e tracker. |
+| Correções realizadas | CPF ganhou máscara progressiva e edição inicial formatada; nascimento passou a calendário Coelo com seleção única, sem datas futuras; edição local e rodapé canônico preservados. |
+| Testes e resultados | REDs reproduzidos; GREEN 28/28 não-golden+rotas e 11/11 calendário; analyzers focados, validador visual e diff-check verdes. Duas invocações no cwd errado falharam por caminho e foram repetidas corretamente. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%; create light 375 e edit dark 1440 inspecionados; foco/Escape/retorno do calendário cobertos. |
+| Bloqueios | Goldens antigos divergiram 0,41%–47,07% e não foram atualizados; deltas pequenos são o campo novo, grandes permanecem no shell V1. Backend/E2E e aceite humano pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 08 min; 1 h 54 min acumulados, às 13:15 BRT. |
+| Estimativa restante | 8 h 06 min da janela; V3.14 = 1–2 h. |
+| Próximo item exato | V3.14 Perfis e modelos de acesso: inventário de lista/criação/detalhe/edição. |
+| Conhecimento capturado | `no-op`: requisito já aprovado, sem regra durável nova. |
+
 ## 17. Histórico
 
 

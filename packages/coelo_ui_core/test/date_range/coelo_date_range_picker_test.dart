@@ -246,6 +246,30 @@ void main() {
     expect(changed, isNull);
   });
 
+  testWidgets('field supports a single-date calendar without range copy', (tester) async {
+    await tester.pumpWidget(
+      _testApp(
+        width: 375,
+        child: CoeloDateRangeField(
+          value: DateTimeRange(start: DateTime(2014, 5, 9), end: DateTime(2014, 5, 9)),
+          onChanged: (_) {},
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2026, 8, 28),
+          currentDate: DateTime(2026, 8, 28),
+          selectionMode: CoeloDateSelectionMode.single,
+          labelText: 'Data de nascimento',
+        ),
+      ),
+    );
+
+    expect(find.text('09/05/2014'), findsOneWidget);
+    expect(find.textContaining('–'), findsNothing);
+    await tester.tap(find.byType(CoeloDateRangeField));
+    await tester.pumpAndSettle();
+    final picker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
+    expect(picker.selectionMode, CoeloDateSelectionMode.single);
+  });
+
   testWidgets('day hover and focus stay in the semantic primary palette', (tester) async {
     await tester.pumpWidget(
       _testApp(
