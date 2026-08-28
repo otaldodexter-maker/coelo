@@ -51,6 +51,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   Object? _error;
   double _footerHeight = 0;
   bool _measurementScheduled = false;
+  var _loadGeneration = 0;
   PlatformUserPage _result = const PlatformUserPage(
     items: [],
     totalCount: 0,
@@ -71,10 +72,46 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   }
 
   @override
+  void didUpdateWidget(covariant PlatformUserDirectoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.repository, widget.repository) &&
+        oldWidget.capability == widget.capability) {
+      return;
+    }
+    _debounce?.cancel();
+    _loadGeneration += 1;
+    _resetSensitiveState();
+    unawaited(_load());
+  }
+
+  @override
   void dispose() {
     _debounce?.cancel();
+    _loadGeneration += 1;
+    _resetSensitiveState();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _resetSensitiveState() {
+    _searchController.clear();
+    _view = PlatformUserDirectoryView.cards;
+    _tableView = PlatformUserTableView.grouped;
+    _profileIds = {};
+    _statuses = {};
+    _scopes = {};
+    _page = 1;
+    _pageSize = PlatformUserQuery.cardsPageSize;
+    _loading = true;
+    _error = null;
+    _footerHeight = 0;
+    _measurementScheduled = false;
+    _result = const PlatformUserPage(
+      items: [],
+      totalCount: 0,
+      page: 1,
+      pageSize: PlatformUserQuery.cardsPageSize,
+    );
   }
 
   PlatformUserQuery get _query => PlatformUserQuery(
@@ -88,8 +125,16 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   );
 
   Future<void> _load() async {
+    final generation = ++_loadGeneration;
+    final repository = widget.repository;
+    final query = _query;
     if (widget.capability == PlatformUserCapability.unauthorized) {
-      if (mounted) setState(() => _loading = false);
+      if (_isCurrent(generation, repository)) {
+        setState(() {
+          _loading = false;
+          _error = null;
+        });
+      }
       return;
     }
     setState(() {
@@ -97,20 +142,23 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
       _error = null;
     });
     try {
-      final result = await widget.repository.fetchPage(_query);
-      if (!mounted) return;
+      final result = await repository.fetchPage(query);
+      if (!_isCurrent(generation, repository)) return;
       setState(() {
         _result = result;
         _loading = false;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!_isCurrent(generation, repository)) return;
       setState(() {
         _error = error;
         _loading = false;
       });
     }
   }
+
+  bool _isCurrent(int generation, PlatformUserRepository repository) =>
+      mounted && generation == _loadGeneration && identical(widget.repository, repository);
 
   void _search(String _) {
     _debounce?.cancel();
@@ -238,6 +286,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             width: searchWidth,
             height: CoeloSize.touchMin,
             child: CoeloSearchField(
+              key: const Key('platform-user-search'),
               controller: _searchController,
               hintText: 'Buscar por nome, e-mail, CPF, celular ou cargo',
               semanticLabel:
@@ -455,7 +504,7 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             pinnedColumn: _column('person', 'Pessoa', 260, _personCell),
             columns: _tableColumns(),
             headerHeight: 56,
-            rowHeight: 64,
+            rowHeight: MediaQuery.textScalerOf(context).scale(1) >= 1.75 ? 88 : 64,
             onRowPressed: widget.onView == null ? null : (item) => widget.onView!(item.id),
           ),
         ),
