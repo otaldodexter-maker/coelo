@@ -1360,6 +1360,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | 17 min de wall-clock confiável neste lote, medidos de 21:40 a 21:57. |
 | Estimativa restante | Nenhuma correção adicional é conhecida neste recorte de shell/Principal após os gates; o total de 207 ações E2E permanece não calculável pelos bloqueios externos já descritos. |
 
+## 16.3. Rotas reais de wizards e fechamento dos REDs do shell — 2026-08-27
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Telas alteradas ou regredidas | Shell persistente; Criar Cardápio; Criar Modelo de cardápio; Criar Formulário; Criar Perfil de cuidado; Criar Plano de medicação. |
+| Arquivos modificados | `superadmin_router.dart`; `dev_medication_plan_repository.dart`; `dev_medication_plan_health_care_repository.dart`; `health_medication_plan_form_page.dart`; `persistent_shell_routes_test.dart`; `meal_plan_development_routes_test.dart`; `forms_fail_closed_routes_test.dart`; `health_care_routes_test.dart`; `dev_medication_plan_repository_test.dart`; `dev_medication_plan_health_care_repository_test.dart`; `medication_plan_ui_contract_test.dart`. |
+| Correções realizadas | As expectativas antigas do shell e de Cuidado foram alinhadas ao redirecionamento produtivo fail-closed. O detalhe produtivo legado de Perfil agora redireciona diretamente ao 503, antes de montar o formulário. As cinco rotas reais `/dev` comprovam um único shell, wizard dentro do contêiner de conteúdo, `SuperadminFormFrame`, navegação de etapas e footer canônicos em 375/768/1024/1440 com texto a 200%. Cardápio/Modelo comprovam repository local e mídia indisponível; Forms e Cuidado comprovam zero chamada aos adapters produtivos. Medicação usa uma única fonte local no create, diretório, detalhe e edição: salva, reaparece na lista, hidrata o mesmo item e atualiza sua versão. O wizard bloqueia dados obrigatórios e vigência invertida, preserva draft/erro/retry sem falso sucesso, mantém o `requestId` em retry idêntico e cria nova intenção somente após edição real; navegar entre etapas não cria revisão de auditoria falsa. Em resposta ambígua, reconcilia primeiro o receipt da intenção original, recupera `planId/version` e aplica a edição sobre o mesmo item, sem duplicar. O repository `/dev` aplica replay global e CAS síncrono; updates concorrentes produzem um sucesso e um conflito. O adapter preserva o contexto institucional (`atHome=false`) e nunca apresenta falsamente “Casa”. Inputs e selects permanecem dentro do viewport após scroll. |
+| Estado atual | `local-green`. Gate conjunto fresco: 49/49; analyzer dos onze arquivos sem issues; formatter aplicado; `git diff --check` verde. Revisão independente final: GREEN, nenhum P0/P1 no delta. Nenhum backend, repository produtivo, fixture produtiva ou golden foi alterado. |
+| Bloqueios | As rotas produtivas mutantes continuam 503 sem capability autoritativa; isso é comportamento fail-closed, não conclusão funcional. Persistência real, mídia, decisões de produto e E2E permanecem fora deste pacote. |
+| Pendências restantes | Inspeção visual humana; contratos backend/capabilities e verificação E2E das 207 ações. |
+| Tempo usado | Cerca de 1 h 30 min de wall-clock desde 21:57; o encerramento exato não foi recuperado pelo shell. Inclui três ciclos de review independente e correção dos P1 encontrados. |
+| Estimativa restante | Nenhum desvio estrutural adicional é conhecido nas cinco rotas cobertas; o total E2E continua não calculável pelos bloqueios externos já registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
