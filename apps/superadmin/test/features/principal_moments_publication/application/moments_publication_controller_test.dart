@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/principal_moments_publication/application/moments_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/domain/moments_publication.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -140,7 +142,225 @@ void main() {
       expect(unauthorizedController.state.phase, MomentsPublicationPhase.unauthorized);
       expect(unauthorizedController.state.message, 'Você não pode publicar neste contexto.');
     });
+
+    test('preserves edits made during save and keeps the command single-flight', () async {
+      final repository = _DeferredMomentsRepository();
+      final controller = MomentsPublicationController(
+        repository: repository,
+        context: MomentsPublicationContext.demo,
+      )..setCaption('Legenda A');
+
+      final firstSave = controller.saveDraft();
+      controller.setCaption('Legenda B');
+      final duplicateSave = controller.saveDraft();
+
+      expect(repository.saveCalls, 1);
+      repository.saveCompleter.complete(
+        repository.savedSnapshots.single.copyWith(id: 'moment-1', version: 1),
+      );
+      await Future.wait([firstSave, duplicateSave]);
+
+      expect(controller.state.draft.caption, 'Legenda B');
+      expect(controller.state.draft.id, 'moment-1');
+      expect(controller.state.draft.version, 1);
+      expect(controller.state.phase, MomentsPublicationPhase.editing);
+    });
+
+    test('reports a confirmed publish exactly once after an edit', () async {
+      final repository = _DeferredMomentsRepository();
+      final controller =
+          MomentsPublicationController(
+              repository: repository,
+              context: MomentsPublicationContext.demo,
+            )
+            ..setCaption('Legenda A')
+            ..addMedia(MomentsMediaDraft.demo(0))
+            ..toggleAudience(MomentsAudienceKind.families);
+
+      final firstPublish = controller.publish();
+      final duplicatePublish = controller.publish();
+      controller.setCaption('Legenda B');
+      repository.publishCompleter.complete(
+        const MomentsPublication(id: 'publication-1', status: MomentsStatus.published),
+      );
+
+      expect(await firstPublish, isNotNull);
+      expect(await duplicatePublish, isNull);
+      expect(repository.publishCalls, 1);
+      expect(controller.state.draft.caption, 'Legenda A');
+      expect(controller.state.phase, MomentsPublicationPhase.success);
+    });
+
+    test('leaves an edited draft retryable when save fails', () async {
+      final repository = _DeferredErrorMomentsRepository();
+      final controller = MomentsPublicationController(
+        repository: repository,
+        context: MomentsPublicationContext.demo,
+      )..setCaption('Legenda A');
+
+      final save = controller.saveDraft();
+      controller.setCaption('Legenda B');
+      repository.saveCompleter.completeError(Exception('offline'));
+      await save;
+
+      expect(controller.state.draft.caption, 'Legenda B');
+      expect(controller.state.phase, MomentsPublicationPhase.failure);
+      expect(controller.state.message, 'Não foi possível salvar o rascunho.');
+    });
+
+    test('keeps the published snapshot stable and retryable when publish fails', () async {
+      final repository = _DeferredErrorMomentsRepository();
+      final controller =
+          MomentsPublicationController(
+              repository: repository,
+              context: MomentsPublicationContext.demo,
+            )
+            ..setCaption('Legenda A')
+            ..addMedia(MomentsMediaDraft.demo(0))
+            ..toggleAudience(MomentsAudienceKind.families);
+
+      final publish = controller.publish();
+      controller.setCaption('Legenda ignorada durante publicação');
+      repository.publishCompleter.completeError(Exception('offline'));
+      await publish;
+
+      expect(controller.state.draft.caption, 'Legenda A');
+      expect(controller.state.phase, MomentsPublicationPhase.failure);
+      expect(controller.state.message, 'Não foi possível publicar agora.');
+    });
+
+    test('shares the single-flight lock between save and publish', () async {
+      final repository = _DeferredMomentsRepository();
+      final controller =
+          MomentsPublicationController(
+              repository: repository,
+              context: MomentsPublicationContext.demo,
+            )
+            ..addMedia(MomentsMediaDraft.demo(0))
+            ..toggleAudience(MomentsAudienceKind.families);
+
+      final save = controller.saveDraft();
+      final publish = controller.publish();
+
+      expect(repository.saveCalls, 1);
+      expect(repository.publishCalls, 0);
+      expect(await publish, isNull);
+      repository.saveCompleter.complete(MomentsDraft(id: 'moment-1', version: 1));
+      await save;
+    });
+
+    test('does not save the empty initial draft while load is pending', () async {
+      final repository = _DeferredLoadMomentsRepository();
+      final controller = MomentsPublicationController(
+        repository: repository,
+        context: MomentsPublicationContext.demo,
+      );
+
+      final load = controller.load();
+      await controller.saveDraft();
+
+      expect(repository.saveCalls, 0);
+      repository.loadCompleter.complete(
+        MomentsDraft(id: 'moment-existing', caption: 'Existente', version: 3),
+      );
+      await load;
+
+      expect(controller.state.draft.id, 'moment-existing');
+      expect(controller.state.draft.caption, 'Existente');
+      expect(controller.state.draft.version, 3);
+    });
+
+    test('ignores command completion after dispose', () async {
+      final repository = _DeferredMomentsRepository();
+      final controller = MomentsPublicationController(
+        repository: repository,
+        context: MomentsPublicationContext.demo,
+      );
+
+      final save = controller.saveDraft();
+      controller.dispose();
+      repository.saveCompleter.complete(MomentsDraft(id: 'moment-1', version: 1));
+
+      await expectLater(save, completes);
+    });
+
+    test('ignores publish completion after dispose', () async {
+      final repository = _DeferredMomentsRepository();
+      final controller =
+          MomentsPublicationController(
+              repository: repository,
+              context: MomentsPublicationContext.demo,
+            )
+            ..addMedia(MomentsMediaDraft.demo(0))
+            ..toggleAudience(MomentsAudienceKind.families);
+
+      final publish = controller.publish();
+      controller.dispose();
+      repository.publishCompleter.complete(
+        const MomentsPublication(id: 'publication-1', status: MomentsStatus.published),
+      );
+
+      await expectLater(publish, completion(isNull));
+    });
   });
+}
+
+final class _DeferredLoadMomentsRepository implements MomentsPublicationRepository {
+  final loadCompleter = Completer<MomentsDraft?>();
+  var saveCalls = 0;
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) => loadCompleter.future;
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) async =>
+      const MomentsPublication(id: 'publication-1', status: MomentsStatus.published);
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) async {
+    saveCalls += 1;
+    return draft;
+  }
+}
+
+final class _DeferredErrorMomentsRepository implements MomentsPublicationRepository {
+  final saveCompleter = Completer<MomentsDraft>();
+  final publishCompleter = Completer<MomentsPublication>();
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) async => null;
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) =>
+      publishCompleter.future;
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) =>
+      saveCompleter.future;
+}
+
+final class _DeferredMomentsRepository implements MomentsPublicationRepository {
+  final saveCompleter = Completer<MomentsDraft>();
+  final publishCompleter = Completer<MomentsPublication>();
+  final savedSnapshots = <MomentsDraft>[];
+  var saveCalls = 0;
+  var publishCalls = 0;
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) async => null;
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) {
+    publishCalls += 1;
+    return publishCompleter.future;
+  }
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) {
+    saveCalls += 1;
+    savedSnapshots.add(draft);
+    return saveCompleter.future;
+  }
 }
 
 final class _ThrowingMomentsRepository implements MomentsPublicationRepository {

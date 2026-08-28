@@ -100,21 +100,41 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       color: Theme.of(context).colorScheme.surface,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, _) => SuperadminFormFrame(
-          viewportWidth: MediaQuery.sizeOf(context).width,
-          scrollKey: const Key('moments-publication-scroll'),
-          navigation: _stepNavigation(),
-          body: _stepBody(),
-          footer: _ActionFooter(
-            state: _controller.state,
-            currentStep: _currentStep,
-            onCancel: _cancel,
-            onPrevious: _previousStep,
-            onContinue: _continueStep,
-            onSave: _saveDraft,
-            onPublish: _publish,
-          ),
-        ),
+        builder: (context, _) {
+          if (_controller.state.phase == MomentsPublicationPhase.loading) {
+            return const Center(
+              child: CircularProgressIndicator(key: Key('moments-publication-loading')),
+            );
+          }
+          final publishing = _controller.state.phase == MomentsPublicationPhase.publishing;
+          return SuperadminFormFrame(
+            viewportWidth: MediaQuery.sizeOf(context).width,
+            scrollKey: const Key('moments-publication-scroll'),
+            navigation: ExcludeFocus(
+              key: const Key('moments-publication-navigation-focus-lock'),
+              excluding: publishing,
+              child: AbsorbPointer(absorbing: publishing, child: _stepNavigation()),
+            ),
+            body: ExcludeFocus(
+              key: const Key('moments-publication-body-focus-lock'),
+              excluding: publishing,
+              child: AbsorbPointer(
+                key: const Key('moments-publication-body-lock'),
+                absorbing: publishing,
+                child: _stepBody(),
+              ),
+            ),
+            footer: _ActionFooter(
+              state: _controller.state,
+              currentStep: _currentStep,
+              onCancel: _cancel,
+              onPrevious: _previousStep,
+              onContinue: _continueStep,
+              onSave: _saveDraft,
+              onPublish: _publish,
+            ),
+          );
+        },
       ),
     );
   }
@@ -457,6 +477,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   }
 
   Future<void> _publish() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final publication = await _controller.publish();
     if (!mounted) return;
     _showMessage(

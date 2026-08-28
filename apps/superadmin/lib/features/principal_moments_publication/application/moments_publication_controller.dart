@@ -37,23 +37,35 @@ final class MomentsPublicationController extends ChangeNotifier {
   final MomentsPublicationRepository repository;
   final MomentsPublicationContext context;
   MomentsPublicationState _state;
+  var _loadGeneration = 0;
+  var _editGeneration = 0;
+  var _loadInFlight = false;
+  var _commandInFlight = false;
+  var _disposed = false;
 
   MomentsPublicationState get state => _state;
 
   Future<void> load() async {
+    if (_disposed || _loadInFlight || _commandInFlight) return;
+    final generation = ++_loadGeneration;
+    _loadInFlight = true;
     _emit(_state.copyWith(phase: MomentsPublicationPhase.loading, clearMessage: true));
     try {
       final draft = await repository.loadDraft(context);
+      if (!_isCurrentLoad(generation)) return;
       _emit(
         _state.copyWith(draft: draft ?? MomentsDraft(), phase: MomentsPublicationPhase.editing),
       );
     } on Exception {
+      if (!_isCurrentLoad(generation)) return;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.failure,
           message: 'Não foi possível carregar o rascunho.',
         ),
       );
+    } finally {
+      _loadInFlight = false;
     }
   }
 
@@ -92,11 +104,27 @@ final class MomentsPublicationController extends ChangeNotifier {
   }
 
   Future<void> saveDraft() async {
+    if (_disposed || _loadInFlight || _commandInFlight) return;
+    final draft = _state.draft;
+    final generation = _editGeneration;
+    _commandInFlight = true;
     _emit(_state.copyWith(phase: MomentsPublicationPhase.saving, clearMessage: true));
     try {
-      final saved = await repository.saveDraft(context, _state.draft);
+      final saved = await repository.saveDraft(context, draft);
+      if (_disposed) return;
+      if (!_isCurrentCommand(generation)) {
+        _emit(
+          _state.copyWith(
+            draft: _state.draft.copyWith(id: saved.id, version: saved.version),
+            phase: MomentsPublicationPhase.editing,
+            clearMessage: true,
+          ),
+        );
+        return;
+      }
       _emit(_state.copyWith(draft: saved, phase: MomentsPublicationPhase.saved));
     } on MomentsPublicationConflict {
+      if (_disposed) return;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.conflict,
@@ -104,6 +132,7 @@ final class MomentsPublicationController extends ChangeNotifier {
         ),
       );
     } on MomentsPublicationUnauthorized {
+      if (_disposed) return;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.unauthorized,
@@ -111,16 +140,20 @@ final class MomentsPublicationController extends ChangeNotifier {
         ),
       );
     } on Exception {
+      if (_disposed) return;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.failure,
           message: 'Não foi possível salvar o rascunho.',
         ),
       );
+    } finally {
+      _commandInFlight = false;
     }
   }
 
   Future<MomentsPublication?> publish() async {
+    if (_disposed || _loadInFlight || _commandInFlight) return null;
     if (_state.draft.media.isEmpty) {
       _emit(_state.copyWith(message: 'Adicione pelo menos uma mídia para publicar.'));
       return null;
@@ -129,12 +162,16 @@ final class MomentsPublicationController extends ChangeNotifier {
       _emit(_state.copyWith(message: 'Escolha pelo menos um público.'));
       return null;
     }
+    final draft = _state.draft;
+    _commandInFlight = true;
     _emit(_state.copyWith(phase: MomentsPublicationPhase.publishing, clearMessage: true));
     try {
-      final publication = await repository.publish(context, _state.draft);
+      final publication = await repository.publish(context, draft);
+      if (_disposed) return null;
       _emit(_state.copyWith(phase: MomentsPublicationPhase.success));
       return publication;
     } on MomentsPublicationConflict {
+      if (_disposed) return null;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.conflict,
@@ -142,6 +179,7 @@ final class MomentsPublicationController extends ChangeNotifier {
         ),
       );
     } on MomentsPublicationUnauthorized {
+      if (_disposed) return null;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.unauthorized,
@@ -149,24 +187,44 @@ final class MomentsPublicationController extends ChangeNotifier {
         ),
       );
     } on Exception {
+      if (_disposed) return null;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.failure,
           message: 'Não foi possível publicar agora.',
         ),
       );
+    } finally {
+      _commandInFlight = false;
     }
     return null;
   }
 
   void _edit(MomentsDraft draft) {
-    _emit(
-      _state.copyWith(draft: draft, phase: MomentsPublicationPhase.editing, clearMessage: true),
-    );
+    if (_disposed || _loadInFlight || _state.phase == MomentsPublicationPhase.publishing) {
+      return;
+    }
+    _editGeneration += 1;
+    _loadGeneration += 1;
+    final phase = _commandInFlight ? _state.phase : MomentsPublicationPhase.editing;
+    _emit(_state.copyWith(draft: draft, phase: phase, clearMessage: true));
   }
 
+  bool _isCurrentLoad(int generation) => !_disposed && generation == _loadGeneration;
+
+  bool _isCurrentCommand(int generation) => !_disposed && generation == _editGeneration;
+
   void _emit(MomentsPublicationState state) {
+    if (_disposed) return;
     _state = state;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _loadGeneration += 1;
+    _editGeneration += 1;
+    super.dispose();
   }
 }

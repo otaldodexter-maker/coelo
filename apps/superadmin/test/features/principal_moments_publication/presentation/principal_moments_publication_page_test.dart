@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/principal_moments_publication/application/moments_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/domain/moments_publication.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
@@ -8,6 +10,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -23,17 +26,21 @@ void main() {
     ValueChanged<MomentsDraft>? onDraftSaved,
     ValueChanged<MomentsPublication>? onPublished,
     VoidCallback? onClose,
+    MomentsPublicationRepository? repository,
+    bool settle = true,
   }) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final controller = MomentsPublicationController(
-      repository: InMemoryMomentsPublicationRepository(
-        draft: MomentsDraft(
-          caption: 'Aprender juntos é crescer juntos. 🌱',
-          audiences: const {MomentsAudienceKind.families},
-          media: List.generate(5, MomentsMediaDraft.demo),
-        ),
-      ),
+      repository:
+          repository ??
+          InMemoryMomentsPublicationRepository(
+            draft: MomentsDraft(
+              caption: 'Aprender juntos é crescer juntos. 🌱',
+              audiences: const {MomentsAudienceKind.families},
+              media: List.generate(5, MomentsMediaDraft.demo),
+            ),
+          ),
       context: MomentsPublicationContext.demo,
     );
     await tester.pumpWidget(
@@ -54,7 +61,11 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
     return controller;
   }
 
@@ -236,6 +247,108 @@ void main() {
     expect(controller.state.phase, MomentsPublicationPhase.success);
   });
 
+  testWidgets('does not close or overwrite an edit made while saving', (tester) async {
+    final repository = _DeferredSaveMomentsRepository();
+    var closeCalls = 0;
+    final controller = await pumpPage(
+      tester,
+      size: const Size(768, 1024),
+      repository: repository,
+      onClose: () => closeCalls += 1,
+    );
+
+    await tester.enterText(find.byKey(const Key('moments-publication-caption')), 'Legenda A');
+    await tester.tap(find.byKey(const Key('moments-publication-save')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('moments-publication-caption')), 'Legenda B');
+    expect(
+      tester.widget<OutlinedButton>(find.byKey(const Key('moments-publication-save'))).onPressed,
+      isNull,
+    );
+    expect(find.byType(SnackBar), findsNothing);
+    repository.saveCompleter.complete(
+      repository.savedSnapshot!.copyWith(id: 'moment-1', version: 1),
+    );
+    await tester.pumpAndSettle();
+
+    expect(closeCalls, 0);
+    expect(controller.state.phase, MomentsPublicationPhase.editing);
+    expect(controller.state.draft.caption, 'Legenda B');
+    expect(tester.widget<EditableText>(find.byType(EditableText)).controller.text, 'Legenda B');
+  });
+
+  testWidgets('keeps footer actions disabled while the initial load is pending', (tester) async {
+    final repository = _DeferredPageLoadMomentsRepository();
+    await pumpPage(tester, size: const Size(768, 1024), repository: repository, settle: false);
+
+    expect(find.byKey(const Key('moments-publication-loading')), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-caption')), findsNothing);
+    expect(find.byKey(const Key('moments-publication-save')), findsNothing);
+    expect(find.byKey(const Key('moments-publication-continue')), findsNothing);
+    expect(repository.saveCalls, 0);
+
+    repository.loadCompleter.complete(MomentsDraft(caption: 'Existente'));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('locks the editable body while publish is pending', (tester) async {
+    final repository = _DeferredPagePublishMomentsRepository();
+    var publishedCalls = 0;
+    var closeCalls = 0;
+    final controller = await pumpPage(
+      tester,
+      size: const Size(768, 1024),
+      repository: repository,
+      onPublished: (_) => publishedCalls += 1,
+      onClose: () => closeCalls += 1,
+    );
+
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-publish')));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<AbsorbPointer>(find.byKey(const Key('moments-publication-body-lock')))
+          .absorbing,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<ExcludeFocus>(find.byKey(const Key('moments-publication-body-focus-lock')))
+          .excluding,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<ExcludeFocus>(find.byKey(const Key('moments-publication-navigation-focus-lock')))
+          .excluding,
+      isTrue,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    controller.setCaption('Alteração descartável');
+    expect(controller.state.draft.caption, 'Legenda publicada');
+    expect(controller.state.phase, MomentsPublicationPhase.publishing);
+
+    repository.publishCompleter.complete(
+      const MomentsPublication(id: 'publication-1', status: MomentsStatus.published),
+    );
+    await tester.pumpAndSettle();
+
+    expect(publishedCalls, 1);
+    expect(closeCalls, 1);
+    expect(
+      tester
+          .widget<ExcludeFocus>(find.byKey(const Key('moments-publication-body-focus-lock')))
+          .excluding,
+      isFalse,
+    );
+  });
+
   testWidgets('renders the canonical wizard in dark theme', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000), theme: CoeloTheme.dark);
 
@@ -261,4 +374,65 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+}
+
+final class _DeferredSaveMomentsRepository implements MomentsPublicationRepository {
+  final saveCompleter = Completer<MomentsDraft>();
+  MomentsDraft? savedSnapshot;
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) async => MomentsDraft(
+    caption: 'Aprender juntos é crescer juntos. 🌱',
+    audiences: const {MomentsAudienceKind.families},
+    media: List.generate(5, MomentsMediaDraft.demo),
+  );
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) {
+    savedSnapshot = draft;
+    return saveCompleter.future;
+  }
+}
+
+final class _DeferredPageLoadMomentsRepository implements MomentsPublicationRepository {
+  final loadCompleter = Completer<MomentsDraft?>();
+  var saveCalls = 0;
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) => loadCompleter.future;
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) async {
+    saveCalls += 1;
+    return draft;
+  }
+}
+
+final class _DeferredPagePublishMomentsRepository implements MomentsPublicationRepository {
+  final publishCompleter = Completer<MomentsPublication>();
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) async => MomentsDraft(
+    caption: 'Legenda publicada',
+    audiences: const {MomentsAudienceKind.families},
+    media: [MomentsMediaDraft.demo(0)],
+  );
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) =>
+      publishCompleter.future;
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) async =>
+      draft;
 }

@@ -500,6 +500,7 @@ class _ActionFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final busy =
+        state.phase == MomentsPublicationPhase.loading ||
         state.phase == MomentsPublicationPhase.saving ||
         state.phase == MomentsPublicationPhase.publishing;
     return SuperadminFormActionFooter(
