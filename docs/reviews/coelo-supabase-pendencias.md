@@ -3308,3 +3308,52 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 1 h 30 min neste lote. **Tempo restante:**
   cerca de 8 h 30 min do orçamento adicional corrente; ETA do recorte principal
   continua 8–17 dias focados e o backlog integral não é calculável.
+
+### Checkpoint seguro 41 — Instituições: detalhe e reload v2 internos
+
+- **Lote/ações tratadas:** leitura de detalhe e reload de Instituições pelo
+  principal interno da spec 039. Listagem, opções de filtro, criação, edição,
+  status, arquivos, importação/exportação e cutover Flutter permanecem fora
+  deste pacote.
+- **Contrato/migration:** a spec técnica
+  040-superadmin-internal-institution-read-v2.md foi aprovada documentalmente
+  pela coordenação, derivada estritamente das specs 011/039. A migration aditiva
+  20260827234500_superadmin_internal_institution_detail.sql cria helper privado
+  e wrapper público v2 sem alterar o helper compartilhado ou revogar contratos
+  legados. Somente owner, operations e auditor podem ler; support e content
+  ficam fail-closed; Owner exige AAL2.
+- **Autorização/evidências:** a chamada revalida Auth, session_id,
+  auth.sessions.not_after, link, membership, role, capability, MFA e escopo
+  antes de interpretar o ID. Membership institucional lê somente sua FK;
+  membership de plataforma autorizada lê A/B. ID inexistente, adulterado e
+  cross-scope são indistinguíveis. O helper não tem EXECUTE de cliente; o
+  wrapper é SECURITY DEFINER, owner postgres, search_path vazio e executável
+  somente por authenticated.
+- **Auditoria/persistência:** sucesso grava evento v2 minimizado por Instituição;
+  negativas após sessão válida gravam v2/v3 correlacionado fora da
+  subtransação. Falha do append aborta a RPC. O teste alterou o nome sintético
+  entre duas chamadas e o reload observou o valor persistido; todas as fixtures
+  foram revertidas por transação.
+- **Testes executados:** replay Docker DB-only isolado no baseline até
+  20260812001975, seguido por hardening ACL 20260827214000, Auth 20260827233000
+  e a migration do domínio. O pgTAP passou 26/26 cobrindo envelopes exatos,
+  reload, cross-tenant, cross-app, sessão expirada sem audit, membership
+  suspensa, Support/Content, Owner AAL1/AAL2, Auditor, escopo platform, não enumeração,
+  ACL e append fail-closed. Teardown terminou com zero container. Dois reviews
+  independentes concluíram P0=0/P1=0.
+- **Manifesto:** 107 migrations canônicas e mirror reconciliadas. Migration e
+  mirror: 3.951 bytes, SHA-256
+  EBFFF6AAE8614494A1C3FFDC35AB0BCA8E2AD0BCC28EB8C0062FBB242AAFDC98;
+  pgTAP: 21.039 bytes, SHA-256
+  20D47C0A2D1E23C103E231D99A93A7C3D9890662E218ADBA4FDCEAFFA941C2DD;
+  spec aprovada: 7.116 bytes, SHA-256
+  4A7481D7A569CF61AE1A448AF893281C5F334CFA5A5991A8D975CC6899C61EF9.
+  Diff-check verde e nenhuma credencial real foi usada.
+- **Estado local/remoto:** local-green somente para detalhe/reload v2. Zero
+  mutação remota, deploy, Flutter ou E2E; não é remote-green nem done.
+- **Bloqueios/pendências:** list/filter v2 já está em RED independente; escrita
+  ainda depende de recibo/autoria internos sem reutilizar people. Contratos
+  legados permanecem até cutover e regressão integrada.
+- **Tempo usado:** aproximadamente 2 h 45 min do orçamento adicional.
+  **Tempo restante:** aproximadamente 7 h 15 min; ETA do recorte principal
+  permanece 8–17 dias focados e o backlog integral não é calculável.
