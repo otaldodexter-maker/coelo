@@ -1123,13 +1123,67 @@ void main() {
 
     await tester.tap(find.text('Administradores'));
     await tester.pumpAndSettle();
-    expect(find.byType(CheckboxListTile), findsOneWidget);
-    expect(find.byType(CoeloAdminMultiSelectField<String>), findsNothing);
+    final candidatesField = find.byKey(
+      const Key('institution-administrator-representative-select'),
+    );
+    const candidateLabel = 'Rafael Coelho — rafael@aurora.coelo.me';
+    expect(find.byType(CheckboxListTile), findsNothing);
+    expect(candidatesField, findsOneWidget);
+    expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
     expect(
       find.byKey(const Key('institution-confirm-representative-administrators')),
       findsOneWidget,
     );
     expect(find.text('Admin Master'), findsNothing);
+
+    await tester.tap(candidatesField);
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel(candidateLabel));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Aplicar'), findsNothing);
+    final trigger = tester.widget<InkWell>(
+      find.descendant(of: candidatesField, matching: find.byType(InkWell)),
+    );
+    expect(trigger.focusNode!.hasFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    final candidateOption = find.ancestor(
+      of: find.text(candidateLabel).last,
+      matching: find.byType(MenuItemButton),
+    );
+    expect(
+      find.descendant(of: candidateOption, matching: find.text(candidateLabel)),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<Checkbox>(find.descendant(of: candidateOption, matching: find.byType(Checkbox)))
+          .value,
+      isTrue,
+    );
+    await tester.tap(find.bySemanticsLabel(candidateLabel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.byKey(const Key('institution-confirm-representative-administrators')),
+          )
+          .onPressed,
+      isNull,
+    );
+
+    await tester.tap(candidatesField);
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel(candidateLabel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('institution-confirm-representative-administrators')));
     await tester.pumpAndSettle();
@@ -1161,6 +1215,44 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Rafael Coelho — representante legal'), findsOneWidget);
     expect(find.textContaining('Rafael Coelho — Admin Master · Aceito'), findsOneWidget);
+  });
+
+  testWidgets('administrator representative selection supports 200 percent text at 375 and 1440', (
+    tester,
+  ) async {
+    addTearDown(tester.view.reset);
+    for (final width in [375.0, 1440.0]) {
+      tester.view.physicalSize = Size(width, 1100);
+      tester.view.devicePixelRatio = 1;
+      await tester.pumpWidget(
+        _app(
+          InstitutionFormPage(
+            key: ValueKey(width),
+            repository: FakeInstitutionDirectoryRepository(),
+            institutionId: 'demo-institution-aurora',
+            logout: _logout,
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+          textScaler: const TextScaler.linear(2),
+        ),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      for (var step = 0; step < 4; step++) {
+        await tester.tap(find.byKey(const Key('institution-form-continue')));
+        await tester.pumpAndSettle();
+      }
+      final candidatesField = find.byKey(
+        const Key('institution-administrator-representative-select'),
+      );
+      await tester.ensureVisible(candidatesField);
+      await tester.pumpAndSettle();
+      expect(candidatesField, findsOneWidget, reason: 'width ${width.toInt()}');
+      expect(find.byType(CheckboxListTile), findsNothing, reason: 'width ${width.toInt()}');
+      expect(tester.takeException(), isNull, reason: 'width ${width.toInt()}');
+    }
   });
 
   testWidgets('invite without email opens the editor focused and sends after valid save', (

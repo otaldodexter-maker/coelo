@@ -465,24 +465,24 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (candidates.isNotEmpty) ...[
-            Text('Representantes sugeridos', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: CoeloSpacing.space2),
-            for (final candidate in candidates)
-              CheckboxListTile(
-                key: Key('institution-administrator-candidate-${candidate.id}'),
-                contentPadding: EdgeInsets.zero,
-                value: _selectedRepresentativeIds.contains(candidate.id),
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text(candidate.person.displayName),
-                subtitle: Text(candidate.person.email),
-                onChanged: (selected) => setState(() {
-                  if (selected ?? false) {
-                    _selectedRepresentativeIds.add(candidate.id);
-                  } else {
-                    _selectedRepresentativeIds.remove(candidate.id);
-                  }
-                }),
-              ),
+            CoeloAdminMultiSelectField<String>(
+              key: const Key('institution-administrator-representative-select'),
+              label: 'Representantes sugeridos',
+              options: candidates.map((candidate) => candidate.id).toList(growable: false),
+              selectedValues: _selectedRepresentativeIds,
+              optionLabel: (id) {
+                final person = candidates.firstWhere((candidate) => candidate.id == id).person;
+                final email = person.email.trim();
+                return '${person.displayName} — ${email.isEmpty ? 'E-mail não informado' : email}';
+              },
+              onChanged: (selected) => setState(() {
+                _selectedRepresentativeIds
+                  ..clear()
+                  ..addAll(selected);
+              }),
+              prefixIcon: Icons.admin_panel_settings_outlined,
+              searchHintText: 'Buscar representante',
+            ),
             Align(
               alignment: Alignment.centerLeft,
               child: FilledButton(
