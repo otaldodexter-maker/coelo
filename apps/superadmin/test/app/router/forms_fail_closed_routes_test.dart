@@ -27,6 +27,11 @@ void main() {
     '/dev/forms/form-1/responses',
     '/dev/forms/form-1/responses/response-1',
   ];
+  const redirectedProductionPaths = {
+    '/forms/new',
+    '/forms/form-1/edit',
+    '/forms/form-1/occurrences/occurrence-1/respond',
+  };
 
   testWidgets('production and unavailable development routes are 503 with zero API calls', (
     tester,
@@ -51,7 +56,11 @@ void main() {
       router.go(path);
       await tester.pumpAndSettle();
 
-      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        redirectedProductionPaths.contains(path) ? '/errors/mutation-capability-unavailable' : path,
+        reason: path,
+      );
       expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
       expect(
         tester.widget<SuperadminErrorScreen>(find.byType(SuperadminErrorScreen)).kind,

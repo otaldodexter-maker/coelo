@@ -28,7 +28,7 @@ class AttendanceDashboardPage extends StatefulWidget {
   final AttendanceDashboardRepository? dashboardRepository;
   final AttendancePermissions permissions;
   final LogoutAction logout;
-  final VoidCallback onCreate;
+  final VoidCallback? onCreate;
   final ValueChanged<String> onOpenCall;
   final SuperadminActivityController? activityController;
 
@@ -133,7 +133,7 @@ class _DashboardStateView extends StatelessWidget {
   final double maxWidth;
   final double inset;
   final AttendancePermissions permissions;
-  final VoidCallback onCreate;
+  final VoidCallback? onCreate;
   final ValueChanged<String> onOpenCall;
 
   @override
@@ -244,7 +244,7 @@ class _DashboardContent extends StatelessWidget {
   final double maxWidth;
   final double inset;
   final AttendancePermissions permissions;
-  final VoidCallback onCreate;
+  final VoidCallback? onCreate;
   final ValueChanged<String> onOpenCall;
 
   bool get _wide => maxWidth >= CoeloBreakpoints.large.minWidth;
@@ -258,6 +258,7 @@ class _DashboardContent extends StatelessWidget {
       children: [
         _DashboardHeader(
           canCreate:
+              onCreate != null &&
               snapshot.access.canCreateCall &&
               permissions.canCreate(backendCanManage: snapshot.access.canCreateCall),
           onCreate: onCreate,
@@ -297,7 +298,7 @@ class _DashboardContent extends StatelessWidget {
 class _DashboardHeader extends StatelessWidget {
   const _DashboardHeader({required this.canCreate, required this.onCreate});
   final bool canCreate;
-  final VoidCallback onCreate;
+  final VoidCallback? onCreate;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -313,7 +314,7 @@ class _DashboardHeader extends StatelessWidget {
           const Text('Indicadores calculados sobre registros oficiais válidos.'),
         ],
       ),
-      if (canCreate)
+      if (canCreate && onCreate != null)
         FilledButton.icon(
           onPressed: onCreate,
           icon: const Icon(Icons.add_rounded),

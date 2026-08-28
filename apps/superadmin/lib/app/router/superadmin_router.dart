@@ -1051,7 +1051,7 @@ GoRouter createSuperadminRouter({
               repository: attendanceRepository,
               permissions: attendancePermissions,
               logout: logout,
-              onCreate: () => context.goNamed(SuperadminRoutes.attendanceCreateName),
+              onCreate: null,
               onOpenCall: (id) => context.goNamed(
                 SuperadminRoutes.attendanceCallName,
                 pathParameters: {'callId': id},

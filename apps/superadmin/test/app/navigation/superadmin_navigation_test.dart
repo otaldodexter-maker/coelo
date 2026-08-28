@@ -145,14 +145,14 @@ void main() {
 
   test('searches accents, case and create/publish actions with breadcrumbs', () {
     expect(
-      searchCoeloNavigation('CRIAR').map((result) => result.node.label),
+      searchCoeloNavigation('CRIAR', canAccess: (_) => true).map((result) => result.node.label),
       contains('Criar instituição'),
     );
     expect(
       searchCoeloNavigation('cardapio').map((result) => result.node.label),
       contains('Cardápios'),
     );
-    final publish = searchCoeloNavigation('publicar em momentos').single;
+    final publish = searchCoeloNavigation('publicar em momentos', canAccess: (_) => true).single;
     expect(publish.breadcrumb, <String>['Coelo (Principal)', 'Momentos', 'Publicar em Momentos']);
     expect(searchCoeloNavigation('Acessos'), isEmpty);
     expect(searchCoeloNavigation('Operação'), isEmpty);
@@ -204,7 +204,11 @@ void main() {
       restricted.isAvailable(CoeloNavigationEnvironment.production, canAccess: (_) => false),
       isFalse,
     );
-    expect(restricted.isAvailable(CoeloNavigationEnvironment.production), isTrue);
+    expect(restricted.isAvailable(CoeloNavigationEnvironment.production), isFalse);
+    expect(
+      restricted.isAvailable(CoeloNavigationEnvironment.production, canAccess: (_) => true),
+      isTrue,
+    );
   });
 
   testWidgets('navigable parents also reveal their child actions', (tester) async {
@@ -217,6 +221,7 @@ void main() {
             collapsed: false,
             currentDestination: 'home',
             onDestinationSelected: (value) => selected = value,
+            canAccessCapability: (_) => true,
           ),
         ),
       ),
@@ -235,11 +240,12 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: CoeloNavigationContent(
             collapsed: false,
             currentDestination: 'home',
             onDestinationSelected: null,
+            canAccessCapability: (_) => true,
           ),
         ),
       ),
@@ -297,6 +303,7 @@ void main() {
             collapsed: true,
             currentDestination: 'home',
             onDestinationSelected: (value) => selected = value,
+            canAccessCapability: (_) => true,
           ),
         ),
       ),

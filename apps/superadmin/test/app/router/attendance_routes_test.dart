@@ -84,9 +84,9 @@ void main() {
     router.go(SuperadminRoutes.attendance);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(find.text('Nova chamada'), findsOneWidget);
+    expect(find.text('Nova chamada'), findsNothing);
 
-    router.go('/attendance/calls/call-progress');
+    router.go('/dev/attendance/calls/call-progress');
     await tester.pumpAndSettle();
     expect(find.text('Lançar chamada'), findsWidgets);
 
@@ -128,7 +128,7 @@ void main() {
     }
   });
 
-  testWidgets('production attendance routes use the injected repository', (tester) async {
+  testWidgets('production attendance reads data and blocks mutation routes', (tester) async {
     final session = SuperadminSession()..signIn();
     final repository = _TrackingAttendanceRepository();
     final router = createSuperadminRouter(
@@ -148,14 +148,23 @@ void main() {
 
     for (final routeCase in const [
       (path: '/attendance', expectedCalls: ['fetchAccess', 'fetchDashboard']),
-      (path: '/attendance/new', expectedCalls: ['fetchContextOptions']),
-      (path: '/attendance/calls/call-progress', expectedCalls: ['fetchCall:call-progress']),
+      (path: '/attendance/new', expectedCalls: <String>[]),
+      (path: '/attendance/calls/call-progress', expectedCalls: <String>[]),
     ]) {
       repository.calls.clear();
       router.go(routeCase.path);
       await tester.pumpAndSettle();
 
       expect(repository.calls, routeCase.expectedCalls, reason: routeCase.path);
+      if (routeCase.path == '/attendance') {
+        expect(find.text('Nova chamada'), findsNothing);
+      } else {
+        expect(
+          router.routeInformationProvider.value.uri.path,
+          '/errors/mutation-capability-unavailable',
+          reason: routeCase.path,
+        );
+      }
     }
   });
 }
