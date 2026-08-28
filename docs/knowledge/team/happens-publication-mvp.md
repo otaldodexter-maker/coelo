@@ -17,3 +17,10 @@ O composer do Acontece cria posts com até seis fotos ou vídeos, legenda, conte
 Autorização é server-side, deny-by-default, com versão otimista e capabilities `happens.posts.create` e `happens.posts.publish`. A mídia usa temporariamente Supabase Storage privado conforme ADR 0026; bucket público é proibido e a migração ao R2 deve ocorrer antes de piloto/produção.
 
 O feed consome uma projeção mínima autorizada por `happens.posts.read`, sem fabricar contagens ou rótulos ausentes. Mídias chegam como tickets opacos ordenados e são trocadas sob demanda por URL assinada curta; como o ticket é descartável, retry de mídia recarrega o feed para obter um novo ticket.
+
+Carregamento não expõe campos nem ações do composer. Picker, remoção,
+autosalvamento, save e publish são mutuamente exclusivos e bloqueiam ponteiro,
+foco e navegação enquanto pendentes. Trocar repository ou contexto descarta
+respostas, seletores e estado social locais do contexto anterior. Falhas
+operacionais preservam o rascunho e permitem retry; falha de carregamento usa
+uma superfície própria.

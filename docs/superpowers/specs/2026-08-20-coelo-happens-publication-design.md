@@ -26,6 +26,14 @@ Até seis JPG, PNG, WebP ou MP4 podem ser selecionados. O MVP usa a exceção te
 
 Inicial, carregando, editando, autosalvando, salvo, enviando mídia, publicando, agendado, sucesso, conflito, erro recuperável e acesso negado.
 
+Durante carregamento, o composer não expõe campos ou ações. Seleção de mídia,
+remoção, autosave, save e publish compartilham exclusão mútua; enquanto uma
+dessas intenções está pendente, navegação, ponteiro e foco do formulário ficam
+bloqueados. Troca de repository ou contexto invalida respostas e seletores
+pendentes, limpa o estado anterior e só então carrega o novo contexto. Falhas
+operacionais preservam o draft e oferecem retry; falha de load usa uma
+superfície de estado separada.
+
 ## Fora de escopo
 
 Momentos, Agora, edição avançada, moderação completa e notificações de entrega.
@@ -34,5 +42,6 @@ Momentos, Agora, edição avançada, moderação completa e notificações de en
 
 - estrutura fiel em 375, 768 e 1440 px, sem overflow;
 - mídia, legenda, contexto, audiência, agendamento, rascunho, CTA e prévia funcionais;
+- troca de contexto não conserva posts, ações locais, draft ou callbacks do contexto anterior;
 - acesso cross-tenant e por ID negado no backend;
 - análise estática, testes Flutter, SQL/Edge e validadores Coelo executados quando o runtime estiver disponível.

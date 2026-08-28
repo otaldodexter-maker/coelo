@@ -1531,6 +1531,24 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de load concorrente, A→B, dispose, command lock, erro/retry, dirty/cancel, overlays, foco/teclado, matriz responsiva e revisão independente. |
 | Estimativa restante | O próximo lote Flutter deve ser independente; o fechamento E2E de Conta depende dos contratos produtivos registrados. |
 
+## 16.13. Acontece — troca de contexto e lifecycle local — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Telas alteradas ou regredidas | Feed Acontece e Publicar no Acontece na composição local. |
+| Arquivos modificados | `principal_happens_preview_page.dart`; `happens_publication_controller.dart`; `principal_happens_publication_page.dart`; testes de feed, controller e página; spec canônica e projeção de conhecimento. |
+| Correções realizadas | Troca de repository, escopo ou variante limpa posts mixed/produtivos, erro, curtidas e salvos antes do novo load e descarta respostas tardias. O publicador recria controller em troca integral de contexto, invalida picker/callbacks A e guarda todas as continuações após dispose. Loading e falha de load são state-only. Picker, remoção, autosave, save e publish compartilham exclusão mútua; corpo e navegação bloqueiam ponteiro/foco. Remoção rearma autosave; falhas operacionais preservam o draft e permitem retry. O receipt de save reconcilia ID/versão antes de upload/publish para impedir nova criação no retry local. |
+| Estado atual | `local-green`. Suíte Acontece non-golden fresca 48/48 antes dos dois REDs finais; gate focado final do publicador 29/29 e feed 2/2; analyzer focado sem issues; formatter e `git diff --check` verdes. Revisões independentes finais dos dois sublotes: GREEN, P0=0/P1=0. Nenhum backend, router produtivo ou golden foi alterado. |
+| Bloqueios | O contrato de save/publish não possui requestId/receipt de comando capaz de reconciliar publicação remota que persistiu e perdeu a resposta. Persistência produtiva, autorização/RLS, mídia privada/R2 e validação cross-tenant continuam fora deste pacote. O resultado local não constitui E2E. |
+| Conhecimento capturado | A spec fonte e `docs/knowledge/team/happens-publication-mvp.md` registram loading state-only, single-flight do composer, limpeza cross-context e retry operacional preservando o draft. |
+| Pendências restantes | Implementar e provar idempotência/receipt no contrato integrado; executar testes remotos/cross-tenant, inspeção visual humana e goldens autorizados; manter 0/207 E2E. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs A→B, dispose, picker tardio, autosave/removal, failure origin, checkpoint de save e duas revisões independentes. |
+| Estimativa restante | Próximo lote Flutter deve ser independente; o fechamento E2E de Acontece depende dos contratos produtivos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
