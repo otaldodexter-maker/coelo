@@ -89,6 +89,14 @@ void main() {
     router.go('/dev/attendance/calls/call-progress');
     await tester.pumpAndSettle();
     expect(find.text('Lançar chamada'), findsWidgets);
+    expect(find.text('1 obrigatória pendente'), findsOneWidget);
+    expect(find.text('Rotina demonstrativa de Lia Horizonte'), findsOneWidget);
+    final routineAction = find.byKey(const Key('attendance-open-daily-routine-participant-1'));
+    await tester.ensureVisible(routineAction);
+    await tester.pump();
+    await tester.tap(routineAction);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/dev/daily-routine');
 
     router.go('/dev/attendance');
     await tester.pumpAndSettle();

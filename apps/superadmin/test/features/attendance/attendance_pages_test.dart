@@ -588,6 +588,11 @@ void main() {
     await tester.pump();
     await tester.tap(absenceAction);
     await tester.pump();
+    final firstSave = find.byKey(const Key('attendance-participant-save-participant-1'));
+    await tester.ensureVisible(firstSave);
+    await tester.pump();
+    await tester.tap(firstSave);
+    await tester.pumpAndSettle();
     expect(
       (await repository.fetchCall('call-progress'))!.participants.first.state,
       AttendancePresenceState.absent,
@@ -726,10 +731,15 @@ void main() {
     final action = find.widgetWithText(OutlinedButton, 'Presente').first;
     await tester.ensureVisible(action);
     await tester.tap(action);
+    final save = find.byKey(const Key('attendance-participant-save-participant-1'));
+    await tester.ensureVisible(save);
+    await tester.pump();
+    await tester.tap(save);
     await tester.pumpAndSettle();
 
     expect(find.text('Alunos de Turma Sol'), findsOneWidget);
     expect(find.text('A chamada foi atualizada em outro acesso.'), findsOneWidget);
+    expect(find.byKey(const Key('attendance-participant-pending-participant-1')), findsOneWidget);
     repository.commandError = null;
     await tester.tap(find.widgetWithText(OutlinedButton, 'Recarregar chamada'));
     await tester.pumpAndSettle();
@@ -864,7 +874,9 @@ void main() {
     expect(topology.segmentCount, 0);
   });
 
-  testWidgets('call page marks one participant across every individual state', (tester) async {
+  testWidgets('call page saves each participant explicitly and keeps feelings local', (
+    tester,
+  ) async {
     final repository = FakeAttendanceRepository.seeded();
     addTearDown(repository.dispose);
 
@@ -881,6 +893,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.text('Sentimento (demonstração local)'), findsWidgets);
+    expect(find.text('Não persistido nesta etapa.'), findsWidgets);
+    final feeling = find.byKey(const Key('attendance-feeling-participant-1-animated'));
+    await tester.ensureVisible(feeling);
+    await tester.pump();
+    await tester.tap(feeling);
+    await tester.pump();
+    expect(tester.widget<Semantics>(feeling).properties.selected, isTrue);
+
     for (final entry in const <(String, AttendancePresenceState)>[
       ('Presente', AttendancePresenceState.present),
       ('Falta', AttendancePresenceState.absent),
@@ -894,6 +915,12 @@ void main() {
       await tester.tap(action);
       await tester.pump();
 
+      expect(
+        (await repository.fetchCall('call-progress'))!.participants.first.state,
+        isNot(entry.$2),
+      );
+      await tester.tap(find.byKey(const Key('attendance-participant-save-participant-1')));
+      await tester.pumpAndSettle();
       expect((await repository.fetchCall('call-progress'))!.participants.first.state, entry.$2);
       final participantCard = find
           .ancestor(

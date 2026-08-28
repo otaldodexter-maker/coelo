@@ -563,6 +563,48 @@ Supabase `local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202;
 projeto estrito 0/229. E2E e estrito medem conclusão integral e não anulam os
 GREENs locais.
 
+### V2.9 Assiduidade — abertura — 2026-08-28 12:34 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V2 permanece 3/6 (50,00%). |
+| Tela e rota | Dashboard de Assiduidade, criação de chamada e detalhe/lançamento de chamada, produção e `/dev`. |
+| Baseline e índice | Instituições para diretório/filtros; `pattern.form-step-navigation`, `superadmin.form-action-footer`, estados interativos e contratos responsivos canônicos. |
+| Inventário inicial | Dashboard, fluxo de chamada, estados individuais, matriz responsiva e seam demonstrativa de Rotina diária já existem e possuem testes. A marcação individual salva imediatamente e a UI não apresenta sentimento nem ação explícita `Salvar` por aluno. |
+| RED planejado | Exigir seleção local por participante, sentimento Coelo e botão `Salvar` individual que execute uma única mutation real fornecida; vínculo demonstrativo de Rotina permanece visível sem anunciar persistência adicional. |
+| Fora do recorte | Nenhuma mudança no repository Supabase, RPC, migration, RLS ou persistência de sentimentos; fixture local deve ser explicitamente demonstrativa. |
+| Tempo usado | 1 h 13 min acumulados. |
+| Estimativa | 2–3 h para V2.9; 8 h 47 min restam na janela. |
+| Próximo item exato | Escrever RED do primeiro participante exigindo sentimento, estado pendente e `Salvar` por aluno antes de chamar o repository. |
+
+Percentuais: entrega V2 3/6 (50,00%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V2.9 Assiduidade — checkpoint local-green — 2026-08-28 12:45 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V2 = 4/6 (66,67%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Dashboard, nova chamada e lançamento/detalhe; `/dev/attendance/calls/call-progress` inclui fixture segura de Rotina diária. |
+| Arquivos alterados | `attendance_pages.dart`; router; testes de página e rotas; spec e tracker. |
+| Correções | Estado individual agora é editado localmente e só chama o repository ao pressionar `Salvar` do aluno; falha preserva seleção e snapshot. Picker Coelo de sentimentos aparece por aluno como demonstração local, marcado honestamente `Não persistido nesta etapa.`. `/dev` liga a primeira rotina pendente ao diretório de Rotina diária. |
+| Testes | REDs de sentimento/Salvar e ligação `/dev` reproduzidos. GREEN: 50/50 domínio/controller/repository/páginas/notificação + 6/6 rotas; analyzer, validador visual e diff-check verdes. |
+| Responsividade e acessibilidade | Dashboard/chamada em 375/768/1024/1440 e texto 200%, light/dark, reduced motion, foco, Escape e alvos. Inspeção do resultado dark 1440 confirmou hierarquia, estados, sentimentos e ação individual sem corte. |
+| Goldens e bloqueios | Referências antigas divergiram 59,47% no contexto 375 e 12,86% na marcação dark 1440; não foram atualizadas. A segunda inclui a anatomia nova esperada e foi inspecionada, mas `accepted` requer aprovação humana. Emoji aparece como tofu no ambiente de golden, apesar do fallback já canônico; manter pendente de inspeção em runtime. |
+| Tempo usado | 0 h 11 min no item; 1 h 24 min acumulados. |
+| Estimativa restante | 8 h 36 min da janela; V2.10 estimada em 1–2 h. |
+| Próximo item exato | V2.10 Rotina diária: inventariar cards, duplicação e criação por modelo; escrever RED do primeiro contrato ausente. |
+| Conhecimento | `no-op`: sentimentos locais, indisponibilidade e vínculo demonstrativo já foram aprovados neste programa. |
+
+Percentuais: entrega V2 4/6 (66,67%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
 Percentuais de fechamento local da onda: entrega atual 5/5 `local-green` ou
 `accepted` (100,00%); programa visual 0/31 `accepted` (0,00%); Flutter
 `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase

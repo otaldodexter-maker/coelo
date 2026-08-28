@@ -1986,6 +1986,48 @@ os GREENs locais.
 | Próximo item exato | V2.9 Assiduidade: inventário e RED de dashboard/chamada, começando por Salvar por aluno. |
 | Conhecimento capturado | `no-op`: contratos de UX já aprovados foram aplicados. |
 
+## 16.33. V2.9 Assiduidade — abertura — 2026-08-28
+
+**Entrega atual V2:** 50,00% (3/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Dashboard, nova chamada e lançamento/detalhe de Assiduidade, produção e `/dev`. |
+| Inventário | Dashboard, chamada, cinco estados individuais, responsividade e seam de Rotina diária já estão implementados. Falta sentimento e `Salvar` explícito por aluno; hoje tocar no estado dispara mutation imediatamente. |
+| Testes planejados | RED de edição local por participante: escolher estado/sentimento não chama repository; `Salvar` chama uma vez; erro preserva a seleção; Rotina demonstrativa continua visível. |
+| Bloqueios | Persistência real de sentimentos está fora do recorte/backend; a demonstração local não pode anunciar sucesso remoto. Assessments permanece intocado. |
+| Tempo realmente usado | 1 h 13 min acumulados, às 12:34 BRT. |
+| Estimativa restante | 2–3 h para V2.9; 8 h 47 min da janela. |
+| Próximo item exato | RED do primeiro card exigindo sentimento Coelo e botão individual `Salvar`. |
+| Conhecimento capturado | `no-op`: comportamento já aprovado no programa visual. |
+
+## 16.34. V2.9 Assiduidade — local-green — 2026-08-28
+
+**Entrega atual V2:** 66,67% (4/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Dashboard, nova chamada e chamada; `/dev/attendance/calls/call-progress` ligado à Rotina diária local. |
+| Arquivos alterados | `attendance_pages.dart`; `superadmin_router.dart`; testes de página e rotas; spec e tracker. |
+| Correções realizadas | Selecionar estado não persiste até `Salvar` por aluno; falha mantém seleção. Sentimentos reutilizam o picker Coelo e são rotulados como demonstração local não persistida. A fixture `/dev` mostra rotina pendente e navega a `/dev/daily-routine`. |
+| Testes e resultados | Dois REDs reproduzidos; GREEN 50/50 suíte focada de Assiduidade + 6/6 rotas. Analyzer, validador administrativo e diff-check verdes. |
+| Inspeções responsivas | 375/768/1024/1440, texto 200%, light/dark e reduced motion pelos testes existentes; foco/Escape/alvos preservados. Saída dark 1440 inspecionada. |
+| Bloqueios | Goldens antigos divergem 59,47% e 12,86%; não atualizados. Emoji aparece como tofu no renderer de teste e precisa inspeção em runtime. Persistência de sentimentos continua corretamente fora do recorte. Assessments intocado. |
+| Tempo realmente usado | 0 h 11 min; 1 h 24 min acumulados, às 12:45 BRT. |
+| Estimativa restante | 8 h 36 min da janela; V2.10 = 1–2 h. |
+| Próximo item exato | V2.10 Rotina diária: RED de cards ricos, duplicação ou criação por modelo conforme o primeiro gap confirmado. |
+| Conhecimento capturado | `no-op`: contratos já aprovados foram aplicados sem nova regra durável. |
+
 ## 17. Histórico
 
 

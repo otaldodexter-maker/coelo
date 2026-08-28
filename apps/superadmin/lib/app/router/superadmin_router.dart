@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import '../../core/guards/superadmin_session.dart';
 import '../../core/config/superadmin_app_config.dart';
@@ -2151,6 +2152,22 @@ GoRouter createSuperadminRouter({
               permissions: const AttendancePermissions.development(),
               logout: _previewLogout,
               onBack: () => context.goNamed(SuperadminRoutes.devAttendanceName),
+              routinePendingParticipantIds: const {'participant-1'},
+              participantRoutineBuilder: (context, participant) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Rotina demonstrativa de ${participant.name}'),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  const Text('Exemplo local: acolhimento, hidratação e observação do sentimento.'),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  OutlinedButton.icon(
+                    key: Key('attendance-open-daily-routine-${participant.id}'),
+                    onPressed: () => context.goNamed(SuperadminRoutes.devDailyRoutineName),
+                    icon: const Icon(Icons.event_note_outlined),
+                    label: const Text('Abrir Rotina diária'),
+                  ),
+                ],
+              ),
               activityController: attendanceActivities,
             ),
           ),

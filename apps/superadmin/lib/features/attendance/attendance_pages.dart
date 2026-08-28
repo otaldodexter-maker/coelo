@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 
 import '../../app/shell/superadmin_shell.dart';
 import '../../app/activity/superadmin_activity.dart';
+import '../../app/shell/superadmin_notice.dart';
 import '../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../auth/domain/logout_action.dart';
+import '../daily_routine/daily_routine.dart';
+import '../daily_routine/daily_routine_feeling_picker.dart';
 import 'attendance.dart';
 
 export 'attendance_dashboard_page.dart';
@@ -889,16 +892,14 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                               participant.id,
                                               () => TextEditingController(text: participant.note),
                                             ),
-                                            onStateChanged: (state) {
-                                              _applyCall(
-                                                () => widget.repository.setParticipantState(
-                                                  call.id,
-                                                  participant.id,
-                                                  state,
-                                                  expectedVersion: call.version,
-                                                ),
-                                              );
-                                            },
+                                            onSave: (state) => _applyCall(
+                                              () => widget.repository.setParticipantState(
+                                                call.id,
+                                                participant.id,
+                                                state,
+                                                expectedVersion: call.version,
+                                              ),
+                                            ),
                                             onConfirmNotice:
                                                 notice != null && notice.pending && writable
                                                 ? () => _applyCall(
@@ -1382,7 +1383,7 @@ class _ParticipantCard extends StatefulWidget {
     required this.routinePending,
     required this.routineInitiallyExpanded,
     required this.noteController,
-    required this.onStateChanged,
+    required this.onSave,
     required this.onConfirmNotice,
   });
 
@@ -1394,7 +1395,7 @@ class _ParticipantCard extends StatefulWidget {
   final bool routinePending;
   final bool routineInitiallyExpanded;
   final TextEditingController noteController;
-  final ValueChanged<AttendancePresenceState> onStateChanged;
+  final Future<bool> Function(AttendancePresenceState state) onSave;
   final VoidCallback? onConfirmNotice;
 
   @override
@@ -1404,6 +1405,18 @@ class _ParticipantCard extends StatefulWidget {
 class _ParticipantCardState extends State<_ParticipantCard> {
   late bool _detailsExpanded = widget.focused;
   late bool _routineExpanded = widget.routineInitiallyExpanded;
+  late AttendancePresenceState _pendingState = widget.participant.state;
+  DailyRoutineFeeling? _feeling;
+  bool _saving = false;
+
+  bool get _hasPendingState => _pendingState != widget.participant.state;
+
+  Future<void> _save() async {
+    if (_saving || !_hasPendingState) return;
+    setState(() => _saving = true);
+    await widget.onSave(_pendingState);
+    if (mounted) setState(() => _saving = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1445,6 +1458,34 @@ class _ParticipantCardState extends State<_ParticipantCard> {
                 );
               },
             ),
+            const SizedBox(height: CoeloSpacing.space3),
+            Text('Sentimento (demonstração local)', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: CoeloSpacing.space1),
+            DailyRoutineFeelingPicker(
+              keyPrefix: 'attendance-feeling-${widget.participant.id}',
+              value: _feeling,
+              enabled: widget.writable && !_saving,
+              onChanged: (value) => setState(() => _feeling = value),
+              onSuggestFeeling: () async {
+                if (context.mounted) {
+                  showSuperadminNotice(context, 'Indisponível nesta etapa');
+                }
+              },
+            ),
+            Text(
+              'Não persistido nesta etapa.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            if (_hasPendingState) ...[
+              const SizedBox(height: CoeloSpacing.space2),
+              Text(
+                'Alteração de presença não salva.',
+                key: Key('attendance-participant-pending-${widget.participant.id}'),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.primary),
+              ),
+            ],
             if (_detailsExpanded) ...[
               const SizedBox(height: CoeloSpacing.space3),
               _details(context),
@@ -1509,37 +1550,43 @@ class _ParticipantCardState extends State<_ParticipantCard> {
       _AttendanceStateButton(
         label: 'Presente',
         state: AttendancePresenceState.present,
-        selected: widget.participant.state == AttendancePresenceState.present,
-        enabled: widget.writable,
-        onSelected: widget.onStateChanged,
+        selected: _pendingState == AttendancePresenceState.present,
+        enabled: widget.writable && !_saving,
+        onSelected: (state) => setState(() => _pendingState = state),
       ),
       _AttendanceStateButton(
         label: 'Falta',
         state: AttendancePresenceState.absent,
-        selected: widget.participant.state == AttendancePresenceState.absent,
-        enabled: widget.writable,
-        onSelected: widget.onStateChanged,
+        selected: _pendingState == AttendancePresenceState.absent,
+        enabled: widget.writable && !_saving,
+        onSelected: (state) => setState(() => _pendingState = state),
       ),
       _AttendanceStateButton(
         label: 'Atraso',
         state: AttendancePresenceState.late,
-        selected: widget.participant.state == AttendancePresenceState.late,
-        enabled: widget.writable,
-        onSelected: widget.onStateChanged,
+        selected: _pendingState == AttendancePresenceState.late,
+        enabled: widget.writable && !_saving,
+        onSelected: (state) => setState(() => _pendingState = state),
       ),
       _AttendanceStateButton(
         label: 'Saída antecipada',
         state: AttendancePresenceState.earlyDeparture,
-        selected: widget.participant.state == AttendancePresenceState.earlyDeparture,
-        enabled: widget.writable,
-        onSelected: widget.onStateChanged,
+        selected: _pendingState == AttendancePresenceState.earlyDeparture,
+        enabled: widget.writable && !_saving,
+        onSelected: (state) => setState(() => _pendingState = state),
       ),
       _AttendanceStateButton(
         label: 'Atraso + sa\u00edda',
         state: AttendancePresenceState.lateAndEarly,
-        selected: widget.participant.state == AttendancePresenceState.lateAndEarly,
-        enabled: widget.writable,
-        onSelected: widget.onStateChanged,
+        selected: _pendingState == AttendancePresenceState.lateAndEarly,
+        enabled: widget.writable && !_saving,
+        onSelected: (state) => setState(() => _pendingState = state),
+      ),
+      FilledButton.icon(
+        key: Key('attendance-participant-save-${widget.participant.id}'),
+        onPressed: widget.writable && _hasPendingState && !_saving ? _save : null,
+        icon: const Icon(Icons.save_outlined),
+        label: Text(_saving ? 'Salvando...' : 'Salvar'),
       ),
       TextButton.icon(
         onPressed: () => setState(() => _detailsExpanded = !_detailsExpanded),
