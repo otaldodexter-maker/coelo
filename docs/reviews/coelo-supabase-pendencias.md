@@ -497,9 +497,9 @@ somada à da família; espera por decisão externa não está incluída.
 | 3 | `institutions` | `institutions.error` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 3 | `institutions` | `institutions.export` | O wrapper remoto executável por `authenticated` alcança `app_private.superadmin_request_institution_export`, cuja query referencia `institution_directory.slug` e `updated_at`, colunas ausentes da view remota; runtime/lint falha com SQLSTATE `42703`. Cliente deve permanecer fail-closed. | `fail-closed` | Reproduzir `42703` e manter integração indisponível; não fecha ação. | Básica + corrigir projeção/contrato sem confiar em filtros, com autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, limites, arquivo real, expiração e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E; pode fechar ação. | `Avançada` | 6–12 h | RED/GREEN do runtime; view e função compatíveis; ator/tenant/ownership; filtros/IDs adulterados; arquivo real; DTO sem path; expiração/revogação; cleanup sem órfão; remoto autorizado e E2E. |
 | 3 | `institutions` | `institutions.files` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
-| 3 | `institutions` | `institutions.filter` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
+| 3 | `institutions` | `institutions.filter` | Filtros/opções v2 internos passaram 35/35: allowlists, escopo visible-only, limites 8.192/240, NULL/duplicados/UUIDs adulterados, Support/Content negados e audit fail-closed. | `local-green` | Backend focal fechado localmente; não fecha ação sem remoto, Flutter e E2E. | Básica + contrato, autorização e negativas locais. | Intermediária + cutover Flutter, tenant A/B integrado e remoto autorizado. | Avançada + regressão integrada, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h de integração + remoto/E2E separado | Migration 20260827235500; mirror 108/108; regressões Auth 29/29 e detalhe 26/26. |
 | 3 | `institutions` | `institutions.import` | O wrapper remoto executável por `authenticated` alcança `app_private.superadmin_confirm_institution_import`, cujo update usa `created_count` e `rejected_count` de forma ambígua; runtime/lint falha com SQLSTATE `42702`. Cliente deve permanecer fail-closed. | `fail-closed` | Reproduzir `42702` e manter integração indisponível; não fecha ação. | Básica + qualificar variáveis/colunas, contrato, autorização e negativas locais. | Intermediária + tenant A/B, vínculo revogado, idempotência, arquivo real e remoto autorizado. | Avançada + regressão, Advisors, auditoria, cleanup e E2E; pode fechar ação. | `Avançada` | 6–12 h | RED/GREEN do runtime; contagens persistidas sem ambiguidade; ator/tenant/ownership; negações; replay; arquivo real; reload; auditoria; remoto autorizado e E2E. |
-| 3 | `institutions` | `institutions.list` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
+| 3 | `institutions` | `institutions.list` | Diretório v2 interno passou 35/35: paginação 1–100, offset até 10.000, 17 sorts NULLS LAST/id, output estrito, busca literal e escopo platform/institution. | `local-green` | Backend focal fechado localmente; não fecha ação sem remoto, Flutter e E2E. | Básica + contrato, autorização e negativas locais. | Intermediária + cutover Flutter, tenant A/B integrado e remoto autorizado. | Avançada + regressão integrada, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h de integração + remoto/E2E separado | Owner/Operations/Auditor positivos; Owner AAL2; ACL mínima e audit v2/v3. |
 | 3 | `institutions` | `institutions.reload` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 2–4 h | Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. |
 | 3 | `institutions` | `institutions.status` | Revalidar em stack limpa, ledger e remoto autorizado; faltam regressão e fechamento. | `local-green` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
 | 4 | `units` | `units.create` | Contrato inventariado, mas a ação ainda não possui prova completa local/remota. | `audited` | RED + teste local mínimo; não fecha ação. | Básica + contrato, autorização e negativas locais. | Intermediária + ações relacionadas, tenant A/B e remoto autorizado. | Avançada + regressão, Advisors, auditoria e cleanup; pode fechar ação. | `Avançada` | 4–8 h | RED; sucesso persistido; sem capability; suspenso/revogado; tenant A/B; ID adulterado; reload e auditoria. |
@@ -3357,3 +3357,52 @@ da simples soma das 207 ações.
 - **Tempo usado:** aproximadamente 2 h 45 min do orçamento adicional.
   **Tempo restante:** aproximadamente 7 h 15 min; ETA do recorte principal
   permanece 8–17 dias focados e o backlog integral não é calculável.
+### Checkpoint seguro 42 — Instituições: listagem e filtros v2 internos
+
+- **Lote/ações tratadas:** `institutions.list` e `institutions.filter` no
+  backend interno. A tela de Instituições passa a ter contrato local real para
+  listar, buscar literalmente, filtrar, paginar, ordenar e carregar opções.
+  Flutter, criação, edição, ativação, arquivos, importação/exportação e E2E não
+  foram alterados.
+- **Contrato/migration:** a spec 041 aprovada substitui somente as seções de
+  diretório/opções da spec 040; detalhe/reload permanece canônico. A migration
+  aditiva `20260827235500_superadmin_internal_institution_list_filter.sql`
+  cria dois wrappers autenticados e helpers privados, sem alterar a view/RLS
+  legada nem o helper compartilhado de autorização.
+- **Autorização:** Auth, sessão, `not_after`, link, membership, role,
+  `platform.read`, MFA e escopo são revalidados antes dos filtros. Somente
+  Owner, Operations e Auditor entram; Owner exige AAL2. Membership institution
+  enxerga apenas sua FK; Support e Content permanecem fail-closed.
+- **Contrato comportamental:** limite 1–100, offset 0–10.000, 17 sorts com
+  `NULLS LAST` e desempate `id ASC`; busca trata `%`, `_` e barra como
+  literais. Filtros têm allowlist, teto JSON 8.192 bytes, textos 240 bytes,
+  cardinalidade, UUID canônico e duplicidade normalizada. Outputs e opções usam
+  chaves estritas e somente valores visíveis ao escopo.
+- **Erros/auditoria:** `SAI_INVALID_ARGUMENT` foi acrescentado forward-only ao
+  envelope interno com status semântico 400, preservando todos os códigos
+  anteriores. Falhas desconhecidas viram erro interno; sucessos e negativas
+  identificadas geram audit v2/v3 correlacionado e minimizado; falha de append
+  aborta a RPC.
+- **Testes executados:** stage Docker DB-only isolado até `20260812001975`,
+  seguido por ACL `20260827214000`, Auth `20260827233000`, detalhe
+  `20260827234500` e list/filter `20260827235500`. PgTAP list/filter passou
+  35/35; regressões afetadas Auth 29/29 e detalhe 26/26 também passaram.
+  Teardown terminou com zero recursos. Dois reviews independentes concluíram
+  P0=0/P1=0.
+- **Manifesto:** 108 migrations canônicas e mirror verificados. Migration e
+  mirror: 23.552 bytes, SHA-256
+  `0DB7F95A064242F3DB1D7D8A4D2B0631C5573CB55B0DEC19519047DD7ADBE604`;
+  pgTAP: 27.817 bytes, SHA-256
+  `D793F5B846BE62E5C5647068922BD7D04282B96B3CB613C701BFCC5BE91A4BC6`;
+  spec 041: 6.807 bytes, SHA-256
+  `65E260D24C7745800D82D151A5066C466843959947D701F4B93DB0C36CB6E66E`.
+- **Estado local/remoto:** `local-green` somente. Zero mutação remota, deploy,
+  Flutter ou E2E; não é `remote-green` nem `done`.
+- **Bloqueios/pendências:** futura integração Flutter deve remover/desabilitar
+  page size 500 e fazer cutover das APIs legadas. O preflight de shape da view é
+  hardening P2. Escrita interna não pode reutilizar o realm `people`; edição
+  core exige spec/receipt tipado e criação/ativação completa depende do contrato
+  de Owner, convite e admin.
+- **Tempo usado:** aproximadamente 4 h 30 min do orçamento adicional.
+  **Tempo restante:** aproximadamente 5 h 30 min. ETA do recorte principal
+  permanece 8–17 dias focados; backlog integral não calculável.
