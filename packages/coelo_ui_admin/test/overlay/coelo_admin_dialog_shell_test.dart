@@ -129,6 +129,8 @@ void main() {
   });
 
   testWidgets('lets footer actions grow with text at 200 percent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -164,6 +166,7 @@ void main() {
     await tester.tap(find.text('Abrir'));
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('coelo-admin-dialog-keyboard-scroll')), findsOneWidget);
     expect(tester.takeException(), isNull);
     expect(
       tester.getSize(find.byKey(const Key('keep-editing'))).height,

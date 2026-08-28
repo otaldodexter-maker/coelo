@@ -204,7 +204,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(_app());
+    await tester.pumpWidget(_app(onDestinationSelected: (_) {}));
     await tester.pumpAndSettle();
     final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
     final footer = find.byKey(const Key('activity-form-footer-surface'));
@@ -683,6 +683,7 @@ Widget _app({
   ActivityProfileAboutRepository? aboutRepository,
   Future<void> Function(ActivityFormDraft)? onSaveDraft,
   Future<void> Function(ActivityFormDraft)? onSubmit,
+  ValueChanged<String>? onDestinationSelected,
   TextScaler textScaler = TextScaler.noScaling,
 }) => MaterialApp(
   theme: CoeloTheme.light,
@@ -708,6 +709,7 @@ Widget _app({
           name: draft.name,
         ),
     ],
+    onDestinationSelected: onDestinationSelected,
     imagePicker: () async => null,
     aboutRepository: aboutRepository ?? DevelopmentActivityProfileAboutRepository(),
   ),

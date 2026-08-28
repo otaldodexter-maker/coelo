@@ -77,6 +77,7 @@ final class CoeloAdminDialogShell extends StatelessWidget {
     final paddedBody = Padding(padding: const EdgeInsets.all(CoeloSpacing.space6), child: body);
     final normalBody = SingleChildScrollView(primary: false, child: paddedBody);
     final keyboardIsOpen = mediaQuery.viewInsets.vertical > 0;
+    final largeText = mediaQuery.textScaler.scale(1) > 1.5;
     return Dialog(
       key: dialogKey,
       backgroundColor: colors.surface,
@@ -90,7 +91,7 @@ final class CoeloAdminDialogShell extends StatelessWidget {
           maxWidth: maxWidth,
           maxHeight: viewportHeight - (CoeloSpacing.space6 * 2),
         ),
-        child: keyboardIsOpen
+        child: keyboardIsOpen || largeText
             ? SingleChildScrollView(
                 key: const Key('coelo-admin-dialog-keyboard-scroll'),
                 primary: false,
@@ -106,7 +107,7 @@ final class CoeloAdminDialogShell extends StatelessWidget {
                 children: [
                   header,
                   divider,
-                  Flexible(child: normalBody),
+                  Expanded(child: normalBody),
                   footer,
                 ],
               ),
@@ -131,23 +132,35 @@ final class _DialogFooter extends StatelessWidget {
         child: primaryAction,
       );
     }
-    return Row(
+    final secondaryButton = ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: double.infinity, minHeight: CoeloSize.touchMin),
+      child: secondary,
+    );
+    final primaryButton = ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: double.infinity, minHeight: CoeloSize.touchMin),
+      child: primaryAction,
+    );
+    return LayoutBuilder(
       key: const Key('coelo-admin-dialog-footer'),
-      children: [
-        Expanded(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-            child: secondary,
-          ),
-        ),
-        const SizedBox(width: CoeloSpacing.space3),
-        Expanded(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-            child: primaryAction,
-          ),
-        ),
-      ],
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 320) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              primaryButton,
+              const SizedBox(height: CoeloSpacing.space2),
+              secondaryButton,
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: secondaryButton),
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(child: primaryButton),
+          ],
+        );
+      },
     );
   }
 }

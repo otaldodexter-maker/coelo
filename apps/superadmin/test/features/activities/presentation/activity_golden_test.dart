@@ -65,7 +65,7 @@ void main() {
           onCreate: () {},
           onView: (_) {},
           onCreateFromTemplate: (_) {},
-          onDuplicateTemplate: (_, _) async {},
+          onDuplicateTemplate: (_, _, _) async {},
           onCreateTemplate: (_) async {},
         ),
       ),

@@ -15,7 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders canonical cards and opens the read-only detail', (tester) async {
+  testWidgets('renders canonical cards and opens edit when editing is available', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     String? viewedId;
@@ -96,8 +96,8 @@ void main() {
     await tester.tap(find.byKey(const Key('create-activity-tile')));
     expect(createCount, 1);
     await tester.tap(find.byKey(const Key('activity-card-activity-10')));
-    expect(viewedId, 'activity-10');
-    expect(editedId, isNull);
+    expect(editedId, 'activity-10');
+    expect(viewedId, isNull);
     expect(find.byKey(const Key('activity-card-edit-activity-10')), findsNothing);
   });
 
@@ -451,6 +451,7 @@ void main() {
     ActivityTemplateOption? started;
     ActivityTemplateOption? duplicated;
     String? duplicateInstitutionId;
+    String? duplicateName;
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -461,9 +462,10 @@ void main() {
           onView: (_) {},
           onCreateFromTemplate: (template) => started = template,
           onCreateTemplate: (_) async {},
-          onDuplicateTemplate: (template, institutionId) async {
+          onDuplicateTemplate: (template, institutionId, newName) async {
             duplicated = template;
             duplicateInstitutionId = institutionId;
+            duplicateName = newName;
           },
         ),
       ),
@@ -517,10 +519,18 @@ void main() {
         .onChanged('institution-1');
     await tester.pump();
     await tester.tap(find.byKey(const Key('activity-template-copy-submit')));
+    await tester.pump();
+    expect(find.text('Informe o novo nome do modelo.'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('activity-template-copy-name')),
+      'Modelo esportivo 2027',
+    );
+    await tester.tap(find.byKey(const Key('activity-template-copy-submit')));
     await tester.pumpAndSettle();
 
     expect(duplicated?.id, 'template-1');
     expect(duplicateInstitutionId, 'institution-1');
+    expect(duplicateName, 'Modelo esportivo 2027');
     expect(find.text('Modelo duplicado com sucesso.'), findsOneWidget);
 
     await tester.drag(find.byKey(const Key('activity-directory-scroll')), const Offset(0, 2000));
@@ -532,7 +542,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('creates a model from the Models collection with canonical fields', (tester) async {
+  testWidgets('creates a model through the canonical wizard without bindings', (tester) async {
     ActivityTemplateCreateDraft? created;
     await tester.pumpWidget(
       MaterialApp(
@@ -553,11 +563,23 @@ void main() {
     await tester.tap(find.byKey(const Key('create-activity-template-tile')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-template-create-dialog')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+    expect(find.byKey(const Key('activity-form-units')), findsNothing);
+    expect(find.byKey(const Key('activity-form-groups')), findsNothing);
+    expect(find.textContaining('Profissionais'), findsNothing);
     tester
         .widget<CoeloAdminSingleSelectField<String?>>(
           find.byKey(const Key('activity-template-create-institution')),
         )
         .onChanged('institution-1');
+    tester
+        .widget<CoeloAdminSingleSelectField<String?>>(
+          find.byKey(const Key('activity-template-create-taxonomy')),
+        )
+        .onChanged('languages');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-template-create-next')));
+    await tester.pump();
     await tester.enterText(
       find.byKey(const Key('activity-template-create-name')),
       'Clube de ciências',
@@ -567,16 +589,14 @@ void main() {
       'Modelo editável para experiências semanais.',
     );
     tester
-        .widget<CoeloAdminSingleSelectField<String?>>(
-          find.byKey(const Key('activity-template-create-taxonomy')),
-        )
-        .onChanged('languages');
-    tester
         .widget<CoeloAdminSingleSelectField<ActivityGovernance>>(
           find.byKey(const Key('activity-template-create-governance')),
         )
         .onChanged(ActivityGovernance.mandatory);
     await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-template-create-next')));
+    await tester.pump();
+    expect(find.text('Sem vínculos nesta etapa'), findsOneWidget);
     await tester.tap(find.byKey(const Key('activity-template-create-submit')));
     await tester.pumpAndSettle();
 
@@ -611,12 +631,16 @@ void main() {
           find.byKey(const Key('activity-template-create-institution')),
         )
         .onChanged('institution-1');
-    await tester.enterText(find.byKey(const Key('activity-template-create-name')), 'Modelo local');
     tester
         .widget<CoeloAdminSingleSelectField<String?>>(
           find.byKey(const Key('activity-template-create-taxonomy')),
         )
         .onChanged('sports');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('activity-template-create-next')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('activity-template-create-name')), 'Modelo local');
+    await tester.tap(find.byKey(const Key('activity-template-create-next')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('activity-template-create-submit')));
     await tester.pumpAndSettle();
@@ -624,6 +648,40 @@ void main() {
     expect(find.byKey(const Key('activity-template-create-dialog')), findsOneWidget);
     expect(find.text('Não foi possível criar o modelo. Tente novamente.'), findsOneWidget);
     expect(find.text('Modelo local'), findsOneWidget);
+  });
+
+  testWidgets('keeps the model wizard responsive at approved widths and 200 percent text', (
+    tester,
+  ) async {
+    for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 1000));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: ActivityDirectoryPage(
+            repository: _TemplateOptionsRepository(),
+            logout: () async => const LogoutResult.success(),
+            onCreate: () {},
+            onView: (_) {},
+            onCreateFromTemplate: (_) {},
+            onCreateTemplate: (_) async {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'directory width $width');
+      await tester.tap(find.byKey(const Key('create-activity-template-tile')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+      expect(tester.takeException(), isNull, reason: 'width $width');
+      await tester.tap(find.byTooltip('Fechar criação de modelo'));
+      await tester.pumpAndSettle();
+    }
+    addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 
   testWidgets('keeps model loading and failure local to the activity directory', (tester) async {

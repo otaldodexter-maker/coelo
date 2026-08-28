@@ -1909,13 +1909,16 @@ GoRouter createSuperadminRouter({
                     'institutionId': template.institutionId!,
                 },
               ),
-              onDuplicateTemplate: (template, institutionId) async {
-                await developmentActivityCommandRepository.copyTemplate(
-                  ActivityTemplateCopyCommand(
-                    requestId: _activityRequestId(),
-                    templateId: template.id,
+              onDuplicateTemplate: (template, institutionId, newName) async {
+                await createActivityTemplate(
+                  ActivityTemplateCreateDraft(
                     institutionId: institutionId,
+                    name: newName,
+                    description: template.description,
+                    taxonomyId: template.taxonomyId,
+                    governance: template.governance,
                   ),
+                  developmentActivityCommandRepository,
                 );
               },
               onCreateTemplate: (draft) =>

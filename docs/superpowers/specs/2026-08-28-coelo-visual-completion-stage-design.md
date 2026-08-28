@@ -519,6 +519,50 @@ Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
 estrito 0/229. E2E e estrito medem conclusão integral e não anulam os GREENs
 locais.
 
+### V2.8 Atividades e modelos — abertura — 2026-08-28 12:17 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; V2 permanece 2/6 (33,33%). |
+| Tela e rota | Diretório de Atividades e coleção Modelos, produção e `/dev`; wizard canônico de Atividades. |
+| Baseline e índice | Criar/Editar Instituição, `pattern.form-controls`, `superadmin.form-action-footer`, `pattern.form-step-navigation` e `pattern.form-frame-geometry`. |
+| Regressões encontradas | O card chama detalhe mesmo quando `onEdit` existe; duplicar modelo pede somente instituição, sem novo nome; criar modelo ainda usa dialog local e precisa ser confrontado com o wizard canônico sem vínculos. |
+| REDs planejados | Card deve abrir edição; duplicação deve exigir e entregar o novo nome; criação de modelo deve percorrer wizard sem unidade, grupo, profissionais ou outros vínculos. |
+| Responsividade | Revalidar 375/768/1024/1440, texto 200%, light/dark, foco, teclado, Escape, alvos e reduced motion nas superfícies atingidas. |
+| Bloqueios | Nenhum no início; backend/Supabase continua fora do recorte e `accepted` requer aprovação visual humana. |
+| Tempo usado | 0 h 56 min acumulados. |
+| Estimativa | 1–2 h para V2.8; 9 h 04 min restam na janela inicial. |
+| Próximo item exato | Escrever e executar o RED de abertura de edição pelo card; em seguida, RED do novo nome na duplicação e inventário do modo modelo no wizard. |
+
+Percentuais: entrega V2 2/6 (33,33%); programa visual 0/31 `accepted`
+(0,00%); Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207;
+Supabase `local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202;
+projeto estrito 0/229. E2E e estrito medem conclusão integral e não anulam o
+trabalho Flutter local.
+
+### V2.8 Atividades e modelos — checkpoint local-green — 2026-08-28 12:34 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; V2 = 3/6 (50,00%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Diretório de Atividades/Modelos e rotas de criação/edição em `/dev`; produção continua fail-closed sem capability de mutação. |
+| Arquivos alterados | `activity_directory_page.dart`; router; testes de diretório, formulário e golden; `coelo_admin_dialog_shell.dart` e seu teste; spec e tracker. |
+| Correções | Cards e linhas usam edição quando a capability existe, com semântica correspondente e detalhe como fallback; duplicação exige novo nome e a fixture `/dev` cria a cópia com esse nome; criar modelo virou wizard canônico Contexto → Identidade → Revisão, explicitamente sem unidades, turmas, alunos ou profissionais. |
+| Regressão responsiva corrigida | O dialog canônico transbordava verticalmente em 375 px com texto 200%. RED isolado reproduziu 81 px e o wizard reproduziu 89 px; texto ampliado agora rola o dialog integral e ações estreitas são empilhadas. |
+| Testes | Três REDs funcionais e um RED responsivo reproduzidos. GREEN: 42/42 em diretório, formulário e rotas; 4/4 no dialog compartilhado; analyzers focados e validador visual administrativo verdes; `git diff --check` verde. |
+| Responsividade | Wizard exercitado em 375/768/1024/1440 com texto 200%; matriz preexistente cobre diretório/formulário, light/dark e reduced motion. Teclado, Escape, retorno de foco e alvos permanecem cobertos pelo dialog canônico. |
+| Goldens e bloqueios | Comparação sem atualização encontrou nove grupos antigos divergentes: 4,72%–46,27%, além de um cenário de interação legado. O deslocamento constante de cerca de 4,9%–6,9% inclui mudanças V1 de launcher/Arquivos; dialogs refletem a correção responsiva. Nenhum baseline foi atualizado; exige inspeção e aceite humano. |
+| Tempo usado | 0 h 17 min no item; 1 h 13 min acumulados. |
+| Estimativa restante | 8 h 47 min da janela inicial; V2.9 estimada em 2–3 h. |
+| Próximo item exato | V2.9 Assiduidade: inventariar dashboard/chamada e escrever o primeiro RED para Salvar por aluno, sentimentos e ligação demonstrativa com Rotina diária. |
+| Conhecimento | `no-op`: foram aplicados contratos aprovados; não surgiu regra durável nova. |
+
+Percentuais: entrega V2 3/6 (50,00%); programa visual 0/31 `accepted`
+(0,00%); Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207;
+Supabase `local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202;
+projeto estrito 0/229. E2E e estrito medem conclusão integral e não anulam os
+GREENs locais.
+
 Percentuais de fechamento local da onda: entrega atual 5/5 `local-green` ou
 `accepted` (100,00%); programa visual 0/31 `accepted` (0,00%); Flutter
 `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase

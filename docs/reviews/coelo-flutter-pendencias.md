@@ -1942,6 +1942,50 @@ os GREENs locais.
 | Próximo item exato | V2.8 Atividades/Modelos: edição, duplicação com novo nome e modelo sem vínculos. |
 | Conhecimento capturado | `no-op`: contrato aprovado ganhou gate executável. |
 
+## 16.31. V2.8 Atividades e modelos — abertura — 2026-08-28
+
+**Entrega atual V2:** 33,33% (2/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `in-progress`. |
+| Tela e rota | Diretório de Atividades, coleção Modelos e wizard canônico, produção e `/dev`. |
+| Arquivos alterados | Spec e tracker antes dos REDs; produção/testes serão registrados no GREEN. |
+| Regressões | Card ainda abre detalhe apesar de receber callback de edição; dialog de duplicação não solicita novo nome; criação de modelo usa dialog local e ainda não prova wizard sem vínculos. |
+| Testes planejados | Três contratos RED→GREEN independentes: abrir edição, duplicar com nome obrigatório e criar modelo pelo wizard omitindo vínculos. |
+| Inspeções responsivas | Pendentes em 375/768/1024/1440, texto 200%, light/dark, teclado, foco, Escape, alvos e reduced motion. |
+| Bloqueios | Nenhum local; Supabase/backend e Assessments permanecem fora do recorte. |
+| Tempo realmente usado | 0 h 56 min acumulados, às 12:17 BRT. |
+| Estimativa restante | 1–2 h para V2.8; 9 h 04 min da janela inicial. |
+| Próximo item exato | RED do card abrindo edição; depois novo nome na duplicação e modo modelo sem vínculos no wizard. |
+| Conhecimento capturado | `no-op`: comportamento já aprovado na spec do programa. |
+
+## 16.32. V2.8 Atividades e modelos — local-green — 2026-08-28
+
+**Entrega atual V2:** 50,00% (3/6). **Programa visual:** 0/31 `accepted`.
+**Flutter local:** 84/207 (40,58%). **Flutter verified:** 0/207. **Supabase
+local:** 3/37 (8,11%). **Supabase done:** 0/37. **Integração:** 0/202.
+**Projeto estrito:** 0/229. E2E e estrito medem conclusão integral e não anulam
+os GREENs locais.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Atividades/Modelos e criação/edição `/dev`; produção permanece sem mutação quando não há capability. |
+| Arquivos alterados | `activity_directory_page.dart`; `superadmin_router.dart`; testes de diretório, formulário e golden; dialog shell compartilhado e teste; spec e tracker. |
+| Correções realizadas | Card/tabela abrem edição quando disponível e mantêm detalhe como fallback; duplicação exige novo nome e o encaminha à cópia local; criação de modelo usa wizard Contexto → Identidade → Revisão e declara ausência de vínculos. Dialog compartilhado ganhou rolagem integral em texto ampliado e ações empilhadas em largura estreita. |
+| Testes e resultados | REDs: edição ignorada, callback sem nome, criação sem wizard e overflow 375/200%. GREEN 42/42 Atividades/rotas + 4/4 dialog; analyzers focados, validador administrativo e diff-check verdes. |
+| Inspeções responsivas | Wizard 375/768/1024/1440 a 200%; diretório/formulário já cobrem light/dark e reduced motion; dialog cobre teclado, Escape, retorno de foco e alvos. |
+| Bloqueios | Nove grupos de goldens antigos divergem 4,72%–46,27% e um cenário interativo legado não alcança a chave esperada. Não atualizados. Mudanças V1 de launcher/Arquivos explicam o deslocamento constante de várias referências; inspeção/aceite humano pendentes. Assessments intocado. |
+| Tempo realmente usado | 0 h 17 min; 1 h 13 min acumulados, às 12:34 BRT. |
+| Estimativa restante | 8 h 47 min da janela; V2.9 = 2–3 h inicial. |
+| Próximo item exato | V2.9 Assiduidade: inventário e RED de dashboard/chamada, começando por Salvar por aluno. |
+| Conhecimento capturado | `no-op`: contratos de UX já aprovados foram aplicados. |
+
 ## 17. Histórico
 
 
