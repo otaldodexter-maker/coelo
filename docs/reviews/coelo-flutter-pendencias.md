@@ -1394,6 +1394,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu inventário paralelo, três REDs, duas rodadas de review e gates focados. |
 | Estimativa restante | O próximo lote seguro é Rotina diária ou Comunicação/Avisos para fechar troca de repository/contexto; a ETA E2E continua não calculável sem backend e decisões de capability. |
 
+## 16.5. Rotina diária — troca segura de contexto — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Diretório de Rotina diária. |
+| Arquivos modificados | `daily_routine_pages.dart`; `daily_routine_production_page_test.dart`. |
+| Correções realizadas | Ao receber outra instância de repository/contexto, a página remove o listener e descarta o controller anterior, limpa busca e permissão de gestão, restaura o tipo inicial e carrega um controller novo. O descarte invalida a carga anterior; uma resposta tardia do tenant A não pode notificar nem repovoar a superfície do tenant B. Estado `unauthorized` do novo contexto retorna antes de toolbar, tabs, criação e conteúdo anterior. |
+| Estado atual | `local-green`. RED reproduzido antes da correção; regressão não-golden fresca 37/37; analyzer dos dois arquivos sem issues; formatter aplicado; `git diff --check` verde. Duas revisões independentes finais: GREEN, P0=0/P1=0. Nenhum backend, adapter produtivo ou golden foi alterado. |
+| Bloqueios | Persistência real, autorização integrada, cross-tenant remoto, inspeção visual humana e E2E permanecem fora deste pacote. |
+| Pendências restantes | Contraprova futura pode cobrir troca para tenant B autorizado preservando uma preferência de layout explícita; isso não altera a correção de privacidade já exercitada. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu RED, correção, 37 testes e duas revisões independentes. |
+| Estimativa restante | O próximo lote seguro é Comunicação/Avisos, com foco em troca de repository/ID e comandos assíncronos; a ETA E2E continua dependente dos bloqueios externos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
