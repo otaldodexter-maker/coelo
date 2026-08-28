@@ -1479,6 +1479,23 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de swap A→B, reseleção A→A, retry ambíguo, suíte focada e duas revisões independentes. |
 | Estimativa restante | Próximo lote seguro: lifecycle de save/publicação de Momentos; ETA E2E continua dependente dos contratos externos registrados. |
 
+## 16.10. Momentos — lifecycle de carregar, salvar e publicar — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Publicar em Momentos; carregar rascunho, salvar e publicar. |
+| Arquivos modificados | `moments_publication_controller.dart`; `principal_moments_publication_page.dart`; `principal_moments_publication_components.dart`; testes do controller e da página. |
+| Correções realizadas | Load, save e publish compartilham lifecycle single-flight e ignoram continuações após descarte. Save concluído após edição preserva os campos atuais e reconcilia somente ID/versão; erros sempre saem do estado busy com feedback retryable. Loading mostra estado sem inputs/ações. Publishing bloqueia ponteiro, foco e teclado, mantém snapshot estável e comunica o receipt confirmado exatamente uma vez. |
+| Estado atual | `local-green`. Suíte Momentos não-golden fresca 38/38; analyzer dos cinco paths sem issues; formatter e `git diff --check` verdes. Duas revisões independentes finais: GREEN, P0=0/P1=0. Nenhum backend, router produtivo ou golden foi alterado. |
+| Bloqueios | Persistência produtiva, autorização/RLS, mídia R2 real, resposta remota perdida e validação cross-tenant permanecem fora deste pacote. O resultado local não constitui E2E. |
+| Pendências restantes | Evidência E2E das 207 ações, inspeção visual humana e contratos integrados de mídia/publicação continuam pendentes nos rastreadores correspondentes. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de concorrência, receipt stale, loading, erros, dispose, teclado/foco e revisões independentes. |
+| Estimativa restante | Próximo lote Flutter deve ser independente deste fluxo; ETA E2E continua dependente dos contratos externos registrados. |
+
 ## 17. Histórico
 
 | Data | Mudança |
