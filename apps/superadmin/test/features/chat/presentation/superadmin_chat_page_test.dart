@@ -153,6 +153,154 @@ void main() {
     expect(find.text('Resultado B'), findsWidgets);
     expect(find.text('Thread A'), findsNothing);
   });
+
+  testWidgets('repository swap clears tenant A and ignores its late search', (tester) async {
+    _viewport(tester, 1440);
+    final repositoryA = _ControlledSearchRepository();
+    final repositoryB = _UnauthorizedChatRepository();
+    await tester.pumpWidget(_app(repository: repositoryA));
+    await tester.pumpAndSettle();
+
+    final search = tester.widget<CoeloSearchField>(find.byKey(const Key('superadmin-chat-search')));
+    search.controller.text = 'tenant A';
+    search.onChanged('tenant A');
+    await tester.pump(const Duration(milliseconds: 301));
+    expect(repositoryA.pending, contains('tenant A'));
+
+    await tester.pumpWidget(_app(repository: repositoryB));
+    await tester.pump();
+    await tester.pump();
+
+    expect(repositoryB.queries, hasLength(1));
+    expect(repositoryB.queries.single.search, isEmpty);
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Turma Girassol'), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-search')), findsNothing);
+    expect(find.byKey(const Key('superadmin-chat-composer-field')), findsNothing);
+
+    repositoryA.complete('tenant A', title: 'Resultado privado A');
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Acesso nao autorizado'), findsOneWidget);
+    expect(find.text('Resultado privado A'), findsNothing);
+  });
+
+  testWidgets('late send from conversation A cannot alter conversation B', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _ControlledSendRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('superadmin-chat-composer-field')),
+      'Mensagem enviada A',
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    expect(repository.sent, hasLength(1));
+
+    await tester.tap(find.byKey(const Key('chat-real-conversation-conversation-b')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Rascunho B');
+
+    repository.completeFirstSend();
+    await tester.pump();
+    await tester.pump();
+
+    final composer = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('superadmin-chat-composer-field')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(composer.controller.text, 'Rascunho B');
+    expect(find.text('Thread B'), findsOneWidget);
+    expect(find.text('Mensagem enviada A'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pumpAndSettle();
+    expect(repository.sent, hasLength(2));
+    expect(repository.sent.last.conversationId, 'conversation-b');
+    expect(find.text('Rascunho B'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('reselecting the same conversation keeps its send single-flight', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _ControlledSendRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Mensagem A');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    expect(repository.sent, hasLength(1));
+
+    await tester.tap(find.byKey(const Key('chat-real-conversation-conversation-a')));
+    await tester.pump();
+    await tester.pump();
+    expect(repository.threadRequests, 1);
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+
+    expect(repository.sent, hasLength(1));
+    repository.completeFirstSend();
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Mensagem enviada A'), findsOneWidget);
+  });
+
+  testWidgets('retries an ambiguous send with the same idempotency key', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _AmbiguousSendRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('superadmin-chat-composer-field')),
+      'Mensagem única',
+    );
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    await tester.pump();
+    expect(repository.persistedMessages, 1);
+    expect(repository.commands, hasLength(1));
+
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    await tester.pump();
+
+    expect(repository.persistedMessages, 1);
+    expect(repository.commands, hasLength(2));
+    expect(repository.commands[1].idempotencyKey, repository.commands[0].idempotencyKey);
+    expect(find.text('Mensagem única'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('editing after an ambiguous send creates a new intent', (tester) async {
+    _viewport(tester, 1440);
+    final repository = _AmbiguousSendRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Mensagem A');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    await tester.pump();
+
+    await tester.enterText(find.byKey(const Key('superadmin-chat-composer-field')), 'Mensagem B');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('superadmin-chat-send')));
+    await tester.pump();
+    await tester.pump();
+
+    expect(repository.persistedMessages, 2);
+    expect(repository.commands, hasLength(2));
+    expect(repository.commands[1].idempotencyKey, isNot(repository.commands[0].idempotencyKey));
+    expect(find.text('Mensagem B'), findsOneWidget);
+  });
 }
 
 Widget _app({ChatRepository? repository, double textScale = 1}) => MaterialApp(
@@ -358,6 +506,130 @@ final class _ControlledThreadSearchRepository implements ChatRepository {
   @override
   Future<ChatMessage> sendMessage(ChatSendMessageCommand command) => _fallback.sendMessage(command);
 }
+
+final class _UnauthorizedChatRepository implements ChatRepository {
+  final List<ChatInboxQuery> queries = [];
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) {
+    queries.add(query);
+    throw const ChatUnauthorizedException();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _ControlledSendRepository implements ChatRepository {
+  final List<ChatSendMessageCommand> sent = [];
+  final Completer<ChatMessage> _firstSend = Completer<ChatMessage>();
+  int threadRequests = 0;
+
+  void completeFirstSend() {
+    _firstSend.complete(
+      ChatMessage(
+        id: 'sent-a',
+        conversationId: 'conversation-a',
+        body: 'Mensagem enviada A',
+        authorName: 'Owner',
+        sentAt: DateTime.utc(2026, 8, 28),
+        isMine: true,
+        kind: 'text',
+      ),
+    );
+  }
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async => ChatInboxPage(
+    totalUnread: 0,
+    items: [
+      _conversation('conversation-a', 'Conversa A'),
+      _conversation('conversation-b', 'Conversa B'),
+    ],
+  );
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async {
+    threadRequests++;
+    return _threadPage(query.conversationId == 'conversation-a' ? 'Thread A' : 'Thread B');
+  }
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) {
+    sent.add(command);
+    if (sent.length == 1) return _firstSend.future;
+    return Future.value(
+      ChatMessage(
+        id: 'sent-b',
+        conversationId: command.conversationId,
+        body: command.body,
+        authorName: 'Owner',
+        sentAt: DateTime.utc(2026, 8, 28, 1),
+        isMine: true,
+        kind: 'text',
+      ),
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _AmbiguousSendRepository implements ChatRepository {
+  final List<ChatSendMessageCommand> commands = [];
+  final Map<String, ChatMessage> _receipts = {};
+  int persistedMessages = 0;
+  bool _dropFirstResponse = true;
+
+  @override
+  Future<ChatInboxPage> fetchInbox(ChatInboxQuery query) async =>
+      ChatInboxPage(totalUnread: 0, items: [_conversation('conversation-a', 'Conversa A')]);
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => _threadPage('Thread A');
+
+  @override
+  Future<void> markRead({required String conversationId, required String upToMessageId}) async {}
+
+  @override
+  Future<ChatMessage> sendMessage(ChatSendMessageCommand command) async {
+    commands.add(command);
+    if (_receipts[command.idempotencyKey] case final receipt?) return receipt;
+    persistedMessages++;
+    final receipt = ChatMessage(
+      id: 'sent-unique',
+      conversationId: command.conversationId,
+      body: command.body,
+      authorName: 'Owner',
+      sentAt: DateTime.utc(2026, 8, 28),
+      isMine: true,
+      kind: 'text',
+    );
+    _receipts[command.idempotencyKey] = receipt;
+    if (_dropFirstResponse) {
+      _dropFirstResponse = false;
+      throw const ChatOfflineException();
+    }
+    return receipt;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+ChatConversationSummary _conversation(String id, String title) => ChatConversationSummary(
+  id: id,
+  title: title,
+  preview: 'Preview $title',
+  contextLabel: 'Contexto autorizado',
+  kind: 'group',
+  unreadCount: 0,
+  updatedAt: DateTime.utc(2026, 8, 28),
+  isReadOnly: false,
+);
 
 ChatThreadPage _threadPage(String body) => ChatThreadPage(
   items: [

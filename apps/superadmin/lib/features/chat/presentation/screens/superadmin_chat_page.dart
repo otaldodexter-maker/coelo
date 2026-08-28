@@ -13,6 +13,25 @@ import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
 import '../widgets/superadmin_chat_composer.dart';
 
+final class _PendingChatSend {
+  const _PendingChatSend({
+    required this.repository,
+    required this.conversationId,
+    required this.body,
+    required this.idempotencyKey,
+  });
+
+  final ChatRepository repository;
+  final String conversationId;
+  final String body;
+  final String idempotencyKey;
+
+  bool matches(ChatRepository candidateRepository, String candidateConversationId, String value) =>
+      identical(repository, candidateRepository) &&
+      conversationId == candidateConversationId &&
+      body == value;
+}
+
 final class SuperadminChatPage extends StatefulWidget {
   const SuperadminChatPage({
     required this.logout,
@@ -36,17 +55,40 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   final _composer = TextEditingController();
   Timer? _searchDebounce;
   int _inboxRequestGeneration = 0;
-  late final ChatRepository _repository;
+  int _threadRequestGeneration = 0;
+  int _sendRequestGeneration = 0;
+  late ChatRepository _repository;
   ChatInboxState _inboxState = const ChatInboxState.loading();
   ChatConversationSummary? _selected;
   ChatThreadPage? _thread;
   Object? _threadError;
   var _sending = false;
+  _PendingChatSend? _pendingSend;
 
   @override
   void initState() {
     super.initState();
     _repository = widget.chatRepository ?? _configuredRepository();
+    _loadInbox();
+  }
+
+  @override
+  void didUpdateWidget(covariant SuperadminChatPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.chatRepository, widget.chatRepository)) return;
+    _searchDebounce?.cancel();
+    _inboxRequestGeneration++;
+    _threadRequestGeneration++;
+    _sendRequestGeneration++;
+    _repository = widget.chatRepository ?? _configuredRepository();
+    _search.clear();
+    _composer.clear();
+    _selected = null;
+    _thread = null;
+    _threadError = null;
+    _sending = false;
+    _pendingSend = null;
+    _inboxState = const ChatInboxState.loading();
     _loadInbox();
   }
 
@@ -68,11 +110,16 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   Future<void> _loadInbox() async {
     final requestGeneration = ++_inboxRequestGeneration;
+    final requestedRepository = _repository;
     final search = _search.text;
     setState(() => _inboxState = const ChatInboxState.loading());
     try {
-      final page = await _repository.fetchInbox(ChatInboxQuery(search: search));
-      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      final page = await requestedRepository.fetchInbox(ChatInboxQuery(search: search));
+      if (!mounted ||
+          requestGeneration != _inboxRequestGeneration ||
+          !identical(requestedRepository, _repository)) {
+        return;
+      }
       setState(() => _inboxState = ChatInboxState.loaded(page, search: search));
       if (page.items.isNotEmpty) {
         await _select(
@@ -82,22 +129,35 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         );
       }
     } on ChatUnauthorizedException catch (error) {
-      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       setState(() => _inboxState = ChatInboxState.unauthorized(error));
     } on ChatOfflineException catch (error) {
-      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       setState(() => _inboxState = ChatInboxState.offline(error));
     } catch (error) {
-      if (!mounted || requestGeneration != _inboxRequestGeneration) return;
+      if (!_isCurrentInboxRequest(requestGeneration, requestedRepository)) return;
       setState(() => _inboxState = ChatInboxState.failure(error));
     }
   }
+
+  bool _isCurrentInboxRequest(int generation, ChatRepository requestedRepository) =>
+      mounted &&
+      generation == _inboxRequestGeneration &&
+      identical(requestedRepository, _repository);
 
   Future<void> _select(
     ChatConversationSummary conversation, {
     int? inboxRequestGeneration,
     String? inboxSearch,
   }) async {
+    final conversationChanged = _selected?.id != conversation.id;
+    if (!conversationChanged && _thread != null && _threadError == null) return;
+    final threadGeneration = ++_threadRequestGeneration;
+    final requestedRepository = _repository;
+    if (conversationChanged) {
+      _sendRequestGeneration++;
+      _pendingSend = null;
+    }
     bool isCurrentAutomaticSelection() =>
         inboxRequestGeneration == null ||
         (inboxRequestGeneration == _inboxRequestGeneration && inboxSearch == _search.text);
@@ -106,23 +166,32 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       _selected = conversation;
       _thread = null;
       _threadError = null;
+      if (conversationChanged) _sending = false;
     });
     try {
-      final thread = await _repository.fetchThread(
+      final thread = await requestedRepository.fetchThread(
         ChatThreadQuery(conversationId: conversation.id),
       );
-      if (!mounted || _selected?.id != conversation.id || !isCurrentAutomaticSelection()) {
+      if (!mounted ||
+          threadGeneration != _threadRequestGeneration ||
+          !identical(requestedRepository, _repository) ||
+          _selected?.id != conversation.id ||
+          !isCurrentAutomaticSelection()) {
         return;
       }
       setState(() => _thread = thread);
       if (thread.items.isNotEmpty) {
-        await _repository.markRead(
+        await requestedRepository.markRead(
           conversationId: conversation.id,
           upToMessageId: thread.items.first.id,
         );
       }
     } catch (error) {
-      if (mounted && _selected?.id == conversation.id && isCurrentAutomaticSelection()) {
+      if (mounted &&
+          threadGeneration == _threadRequestGeneration &&
+          identical(requestedRepository, _repository) &&
+          _selected?.id == conversation.id &&
+          isCurrentAutomaticSelection()) {
         setState(() => _threadError = error);
       }
     }
@@ -132,30 +201,58 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     final conversation = _selected;
     final body = _composer.text.trim();
     if (conversation == null || body.isEmpty || conversation.isReadOnly || _sending) return;
+    final pending = _pendingSend;
+    final intent = pending != null && pending.matches(_repository, conversation.id, body)
+        ? pending
+        : _PendingChatSend(
+            repository: _repository,
+            conversationId: conversation.id,
+            body: body,
+            idempotencyKey: _requestId(),
+          );
+    _pendingSend = intent;
+    final sendGeneration = ++_sendRequestGeneration;
+    final requestedRepository = intent.repository;
     setState(() => _sending = true);
     try {
-      final sent = await _repository.sendMessage(
+      final sent = await requestedRepository.sendMessage(
         ChatSendMessageCommand(
           conversationId: conversation.id,
           body: body,
-          idempotencyKey: _requestId(),
+          idempotencyKey: intent.idempotencyKey,
         ),
       );
-      if (!mounted) return;
+      if (!_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) return;
+      _pendingSend = null;
       setState(() {
-        _composer.clear();
+        if (_composer.text.trim() == body) _composer.clear();
         _thread = ChatThreadPage(items: [...?_thread?.items, sent]);
       });
     } on ChatUnauthorizedException {
-      if (mounted) _showNotice('Sua permissao para esta conversa foi alterada.');
+      if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
+        _pendingSend = null;
+        _showNotice('Sua permissao para esta conversa foi alterada.');
+      }
     } on ChatOfflineException {
-      if (mounted) _showNotice('Sem conexao. A mensagem nao foi enviada.');
+      if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Sem conexao. A mensagem nao foi enviada.');
+      }
     } catch (_) {
-      if (mounted) _showNotice('Nao foi possivel enviar. Tente novamente.');
+      if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
+        _showNotice('Nao foi possivel enviar. Tente novamente.');
+      }
     } finally {
-      if (mounted) setState(() => _sending = false);
+      if (_isCurrentSend(sendGeneration, requestedRepository, conversation.id)) {
+        setState(() => _sending = false);
+      }
     }
   }
+
+  bool _isCurrentSend(int generation, ChatRepository requestedRepository, String conversationId) =>
+      mounted &&
+      generation == _sendRequestGeneration &&
+      identical(requestedRepository, _repository) &&
+      _selected?.id == conversationId;
 
   void _showNotice(String message) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
