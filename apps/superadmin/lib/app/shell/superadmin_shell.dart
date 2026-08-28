@@ -455,7 +455,8 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     }
     final openConversations =
         widget.onOpenConversations ??
-        (destinationHandler == null ? () {} : () => destinationHandler('conversations'));
+        (destinationHandler == null ? null : () => destinationHandler('conversations'));
+    if (openConversations == null) return child;
     final pageBottomInset = widget.isHost
         ? _embeddedChatLauncherBottomInset
         : widget.chatLauncherBottomInset;

@@ -367,3 +367,23 @@ Percentuais: programa visual 0/31 `accepted` (0,00%); Flutter `local-green`
 84/207 (40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37
 (8,11%); Supabase `done` 0/37; integração 0/202; projeto estrito 0/229.
 E2E e estrito medem conclusão integral e não anulam este GREEN local.
+
+### V1.2 Conversas — checkpoint local-green — 2026-08-28 11:36 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `local-green`; 2/5 entregáveis V1 (40,00%). `accepted` depende de aprovação visual humana. |
+| Tela e rota | Launcher e item lateral → `/communication/conversations` e `/dev/communication/conversations`; saída para Atividades. |
+| Arquivos alterados | `superadmin_router.dart`; `superadmin_shell.dart`; `chat_routes_test.dart`; `superadmin_shell_test.dart`; spec e rastreador. |
+| Correções | Conversas usa os mapeadores centrais produtivo e `/dev`; launcher e item lateral preservam o shell; launcher sem capability não é renderizado, eliminando callback vazio. |
+| Testes | RED do launcher morto reproduzido; GREEN conjunto 70/70. Analyzer focado sem issues; formatter verde. |
+| Responsividade | A suíte do shell cobre 375/768/1024/1440 px, light/dark, texto ampliado e reduced motion; rota também foi exercitada no shell persistente. |
+| Bloqueios | Inspeção visual humana e aceite pendentes; conteúdo remoto do chat continua fora do recorte. |
+| Tempo usado | 0 h 07 min neste entregável; 0 h 14 min acumulados. |
+| Estimativa restante | 9 h 46 min da janela autorizada; 9 h 46 min–13 h 46 min pela faixa original. |
+| Próximo item exato | Menu lateral: RED para ausência de rótulos `Criar ...`, preservação de `Nova chamada` e dos três `Publicar ...`, mantendo capabilities das mutações restantes. |
+
+Percentuais: programa visual 0/31 `accepted`; Flutter `local-green` 84/207
+(40,58%); Flutter `verified` 0/207; Supabase `local-green` 3/37 (8,11%);
+Supabase `done` 0/37; integração 0/202; projeto estrito 0/229. E2E e
+estrito medem conclusão integral e não anulam este GREEN local.

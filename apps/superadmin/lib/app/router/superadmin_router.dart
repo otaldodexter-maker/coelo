@@ -1563,19 +1563,8 @@ GoRouter createSuperadminRouter({
                   _ => SuperadminRoutes.institutionsName,
                 });
               },
-              onDestinationSelected: (destination) {
-                if (destination == 'home') {
-                  context.goNamed(SuperadminRoutes.homeName);
-                } else if (destination == 'institutions') {
-                  context.goNamed(SuperadminRoutes.institutionsName);
-                } else if (destination == 'units') {
-                  context.goNamed(SuperadminRoutes.unitsName);
-                } else if (destination == 'groups') {
-                  context.goNamed(SuperadminRoutes.groupsName);
-                } else if (destination == 'catalog') {
-                  context.goNamed(SuperadminRoutes.governanceCatalogName);
-                }
-              },
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
             ),
           ),
           GoRoute(
@@ -3057,19 +3046,8 @@ GoRouter createSuperadminRouter({
                     ? SuperadminRoutes.devHomeName
                     : SuperadminRoutes.devInstitutionsName,
               ),
-              onDestinationSelected: (destination) {
-                if (destination == 'home') {
-                  context.goNamed(SuperadminRoutes.devHomeName);
-                } else if (destination == 'institutions') {
-                  context.goNamed(SuperadminRoutes.devInstitutionsName);
-                } else if (destination == 'units') {
-                  context.goNamed(SuperadminRoutes.devUnitsName);
-                } else if (destination == 'groups') {
-                  context.goNamed(SuperadminRoutes.devGroupsName);
-                } else if (destination == 'catalog') {
-                  context.goNamed(SuperadminRoutes.devCatalogName);
-                }
-              },
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
             ),
           ),
           GoRoute(

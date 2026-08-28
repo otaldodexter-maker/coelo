@@ -311,7 +311,27 @@ void main() {
     expect(destinations, ['conversations']);
   });
 
+  testWidgets('does not expose a dead chat launcher without a navigation capability', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell(
+          logout: () async => const LogoutResult.success(),
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
+  });
+
   testWidgets('does not reserve global bottom clearance for the launcher', (tester) async {
+    final destinations = <String>[];
     for (final width in [375.0, 768.0, 1440.0]) {
       await tester.binding.setSurfaceSize(Size(width, 900));
       await tester.pumpWidget(
@@ -320,6 +340,7 @@ void main() {
           home: SuperadminShell(
             key: ValueKey(width),
             logout: () async => const LogoutResult.success(),
+            onDestinationSelected: destinations.add,
             child: Align(
               alignment: Alignment.bottomRight,
               child: IconButton(
@@ -1874,6 +1895,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       _shellApp(
+        onDestinationSelected: (_) {},
         chatUnreadCountLoader: () async {
           calls += 1;
           return 3;

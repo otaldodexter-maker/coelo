@@ -1736,6 +1736,28 @@ As duas últimas métricas medem conclusão integral e não anulam o GREEN local
 | Próximo item exato | Conversas: REDs de launcher/item lateral, navegação de saída e callback ausente. |
 | Conhecimento capturado | `no-op`: aplicação de `pattern.interaction-states` e `pattern.selection-controls` já aprovados. |
 
+## 16.22. V1.2 Conversas — navegação total do shell — 2026-08-28
+
+**Entrega atual:** 40,00% (2/5 `local-green` ou `accepted`). **Programa
+visual:** 0/31 `accepted`. **Flutter local:** 84/207 (40,58%). **Flutter
+verified:** 0/207. **Supabase local:** 3/37 (8,11%). **Supabase done:** 0/37.
+**Integração:** 0/202. **Projeto estrito:** 0/229. E2E e estrito medem
+conclusão integral e não anulam evidência local.
+
+| Campo | Registro factual |
+|---|---|
+| Status | `local-green`; aceite visual humano pendente. |
+| Tela e rota | Launcher/item lateral para Conversas em produção e `/dev`; navegação de Conversas para Atividades. |
+| Arquivos alterados | `superadmin_router.dart`; `superadmin_shell.dart`; testes de chat routes e shell; spec e tracker. |
+| Correções realizadas | Mapeadores centrais substituem callbacks parciais; shell persiste; controle visível nunca recebe callback vazio e some quando nenhuma capability de navegação foi injetada. |
+| Testes e resultados | RED do launcher morto; GREEN conjunto 70/70; analyzer focado sem issues; formatter verde. |
+| Inspeções responsivas | Matriz do shell em 375/768/1024/1440, light/dark, texto ampliado e reduced motion. |
+| Bloqueios | Inspeção/aceite humano; chat remoto permanece fora do recorte. |
+| Tempo realmente usado | 0 h 07 min; 0 h 14 min acumulados. |
+| Estimativa restante | 9 h 46 min da janela; 9 h 46 min–13 h 46 min pela faixa V1. |
+| Próximo item exato | Menu: RED para remover `Criar ...` e preservar `Nova chamada`/três `Publicar ...`. |
+| Conhecimento capturado | `no-op`: aplicação de `pattern.stable-route-content-transition` já aprovado. |
+
 ## 17. Histórico
 
 

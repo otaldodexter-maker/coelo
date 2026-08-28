@@ -71,6 +71,89 @@ void main() {
     expect(launcher, findsNothing);
   });
 
+  testWidgets('sidebar item opens conversations without replacing the development shell', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devInstitutions);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    final shellBefore = tester.state(find.byKey(const Key('superadmin-persistent-shell')));
+
+    final navigationScroll = find.descendant(
+      of: find.byKey(const Key('superadmin-navigation-scroll')),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('superadmin-navigation-section-communication')),
+      240,
+      scrollable: navigationScroll,
+    );
+    await tester.tap(find.byKey(const Key('superadmin-navigation-section-communication')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('superadmin-navigation-conversations')),
+      120,
+      scrollable: navigationScroll,
+    );
+    await tester.tap(find.byKey(const Key('superadmin-navigation-conversations')));
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devConversations);
+    expect(tester.state(find.byKey(const Key('superadmin-persistent-shell'))), same(shellBefore));
+  });
+
+  testWidgets('conversation sidebar can navigate to activities in dev and production', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    for (final authenticated in <bool>[false, true]) {
+      final session = SuperadminSession();
+      if (authenticated) session.signIn();
+      final router = createSuperadminRouter(
+        session: session,
+        login: (_) async => const LoginResult.success(),
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
+
+      router.go(authenticated ? SuperadminRoutes.conversations : SuperadminRoutes.devConversations);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('superadmin-navigation-section-structure')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('superadmin-navigation-activities')));
+      await tester.pumpAndSettle();
+
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        authenticated ? SuperadminRoutes.activities : SuperadminRoutes.devActivities,
+      );
+    }
+  });
+
   testWidgets('opens protected conversations for an authenticated session', (tester) async {
     final session = SuperadminSession()..signIn();
     final router = createSuperadminRouter(
