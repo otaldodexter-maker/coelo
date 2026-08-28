@@ -892,6 +892,13 @@ concorrência real e reload persistido. Não houve Flutter, remoto ou E2E; o
 tracker integrado permanece aberto, sem ação promovida, e a métrica geral segue
 0/207. Contacts só pode avançar após protocolo comum e versionado entre writers.
 
+Para Unidades, o Checkpoint seguro 44 prova somente o backend local de
+detail/reload v2: UNIT 31/31 e regressões Auth 29/29, detalhe de Instituição
+26/26, listagem/filtros 35/35 e EDIT CORE 47/47, totalizando 168/168. Não houve
+Flutter, remoto ou E2E e nenhuma ação foi promovida. O P0 legado de `SELECT`
+direto/RLS sem escopo equivalente em `unit_addresses` e `unit_contacts` mantém
+domínio e cutover incompletos; a métrica geral permanece 0/207.
+
 **Gate estrutural deste checkpoint:** os três rastreadores possuem os mesmos 207
 `action_id`; cada rastreador contém 207 linhas únicas, zero duplicadas, e o
 integrado possui zero linhas com quantidade inválida de colunas. Os 22 gates
@@ -978,6 +985,7 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 
 | Data | Mudança |
 |---|---|
+| 2026-08-28 | Checkpoint seguro 44 registrou Unidades detail/reload v2 somente no backend local: spec 043 aprovada sem criar/restaurar `units.read/create/update`, migration/mirror `20260828002000` SHA-256 `0943AF7A…`, pgTAP plano 31 SHA-256 `B75159BB…`, manifesto 110/110 e replay RED específico seguido de UNIT 31/31 mais regressões 29/29 + 26/26 + 35/35 + 47/47, total 168/168. Persistência/reload, plano efetivo determinístico, endereço/contato arquivado ausente e auditoria v2/v3 fail-closed foram provados; teardown sem resíduos. O P0 legado de `SELECT` direto/RLS sem escopo em `unit_addresses`/`unit_contacts` mantém domínio/cutover incompletos. Zero remoto, Flutter ou E2E; nenhuma das 207 ações foi promovida e o progresso permanece 0/207. Knowledge `no-op`, fonte canônica spec 043. |
 | 2026-08-28 | Checkpoint seguro 43 registrou `institutions.edit` ROOT+ADDRESS somente no backend local: spec 042, migration/mirror `20260828000500`, pgTAP plano 47, replay 47/47, regressões totalizando 137/137, concorrência real, persistência/detail reload, receipt/idempotência e auditoria fail-closed. Manifesto 109/109 e teardown sem resíduos. Zero remoto, Flutter ou E2E; integrado nunca concluído, 0/207 ações verificadas. Contacts e os demais domínios fora do slice permanecem bloqueados; knowledge `no-op`, fonte canônica spec 042. |
 | 2026-08-27 | Instituições ganhou listagem/filtros v2 somente no backend local: spec 041 refinou a spec 040, RPCs internas provaram escopo, MFA, roles, busca literal, paginação, 17 sorts, filtros/opções visible-only, ACL e audit. Replay isolado passou 35/35 e regressões Auth 29/29 + detalhe 26/26; page size Flutter 500/cutover, remoto e E2E permanecem pendentes, sem promoção das 207 ações. |
 | 2026-08-27 | Instituições ganhou somente detalhe/reload v2 no backend local: contrato técnico 040 aprovado, RPC aditiva com identidade interna, allowlist Owner/Operations/Auditor, Support/Content fail-closed, MFA, cross-tenant, auditoria e reload. Replay isolado passou 26/26 e P0/P1=0; contratos Flutter/legados não foram alterados, list/filter e escrita permanecem pendentes, zero remoto/E2E e as 207 ações integradas seguem sem promoção. |

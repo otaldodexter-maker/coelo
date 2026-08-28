@@ -3444,3 +3444,51 @@ da simples soma das 207 ações.
   medição exata nem ETA do backlog integral.
 - **Gate de conhecimento:** `no-op`. Nenhuma regra durável nova foi derivada
   para `docs/knowledge`; a fonte canônica permanece a spec 042.
+
+### Checkpoint seguro 44 — Unidades: detalhe/reload v2 interno
+
+- **Recorte/ações tratadas:** backend interno aditivo de detalhe da Unidade,
+  com suporte ao reload de `units.reload`. A spec canônica
+  `043-superadmin-internal-unit-detail-v2.md` está
+  `approved-for-implementation`. Ela usa `platform.read` somente por
+  compatibilidade, com allowlist Owner/Operations/Auditor; Owner exige AAL2,
+  Support/Content permanecem `fail-closed` e o escopo platform/institution é
+  validado no servidor. O slice não cria, aprova nem restaura
+  `units.read`/`units.create`/`units.update`; OQ-032 continua aberta.
+- **Output e regra física:** o JSON expõe somente `id`, `name`, `slug`,
+  `status`, `institution {id,name,type {id,name}}`,
+  `unit_type {id,name}`, `address`, `contact` e
+  `effective_plan {id,code,name,inherited}`. Endereço ou contato sem linha
+  não arquivada retorna `null`; linha `status='archived'` é tratada como
+  ausente. O plano efetivo é determinístico: override vigente vence; sem
+  override, usa a assinatura vigente mais recente por `created_at,id`; sem
+  ambos, retorna `null`.
+- **Migration/teste:** a migration forward-only
+  `20260828002000_superadmin_internal_unit_detail.sql`, canônica e mirror, tem
+  7.465 bytes e SHA-256
+  `0943AF7A7D45B745A5C0651BF0D5E1CF85D84A32371CB6768E1222BD65FE1691`.
+  O pgTAP `superadmin_internal_unit_detail_test.sql` tem 36.465 bytes, plano
+  31 e SHA-256
+  `B75159BB8F43F488926DF5BFA41D00956E0A01F8596CBBC9DA6FBE815EDC6C03`.
+  O manifesto terminou com 110 migrations canônicas e 110 mirrors idênticos.
+- **Provas locais:** replay isolado confirmou o RED específico do wrapper e
+  helper antes da migration, depois passou UNIT 31/31 e as regressões Auth
+  29/29, detalhe de Instituição 26/26, listagem/filtros 35/35 e EDIT CORE
+  47/47: 168 testes executados e todos os 168 verdes. Persistência seguida de
+  reload, auditoria v2/v3 1:1/minimizada/digest-valid e falha adversarial de
+  append `fail-closed` foram exercitadas. Ledgers de dependências e alvo
+  passaram; teardown terminou sem container, volume, rede ou diretório
+  temporário residual.
+- **P0 legado separado:** grants/RLS de `unit_addresses` e
+  `unit_contacts` ainda permitem `SELECT` direto sem o mesmo escopo do wrapper.
+  Esse domínio/cutover legado não foi concluído por este slice e continua
+  bloqueando promoção ampla; o contrato novo não o mascara nem o declara
+  resolvido.
+- **Ambiente/estado:** zero mutação remota, deploy, Flutter ou E2E. O máximo
+  comprovado é `local-green` somente no backend; tela e integração não estão
+  concluídas e o progresso geral de produto/E2E permanece 0/207 ações.
+- **Tempo adicional:** aproximadamente 10 h consumidas neste pacote. O ETA do
+  backlog integral permanece não calculável com os dados atuais.
+- **Gate de conhecimento:** `no-op`. Os scripts `Search`/`Test` da memória não
+  existem nesta checkout; nenhuma projeção foi inventada e a fonte canônica
+  permanece a spec 043.
