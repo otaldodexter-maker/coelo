@@ -3,6 +3,7 @@ title: "Perfil e configurações do Superadmin"
 source: "Plano aprovado pelo usuário em 2026-07-28; docs/design/design-system.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md"
 status: "implemented"
 generated_at: "2026-07-28"
+updated_at: "2026-08-28"
 ---
 
 # Perfil e configurações do Superadmin
@@ -15,8 +16,10 @@ permitir autoedição de papel ou permissões.
 
 ## Perfil
 
-`/profile` reúne dados pessoais, acesso e segurança. Nome, sobrenome, avatar e
-senha são simulados localmente. Alterar o e-mail cria uma solicitação pendente:
+Enquanto o contrato produtivo não está disponível, `/profile` permanece
+fail-closed em `503` e `/dev/profile` reúne dados pessoais, acesso e segurança
+com repositório local isolado. Nome, sobrenome e avatar são simulados
+localmente. Alterar o e-mail cria uma solicitação pendente:
 o e-mail atual permanece ativo até um Owner aprovar pela central de atividades.
 Qualquer Owner pode decidir, inclusive o próprio solicitante nesta primeira
 versão do protótipo.
@@ -30,6 +33,11 @@ a foto.
 “Meu acesso” mostra papel, MFA e resumo de capacidades somente para leitura.
 Autorização real continua obrigatoriamente server-side.
 
+Alteração de senha permanece indisponível e a interface não solicita nem monta
+campos de credenciais enquanto não houver capability e comando server-side
+reais. Alterações locais do formulário possuem estado dirty explícito;
+`Cancelar alterações` restaura integralmente o último perfil confirmado.
+
 ## Configurações
 
 `/settings` oferece `Sistema`, `Claro` e `Escuro`, além de “Reduzir animações”.
@@ -39,6 +47,6 @@ combinada com a preferência do sistema, nunca a substitui.
 ## Limites
 
 Não fazem parte desta versão Supabase, R2, senha real, e-mail transacional,
-sessões ativas, MFA real ou auditoria server-side. Nenhuma senha do protótipo é
-persistida. Os contratos locais permitem substituir os repositórios sem alterar
-as telas.
+sessões ativas, MFA real ou auditoria server-side. O protótipo não solicita nem
+persiste senha. Os contratos locais permitem substituir os repositórios sem
+alterar as telas.

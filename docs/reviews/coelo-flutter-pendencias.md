@@ -417,7 +417,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 31.4 | Suporte / Detalhe | `support.detail` | Detalhe e link direto não revalidados. | `audited` | B | I | A | C | Avançada | 1.5 h | Abrir/not-found/unauthorized, 200% e foco. |
 | 31.5 | Suporte / Responder | `support.reply` | Envio, duplo envio e erro não comprovados. | `audited` | B | I | A | C | Avançada | 1.5 h | Responder/falhar/retry, teclado e sem duplicação. |
 | 31.6 | Suporte / Encerrar | `support.close` | Mapeamento de status e ação negativa abertos. | `audited` | B | I | A | C | Avançada após decisão | 1.5 h + decisão | Confirmar/cancelar/falhar, foco e status após reload. |
-| 32.1 | Conta / Perfil | `account.profile` | Oito PNGs e fluxo de perfil precisam rerun. | `audited` | B | I | A | C | Avançada | 1.5 h | Carregar/editar/erro, 375–1440, 200% e goldens. |
+| 32.1 | Conta / Perfil | `account.profile` | Lifecycle, privacidade A→B e matriz non-golden estão verdes; produção, mídia e goldens permanecem. | `local-green` | B | I | A | C | Avançada | 1.5 h | Integrar perfil/autorização/mídia, executar cross-tenant, remoto e goldens. |
 | 32.2 | Conta / Configurações | `account.settings` | Estados e visual não revalidados no worktree atual. | `audited` | B | I | A | C | Avançada | 1.5 h | Configurar/salvar/falhar, teclado, 200% e goldens. |
 | 32.3 | Conta / Tema | `account.theme` | Duração normativa e regressão ainda abertas. | `local-green` | B | I | A | C | Avançada | 1 h | Light/dark/sistema, reduced motion e persistência local. |
 | 32.4 | Conta / MFA | `account.mfa` | Fluxo sensível sem prova atual. | `audited` | B | I | A | C | Avançada | 1.5 h | Habilitar/desabilitar/negar/falhar e sessão revogada. |
@@ -1512,6 +1512,24 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 | Pendências restantes | Definir e implementar o contrato server-side/adapter de idempotência para save/upload/publish, com receipt/replay e testes de resposta perdida; executar evidência E2E das 207 ações, inspeção visual humana e goldens quando autorizados. |
 | Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de load/swap, single-flight, checkpoints, edição concorrente, dispose, foco/teclado e ownership de overlays antes do primeiro frame, além de duas revisões independentes. |
 | Estimativa restante | Próximo lote Flutter deve ser independente deste fluxo; o fechamento E2E de Agora depende do contrato integrado de idempotência, mídia e autorização. |
+
+## 16.12. Perfil/Conta — lifecycle, privacidade e responsividade local — 2026-08-28
+
+**Progresso geral conhecido — Concluído:** 0,00% (0/207 ações E2E).
+
+**Progresso geral conhecido — Restante:** 100,00% (207/207 ações E2E).
+
+| Campo | Registro factual |
+|---|---|
+| Tela alterada ou regredida | Conta / Perfil em `/dev/profile`; `/profile` produtivo permanece fail-closed em 503. |
+| Arquivos modificados | `account_controller.dart`; `profile_page.dart`; `superadmin_advanced_color_picker_dialog.dart`; testes do controller, página e rotas; spec canônica e projeção de conhecimento de Perfil/Configurações. |
+| Correções realizadas | Load possui estado tipado, erro/retry, generations supersedíveis e descarte após dispose. Save, cancelamento e decisão de e-mail compartilham single-flight e guardam efeitos pós-await. A página limpa rascunho/avatar/erros/overlays em troca de controller ou reload e reidrata por revisão/origem confirmada: load/cancel/resolve aplicam o snapshot atual, save preserva edição concorrente e falha preserva o draft. Dirty/cancel abrangem todos os campos e avatar. Senha indisponível não monta nem solicita credenciais. Comandos bloqueiam ponteiro, foco e teclado. Layout troca linhas/colunas também pelo text scale e não apresenta overflow em 375/768/1024/1440 a 100/200%. Dialogs Flutter são registrados antes do push e encerrados em swap/dispose. |
+| Estado atual | `local-green`. Gate não-golden do owner: controller+página 34/34 e rotas 5/5; analyzer dos seis paths sem issues; validador visual, formatter, memória e `git diff --check` verdes. Revisão independente inicial encontrou dois P1 de reload/reidratação, corrigidos com REDs específicos; revalidação final registrada no handoff. Nenhum backend, nova rota produtiva ou golden foi alterado. |
+| Bloqueios | Produção continua 503 por ausência de repository/capability autoritativos; persistência real, autorização/RLS, mídia privada, e-mail transacional, MFA/sessões e validação cross-tenant permanecem fora. O seletor nativo do sistema aberto pelo `FilePicker` não pode ser fechado pela página em swap, mas seu resultado é descartado por generation e não altera o novo contexto. O resultado local não constitui E2E. |
+| Conhecimento capturado | A spec fonte e `docs/knowledge/team/superadmin-profile-settings.md` agora registram `/profile` fail-closed, `/dev/profile` local isolado, cancelamento integral e ausência de coleta de senha sem capability/comando reais. Os dois validadores da memória passaram. |
+| Pendências restantes | Integrar contratos produtivos, executar testes cross-tenant/remotos e goldens autorizados; manter as 207 ações E2E como não concluídas até evidência integrada. |
+| Tempo usado | Não calculável com precisão pelo shell; incluiu REDs de load concorrente, A→B, dispose, command lock, erro/retry, dirty/cancel, overlays, foco/teclado, matriz responsiva e revisão independente. |
+| Estimativa restante | O próximo lote Flutter deve ser independente; o fechamento E2E de Conta depende dos contratos produtivos registrados. |
 
 ## 17. Histórico
 
