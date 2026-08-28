@@ -158,6 +158,18 @@ final class NoticeFormController extends ChangeNotifier {
     }
   }
 
+  bool get canRetryLoad =>
+      _noticeId != null &&
+      loadFailure != null &&
+      loadFailure is! NoticeUnauthorizedException &&
+      loadFailure is! NoticeNotFoundException;
+
+  Future<void> retryLoad() {
+    final noticeId = _noticeId;
+    if (noticeId == null || !canRetryLoad) return Future.value();
+    return _load(noticeId);
+  }
+
   bool _isCurrentLoad(int generation, NoticeRepository requestedRepository, String noticeId) =>
       !_isDisposed &&
       generation == _loadGeneration &&

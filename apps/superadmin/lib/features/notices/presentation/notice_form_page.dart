@@ -68,14 +68,58 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _controller,
-    builder: (context, _) => SuperadminFormFrame(
-      viewportWidth: MediaQuery.sizeOf(context).width,
-      navigation: _navigation(),
-      scrollKey: Key('notice-step-${_controller.currentStep.name}'),
-      body: _wizardContent(),
-      footer: _footer(),
-    ),
+    builder: (context, _) {
+      if (_controller.isLoading || _controller.loadFailure != null) {
+        return _loadState();
+      }
+      return SuperadminFormFrame(
+        viewportWidth: MediaQuery.sizeOf(context).width,
+        navigation: _navigation(),
+        scrollKey: Key('notice-step-${_controller.currentStep.name}'),
+        body: _wizardContent(),
+        footer: _footer(),
+      );
+    },
   );
+
+  Widget _loadState() {
+    final failure = _controller.loadFailure;
+    final panel = failure == null
+        ? const CoeloStatePanel(
+            key: Key('notice-form-loading'),
+            title: 'Carregando comunicação',
+            message: 'Aguarde enquanto os dados autorizados são carregados.',
+            loading: true,
+          )
+        : CoeloStatePanel(
+            key: const Key('notice-form-load-failure'),
+            title: switch (failure) {
+              NoticeUnauthorizedException() => 'Sem permissão',
+              NoticeNotFoundException() => 'Comunicação não encontrada',
+              _ => 'Não foi possível carregar',
+            },
+            message: failure.safeMessage,
+            icon: failure is NoticeUnauthorizedException
+                ? Icons.lock_outline_rounded
+                : failure is NoticeNotFoundException
+                ? Icons.search_off_rounded
+                : Icons.error_outline_rounded,
+            actionLabel: _controller.canRetryLoad ? 'Tentar novamente' : null,
+            onAction: _controller.canRetryLoad ? _controller.retryLoad : null,
+          );
+    final width = MediaQuery.sizeOf(context).width;
+    final padding = width >= CoeloBreakpoints.large.minWidth
+        ? CoeloSpacing.space10
+        : width < CoeloBreakpoints.medium.minWidth
+        ? CoeloSpacing.space4
+        : CoeloSpacing.space6;
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: Center(
+        child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 720), child: panel),
+      ),
+    );
+  }
 
   Widget _navigation() => SuperadminFormStepNavigation(
     steps: NoticeFormStep.values
@@ -92,30 +136,6 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
   );
 
   Widget _wizardContent() {
-    if (_controller.isLoading) {
-      return const CoeloStatePanel(
-        key: Key('notice-form-loading'),
-        title: 'Carregando comunicação',
-        message: 'Aguarde enquanto os dados autorizados são carregados.',
-        loading: true,
-      );
-    }
-    if (_controller.loadFailure case final failure?) {
-      return CoeloStatePanel(
-        key: const Key('notice-form-load-failure'),
-        title: switch (failure) {
-          NoticeUnauthorizedException() => 'Sem permissão',
-          NoticeNotFoundException() => 'Comunicação não encontrada',
-          _ => 'Não foi possível carregar',
-        },
-        message: failure.safeMessage,
-        icon: failure is NoticeUnauthorizedException
-            ? Icons.lock_outline_rounded
-            : failure is NoticeNotFoundException
-            ? Icons.search_off_rounded
-            : Icons.error_outline_rounded,
-      );
-    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -5,6 +5,8 @@ import 'package:coelo_superadmin/app/prototype/superadmin_prototype_store.dart';
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/platform_notice.dart';
 import 'package:coelo_superadmin/features/notices/presentation/notice_form_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -138,6 +140,57 @@ void main() {
     expect(find.text('Comunicação A'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('transient load failure shows no wizard actions and retries in place', (
+    tester,
+  ) async {
+    final repository = _RetryLoadNoticeRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: NoticeFormPage(repository: repository, noticeId: 'notice-retry'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('notice-form-load-failure')), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byType(SuperadminFormStepNavigation), findsNothing);
+    expect(find.byType(SuperadminFormActionFooter), findsNothing);
+    expect(find.text('Salvar rascunho'), findsNothing);
+
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(repository.loads, 2);
+    expect(find.text('Comunicação recuperada'), findsWidgets);
+    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unauthorized load stays state-only without retry or mutation footer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: NoticeFormPage(
+            repository: _DeniedLoadNoticeRepository(),
+            noticeId: 'notice-denied',
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sem permissão'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
+    expect(find.byType(SuperadminFormStepNavigation), findsNothing);
+    expect(find.byType(SuperadminFormActionFooter), findsNothing);
+    expect(find.text('Salvar rascunho'), findsNothing);
+  });
 }
 
 PlatformNotice _notice(String id, String title) => PlatformNotice(
@@ -200,6 +253,39 @@ final class _SwapDuringSaveNoticeRepository implements NoticeRepository {
     String? noticeId,
     int? expectedVersion,
   }) => pendingSave.future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _RetryLoadNoticeRepository implements NoticeRepository {
+  int loads = 0;
+
+  @override
+  Future<PlatformNotice> getById(String noticeId) async {
+    loads++;
+    if (loads == 1) throw const NoticeUnavailableException();
+    return _notice(noticeId, 'Comunicação recuperada');
+  }
+
+  @override
+  Future<NoticeAudienceOptionsPage> fetchAudienceOptions({
+    required NoticeAudienceDimension dimension,
+    String? search,
+    List<String> parentIds = const [],
+    String? cursorLabel,
+    String? cursorId,
+    int pageSize = 30,
+  }) async => const NoticeAudienceOptionsPage(items: []);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _DeniedLoadNoticeRepository implements NoticeRepository {
+  @override
+  Future<PlatformNotice> getById(String noticeId) async =>
+      throw const NoticeUnauthorizedException();
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
