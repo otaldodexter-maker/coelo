@@ -140,6 +140,9 @@ Em sucesso, `data` possui exatamente esta forma logica, sem chaves adicionais:
 - `institution.name` deriva de `institutions.public_name`;
 - `unit.name` deriva da Unidade vinculada, cuja `institution_id` deve coincidir
   com a da Turma pela integridade fisica;
+- `groups.unit_id` e fisicamente `NOT NULL` desde
+  `20260724152628_contextual_authorization_core.sql`; a v2 preserva essa
+  hierarquia obrigatoria e nao adiciona nova regra de dominio;
 - `group_type` continua texto livre; o valor `class` nao e transformado no
   backend, pois `Turma` e apenas o rotulo de apresentacao do Flutter;
 - `group_type_other_text` preserva a nullability fisica e a constraint vigente;
