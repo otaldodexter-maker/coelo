@@ -44,7 +44,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   final _cursors = <String?>[null];
   Set<FormOperationalStatus> _operationalStatuses = {};
   DateTimeRange? _period;
-  FormsDirectoryDisplay _display = FormsDirectoryDisplay.table;
+  FormsDirectoryDisplay _display = FormsDirectoryDisplay.cards;
   FormsDirectoryLoadStatus _status = FormsDirectoryLoadStatus.loading;
   FormCursorPage<FormDirectoryItem>? _page;
   String? _message;
@@ -62,7 +62,18 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   void didUpdateWidget(covariant FormsDirectoryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.api, widget.api)) {
-      _resetAndLoad();
+      _searchDebounce?.cancel();
+      _loadGeneration++;
+      _search.clear();
+      _operationalStatuses = {};
+      _period = null;
+      _page = null;
+      _message = null;
+      _cursors
+        ..clear()
+        ..add(null);
+      _pageIndex = 0;
+      unawaited(_load());
     }
   }
 
@@ -370,23 +381,33 @@ final class FormsDirectoryResults extends StatelessWidget {
             SizedBox(
               width: width,
               child: CoeloAdminInteractiveCard(
-                semanticLabel: 'Abrir ${item.title}',
+                key: Key('forms-directory-card-${item.id}'),
+                surfaceKey: Key('forms-directory-card-surface-${item.id}'),
+                minHeight: 216,
                 onPressed: onOpen == null ? null : () => onOpen!(item),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 188),
-                  child: Padding(
-                    padding: const EdgeInsets.all(CoeloSpacing.space4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.title, style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        Text(_kindLabel(item.kind)),
-                        Text(_operationalStatusLabel(item.operationalStatus)),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        Text('Atualizado em ${_shortDate(item.updatedAt)}'),
-                      ],
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoeloSpacing.space6,
+                    vertical: CoeloSpacing.space4,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(item.title, style: Theme.of(context).textTheme.titleMedium),
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                          _FormOperationalStatusIndicator(item: item),
+                        ],
+                      ),
+                      const SizedBox(height: CoeloSpacing.space3),
+                      Text(_kindLabel(item.kind)),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      Text('Atualizado em ${_shortDate(item.updatedAt)}'),
+                    ],
                   ),
                 ),
               ),
@@ -422,7 +443,7 @@ final class FormsDirectoryResults extends StatelessWidget {
         initialWidth: 140,
         minWidth: 110,
         maxWidth: 180,
-        cellBuilder: (_, item) => Text(_operationalStatusLabel(item.operationalStatus)),
+        cellBuilder: (_, item) => _FormOperationalStatusChip(status: item.operationalStatus),
       ),
       CoeloAdminTableColumn(
         id: 'identity',
@@ -446,6 +467,56 @@ final class FormsDirectoryResults extends StatelessWidget {
     rowHeight: 68,
     onRowPressed: onOpen,
   );
+}
+
+final class _FormOperationalStatusIndicator extends StatelessWidget {
+  const _FormOperationalStatusIndicator({required this.item});
+
+  final FormDirectoryItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = _operationalStatusLabel(item.operationalStatus);
+    final (background, foreground) = _operationalStatusColors(context, item.operationalStatus);
+    return CoeloAdminExpandableStatusIndicator(
+      label: label,
+      backgroundColor: background,
+      foregroundColor: foreground,
+      semanticLabel: 'Status: $label',
+      surfaceKey: Key('forms-directory-card-status-${item.id}'),
+    );
+  }
+}
+
+final class _FormOperationalStatusChip extends StatelessWidget {
+  const _FormOperationalStatusChip({required this.status});
+
+  final FormOperationalStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final (background, foreground) = _operationalStatusColors(context, status);
+    return CoeloStatusChip(
+      label: _operationalStatusLabel(status),
+      backgroundColor: background,
+      foregroundColor: foreground,
+    );
+  }
+}
+
+(Color, Color) _operationalStatusColors(BuildContext context, FormOperationalStatus status) {
+  final colors =
+      Theme.of(context).extension<CoeloStatusColors>() ??
+      (Theme.brightnessOf(context) == Brightness.dark
+          ? CoeloStatusColors.dark
+          : CoeloStatusColors.light);
+  return switch (status) {
+    FormOperationalStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
+    FormOperationalStatus.scheduled => (colors.warningContainer, colors.onWarningContainer),
+    FormOperationalStatus.active => (colors.successContainer, colors.onSuccessContainer),
+    FormOperationalStatus.closed => (colors.infoContainer, colors.onInfoContainer),
+    FormOperationalStatus.archived => (colors.historyContainer, colors.onHistoryContainer),
+  };
 }
 
 String _operationalStatusLabel(FormOperationalStatus status) => switch (status) {
