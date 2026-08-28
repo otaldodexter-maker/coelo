@@ -14,7 +14,12 @@ final class AgendaPermissionsPage extends StatelessWidget {
     animation: store,
     builder: (context, _) => LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        final effectiveWidth = constraints.maxWidth / textScale;
+        final tableBreakpoint = textScale > 1
+            ? CoeloBreakpoints.expanded.minWidth
+            : CoeloBreakpoints.medium.minWidth;
+        final compact = effectiveWidth < tableBreakpoint;
         final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
             ? CoeloSpacing.space10
             : compact
@@ -67,7 +72,7 @@ final class _PermissionMatrix extends StatelessWidget {
     items: store.contexts,
     rowKey: (node) => node.id,
     headerHeight: 56,
-    rowHeight: 160,
+    rowHeight: 88,
     pinnedColumn: CoeloAdminTableColumn<AgendaContext>(
       id: 'context',
       label: 'Contexto',
@@ -102,6 +107,7 @@ final class _PermissionMatrix extends StatelessWidget {
             store: store,
             node: node,
             capability: AgendaCapability.publishAgendaItems,
+            compact: true,
           ),
         ),
       ),
@@ -116,6 +122,7 @@ final class _PermissionMatrix extends StatelessWidget {
             store: store,
             node: node,
             capability: AgendaCapability.approveGuardianBirthdayRequest,
+            compact: true,
           ),
         ),
       ),
@@ -159,10 +166,16 @@ final class _PermissionCard extends StatelessWidget {
 }
 
 final class _PermissionControl extends StatelessWidget {
-  const _PermissionControl({required this.store, required this.node, required this.capability});
+  const _PermissionControl({
+    required this.store,
+    required this.node,
+    required this.capability,
+    this.compact = false,
+  });
   final AgendaPrototypeStore store;
   final AgendaContext node;
   final AgendaCapability capability;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -181,17 +194,23 @@ final class _PermissionControl extends StatelessWidget {
         'Bloqueado por ${resolution.blockedByContextName ?? 'ancestral'}',
     };
     return Semantics(
-      label: '$capabilityLabel. $detail',
+      key: Key('agenda-permission-semantics-${node.id}-${capability.name}'),
+      label: '$capabilityLabel em ${node.name}. $detail',
       enabled: !blocked,
-      checked: resolution.isAllowed,
-      child: CoeloAdminToggleField(
-        key: Key('agenda-permission-${node.id}-${capability.name}'),
-        label: capabilityLabel,
-        description: detail,
-        value: resolution.isAllowed,
-        onChanged: blocked
-            ? null
-            : (value) => store.setCapabilityRestricted(node.id, capability, !value),
+      toggled: resolution.isAllowed,
+      onTap: blocked
+          ? null
+          : () => store.setCapabilityRestricted(node.id, capability, resolution.isAllowed),
+      child: ExcludeSemantics(
+        child: CoeloAdminToggleField(
+          key: Key('agenda-permission-${node.id}-${capability.name}'),
+          label: compact ? detail : capabilityLabel,
+          description: compact ? null : detail,
+          value: resolution.isAllowed,
+          onChanged: blocked
+              ? null
+              : (value) => store.setCapabilityRestricted(node.id, capability, !value),
+        ),
       ),
     );
   }
