@@ -4100,3 +4100,18 @@ da simples soma das 207 ações.
   incompleto é a decisão canônica OQ-032 e a classificação documental do
   ambiente remoto. Gate de conhecimento: `no-op`, pois não nasceu regra durável
   de produto nem comportamento implantado novo.
+
+### Checkpoint seguro 59 - commits backend prontos para consolidação
+
+- **Commits:** `04da0141` e `0f3b6ebf` são as duas únicas linhas `+` de
+  `git cherry dev codex/supabase-cross-app-foundation`; ambos estão alcançáveis,
+  testados e preservados em worktree limpa.
+- **Gate local:** manifesto 52/52, mirror 115/115, regressão 11 arquivos/285
+  asserts, secret scan sem ocorrência e cleanup Docker zero permanecem verdes.
+- **Consolidação:** `dev` contém lote não commitado de Formulários/UI/docs
+  visuais. Nenhum arquivo dessa frente foi alterado, staged ou commitado pelo
+  backend. O fast-forward/cherry-pick fica condicionado ao status limpo para
+  impedir mistura ou perda de trabalho.
+- **Tempo restante local:** 30–60 minutos após a liberação limpa de `dev` para
+  integrar, repetir gates, atualizar o ledger e remover somente a worktree e a
+  branch backend. Remoto e OQ-032 continuam separados e sem ETA autorizado.
