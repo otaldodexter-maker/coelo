@@ -3717,7 +3717,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => agendaAreaShell(
               context,
               AgendaModuleArea.approvals,
-              const AgendaApprovalsPage.localFixtures(),
+              AgendaApprovalsPage.localFixtures(store: agendaPrototypeStore),
             ),
           ),
           GoRoute(

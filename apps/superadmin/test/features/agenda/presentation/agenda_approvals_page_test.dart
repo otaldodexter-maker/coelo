@@ -1,4 +1,6 @@
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_approvals_page.dart';
+import 'package:coelo_superadmin/features/agenda/data/agenda_prototype_store.dart';
+import 'package:coelo_superadmin/features/agenda/domain/agenda_models.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -74,9 +76,47 @@ void main() {
     expect(find.text('Festival de esportes'), findsNothing);
     expect(find.byKey(const Key('agenda-approval-confirm-approve')), findsNothing);
   });
+
+  testWidgets('pedido salvo pelo formulário aparece nas aprovações locais', (tester) async {
+    final store = AgendaPrototypeStore.seeded(clock: () => DateTime(2026, 8, 31, 18));
+    store.upsertItem(
+      AgendaItem.fixture(
+        id: 'draft-week',
+        title: 'Planejamento da semana',
+        audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+        startsAt: DateTime(2026, 9, 1, 8),
+        endsAt: DateTime(2026, 9, 1, 9),
+        status: AgendaItemStatus.draft,
+      ),
+    );
+    store.requestPublication('draft-week', requestedBy: 'Carolina Mendes');
+
+    await _pumpPage(tester, const Size(1440, 1000), store: store);
+
+    expect(find.text('Planejamento da semana'), findsWidgets);
+    expect(find.text('Carolina Mendes'), findsWidgets);
+    expect(find.byKey(const Key('agenda-approval-decide-publication-draft-week')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('agenda-approval-decide-publication-draft-week')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('agenda-approval-reason')),
+      'Contrato visual revisado.',
+    );
+    await tester.tap(find.byKey(const Key('agenda-approval-confirm-approve')));
+    await tester.pumpAndSettle();
+
+    expect(store.publicationRequests.single.status, AgendaPublicationRequestStatus.approved);
+    expect(store.itemById('draft-week')!.status, AgendaItemStatus.published);
+  });
 }
 
-Future<void> _pumpPage(WidgetTester tester, Size size, {bool unavailable = false}) async {
+Future<void> _pumpPage(
+  WidgetTester tester,
+  Size size, {
+  bool unavailable = false,
+  AgendaPrototypeStore? store,
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
   addTearDown(() {
@@ -89,7 +129,7 @@ Future<void> _pumpPage(WidgetTester tester, Size size, {bool unavailable = false
       home: Scaffold(
         body: unavailable
             ? const AgendaApprovalsPage.unavailable()
-            : const AgendaApprovalsPage.localFixtures(),
+            : AgendaApprovalsPage.localFixtures(store: store),
       ),
     ),
   );

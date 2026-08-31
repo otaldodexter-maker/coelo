@@ -3,6 +3,9 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../data/agenda_prototype_store.dart';
+import '../domain/agenda_models.dart';
+
 enum _ApprovalStatus { pending, approved, rejected }
 
 extension on _ApprovalStatus {
@@ -30,6 +33,7 @@ final class _AgendaApproval {
     required this.requestedAt,
     required this.status,
     this.history,
+    this.publicationRequestId,
   });
 
   final String id;
@@ -39,6 +43,7 @@ final class _AgendaApproval {
   final DateTime requestedAt;
   final _ApprovalStatus status;
   final _ApprovalHistory? history;
+  final String? publicationRequestId;
 
   _AgendaApproval decided({required _ApprovalStatus status, required String reason}) =>
       _AgendaApproval(
@@ -48,11 +53,34 @@ final class _AgendaApproval {
         requestedBy: requestedBy,
         requestedAt: requestedAt,
         status: status,
+        publicationRequestId: publicationRequestId,
         history: _ApprovalHistory(
           actor: 'Marina Oliveira',
           reason: reason,
           decidedAt: DateTime(2026, 8, 31, 16, 40),
         ),
+      );
+
+  factory _AgendaApproval.fromPublicationRequest(AgendaPublicationRequest request) =>
+      _AgendaApproval(
+        id: request.id,
+        title: request.title,
+        context: request.contextLabel,
+        requestedBy: request.requestedBy,
+        requestedAt: request.requestedAt,
+        status: switch (request.status) {
+          AgendaPublicationRequestStatus.pending => _ApprovalStatus.pending,
+          AgendaPublicationRequestStatus.approved => _ApprovalStatus.approved,
+          AgendaPublicationRequestStatus.rejected => _ApprovalStatus.rejected,
+        },
+        history: request.decidedBy == null
+            ? null
+            : _ApprovalHistory(
+                actor: request.decidedBy!,
+                reason: request.reason ?? '',
+                decidedAt: request.decidedAt!,
+              ),
+        publicationRequestId: request.id,
       );
 }
 
@@ -62,10 +90,11 @@ final class _AgendaApproval {
 /// uma fonte autorizada seja conectada. As decisões deste protótipo vivem
 /// somente no estado do widget e nunca representam persistência remota.
 final class AgendaApprovalsPage extends StatefulWidget {
-  const AgendaApprovalsPage.localFixtures({super.key}) : _localFixtures = true;
+  const AgendaApprovalsPage.localFixtures({this.store, super.key}) : _localFixtures = true;
 
-  const AgendaApprovalsPage.unavailable({super.key}) : _localFixtures = false;
+  const AgendaApprovalsPage.unavailable({super.key}) : store = null, _localFixtures = false;
 
+  final AgendaPrototypeStore? store;
   final bool _localFixtures;
 
   @override
@@ -73,7 +102,12 @@ final class AgendaApprovalsPage extends StatefulWidget {
 }
 
 final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
-  late final List<_AgendaApproval> _items = _fixtureApprovals();
+  late final List<_AgendaApproval> _fixtureItems = _fixtureApprovals();
+
+  List<_AgendaApproval> get _items => [
+    ...?widget.store?.publicationRequests.map(_AgendaApproval.fromPublicationRequest),
+    ..._fixtureItems,
+  ];
 
   Future<void> _openDecision(_AgendaApproval item) async {
     await showDialog<void>(
@@ -81,9 +115,20 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
       builder: (dialogContext) => _ApprovalDecisionDialog(
         item: item,
         onDecide: (status, reason) {
-          final index = _items.indexWhere((candidate) => candidate.id == item.id);
-          if (index < 0 || !mounted) return;
-          setState(() => _items[index] = item.decided(status: status, reason: reason));
+          if (!mounted) return;
+          final requestId = item.publicationRequestId;
+          if (requestId != null) {
+            widget.store!.decidePublicationRequest(
+              requestId: requestId,
+              approve: status == _ApprovalStatus.approved,
+              decidedBy: 'Marina Oliveira',
+              reason: reason,
+            );
+            return;
+          }
+          final index = _fixtureItems.indexWhere((candidate) => candidate.id == item.id);
+          if (index < 0) return;
+          setState(() => _fixtureItems[index] = item.decided(status: status, reason: reason));
         },
       ),
     );
@@ -92,40 +137,44 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
   @override
   Widget build(BuildContext context) {
     if (!widget._localFixtures) return const _UnavailableApprovals();
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final textScale = MediaQuery.textScalerOf(context).scale(1);
-        final effectiveWidth = constraints.maxWidth / textScale;
-        final compact = effectiveWidth < CoeloBreakpoints.medium.minWidth;
-        final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-            ? CoeloSpacing.space10
-            : compact
-            ? CoeloSpacing.space4
-            : CoeloSpacing.space6;
-        return ListView(
-          key: const Key('agenda-approvals-scroll'),
-          padding: EdgeInsets.all(padding),
-          children: [
-            Text('Aprovações de publicação', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: CoeloSpacing.space1),
-            const Text(
-              'Revise itens enviados por pessoas sem permissão de publicação e registre a decisão.',
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            const _LocalFixtureNotice(),
-            const SizedBox(height: CoeloSpacing.space5),
-            if (compact)
-              _ApprovalCardList(items: _items, onDecide: _openDecision)
-            else
-              SizedBox(
-                height: 500,
-                child: _ApprovalTable(items: _items, onDecide: _openDecision),
-              ),
-          ],
-        );
-      },
-    );
+    final store = widget.store;
+    if (store == null) return _buildAvailable(context);
+    return AnimatedBuilder(animation: store, builder: (context, _) => _buildAvailable(context));
   }
+
+  Widget _buildAvailable(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final textScale = MediaQuery.textScalerOf(context).scale(1);
+      final effectiveWidth = constraints.maxWidth / textScale;
+      final compact = effectiveWidth < CoeloBreakpoints.medium.minWidth;
+      final padding = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
+          ? CoeloSpacing.space10
+          : compact
+          ? CoeloSpacing.space4
+          : CoeloSpacing.space6;
+      return ListView(
+        key: const Key('agenda-approvals-scroll'),
+        padding: EdgeInsets.all(padding),
+        children: [
+          Text('Aprovações de publicação', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          const Text(
+            'Revise itens enviados por pessoas sem permissão de publicação e registre a decisão.',
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          const _LocalFixtureNotice(),
+          const SizedBox(height: CoeloSpacing.space5),
+          if (compact)
+            _ApprovalCardList(items: _items, onDecide: _openDecision)
+          else
+            SizedBox(
+              height: _items.length <= 3 ? 500 : 80 + _items.length * 140,
+              child: _ApprovalTable(items: _items, onDecide: _openDecision),
+            ),
+        ],
+      );
+    },
+  );
 }
 
 final class _ApprovalDecisionDialog extends StatefulWidget {

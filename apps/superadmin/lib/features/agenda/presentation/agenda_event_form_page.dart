@@ -153,6 +153,12 @@ final class _AgendaEventFormPageState extends State<AgendaEventFormPage> {
     );
     final result = widget.store.saveItem(item, actorContextId: institutionId);
     if (result == AgendaMutationResult.success) {
+      if (requestedStatus == AgendaItemStatus.published && !widget.canPublish) {
+        widget.store.requestPublication(
+          id,
+          requestedBy: 'Usuário local sem permissão de publicação',
+        );
+      }
       widget.onSaved(id);
       return;
     }

@@ -8,6 +8,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     _items = const [];
     _requests = const [];
     _birthdays = const [];
+    _publicationRequests = const [];
   }
 
   AgendaPrototypeStore.seeded({DateTime Function()? clock}) : _clock = clock ?? DateTime.now {
@@ -15,19 +16,80 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     _items = _seedItems();
     _requests = _seedRequests();
     _birthdays = _seedBirthdays();
+    _publicationRequests = const [];
   }
   final DateTime Function() _clock;
   late List<AgendaItem> _items;
   late List<AgendaContext> _contexts;
   late List<GuardianBirthdayRequest> _requests;
   late List<AgendaBirthday> _birthdays;
+  late List<AgendaPublicationRequest> _publicationRequests;
   DateTime get referenceDate => DateTime(2026, 8, 3);
   List<AgendaItem> get items => List.unmodifiable(_items);
   List<AgendaContext> get contexts => List.unmodifiable(_contexts);
   List<GuardianBirthdayRequest> get requests => List.unmodifiable(_requests);
+  List<AgendaPublicationRequest> get publicationRequests => List.unmodifiable(_publicationRequests);
   AgendaItem? itemById(String id) => _firstOrNull(_items.where((e) => e.id == id));
   GuardianBirthdayRequest? requestById(String id) =>
       _firstOrNull(_requests.where((e) => e.id == id));
+
+  AgendaMutationResult requestPublication(String itemId, {required String requestedBy}) {
+    final item = itemById(itemId);
+    if (item == null) return AgendaMutationResult.notFound;
+    if (item.status != AgendaItemStatus.draft) return AgendaMutationResult.invalidLifecycle;
+    final id = 'publication-$itemId';
+    if (_publicationRequests.any(
+      (request) => request.id == id && request.status == AgendaPublicationRequestStatus.pending,
+    )) {
+      return AgendaMutationResult.success;
+    }
+    _publicationRequests = [
+      ..._publicationRequests,
+      AgendaPublicationRequest(
+        id: id,
+        itemId: item.id,
+        title: item.title,
+        contextLabel: _context(item.audience.institutionId)?.name ?? item.audience.institutionId,
+        requestedBy: requestedBy,
+        requestedAt: _clock(),
+      ),
+    ];
+    notifyListeners();
+    return AgendaMutationResult.success;
+  }
+
+  AgendaMutationResult decidePublicationRequest({
+    required String requestId,
+    required bool approve,
+    required String decidedBy,
+    required String reason,
+  }) {
+    final index = _publicationRequests.indexWhere((request) => request.id == requestId);
+    if (index < 0) return AgendaMutationResult.notFound;
+    final request = _publicationRequests[index];
+    if (request.status != AgendaPublicationRequestStatus.pending) {
+      return AgendaMutationResult.invalidLifecycle;
+    }
+    if (reason.trim().isEmpty) return AgendaMutationResult.reasonRequired;
+    _publicationRequests = [..._publicationRequests]
+      ..[index] = request.decided(
+        status: approve
+            ? AgendaPublicationRequestStatus.approved
+            : AgendaPublicationRequestStatus.rejected,
+        decidedBy: decidedBy,
+        decidedAt: _clock(),
+        reason: reason.trim(),
+      );
+    if (approve) {
+      final itemIndex = _items.indexWhere((item) => item.id == request.itemId);
+      if (itemIndex >= 0) {
+        _items = [..._items]
+          ..[itemIndex] = _items[itemIndex].copyWith(status: AgendaItemStatus.published);
+      }
+    }
+    notifyListeners();
+    return AgendaMutationResult.success;
+  }
 
   AgendaMutationResult cancelItem(String id, {required String actorName}) {
     final item = itemById(id);
