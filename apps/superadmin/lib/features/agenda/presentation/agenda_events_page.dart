@@ -13,7 +13,7 @@ enum _AgendaEventsDisplay { cards, table }
 
 enum _AgendaEventsTableView { all }
 
-enum _AgendaEventAction { open, edit }
+enum _AgendaEventAction { open, edit, cancel, restore, deleteDraft }
 
 final class AgendaEventsPage extends StatefulWidget {
   const AgendaEventsPage({
@@ -170,9 +170,21 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
                 onCreate: widget.onCreate,
                 onOpen: widget.onOpen,
                 onEdit: widget.onEdit,
+                onCancel: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
+                onRestore: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
+                onDeleteDraft: (item) =>
+                    _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
               )
             else if (visible.isNotEmpty)
-              _EventTable(items: visible, onOpen: widget.onOpen, onEdit: widget.onEdit),
+              _EventTable(
+                items: visible,
+                onOpen: widget.onOpen,
+                onEdit: widget.onEdit,
+                onCancel: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
+                onRestore: (item) => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
+                onDeleteDraft: (item) =>
+                    _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
+              ),
             if (visible.isEmpty) ...[
               if (_display == _AgendaEventsDisplay.cards)
                 const SizedBox(height: CoeloSpacing.space4),
@@ -226,6 +238,20 @@ final class _AgendaEventsPageState extends State<AgendaEventsPage> {
     _status = null;
     _page = 1;
   });
+
+  Future<void> _confirmLifecycle(AgendaItem item, _AgendaLifecycleAction action) async {
+    final confirmed = await _showAgendaLifecycleConfirmation(context, item, action);
+    if (confirmed != true || !mounted) return;
+    final result = switch (action) {
+      _AgendaLifecycleAction.cancel => widget.store.cancelItem(item.id, actorName: 'Owner Coelo'),
+      _AgendaLifecycleAction.restore => widget.store.restoreItem(item.id, actorName: 'Owner Coelo'),
+      _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
+    };
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(_mutationFeedback(action, result))));
+  }
 }
 
 final class _EventCards extends StatelessWidget {
@@ -234,11 +260,17 @@ final class _EventCards extends StatelessWidget {
     required this.onCreate,
     required this.onOpen,
     required this.onEdit,
+    required this.onCancel,
+    required this.onRestore,
+    required this.onDeleteDraft,
   });
   final List<AgendaItem> items;
   final VoidCallback onCreate;
   final ValueChanged<String> onOpen;
   final ValueChanged<String> onEdit;
+  final ValueChanged<AgendaItem> onCancel;
+  final ValueChanged<AgendaItem> onRestore;
+  final ValueChanged<AgendaItem> onDeleteDraft;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -280,6 +312,9 @@ final class _EventCards extends StatelessWidget {
                     item: item,
                     onOpen: () => onOpen(item.id),
                     onEdit: () => onEdit(item.id),
+                    onCancel: () => onCancel(item),
+                    onRestore: () => onRestore(item),
+                    onDeleteDraft: () => onDeleteDraft(item),
                   ),
                 ),
               ),
@@ -291,10 +326,20 @@ final class _EventCards extends StatelessWidget {
 }
 
 final class _EventTable extends StatelessWidget {
-  const _EventTable({required this.items, required this.onOpen, required this.onEdit});
+  const _EventTable({
+    required this.items,
+    required this.onOpen,
+    required this.onEdit,
+    required this.onCancel,
+    required this.onRestore,
+    required this.onDeleteDraft,
+  });
   final List<AgendaItem> items;
   final ValueChanged<String> onOpen;
   final ValueChanged<String> onEdit;
+  final ValueChanged<AgendaItem> onCancel;
+  final ValueChanged<AgendaItem> onRestore;
+  final ValueChanged<AgendaItem> onDeleteDraft;
 
   Widget _cell(String value) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
@@ -368,6 +413,9 @@ final class _EventTable extends StatelessWidget {
             item: item,
             onOpen: () => onOpen(item.id),
             onEdit: () => onEdit(item.id),
+            onCancel: () => onCancel(item),
+            onRestore: () => onRestore(item),
+            onDeleteDraft: () => onDeleteDraft(item),
           ),
         ),
       ),
@@ -376,10 +424,20 @@ final class _EventTable extends StatelessWidget {
 }
 
 final class _EventSummary extends StatelessWidget {
-  const _EventSummary({required this.item, this.onOpen, this.onEdit});
+  const _EventSummary({
+    required this.item,
+    this.onOpen,
+    this.onEdit,
+    this.onCancel,
+    this.onRestore,
+    this.onDeleteDraft,
+  });
   final AgendaItem item;
   final VoidCallback? onOpen;
   final VoidCallback? onEdit;
+  final VoidCallback? onCancel;
+  final VoidCallback? onRestore;
+  final VoidCallback? onDeleteDraft;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -390,9 +448,16 @@ final class _EventSummary extends StatelessWidget {
         children: [
           Expanded(child: Text(item.title, style: Theme.of(context).textTheme.titleMedium)),
           _AgendaEventStatusIndicator(item: item),
-          if (onOpen != null || onEdit != null) ...[
+          if (onOpen != null || onEdit != null || onCancel != null) ...[
             const SizedBox(width: CoeloSpacing.space2),
-            _AgendaEventActions(item: item, onOpen: onOpen, onEdit: onEdit),
+            _AgendaEventActions(
+              item: item,
+              onOpen: onOpen,
+              onEdit: onEdit,
+              onCancel: onCancel,
+              onRestore: onRestore,
+              onDeleteDraft: onDeleteDraft,
+            ),
           ],
         ],
       ),
@@ -407,11 +472,21 @@ final class _EventSummary extends StatelessWidget {
 }
 
 final class _AgendaEventActions extends StatelessWidget {
-  const _AgendaEventActions({required this.item, this.onOpen, this.onEdit});
+  const _AgendaEventActions({
+    required this.item,
+    this.onOpen,
+    this.onEdit,
+    this.onCancel,
+    this.onRestore,
+    this.onDeleteDraft,
+  });
 
   final AgendaItem item;
   final VoidCallback? onOpen;
   final VoidCallback? onEdit;
+  final VoidCallback? onCancel;
+  final VoidCallback? onRestore;
+  final VoidCallback? onDeleteDraft;
 
   @override
   Widget build(BuildContext context) {
@@ -428,12 +503,40 @@ final class _AgendaEventActions extends StatelessWidget {
           icon: Icons.edit_outlined,
           label: 'Editar',
         ),
+      if ((item.status == AgendaItemStatus.scheduled ||
+              item.status == AgendaItemStatus.published) &&
+          onCancel != null)
+        const CoeloAdminFlyoutItem(
+          value: _AgendaEventAction.cancel,
+          icon: Icons.event_busy_outlined,
+          label: 'Cancelar evento',
+          startsGroup: true,
+          tone: CoeloAdminFlyoutTone.negative,
+        ),
+      if (item.status == AgendaItemStatus.canceled && onRestore != null)
+        const CoeloAdminFlyoutItem(
+          value: _AgendaEventAction.restore,
+          icon: Icons.restore_rounded,
+          label: 'Restaurar evento',
+          startsGroup: true,
+        ),
+      if (item.status == AgendaItemStatus.draft && onDeleteDraft != null)
+        const CoeloAdminFlyoutItem(
+          value: _AgendaEventAction.deleteDraft,
+          icon: Icons.delete_outline_rounded,
+          label: 'Excluir rascunho',
+          startsGroup: true,
+          tone: CoeloAdminFlyoutTone.negative,
+        ),
     ];
     return CoeloAdminFlyout<_AgendaEventAction>(
       items: items,
       onSelected: (action) => switch (action) {
         _AgendaEventAction.open => onOpen?.call(),
         _AgendaEventAction.edit => onEdit?.call(),
+        _AgendaEventAction.cancel => onCancel?.call(),
+        _AgendaEventAction.restore => onRestore?.call(),
+        _AgendaEventAction.deleteDraft => onDeleteDraft?.call(),
       },
       builder: (context, controller) => IconButton(
         key: Key('agenda-event-actions-${item.id}'),
@@ -501,12 +604,13 @@ String _statusLabel(AgendaItemStatus status) => switch (status) {
   AgendaItemStatus.canceled => 'Cancelado',
 };
 
-final class AgendaEventDetailPage extends StatelessWidget {
+final class AgendaEventDetailPage extends StatefulWidget {
   const AgendaEventDetailPage({
     required this.store,
     required this.eventId,
     required this.onBack,
     required this.onEdit,
+    this.unavailable = false,
     super.key,
   });
 
@@ -514,47 +618,386 @@ final class AgendaEventDetailPage extends StatelessWidget {
   final String eventId;
   final VoidCallback onBack;
   final VoidCallback onEdit;
+  final bool unavailable;
+
+  @override
+  State<AgendaEventDetailPage> createState() => _AgendaEventDetailPageState();
+}
+
+final class _AgendaEventDetailPageState extends State<AgendaEventDetailPage> {
+  static const _actorName = 'Owner Coelo';
 
   @override
   Widget build(BuildContext context) {
-    final item = store.itemById(eventId);
-    if (item == null) {
+    if (widget.unavailable) {
       return CoeloStatePanel(
-        title: 'Item não encontrado',
-        message: 'O item solicitado não foi encontrado.',
-        icon: Icons.event_busy_rounded,
+        key: const Key('agenda-event-unavailable'),
+        title: 'Agenda indisponível',
+        message: 'Não foi possível carregar este item agora. Nenhuma alteração foi aplicada.',
+        icon: Icons.cloud_off_outlined,
         actionLabel: 'Voltar aos eventos',
-        onAction: onBack,
+        onAction: widget.onBack,
       );
     }
-    return ListView(
-      key: const Key('agenda-event-detail'),
-      padding: const EdgeInsets.all(CoeloSpacing.space6),
+    return AnimatedBuilder(
+      animation: widget.store,
+      builder: (context, _) {
+        final item = widget.store.itemById(widget.eventId);
+        if (item == null) {
+          return CoeloStatePanel(
+            key: const Key('agenda-event-not-found'),
+            title: 'Item não encontrado',
+            message: 'O item solicitado não foi encontrado ou não pode ser revelado.',
+            icon: Icons.event_busy_rounded,
+            actionLabel: 'Voltar aos eventos',
+            onAction: widget.onBack,
+          );
+        }
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final horizontalPadding = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+                ? CoeloSpacing.space4
+                : CoeloSpacing.space6;
+            return ListView(
+              key: const Key('agenda-event-detail'),
+              padding: EdgeInsets.all(horizontalPadding),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: widget.onBack,
+                    icon: const Icon(Icons.arrow_back_rounded),
+                    label: const Text('Eventos'),
+                  ),
+                ),
+                const SizedBox(height: CoeloSpacing.space3),
+                _EventSummary(item: item),
+                const SizedBox(height: CoeloSpacing.space6),
+                _AgendaDetailSection(
+                  title: 'Descrição',
+                  child: Text(
+                    item.description.trim().isEmpty
+                        ? 'Nenhuma descrição informada.'
+                        : item.description,
+                  ),
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _AgendaDetailSection(
+                  title: 'Contexto e audiência',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _AgendaDetailField(
+                        label: 'Contexto principal',
+                        value: _mainContextLabel(item),
+                      ),
+                      _AgendaDetailField(label: 'Audiência', value: _audienceLabel(item)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _AgendaDetailSection(
+                  title: 'Agenda e respostas',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _AgendaDetailField(label: 'Fuso horário', value: item.timeZoneId),
+                      _AgendaDetailField(
+                        label: 'Recorrência',
+                        value: _recurrenceLabel(item.recurrence),
+                      ),
+                      _AgendaDetailField(
+                        label: 'Resposta esperada',
+                        value: _responseModeLabel(item.responseMode),
+                      ),
+                      if (item.responseMode != AgendaResponseMode.none)
+                        _AgendaDetailField(
+                          label: 'Política dos responsáveis',
+                          value: _guardianPolicyLabel(item.guardianResponsePolicy),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _AgendaDetailSection(
+                  title: 'Histórico',
+                  child: item.history.isEmpty
+                      ? const Text('Nenhuma alteração registrada.')
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (final entry in item.history.reversed)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+                                child: Text(_historyLabel(entry)),
+                              ),
+                          ],
+                        ),
+                ),
+                const SizedBox(height: CoeloSpacing.space6),
+                _actions(item),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _actions(AgendaItem item) {
+    final colors = Theme.of(context).colorScheme;
+    return Wrap(
+      spacing: CoeloSpacing.space3,
+      runSpacing: CoeloSpacing.space3,
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back_rounded),
-            label: const Text('Eventos'),
-          ),
-        ),
-        const SizedBox(height: CoeloSpacing.space3),
-        _EventSummary(item: item),
-        const SizedBox(height: CoeloSpacing.space6),
-        Text('Descrição', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: CoeloSpacing.space2),
-        Text(item.description),
-        const SizedBox(height: CoeloSpacing.space6),
-        FilledButton.icon(
-          onPressed: onEdit,
+        OutlinedButton.icon(
+          onPressed: widget.onEdit,
           icon: const Icon(Icons.edit_outlined),
           label: const Text('Editar item'),
         ),
+        if (item.status == AgendaItemStatus.scheduled || item.status == AgendaItemStatus.published)
+          FilledButton.icon(
+            key: const Key('agenda-event-cancel'),
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.error,
+              foregroundColor: colors.onError,
+            ),
+            onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.cancel),
+            icon: const Icon(Icons.event_busy_outlined),
+            label: const Text('Cancelar evento'),
+          ),
+        if (item.status == AgendaItemStatus.canceled)
+          FilledButton.icon(
+            key: const Key('agenda-event-restore'),
+            onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.restore),
+            icon: const Icon(Icons.restore_rounded),
+            label: const Text('Restaurar evento'),
+          ),
+        if (item.status == AgendaItemStatus.draft)
+          FilledButton.icon(
+            key: const Key('agenda-event-delete-draft'),
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.error,
+              foregroundColor: colors.onError,
+            ),
+            onPressed: () => _confirmLifecycle(item, _AgendaLifecycleAction.deleteDraft),
+            icon: const Icon(Icons.delete_outline_rounded),
+            label: const Text('Excluir rascunho'),
+          ),
       ],
     );
   }
+
+  Future<void> _confirmLifecycle(AgendaItem item, _AgendaLifecycleAction action) async {
+    final confirmed = await _showAgendaLifecycleConfirmation(context, item, action);
+    if (confirmed != true || !mounted) return;
+
+    final result = switch (action) {
+      _AgendaLifecycleAction.cancel => widget.store.cancelItem(item.id, actorName: _actorName),
+      _AgendaLifecycleAction.restore => widget.store.restoreItem(item.id, actorName: _actorName),
+      _AgendaLifecycleAction.deleteDraft => widget.store.deleteDraft(item.id),
+    };
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(_mutationFeedback(action, result))));
+  }
+
+  String _contextName(String id) {
+    for (final context in widget.store.contexts) {
+      if (context.id == id) return context.name;
+    }
+    return id;
+  }
+
+  String _mainContextLabel(AgendaItem item) {
+    final audience = item.audience;
+    final id =
+        audience.personIds.firstOrNull ??
+        audience.activityIds.firstOrNull ??
+        audience.groupIds.firstOrNull ??
+        audience.unitIds.firstOrNull ??
+        audience.institutionId;
+    return _contextName(id);
+  }
+
+  String _audienceLabel(AgendaItem item) {
+    final audience = item.audience;
+    final ids = <String>[
+      audience.institutionId,
+      ...audience.unitIds,
+      ...audience.groupIds,
+      ...audience.activityIds,
+      ...audience.personIds,
+    ];
+    return ids.map(_contextName).join(' · ');
+  }
 }
+
+enum _AgendaLifecycleAction { cancel, restore, deleteDraft }
+
+Future<bool?> _showAgendaLifecycleConfirmation(
+  BuildContext context,
+  AgendaItem item,
+  _AgendaLifecycleAction action,
+) => showDialog<bool>(
+  context: context,
+  builder: (dialogContext) {
+    final destructive = action != _AgendaLifecycleAction.restore;
+    return CoeloAdminDialogShell(
+      title: switch (action) {
+        _AgendaLifecycleAction.cancel => 'Cancelar evento?',
+        _AgendaLifecycleAction.restore => 'Restaurar evento?',
+        _AgendaLifecycleAction.deleteDraft => 'Excluir rascunho?',
+      },
+      body: Text(switch (action) {
+        _AgendaLifecycleAction.cancel =>
+          '“${item.title}” deixará de aparecer como ativo. O histórico será preservado.',
+        _AgendaLifecycleAction.restore =>
+          '“${item.title}” voltará ao status anterior ao cancelamento.',
+        _AgendaLifecycleAction.deleteDraft =>
+          '“${item.title}” será removido desta demonstração. Esta ação não pode ser desfeita.',
+      }),
+      secondaryAction: OutlinedButton(
+        onPressed: () => Navigator.of(dialogContext).pop(false),
+        child: const Text('Voltar'),
+      ),
+      primaryAction: FilledButton(
+        key: const Key('agenda-event-confirm-lifecycle'),
+        style: destructive
+            ? FilledButton.styleFrom(
+                backgroundColor: Theme.of(dialogContext).colorScheme.error,
+                foregroundColor: Theme.of(dialogContext).colorScheme.onError,
+              )
+            : null,
+        onPressed: () => Navigator.of(dialogContext).pop(true),
+        child: Text(switch (action) {
+          _AgendaLifecycleAction.cancel => 'Confirmar cancelamento',
+          _AgendaLifecycleAction.restore => 'Confirmar restauração',
+          _AgendaLifecycleAction.deleteDraft => 'Excluir rascunho',
+        }),
+      ),
+    );
+  },
+);
+
+final class _AgendaDetailSection extends StatelessWidget {
+  const _AgendaDetailSection({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: CoeloSpacing.space3),
+          child,
+        ],
+      ),
+    ),
+  );
+}
+
+final class _AgendaDetailField extends StatelessWidget {
+  const _AgendaDetailField({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: CoeloSpacing.space1),
+        SelectableText(value),
+      ],
+    ),
+  );
+}
+
+String _recurrenceLabel(AgendaRecurrence? recurrence) {
+  if (recurrence == null) return 'Evento único';
+  final frequency = switch (recurrence.frequency) {
+    AgendaRecurrenceFrequency.daily => 'Diária',
+    AgendaRecurrenceFrequency.weekly => 'Semanal',
+    AgendaRecurrenceFrequency.monthly => 'Mensal',
+  };
+  final interval = recurrence.interval == 1 ? '' : ' a cada ${recurrence.interval} períodos';
+  final end = recurrence.occurrenceCount != null
+      ? '${recurrence.occurrenceCount} ocorrências'
+      : 'até ${_date(recurrence.until!)}';
+  final exceptions = recurrence.exceptions.isEmpty
+      ? ''
+      : ' · ${recurrence.exceptions.length} exceção(ões)';
+  return '$frequency$interval · $end$exceptions';
+}
+
+String _responseModeLabel(AgendaResponseMode mode) => switch (mode) {
+  AgendaResponseMode.none => 'Nenhuma resposta',
+  AgendaResponseMode.rsvp => 'Confirmação de presença',
+  AgendaResponseMode.acknowledgement => 'Ciência',
+  AgendaResponseMode.authorization => 'Autorização',
+};
+
+String _guardianPolicyLabel(GuardianResponsePolicy policy) => switch (policy) {
+  GuardianResponsePolicy.oneIsEnough => 'Uma resposta por criança é suficiente',
+  GuardianResponsePolicy.allMustRespond => 'Todos os responsáveis devem responder',
+};
+
+String _historyLabel(AgendaHistoryEntry entry) {
+  final action = switch (entry.action) {
+    AgendaHistoryAction.canceled => 'Cancelado',
+    AgendaHistoryAction.restored => 'Restaurado',
+    AgendaHistoryAction.occurrenceEdited => 'Ocorrência editada',
+    AgendaHistoryAction.reservationConflictOverridden => 'Conflito de reserva sobrescrito',
+  };
+  final scope = switch (entry.occurrenceEditScope) {
+    AgendaOccurrenceEditScope.occurrence => ' · Somente esta ocorrência',
+    AgendaOccurrenceEditScope.thisAndFollowing => ' · Esta e as seguintes',
+    AgendaOccurrenceEditScope.series => ' · Série inteira',
+    null => '',
+  };
+  final reason = entry.reason == null ? '' : ' · Motivo: ${entry.reason}';
+  return '$action por ${entry.actorName} em ${_dateTime(entry.occurredAt)}$scope$reason';
+}
+
+String _mutationFeedback(_AgendaLifecycleAction action, AgendaMutationResult result) {
+  if (result == AgendaMutationResult.success) {
+    return switch (action) {
+      _AgendaLifecycleAction.cancel => 'Evento cancelado e histórico atualizado.',
+      _AgendaLifecycleAction.restore => 'Evento restaurado e histórico atualizado.',
+      _AgendaLifecycleAction.deleteDraft => 'Rascunho excluído.',
+    };
+  }
+  return switch (result) {
+    AgendaMutationResult.notFound => 'O item não foi encontrado. Nenhuma alteração foi aplicada.',
+    AgendaMutationResult.invalidLifecycle =>
+      'Esta ação não é permitida no status atual. Nenhuma alteração foi aplicada.',
+    AgendaMutationResult.notAuthorized =>
+      'Você não tem permissão para esta ação. Nenhuma alteração foi aplicada.',
+    AgendaMutationResult.reservationConflict =>
+      'Há um conflito de horário. Nenhuma alteração foi aplicada.',
+    AgendaMutationResult.reasonRequired =>
+      'Informe um motivo para continuar. Nenhuma alteração foi aplicada.',
+    AgendaMutationResult.success => throw StateError('success handled above'),
+  };
+}
+
+String _date(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 
 String _dateTime(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')} '
