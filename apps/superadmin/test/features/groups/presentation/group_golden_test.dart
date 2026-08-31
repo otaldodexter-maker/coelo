@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'dart:async';
+
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart' as domain;
@@ -68,11 +70,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-form-not-found')), findsNothing);
+    expect(find.byKey(const Key('group-hierarchy-section')), findsOneWidget);
     await expectLater(
       find.byKey(const Key('group-form-golden-frame')),
       matchesGoldenFile('../../../goldens/groups/group_form_create_light_375.png'),
     );
 
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.physicalSize = const Size(1440, 900);
     await tester.pumpWidget(
       _formApp(
@@ -90,6 +95,13 @@ void main() {
     await expectLater(
       find.byKey(const Key('group-form-golden-frame')),
       matchesGoldenFile('../../../goldens/groups/group_form_edit_dark_1440.png'),
+    );
+    await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-people-section')), findsOneWidget);
+    await expectLater(
+      find.byKey(const Key('group-form-golden-frame')),
+      matchesGoldenFile('../../../goldens/groups/group_form_members_dark_1440.png'),
     );
   });
 
@@ -119,6 +131,24 @@ void main() {
     }
   });
 
+  testWidgets('matches the loading directory state', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _directoryApp(Brightness.light, repository: const _ScenarioRepository.loading()),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    await expectLater(
+      find.byKey(const Key('group-directory-golden-frame')),
+      matchesGoldenFile('../../../goldens/groups/group_directory_loading_light_1440.png'),
+    );
+  });
+
   testWidgets('matches the critical no-results directory state', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 900);
@@ -127,7 +157,13 @@ void main() {
 
     await tester.pumpWidget(_directoryApp(Brightness.light));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).first, 'sem correspondencia');
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const Key('group-filter-toolbar')),
+        matching: find.byType(TextField),
+      ),
+      'sem correspondencia',
+    );
     await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
     await expectLater(
@@ -144,7 +180,9 @@ void main() {
     final institutions = FakeInstitutionDirectoryRepository();
     final repository = FakeGroupDirectoryRepository(institutions);
 
-    await tester.pumpWidget(_directoryApp(Brightness.light, repository: repository));
+    await tester.pumpWidget(
+      _directoryApp(Brightness.light, repository: repository, allowEdit: true),
+    );
     await tester.pumpAndSettle();
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer();
@@ -297,7 +335,11 @@ void main() {
   });
 }
 
-Widget _directoryApp(Brightness brightness, {domain.GroupDirectoryRepository? repository}) {
+Widget _directoryApp(
+  Brightness brightness, {
+  domain.GroupDirectoryRepository? repository,
+  bool allowEdit = false,
+}) {
   final institutions = FakeInstitutionDirectoryRepository();
   return MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -317,6 +359,8 @@ Widget _directoryApp(Brightness brightness, {domain.GroupDirectoryRepository? re
     home: GroupDirectoryPage(
       repository: repository ?? FakeGroupDirectoryRepository(institutions),
       logout: _logout,
+      onCreate: () {},
+      onEdit: allowEdit ? (_) {} : null,
       onBugReportSubmitted: (_) {},
     ),
   );
@@ -349,9 +393,10 @@ Future<void> _scrollDirectoryToTop(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-enum _Scenario { empty, failure, unauthorized }
+enum _Scenario { loading, empty, failure, unauthorized }
 
 final class _ScenarioRepository implements domain.GroupDirectoryRepository {
+  const _ScenarioRepository.loading() : scenario = _Scenario.loading;
   const _ScenarioRepository.empty() : scenario = _Scenario.empty;
   const _ScenarioRepository.failure() : scenario = _Scenario.failure;
   const _ScenarioRepository.unauthorized() : scenario = _Scenario.unauthorized;
@@ -370,6 +415,7 @@ final class _ScenarioRepository implements domain.GroupDirectoryRepository {
   @override
   Future<domain.GroupDirectoryPage> fetchPage(domain.GroupDirectoryQuery query) async =>
       switch (scenario) {
+        _Scenario.loading => Completer<domain.GroupDirectoryPage>().future,
         _Scenario.empty => domain.GroupDirectoryPage(
           items: const [],
           totalCount: 0,
