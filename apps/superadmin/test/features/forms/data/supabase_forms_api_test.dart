@@ -17,6 +17,11 @@ void main() {
             'status': 'published',
             'operational_status': 'scheduled',
             'identity_mode': 'identified',
+            'context_label': 'Unidade Centro',
+            'audience_label': 'Famílias',
+            'response_count': 18,
+            'schedule_count': 2,
+            'created_at': '2026-08-01T09:00:00Z',
             'updated_at': '2026-08-13T12:00:00Z',
             'management_version': 4,
           },
@@ -33,6 +38,11 @@ void main() {
 
       expect(first.items.single.title, 'Pesquisa');
       expect(first.items.single.operationalStatus, FormOperationalStatus.scheduled);
+      expect(first.items.single.contextLabel, 'Unidade Centro');
+      expect(first.items.single.audienceLabel, 'Famílias');
+      expect(first.items.single.responseCount, 18);
+      expect(first.items.single.scheduleCount, 2);
+      expect(first.items.single.createdAt, DateTime.parse('2026-08-01T09:00:00Z'));
       expect(first.nextCursor, isNotNull);
       expect(query['institution_id'], 'institution-1');
       expect(query, isNot(contains('offset')));

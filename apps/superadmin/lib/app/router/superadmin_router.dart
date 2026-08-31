@@ -139,6 +139,7 @@ import '../../features/meal_plans/data/dev/development_meal_plan_repository.dart
 import '../../features/meal_plans/presentation/meal_plan_directory_page.dart';
 import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
+import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
@@ -1209,6 +1210,20 @@ GoRouter createSuperadminRouter({
               onOpen: (form) => context.goNamed(
                 SuperadminRoutes.formOverviewName,
                 pathParameters: {'formId': form.id},
+              ),
+              onManageSchedules: (form) => showFormsScheduleDialog(
+                context: context,
+                initialValue: FormsScheduleDraft(
+                  active: true,
+                  name: 'Agendamento de ${form.title}',
+                  startsAt: DateTime.now(),
+                  endsAt: DateTime.now(),
+                  frequency: FormsScheduleFrequency.once,
+                  weekdays: const {},
+                  audienceLabel: form.audienceLabel ?? 'Público da distribuição',
+                ),
+                unavailableReason:
+                    'A integração de agendamentos não está disponível neste ambiente.',
               ),
             ),
           ),

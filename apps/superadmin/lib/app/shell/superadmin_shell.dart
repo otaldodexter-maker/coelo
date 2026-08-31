@@ -1499,15 +1499,15 @@ class _PageHeader extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        maxLines: compact ? null : 1,
+                        overflow: compact ? null : TextOverflow.ellipsis,
                         style: theme.textTheme.headlineSmall,
                       ),
                       const SizedBox(height: CoeloSpacing.space1),
                       Text(
                         subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        maxLines: compact ? null : 1,
+                        overflow: compact ? null : TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                       ),
                     ],

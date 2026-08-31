@@ -41,6 +41,11 @@ final class SupabaseFormsApi implements FormsApi {
             status: _formStatus(_string(item, 'status')),
             operationalStatus: _formOperationalStatus(_string(item, 'operational_status')),
             identityMode: _identityMode(_string(item, 'identity_mode')),
+            contextLabel: _optionalString(item, 'context_label'),
+            audienceLabel: _optionalString(item, 'audience_label'),
+            responseCount: _optionalInteger(item, 'response_count'),
+            scheduleCount: _optionalInteger(item, 'schedule_count'),
+            createdAt: _optionalDateTime(item, 'created_at'),
             updatedAt: _dateTime(item, 'updated_at'),
             managementVersion: _integer(item, 'management_version'),
           ),
@@ -734,6 +739,28 @@ int _integer(Map<String, Object?> value, String key) {
   final result = value[key];
   if (result is! num) throw WireFormatException('$key must be a number.');
   return result.toInt();
+}
+
+String? _optionalString(Map<String, Object?> value, String key) {
+  final result = value[key];
+  if (result == null) return null;
+  if (result is! String) throw WireFormatException('$key must be a string.');
+  return result;
+}
+
+int? _optionalInteger(Map<String, Object?> value, String key) {
+  final result = value[key];
+  if (result == null) return null;
+  if (result is! num) throw WireFormatException('$key must be a number.');
+  return result.toInt();
+}
+
+DateTime? _optionalDateTime(Map<String, Object?> value, String key) {
+  final result = value[key];
+  if (result == null) return null;
+  final parsed = DateTime.tryParse(result.toString());
+  if (parsed == null) throw WireFormatException('$key must be a date-time.');
+  return parsed;
 }
 
 bool _boolean(Map<String, Object?> value, String key) {

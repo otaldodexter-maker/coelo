@@ -40,6 +40,11 @@ final class CoeloAdminFlyout<T> extends StatefulWidget {
     required this.builder,
     this.itemWidth = 220,
     this.alignmentOffset = const Offset(0, CoeloSpacing.space1),
+    this.viewportGap = CoeloSpacing.space2,
+    this.elevation = CoeloElevation.level2,
+    this.alignPanelToViewportEnd = false,
+    this.crossAxisUnconstrained = false,
+    this.outlineOpacity = 1,
     super.key,
   });
 
@@ -48,6 +53,11 @@ final class CoeloAdminFlyout<T> extends StatefulWidget {
   final Widget Function(BuildContext context, MenuController controller) builder;
   final double itemWidth;
   final Offset alignmentOffset;
+  final double viewportGap;
+  final double elevation;
+  final bool alignPanelToViewportEnd;
+  final bool crossAxisUnconstrained;
+  final double outlineOpacity;
 
   @override
   State<CoeloAdminFlyout<T>> createState() => _CoeloAdminFlyoutState<T>();
@@ -111,51 +121,59 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
     final desiredPanelWidth = widget.itemWidth + panelPadding;
     final availablePanelWidth = math.max(
       0.0,
-      mediaQuery.size.width - safeLeft - safeRight - (CoeloSpacing.space2 * 2),
+      mediaQuery.size.width - safeLeft - safeRight - (widget.viewportGap * 2),
     );
     final availablePanelHeight = math.max(
       0.0,
-      mediaQuery.size.height - safeTop - safeBottom - (CoeloSpacing.space2 * 2),
+      mediaQuery.size.height - safeTop - safeBottom - (widget.viewportGap * 2),
     );
     final panelWidth = math.min(desiredPanelWidth, availablePanelWidth);
     final effectiveItemWidth = math.max(0.0, panelWidth - panelPadding);
     final overlayPadding = EdgeInsets.fromLTRB(
-      safeLeft + CoeloSpacing.space2,
-      safeTop + CoeloSpacing.space2,
-      safeRight + CoeloSpacing.space2,
-      safeBottom + CoeloSpacing.space2,
+      safeLeft + widget.viewportGap,
+      safeTop + widget.viewportGap,
+      safeRight + widget.viewportGap,
+      safeBottom + widget.viewportGap,
     );
     final reservedPadding = EdgeInsets.fromLTRB(
-      safeLeft + CoeloSpacing.space2,
-      safeTop + CoeloSpacing.space2,
-      safeRight + CoeloSpacing.space2,
-      safeBottom + CoeloSpacing.space2,
+      safeLeft + widget.viewportGap,
+      safeTop + widget.viewportGap,
+      safeRight + widget.viewportGap,
+      safeBottom + widget.viewportGap,
     );
-    final effectiveAlignmentOffset = Offset(
-      widget.alignmentOffset.dx - safeRight - CoeloSpacing.space1,
-      widget.alignmentOffset.dy,
-    );
+    final effectiveAlignmentOffset = widget.alignPanelToViewportEnd
+        ? Offset(
+            widget.alignmentOffset.dx - panelWidth - safeRight - widget.viewportGap,
+            widget.alignmentOffset.dy,
+          )
+        : Offset(
+            widget.alignmentOffset.dx - safeRight - CoeloSpacing.space1,
+            widget.alignmentOffset.dy,
+          );
     return MediaQuery(
       data: mediaQuery.copyWith(padding: overlayPadding),
       child: MenuAnchor(
         controller: _menuController,
         useRootOverlay: true,
-        crossAxisUnconstrained: false,
+        crossAxisUnconstrained: widget.crossAxisUnconstrained,
         onOpen: _handleOpen,
         onClose: _handleClose,
         reservedPadding: reservedPadding,
         alignmentOffset: effectiveAlignmentOffset,
         style: MenuStyle(
+          alignment: widget.alignPanelToViewportEnd ? AlignmentDirectional.topEnd : null,
           backgroundColor: WidgetStatePropertyAll(colors.surface),
           surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-          elevation: const WidgetStatePropertyAll(CoeloElevation.level2),
+          elevation: WidgetStatePropertyAll(widget.elevation),
           padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
           minimumSize: WidgetStatePropertyAll(Size(panelWidth, 0)),
           maximumSize: WidgetStatePropertyAll(Size(panelWidth, availablePanelHeight)),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: radius,
-              side: BorderSide(color: colors.outlineVariant),
+              side: BorderSide(
+                color: colors.outlineVariant.withValues(alpha: widget.outlineOpacity),
+              ),
             ),
           ),
         ),

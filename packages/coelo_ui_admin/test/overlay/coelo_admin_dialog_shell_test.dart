@@ -85,6 +85,40 @@ void main() {
     expect(action.right, footer.right);
   });
 
+  testWidgets('uses content height when the body does not need the viewport', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(900, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showDialog<void>(
+              context: context,
+              builder: (context) => CoeloAdminDialogShell(
+                dialogKey: const Key('content-height-dialog'),
+                title: 'Editar agendamento',
+                body: const SizedBox(height: 120, child: Text('Campos do agendamento')),
+                secondaryAction: OutlinedButton(onPressed: () {}, child: const Text('Cancelar')),
+                primaryAction: FilledButton(onPressed: () {}, child: const Text('Salvar')),
+              ),
+            ),
+            child: const Text('Abrir'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Abrir'));
+    await tester.pumpAndSettle();
+
+    final surface = find.descendant(
+      of: find.byKey(const Key('content-height-dialog')),
+      matching: find.byType(Material),
+    );
+    expect(tester.getSize(surface.last).height, lessThan(420));
+  });
+
   testWidgets('scrolls only the body and Escape restores focus to the opener', (tester) async {
     final openerFocusNode = FocusNode();
     addTearDown(openerFocusNode.dispose);

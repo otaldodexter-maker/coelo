@@ -1,4 +1,5 @@
 import 'package:coelo_api/coelo_api.dart';
+import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/app/router/superadmin_router.dart';
 import 'package:coelo_superadmin/core/guards/superadmin_session.dart';
 import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
@@ -8,8 +9,8 @@ import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin
 import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -97,7 +98,7 @@ void main() {
 
       expect(router.routeInformationProvider.value.uri.path, path, reason: path);
       expect(find.byType(FormsEditorPage), findsOneWidget, reason: path);
-      expect(find.text('Prévia de desenvolvimento'), findsOneWidget, reason: path);
+      expect(find.byKey(const Key('forms-editor-section-list')), findsOneWidget, reason: path);
       expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
       expect(api.calls, 0, reason: path);
     }
@@ -150,7 +151,7 @@ void main() {
         reason: '$width',
       );
       expect(find.byType(SuperadminFormFrame), findsOneWidget, reason: '$width');
-      expect(find.byType(SuperadminFormStepNavigation), findsOneWidget, reason: '$width');
+      expect(find.byKey(const Key('forms-editor-section-list')), findsOneWidget, reason: '$width');
       expect(find.byType(SuperadminFormActionFooter), findsOneWidget, reason: '$width');
       await _expectInputsInsideViewport(tester, width, reason: '$width');
       expect(tester.takeException(), isNull, reason: '$width');
@@ -207,6 +208,46 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, isNot('/dev/forms/new'));
     expect(api.calls, 0);
   });
+
+  testWidgets('production directory reaches schedule dialog without faking integration', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signIn();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      formsApi: _DirectoryFormsApi(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    router.go('/forms');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Ações do formulário Pesquisa das famílias'));
+    await tester.pumpAndSettle();
+    expect(find.text('Agendamentos'), findsWidgets);
+    expect(find.text('Duplicar'), findsNothing);
+
+    await tester.tap(find.text('Agendamentos').last);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CoeloAdminDialogShell), findsOneWidget);
+    expect(
+      find.text('A integração de agendamentos não está disponível neste ambiente.'),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Salvar')).onPressed,
+      isNull,
+    );
+  });
 }
 
 Future<void> _expectInputsInsideViewport(
@@ -241,4 +282,29 @@ final class _TripwireFormsApi implements FormsApi {
     calls += 1;
     throw StateError('FormsApi must stay unused on fail-closed routes.');
   }
+}
+
+final class _DirectoryFormsApi implements FormsApi {
+  @override
+  Future<FormCursorPage<FormDirectoryItem>> listDirectory(FormDirectoryQuery query) async =>
+      FormCursorPage(
+        items: [
+          FormDirectoryItem(
+            id: 'form-1',
+            title: 'Pesquisa das famílias',
+            kind: FormKind.form,
+            status: FormStatus.published,
+            operationalStatus: FormOperationalStatus.scheduled,
+            identityMode: FormIdentityMode.identified,
+            audienceLabel: 'Famílias',
+            scheduleCount: 1,
+            updatedAt: DateTime(2026, 8, 31),
+            managementVersion: 1,
+          ),
+        ],
+        nextCursor: null,
+      );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

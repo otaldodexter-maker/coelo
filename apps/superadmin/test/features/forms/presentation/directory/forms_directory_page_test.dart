@@ -10,15 +10,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('loads the authorized projection read-only in cards and table', (tester) async {
+  testWidgets('starts table-first with the canonical create banner and row metrics', (
+    tester,
+  ) async {
     final api = _FormsApi(page: FormCursorPage(items: [_item], nextCursor: null));
     FormDirectoryItem? opened;
+    var createCount = 0;
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: Scaffold(
-          body: FormsDirectoryPage(api: api, canManage: true, onOpen: (value) => opened = value),
+          body: FormsDirectoryPage(
+            api: api,
+            canManage: true,
+            onCreate: () => createCount++,
+            onOpen: (value) => opened = value,
+          ),
         ),
       ),
     );
@@ -26,7 +34,26 @@ void main() {
 
     expect(find.text('Pesquisa das famílias'), findsWidgets);
     expect(find.text('Publicado'), findsNothing);
-    expect(find.text('Novo formulário'), findsNothing);
+    expect(find.text('Unidade Centro'), findsOneWidget);
+    expect(find.text('Famílias'), findsOneWidget);
+    expect(find.text('18'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+    expect(find.text('01/08/2026'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
+    expect(find.text('Novo formulário'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-card-grid')), findsNothing);
+    final table = tester.widget<CoeloAdminResizableTable<FormDirectoryItem>>(
+      find.byType(CoeloAdminResizableTable<FormDirectoryItem>),
+    );
+    expect(table.headerHeight, 56);
+    expect(table.rowHeight, 64);
+    await tester.tap(find.byKey(const Key('forms-directory-create')));
+    expect(createCount, 1);
+    await tester.tap(find.text('Pesquisa das famílias').first);
+    expect(opened?.id, 'form-1');
+
+    await tester.tap(find.byKey(const Key('forms-directory-view-cards')));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('forms-directory-card-grid')), findsOneWidget);
     final card = tester.widget<CoeloAdminInteractiveCard>(
       find.byKey(const Key('forms-directory-card-form-1')),
@@ -39,14 +66,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    await tester.tap(find.text('Pesquisa das famílias').first);
-    expect(opened?.id, 'form-1');
-
-    await tester.tap(find.byKey(const Key('forms-directory-view-table')));
-    await tester.pumpAndSettle();
-    expect(find.byType(CoeloAdminResizableTable<FormDirectoryItem>), findsOneWidget);
-    expect(find.byType(CoeloStatusChip), findsOneWidget);
-    expect(find.text('Programado'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
   });
 
   testWidgets('renders fail-closed authorization and 200% text without overflow', (tester) async {
@@ -78,6 +98,35 @@ void main() {
     expect(find.byKey(const Key('forms-directory-view-cards')), findsNothing);
     expect(find.byKey(const Key('forms-directory-create')), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps canonical creation in empty no-results and failure states', (tester) async {
+    Future<void> pump(_FormsApi api, {Key? key}) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(
+            body: FormsDirectoryPage(key: key, api: api, canManage: true, onCreate: () {}),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await pump(_FormsApi());
+    expect(find.text('Nenhum formulário disponível'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('forms-directory-search')), 'sem resultado');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum resultado'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
+
+    await pump(_FormsApi(failure: true), key: const Key('failure'));
+    expect(find.text('Não foi possível carregar os formulários'), findsOneWidget);
+    expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
   });
 
   testWidgets('uses canonical responsive insets without a duplicated local title', (tester) async {
@@ -127,6 +176,7 @@ void main() {
     final api = _OrderedFormsApi();
     await tester.pumpWidget(
       MaterialApp(
+        theme: CoeloTheme.light,
         home: Scaffold(body: FormsDirectoryPage(api: api)),
       ),
     );
@@ -166,6 +216,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        theme: CoeloTheme.light,
         home: Scaffold(
           body: FormsDirectoryPage(key: key, api: apiA),
         ),
@@ -188,6 +239,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        theme: CoeloTheme.light,
         home: Scaffold(
           body: FormsDirectoryPage(key: key, api: apiB),
         ),
@@ -202,7 +254,7 @@ void main() {
     expect(query.startsOnOrAfter, isNull);
     expect(query.endsOnOrBefore, isNull);
     expect(query.cursor, isNull);
-    expect(find.text('Formulário exclusivo B'), findsOneWidget);
+    expect(find.text('Formulário exclusivo B'), findsWidgets);
     expect(find.text('Formulário exclusivo A'), findsNothing);
     expect(
       tester
@@ -236,13 +288,12 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.byKey(const Key('forms-directory-card-grid')), findsOneWidget);
+        expect(find.byType(CoeloAdminResizableTable<FormDirectoryItem>), findsOneWidget);
         expect(tester.takeException(), isNull);
 
-        await tester.tap(find.byKey(const Key('forms-directory-view-table')));
+        await tester.tap(find.byKey(const Key('forms-directory-view-cards')));
         await tester.pumpAndSettle();
-        expect(find.byType(CoeloAdminResizableTable<FormDirectoryItem>), findsOneWidget);
-        expect(find.byType(CoeloStatusChip), findsOneWidget);
+        expect(find.byKey(const Key('forms-directory-card-grid')), findsOneWidget);
         expect(
           tester.takeException(),
           isNull,
@@ -260,6 +311,11 @@ final _item = FormDirectoryItem(
   status: FormStatus.published,
   operationalStatus: FormOperationalStatus.scheduled,
   identityMode: FormIdentityMode.identified,
+  contextLabel: 'Unidade Centro',
+  audienceLabel: 'Famílias',
+  responseCount: 18,
+  scheduleCount: 2,
+  createdAt: DateTime(2026, 8, 1),
   updatedAt: DateTime(2026, 8, 13),
   managementVersion: 2,
 );
@@ -291,10 +347,11 @@ final class _OrderedFormsApi implements FormsApi {
 }
 
 final class _FormsApi implements FormsApi {
-  _FormsApi({this.page, this.unauthorized = false});
+  _FormsApi({this.page, this.unauthorized = false, this.failure = false});
 
   final FormCursorPage<FormDirectoryItem>? page;
   final bool unauthorized;
+  final bool failure;
   final queries = <FormDirectoryQuery>[];
 
   @override
@@ -302,6 +359,9 @@ final class _FormsApi implements FormsApi {
     queries.add(query);
     if (unauthorized) {
       throw const FormApiException(FormApiFailureKind.unauthorized, 'denied');
+    }
+    if (failure) {
+      throw const FormApiException(FormApiFailureKind.unavailable, 'offline');
     }
     return page ?? FormCursorPage(items: const [], nextCursor: null);
   }
