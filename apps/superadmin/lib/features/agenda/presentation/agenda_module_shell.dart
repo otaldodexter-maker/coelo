@@ -27,6 +27,7 @@ final class AgendaModuleShell extends StatelessWidget {
     this.actions = const [],
     this.compactActions = const [],
     this.onDestinationSelected,
+    this.currentDestination,
     super.key,
   });
 
@@ -37,18 +38,21 @@ final class AgendaModuleShell extends StatelessWidget {
   final List<Widget> actions;
   final List<Widget> compactActions;
   final ValueChanged<String>? onDestinationSelected;
+  final String? currentDestination;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
     title: 'Agenda institucional',
     subtitle: 'Acompanhe o calendário, eventos e respostas por contexto.',
     logout: logout,
-    currentDestination: switch (selectedArea) {
-      AgendaModuleArea.calendar || AgendaModuleArea.events => 'agenda',
-      AgendaModuleArea.requests => 'agenda-requests',
-      AgendaModuleArea.approvals => 'agenda-approvals',
-      AgendaModuleArea.permissions => 'agenda-permissions',
-    },
+    currentDestination:
+        currentDestination ??
+        switch (selectedArea) {
+          AgendaModuleArea.calendar || AgendaModuleArea.events => 'agenda',
+          AgendaModuleArea.requests => 'agenda-requests',
+          AgendaModuleArea.approvals => 'agenda-approvals',
+          AgendaModuleArea.permissions => 'agenda-permissions',
+        },
     actions: actions,
     compactActions: compactActions,
     onDestinationSelected: onDestinationSelected,
