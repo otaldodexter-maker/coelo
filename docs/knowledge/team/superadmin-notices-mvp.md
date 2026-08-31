@@ -4,6 +4,7 @@ knowledge_id: superadmin-notices-mvp
 source: docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md
 status: validated
 generated_at: 2026-08-20
+updated_at: 2026-08-31
 audience: team
 surfaces: [superadmin, notices]
 visibility: internal
@@ -49,6 +50,18 @@ separado de conteúdo opcional silenciável.
 No diretório e na revisão, Aviso mantém a prévia real de popup. Conteúdo,
 Destaque e Para você usam card administrativo neutro e tipado; essa prévia não
 define nem simula a futura superfície do app Principal.
+
+O diretório não oferece uma escolha entre Cards e Tabela. Tablet e desktop
+usam a tabela administrativa de Instituições; no mobile, os mesmos registros
+se reorganizam automaticamente em uma lista vertical compacta. Essa adaptação
+responsiva não cria um segundo modo selecionável pelo operador.
+
+No mobile, a criação aparece como tile e os registros como cards compactos. Em
+tablet e desktop, a criação ocupa uma faixa própria acima da tabela, sem botão
+laranja isolado no topo. Toolbar, filtros, respiro, tabela, status e paginação
+reutilizam literalmente Instituições. Tipos usam badges uniformes e alinhados.
+No desktop, o preview ocupa um contêiner auxiliar único, com hierarquia,
+paddings, raios e gaps tokenizados, sem competir com a tabela.
 
 Métricas básicas agregam alcance, entrega, visualização e aceite. Auditoria
 registra apenas resumos minimizados das mutações, sem PII, destinatários, mídia

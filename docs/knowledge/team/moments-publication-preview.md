@@ -4,6 +4,7 @@ knowledge_id: "moments-publication-preview"
 source: "docs/superpowers/specs/2026-08-20-coelo-moments-publication-design.md"
 status: "validated"
 generated_at: "2026-08-20"
+updated_at: "2026-08-31"
 audience: "team"
 surfaces: [principal, momentos, superadmin-preview, media, authorization]
 visibility: "internal"
@@ -20,6 +21,10 @@ no desktop. O preview executável usa a rota `/dev/principal-moments/publish`.
 Mobile usa uma coluna; tablet combina mídia e formulário; desktop mantém editor
 central e prévia à direita. `Agendamento` permanece fechado como `Publicar agora`
 até existir um date-time picker canônico aprovado.
+
+Como todo fluxo `Publicar` do Principal, usa shell, contêiner direito, insets e
+rodapé responsivo comuns. Desktop mantém Cancelar à esquerda e continuidade mais
+a primária à direita; compacto apresenta a primária primeiro em largura total.
 
 Momentos mantém domínio e repositório próprios, sem compartilhar ownership com
 Acontece ou Agora. A mídia operacional permanece no Cloudflare R2 privado; o
