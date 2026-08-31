@@ -39,6 +39,31 @@ void main() {
     expect(find.byKey(const Key('forms-overview-content')), findsOneWidget);
   });
 
+  testWidgets('fixture local cobre distribuição audiência agendamento e versionamento', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: FormsOverviewPage.development(formId: 'form-fixture')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final label in const [
+      'Distribuições e audiências',
+      'Instituição · Unidade · Turma · Atividade · Perfil · Pessoa',
+      'Agendamento único e recorrente',
+      'Ocorrências, fuso e lembretes',
+      'Versão publicada 3',
+      'Rascunho de edição 4',
+    ]) {
+      expect(find.text(label), findsOneWidget, reason: label);
+    }
+    expect(find.text('Fixture local · sem persistência remota'), findsOneWidget);
+  });
+
   testWidgets('uses responsive insets and canonical card gaps', (tester) async {
     for (final (size, expectedInset) in [
       (const Size(375, 800), CoeloSpacing.space4),
