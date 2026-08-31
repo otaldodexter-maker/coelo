@@ -51,9 +51,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('superadmin-tour-screen')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-tour-menu')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-tour-complete')), findsOneWidget);
+    expect(find.text('Tour desta tela'), findsOneWidget);
+    expect(find.text('Tour do menu'), findsOneWidget);
+    expect(find.text('Tour completo'), findsOneWidget);
   });
 
   testWidgets('opens unit creation and editing from the development directory', (tester) async {
