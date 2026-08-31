@@ -2498,7 +2498,7 @@ os GREENs locais.
 | 22 Comunicações | Proposta rejeitada. Refazer pela anatomia responsiva do anexo 27: busca, filtros aplicados, categorias com contagem, tabela/lista, paginação e prévia rica lateral. |
 | 23 Circulares | Card de Perfil aprovado com pedido de refinamento visual. Composer atual é boa base, mas deve depender primeiro do builder de Formulários e reutilizar seções/perguntas modulares. |
 | 24 Acontece | `visual-contract-approved`. Agora no topo como carrossel horizontal sem `Ver tudo`; primeiro card retangular publica Agora. Abaixo, título discreto Acontece e feed conjunto de publicações Acontece + Circulares. Cabeçalho Principal usa marca Coelo + chevron para menu e avatar; sem hambúrguer. Shell, contêiner direito e espaçamentos canônicos são correções obrigatórias de execução. Menu inferior em mobile/tablet/web: Home, Para você, ação central `+` de publicar Agora, Momentos e Pesquisar; o `+` atravessa o topo da barra em 50/50 e o web usa dock compacto, não largura total. Mensagens permanece flutuante; Perfil não entra no rodapé. |
-| 25/29 Agora e Momentos | Refazer viewers para ocupar a tela inteira; preservar ações e navegação Coelo. |
+| 25/29 Agora e Momentos | Item 25 Agora `visual-contract-approved`: viewer imersivo fullscreen, mídia vertical, progressão, autoria, contexto, audiência, resposta e ações Coelo; mobile edge-to-edge, tablet centralizado e web com prévias laterais discretas. O shell fica temporariamente suspenso. Item 29 Momentos ainda precisa de aprovação visual própria. |
 | 26 Galeria | Contrato visual aprovado pelo Owner. Não solicitar novamente o mesmo aceite; implementação/golden real ainda serão necessários antes do status final `accepted`. |
 | 27/31 Composers | Refazer pela anatomia dos anexos 34/36, mantendo no web shell, contêiner direito e espaçamento Coelo. O mesmo contrato adapta Acontece, Momentos e Agora aos respectivos contextos. |
 | 28 Para você | Refazer conforme anatomia responsiva do anexo 35, sem copiar identidade externa. |
@@ -2826,6 +2826,21 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
 | Próximo gate | Prosseguir para o Item 25, viewer fullscreen do Agora. Implementação continua bloqueada até o `okay` final do conjunto. |
 | Conhecimento capturado | Fonte canônica atualizada e projeção interna criada em `docs/knowledge/team/principal-happens-feed.md`. |
+
+## 16.80. V5.25 — visualizador do Agora aprovado — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Viewer imersivo do Agora em 375, 768 e 1440 px. |
+| Decisão do Owner | Proposta aprovada sem ajuste visual adicional. |
+| Responsividade | Mobile usa mídia vertical de ponta a ponta; tablet mantém quadro vertical seguro e centralizado; web centraliza o story e oferece prévias laterais discretas com setas. |
+| Conteúdo e ações | Barras de progresso, marca Coelo branca, autoria, tempo/contexto, som, mais opções, fechar, audiência, resposta, curtir e compartilhar permanecem acessíveis e subordinados à mídia. |
+| Shell | O viewer ocupa a tela inteira e suspende temporariamente shell, rail e dock global; fechar devolve o usuário ao ponto de origem no Acontece. |
+| Evidências | `pilot-25-now-v2-mobile.png`, `pilot-25-now-v2-tablet.png` e `pilot-25-now-v2-desktop.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Produção | Nenhum código produtivo foi alterado por esta aprovação. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para o Item 27, conteúdo específico de Publicar no Acontece. |
+| Conhecimento capturado | Fonte canônica atualizada e projeção interna criada em `docs/knowledge/team/principal-now-viewer.md`. |
 
 ## 17. Histórico
 

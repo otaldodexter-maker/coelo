@@ -252,7 +252,15 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     aprovados.
 25. **Agora no Acontece:** primeiro card vazio publica no Agora; remover `Ver
     tudo`; permitir arraste horizontal; abrir viewer em tela cheia escura, com
-    leve transparência e logo Coelo branca.
+    leve transparência e logo Coelo branca. O viewer recebeu aprovação visual do
+    Owner em 2026-08-31: mobile usa mídia vertical de ponta a ponta; tablet usa
+    quadro vertical seguro e centralizado; web mantém o story central com
+    prévias laterais discretas e navegação por setas. Progresso, autoria,
+    contexto, som, mais opções, fechamento, audiência, resposta, curtir e
+    compartilhar permanecem acessíveis sem competir com a mídia. Enquanto o
+    viewer está aberto, ele suspende temporariamente o shell e a navegação
+    global por ser uma superfície imersiva. O item permanece
+    `visual-contract-approved` até implementação e golden real aprovados.
 26. **Galeria do Acontece:** mídia do post abre e permite navegar entre itens com
     contagem e ações acessíveis. Contrato visual aprovado pelo Owner em
     2026-08-28; não repetir a mesma solicitação de aceite. O entregável só muda
