@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 
-enum AgendaModuleArea { calendar, events, requests, permissions }
+enum AgendaModuleArea { calendar, events, requests, approvals, permissions }
 
 extension AgendaModuleAreaLabel on AgendaModuleArea {
   String get label => switch (this) {
     AgendaModuleArea.calendar => 'Calendário',
     AgendaModuleArea.events => 'Eventos',
     AgendaModuleArea.requests => 'Solicitações',
+    AgendaModuleArea.approvals => 'Aprovações',
     AgendaModuleArea.permissions => 'Permissões',
   };
 }

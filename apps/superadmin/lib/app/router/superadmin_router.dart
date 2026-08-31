@@ -56,6 +56,7 @@ import '../../features/access_profiles/presentation/access_profile_directory_pag
 import '../../features/access_profiles/presentation/access_profile_form_page.dart';
 import '../../features/agenda/data/agenda_prototype_store.dart';
 import '../../features/agenda/presentation/agenda_calendar_page.dart';
+import '../../features/agenda/presentation/agenda_approvals_page.dart';
 import '../../features/agenda/presentation/agenda_event_form_page.dart';
 import '../../features/agenda/presentation/agenda_events_page.dart';
 import '../../features/agenda/presentation/agenda_module_shell.dart';
@@ -148,6 +149,9 @@ import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
+import '../../features/forms/presentation/operations/forms_operations_page.dart';
+import '../../features/forms/presentation/response/form_response_page.dart';
+import '../../features/forms/presentation/response/forms_test_page.dart';
 import '../../features/support/presentation/screens/support_page.dart';
 import '../../features/support/presentation/view_models/support_prototype_controller.dart';
 import '../../features/student_tracking/domain/student_tracking.dart';
@@ -437,23 +441,35 @@ GoRouter createSuperadminRouter({
     onAction: () => context.goNamed(SuperadminRoutes.homeName),
   );
   bool hasAuthoritativeMutationCapability() => false;
-  void openAgendaArea(BuildContext context, AgendaModuleArea area) {
-    context.goNamed(switch (area) {
-      AgendaModuleArea.calendar => SuperadminRoutes.devAgendaName,
-      AgendaModuleArea.events => SuperadminRoutes.devAgendaEventsName,
-      AgendaModuleArea.requests => SuperadminRoutes.devAgendaRequestsName,
-      AgendaModuleArea.permissions => SuperadminRoutes.devAgendaPermissionsName,
+  void openAgendaArea(BuildContext context, AgendaModuleArea area, {required bool development}) {
+    context.goNamed(switch ((area, development)) {
+      (AgendaModuleArea.calendar, true) => SuperadminRoutes.devAgendaName,
+      (AgendaModuleArea.events, true) => SuperadminRoutes.devAgendaEventsName,
+      (AgendaModuleArea.requests, true) => SuperadminRoutes.devAgendaRequestsName,
+      (AgendaModuleArea.approvals, true) => SuperadminRoutes.devAgendaApprovalsName,
+      (AgendaModuleArea.permissions, true) => SuperadminRoutes.devAgendaPermissionsName,
+      (AgendaModuleArea.calendar, false) => SuperadminRoutes.agendaName,
+      (AgendaModuleArea.events, false) => SuperadminRoutes.agendaName,
+      (AgendaModuleArea.requests, false) => SuperadminRoutes.agendaRequestsName,
+      (AgendaModuleArea.approvals, false) => SuperadminRoutes.agendaApprovalsName,
+      (AgendaModuleArea.permissions, false) => SuperadminRoutes.agendaPermissionsName,
     });
   }
 
-  Widget agendaAreaShell(BuildContext context, AgendaModuleArea area, Widget child) =>
-      AgendaModuleShell(
-        logout: _previewLogout,
-        selectedArea: area,
-        onAreaSelected: (value) => openAgendaArea(context, value),
-        onDestinationSelected: (destination) => _navigateFromDevelopmentShell(context, destination),
-        child: child,
-      );
+  Widget agendaAreaShell(
+    BuildContext context,
+    AgendaModuleArea area,
+    Widget child, {
+    bool development = true,
+  }) => AgendaModuleShell(
+    logout: development ? _previewLogout : logout,
+    selectedArea: area,
+    onAreaSelected: (value) => openAgendaArea(context, value, development: development),
+    onDestinationSelected: development
+        ? (destination) => _navigateFromDevelopmentShell(context, destination)
+        : (destination) => _navigateFromPersistentShell(context, destination),
+    child: child,
+  );
 
   Future<void> saveActivity(
     ActivityFormDraft draft, {
@@ -1270,7 +1286,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formCreate,
             name: SuperadminRoutes.formCreateName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsEditorPage(),
           ),
           GoRoute(
             path: SuperadminRoutes.formOverview,
@@ -1281,42 +1297,130 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formEdit,
             name: SuperadminRoutes.formEditName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsEditorPage(),
           ),
           GoRoute(
             path: SuperadminRoutes.formTest,
             name: SuperadminRoutes.formTestName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsTestPage(),
           ),
           GoRoute(
             path: SuperadminRoutes.formMonitor,
             name: SuperadminRoutes.formMonitorName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsOperationsPage.monitor(),
           ),
           GoRoute(
             path: SuperadminRoutes.formRespond,
             name: SuperadminRoutes.formRespondName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormResponsePage(),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponses,
             name: SuperadminRoutes.formResponsesName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsOperationsPage.responses(),
           ),
           GoRoute(
             path: SuperadminRoutes.formResponseDetail,
             name: SuperadminRoutes.formResponseDetailName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsOperationsPage.responseDetail(),
           ),
           GoRoute(
             path: SuperadminRoutes.formFiles,
             name: SuperadminRoutes.formFilesName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => const FormsOperationsPage.files(),
           ),
           GoRoute(
             path: SuperadminRoutes.formMedia,
             name: SuperadminRoutes.formMediaName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => const FormsOperationsPage.files(),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agenda,
+            name: SuperadminRoutes.agendaName,
+            builder: (context, state) => AgendaCalendarPage.unavailable(
+              logout: logout,
+              onAreaSelected: (area) => openAgendaArea(context, area, development: false),
+              onCreateItem: () => context.goNamed(SuperadminRoutes.agendaEventCreateName),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agendaEventCreate,
+            name: SuperadminRoutes.agendaEventCreateName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.events,
+              AgendaEventFormPage(
+                store: agendaPrototypeStore,
+                actionsAvailable: false,
+                onCancel: () => context.goNamed(SuperadminRoutes.agendaName),
+                onSaved: (_) {},
+              ),
+              development: false,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agendaEventEdit,
+            name: SuperadminRoutes.agendaEventEditName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.events,
+              AgendaEventFormPage(
+                store: agendaPrototypeStore,
+                eventId: state.pathParameters['eventId'],
+                actionsAvailable: false,
+                onCancel: () => context.goNamed(SuperadminRoutes.agendaName),
+                onSaved: (_) {},
+              ),
+              development: false,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agendaEventDetail,
+            name: SuperadminRoutes.agendaEventDetailName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.events,
+              AgendaEventDetailPage(
+                store: agendaPrototypeStore,
+                eventId: state.pathParameters['eventId']!,
+                unavailable: true,
+                onBack: () => context.goNamed(SuperadminRoutes.agendaName),
+                onEdit: () {},
+              ),
+              development: false,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agendaRequests,
+            name: SuperadminRoutes.agendaRequestsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.requests,
+              const AgendaRequestsPage.unavailable(),
+              development: false,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agendaApprovals,
+            name: SuperadminRoutes.agendaApprovalsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.approvals,
+              const AgendaApprovalsPage.unavailable(),
+              development: false,
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.agendaPermissions,
+            name: SuperadminRoutes.agendaPermissionsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.permissions,
+              const AgendaPermissionsPage.unavailable(),
+              development: false,
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfiles,
@@ -3036,7 +3140,7 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.devFormOverview,
             name: SuperadminRoutes.devFormOverviewName,
             builder: (context, state) =>
-                FormsOverviewPage(api: null, formId: state.pathParameters['formId']!),
+                FormsOverviewPage.development(formId: state.pathParameters['formId']!),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormEdit,
@@ -3046,37 +3150,40 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.devFormTest,
             name: SuperadminRoutes.devFormTestName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsTestPage.development(),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormMonitor,
             name: SuperadminRoutes.devFormMonitorName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsOperationsPage.monitor(development: true),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormRespond,
             name: SuperadminRoutes.devFormRespondName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormResponsePage.development(),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormResponses,
             name: SuperadminRoutes.devFormResponsesName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => const FormsOperationsPage.responses(development: true),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormResponseDetail,
             name: SuperadminRoutes.devFormResponseDetailName,
-            builder: (context, state) => _unavailableFormsRoute(context),
+            builder: (context, state) => FormsOperationsPage.responseDetail(
+              development: true,
+              anonymous: state.uri.queryParameters['anonymous'] == 'true',
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormFiles,
             name: SuperadminRoutes.devFormFilesName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => const FormsOperationsPage.files(development: true),
           ),
           GoRoute(
             path: SuperadminRoutes.devFormMedia,
             name: SuperadminRoutes.devFormMediaName,
-            builder: (context, state) => _unavailableCompositionRootRoute(context),
+            builder: (context, state) => const FormsOperationsPage.files(development: true),
           ),
           GoRoute(
             path: SuperadminRoutes.invites,
@@ -3526,7 +3633,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => AgendaCalendarPage(
               store: agendaPrototypeStore,
               logout: _previewLogout,
-              onAreaSelected: (area) => openAgendaArea(context, area),
+              onAreaSelected: (area) => openAgendaArea(context, area, development: true),
               onCreateItem: () => context.goNamed(SuperadminRoutes.devAgendaEventCreateName),
               onDestinationSelected: (destination) =>
                   _navigateFromDevelopmentShell(context, destination),
@@ -3618,6 +3725,15 @@ GoRouter createSuperadminRouter({
               context,
               AgendaModuleArea.requests,
               AgendaRequestsPage(store: agendaPrototypeStore),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devAgendaApprovals,
+            name: SuperadminRoutes.devAgendaApprovalsName,
+            builder: (context, state) => agendaAreaShell(
+              context,
+              AgendaModuleArea.approvals,
+              const AgendaApprovalsPage.localFixtures(),
             ),
           ),
           GoRoute(
@@ -3722,6 +3838,16 @@ void _navigateFromAccount(
       context.goNamed(SuperadminRoutes.healthMedicationPlansName);
     case 'forms':
       context.goNamed(SuperadminRoutes.formsName);
+    case 'agenda':
+      context.goNamed(SuperadminRoutes.agendaName);
+    case 'agenda-create':
+      context.goNamed(SuperadminRoutes.agendaEventCreateName);
+    case 'agenda-requests':
+      context.goNamed(SuperadminRoutes.agendaRequestsName);
+    case 'agenda-approvals':
+      context.goNamed(SuperadminRoutes.agendaApprovalsName);
+    case 'agenda-permissions':
+      context.goNamed(SuperadminRoutes.agendaPermissionsName);
     case 'imports':
       context.goNamed(SuperadminRoutes.importsName);
     case 'invites':
@@ -3786,6 +3912,7 @@ bool _usesPersistentShell(String location) {
 
 bool _isProductionMutationLocation(String location) {
   if (location.startsWith('/dev/')) return false;
+  if (location.startsWith('/forms') || location.startsWith('/agenda')) return false;
   if (location.endsWith('/new') ||
       location.contains('/new/') ||
       location.endsWith('/edit') ||
@@ -4027,6 +4154,16 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.dailyRoutineName);
     case 'forms':
       context.goNamed(SuperadminRoutes.formsName);
+    case 'agenda':
+      context.goNamed(SuperadminRoutes.agendaName);
+    case 'agenda-create':
+      context.goNamed(SuperadminRoutes.agendaEventCreateName);
+    case 'agenda-requests':
+      context.goNamed(SuperadminRoutes.agendaRequestsName);
+    case 'agenda-approvals':
+      context.goNamed(SuperadminRoutes.agendaApprovalsName);
+    case 'agenda-permissions':
+      context.goNamed(SuperadminRoutes.agendaPermissionsName);
     case 'health-care-profiles':
       context.goNamed(SuperadminRoutes.healthCareProfilesName);
     case 'health-medication-plans':
@@ -4208,13 +4345,15 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devMealPlanCreateName);
     case 'meal-plan-model-create':
       context.goNamed(SuperadminRoutes.devMealPlanModelCreateName);
-    case 'events':
+    case 'events' || 'agenda-events':
       context.goNamed(SuperadminRoutes.devAgendaEventsName);
-    case 'event-create':
+    case 'event-create' || 'agenda-create':
       context.goNamed(SuperadminRoutes.devAgendaEventCreateName);
-    case 'requests':
+    case 'requests' || 'agenda-requests':
       context.goNamed(SuperadminRoutes.devAgendaRequestsName);
-    case 'permissions':
+    case 'agenda-approvals':
+      context.goNamed(SuperadminRoutes.devAgendaApprovalsName);
+    case 'permissions' || 'agenda-permissions':
       context.goNamed(SuperadminRoutes.devAgendaPermissionsName);
     case 'principal-happens':
       context.goNamed(SuperadminRoutes.devPrincipalHappensName);
@@ -4285,8 +4424,6 @@ Widget _unavailableMedicationPlans(BuildContext context) => SuperadminErrorScree
   kind: SuperadminErrorKind.unavailable,
   onAction: () => context.goNamed(SuperadminRoutes.homeName),
 );
-
-Widget _unavailableFormsRoute(BuildContext context) => _unavailableCompositionRootRoute(context);
 
 Widget _unavailableCompositionRootRoute(BuildContext context) => SuperadminErrorScreen(
   kind: SuperadminErrorKind.unavailable,

@@ -24,20 +24,16 @@ void main() {
     '/forms/form-1/responses',
     '/forms/form-1/responses/response-1',
   ];
-  const unavailableDevelopmentPaths = [
+  const developmentOperationPaths = [
     '/dev/forms/form-1/test',
     '/dev/forms/form-1/monitor',
     '/dev/forms/form-1/occurrences/occurrence-1/respond',
     '/dev/forms/form-1/responses',
     '/dev/forms/form-1/responses/response-1',
   ];
-  const redirectedProductionPaths = {
-    '/forms/new',
-    '/forms/form-1/edit',
-    '/forms/form-1/occurrences/occurrence-1/respond',
-  };
+  const redirectedProductionPaths = <String>{};
 
-  testWidgets('production and unavailable development routes are 503 with zero API calls', (
+  testWidgets('production routes preserve composition and remain fail-closed with zero API calls', (
     tester,
   ) async {
     final session = SuperadminSession()..signIn();
@@ -56,21 +52,48 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
 
-    for (final path in [...productionPaths, ...unavailableDevelopmentPaths]) {
+    for (final path in productionPaths) {
       router.go(path);
       await tester.pumpAndSettle();
 
-      expect(
-        router.routeInformationProvider.value.uri.path,
-        redirectedProductionPaths.contains(path) ? '/errors/mutation-capability-unavailable' : path,
-        reason: path,
-      );
-      expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
-      expect(
-        tester.widget<SuperadminErrorScreen>(find.byType(SuperadminErrorScreen)).kind,
-        SuperadminErrorKind.unavailable,
-        reason: path,
-      );
+      if (redirectedProductionPaths.contains(path)) {
+        expect(
+          router.routeInformationProvider.value.uri.path,
+          '/errors/mutation-capability-unavailable',
+          reason: path,
+        );
+        expect(find.byType(SuperadminErrorScreen), findsOneWidget, reason: path);
+      } else {
+        expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+        expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
+        expect(find.textContaining('indisponível'), findsWidgets, reason: path);
+      }
+      expect(api.calls, 0, reason: path);
+    }
+  });
+
+  testWidgets('development operation routes expose deterministic Flutter fixtures', (tester) async {
+    final session = SuperadminSession()..signIn();
+    final api = _TripwireFormsApi();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      formsApi: api,
+      allowDevelopmentPreview: true,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+
+    for (final path in developmentOperationPaths) {
+      router.go(path);
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, path, reason: path);
+      expect(find.byType(SuperadminErrorScreen), findsNothing, reason: path);
+      expect(find.byKey(const Key('forms-operations-unavailable')), findsNothing, reason: path);
       expect(api.calls, 0, reason: path);
     }
   });
@@ -182,7 +205,11 @@ void main() {
 
       expect(router.routeInformationProvider.value.uri.path, path, reason: path);
       expect(api.calls, 0, reason: path);
-      expect(find.textContaining('não est'), findsWidgets, reason: path);
+      if (path.endsWith('form-1')) {
+        expect(find.text('Fixture local · sem persistência remota'), findsOneWidget);
+      } else {
+        expect(find.textContaining('não est'), findsWidgets, reason: path);
+      }
     }
   });
 
