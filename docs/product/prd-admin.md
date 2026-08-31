@@ -3,7 +3,7 @@ title: "Coelo PRD Admin Oficial v1"
 source_file: "Coelo PRD Admin Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Admin Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Admin Oficial v1.docx"
-supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
+supplemental_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; decisions/0028-superadmin-agenda-product-surface.md; specs/006-comunicacao-agenda.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
@@ -425,6 +425,16 @@ O Admin deve permitir:
 - administrar presença, pendências familiares, correções auditadas e painéis de assiduidade.
 
 Listas e ações devem desaparecer quando o profissional não possuir permissão. Um administrador da unidade pode enxergar todas as turmas ou apenas as selecionadas; unidade irmã nunca é herdada.
+
+# 23. Aditivo 2026-08-31 — Agenda fora do Admin produtivo
+
+No recorte atual, `apps/admin` não possui Agenda produtiva. As menções
+anteriores à gestão de Agenda neste PRD ficam preservadas como histórico ou
+possibilidade futura e são substituídas, para a versão vigente, pela ADR 0028 e
+por `specs/006-comunicacao-agenda.md`.
+
+Não criar rotas, telas ou composição produtiva de Agenda no Admin sem nova
+decisão aprovada.
 
 # Fontes e referências
 

@@ -7,6 +7,16 @@ generated_at: "2026-06-27"
 
 # Superadmin MVP
 
+## Aditivo 2026-08-31 — Agenda institucional
+
+Agenda deixa de estar fora do escopo do Superadmin para o recorte vigente. A
+superfície produtiva existe exclusivamente em `apps/superadmin`, conforme a ADR
+0028 e `specs/006-comunicacao-agenda.md`. A autorização atual cobre apenas
+Flutter/Dart, UI/UX e fixtures de `/dev`; backend e integração produtiva
+continuam fora de escopo.
+
+Este aditivo prevalece sobre a menção histórica da linha 76 sem apagá-la.
+
 ## Aditivo de identidade interna — 2026-08-05
 
 Para a feature Usuários Internos, a ADR 0019 e a spec 023 substituem a regra de
