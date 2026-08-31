@@ -159,3 +159,24 @@ HTML temporário do Item 28 foi removido, as quatro fontes aprovadas passaram no
 dois validadores de conhecimento e foram commitadas como `1ba6c241`. `dev`
 avançou por fast-forward, a branch era ancestral e a worktree Codex foi removida
 limpa. Nenhum protótipo não aprovado entrou em Git.
+
+## Continuação backend após a consolidação — 2026-08-31
+
+A fundação Supabase produziu dois commits adicionais a partir de
+`dev@f1aeacf6`:
+
+| Commit | Classificação contra `dev` | Evidência |
+| --- | --- | --- |
+| `04da0141` | exclusivo e correto, pendente de integração | migration CLI do guard de proveniência, manifesto 52/52, mirror 115/115 e replay GREEN |
+| `0f3b6ebf` | exclusivo e correto, pendente de integração | contraprova transacional do contrato remoto divergente, pgTAP 7/7 e cleanup zero |
+
+`git cherry dev codex/supabase-cross-app-foundation` retorna exatamente duas
+linhas `+`, na ordem acima. A worktree backend está limpa e os commits estão
+alcançáveis pela branch `codex/supabase-cross-app-foundation`.
+
+A checkout principal `dev` não pode ser avançada neste checkpoint: contém um
+lote ativo e não commitado de Formulários, UI e documentação visual. Esses
+arquivos pertencem à outra frente e permanecem intocados. Quando `dev` estiver
+limpa, o gate seguro é recalcular `git cherry`, integrar os dois commits na
+ordem, repetir replay/mirror/pgTAP/secret scan e somente então remover a
+worktree/branch backend. Não fazer push.
