@@ -4078,8 +4078,9 @@ da simples soma das 207 ações.
   `20260831164937_assert_unit_hierarchy_contract.sql`, SHA-256 normalizado
   `34b22ee247857f56ac5c80d55694544a60c42fe3c373089ab37749aba47d6ca5`,
   cria guard privado invoker, `search_path=''` e sem EXECUTE cliente. O teste
-  focal passou 6/6; replay e regressão passaram 52 migrations + dois preflights,
-  11 arquivos pgTAP e 284 asserts. Mirror `Prepare`/`Verify`: 115/115.
+  focal passou 7/7, incluindo a contraprova do formato remoto divergente;
+  replay e regressão passaram 52 migrations + dois preflights, 11 arquivos
+  pgTAP e 285 asserts. Mirror `Prepare`/`Verify`: 115/115.
 - **Proveniência remota read-only:** `units.unit_type_id not null` referencia
   `unit_types(id)` e diverge do contrato local aprovado
   `institution_type_id -> institution_types`. O guard falharia antes de uma
@@ -4089,7 +4090,7 @@ da simples soma das 207 ações.
   Docker AI, componente que recriava o socket AF_UNIX inválido. Engine 29.7.2
   voltou saudável; o wrapper terminou sem container, volume ou rede
   `coelo_safe_*` residual.
-- **Lint/fora do pacote:** os 284 asserts passaram antes de o lint repetir dois
+- **Lint/fora do pacote:** os 285 asserts passaram antes de o lint repetir dois
   `42702` em imports Activity/Groups, um `42804` no import de Access Profiles e
   um `42703` no file job. Importação, exportação, arquivos e mídia existentes
   foram preservados integralmente; não foram apagados, revertidos, desativados

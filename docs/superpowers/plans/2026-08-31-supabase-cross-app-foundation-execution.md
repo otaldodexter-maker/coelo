@@ -110,8 +110,9 @@ tabelas.
 
 TDD: o teste novo falhou antes da migration pela ausência da função. Após a
 implementação e a correção da inspeção de FK para usar catálogos, o mesmo teste
-passou 6/6. O replay fechado agora aplica 52 migrations canônicas e dois
-preflights até `20260831164937`; a regressão passou 11 arquivos/284 asserts.
+passou 7/7, incluindo o formato remoto divergente criado e revertido na própria
+transação. O replay fechado agora aplica 52 migrations canônicas e dois
+preflights até `20260831164937`; a regressão passou 11 arquivos/285 asserts.
 `Prepare` e `Verify` confirmaram 115/115 migrations. O lint manteve os quatro
 erros históricos já classificados de importação e arquivo; esses recursos
 existentes foram preservados e apenas permanecem fora deste pacote.

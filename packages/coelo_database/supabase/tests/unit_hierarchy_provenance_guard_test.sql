@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(6);
+select plan(7);
 
 select ok(
   to_regprocedure('app_private.assert_unit_hierarchy_contract()') is not null,
@@ -59,6 +59,16 @@ select is(
     'contract', 'shared-institution-type'
   ),
   'provenance guard reports the accepted canonical hierarchy contract'
+);
+
+alter table public.units add column unit_type_id uuid;
+create table public.unit_types(id uuid primary key);
+
+select throws_ok(
+  'select app_private.assert_unit_hierarchy_contract()',
+  '55000',
+  'unit hierarchy contract mismatch',
+  'remote-like unit type catalog divergence fails closed'
 );
 
 select * from finish();

@@ -166,6 +166,7 @@ altera policy/grant de tabelas e não resolve OQ-032 silenciosamente.
 
 O RED comprovou a ausência do guard no replay anterior. O GREEN aplicou 52
 migrations canônicas e dois preflights até `20260831164937`; a regressão passou
-11 arquivos pgTAP/284 asserts. O remoto permaneceu sem mutação e continua
+11 arquivos pgTAP/285 asserts, incluindo a contraprova transacional do formato
+remoto divergente. O remoto permaneceu sem mutação e continua
 `blocked-environment`; esta prova reduz o risco de aplicação acidental, mas não
 remove nenhum dos seis gates para retomar o Design A.
