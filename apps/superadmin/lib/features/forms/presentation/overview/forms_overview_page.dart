@@ -19,8 +19,20 @@ final class FormsOverviewPage extends StatefulWidget {
     this.onFiles,
     this.canManageLifecycle = false,
     this.canTransferCrossInstitution = false,
+    this.development = false,
     super.key,
   });
+
+  const FormsOverviewPage.development({required this.formId, super.key})
+    : api = null,
+      onEdit = null,
+      onTest = null,
+      onMonitor = null,
+      onResponses = null,
+      onFiles = null,
+      canManageLifecycle = true,
+      canTransferCrossInstitution = false,
+      development = true;
 
   final FormsApi? api;
   final String formId;
@@ -31,6 +43,7 @@ final class FormsOverviewPage extends StatefulWidget {
   final VoidCallback? onFiles;
   final bool canManageLifecycle;
   final bool canTransferCrossInstitution;
+  final bool development;
 
   @override
   State<FormsOverviewPage> createState() => _FormsOverviewPageState();
@@ -62,6 +75,14 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
   }
 
   Future<void> _load() async {
+    if (widget.development) {
+      if (!mounted) return;
+      setState(() {
+        _failure = null;
+        _overview = _developmentOverview(widget.formId);
+      });
+      return;
+    }
     final api = widget.api;
     final formId = widget.formId;
     final generation = ++_loadGeneration;
@@ -153,6 +174,10 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
                 );
               },
             ),
+            if (widget.development) ...[
+              const SizedBox(height: CoeloSpacing.space6),
+              const _DevelopmentOperations(),
+            ],
           ],
         ],
       );
@@ -183,6 +208,100 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
     ),
   );
 }
+
+final class _DevelopmentOperations extends StatelessWidget {
+  const _DevelopmentOperations();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(
+        'Fixture local · sem persistência remota',
+        style: Theme.of(context).textTheme.labelLarge,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      const _OperationCard(
+        icon: Icons.account_tree_outlined,
+        title: 'Distribuições e audiências',
+        detail: 'Instituição · Unidade · Turma · Atividade · Perfil · Pessoa',
+      ),
+      const _OperationCard(
+        icon: Icons.event_repeat_outlined,
+        title: 'Agendamento único e recorrente',
+        detail: 'Uma vez · semanal · mensal · janela configurada',
+      ),
+      const _OperationCard(
+        icon: Icons.notifications_active_outlined,
+        title: 'Ocorrências, fuso e lembretes',
+        detail: 'America/Sao_Paulo · 24 h antes · 1 h antes',
+      ),
+      const _OperationCard(
+        icon: Icons.history_rounded,
+        title: 'Versionamento',
+        detail: 'Versão publicada 3',
+        trailing: 'Rascunho de edição 4',
+      ),
+    ],
+  );
+}
+
+final class _OperationCard extends StatelessWidget {
+  const _OperationCard({
+    required this.icon,
+    required this.title,
+    required this.detail,
+    this.trailing,
+  });
+  final IconData icon;
+  final String title, detail;
+  final String? trailing;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+    child: CoeloAdminInteractiveCard(
+      semanticLabel: '$title, $detail${trailing == null ? '' : ', $trailing'}',
+      onPressed: () {},
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Row(
+          children: [
+            Icon(icon),
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  Text(detail),
+                  if (trailing != null) Text(trailing!),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+FormOverview _developmentOverview(String formId) => FormOverview(
+  definition: FormDefinition(
+    id: formId,
+    institutionId: 'institution-fixture',
+    kind: FormKind.form,
+    identityMode: FormIdentityMode.identified,
+    responseUnit: FormResponseUnit.person,
+    title: 'Pesquisa das famílias',
+    managementVersion: 4,
+    sections: const [],
+  ),
+  applicationCount: 3,
+  occurrenceCount: 12,
+  responseCount: 28,
+);
 
 @Preview(name: 'Formulários · visão geral · desktop', size: Size(1024, 720))
 Widget formsOverviewPreview() => MaterialApp(
