@@ -1,6 +1,76 @@
 -- Normalize replay-only label sentinels and restore the canonical no-default
 -- contract. On environments that never used the replay bridge this is a no-op.
 
+begin;
+
+do $$
+begin
+  if (
+    select count(*) <> 3
+    from pg_catalog.pg_class relation
+    join pg_catalog.pg_namespace namespace on namespace.oid = relation.relnamespace
+    where namespace.nspname = 'public'
+      and relation.relname in (
+        'platform_permissions',
+        'institution_permissions',
+        'platform_role_permissions'
+      )
+      and relation.relkind in ('r', 'p')
+      and pg_catalog.pg_get_userbyid(relation.relowner) = 'postgres'
+  ) or (
+    select count(*) <> 6
+    from pg_catalog.pg_attribute attribute
+    join pg_catalog.pg_class relation on relation.oid = attribute.attrelid
+    join pg_catalog.pg_namespace namespace on namespace.oid = relation.relnamespace
+    where namespace.nspname = 'public'
+      and relation.relname in ('platform_permissions', 'institution_permissions')
+      and attribute.attname in ('module_label', 'screen_label', 'action_label')
+      and attribute.attnum > 0
+      and not attribute.attisdropped
+      and attribute.atttypid = 'pg_catalog.text'::pg_catalog.regtype
+      and attribute.attnotnull
+  ) or exists (
+    select 1
+    from pg_catalog.pg_attribute attribute
+    join pg_catalog.pg_class relation on relation.oid = attribute.attrelid
+    join pg_catalog.pg_namespace namespace on namespace.oid = relation.relnamespace
+    join pg_catalog.pg_attrdef definition
+      on definition.adrelid = attribute.attrelid
+     and definition.adnum = attribute.attnum
+    where namespace.nspname = 'public'
+      and relation.relname in ('platform_permissions', 'institution_permissions')
+      and attribute.attname in ('module_label', 'screen_label', 'action_label')
+      and pg_catalog.pg_get_expr(definition.adbin, definition.adrelid)
+          <> '''__replay_legacy__''::text'
+  ) or exists (
+    select 1
+    from pg_catalog.pg_attribute attribute
+    join pg_catalog.pg_class relation on relation.oid = attribute.attrelid
+    join pg_catalog.pg_namespace namespace on namespace.oid = relation.relnamespace
+    left join pg_catalog.pg_attrdef definition
+      on definition.adrelid = attribute.attrelid
+     and definition.adnum = attribute.attnum
+    where namespace.nspname = 'public'
+      and relation.relname = 'platform_role_permissions'
+      and attribute.attname = 'updated_at'
+      and (
+        attribute.attnum <= 0
+        or attribute.attisdropped
+        or attribute.atttypid <> 'timestamp with time zone'::pg_catalog.regtype
+        or not attribute.attnotnull
+        or definition.oid is null
+        or pg_catalog.pg_get_expr(definition.adbin, definition.adrelid) <> 'now()'
+      )
+  ) or pg_catalog.to_regprocedure(
+    'app_private.assert_permission_label_replay_contract()'
+  ) is not null then
+    raise exception using
+      errcode = '55000',
+      message = 'unexpected permission label replay contract';
+  end if;
+end;
+$$;
+
 alter table public.platform_role_permissions
   add column if not exists updated_at timestamptz not null default now();
 
@@ -172,3 +242,5 @@ alter table public.institution_permissions
   alter column action_label drop default;
 
 select app_private.assert_permission_label_replay_contract();
+
+commit;

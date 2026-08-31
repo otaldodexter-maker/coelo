@@ -3939,10 +3939,13 @@ da simples soma das 207 ações.
   do bridge; defaults inesperados poderiam ser removidos sem preflight.
 - **GREEN:** `foundation-migrations.sha256` fixa 50 nomes/hashes; o teste do
   perfil prova oito exclusões e todos os hashes. `FoundationOnly` aceita apenas
-  o alvo final `20260831130726`, antes de iniciar Docker. O validator privado
-  falha com SQLSTATE `55000` em owner, tipo, nullability ou default inesperado,
-  tem EXECUTE revogado e é testado com drift sintético revertido por rollback.
-- **Regressão:** nove arquivos pgTAP passaram 264/264; rejeições de alvo parcial,
+  o alvo final `20260831130726`, antes de iniciar Docker. Um bloco catalogal
+  read-only roda antes de qualquer DDL e rejeita tabela/coluna/função inesperada;
+  só depois a transação explícita cria o validator privado. Ele falha com
+  SQLSTATE `55000` em owner, tipo, nullability ou default inesperado, tem EXECUTE
+  revogado e é testado com drifts sintéticos revertidos por rollback.
+- **Regressão:** nove arquivos pgTAP somam 265 asserts após a cobertura estrutural;
+  o teste focal passou 10/10. Rejeições de alvo parcial,
   caminho fora da raiz e extensão não SQL ocorreram antes do Docker. O lint
   repetiu os erros históricos classificados e não apontou o validator novo.
   Todos os caminhos terminaram com zero container, volume e rede residual.

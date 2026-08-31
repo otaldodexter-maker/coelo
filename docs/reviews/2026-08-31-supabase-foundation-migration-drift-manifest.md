@@ -189,7 +189,7 @@ Inventário read-only. O ledger remoto expõe versão e nome, mas não o SQL nem
 
 ## Regras de uso
 
-1. `equivalent` significa somente versão e nome iguais no ledger; o hash remoto continua indisponível.
+1. `name-version-match` significa somente versão e nome iguais no ledger; o hash remoto continua indisponível.
 2. `unresolved` exige comparação de conteúdo/proveniência antes de qualquer ação.
 3. `local-only` e `remote-only` não são candidatos automáticos a aplicação, repair ou restauração.
 4. Migrations já aplicadas remotamente nunca são editadas; qualquer correção é forward-only.

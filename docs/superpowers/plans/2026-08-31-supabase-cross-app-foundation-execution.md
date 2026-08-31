@@ -33,7 +33,7 @@ A migration canônica `20260827233000_superadmin_internal_auth_context.sql` e se
 
 O Docker Desktop 4.86.0 foi reparado sem apagar imagens ou volumes: os diretórios de runtime com sockets AF_UNIX corrompidos foram movidos para backups e o daemon 29.7.2 voltou a responder. O replay integral reproduz dois drifts fora do recorte (`platform_permissions` sem labels/defaults e Import/Export removido). O perfil `-FoundationOnly` é fechado por manifesto SHA-256: aplica exatamente 50 migrations canônicas revisadas e dois preflights de replay, sem admitir migrations futuras ou mascarar o RED integral.
 
-A migration forward-only `20260831130726_reconcile_permission_labels_after_replay.sql`, criada pelo CLI 2.116.0, valida owner/tipos/nullability/defaults antes de normalizar os sentinels temporários e remover os seis defaults. Replay focado, nove arquivos pgTAP e 264 asserts passaram; Auth, instituições, unidade, grupo e pessoa estão verdes. O lint global continua RED por erros históricos em domínios anteriores, classificados separadamente do delta; o validator novo não recebeu achado.
+A migration forward-only `20260831130726_reconcile_permission_labels_after_replay.sql`, criada pelo CLI 2.116.0, executa preflight catalogal antes de qualquer DDL e valida owner/tipos/nullability/defaults antes de normalizar os sentinels temporários e remover os seis defaults. Replay focado, nove arquivos pgTAP e 265 asserts passaram; Auth, instituições, unidade, grupo e pessoa estão verdes. O lint global continua RED por erros históricos em domínios anteriores, classificados separadamente do delta; o validator novo não recebeu achado.
 
 ## Evidência read-only de 2026-08-31
 

@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(9);
+select plan(10);
 
 select has_column(
   'public',
@@ -115,6 +115,19 @@ select throws_ok(
 
 alter table public.platform_permissions
   alter column module_label drop default;
+
+alter table public.institution_permissions
+  alter column action_label drop not null;
+
+select throws_ok(
+  $$select app_private.assert_permission_label_replay_contract()$$,
+  '55000',
+  'unexpected permission label replay contract',
+  'validator fails closed when label nullability drifts'
+);
+
+alter table public.institution_permissions
+  alter column action_label set not null;
 
 select * from finish();
 

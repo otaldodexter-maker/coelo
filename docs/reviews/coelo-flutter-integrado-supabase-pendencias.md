@@ -1190,7 +1190,8 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 ### Checkpoint integrado 53 - replay fechado sem promocao Flutter/E2E
 
 - O review backend foi fechado com manifesto de 50 migrations/hash, alvo final
-  obrigatório e validator fail-closed; nove arquivos pgTAP passaram 264/264.
+  obrigatório e preflight catalogal antes de qualquer DDL; nove arquivos pgTAP
+  somam 265 asserts, incluindo drift estrutural fail-closed.
 - Flutter `verified` continua 0,00% (0/207), E2E continua 0,00% (0/202) e
   nenhum arquivo visual foi alterado. A frente visual permanece isolada.
 - O lint histórico continua RED e o remoto segue read-only. Portanto o backend
