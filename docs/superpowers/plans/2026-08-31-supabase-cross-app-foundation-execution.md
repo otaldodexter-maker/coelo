@@ -96,3 +96,29 @@ O inventário oficial read-only confirmou projeto saudável, ledger 103, dez
 Edge Functions, Advisors 207/505, 180 tabelas públicas com RLS e três tabelas
 `audit`, uma sem RLS. O remoto continua sem classificação documental de
 desenvolvimento/homologação/produção e não recebeu qualquer mutação.
+
+## Continuação executada — guard de proveniência de hierarquia
+
+O inventário remoto SELECT-only confirmou `units.unit_type_id -> unit_types`,
+enquanto ADR 0016/spec 017 e o perfil local aprovado exigem
+`units.institution_type_id -> institution_types`. Em vez de inferir uma
+conversão, foi criado pelo CLI 2.116.0 o delta forward-only
+`20260831164937_assert_unit_hierarchy_contract.sql`. O guard privado resultante
+falha cedo com SQLSTATE `55000` se a cadeia apresentar coluna, catálogo, FK ou
+índice incompatível; não expõe endpoint nem altera dados, RLS ou grants de
+tabelas.
+
+TDD: o teste novo falhou antes da migration pela ausência da função. Após a
+implementação e a correção da inspeção de FK para usar catálogos, o mesmo teste
+passou 6/6. O replay fechado agora aplica 52 migrations canônicas e dois
+preflights até `20260831164937`; a regressão passou 11 arquivos/284 asserts.
+`Prepare` e `Verify` confirmaram 115/115 migrations. O lint manteve os quatro
+erros históricos já classificados de importação e arquivo; esses recursos
+existentes foram preservados e apenas permanecem fora deste pacote.
+
+Docker Desktop 4.86.0 voltou a operar com engine 29.7.2 após o reset realizado
+na interface e a desativação do recurso opcional Docker AI que recriava o socket
+AF_UNIX inválido. O replay terminou com zero recurso `coelo_safe_*` residual.
+O remoto continua read-only, `blocked-environment`, sem `remote-green` ou
+`done`; OQ-032 permanece aberta para a escolha canônica antes de qualquer
+mutação remota.
