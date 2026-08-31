@@ -2797,6 +2797,18 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Conhecimento | Fontes canônicas foram commitadas antes da projeção; os dois gates da memória Coelo passaram. Nenhuma PII, fixture real ou segredo foi introduzido. |
 | Tempo usado | O tempo adicional desta retomada não é calculável com confiabilidade a partir do ledger disponível; o checkpoint anterior preserva 3 h 41 min acumulados. Nenhuma duração foi inferida por percentual. |
 | Primeiro gate incompleto | Integração dos commits exclusivos da branch visual com a fundação backend na worktree `codex/final-consolidation`, seguida das regressões combinadas. |
+
+## 16.78. Regressão da consolidação visual — 2026-08-31
+
+| Campo | Evidência |
+| --- | --- |
+| Objetivo | Validar o lote visual já commitado dentro da consolidação, sem promover ações Flutter ou E2E. |
+| GREEN não-golden | 71 arquivos alterados, 773 testes aprovados; o seletor de data em 200% foi estabilizado tornando o alvo visível antes do gesto. |
+| Menu `/dev` | Os dois testes funcionais passaram: ordem completa dos destinos e uso em 375/768/1024/1440. O flyout agora limita a altura ao viewport seguro e capacidades sintéticas ficam restritas ao catálogo `/dev`. |
+| Análise | `flutter analyze` verde em Superadmin, `coelo_ui_admin`, `coelo_ui_core` e catálogo. |
+| Limites honestos | Goldens divergentes não foram regravados sem aprovação visual. A suíte integral do catálogo mantém uma falha histórica reproduzida no baseline backend. Falhas históricas da suíte Superadmin também foram reproduzidas no baseline e não foram chamadas de regressões fechadas. |
+| Estado | Flutter `verified` permanece 0,00% (0/207); ações local-green e denominadores anteriores não são promovidos por esta consolidação. |
+| Conhecimento | `no-op`: o ajuste implementa contratos visuais já aprovados, sem regra durável nova. |
 | Próximo comando exato | Recalcular `rtk git cherry dev codex/flutter-ui-10h`; na worktree final, aplicar em ordem somente as linhas `+`, resolver documentos de forma append-only e repetir os gates backend/Flutter. |
 
 ## 17. Histórico

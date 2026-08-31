@@ -1,7 +1,7 @@
 ---
 title: "Execução da fundação Supabase cross-app"
 source: "Prompt aprovado pelo Owner Coelo em 2026-08-31; decisions/0019-superadmin-internal-identity.md; specs/039-superadmin-internal-auth-session-context.md; inventário read-only de 2026-08-31"
-status: "in-progress-gates-3-of-4"
+status: "local-green-consolidation-ready"
 generated_at: "2026-08-31"
 ---
 
@@ -57,3 +57,19 @@ Repetir o gate focado com pgTAP e lint visível:
 ```
 
 O pgTAP deve permanecer GREEN; o lint global permanece RED até os erros históricos serem reconciliados por pacote. Não usar o remoto como substituto.
+
+## Fechamento local de 2026-08-31
+
+Os quatro gates do macrotema foram executados localmente. O replay fechado aplica
+51 migrations canônicas revisadas e dois preflights até `20260831134407`, roda
+dez arquivos pgTAP com 278 asserts e remove os recursos Docker temporários. O
+manifesto passou a calcular SHA-256 sobre texto UTF-8 normalizado em CRLF, de
+modo que LF/CRLF da checkout não alteram a identidade lógica das migrations.
+`Prepare` e `Verify` confirmaram 114/114 migrations canônicas/mirror.
+
+O remoto `coelo` permanece `blocked-environment`, read-only e fora de
+`remote-green`; não houve push, deploy, DDL/DML, alteração Auth ou migration
+remota. O lint global continua vermelho apenas pelos erros históricos já
+classificados de Activity/Import-Export, fora do núcleo contratado. O gate de
+conhecimento foi `no-op`: nenhuma regra durável de produto nova nasceu deste
+fechamento técnico.

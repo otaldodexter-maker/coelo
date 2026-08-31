@@ -1,7 +1,7 @@
 ---
 title: "Ledger de consolidação das worktrees — abertura de 2026-08-31"
 source: "git worktree list; git cherry dev codex/supabase-backend-priority; Git HEAD c9b7114bab681ddb3f47a93c6f215570327b15f0"
-status: "in-progress-read-only"
+status: "verified-ready-for-local-fast-forward"
 generated_at: "2026-08-31"
 ---
 
@@ -83,3 +83,33 @@ Resultado: 41 linhas, todas prefixadas por `-`. Pelo contrato de `git cherry`, c
 - O commit documental `a1cc69f6` persistiu este ledger e o inventário do Dia 1.
 - `git cherry dev codex/supabase-backend-priority` foi repetido e manteve 41/41 linhas `-`.
 - A worktree limpa `.worktrees/supabase-backend-priority` foi removida; a branch `codex/supabase-backend-priority` foi preservada para a auditoria final. Nenhum commit ou branch foi apagado.
+
+## Consolidação final verificada
+
+- Backend atual: `codex/supabase-cross-app-foundation` em `80305ce0` é ancestral
+  da consolidação; portanto todos os commits estão integrados por identidade.
+- Visual: as 26 linhas `+` de `git cherry dev codex/flutter-ui-10h` foram
+  cherry-picked em ordem entre `888a0e62` e `995714bf`. Contra
+  `codex/final-consolidation`, a branch visual retorna 77 linhas `-`, zero `+`;
+  os commits anteriores e os 26 finais são patch-equivalentes.
+- Backend legado: `codex/supabase-backend-priority` retorna 41 linhas `-`, zero
+  `+`. Visual legado: `codex/flutter-ui-final` retorna 4 linhas `-`, zero `+`.
+- Correções próprias da consolidação: `eee0e1a8` normaliza hashes do replay e
+  `fde211ea` mantém flyouts de desenvolvimento alcançáveis, incluindo a prova
+  de data em 200%.
+- O prompt aprovado não rastreado na checkout principal tem o mesmo blob Git
+  `61588a2e` da cópia rastreada na consolidação. Ele pode ser removido da
+  checkout principal imediatamente antes do fast-forward sem perda.
+
+### Matriz de alcance
+
+| Branch de origem | Prova contra a consolidação | Classificação |
+| --- | --- | --- |
+| `codex/supabase-cross-app-foundation` | ancestral; `git cherry` sem saída | integrado por identidade |
+| `codex/flutter-ui-10h` | 77 `-`, 0 `+`; 26 exclusivos originais integrados em ordem | patch-equivalente |
+| `codex/supabase-backend-priority` | 41 `-`, 0 `+` | patch-equivalente legado |
+| `codex/flutter-ui-final` | 4 `-`, 0 `+` | patch-equivalente legado |
+
+O próximo passo é avançar `dev` por `--ff-only`, repetir as provas contra
+`dev`, remover somente essas worktrees/branches temporárias e confirmar uma
+única checkout `dev` limpa. Não fazer push.

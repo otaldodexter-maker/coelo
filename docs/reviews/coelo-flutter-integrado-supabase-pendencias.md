@@ -1214,3 +1214,19 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Cleanup de mirror rejeitou junction externo sem apagar o arquivo-prova.
 - Flutter `verified` segue 0,00% (0/207), E2E 0,00% (0/202), remoto read-only e
   nenhuma worktree visual foi tocada por esta correção.
+
+### Checkpoint integrado 56 - consolidação local sem promocao E2E
+
+- A fundação backend fechou 4/4 gates locais, com replay de 51 migrations +
+  dois preflights e dez arquivos pgTAP/278 asserts. Mirror 114/114 e cleanup
+  Docker sem recursos `coelo_safe_*` residuais.
+- Os 26 commits visuais exclusivos foram integrados por cherry-pick em ordem;
+  `git cherry` contra a consolidação passou a reportar zero patch exclusivo na
+  branch visual. A regressão não-golden alterada passou 773 testes em 71
+  arquivos e analyzers ficaram verdes.
+- Goldens não aprovados, falhas históricas do catálogo/Superadmin, lint
+  histórico do banco e toda prova remota/E2E continuam explicitamente abertos.
+  Flutter `verified` permanece 0,00% (0/207), E2E 0,00% (0/202), Supabase
+  `done` 0,00% (0/37) e remoto `blocked-environment`, read-only.
+- Esta consolidação não prova clique → backend remoto → reload, não altera
+  denominadores e não promove tela, ação integrada, `remote-green` ou `done`.

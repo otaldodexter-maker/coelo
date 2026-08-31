@@ -4013,3 +4013,23 @@ da simples soma das 207 ações.
   75,00% (3/4), restante 25,00% (1/4). `done`, Flutter e E2E inalterados.
   Próximo passo: regressão completa, review final e consolidação após worktree
   visual limpa.
+
+### Checkpoint seguro 56 - Dia 4 local-green e portátil
+
+- **Progresso do macrotema:** 100,00% dos gates locais (4/4), restante 0,00%
+  (0/4). Projeto estrito `done` permanece 0,00% (0/229), backlog Supabase
+  estrito `done` 0,00% (0/228) e famílias Supabase `done` 0,00% (0/37).
+- **RED de portabilidade:** o mesmo blob Git de uma migration produzia hash
+  diferente em worktrees LF/CRLF e o replay recusava uma checkout válida.
+- **GREEN:** scripts e manifesto calculam SHA-256 de texto UTF-8 normalizado em
+  CRLF. O perfil aceitou 51 migrations revisadas, manteve oito exclusões e
+  executou dois preflights + dez arquivos pgTAP/278 asserts até
+  `20260831134407`.
+- **Regressão:** mirror `Prepare`/`Verify` 114/114; lint repetiu somente erros
+  históricos classificados de Activity/Import-Export; cleanup terminou sem
+  container, volume ou rede `coelo_safe_*` residual. Nenhuma fixture, PII ou
+  segredo foi persistido.
+- **Estado:** fundação do recorte `local-green`, reproduzível; remoto continua
+  `blocked-environment`, read-only, ledger 103 e sem `remote-green` ou `done`.
+  Gate de conhecimento `no-op`. Próximo comando seguro remoto continua sendo
+  apenas inventário SELECT; qualquer mutação exige autorização nominal.
