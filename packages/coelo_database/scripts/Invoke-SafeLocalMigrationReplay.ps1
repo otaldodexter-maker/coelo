@@ -77,6 +77,11 @@ function Get-DockerResources([string]$Identity) {
 if ($targetMigration.Count -ne 1) {
   throw "target version must identify exactly one canonical migration: $TargetVersion"
 }
+if ($FoundationOnly -and
+    $targetMigration[0].Name -ge '20260812002000_' -and
+    $targetMigration[0].Name -lt '20260827214000_') {
+  throw "target version is outside the foundation replay profile: $TargetVersion"
+}
 if (-not (Test-Path -LiteralPath $canonicalConfig -PathType Leaf)) {
   throw 'canonical Supabase config is missing'
 }
