@@ -6,6 +6,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $packageRoot = Split-Path -Parent $PSScriptRoot
+$repositoryRoot = Split-Path -Parent (Split-Path -Parent $packageRoot)
 $canonicalRoot = Join-Path $packageRoot 'migrations'
 $mirrorRoot = Join-Path $packageRoot 'supabase\migrations'
 
@@ -32,13 +33,27 @@ if ($canonical.Count -eq 0) {
 }
 
 if ($Mode -eq 'Clean') {
+  $trackedMirrorFiles = [Collections.Generic.HashSet[string]]::new(
+    [StringComparer]::OrdinalIgnoreCase
+  )
+  $trackedPaths = @(
+    & git -C $repositoryRoot ls-files -- 'packages/coelo_database/supabase/migrations/*.sql'
+  )
+  if ($LASTEXITCODE -ne 0) { throw 'cannot inventory tracked migration mirrors' }
+  foreach ($trackedPath in $trackedPaths) {
+    [void]$trackedMirrorFiles.Add(
+      [IO.Path]::GetFullPath((Join-Path $repositoryRoot $trackedPath))
+    )
+  }
   Get-ChildItem -LiteralPath $mirrorFull -File -Filter '*.sql' |
     ForEach-Object {
       $candidate = [System.IO.Path]::GetFullPath($_.FullName)
       if (-not $candidate.StartsWith($mirrorFull, [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "refusing to remove file outside mirror: $candidate"
       }
-      Remove-Item -LiteralPath $candidate -Force
+      if (-not $trackedMirrorFiles.Contains($candidate)) {
+        Remove-Item -LiteralPath $candidate -Force
+      }
     }
   return
 }
@@ -46,7 +61,17 @@ if ($Mode -eq 'Clean') {
 if ($Mode -eq 'Prepare') {
   & $PSCommandPath -Mode Clean
   foreach ($source in $canonical) {
-    Copy-Item -LiteralPath $source.FullName -Destination (Join-Path $mirrorFull $source.Name)
+    $target = Join-Path $mirrorFull $source.Name
+    if (Test-Path -LiteralPath $target -PathType Leaf) {
+      $sourceHash = (Get-FileHash -LiteralPath $source.FullName -Algorithm SHA256).Hash
+      $targetHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+      if ($sourceHash -cne $targetHash) {
+        throw "tracked migration mirror differs from canonical source: $($source.Name)"
+      }
+    }
+    else {
+      Copy-Item -LiteralPath $source.FullName -Destination $target
+    }
   }
 }
 
