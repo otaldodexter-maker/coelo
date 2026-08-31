@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(31);
+select plan(39);
 
 select has_column('public','activity_definitions','created_by_actor_kind','definition actor kind');
 select has_column('public','activity_unit_links','linked_by_actor_kind','unit link actor kind');
@@ -65,8 +65,10 @@ insert into public.people(id,person_type,first_name,last_name,display_name)
 values
  ('7a100000-0000-4000-8000-000000000001','adult','Actor','People','Actor People'),
  ('7a100000-0000-4000-8000-000000000002','adult','Other','People','Other People');
-insert into public.institutions(id,public_name,slug)
-values ('7a100000-0000-4000-8000-000000000003','Actor contract','actor-contract-v2');
+insert into public.institution_types(id,code,name,status)
+values ('7a100000-0000-4000-8000-000000000004','actor_contract','Actor contract type','active');
+insert into public.institutions(id,public_name,slug,institution_type_id)
+values ('7a100000-0000-4000-8000-000000000003','Actor contract','actor-contract-v2','7a100000-0000-4000-8000-000000000004');
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,
   raw_app_meta_data,raw_user_meta_data)
 values
@@ -94,6 +96,54 @@ insert into public.activity_definitions(
  '7a100000-0000-4000-8000-000000000003','People provenance','people-provenance','institution',
  '7a100000-0000-4000-8000-000000000001'
 );
+select throws_ok($$insert into public.activity_definitions(
+ id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id
+) values (
+ '7a100000-0000-4000-8000-000000000013',
+ '7a100000-0000-4000-8000-000000000003','Mismatched people','mismatched-people','institution',
+ '7a100000-0000-4000-8000-000000000002'
+)$$, '42501','activity actor provenance denied','people inserts reject a mismatched person');
+insert into public.activity_capability_policies(
+ id,activity_id,institution_id,capability_id,policy_mode,changed_by_person_id
+) select
+ '7a100000-0000-4000-8000-000000000014',
+ '7a100000-0000-4000-8000-000000000010',
+ '7a100000-0000-4000-8000-000000000003',id,'default_on',
+ '7a100000-0000-4000-8000-000000000001'
+from public.activity_capabilities where code='conversation';
+insert into public.units(id,institution_id,institution_type_id,name,slug) values
+ ('7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000004','Actor unit','actor-unit');
+insert into public.groups(id,institution_id,unit_id,name) values
+ ('7a100000-0000-4000-8000-000000000032','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000031','Actor group');
+insert into public.institution_memberships(id,person_id,institution_id,role_code) values
+ ('7a100000-0000-4000-8000-000000000033','7a100000-0000-4000-8000-000000000001','7a100000-0000-4000-8000-000000000003','staff');
+insert into public.activity_unit_links(id,activity_id,institution_id,unit_id,linked_by_person_id) values
+ ('7a100000-0000-4000-8000-000000000034','7a100000-0000-4000-8000-000000000010','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000001');
+insert into public.activity_group_links(id,activity_id,institution_id,unit_id,group_id,linked_by_person_id) values
+ ('7a100000-0000-4000-8000-000000000035','7a100000-0000-4000-8000-000000000010','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000032','7a100000-0000-4000-8000-000000000001');
+select throws_ok($$insert into public.activity_group_assignments(
+ id,activity_group_link_id,institution_id,person_id,membership_id,assignment_role,assigned_by_person_id
+) values (
+ '7a100000-0000-4000-8000-000000000036','7a100000-0000-4000-8000-000000000035','7a100000-0000-4000-8000-000000000003',
+ '7a100000-0000-4000-8000-000000000001','7a100000-0000-4000-8000-000000000033','activity_admin','7a100000-0000-4000-8000-000000000001'
+)$$, '23514','activity_admin assignments are activity-scoped only','new group-scoped activity admins are denied');
+alter table public.activity_group_assignments disable trigger activity_group_assignments_activity_admin_guard;
+insert into public.activity_group_assignments(
+ id,activity_group_link_id,institution_id,person_id,membership_id,assignment_role,assigned_by_person_id
+) values (
+ '7a100000-0000-4000-8000-000000000037','7a100000-0000-4000-8000-000000000035','7a100000-0000-4000-8000-000000000003',
+ '7a100000-0000-4000-8000-000000000001','7a100000-0000-4000-8000-000000000033','activity_admin','7a100000-0000-4000-8000-000000000001'
+);
+alter table public.activity_group_assignments enable trigger activity_group_assignments_activity_admin_guard;
+select lives_ok($$update public.activity_group_assignments
+ set status='inactive',revoked_at=now() where id='7a100000-0000-4000-8000-000000000037'$$,
+ 'historical group-scoped activity admin accepts only revocation lifecycle');
+select throws_ok($$update public.activity_group_assignments
+ set assigned_by_person_id='7a100000-0000-4000-8000-000000000002' where id='7a100000-0000-4000-8000-000000000037'$$,
+ '23514','activity_admin assignments are activity-scoped only','historical group admin authorship remains immutable');
+select throws_ok($$update public.activity_group_assignments
+ set created_at=created_at-interval '1 second' where id='7a100000-0000-4000-8000-000000000037'$$,
+ '23514','activity_admin assignments are activity-scoped only','historical group admin creation date remains immutable');
 
 select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000023','session_id','7a100000-0000-4000-8000-000000000024','aal','aal2','role','authenticated')::text,true);
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
@@ -108,6 +158,14 @@ select lives_ok($$update public.activity_definitions set description='internal e
 select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000022','aal','aal2','role','authenticated')::text,true);
 select lives_ok($$update public.activity_definitions set description='admin edit' where id='7a100000-0000-4000-8000-000000000010'$$,
  'different Admin updates a row without reattributing history');
+select lives_ok($$update public.activity_capability_policies
+ set reason='admin change',changed_by_person_id='7a100000-0000-4000-8000-000000000002'
+ where id='7a100000-0000-4000-8000-000000000014'$$,
+ 'change provenance is replaced by the person making the update');
+select throws_ok($$update public.activity_capability_policies
+ set changed_by_person_id='7a100000-0000-4000-8000-000000000001'
+ where id='7a100000-0000-4000-8000-000000000014'$$,
+ '42501','activity actor provenance denied','change provenance rejects a different person');
 select throws_ok($$update public.activity_definitions set created_by_person_id='7a100000-0000-4000-8000-000000000002' where id='7a100000-0000-4000-8000-000000000010'$$,
  '42501','activity actor provenance immutable','rewriting historical authorship is denied');
 select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4000-8000-000000000023','session_id','7a100000-0000-4000-8000-000000000024','aal','aal2','role','authenticated')::text,true);
@@ -118,6 +176,13 @@ select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
 select throws_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
  values('7a100000-0000-4000-8000-000000000012','7a100000-0000-4000-8000-000000000003','Forged marker','forged-marker','institution',null)$$,
  '42501','activity internal marker denied','forged marker permission is denied');
+select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
+ 'internal_identity_id','7a100000-0000-4000-8000-000000000025','internal_auth_link_id','7a100000-0000-4000-8000-000000000026',
+ 'internal_membership_id','7a100000-0000-4000-8000-000000000027','auth_user_id','7a100000-0000-4000-8000-000000000023',
+ 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','activities.manage','action_code',null)::text,true);
+select throws_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
+ values('7a100000-0000-4000-8000-000000000015','7a100000-0000-4000-8000-000000000003','Null action','null-action','institution',null)$$,
+ '42501','activity internal marker denied','marker action cannot be null');
 
 select * from finish();
 rollback;
