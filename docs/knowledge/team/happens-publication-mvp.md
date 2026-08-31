@@ -18,6 +18,10 @@ O composer do Acontece cria posts com até seis fotos ou vídeos, legenda, conte
 Como todo fluxo `Publicar` do Principal, usa shell, contêiner direito, insets e
 rodapé responsivo comuns. Desktop mantém Cancelar à esquerda e continuidade mais
 a primária à direita; compacto apresenta a primária primeiro em largura total.
+A proposta específica foi aprovada visualmente em 2026-08-31: mobile e tablet
+mantêm editor linear com mídia dominante, enquanto o desktop acrescenta prévia
+lateral. Shell, contêiner direito, raios, insets e gaps devem reproduzir a
+geometria canônica aprovada, sem aproximações de implementação.
 
 Autorização é server-side, deny-by-default, com versão otimista e capabilities `happens.posts.create` e `happens.posts.publish`. A mídia usa temporariamente Supabase Storage privado conforme ADR 0026; bucket público é proibido e a migração ao R2 deve ocorrer antes de piloto/produção.
 

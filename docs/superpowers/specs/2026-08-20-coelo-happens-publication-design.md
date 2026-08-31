@@ -13,7 +13,7 @@ Oferecer criação social segura de posts do Acontece com mídia dominante, lege
 
 ## Superfícies e responsividade
 
-A implementação executável fica no preview do Superadmin em `/dev/principal-happens/publish`. Em largura compacta, o composer é linear e a prévia permanece após os campos. No tablet, composer e prévia ficam lado a lado. No desktop, rail, composer central e prévia lateral reproduzem a anatomia canônica.
+A implementação executável fica no preview do Superadmin em `/dev/principal-happens/publish`. A proposta específica recebeu aprovação visual do Owner em 2026-08-31. Em largura compacta, o composer é linear e prioriza mídia, legenda, público e contexto. No tablet, o editor permanece linear e ganha respiro sem comprimir uma prévia concorrente. No desktop, rail, composer central e prévia lateral reproduzem a anatomia canônica.
 
 Todos os fluxos `Publicar` do Principal compartilham o contrato externo aprovado
 em 2026-08-31: shell e contêiner direito canônicos, insets tokenizados e rodapé
@@ -21,6 +21,10 @@ responsivo de Criar/Editar Instituição. No amplo, `Cancelar` fica à esquerda 
 rascunho/continuidade mais a única ação primária ficam à direita; no compacto, a
 primária vem primeiro em largura total. O conteúdo e o domínio continuam próprios
 do Acontece.
+
+Na execução, shell, contêiner direito, insets, raios e gaps devem reproduzir
+literalmente a geometria canônica já aprovada. Essa ressalva faz parte do aceite
+visual e não pode ser tratada como polimento posterior.
 
 ## Domínio e segurança
 

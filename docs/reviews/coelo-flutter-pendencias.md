@@ -2842,6 +2842,20 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Próximo gate | Prosseguir para o Item 27, conteúdo específico de Publicar no Acontece. |
 | Conhecimento capturado | Fonte canônica atualizada e projeção interna criada em `docs/knowledge/team/principal-now-viewer.md`. |
 
+## 16.81. V5.27 — Publicar no Acontece aprovado visualmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Composer específico do Acontece em 375, 768 e 1440 px. |
+| Decisão do Owner | Proposta aprovada com ressalva obrigatória sobre a fidelidade do shell, contêiner direito e seus espaçamentos. |
+| Responsividade | Mobile e tablet usam fluxo linear com mídia dominante, legenda, público/contexto e rodapé; desktop usa rail, editor central e prévia lateral. |
+| Rodapé | Reproduz Criar/Editar Instituição: compacto com ação primária primeiro; amplo com Cancelar à esquerda e Salvar rascunho/Publicar à direita. |
+| Evidências | `pilot-27-publish-happens-mobile.png`, `pilot-27-publish-happens-tablet.png` e `pilot-27-publish-happens-desktop.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`. |
+| Produção | Nenhum código produtivo foi alterado por esta aprovação. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para o Item 28, Para você. |
+| Conhecimento capturado | Fonte canônica e `docs/knowledge/team/happens-publication-mvp.md` atualizados. |
+
 ## 17. Histórico
 
 | Data | Mudança |

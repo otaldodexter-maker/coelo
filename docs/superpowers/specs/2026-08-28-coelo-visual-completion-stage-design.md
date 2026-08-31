@@ -271,6 +271,12 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     ser observável pela prévia do Superadmin. O Owner aprovou em 2026-08-31 que
     todos os fluxos `Publicar` compartilhem este contrato externo e o rodapé
     responsivo de Criar/Editar Instituição, adaptando apenas conteúdo e domínio.
+    A proposta específica do Acontece foi aprovada visualmente em 2026-08-31:
+    mobile e tablet usam fluxo editorial linear com mídia dominante; desktop usa
+    rail, editor central e prévia lateral. Na execução, shell, contêiner direito,
+    insets, raios e gaps devem reproduzir literalmente a geometria canônica já
+    aprovada, sem aproximações. O item permanece `visual-contract-approved` até
+    implementação e golden real aprovados.
 28. **Para você:** corrigir composição, imagens, respiro e responsividade dentro
     do contêiner amplo pela anatomia responsiva 375/768/1440 aprovada, sem
     alterar os textos editoriais aprovados.
