@@ -35,30 +35,34 @@ final class CommunicationTypeBadge extends StatelessWidget {
     };
     return Semantics(
       label: 'Tipo: ${type.label}${type == CommunicationType.notice ? ', popup' : ''}',
-      child: Container(
-        constraints: const BoxConstraints(minHeight: CoeloSpacing.space8),
-        padding: const EdgeInsets.symmetric(
-          horizontal: CoeloSpacing.space2,
-          vertical: CoeloSpacing.space1,
-        ),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(CoeloRadius.full),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: CoeloSize.iconSm, color: foreground),
-            const SizedBox(width: CoeloSpacing.space1),
-            Flexible(
-              child: Text(
-                type.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: foreground),
+      child: SizedBox(
+        key: Key('communication-type-badge-${type.storageValue}'),
+        width: 120,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: CoeloSpacing.space8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: CoeloSpacing.space2,
+            vertical: CoeloSpacing.space1,
+          ),
+          decoration: BoxDecoration(
+            color: background,
+            borderRadius: BorderRadius.circular(CoeloRadius.full),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: CoeloSize.iconSm, color: foreground),
+              const SizedBox(width: CoeloSpacing.space1),
+              Flexible(
+                child: Text(
+                  type.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: foreground),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

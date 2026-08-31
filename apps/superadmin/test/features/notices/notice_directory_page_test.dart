@@ -137,9 +137,7 @@ void main() {
 
     Widget app(NoticeRepository repository) => MaterialApp(
       theme: CoeloTheme.light,
-      home: Scaffold(
-        body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true),
-      ),
+      home: Scaffold(body: NoticeDirectoryPage(repository: repository, canManageLifecycle: true)),
     );
 
     await tester.pumpWidget(app(repositoryA));
@@ -233,6 +231,59 @@ void main() {
     expect(find.byType(CoeloAdminResizableTable<PlatformNotice>), findsOneWidget);
   });
 
+  testWidgets('matches the approved responsive creation contract without a view toggle', (
+    tester,
+  ) async {
+    final repository = _repository()..create(_draft(1));
+
+    await _pumpDirectory(
+      tester,
+      repository: repository,
+      onCreate: () {},
+      size: const Size(375, 800),
+    );
+    expect(find.byKey(const Key('create-notice-card')), findsOneWidget);
+    expect(find.byKey(const Key('create-notice-banner')), findsNothing);
+    expect(find.text('Cards'), findsNothing);
+    expect(find.text('Tabela'), findsNothing);
+
+    await _pumpDirectory(
+      tester,
+      repository: repository,
+      onCreate: () {},
+      size: const Size(768, 800),
+    );
+    expect(find.byKey(const Key('create-notice-card')), findsNothing);
+    expect(find.byKey(const Key('create-notice-banner')), findsOneWidget);
+    expect(find.text('Cards'), findsNothing);
+    expect(find.text('Tabela'), findsNothing);
+  });
+
+  testWidgets('uses the exact Institution table rhythm and uniform type badges', (tester) async {
+    final repository = _repository()
+      ..create(_draft(1, type: CommunicationType.notice))
+      ..create(_draft(2, type: CommunicationType.content))
+      ..create(_draft(3, type: CommunicationType.highlight))
+      ..create(_draft(4, type: CommunicationType.forYou));
+
+    await _pumpDirectory(tester, repository: repository, size: const Size(1440, 900));
+
+    final table = tester.widget<CoeloAdminResizableTable<PlatformNotice>>(
+      find.byType(CoeloAdminResizableTable<PlatformNotice>),
+    );
+    expect(table.headerHeight, 56);
+    expect(table.rowHeight, 64);
+
+    final badgeWidths = <double>[];
+    for (final type in CommunicationType.values) {
+      final box = tester.renderObject<RenderBox>(
+        find.byKey(Key('communication-type-badge-${type.storageValue}')),
+      );
+      badgeWidths.add(box.size.width);
+    }
+    expect(badgeWidths.toSet(), hasLength(1));
+  });
+
   testWidgets('shows a selectable right preview only when explicitly enabled', (tester) async {
     final repository = _repository()
       ..create(_draft(1, type: CommunicationType.content))
@@ -242,14 +293,15 @@ void main() {
       tester,
       repository: repository,
       inlinePreview: true,
-      size: const Size(1024, 900),
+      size: const Size(1440, 900),
     );
     await tester.tap(find.text('Conteúdos').first);
     await tester.pump();
 
     expect(find.byKey(const Key('notice-directory-inline-preview')), findsOneWidget);
-    expect(find.byType(NoticePopupPreview), findsOneWidget);
-    expect(find.text('Prévia no app'), findsOneWidget);
+    expect(find.byType(CommunicationPreviewCard), findsOneWidget);
+    expect(find.byType(NoticePopupPreview), findsNothing);
+    expect(find.text('Prévia administrativa'), findsWidgets);
     expect(find.text('Aviso 2'), findsWidgets);
 
     await tester.tap(find.text('Aviso 1').first);
@@ -270,7 +322,7 @@ void main() {
       tester,
       repository: repository,
       inlinePreview: true,
-      size: const Size(768, 900),
+      size: const Size(1024, 900),
     );
     await tester.tap(find.text('Conteúdos').first);
     await tester.pump();
@@ -307,14 +359,43 @@ void main() {
 
     var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
     expect(pagination.currentPage, 1);
-    expect(pagination.pageSize, 24);
-    expect(pagination.pageSizeOptions, const [12, 24, 48]);
+    expect(pagination.pageSize, 8);
+    expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
 
     pagination.onNext?.call();
     await tester.pump();
     pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
     expect(pagination.currentPage, 2);
     expect(find.byType(CoeloAdminPagination), findsOneWidget);
+  });
+
+  testWidgets('uses the literal Institutions page sizes for cards and table', (tester) async {
+    final compactRepository = _repository(extraNotices: 25);
+    await _pumpDirectory(tester, repository: compactRepository, size: const Size(375, 900));
+    var pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    expect(pagination.pageSize, 11);
+    expect(pagination.pageSizeOptions, const [11, 20, 50, 100]);
+
+    final tableRepository = _repository(extraNotices: 25);
+    await _pumpDirectory(tester, repository: tableRepository, size: const Size(768, 900));
+    pagination = tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination));
+    expect(pagination.pageSize, 8);
+    expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
+  });
+
+  testWidgets('keeps tabular cells on one line at 200 percent text', (tester) async {
+    final repository = _repository()..create(_draft(1));
+    await _pumpDirectory(
+      tester,
+      repository: repository,
+      size: const Size(1440, 1000),
+      textScaler: const TextScaler.linear(2),
+    );
+
+    final validity = tester.widget<Text>(find.textContaining('Desde ').first);
+    expect(validity.maxLines, 1);
+    expect(validity.overflow, TextOverflow.ellipsis);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('requires an audit reason before inactivating a notice', (tester) async {
@@ -359,6 +440,8 @@ void main() {
 
     expect(find.text('Nenhuma comunicação'), findsOneWidget);
     expect(find.text('Nova comunicação'), findsOneWidget);
+    expect(find.byKey(const Key('create-notice-banner')), findsOneWidget);
+    expect(find.byKey(const Key('create-notice-card')), findsNothing);
 
     await tester.enterText(find.byType(EditableText).first, 'sem correspondência');
     await tester.pump(const Duration(milliseconds: 350));
@@ -366,6 +449,19 @@ void main() {
 
     expect(find.text('Nenhum resultado'), findsOneWidget);
     expect(find.text('Nova comunicação'), findsOneWidget);
+    expect(find.byKey(const Key('create-notice-banner')), findsOneWidget);
+  });
+
+  testWidgets('uses the canonical creation tile in compact empty state', (tester) async {
+    await _pumpDirectory(
+      tester,
+      repository: _repository(),
+      onCreate: () {},
+      size: const Size(375, 812),
+    );
+
+    expect(find.byKey(const Key('create-notice-card')), findsOneWidget);
+    expect(find.byKey(const Key('create-notice-banner')), findsNothing);
   });
 
   testWidgets('keeps creation and retry actions when loading fails', (tester) async {
@@ -375,6 +471,7 @@ void main() {
     expect(find.text('Não foi possível carregar'), findsOneWidget);
     expect(find.text('Nova comunicação'), findsOneWidget);
     expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byKey(const Key('create-notice-banner')), findsOneWidget);
 
     await tester.tap(find.text('Tentar novamente'));
     await tester.pump();
@@ -417,6 +514,7 @@ Future<void> _pumpDirectory(
   ValueChanged<String>? onEdit,
   bool inlinePreview = false,
   Size size = const Size(1440, 900),
+  TextScaler textScaler = TextScaler.noScaling,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
@@ -424,6 +522,10 @@ Future<void> _pumpDirectory(
   await tester.pumpWidget(
     MaterialApp(
       theme: CoeloTheme.light,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+        child: child!,
+      ),
       home: Scaffold(
         body: NoticeDirectoryPage(
           repository: repository,

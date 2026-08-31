@@ -94,7 +94,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   final Map<String, String> _actionRequestIds = {};
   final Set<(NavigatorState, Route<dynamic>)> _ownedOverlays = {};
   int _page = 1;
-  int _pageSize = 24;
+  int _pageSize = 8;
+  bool? _compactPagination;
   List<PlatformNotice> _items = const [];
   final List<(DateTime?, String?)> _cursorHistory = [];
   DateTime? _nextCursorOccurredAt;
@@ -109,6 +110,15 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final compact = MediaQuery.sizeOf(context).width < CoeloBreakpoints.medium.minWidth;
+    if (_compactPagination == compact) return;
+    _compactPagination = compact;
+    _pageSize = compact ? 11 : 8;
     _load(reset: true);
   }
 
@@ -125,7 +135,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     _typeFilter = _CommunicationTypeFilter.all;
     _actionRequestIds.clear();
     _page = 1;
-    _pageSize = 24;
+    _pageSize = _compactPagination == true ? 11 : 8;
     _items = const [];
     _cursorHistory.clear();
     _nextCursorOccurredAt = null;
@@ -212,8 +222,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                       child: _content(
                         context,
                         compact: compact,
-                        allowInlinePreview:
-                            constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth,
+                        allowInlinePreview: constraints.maxWidth >= CoeloBreakpoints.large.minWidth,
                         all: all,
                         notices: notices,
                       ),
@@ -230,7 +239,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
                   currentPage: _page,
                   totalPages: totalPages,
                   pageSize: _pageSize,
-                  pageSizeOptions: const [12, 24, 48],
+                  pageSizeOptions: compact ? const [11, 20, 50, 100] : const [8, 20, 50, 100],
                   onPrevious: _page > 1 ? _previousPage : null,
                   onNext: _nextCursorId != null ? _nextPage : null,
                   onPageSelected: null,
@@ -365,7 +374,10 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Prévia no app', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            notice.isPopup ? 'Prévia no app' : 'Prévia administrativa',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: CoeloSpacing.space1),
           Text(
             '${notice.type.label} · ${notice.targetDevice.label}',
@@ -373,12 +385,14 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
           ),
           const SizedBox(height: CoeloSpacing.space4),
           Expanded(
-            child: NoticePopupPreview(
-              notice: notice,
-              device: NoticeTargetDevice.mobile,
-              checkboxChecked: false,
-              onCheckboxChanged: null,
-            ),
+            child: notice.isPopup
+                ? NoticePopupPreview(
+                    notice: notice,
+                    device: NoticeTargetDevice.mobile,
+                    checkboxChecked: false,
+                    onCheckboxChanged: null,
+                  )
+                : SingleChildScrollView(child: CommunicationPreviewCard(notice: notice)),
           ),
         ],
       ),
@@ -391,8 +405,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }
 
   Widget _stateWithCreate({required bool compact, required Widget state}) {
-    final children = <Widget>[if (widget.onCreate != null) _createAction(), state];
     if (compact) {
+      final children = <Widget>[if (widget.onCreate != null) _createAction(), state];
       return ListView.separated(
         key: const Key('notice-directory-state-list'),
         itemCount: children.length,
@@ -400,16 +414,15 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         itemBuilder: (_, index) => children[index],
       );
     }
-    return GridView.builder(
-      key: const Key('notice-directory-state-grid'),
-      itemCount: children.length,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 420,
-        mainAxisExtent: 280,
-        mainAxisSpacing: CoeloSpacing.space6,
-        crossAxisSpacing: CoeloSpacing.space6,
-      ),
-      itemBuilder: (_, index) => children[index],
+    return Column(
+      key: const Key('notice-directory-state-wide'),
+      children: [
+        if (widget.onCreate != null) ...[
+          _createBannerAction(),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
+        Expanded(child: state),
+      ],
     );
   }
 
@@ -422,6 +435,15 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       icon: Icons.post_add_rounded,
       onPressed: widget.onCreate,
     ),
+  );
+
+  Widget _createBannerAction() => CoeloAdminCreateAction(
+    key: const Key('create-notice-banner'),
+    label: 'Nova comunicação',
+    description: 'Criar aviso, conteúdo, destaque ou item Para você.',
+    icon: Icons.post_add_rounded,
+    variant: CoeloAdminCreateActionVariant.banner,
+    onPressed: widget.onCreate,
   );
 
   Widget _cards(
@@ -461,14 +483,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   }) => Column(
     children: [
       if (widget.onCreate != null) ...[
-        CoeloAdminCreateAction(
-          key: const Key('create-notice-banner'),
-          label: 'Nova comunicação',
-          description: 'Criar aviso, conteúdo, destaque ou item Para você.',
-          icon: Icons.post_add_rounded,
-          variant: CoeloAdminCreateActionVariant.banner,
-          onPressed: widget.onCreate,
-        ),
+        _createBannerAction(),
         const SizedBox(height: CoeloSpacing.space4),
       ],
       Expanded(
@@ -485,19 +500,27 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
               initialWidth: 280,
               minWidth: 220,
               maxWidth: 420,
-              cellBuilder: (_, notice) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(notice.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Text(
-                    notice.message,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
+              cellBuilder: (cellContext, notice) {
+                final showsSummary = MediaQuery.textScalerOf(cellContext).scale(1) < 1.5;
+                return Semantics(
+                  label: '${notice.title}. ${notice.message}',
+                  excludeSemantics: true,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(notice.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      if (showsSummary)
+                        Text(
+                          notice.message,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(cellContext).textTheme.bodySmall,
+                        ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
             columns: [
               CoeloAdminTableColumn(
@@ -540,7 +563,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
               ),
             ],
             headerHeight: 56,
-            rowHeight: 72,
+            rowHeight: 64,
             onRowPressed:
                 onSelected ??
                 (widget.onEdit == null ? null : (notice) => widget.onEdit!(notice.id)),
@@ -561,7 +584,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     initialWidth: width,
     minWidth: width - 30,
     maxWidth: width + 100,
-    cellBuilder: (_, notice) => Text(value(notice), maxLines: 2, overflow: TextOverflow.ellipsis),
+    cellBuilder: (_, notice) => Text(value(notice), maxLines: 1, overflow: TextOverflow.ellipsis),
   );
 
   Widget _noticeCard(BuildContext context, PlatformNotice notice) {
