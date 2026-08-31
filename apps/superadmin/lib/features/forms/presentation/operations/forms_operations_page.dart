@@ -392,8 +392,38 @@ final class _Answer extends StatelessWidget {
   );
 }
 
-final class _FilesContent extends StatelessWidget {
+final class _FilesContent extends StatefulWidget {
   const _FilesContent();
+
+  @override
+  State<_FilesContent> createState() => _FilesContentState();
+}
+
+final class _FilesContentState extends State<_FilesContent> {
+  bool _assetPresent = true;
+  bool _accessExpired = false;
+
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => CoeloAdminDialogShell(
+        title: 'Excluir arquivo protegido?',
+        closeTooltip: 'Fechar confirmação',
+        body: const Text(
+          'O arquivo deixará de aparecer após o recarregamento. Esta demonstração altera apenas a fixture local.',
+        ),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancelar'),
+        ),
+        primaryAction: FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Excluir arquivo'),
+        ),
+      ),
+    );
+    if (confirmed == true && mounted) setState(() => _assetPresent = false);
+  }
 
   @override
   Widget build(BuildContext context) => Column(
@@ -425,6 +455,56 @@ final class _FilesContent extends StatelessWidget {
           ),
         ),
       ),
+      const SizedBox(height: CoeloSpacing.space4),
+      if (_assetPresent)
+        CoeloAdminInteractiveCard(
+          semanticLabel: 'Arquivo protegido autorização passeio',
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('autorizacao-passeio.pdf', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  _accessExpired
+                      ? 'Acesso temporário expirado'
+                      : 'Disponível por acesso temporário',
+                ),
+                const SizedBox(height: CoeloSpacing.space2),
+                Wrap(
+                  spacing: CoeloSpacing.space2,
+                  runSpacing: CoeloSpacing.space2,
+                  children: [
+                    OutlinedButton(
+                      onPressed: _accessExpired ? null : () {},
+                      child: const Text('Abrir temporariamente'),
+                    ),
+                    OutlinedButton(
+                      onPressed: _accessExpired
+                          ? null
+                          : () => setState(() => _accessExpired = true),
+                      child: const Text('Expirar acesso'),
+                    ),
+                    TextButton(
+                      onPressed: _confirmDelete,
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                      child: const Text('Excluir arquivo'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      else
+        const CoeloStatePanel(
+          key: Key('forms-file-absent-after-reload'),
+          icon: Icons.delete_outline_rounded,
+          title: 'Arquivo ausente após reload',
+          message: 'A fixture local representa a exclusão sem afirmar persistência remota.',
+        ),
       const SizedBox(height: CoeloSpacing.space4),
       Wrap(
         spacing: CoeloSpacing.space2,
