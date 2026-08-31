@@ -9,7 +9,7 @@ generated_at: "2026-08-31"
 
 ## Resultado e limites
 
-Concluir e verificar as correções Flutter locais seguras das 44 ações pedidas,
+Concluir e verificar as correções Flutter locais seguras das 24 ações ativas,
 preservando fail-closed, estados de decisão e limites de backend. O trabalho
 ocorre exclusivamente no worktree `operations-completion`; não faz merge no
 checkout principal e não altera as seções V4.19–V5.31 do rastreador.
@@ -19,6 +19,23 @@ Agenda/Eventos permanece somente em auditoria documental enquanto
 Unidades, integração Supabase, Storage, RLS, remoto e E2E não são promovidos
 sem evidência própria. Formulários que compartilhem arquivos modificados no
 checkout principal são registrados para reconciliação, não sobrescritos.
+
+## Manifesto do recorte ativo — 24 ações
+
+- Pessoas: `people.list`, `people.create`, `people.edit`, `people.links`,
+  `people.reload`.
+- Unidades: `units.list`, `units.filter`, `units.create`, `units.edit`,
+  `units.status`, `units.error`, `units.access-denied`, `units.reload`.
+- Assiduidade e chamada: `attendance.dashboard`, `attendance.create`,
+  `attendance.mark`, `attendance.correct`, `attendance.finish`,
+  `attendance.export`.
+- Rotina Diária: `daily-routine.list`, `daily-routine.create`,
+  `daily-routine.edit`, `daily-routine.apply`, `daily-routine.publish`.
+
+As 20 ações originalmente inventariadas de Formulários, Respostas, Arquivos de
+Formulários, Agenda e Eventos foram retiradas do ownership de implementação
+pelo Owner. Seus inventários permanecem somente como handoff read-only, sem
+delta, testes adicionais, golden atualizado, commit ou promoção de estado.
 
 ## Ownership paralelo
 

@@ -12,7 +12,7 @@ import '../../support/fake_attendance_repository.dart';
 void main() {
   setUpAll(_loadGoldenFonts);
 
-  testWidgets('matches the new attendance call references', (tester) async {
+  testWidgets('matches the new attendance call context reference', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
@@ -37,29 +37,40 @@ void main() {
       find.byKey(const Key('attendance-golden-root')),
       matchesGoldenFile('goldens/attendance_new_call_context_light_375.png'),
     );
-
-    final callRepository = FakeAttendanceRepository.seeded();
-    addTearDown(callRepository.dispose);
-    tester.view.physicalSize = const Size(1440, 900);
-    await tester.pumpWidget(
-      _goldenApp(
-        AttendanceCallPage(
-          repository: callRepository,
-          callId: 'call-progress',
-          permissions: const AttendancePermissions.owner(),
-          logout: unavailableSuperadminLogout,
-          onBack: () {},
-          today: FakeAttendanceRepository.today,
-        ),
-        brightness: Brightness.dark,
-      ),
-    );
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byKey(const Key('attendance-golden-root')),
-      matchesGoldenFile('goldens/attendance_new_call_marking_dark_1440.png'),
-    );
   });
+
+  testWidgets(
+    'matches the new attendance call marking reference',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final callRepository = FakeAttendanceRepository.seeded();
+      addTearDown(callRepository.dispose);
+      tester.view.physicalSize = const Size(1440, 900);
+      await tester.pumpWidget(
+        _goldenApp(
+          AttendanceCallPage(
+            repository: callRepository,
+            callId: 'call-progress',
+            permissions: const AttendancePermissions.owner(),
+            logout: unavailableSuperadminLogout,
+            onBack: () {},
+            today: FakeAttendanceRepository.today,
+          ),
+          brightness: Brightness.dark,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byKey(const Key('attendance-golden-root')),
+        matchesGoldenFile('goldens/attendance_new_call_marking_dark_1440.png'),
+      );
+    },
+    // The checked-in reference uses the Windows Segoe UI Emoji renderer.
+    skip: !Platform.isWindows,
+  );
 }
 
 Widget _goldenApp(Widget child, {Brightness brightness = Brightness.light}) => MaterialApp(
@@ -91,8 +102,11 @@ Future<void> _loadGoldenFonts() async {
     ..addFont(Future.value(ByteData.sublistView(materialIcons)));
   await materialIconsLoader.load();
 
-  final emojiFont = File(r'C:\Windows\Fonts\seguiemj.ttf');
-  if (Platform.isWindows && emojiFont.existsSync()) {
+  final windowsDirectory = Platform.environment['WINDIR'];
+  final emojiFont = windowsDirectory == null
+      ? null
+      : File('$windowsDirectory\\Fonts\\seguiemj.ttf');
+  if (Platform.isWindows && emojiFont != null && emojiFont.existsSync()) {
     final emojiFontLoader = FontLoader('Segoe UI Emoji')
       ..addFont(Future.value(ByteData.sublistView(emojiFont.readAsBytesSync())));
     await emojiFontLoader.load();
