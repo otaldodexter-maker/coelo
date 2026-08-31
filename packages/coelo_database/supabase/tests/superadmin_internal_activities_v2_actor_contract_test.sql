@@ -149,7 +149,7 @@ select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
  'internal_identity_id','7a100000-0000-4000-8000-000000000025','internal_auth_link_id','7a100000-0000-4000-8000-000000000026',
  'internal_membership_id','7a100000-0000-4000-8000-000000000027','auth_user_id','7a100000-0000-4000-8000-000000000023',
- 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','activities.manage','action_code','manage')::text,true);
+ 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','activities.manage','action_code','manage','correlation_id',gen_random_uuid())::text,true);
 select lives_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
  values('7a100000-0000-4000-8000-000000000011','7a100000-0000-4000-8000-000000000003','Internal provenance','internal-provenance','institution',null)$$,
  'real internal marker accepts an allowlisted action');
@@ -172,14 +172,14 @@ select set_config('request.jwt.claims',jsonb_build_object('sub','7a100000-0000-4
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
  'internal_identity_id','7a100000-0000-4000-8000-000000000025','internal_auth_link_id','7a100000-0000-4000-8000-000000000026',
  'internal_membership_id','7a100000-0000-4000-8000-000000000027','auth_user_id','7a100000-0000-4000-8000-000000000023',
- 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','platform.read','action_code','manage')::text,true);
+ 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','platform.read','action_code','manage','correlation_id',gen_random_uuid())::text,true);
 select throws_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
  values('7a100000-0000-4000-8000-000000000012','7a100000-0000-4000-8000-000000000003','Forged marker','forged-marker','institution',null)$$,
  '42501','activity internal marker denied','forged marker permission is denied');
 select set_config('app_private.activity_v2_internal_marker',jsonb_build_object(
  'internal_identity_id','7a100000-0000-4000-8000-000000000025','internal_auth_link_id','7a100000-0000-4000-8000-000000000026',
  'internal_membership_id','7a100000-0000-4000-8000-000000000027','auth_user_id','7a100000-0000-4000-8000-000000000023',
- 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','activities.manage','action_code',null)::text,true);
+ 'session_id','7a100000-0000-4000-8000-000000000024','permission_code','activities.manage','action_code',null,'correlation_id',gen_random_uuid())::text,true);
 select throws_ok($$insert into public.activity_definitions(id,institution_id,name,handle_stem,origin_scope_kind,created_by_person_id)
  values('7a100000-0000-4000-8000-000000000015','7a100000-0000-4000-8000-000000000003','Null action','null-action','institution',null)$$,
  '42501','activity internal marker denied','marker action cannot be null');
