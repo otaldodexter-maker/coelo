@@ -1246,3 +1246,11 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
 - Não houve implementação produtiva, backend, remoto ou E2E. Flutter
   `verified` permanece 0,00% (0/207), E2E 0,00% (0/202) e Supabase `done`
   permanece 0,00% (0/37).
+
+### Checkpoint integrado 59 - composer aprovado e worktree encerrada
+
+- O contrato visual do composer Acontece foi integrado por fast-forward após
+  validação documental. O protótipo seguinte, sem aprovação, não entrou em Git.
+- A branch/worktree temporária do handoff foi removida após prova de
+  ancestralidade. Não houve código produtivo, backend, remoto ou E2E; os
+  percentuais `verified` e `done` permanecem inalterados.

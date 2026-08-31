@@ -152,3 +152,10 @@ removidas. O checkpoint documental foi preservado, validado e commitado em
 `.codex-tmp` durante o turno ativo e foi removido pela própria tarefa ao
 encerrar; não havia decisão aprovada ou fonte canônica nova a integrar. O
 workspace voltou a ficar limpo antes deste fechamento.
+
+O Item 27 já estava aprovado quando a tarefa iniciou o protótipo não aprovado
+do Item 28. Um handoff isolou o estado em `codex/executar-etapa-visual-v1`; o
+HTML temporário do Item 28 foi removido, as quatro fontes aprovadas passaram nos
+dois validadores de conhecimento e foram commitadas como `1ba6c241`. `dev`
+avançou por fast-forward, a branch era ancestral e a worktree Codex foi removida
+limpa. Nenhum protótipo não aprovado entrou em Git.
