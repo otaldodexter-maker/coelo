@@ -446,61 +446,64 @@ final class _AgendaDayCell extends StatelessWidget {
       button: true,
       selected: selected,
       label: '${day.day} de ${_monthName(day.month)}, ${occurrences.length} eventos',
-      child: InkWell(
-        key: Key('agenda-day-${_isoDate(day)}'),
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(CoeloRadius.md),
-        child: Container(
-          margin: const EdgeInsets.all(CoeloSpacing.spaceHalf),
-          padding: const EdgeInsets.all(CoeloSpacing.space1),
-          decoration: BoxDecoration(
-            color: selected ? colors.primaryContainer : colors.surface,
-            border: Border.all(color: colors.outlineVariant),
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.spaceHalf),
+        child: TextButton(
+          key: Key('agenda-day-${_isoDate(day)}'),
+          onPressed: onPressed,
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            backgroundColor: selected ? colors.primaryContainer : colors.surface,
+            foregroundColor: colors.onSurface,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+            side: BorderSide(color: colors.outlineVariant),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${day.day}',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: inMonth ? colors.onSurface : colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: CoeloSpacing.spaceHalf),
-              for (final occurrence in occurrences.take(largeText ? 1 : 2))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: CoeloSpacing.spaceHalf),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: _eventColor(colors, occurrence.item.prominence),
-                      borderRadius: BorderRadius.circular(CoeloRadius.sm),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                      child: largeText
-                          ? SizedBox.square(
-                              dimension: 8,
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: colors.onSurfaceVariant,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            )
-                          : Text(
-                              occurrence.item.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelSmall,
-                            ),
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${day.day}',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: inMonth ? colors.onSurface : colors.onSurfaceVariant,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-              if (!largeText && occurrences.length > 2)
-                Text('+${occurrences.length - 2}', style: Theme.of(context).textTheme.labelSmall),
-            ],
+                const SizedBox(height: CoeloSpacing.spaceHalf),
+                for (final occurrence in occurrences.take(largeText ? 1 : 2))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: CoeloSpacing.spaceHalf),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: _eventColor(colors, occurrence.item.prominence),
+                        borderRadius: BorderRadius.circular(CoeloRadius.sm),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: largeText
+                            ? SizedBox.square(
+                                dimension: 8,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: colors.onSurfaceVariant,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                occurrence.item.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.labelSmall,
+                              ),
+                      ),
+                    ),
+                  ),
+                if (!largeText && occurrences.length > 2)
+                  Text('+${occurrences.length - 2}', style: Theme.of(context).textTheme.labelSmall),
+              ],
+            ),
           ),
         ),
       ),
