@@ -111,6 +111,24 @@ Supabase CLI 2.116.0 validado neste historico. Exemplo:
   -TargetVersion 20260812001975
 ```
 
+Quando o objetivo for somente a fundacao interna aprovada, use
+`-FoundationOnly`. Esse perfil inclui a base ate `20260812001975` e os
+hardenings/Auth/RPCs internos a partir de `20260827214000`; migrations
+intermediarias de produtos fora do recorte permanecem no replay integral e nao
+sao mascaradas. `-TestPath` aceita somente arquivos abaixo de
+`supabase/tests` e executa pgTAP antes do teardown:
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260831130726 `
+  -FoundationOnly `
+  -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql
+```
+
+Adicione `-RunLint` para executar `supabase db lint --local` no mesmo banco
+descartavel antes do teardown. Erros fazem o wrapper falhar; warnings ficam
+visiveis para classificacao do delta.
+
 Nunca use
 `Prepare-SafeMigrationReplay.ps1` diretamente em operacoes normais, nem use o
 staging com `db push`, `migration repair` ou qualquer comando remoto. As

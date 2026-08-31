@@ -2,7 +2,9 @@
 param(
   [Parameter(Mandatory = $true)]
   [ValidateNotNullOrEmpty()]
-  [string]$DestinationMigrationsRoot
+  [string]$DestinationMigrationsRoot,
+
+  [switch]$FoundationOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -36,9 +38,15 @@ if (@(Get-ChildItem -LiteralPath $destinationFull -Force).Count -ne 0) {
 
 $canonical = @(Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' | Sort-Object Name)
 $preflight = @(Get-ChildItem -LiteralPath $preflightFull -File -Filter '*.sql' | Sort-Object Name)
+if ($FoundationOnly) {
+  $canonical = @($canonical | Where-Object {
+    $_.Name -lt '20260812002000_' -or $_.Name -ge '20260827214000_'
+  })
+}
 if ($canonical.Count -eq 0 -or
-    $preflight.Count -ne 1 -or
-    $preflight[0].Name -ne '20260811151253_assert_function_execute_preflight.sql') {
+    $preflight.Count -ne 2 -or
+    $preflight[0].Name -ne '20260811151253_assert_function_execute_preflight.sql' -or
+    $preflight[1].Name -ne '20260811215452_access_profile_labels_replay_bridge.sql') {
   throw "unexpected replay inputs: canonical=$($canonical.Count) preflight=$($preflight.Count)"
 }
 
@@ -58,6 +66,13 @@ if ($preflightIndex -lt 0 -or
     $combined[$preflightIndex + 1].Name -ne '20260811151254_group_management_security.sql') {
   throw 'safe replay preflight must be immediately before the historical Groups migration'
 }
+$labelBridgeIndex = [Array]::IndexOf(@($combined.Name), $preflight[1].Name)
+if ($labelBridgeIndex -lt 1 -or
+    $combined[$labelBridgeIndex - 1].Name -ne '20260811215451_access_profile_management_v2.sql' -or
+    $labelBridgeIndex + 1 -ge $combined.Count -or
+    $combined[$labelBridgeIndex + 1].Name -ne '20260811225000_activity_professional_search.sql') {
+  throw 'label replay bridge must immediately follow access-profile management v2'
+}
 
 foreach ($source in @($canonical) + @($preflight)) {
   $sourceFull = [IO.Path]::GetFullPath($source.FullName)
@@ -74,5 +89,8 @@ if ($generated.Count -ne ($canonical.Count + $preflight.Count)) {
   throw 'generated safe replay migration count mismatch'
 }
 
-$preflightHash = (Get-FileHash -LiteralPath $preflight[0].FullName -Algorithm SHA256).Hash
-"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); preflight_sha256=$preflightHash."
+$preflightHashes = @($preflight | ForEach-Object {
+  "$(($_.BaseName))=$((Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash)"
+}) -join ','
+$profile = if ($FoundationOnly) { 'foundation' } else { 'full' }
+"Prepared $($generated.Count) safe replay migrations ($($canonical.Count) canonical + $($preflight.Count) preflight); profile=$profile; preflight_sha256=$preflightHashes."

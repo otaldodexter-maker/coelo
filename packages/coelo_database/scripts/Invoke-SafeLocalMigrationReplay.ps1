@@ -2,7 +2,13 @@
 param(
   [Parameter(Mandatory = $true)]
   [ValidatePattern('^\d{14}$')]
-  [string]$TargetVersion
+  [string]$TargetVersion,
+
+  [switch]$FoundationOnly,
+
+  [string[]]$TestPath = @(),
+
+  [switch]$RunLint
 )
 
 $ErrorActionPreference = 'Stop'
@@ -11,6 +17,7 @@ $packageRoot = Split-Path -Parent $scriptRoot
 $repositoryRoot = Split-Path -Parent (Split-Path -Parent $packageRoot)
 $repositoryFull = [IO.Path]::GetFullPath($repositoryRoot)
 $canonicalConfig = Join-Path $packageRoot 'supabase\config.toml'
+$canonicalTestsRoot = [IO.Path]::GetFullPath((Join-Path $packageRoot 'supabase\tests'))
 $targetMigration = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot 'migrations') -File -Filter "$TargetVersion`_*.sql")
 $tempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
 $projectId = 'coelo_safe_' + [guid]::NewGuid().ToString('N')
@@ -73,6 +80,16 @@ if ($targetMigration.Count -ne 1) {
 if (-not (Test-Path -LiteralPath $canonicalConfig -PathType Leaf)) {
   throw 'canonical Supabase config is missing'
 }
+$resolvedTestPaths = @($TestPath | ForEach-Object {
+  $resolved = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $_ -ErrorAction Stop).Path)
+  if (-not $resolved.StartsWith(
+      $canonicalTestsRoot.TrimEnd('\') + '\',
+      [StringComparison]::OrdinalIgnoreCase
+    ) -or -not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+    throw "test path must be a file below canonical Supabase tests: $resolved"
+  }
+  $resolved
+})
 Assert-NoReparseAncestors $tempRoot
 if ($projectRoot -eq $repositoryFull -or
     $projectRoot.StartsWith($repositoryFull.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
@@ -131,9 +148,19 @@ try {
   & npx.cmd --yes $cliPackage start --workdir $projectRoot --exclude $databaseOnlyExcludes *> $null
   if ($LASTEXITCODE -ne 0) { throw "supabase start failed with exit code $LASTEXITCODE" }
 
-  & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') -DestinationMigrationsRoot $migrationRoot
+  & (Join-Path $scriptRoot 'Prepare-SafeMigrationReplay.ps1') `
+    -DestinationMigrationsRoot $migrationRoot `
+    -FoundationOnly:$FoundationOnly
   & npx.cmd --yes $cliPackage db reset --local --no-seed --version $TargetVersion --workdir $projectRoot --yes
   if ($LASTEXITCODE -ne 0) { throw "safe local db reset failed with exit code $LASTEXITCODE" }
+  if ($resolvedTestPaths.Count -gt 0) {
+    & npx.cmd --yes $cliPackage test db --local @resolvedTestPaths --workdir $projectRoot
+    if ($LASTEXITCODE -ne 0) { throw "safe local pgTAP failed with exit code $LASTEXITCODE" }
+  }
+  if ($RunLint) {
+    & npx.cmd --yes $cliPackage db lint --local --level warning --fail-on error --workdir $projectRoot
+    if ($LASTEXITCODE -ne 0) { throw "safe local database lint failed with exit code $LASTEXITCODE" }
+  }
 }
 catch {
   $primaryFailure = $_.Exception
