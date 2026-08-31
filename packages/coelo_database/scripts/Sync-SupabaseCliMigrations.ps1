@@ -14,6 +14,24 @@ $packageFull = [System.IO.Path]::GetFullPath($packageRoot)
 $canonicalFull = [System.IO.Path]::GetFullPath($canonicalRoot)
 $mirrorFull = [System.IO.Path]::GetFullPath($mirrorRoot)
 
+function Assert-NoReparseAncestors([string]$Path) {
+  $cursorPath = [IO.Path]::GetFullPath($Path)
+  while (-not (Test-Path -LiteralPath $cursorPath)) {
+    $parentPath = [IO.Path]::GetDirectoryName($cursorPath)
+    if ([string]::IsNullOrEmpty($parentPath) -or $parentPath -eq $cursorPath) {
+      throw "migration mirror has no existing safe ancestor: $Path"
+    }
+    $cursorPath = $parentPath
+  }
+  $cursor = Get-Item -LiteralPath $cursorPath -Force -ErrorAction Stop
+  while ($null -ne $cursor) {
+    if (($cursor.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+      throw "migration mirror path contains a reparse point: $($cursor.FullName)"
+    }
+    $cursor = $cursor.Parent
+  }
+}
+
 if (-not $canonicalFull.StartsWith($packageFull, [System.StringComparison]::OrdinalIgnoreCase)) {
   throw 'canonical migration directory escaped package root'
 }
@@ -21,7 +39,9 @@ if (-not $mirrorFull.StartsWith($packageFull, [System.StringComparison]::Ordinal
   throw 'CLI mirror directory escaped package root'
 }
 
+Assert-NoReparseAncestors $mirrorFull
 New-Item -ItemType Directory -Path $mirrorFull -Force | Out-Null
+Assert-NoReparseAncestors $mirrorFull
 
 $canonical = @(
   Get-ChildItem -LiteralPath $canonicalFull -File -Filter '*.sql' |

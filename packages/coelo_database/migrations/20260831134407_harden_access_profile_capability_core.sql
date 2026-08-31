@@ -42,6 +42,10 @@ begin
   ) or exists (
     select 1
     from public.institution_member_permission_overrides override_record
+    where override_record.scope_id = '00000000-0000-0000-0000-000000000000'::uuid
+  ) or exists (
+    select 1
+    from public.institution_member_permission_overrides override_record
     where override_record.status='active' and override_record.revoked_at is null
     group by override_record.membership_id, override_record.permission_code,
       override_record.scope_kind,
@@ -63,6 +67,43 @@ create unique index institution_member_permission_overrides_active_scope_uidx
     coalesce(scope_id, '00000000-0000-0000-0000-000000000000'::uuid)
   )
   where status='active' and revoked_at is null;
+
+alter table public.institution_member_permission_overrides
+  add constraint institution_member_permission_overrides_nonzero_scope_check
+  check (
+    scope_id is null
+    or scope_id <> '00000000-0000-0000-0000-000000000000'::uuid
+  );
+
+create or replace function app_private.resolve_institution_assignment_override_effect(
+  p_membership_id uuid,
+  p_permission_code text,
+  p_scope_kind text,
+  p_scope_unit_id uuid,
+  p_scope_group_id uuid
+)
+returns public.permission_effect
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select case
+    when bool_or(override_record.effect = 'deny') then 'deny'::public.permission_effect
+    when bool_or(override_record.effect = 'allow') then 'allow'::public.permission_effect
+    else null
+  end
+  from public.institution_member_permission_overrides override_record
+  where override_record.membership_id = p_membership_id
+    and override_record.permission_code = p_permission_code
+    and override_record.scope_kind = p_scope_kind
+    and override_record.scope_unit_id is not distinct from p_scope_unit_id
+    and override_record.scope_group_id is not distinct from p_scope_group_id
+    and override_record.status = 'active'
+    and override_record.revoked_at is null
+    and (override_record.starts_at is null or override_record.starts_at <= now())
+    and (override_record.expires_at is null or override_record.expires_at > now())
+$$;
 
 create or replace function app_private.superadmin_access_profile_capability_catalog(
   p_domain text,p_profile_id uuid default null,p_assignment_id uuid default null
@@ -123,17 +164,13 @@ begin
       and profile_grant.permission_id=permission_record.id and profile_grant.status='active' and profile_grant.revoked_at is null
     left join public.institution_role_assignments assignment on assignment.id=p_assignment_id
     left join lateral (
-      select case
-        when bool_or(override_record.effect='deny') then 'deny'::public.permission_effect
-        when bool_or(override_record.effect='allow') then 'allow'::public.permission_effect
-        else null
-      end as effect
-      from public.institution_member_permission_overrides override_record
-      where override_record.membership_id=assignment.membership_id
-        and override_record.permission_code=permission_record.code
-        and override_record.status='active' and override_record.revoked_at is null
-        and (override_record.starts_at is null or override_record.starts_at<=now())
-        and (override_record.expires_at is null or override_record.expires_at>now())
+      select app_private.resolve_institution_assignment_override_effect(
+        assignment.membership_id,
+        permission_record.code,
+        assignment.scope_kind,
+        assignment.scope_unit_id,
+        assignment.scope_group_id
+      ) as effect
     ) assignment_override on true
     where permission_record.status='active';
   elsif p_domain='principal' then
@@ -211,10 +248,44 @@ end $$;
 
 alter function app_private.superadmin_access_profile_capability_catalog(text,uuid,uuid) owner to postgres;
 alter function app_private.superadmin_access_profile_assignment_link(uuid,jsonb) owner to postgres;
+alter function app_private.resolve_institution_assignment_override_effect(uuid,text,text,uuid,uuid) owner to postgres;
 
 revoke all on function app_private.superadmin_access_profile_capability_catalog(text,uuid,uuid)
   from public, anon, authenticated, service_role;
 revoke all on function app_private.superadmin_access_profile_assignment_link(uuid,jsonb)
   from public, anon, authenticated, service_role;
+revoke all on function app_private.resolve_institution_assignment_override_effect(uuid,text,text,uuid,uuid)
+  from public, anon, authenticated, service_role;
+
+create or replace function public.superadmin_access_profile_capability_catalog(text,uuid,uuid)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select app_private.superadmin_access_profile_capability_catalog($1,$2,$3)
+$$;
+
+create or replace function public.superadmin_access_profile_assignment_link(uuid,jsonb)
+returns jsonb
+language sql
+volatile
+security definer
+set search_path = ''
+as $$
+  select app_private.superadmin_access_profile_assignment_link($1,$2)
+$$;
+
+alter function public.superadmin_access_profile_capability_catalog(text,uuid,uuid) owner to postgres;
+alter function public.superadmin_access_profile_assignment_link(uuid,jsonb) owner to postgres;
+revoke all on function public.superadmin_access_profile_capability_catalog(text,uuid,uuid)
+  from public, anon, service_role;
+revoke all on function public.superadmin_access_profile_assignment_link(uuid,jsonb)
+  from public, anon, service_role;
+grant execute on function public.superadmin_access_profile_capability_catalog(text,uuid,uuid)
+  to authenticated;
+grant execute on function public.superadmin_access_profile_assignment_link(uuid,jsonb)
+  to authenticated;
 
 commit;
