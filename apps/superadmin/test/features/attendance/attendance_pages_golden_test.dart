@@ -28,6 +28,7 @@ void main() {
           logout: unavailableSuperadminLogout,
           onCancel: () {},
           onCreated: (_) {},
+          today: FakeAttendanceRepository.today,
         ),
       ),
     );
@@ -48,6 +49,7 @@ void main() {
           permissions: const AttendancePermissions.owner(),
           logout: unavailableSuperadminLogout,
           onBack: () {},
+          today: FakeAttendanceRepository.today,
         ),
         brightness: Brightness.dark,
       ),
@@ -88,4 +90,11 @@ Future<void> _loadGoldenFonts() async {
   final materialIconsLoader = FontLoader('MaterialIcons')
     ..addFont(Future.value(ByteData.sublistView(materialIcons)));
   await materialIconsLoader.load();
+
+  final emojiFont = File(r'C:\Windows\Fonts\seguiemj.ttf');
+  if (Platform.isWindows && emojiFont.existsSync()) {
+    final emojiFontLoader = FontLoader('Segoe UI Emoji')
+      ..addFont(Future.value(ByteData.sublistView(emojiFont.readAsBytesSync())));
+    await emojiFontLoader.load();
+  }
 }

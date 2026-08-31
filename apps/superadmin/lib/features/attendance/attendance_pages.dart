@@ -610,6 +610,7 @@ class AttendanceCallPage extends StatefulWidget {
     required this.logout,
     required this.onBack,
     this.focusedParticipantId,
+    this.today,
     this.participantRoutineBuilder,
     this.routinePendingParticipantIds = const {},
     this.activityController,
@@ -622,6 +623,7 @@ class AttendanceCallPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback onBack;
   final String? focusedParticipantId;
+  final DateTime? today;
   final Widget Function(BuildContext context, AttendanceParticipant participant)?
   participantRoutineBuilder;
   final Set<String> routinePendingParticipantIds;
@@ -634,6 +636,8 @@ class AttendanceCallPage extends StatefulWidget {
 class _AttendanceCallPageState extends State<AttendanceCallPage> {
   final _notes = <String, TextEditingController>{};
   AttendanceBulkReceipt? _lastBulkReceipt;
+
+  DateTime get _today => DateUtils.dateOnly(widget.today ?? DateTime.now());
 
   AttendanceCall? _call;
   Object? _initialLoadError;
@@ -815,7 +819,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${DateUtils.isSameDay(call.date, DateTime.now()) ? 'Hoje · ' : ''}'
+                                      '${DateUtils.isSameDay(call.date, _today) ? 'Hoje · ' : ''}'
                                       '${_attendanceDate(call.date)}',
                                       style: Theme.of(context).textTheme.labelMedium,
                                     ),
