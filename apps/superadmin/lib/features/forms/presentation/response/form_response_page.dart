@@ -40,19 +40,6 @@ final class _FormResponsePageState extends State<FormResponsePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.development) {
-      return const Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: CoeloStatePanel(
-              title: 'Resposta de formulário indisponível',
-              message: 'O envio de respostas está temporariamente indisponível.',
-              icon: Icons.lock_outline_rounded,
-            ),
-          ),
-        ),
-      );
-    }
     return Material(
       color: Theme.of(context).colorScheme.surface,
       child: LayoutBuilder(
@@ -63,11 +50,28 @@ final class _FormResponsePageState extends State<FormResponsePage> {
           return ListView(
             padding: EdgeInsets.fromLTRB(inset, CoeloSpacing.space5, inset, CoeloSpacing.space8),
             children: [
-              Text('Pesquisa das famílias', style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                widget.development ? 'Pesquisa das famílias' : 'Formulário sem dados disponíveis',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: CoeloSpacing.space1),
-              Text(widget.anonymous ? 'Resposta anônima' : 'Resposta identificada'),
+              Text(
+                widget.development
+                    ? (widget.anonymous ? 'Resposta anônima' : 'Resposta identificada')
+                    : 'Identidade indisponível',
+              ),
               const SizedBox(height: CoeloSpacing.space4),
-              if (widget.anonymous && widget.secretLost)
+              if (!widget.development) ...[
+                const CoeloStatePanel(
+                  key: Key('form-response-unavailable'),
+                  icon: Icons.lock_outline_rounded,
+                  title: 'Resposta indisponível',
+                  message:
+                      'A composição permanece visível, mas conteúdo, retomada, upload e envio dependem de uma fonte autorizada.',
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _buildForm(context),
+              ] else if (widget.anonymous && widget.secretLost)
                 const CoeloStatePanel(
                   icon: Icons.key_off_outlined,
                   title: 'Edição irrecuperável',
@@ -107,6 +111,7 @@ final class _FormResponsePageState extends State<FormResponsePage> {
         controller: _answer,
         minLines: 4,
         maxLines: 8,
+        enabled: widget.development,
         decoration: const InputDecoration(
           labelText: 'Sua resposta',
           hintText: 'Escreva sua contribuição',
@@ -114,17 +119,19 @@ final class _FormResponsePageState extends State<FormResponsePage> {
         ),
       ),
       const SizedBox(height: CoeloSpacing.space3),
-      const _AutosaveStates(),
+      _AutosaveStates(available: widget.development),
       const SizedBox(height: CoeloSpacing.space5),
-      const _ResponseUploads(),
+      _ResponseUploads(available: widget.development),
       const SizedBox(height: CoeloSpacing.space5),
       Align(
         alignment: Alignment.centerRight,
         child: FilledButton.icon(
-          onPressed: () => setState(() {
-            _review = true;
-            _failed = false;
-          }),
+          onPressed: widget.development
+              ? () => setState(() {
+                  _review = true;
+                  _failed = false;
+                })
+              : null,
           icon: const Icon(Icons.fact_check_outlined),
           label: const Text('Revisar resposta'),
         ),
@@ -179,7 +186,9 @@ final class _FormResponsePageState extends State<FormResponsePage> {
 }
 
 final class _AutosaveStates extends StatelessWidget {
-  const _AutosaveStates();
+  const _AutosaveStates({required this.available});
+
+  final bool available;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -190,20 +199,24 @@ final class _AutosaveStates extends StatelessWidget {
       Wrap(
         spacing: CoeloSpacing.space2,
         runSpacing: CoeloSpacing.space2,
-        children: const [
-          Chip(label: Text('Alterado')),
-          Chip(label: Text('Salvando')),
-          Chip(label: Text('Salvo')),
-          Chip(label: Text('Conflito')),
-          Chip(label: Text('Falha')),
-        ],
+        children: available
+            ? const [
+                Chip(label: Text('Alterado')),
+                Chip(label: Text('Salvando')),
+                Chip(label: Text('Salvo')),
+                Chip(label: Text('Conflito')),
+                Chip(label: Text('Falha')),
+              ]
+            : const [Chip(label: Text('Sincronização indisponível'))],
       ),
     ],
   );
 }
 
 final class _ResponseUploads extends StatelessWidget {
-  const _ResponseUploads();
+  const _ResponseUploads({required this.available});
+
+  final bool available;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -211,21 +224,25 @@ final class _ResponseUploads extends StatelessWidget {
     children: [
       Text('Anexos protegidos', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space2),
-      const LinearProgressIndicator(
+      LinearProgressIndicator(
         key: Key('form-response-upload-progress'),
-        value: .58,
-        semanticsLabel: 'Upload protegido em andamento',
-        semanticsValue: '58',
+        value: available ? .58 : 0,
+        semanticsLabel: available ? 'Upload protegido em andamento' : 'Upload indisponível',
+        semanticsValue: available ? '58' : '0',
       ),
       Align(
         alignment: Alignment.centerLeft,
-        child: TextButton(onPressed: () {}, child: const Text('Cancelar upload')),
+        child: TextButton(
+          onPressed: available ? () {} : null,
+          child: const Text('Cancelar upload'),
+        ),
       ),
-      const ListTile(
-        leading: Icon(Icons.error_outline_rounded),
-        title: Text('Falha no envio de imagem'),
-        subtitle: Text('Tente novamente sem perder as demais respostas.'),
-      ),
+      if (available)
+        const ListTile(
+          leading: Icon(Icons.error_outline_rounded),
+          title: Text('Falha no envio de imagem'),
+          subtitle: Text('Tente novamente sem perder as demais respostas.'),
+        ),
       const ListTile(
         leading: Icon(Icons.lock_outline_rounded),
         title: Text('Mídia protegida indisponível'),

@@ -37,20 +37,6 @@ final class _FormsTestPageState extends State<FormsTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.development) {
-      return const Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: CoeloStatePanel(
-              title: 'Teste de formulário indisponível',
-              message: 'O teste de formulários está temporariamente indisponível.',
-              icon: Icons.lock_outline_rounded,
-            ),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -68,7 +54,7 @@ final class _FormsTestPageState extends State<FormsTestPage> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: CoeloSpacing.space3),
-                const _LocalFixtureNotice(),
+                _AvailabilityNotice(development: widget.development),
                 const SizedBox(height: CoeloSpacing.space4),
                 _previewControls(),
                 const SizedBox(height: CoeloSpacing.space4),
@@ -118,30 +104,36 @@ final class _FormsTestPageState extends State<FormsTestPage> {
         key: const Key('forms-test-preview-responsive'),
         label: const Text('Responsivo'),
         selected: _preview == _FormsTestPreview.responsive,
-        onSelected: (_) => setState(() => _preview = _FormsTestPreview.responsive),
+        onSelected: widget.development
+            ? (_) => setState(() => _preview = _FormsTestPreview.responsive)
+            : null,
       ),
       ChoiceChip(
         key: const Key('forms-test-preview-tablet'),
         label: const Text('Tablet'),
         selected: _preview == _FormsTestPreview.tablet,
-        onSelected: (_) => setState(() => _preview = _FormsTestPreview.tablet),
+        onSelected: widget.development
+            ? (_) => setState(() => _preview = _FormsTestPreview.tablet)
+            : null,
       ),
       ChoiceChip(
         key: const Key('forms-test-preview-mobile'),
         label: const Text('Celular'),
         selected: _preview == _FormsTestPreview.mobile,
-        onSelected: (_) => setState(() => _preview = _FormsTestPreview.mobile),
+        onSelected: widget.development
+            ? (_) => setState(() => _preview = _FormsTestPreview.mobile)
+            : null,
       ),
       const SizedBox(width: CoeloSpacing.space2),
       ChoiceChip(
         label: const Text('Identificada'),
         selected: !_anonymous,
-        onSelected: (_) => setState(() => _anonymous = false),
+        onSelected: widget.development ? (_) => setState(() => _anonymous = false) : null,
       ),
       ChoiceChip(
         label: const Text('Anônima'),
         selected: _anonymous,
-        onSelected: (_) => setState(() => _anonymous = true),
+        onSelected: widget.development ? (_) => setState(() => _anonymous = true) : null,
       ),
     ],
   );
@@ -151,11 +143,20 @@ final class _FormsTestPageState extends State<FormsTestPage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Pesquisa das famílias', style: Theme.of(context).textTheme.headlineSmall),
+        Text(
+          widget.development ? 'Pesquisa das famílias' : 'Formulário sem dados disponíveis',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
         const SizedBox(height: CoeloSpacing.space1),
-        Text(_anonymous ? 'Resposta anônima' : 'Resposta identificada'),
+        Text(
+          widget.development
+              ? (_anonymous ? 'Resposta anônima' : 'Resposta identificada')
+              : 'Identidade indisponível',
+        ),
         const SizedBox(height: CoeloSpacing.space2),
-        if (_anonymous)
+        if (!widget.development)
+          const Text('Conteúdo e identidade serão carregados somente por uma fonte autorizada.')
+        else if (_anonymous)
           const Text(
             'Este modo não registra identidade. Guarde o segredo de retomada quando disponível.',
           )
@@ -198,14 +199,19 @@ final class _FormsTestPageState extends State<FormsTestPage> {
         spacing: CoeloSpacing.space2,
         runSpacing: CoeloSpacing.space2,
         children: [
-          for (final option in const ['Muito boa', 'Boa', 'Pode melhorar'])
+          for (final option
+              in widget.development
+                  ? const ['Muito boa', 'Boa', 'Pode melhorar']
+                  : const ['Opção 1', 'Opção 2', 'Opção 3'])
             ChoiceChip(
               label: Text(option),
               selected: _rating == option,
-              onSelected: (_) => setState(() {
-                _rating = option;
-                _showValidation = false;
-              }),
+              onSelected: widget.development
+                  ? (_) => setState(() {
+                      _rating = option;
+                      _showValidation = false;
+                    })
+                  : null,
             ),
         ],
       ),
@@ -222,6 +228,7 @@ final class _FormsTestPageState extends State<FormsTestPage> {
         controller: _comment,
         minLines: 3,
         maxLines: 6,
+        enabled: widget.development,
         decoration: const InputDecoration(
           labelText: 'Conte mais (opcional)',
           hintText: 'Escreva sua contribuição',
@@ -233,7 +240,7 @@ final class _FormsTestPageState extends State<FormsTestPage> {
         alignment: Alignment.centerRight,
         child: FilledButton.icon(
           key: const Key('forms-test-next'),
-          onPressed: _next,
+          onPressed: widget.development ? _next : null,
           icon: const Icon(Icons.arrow_forward_rounded),
           label: const Text('Revisar resposta'),
         ),
@@ -260,13 +267,13 @@ final class _FormsTestPageState extends State<FormsTestPage> {
         children: [
           OutlinedButton.icon(
             key: const Key('forms-test-back'),
-            onPressed: () => setState(() => _step = 0),
+            onPressed: widget.development ? () => setState(() => _step = 0) : null,
             icon: const Icon(Icons.arrow_back_rounded),
             label: const Text('Voltar e editar'),
           ),
           FilledButton.icon(
             key: const Key('forms-test-finish'),
-            onPressed: () => setState(() => _finished = true),
+            onPressed: widget.development ? () => setState(() => _finished = true) : null,
             icon: const Icon(Icons.check_rounded),
             label: const Text('Concluir teste local'),
           ),
@@ -295,23 +302,32 @@ final class _FormsTestPageState extends State<FormsTestPage> {
   });
 }
 
-final class _LocalFixtureNotice extends StatelessWidget {
-  const _LocalFixtureNotice();
+final class _AvailabilityNotice extends StatelessWidget {
+  const _AvailabilityNotice({required this.development});
+
+  final bool development;
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
+    key: development ? null : const Key('forms-test-unavailable'),
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.secondaryContainer,
       borderRadius: BorderRadius.circular(CoeloRadius.md),
     ),
-    child: const Padding(
-      padding: EdgeInsets.all(CoeloSpacing.space3),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space3),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.science_outlined),
-          SizedBox(width: CoeloSpacing.space2),
-          Expanded(child: Text('Fixture local · nenhuma resposta será persistida')),
+          Icon(development ? Icons.science_outlined : Icons.lock_outline_rounded),
+          const SizedBox(width: CoeloSpacing.space2),
+          Expanded(
+            child: Text(
+              development
+                  ? 'Fixture local · nenhuma resposta será persistida'
+                  : 'Teste indisponível · conteúdo neutro e ações bloqueadas até existir uma fonte autorizada',
+            ),
+          ),
         ],
       ),
     ),

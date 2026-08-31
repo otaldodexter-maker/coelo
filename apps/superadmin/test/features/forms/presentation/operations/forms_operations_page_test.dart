@@ -60,7 +60,14 @@ void main() {
 
     expect(find.text('Arquivos e exportações'), findsOneWidget);
     expect(find.byKey(const Key('forms-operations-unavailable')), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Exportar'), findsNothing);
+    expect(find.byKey(const Key('forms-upload-progress')), findsOneWidget);
+    expect(find.text('Nenhum arquivo autorizado carregado'), findsOneWidget);
+    expect(find.text('comprovante-familia.pdf'), findsNothing);
+    expect(find.widgetWithText(FilledButton, 'Exportar'), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Exportar')).onPressed,
+      isNull,
+    );
   });
 
   testWidgets('arquivo protegido expira e exclusão exige confirmação negativa', (tester) async {

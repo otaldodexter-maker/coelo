@@ -22,15 +22,15 @@ final class FormsEditorPage extends StatefulWidget {
 }
 
 final class _FormsEditorPageState extends State<FormsEditorPage> {
-  final _title = TextEditingController(text: '01 - ANHEMBI - FOTOS');
-  final _context = TextEditingController(text: 'Todas as unidades');
+  late final TextEditingController _title;
+  late final TextEditingController _context;
   final _catalogSearch = TextEditingController();
   final _sections = <_EditorSectionDraft>[];
 
   var _selectedSection = 0;
   String? _expandedQuestionId;
   var _previewVisible = false;
-  var _recurring = true;
+  late bool _recurring;
   String? _feedback;
   var _nextId = 20;
 
@@ -39,7 +39,10 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   @override
   void initState() {
     super.initState();
-    _sections.addAll(_fixtureSections());
+    _title = TextEditingController(text: widget.development ? '01 - ANHEMBI - FOTOS' : '');
+    _context = TextEditingController(text: widget.development ? 'Todas as unidades' : '');
+    _recurring = widget.development;
+    _sections.addAll(widget.development ? _fixtureSections() : _neutralSections());
     _expandedQuestionId = _sections.first.questions.last.id;
     _title.addListener(_markChanged);
     _context.addListener(_markChanged);
@@ -62,20 +65,6 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.development) {
-      return const Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: CoeloStatePanel(
-              title: 'Editor de formulários indisponível',
-              message: 'A edição de formulários está temporariamente indisponível.',
-              icon: Icons.lock_outline_rounded,
-            ),
-          ),
-        ),
-      );
-    }
-
     final colors = Theme.of(context).colorScheme;
     return ColoredBox(
       color: colors.surface,
@@ -84,19 +73,46 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           viewportWidth: constraints.maxWidth,
           bodyMaxWidth: 1180,
           scrollKey: const Key('forms-editor-scroll'),
-          navigation: _sectionNavigation(context, constraints),
-          body: _editorBody(),
+          navigation: _locked(_sectionNavigation(context, constraints)),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (!widget.development) ...[
+                const CoeloStatePanel(
+                  key: Key('forms-editor-unavailable'),
+                  title: 'Editor indisponível',
+                  message:
+                      'A composição permanece visível com valores neutros, mas edição, publicação e persistência estão bloqueadas.',
+                  icon: Icons.lock_outline_rounded,
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+              ],
+              _locked(_editorBody()),
+            ],
+          ),
           footer: SuperadminFormActionFooter(
-            tertiaryAction: TextButton(onPressed: _confirmCancel, child: const Text('Cancelar')),
+            tertiaryAction: TextButton(
+              onPressed: widget.development ? _confirmCancel : null,
+              child: const Text('Cancelar'),
+            ),
             continuationActions: [
-              OutlinedButton(onPressed: _saveDraftLocally, child: const Text('Salvar rascunho')),
-              FilledButton(onPressed: _validateLocally, child: const Text('Salvar formulário')),
+              OutlinedButton(
+                onPressed: widget.development ? _saveDraftLocally : null,
+                child: const Text('Salvar rascunho'),
+              ),
+              FilledButton(
+                onPressed: widget.development ? _validateLocally : null,
+                child: const Text('Salvar formulário'),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _locked(Widget child) =>
+      widget.development ? child : IgnorePointer(child: Opacity(opacity: 0.64, child: child));
 
   Widget _sectionNavigation(BuildContext context, BoxConstraints constraints) {
     final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
@@ -127,7 +143,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         alignment: Alignment.centerRight,
         child: OutlinedButton.icon(
           key: const Key('forms-editor-publish'),
-          onPressed: _openPublishDialog,
+          onPressed: widget.development ? _openPublishDialog : null,
           icon: const Icon(Icons.publish_outlined),
           label: const Text('Publicar ou agendar'),
         ),
@@ -182,22 +198,26 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
               controller: _title,
               labelText: 'Nome do formulário',
               prefixIcon: Icons.description_outlined,
+              enabled: widget.development,
               onChanged: (_) => _markChanged(),
             ),
             CoeloFormTextField(
               controller: _context,
               labelText: 'Contexto',
               prefixIcon: Icons.account_tree_outlined,
+              enabled: widget.development,
               onChanged: (_) => _markChanged(),
             ),
             CoeloAdminToggleField(
               label: 'Recorrente',
               description: 'Gera tarefas agendadas.',
               value: _recurring,
-              onChanged: (value) => setState(() {
-                _recurring = value;
-                _feedback = null;
-              }),
+              onChanged: widget.development
+                  ? (value) => setState(() {
+                      _recurring = value;
+                      _feedback = null;
+                    })
+                  : null,
             ),
           ];
           if (stack) {
@@ -803,6 +823,22 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           id: 'notes',
           kind: FormItemKind.shortText,
           label: 'Observação principal',
+          required: false,
+        ),
+      ],
+    ),
+  ];
+
+  List<_EditorSectionDraft> _neutralSections() => [
+    _EditorSectionDraft(
+      id: 'neutral-section',
+      title: 'Seção sem dados disponíveis',
+      description: 'O conteúdo autorizado será carregado quando a integração estiver disponível.',
+      questions: [
+        _EditorQuestionDraft(
+          id: 'neutral-question',
+          kind: FormItemKind.shortText,
+          label: 'Pergunta sem conteúdo carregado',
           required: false,
         ),
       ],
