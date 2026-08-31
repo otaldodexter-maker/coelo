@@ -418,7 +418,8 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             initialWidth: 140,
             minWidth: 110,
             maxWidth: 200,
-            cellBuilder: (_, item) => _RoutineStatusIndicator(status: item.status),
+            cellBuilder: (_, item) =>
+                _RoutineStatusIndicator(status: item.status, expandable: false),
           ),
           CoeloAdminTableColumn(
             id: 'version',
@@ -507,9 +508,10 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
 }
 
 final class _RoutineStatusIndicator extends StatelessWidget {
-  const _RoutineStatusIndicator({required this.status});
+  const _RoutineStatusIndicator({required this.status, this.expandable = true});
 
   final String status;
+  final bool expandable;
 
   @override
   Widget build(BuildContext context) {
@@ -518,6 +520,17 @@ final class _RoutineStatusIndicator extends StatelessWidget {
         theme.extension<CoeloStatusColors>() ??
         (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
     final normalized = status.trim().toLowerCase();
+    final label = switch (normalized) {
+      'active' || 'ativo' => 'Ativo',
+      'published' || 'publicado' => 'Publicado',
+      'draft' || 'rascunho' => 'Rascunho',
+      'in_review' || 'em revisao' => 'Em revisão',
+      'inactive' || 'inativo' => 'Inativo',
+      'archived' || 'arquivado' => 'Arquivado',
+      'corrected' || 'corrigido' => 'Corrigido',
+      'cancelled' || 'cancelado' => 'Cancelado',
+      _ => status,
+    };
     final colors = switch (normalized) {
       'active' ||
       'ativo' ||
@@ -529,9 +542,12 @@ final class _RoutineStatusIndicator extends StatelessWidget {
       'em revisao' => (statusColors.infoContainer, statusColors.onInfoContainer),
       _ => (theme.colorScheme.surfaceContainerHighest, theme.colorScheme.onSurfaceVariant),
     };
+    if (!expandable) {
+      return CoeloStatusChip(label: label, backgroundColor: colors.$1, foregroundColor: colors.$2);
+    }
     return CoeloAdminExpandableStatusIndicator(
-      label: status,
-      semanticLabel: 'Status: $status',
+      label: label,
+      semanticLabel: 'Status: $label',
       backgroundColor: colors.$1,
       foregroundColor: colors.$2,
     );

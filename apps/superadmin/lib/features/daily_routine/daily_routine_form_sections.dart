@@ -541,23 +541,25 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
 
   Widget _footer() {
     if (_loading || _entry == null) return const SizedBox.shrink();
+    final continuationActions = <Widget>[
+      if (_canManage && _entry is RoutineModel)
+        FilledButton(
+          key: const Key('daily-routine-save'),
+          onPressed: _saving ? null : _saveModel,
+          child: Text(_saving ? 'Salvando...' : 'Salvar'),
+        ),
+      if (_canManage && _entry is RoutineApplication)
+        FilledButton(
+          key: const Key('daily-routine-application-save'),
+          onPressed: _saving ? null : _saveApplication,
+          child: Text(_saving ? 'Salvando...' : 'Salvar rotina'),
+        ),
+    ];
+    if (continuationActions.isEmpty) return const SizedBox.shrink();
     return SuperadminFormActionFooter(
       surfaceKey: const Key('daily-routine-form-footer'),
       tertiaryAction: const SizedBox.shrink(),
-      continuationActions: [
-        if (_canManage && _entry is RoutineModel)
-          FilledButton(
-            key: const Key('daily-routine-save'),
-            onPressed: _saving ? null : _saveModel,
-            child: Text(_saving ? 'Salvando...' : 'Salvar'),
-          ),
-        if (_canManage && _entry is RoutineApplication)
-          FilledButton(
-            key: const Key('daily-routine-application-save'),
-            onPressed: _saving ? null : _saveApplication,
-            child: Text(_saving ? 'Salvando...' : 'Salvar rotina'),
-          ),
-      ],
+      continuationActions: continuationActions,
     );
   }
 
