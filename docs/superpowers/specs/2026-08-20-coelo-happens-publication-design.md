@@ -2,6 +2,7 @@
 source: referência visual canônica e plano aprovado de Publicação do Acontece
 status: approved
 generated_at: 2026-08-20
+updated_at: 2026-08-31
 ---
 
 # Publicação do Acontece
@@ -13,6 +14,13 @@ Oferecer criação social segura de posts do Acontece com mídia dominante, lege
 ## Superfícies e responsividade
 
 A implementação executável fica no preview do Superadmin em `/dev/principal-happens/publish`. Em largura compacta, o composer é linear e a prévia permanece após os campos. No tablet, composer e prévia ficam lado a lado. No desktop, rail, composer central e prévia lateral reproduzem a anatomia canônica.
+
+Todos os fluxos `Publicar` do Principal compartilham o contrato externo aprovado
+em 2026-08-31: shell e contêiner direito canônicos, insets tokenizados e rodapé
+responsivo de Criar/Editar Instituição. No amplo, `Cancelar` fica à esquerda e
+rascunho/continuidade mais a única ação primária ficam à direita; no compacto, a
+primária vem primeiro em largura total. O conteúdo e o domínio continuam próprios
+do Acontece.
 
 ## Domínio e segurança
 

@@ -2,7 +2,7 @@
 source: "docs/product/prd-superadmin.md; specs/010-superadmin-completo-v1-technical-spec.md; specs/012-superadmin-mvp.md; docs/design/design-system.md; aprovações do Owner Coelo em 2026-08-05 e 2026-08-11"
 status: "approved-design"
 generated_at: "2026-08-11"
-updated_at: "2026-08-20"
+updated_at: "2026-08-31"
 ---
 
 # Comunicações do app no Superadmin
@@ -21,6 +21,9 @@ genérica de campanhas nem um editor livre de layouts.
 
 - Diretório exclusivo, sem formulário aberto junto à listagem, com categorias
   `Todos`, `Avisos`, `Conteúdos`, `Destaques` e `Para você`.
+- O diretório não oferece alternância Cards/Tabela. Tablet e desktop usam a
+  tabela canônica de Instituições; mobile adapta os mesmos registros para uma
+  lista compacta vertical, sem expor outro modo de visualização.
 - Enum fechado de tipo: `Aviso`, `Conteúdo`, `Destaque` e `Para você`.
 - Prioridade, público, vigência e recorrência são comuns aos quatro tipos.
 - Comportamento de aceite, tamanho, inset e aparência de popup pertencem
@@ -62,8 +65,26 @@ genérica de campanhas nem um editor livre de layouts.
 
 - `apps/superadmin`: diretório, criação/edição e prévia de Comunicações do app.
 - Instituições é a baseline do diretório: toolbar, busca, filtros,
-  `CoeloAdminCreateAction`, `CoeloAdminInteractiveCard`, status expansível,
-  `CoeloAdminFlyout` e paginação.
+  `CoeloAdminCreateAction`, `CoeloAdminResizableTable`, status tabular,
+  `CoeloAdminFlyout` e paginação. O toggle Cards/Tabela não se aplica a este
+  diretório.
+- A referência visual enviada pelo Owner em 2026-08-28 para Comunicações define
+  a anatomia informacional e responsiva desejada — categorias, filtros
+  aplicados, densidade da tabela e preview lateral no desktop — sempre
+  traduzida para componentes, tokens, tipografia e interação do Coelo. Ela não
+  autoriza tabela local, aproximação visual nem identidade paralela.
+- A lista compacta mobile e a tabela reutilizam literalmente as anatomias
+  correspondentes de Instituições, incluindo alinhamento horizontal e vertical,
+  baseline tipográfica, alturas, paddings, gaps, estados, largura natural,
+  scrollbar e paginação. Não existe seletor de modo.
+- A criação usa `CoeloAdminCreateAction.tile` no mobile e a faixa de criação
+  canônica acima da tabela nas larguras maiores; não há botão laranja isolado
+  no topo. Antes da tabela existe o mesmo respiro tokenizado de Instituições.
+- Na coluna Tipo, cada tipo usa badge uniforme, com caixa, padding, largura útil
+  e alinhamento consistentes. Status permanece em chip tabular canônico.
+- No desktop, o preview lateral pertence a um contêiner auxiliar único, com
+  cabeçalho, simulação e resumo organizados por paddings, raios e gaps
+  tokenizados, sem competir com a tabela.
 - Criar/Editar Instituição e Unidade são a baseline do fluxo:
   `SuperadminFormStepNavigation`, campos Coelo e
   `SuperadminFormActionFooter`.
@@ -171,10 +192,19 @@ runtime consumidor.
    `content_card` é lido como Conteúdo, sem migração destrutiva.
 9. O tipo pode mudar em rascunho, agendado ou pausado, com revalidação e
    remoção das configurações exclusivas de popup quando deixar de ser Aviso.
+10. O diretório não expõe toggle Cards/Tabela: mobile usa lista compacta
+    automática e tablet/desktop usam tabela, preservando filtros, categoria,
+    ordenação e paginação.
+11. A tabela de Comunicações é uma composição literal da tabela de
+    Instituições, sem substituto local ou aproximação de alinhamento,
+    tipografia, densidade e estados.
+12. Criação, coluna Tipo, filtros, respiro anterior à tabela e contêiner do
+    preview obedecem ao contrato visual aprovado em 2026-08-31.
 
 ## Testes exigidos
 
-- Widget tests do diretório, filtros, paginação, cards, status e flyout.
+- Widget tests do diretório, filtros, paginação, tabela, lista compacta, status
+  tabular e flyout.
 - Widget tests do wizard, validação, preservação e rodapé.
 - Prévia para três destinos, duas orientações e três comportamentos.
 - Transições do repositório fake.

@@ -3,6 +3,7 @@ title: Publicação de Momentos responsiva
 source: "referência visual aprovada pelo owner em 2026-08-20; docs/product/prd-app.md; docs/design/design-system.md; decisions/0022-superadmin-activities-and-identity-storage.md"
 status: approved
 generated_at: 2026-08-20
+updated_at: 2026-08-31
 ---
 
 # Publicação de Momentos responsiva
@@ -27,6 +28,12 @@ Em 375 px, o editor segue uma coluna vertical. Em 768 px, mídia e dados editori
 formam duas colunas e agendamento/opções ficam abaixo. Em 1440 px, o editor ocupa
 o centro e a prévia fica à direita. As decisões usam largura disponível por
 constraints, não tipo de dispositivo.
+
+Todos os fluxos `Publicar` do Principal compartilham shell, contêiner direito,
+insets e rodapé responsivo aprovados em 2026-08-31. No amplo, `Cancelar` fica à
+esquerda e rascunho/continuidade mais a única ação primária ficam à direita; no
+compacto, a primária vem primeiro em largura total. Este contrato visual comum
+não mistura o domínio nem o repositório de Momentos com outros módulos.
 
 ## Comportamento e estados
 

@@ -2,7 +2,7 @@
 source: "Solicitação e 69 anexos visuais aprovados pelo Owner Coelo em 2026-08-28; docs/design/design-system.md; .agents/skills/coelo-ui/SKILL.md; docs/reviews/coelo-flutter-pendencias.md; specs e designs canônicos das superfícies citadas"
 status: "approved-design"
 generated_at: "2026-08-28"
-updated_at: "2026-08-28"
+updated_at: "2026-08-31"
 ---
 
 # Etapa de conclusão visual do Coelo
@@ -156,38 +156,118 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
 
 ### V4 — Formulários e comunicação administrativa — 5 entregáveis — 24–38 h
 
-19. **Formulários — diretório:** Cards/Tabela canônicos e três a cinco exemplos
-    locais representativos.
+19. **Formulários — diretório:** tabela canônica equivalente ao diretório de
+    Instituições, dentro do shell e do contêiner administrativo. A ação de criar
+    fica no topo da tabela; cada linha expõe status, nome, contexto, visitas ou
+    respostas, agendamentos e criação. O menu contextual permite editar,
+    ativar/inativar, duplicar, copiar para outro ambiente autorizado e administrar
+    agendamentos. O agendamento inclui ativo, nome, início, término, frequência,
+    dias da semana e perfis/audiência. Contrato visual aprovado pelo Owner em
+    2026-08-28 com três condições obrigatórias para a implementação: células e
+    fontes reproduzem exatamente os alinhamentos e paddings da tabela de
+    Instituições; a paginação preserva literalmente posição, alinhamento e
+    espaçamento da tela de Instituições, sem ser deslocada para a direita;
+    busca, filtros e ações reproduzem a distribuição e os gaps da
+    toolbar canônica; o diálogo de agendamento ajusta sua altura ao conteúdo,
+    sem área branca excedente e preservando o rodapé oficial; o flyout mantém a
+    largura canônica, recebe afastamento seguro da borda da viewport e usa
+    contorno `outlineVariant` suave, sem aparência preta ou pesada. O item só
+    muda para `accepted` após implementação e golden real aprovados.
 20. **Formulários — editor:** construtor completo conforme a spec aprovada:
-    seções, tipos de pergunta, opções, mídia de apoio, obrigatoriedade,
-    ramificação, agendamento, duplicar e copiar para outro contexto autorizado.
+    seções e perguntas modulares reordenáveis, catálogo pesquisável de tipos,
+    opções, mídia de apoio, obrigatoriedade, ramificação aninhada, preview,
+    agendamento, duplicar e copiar para outro contexto autorizado. O catálogo
+    mínimo contém texto curto, inteiro, decimal, dinheiro, data, sim/não, escolha
+    única, múltipla escolha, foto, galeria e produtos. Perguntas do tipo Data
+    oferecem validação livre, a partir de uma data, até uma data ou em intervalo
+    permitido. Contrato visual aprovado pelo Owner em 2026-08-28 com ajustes
+    obrigatórios para a implementação: preview nasce oculto e abre sob demanda;
+    o catálogo mantém categorias verticais explícitas (`Texto e números`,
+    `Escolhas`, `Mídias` e demais grupos), uma abaixo da outra, em área rolável;
+    a base do conteúdo usa `colorScheme.surface`, sem cinza estrutural; ações de
+    preview e salvamento saem do cabeçalho e o fluxo reutiliza o rodapé de
+    Criar/Editar Instituição; a navegação de seções preserva a ideia aprovada,
+    mas recebe tratamento visual refinado e não usa círculo laranja com número
+    preto. O item só muda para `accepted` após implementação e golden real
+    aprovados.
 21. **Importações:** diretório e wizard seguem Instituições e Criar/Editar
-    Instituição, mantendo operações remotas indisponíveis de forma explícita.
-22. **Comunicações:** diretório, busca, filtros, categorias, lista/tabela e
-    prévia seguem a anatomia Coelo indicada pelo anexo de referência.
-23. **Circulares:** criar a superfície ausente de lista e criação, ligada ao
-    Perfil e à projeção no Acontece conforme a spec canônica.
+    Instituição, sempre dentro do shell e do contêiner canônico. O diretório é
+    uma tabela simples com importar/criar no topo. O wizard deixa visíveis todas
+    as entidades planejadas — instituições, unidades, pessoas, grupos/turmas,
+    atividades e demais entidades pertinentes — mantendo operações remotas
+    indisponíveis de forma explícita e sem simular sucesso. Contrato visual
+    aprovado pelo Owner em 2026-08-28 com uma condição obrigatória: a tabela do
+    diretório deve reproduzir literalmente alinhamento horizontal e vertical,
+    baseline tipográfica, altura de cabeçalho/linhas e paddings internos da
+    tabela de Instituições; a aproximação da proposta não é aceita como delta
+    permanente. O item só muda para `accepted` após implementação e golden real
+    aprovados.
+22. **Comunicações:** contrato visual aprovado pelo Owner em 2026-08-31 para
+    seguir à próxima tela, com ajustes obrigatórios na implementação. O
+    diretório não oferece alternância Cards/Tabela: mobile reorganiza os itens
+    automaticamente em cards compactos e tablet/desktop usam somente a tabela
+    canônica. A criação usa o tile de Instituições no mobile e a faixa de
+    criação acima da tabela nas larguras maiores, sem botão laranja isolado no
+    topo. Busca, filtros, espaçamento anterior à tabela, alinhamento, tipografia,
+    linhas, status e paginação reutilizam literalmente Instituições. A coluna
+    Tipo usa badges uniformes, com dimensões e alinhamento consistentes. No
+    desktop, o preview lateral fica dentro de um contêiner auxiliar único, com
+    hierarquia, paddings, raios e gaps tokenizados. A referência anexada orienta
+    categorias, densidade informacional e preview; a identidade continua Coelo.
+    O item só muda para `accepted` após implementação e golden real aprovados.
+23. **Circulares:** o diretório recebeu aprovação visual do Owner em 2026-08-31:
+    mobile usa tile de criação e cards compactos; tablet/desktop usam faixa de
+    criação e tabela canônica; não há botão laranja isolado nem alternância
+    manual de visualização. Busca, filtros, tabs, status e paginação seguem
+    Instituições. O composer recebeu aprovação visual condicionada e satisfeita
+    em 2026-08-31: pertence ao fluxo do Principal e segue Publicar no Acontece,
+    Agora e Momentos, adaptando título, mídia e perguntas; shell, contêiner direito,
+    insets e rodapé reproduzem a geometria aprovada de Criar/Editar Instituição.
+    O card de Perfil e a projeção no Acontece foram aprovados visualmente em
+    2026-08-31. Mobile preserva a lista compacta no Perfil e tablet apresenta a
+    Circular como item editorial do feed. No web, a prévia no Acontece não ocupa
+    coluna lateral permanente: nasce oculta e abre em popup por ação explícita,
+    mantendo a largura principal do Perfil. Não é necessária nova imagem para
+    esse ajuste; o item permanece `visual-contract-approved` até implementação e
+    golden real aprovados.
 
 ### V5 — Experiência Principal e mídia — 8 entregáveis — 24–38 h
 
 24. **Acontece — estrutura:** remover o botão superior `Publicar no Acontece` e
-    a barra interna redundante Acontece/Para você/Momentos/Perfil; inserir
-    divisor sutil entre Agora e o feed.
+    a barra interna redundante Acontece/Para você/Momentos/Perfil. O cabeçalho
+    Principal usa marca Coelo com chevron de menu e avatar, sem hambúrguer. A
+    seção `Agora` abre a tela, sem `Ver tudo`, em carrossel horizontal cujo
+    primeiro card retangular publica um Agora. Abaixo, um título discreto
+    `Acontece` introduz o feed unificado de Acontece e Circulares em contêineres
+    limpos. No mobile, o rodapé contém Home, Para você, Momentos, ação central
+    laranja `+` e Pesquisar; Mensagens permanece flutuante e Perfil permanece no
+    cabeçalho.
 25. **Agora no Acontece:** primeiro card vazio publica no Agora; remover `Ver
     tudo`; permitir arraste horizontal; abrir viewer em tela cheia escura, com
     leve transparência e logo Coelo branca.
 26. **Galeria do Acontece:** mídia do post abre e permite navegar entre itens com
-    contagem e ações acessíveis.
+    contagem e ações acessíveis. Contrato visual aprovado pelo Owner em
+    2026-08-28; não repetir a mesma solicitação de aceite. O entregável só muda
+    para `accepted` após implementação/golden real visualmente aprovado.
 27. **Publicar no Acontece:** alinhar composer responsivo de 375/768/1440 à
-    referência, preservando identidade e contratos Coelo.
+    referência, preservando identidade e contratos Coelo. Em web, manter shell,
+    contêiner direito e espaçamento canônico; a superfície Principal também deve
+    ser observável pela prévia do Superadmin. O Owner aprovou em 2026-08-31 que
+    todos os fluxos `Publicar` compartilhem este contrato externo e o rodapé
+    responsivo de Criar/Editar Instituição, adaptando apenas conteúdo e domínio.
 28. **Para você:** corrigir composição, imagens, respiro e responsividade dentro
-    do contêiner amplo, sem alterar os textos editoriais aprovados.
+    do contêiner amplo pela anatomia responsiva 375/768/1440 aprovada, sem
+    alterar os textos editoriais aprovados.
 29. **Momentos:** viewer imersivo em tela cheia inspirado em Reels, com ações,
     navegação e comentários em composição própria do Coelo.
 30. **Perfil do Principal:** enriquecer fixture e composição com capa, avatar
-    maior, Acontece, Momentos, Circulares e Sobre.
+    maior totalmente visível, capa de largura integral, cabeçalho Principal
+    canônico, Acontece, Momentos, Circulares e Sobre.
 31. **Publicar Momentos e Agora:** alinhar os dois composers responsivos às
-    referências aprovadas, sem compartilhar domínio, repository ou ownership.
+    referências de Publicar no Acontece, adaptando mídia, texto, audiência,
+    agendamento e ações a cada contexto, sem compartilhar domínio, repository ou
+    ownership. Shell, contêiner direito, insets e rodapé seguem o padrão comum de
+    publicação aprovado em 2026-08-31.
 
 ## Mapeamento dos anexos
 
@@ -232,6 +312,16 @@ Cada gap exige referência pública na skill, entrada consultável no índice,
 exemplo executável no catálogo quando reutilizável e teste/golden do estado
 aprovado. A promoção ocorre no início da onda que o consome; não se programa o
 componente antes de aprovar o contrato visual Coelo.
+
+### Gate humano por entregável — decisão do Owner em 2026-08-28
+
+Antes de implementar qualquer entregável visual restante, parar e apresentar
+uma imagem concreta da proposta, com caminho absoluto para o arquivo, escopo da
+mudança e estados relevantes. A implementação só começa após aprovação explícita
+do Owner. Quando houver mais de um estado visual relevante, mostrar todos os
+necessários ao aceite; não pedir aprovação baseada apenas em texto. Após o
+aceite, retomar RED→GREEN. Esta regra se aplica também quando o entregável não
+criar um padrão público novo.
 
 ## Dados locais e comportamento
 
@@ -944,6 +1034,77 @@ Flutter local.
 | Limite do aceite | Desbloqueia implementação; não concede `local-green` ou `accepted` sem testes, catálogo, goldens e inspeções reais. |
 | Tempo usado | 2 h 24 min acumulados; janela restante 7 h 36 min. |
 | Próximo item exato | Escrever RED público do campo/picker antes do código de produção. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.18 Cardápio/modelo — implementação GREEN, aceite dos goldens pendente — 2026-08-28 14:52 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; código e testes focados GREEN, aguardando aprovação humana dos goldens reais antes de marcar o padrão `implemented`; V3 permanece 6/7 (85,71%). |
+| Correções | Novo `CoeloTimeField`/`showCoeloTimePicker`; `CoeloDateTimeField` reutiliza a API; Medicação não usa mais `showTimePicker`; Cardápio preserva início/fim logo após o nome e usa detalhes multilinha. |
+| RED→GREEN | RED público falhou por API ausente; REDs de Cardápio/Medicação falharam por controles ainda locais. GREEN: core 8/8, Cardápio/Medicação 17/17 e exemplo de catálogo 1/1. |
+| Gates | Analyzer core e Superadmin verdes; validador administrativo verde; comparação dos dois novos goldens verde. Um import redundante e um helper órfão foram detectados pelo analyzer e removidos antes deste checkpoint. |
+| Evidência visual | `coelo_time_picker_open_light_375.png` e `coelo_time_picker_open_dark_1440.png`, com Nunito Sans e Material Icons carregados explicitamente. A primeira geração com fonte Ahem foi rejeitada e substituída, não promovida. |
+| Bloqueio | Aceite visual humano dos dois goldens reais. Depois: completar 768/1024, 200%, semântica/reduced motion, promover índice/referência a `implemented` e fechar V3.18. |
+| Tempo usado | 0 h 12 min desde a aprovação; 2 h 36 min acumulados. |
+| Estimativa restante | 7 h 24 min da janela; 30–60 min para fechar V3.18 após o aceite. |
+| Próximo item exato | Owner revisar os dois PNGs reais e aprovar ou pedir ajustes. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V3.18 Cardápio/modelo — aceite dos goldens reais — 2026-08-28
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`, bloqueio visual removido; Owner confirmou que os dois goldens reais já estão aprovados. |
+| Decisão | `pattern.coelo-time-picker` pode avançar de `approved` para `implemented`; não solicitar novamente esse aceite. |
+| Próximo item exato | Executar matriz final 768/1024, catálogo completo, analyzers e validador; então fechar V3.18 `local-green`. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### Programa visual — novo gate humano por entregável — 2026-08-28
+
+| Campo | Registro |
+|---|---|
+| Mudança de contrato | Antes de todo entregável visual restante, apresentar imagem e caminho absoluto, pedir aprovação e aguardar antes do código. |
+| Aplicação imediata | V3.18 já possui contrato e goldens reais aprovados; pode concluir somente gates técnicos. V4.19 será o primeiro entregável submetido integralmente ao novo gate. |
+| Regressão técnica corrente | Catálogo completo detectou que o padrão implementado apontava `publicFile` para a referência da skill e, por isso, não entrava na lista de componentes implementados do package. Corrigido para o barrel público do `coelo_ui_core`; a referência da skill permanece pública e vinculada pelo `SKILL.md`. |
+| Próximo item exato | Repetir catálogo completo e gates; fechar V3.18; gerar imagens da proposta V4.19 e parar para aprovação antes do RED. |
+
+Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
+Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase
+`local-green` 3/37 (8,11%); Supabase `done` 0/37; integração 0/202; projeto
+estrito 0/229. E2E e estrito medem conclusão integral e não anulam o trabalho
+Flutter local.
+
+### V4/V5 — pacote de aprovação visual refeito em alta fidelidade — 2026-08-28 15:58 BRT
+
+| Campo | Registro |
+|---|---|
+| Status | `in-progress`; execução pausada para aprovação humana antecipada de V4/V5. Nenhum entregável V4/V5 foi promovido a `accepted`. |
+| Regressão de evidência | O primeiro pacote em HTML foi classificado pelo Owner como wireframe colorido e integralmente invalidado. Nenhuma decisão visual foi registrada a partir dele. |
+| Correção | Novas evidências foram capturadas das rotas Flutter reais em build web debug com Nunito Sans, shell, tokens e componentes Coelo. Somente três lacunas ainda não implementadas receberam composição de alta fidelidade sobre captura Flutter real: `pattern.form-question-builder`, diretório demonstrativo de Importações e galeria fullscreen do Acontece. |
+| Formulários | Diretório usa visualmente o mesmo `CoeloAdminCreateAction` do primeiro card de Instituições, sem CTA superior. O preview temporário foi revertido após a captura; os blobs de `forms_directory_page.dart` e `superadmin_router.dart` voltaram a coincidir com o índice Git. Criar/editar preserva `SuperadminFormFrame`, navegação lateral e `SuperadminFormActionFooter`. |
+| Evidências | `actual-19-forms-directory-proposal.png`; `actual-20-forms-editor-light.png`; `hifi-20b-forms-builder.png`; `hifi-21a-imports-directory.png`; `actual-21b-imports-wizard.png`; `actual-22a-communications-directory.png`; V5 `actual-24-happens.png` até `actual-31b-now-composer-520.png`; `hifi-26-happens-gallery.png`; goldens Flutter legíveis de Circulares. |
+| Arquivos de produção | `no-op` para este gate visual; build e scripts de captura não entram no manifesto do produto. Assessments permaneceu intocado. |
+| Bloqueios | Aprovação ou ajustes do Owner, por número. Depois das decisões, registrar contratos aprovados e aguardar o `okay` final antes de retomar implementação contínua. |
+| Tempo realmente usado | 3 h 41 min acumulados às 15:58 BRT. |
+| Estimativa restante | 6 h 19 min da janela inicial; V4/V5 excedem a janela e continuarão por checkpoints seguros se o Owner mantiver o programa completo. |
+| Próximo item exato | Owner revisar as imagens separadas e responder `aprovo todos` ou listar os números a ajustar. |
+| Conhecimento capturado | `no-op`: propostas ainda aguardam aprovação. |
 
 Percentuais: entrega V3 6/7 (85,71%); programa visual 0/31 `accepted`;
 Flutter `local-green` 84/207 (40,58%); Flutter `verified` 0/207; Supabase

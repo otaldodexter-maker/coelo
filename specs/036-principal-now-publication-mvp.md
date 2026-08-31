@@ -2,6 +2,7 @@
 source: "referência visual aprovada call_Xf4KknVH3c3XUaOk6VWaITXM.png; plano aprovado Publicação do Agora; docs/product/prd-app.md; docs/design/design-system.md"
 status: approved
 generated_at: 2026-08-20
+updated_at: 2026-08-31
 ---
 
 # Publicação do Agora no MVP
@@ -28,6 +29,11 @@ Entregar um composer rápido e leve para publicar uma mídia vertical no Agora. 
 - Desktop 1440 px: shell do Principal, mídia vertical ampla, ferramentas adjacentes e coluna editorial enxuta.
 - A base usa `colorScheme.surface`, tokens Coelo, Nunito Sans e uma única ação laranja preenchida: `Publicar agora`.
 - Cópias obrigatórias: `Publicar no Agora`, `Público e contexto`, `Agendar publicação`, `Salvar rascunho` e `Publicar agora`.
+- Todos os fluxos `Publicar` do Principal compartilham shell, contêiner direito,
+  insets e rodapé responsivo aprovados em 2026-08-31. No amplo, `Cancelar` fica à
+  esquerda e rascunho/continuidade mais a única ação primária ficam à direita;
+  no compacto, a primária vem primeiro em largura total. O conteúdo e as regras
+  de Agora permanecem independentes.
 
 ## Dados, permissões e segurança
 

@@ -3,6 +3,7 @@ title: "Circulares privadas e versionadas no Principal"
 source: "PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Modelo de Dados; referência visual aprovada em 2026-08-21"
 status: approved
 generated_at: "2026-08-21"
+updated_at: "2026-08-31"
 ---
 
 # Circulares privadas e versionadas no Principal
@@ -74,14 +75,31 @@ e auditoria ficam no Postgres.
 
 ## UX e estados
 
+O diretório administrativo foi aprovado visualmente em 2026-08-31. Mobile usa
+tile de criação seguido por cards compactos; tablet e desktop usam faixa de
+criação seguida pela tabela canônica de Instituições. Não existe botão laranja
+isolado no topo nem alternância manual de visualização. Busca, filtros, tabs,
+status e paginação reutilizam os componentes e a geometria de Instituições. As
+tabs são `Todas`, `Rascunhos`, `Agendadas`, `Publicadas` e `Encerradas`.
+
 Perfil usa as abas transparentes `Acontece | Momentos | Circulares | Sobre`,
 com underline laranja e rolagem horizontal acessível. O card no Acontece mostra
 identificação, título, trecho, contagens e estado de resposta, abrindo o detalhe.
+O contrato visual dessas duas projeções foi aprovado em 2026-08-31. No web, a
+prévia de como a Circular aparece no Acontece não ocupa coluna lateral nem nasce
+aberta: uma ação explícita abre a prévia em popup contextual, devolvendo a
+largura principal ao Perfil. O popup usa superfície neutra, barreira, corpo
+rolável e fechamento acessível conforme o contrato Coelo de overlays. Esta regra
+não altera o preview lateral aprovado dos composers de publicação.
 
-O editor reutiliza a anatomia do Publicar no Acontece: 375 px usa fluxo vertical
-e alternância de prévia; 768 px alterna quando as constraints não comportarem
-dois painéis; 1024/1440 px usam editor central e prévia lateral. Só publicar ou
-agendar usa laranja preenchido.
+O editor pertence ao fluxo de publicação do Principal, ao lado de Publicar no
+Acontece, Agora e Momentos; não reutiliza wizard administrativo do Superadmin.
+Em 375 px usa fluxo vertical e prévia contextual; em 768 px preserva o formulário
+linear; em 1024/1440 px usa editor central e prévia lateral. O desktop preserva
+o shell canônico, o contêiner direito arredondado e seus insets. O rodapé segue
+a geometria de Criar/Editar Instituição: cancelar no extremo esquerdo e ações de
+continuidade/publicação no direito; no compacto, a primária vem primeiro em
+largura total. Só publicar ou agendar usa laranja preenchido.
 
 Estados exigidos: carregando, vazio, erro, offline, não autorizado, salvando,
 salvo, falha, upload parcial, arquivo inválido, agendada, publicada, encerrada,
