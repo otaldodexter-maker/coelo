@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(30);
+select plan(37);
 
 select has_table('public','activity_admin_capability_actions',
   'activity-admin capability actions exist');
@@ -245,6 +245,224 @@ select lives_ok($$with expected(code,http_status,message) as (values
       'correlation_id','7a200000-0000-4000-8000-000000000003'::uuid))
   then 1 else 0 end$$,
   'Activity errors table-drive every approved envelope, exact error keys, and unknown fallback');
+
+-- Task 4 RED: close the final RLS, function ACL, default-ACL and FK-index
+-- surface without teaching any people-based policy about the internal realm.
+with expected(schema_name,table_name) as (values
+  ('public','activity_definitions'),
+  ('public','activity_unit_links'),
+  ('public','activity_group_links'),
+  ('public','activity_group_participants'),
+  ('public','activity_group_assignments'),
+  ('public','activity_admin_assignments'),
+  ('public','activity_assignment_capability_actions'),
+  ('public','activity_admin_capability_actions'),
+  ('public','activity_capability_policies'),
+  ('public','activity_group_capability_settings'),
+  ('app_private','superadmin_internal_activity_command_receipts')
+), actual as (
+  select namespace_record.nspname as schema_name,relation.relname as table_name,
+    relation.relrowsecurity,relation.relforcerowsecurity
+  from pg_class relation
+  join pg_namespace namespace_record on namespace_record.oid=relation.relnamespace
+  join expected on expected.schema_name=namespace_record.nspname
+    and expected.table_name=relation.relname
+)
+select ok((select count(*)=11 and bool_and(relrowsecurity and relforcerowsecurity)
+  from actual),'all eleven Activity v2 relations enable and force RLS');
+
+with expected(signature) as (values
+  ('public.superadmin_activity_directory_v2(jsonb,integer,integer,text,boolean)'),
+  ('public.superadmin_activity_detail_v2(uuid,text[])'),
+  ('public.superadmin_activity_form_options_v2(uuid,text[],text,integer)'),
+  ('public.superadmin_activity_create_v2(uuid,jsonb)'),
+  ('public.superadmin_activity_update_v2(uuid,uuid,bigint,jsonb)'),
+  ('public.superadmin_activity_publish_v2(uuid,uuid,bigint)'),
+  ('public.superadmin_activity_set_units_v2(uuid,uuid,bigint,uuid[])'),
+  ('public.superadmin_activity_set_groups_v2(uuid,uuid,bigint,uuid[],jsonb)'),
+  ('public.superadmin_activity_set_participants_v2(uuid,uuid,bigint,jsonb)'),
+  ('public.superadmin_activity_set_professionals_v2(uuid,uuid,bigint,jsonb)'),
+  ('public.superadmin_activity_set_permissions_v2(uuid,uuid,bigint,jsonb,jsonb,jsonb)')
+), wrappers as (
+  select to_regprocedure(signature) as oid from expected
+)
+select ok((select count(*)=11 and bool_and(
+    wrappers.oid is not null
+    and owner_role.rolname='postgres'
+    and procedure_record.prosecdef
+    and procedure_record.provolatile='v'
+    and procedure_record.proconfig @> array['search_path=""']::text[])
+  from wrappers
+  left join pg_proc procedure_record on procedure_record.oid=wrappers.oid
+  left join pg_roles owner_role on owner_role.oid=procedure_record.proowner),
+  'all eleven wrappers are exact postgres-owned volatile security definers with empty search_path');
+
+with expected(signature) as (values
+  ('public.superadmin_activity_directory_v2(jsonb,integer,integer,text,boolean)'),
+  ('public.superadmin_activity_detail_v2(uuid,text[])'),
+  ('public.superadmin_activity_form_options_v2(uuid,text[],text,integer)'),
+  ('public.superadmin_activity_create_v2(uuid,jsonb)'),
+  ('public.superadmin_activity_update_v2(uuid,uuid,bigint,jsonb)'),
+  ('public.superadmin_activity_publish_v2(uuid,uuid,bigint)'),
+  ('public.superadmin_activity_set_units_v2(uuid,uuid,bigint,uuid[])'),
+  ('public.superadmin_activity_set_groups_v2(uuid,uuid,bigint,uuid[],jsonb)'),
+  ('public.superadmin_activity_set_participants_v2(uuid,uuid,bigint,jsonb)'),
+  ('public.superadmin_activity_set_professionals_v2(uuid,uuid,bigint,jsonb)'),
+  ('public.superadmin_activity_set_permissions_v2(uuid,uuid,bigint,jsonb,jsonb,jsonb)')
+), targets as (
+  select to_regprocedure(signature) as procedure_oid from expected
+), expected_acl as (
+  select procedure_oid,'authenticated'::regrole::oid as grantee from targets
+), actual_acl as (
+  select target.procedure_oid,acl.grantee
+  from targets target
+  join pg_proc procedure_record on procedure_record.oid=target.procedure_oid
+  cross join lateral aclexplode(coalesce(procedure_record.proacl,
+    acldefault('f',procedure_record.proowner))) acl
+  where acl.privilege_type='EXECUTE'
+    and acl.grantee<>procedure_record.proowner
+), differences as (
+  (select * from actual_acl except select * from expected_acl)
+  union all
+  (select * from expected_acl except select * from actual_acl)
+)
+select ok((select count(*)=11 from targets)
+  and not exists(select 1 from differences),
+  'only authenticated has non-owner EXECUTE on every nominal Activity v2 wrapper');
+
+with expected(signature) as (values
+  ('app_private.activity_v2_success_envelope(jsonb)'),
+  ('app_private.activity_v2_require_context(text,uuid)'),
+  ('app_private.activity_v2_normalize_error(text)'),
+  ('app_private.activity_v2_denied_envelope(text,text,text,uuid,uuid)'),
+  ('app_private.audit_append_superadmin_internal(uuid,uuid,uuid,uuid,text,text,text,public.audit_outcome,text,uuid,uuid,text,uuid,jsonb)'),
+  ('app_private.activity_v2_set_marker(app_private.superadmin_internal_context,text,text,uuid)'),
+  ('app_private.audit_activity_change()'),
+  ('app_private.activity_v2_append_audit(app_private.superadmin_internal_context,uuid,uuid,text,text,jsonb)'),
+  ('app_private.activity_v2_finish_command(app_private.superadmin_internal_context,uuid,uuid,uuid,text,bytea,bigint,text,uuid,jsonb)'),
+  ('app_private.activity_v2_replay_or_error(app_private.superadmin_internal_context,uuid,uuid,uuid,text,bytea,uuid)'),
+  ('app_private.activity_v2_effective_permission(text,text,text,text,text,text,text,text)'),
+  ('app_private.activity_v2_validate_participants(uuid,jsonb)'),
+  ('app_private.activity_v2_validate_professionals(uuid,jsonb)'),
+  ('app_private.activity_v2_command_request_hash(text,uuid,uuid,bigint,jsonb)'),
+  ('app_private.activity_v2_error_envelope(text,uuid)'),
+  ('app_private.require_activity_v2_internal_marker()'),
+  ('app_private.guard_activity_v2_actor_provenance()'),
+  ('app_private.prevent_activity_v2_group_activity_admin()')
+), helpers as (
+  select to_regprocedure(signature) as oid from expected
+)
+select ok((select count(*)=18 and bool_and(
+    helpers.oid is not null
+    and owner_role.rolname='postgres'
+    and procedure_record.proconfig @> array['search_path=""']::text[])
+  from helpers
+  left join pg_proc procedure_record on procedure_record.oid=helpers.oid
+  left join pg_roles owner_role on owner_role.oid=procedure_record.proowner)
+  and not exists(
+    select 1 from helpers
+    join pg_proc procedure_record on procedure_record.oid=helpers.oid
+    cross join lateral aclexplode(coalesce(procedure_record.proacl,
+      acldefault('f',procedure_record.proowner))) acl
+    where acl.privilege_type='EXECUTE'
+      and acl.grantee<>procedure_record.proowner
+  ),'all eighteen Activity v2 helpers are postgres-owned, path-safe and non-executable by non-owners');
+
+with global_default as (
+  select default_acl.defaclacl
+  from pg_default_acl default_acl
+  where default_acl.defaclrole='postgres'::regrole
+    and default_acl.defaclobjtype='f'
+    and default_acl.defaclnamespace=0
+), unsafe_acl as (
+  select 1
+  from pg_default_acl default_acl
+  cross join lateral aclexplode(default_acl.defaclacl) acl
+  where default_acl.defaclrole='postgres'::regrole
+    and default_acl.defaclobjtype='f'
+    and default_acl.defaclnamespace in(
+      0,'public'::regnamespace::oid,'app_private'::regnamespace::oid)
+    and acl.privilege_type='EXECUTE'
+    and acl.grantee in(
+      0,'anon'::regrole::oid,'authenticated'::regrole::oid,'service_role'::regrole::oid)
+)
+select ok((select count(*)=1 from global_default)
+    and not exists(select 1 from unsafe_acl),
+  'postgres has an explicit safe global function default ACL and neither application schema adds client execution');
+
+with expected(schema_name,table_name,constraint_name) as (values
+  ('public','activity_capability_policies','activity_capability_policies_capability_id_fkey'),
+  ('public','activity_capability_policies','activity_capability_policies_changed_by_person_id_fkey'),
+  ('public','activity_group_capability_settings','activity_group_capability_settings_capability_id_fkey'),
+  ('public','activity_group_capability_settings','activity_group_capability_settings_changed_by_person_id_fkey'),
+  ('public','activity_group_participants','activity_group_participants_activity_group_link_id_fkey'),
+  ('public','activity_group_participants','activity_group_participants_added_by_person_id_fkey'),
+  ('public','activity_admin_assignments','activity_admin_assignments_activity_fkey'),
+  ('public','activity_admin_assignments','activity_admin_assignments_membership_fkey')
+), matched as (
+  select expected.*,constraint_record.conrelid,constraint_record.conkey
+  from expected
+  left join pg_namespace namespace_record
+    on namespace_record.nspname=expected.schema_name
+  left join pg_class relation
+    on relation.relnamespace=namespace_record.oid
+   and relation.relname=expected.table_name
+  left join pg_constraint constraint_record
+    on constraint_record.conrelid=relation.oid
+   and constraint_record.conname=expected.constraint_name
+   and constraint_record.contype='f'
+)
+select ok((select count(*)=8 and bool_and(
+    conrelid is not null and exists(
+      select 1
+      from pg_index index_record
+      where index_record.indrelid=matched.conrelid
+        and index_record.indisvalid
+        and index_record.indisready
+        and index_record.indpred is null
+        and (index_record.indkey::smallint[])[0:cardinality(matched.conkey)-1]
+          =matched.conkey
+    )) from matched),
+  'all eight targeted Activity v2 foreign keys have valid full leading-column indexes without duplicate-name assumptions');
+
+with expected(table_name,policy_name) as (values
+  ('activity_definitions','activity_definitions_context_read'),
+  ('activity_definitions','activity_definitions_institution_update'),
+  ('activity_unit_links','activity_unit_links_context_read'),
+  ('activity_unit_links','activity_unit_links_authorized_insert'),
+  ('activity_unit_links','activity_unit_links_authorized_update'),
+  ('activity_group_links','activity_group_links_context_read'),
+  ('activity_group_links','activity_group_links_authorized_insert'),
+  ('activity_group_links','activity_group_links_authorized_update'),
+  ('activity_group_assignments','activity_group_assignments_context_read'),
+  ('activity_group_assignments','activity_group_assignments_authorized_insert'),
+  ('activity_group_assignments','activity_group_assignments_authorized_update'),
+  ('activity_admin_assignments','activity_admin_assignments_authorized_read'),
+  ('activity_assignment_capability_actions','activity_assignment_actions_authorized_read'),
+  ('activity_capability_policies','activity_capability_policies_read'),
+  ('activity_capability_policies','activity_capability_policies_manage_insert'),
+  ('activity_capability_policies','activity_capability_policies_manage_update'),
+  ('activity_group_capability_settings','activity_group_capability_settings_read'),
+  ('activity_group_capability_settings','activity_group_capability_settings_manage_insert'),
+  ('activity_group_capability_settings','activity_group_capability_settings_manage_update'),
+  ('activity_group_participants','activity_group_participants_read'),
+  ('activity_group_participants','activity_group_participants_manage_insert'),
+  ('activity_group_participants','activity_group_participants_manage_update')
+), policies as (
+  select relation.relname as table_name,policy_record.polname as policy_name,
+    coalesce(pg_get_expr(policy_record.polqual,policy_record.polrelid),'')||' '||
+    coalesce(pg_get_expr(policy_record.polwithcheck,policy_record.polrelid),'') as expression
+  from pg_policy policy_record
+  join pg_class relation on relation.oid=policy_record.polrelid
+  join pg_namespace namespace_record on namespace_record.oid=relation.relnamespace
+  where namespace_record.nspname='public'
+)
+select ok((select count(*)=22 from expected join policies using(table_name,policy_name))
+  and not exists(
+    select 1 from expected join policies using(table_name,policy_name)
+    where expression ~* '(superadmin_internal|activity_v2|internal_marker)'
+      or expression !~* '(current_person_id|has_platform_permission|has_institution_permission|has_activity_context_access|has_context_permission)'
+  ),'all twenty-two legacy people policies remain on their exact relations and contain no internal-realm bypass');
 
 select * from finish();
 rollback;

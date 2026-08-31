@@ -3,7 +3,7 @@ create extension if not exists pgtap with schema extensions;
 select plan(18);
 select has_function('public','superadmin_activity_set_permissions_v2',array['uuid','uuid','bigint','jsonb','jsonb','jsonb'],'permission snapshot exists');
 select has_function('public','superadmin_activity_publish_v2',array['uuid','uuid','bigint'],'publish exists');
-select ok(not has_function_privilege('authenticated','public.superadmin_activity_set_permissions_v2(uuid,uuid,bigint,jsonb,jsonb,jsonb)','execute'),'Task3 exposes no intermediate authenticated grant');
+select ok(has_function_privilege('authenticated','public.superadmin_activity_set_permissions_v2(uuid,uuid,bigint,jsonb,jsonb,jsonb)','execute'),'final nominal permission gateway is executable by authenticated');
 select ok(not has_function_privilege('service_role','public.superadmin_activity_publish_v2(uuid,uuid,bigint)','execute'),'service role cannot publish');
 select is(app_private.activity_v2_effective_permission('prohibited','allow','edit','allow','required','true','default_on','allow'),'none','prohibited wins');
 select is(app_private.activity_v2_effective_permission(null,'deny','edit','allow','required','true','default_on','allow'),'none','legacy deny wins');
