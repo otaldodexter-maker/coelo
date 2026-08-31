@@ -107,6 +107,9 @@ void main() {
 
     expect(saved, hasLength(1));
     expect(prototype.itemById(saved.single)!.status, AgendaItemStatus.draft);
+    expect(prototype.publicationRequests, hasLength(1));
+    expect(prototype.publicationRequests.single.itemId, saved.single);
+    expect(prototype.publicationRequests.single.status, AgendaPublicationRequestStatus.pending);
   });
 
   testWidgets('produção sem integração mantém composição e ações fail-closed', (tester) async {

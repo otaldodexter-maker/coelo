@@ -3,6 +3,30 @@ import 'package:coelo_superadmin/features/agenda/domain/agenda_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('registra solicitação local de publicação sem duplicar o item', () {
+    final store = AgendaPrototypeStore.seeded(clock: () => DateTime(2026, 8, 31, 18));
+    store.upsertItem(
+      AgendaItem.fixture(
+        id: 'draft-week',
+        title: 'Planejamento da semana',
+        audience: const AgendaAudience(institutionId: 'inst-horizonte'),
+        startsAt: DateTime(2026, 9, 1, 8),
+        endsAt: DateTime(2026, 9, 1, 9),
+        status: AgendaItemStatus.draft,
+      ),
+    );
+    final draft = store.itemById('draft-week')!;
+
+    store.requestPublication(draft.id, requestedBy: 'Carolina Mendes');
+    store.requestPublication(draft.id, requestedBy: 'Carolina Mendes');
+
+    expect(store.publicationRequests, hasLength(1));
+    expect(store.publicationRequests.single.itemId, draft.id);
+    expect(store.publicationRequests.single.title, draft.title);
+    expect(store.publicationRequests.single.requestedBy, 'Carolina Mendes');
+    expect(store.publicationRequests.single.status, AgendaPublicationRequestStatus.pending);
+  });
+
   final now = DateTime(2026, 8, 3, 9);
   test('expõe exatamente as sete capacidades efetivas da Agenda', () {
     expect(AgendaCapability.values, [

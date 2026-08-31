@@ -65,6 +65,47 @@ enum AgendaResponseMode { none, rsvp, acknowledgement, authorization }
 
 enum GuardianResponsePolicy { oneIsEnough, allMustRespond }
 
+enum AgendaPublicationRequestStatus { pending, approved, rejected }
+
+final class AgendaPublicationRequest {
+  const AgendaPublicationRequest({
+    required this.id,
+    required this.itemId,
+    required this.title,
+    required this.contextLabel,
+    required this.requestedBy,
+    required this.requestedAt,
+    this.status = AgendaPublicationRequestStatus.pending,
+    this.decidedBy,
+    this.decidedAt,
+    this.reason,
+  });
+
+  final String id, itemId, title, contextLabel, requestedBy;
+  final DateTime requestedAt;
+  final AgendaPublicationRequestStatus status;
+  final String? decidedBy, reason;
+  final DateTime? decidedAt;
+
+  AgendaPublicationRequest decided({
+    required AgendaPublicationRequestStatus status,
+    required String decidedBy,
+    required DateTime decidedAt,
+    required String reason,
+  }) => AgendaPublicationRequest(
+    id: id,
+    itemId: itemId,
+    title: title,
+    contextLabel: contextLabel,
+    requestedBy: requestedBy,
+    requestedAt: requestedAt,
+    status: status,
+    decidedBy: decidedBy,
+    decidedAt: decidedAt,
+    reason: reason,
+  );
+}
+
 enum PermissionState { allowed, inherited, restrictedHere, blockedByAncestor }
 
 enum GuardianRequestStatus { sent, underReview, approved, rejected, convertedToDraft }
