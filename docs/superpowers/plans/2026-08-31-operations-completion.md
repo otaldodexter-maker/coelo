@@ -45,7 +45,6 @@ delta, testes adicionais, golden atualizado, commit ou promoção de estado.
 | Unidades | `apps/superadmin/lib/features/units/**`; testes e goldens de Unidades | gateways produtivos e backend permanecem fail-closed |
 | Assiduidade/Chamada | `apps/superadmin/lib/features/attendance/**`; testes e goldens de Assiduidade | contratos compartilhados só mudam após prova de necessidade |
 | Rotina Diária | `apps/superadmin/lib/features/daily_routine/**`; testes e goldens de Rotina | router compartilhado e docs ficam centralizados |
-| Formulários | somente arquivos confirmados sem colisão após inventário | qualquer arquivo V4.19/V4.20 colidente é excluído da edição |
 
 Agentes paralelos não editam `docs/reviews/coelo-flutter-pendencias.md`, fontes
 de conhecimento, router compartilhado ou o mesmo arquivo. O agente raiz

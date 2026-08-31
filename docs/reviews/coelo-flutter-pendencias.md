@@ -3164,6 +3164,8 @@ E2E ou conclusão estrita sem suas próprias evidências.
 
 Esta onda registra somente os 24 `action_id` acima. Formulários, Respostas, Arquivos de Formulários, Agenda e Eventos não fazem parte do ownership de implementação e não recebem alteração, evidência nova nem promoção neste bloco.
 
+**Gates finais da onda:** Pessoas/Unidades 45/45; Assiduidade 57/57; Rotina Diária 48 aprovados e 4 skips justificados; `flutter analyze` global e analyzers focados sem issues; formatter sem delta; `git diff --check`, validador de contratos visuais do Catálogo e os dois gates de `coelo-knowledge` aprovados. O diff de Forms, Respostas e Agenda contra a base é vazio.
+
 ## 17. Histórico
 
 | Data | Mudança |
