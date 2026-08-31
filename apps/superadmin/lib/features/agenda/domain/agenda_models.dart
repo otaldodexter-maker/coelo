@@ -34,7 +34,30 @@ enum AgendaVisualProminence { institutional, unit, group, activity, personal }
 
 enum AgendaContextLevel { institution, unit, group, activity }
 
-enum AgendaCapability { publishAgendaItems, approveGuardianBirthdayRequest }
+enum AgendaCapability {
+  publishAgendaItems,
+  approveGuardianBirthdayRequest,
+  overrideReservationConflict,
+}
+
+enum AgendaMutationResult {
+  success,
+  notFound,
+  invalidLifecycle,
+  reservationConflict,
+  notAuthorized,
+  reasonRequired,
+}
+
+enum AgendaHistoryAction { canceled, restored, occurrenceEdited, reservationConflictOverridden }
+
+enum AgendaOccurrenceEditScope { occurrence, thisAndFollowing, series }
+
+enum AgendaRecurrenceFrequency { daily, weekly, monthly }
+
+enum AgendaResponseMode { none, rsvp, acknowledgement, authorization }
+
+enum GuardianResponsePolicy { oneIsEnough, allMustRespond }
 
 enum PermissionState { allowed, inherited, restrictedHere, blockedByAncestor }
 
@@ -81,16 +104,64 @@ AgendaVisualProminence deriveAgendaProminence({
 }
 
 final class AgendaRecurrence {
+  const AgendaRecurrence.daily({
+    this.interval = 1,
+    this.until,
+    this.occurrenceCount,
+    this.exceptions = const {},
+  }) : frequency = AgendaRecurrenceFrequency.daily,
+       assert(interval > 0),
+       assert((until == null) != (occurrenceCount == null)),
+       assert(occurrenceCount == null || occurrenceCount > 0);
   const AgendaRecurrence.weekly({
     this.interval = 1,
-    required this.until,
+    this.until,
+    this.occurrenceCount,
     this.exceptions = const {},
-  });
+  }) : frequency = AgendaRecurrenceFrequency.weekly,
+       assert(interval > 0),
+       assert((until == null) != (occurrenceCount == null)),
+       assert(occurrenceCount == null || occurrenceCount > 0);
+  const AgendaRecurrence.monthly({
+    this.interval = 1,
+    this.until,
+    this.occurrenceCount,
+    this.exceptions = const {},
+  }) : frequency = AgendaRecurrenceFrequency.monthly,
+       assert(interval > 0),
+       assert((until == null) != (occurrenceCount == null)),
+       assert(occurrenceCount == null || occurrenceCount > 0);
+  final AgendaRecurrenceFrequency frequency;
   final int interval;
-  final DateTime until;
+  final DateTime? until;
+  final int? occurrenceCount;
   final Set<DateTime> exceptions;
   bool isException(DateTime value) =>
       exceptions.any((d) => d.year == value.year && d.month == value.month && d.day == value.day);
+}
+
+bool isValidIanaTimeZoneId(String value) {
+  if (value == 'UTC') return true;
+  return RegExp(r'^[A-Za-z_+-]+(?:/[A-Za-z0-9_+-]+)+$').hasMatch(value);
+}
+
+final class AgendaHistoryEntry {
+  const AgendaHistoryEntry({
+    required this.action,
+    required this.actorName,
+    required this.occurredAt,
+    this.reason,
+    this.occurrenceStartsAt,
+    this.occurrenceEditScope,
+    this.previousStatus,
+  });
+  final AgendaHistoryAction action;
+  final String actorName;
+  final DateTime occurredAt;
+  final String? reason;
+  final DateTime? occurrenceStartsAt;
+  final AgendaOccurrenceEditScope? occurrenceEditScope;
+  final AgendaItemStatus? previousStatus;
 }
 
 final class AgendaItem {
@@ -110,6 +181,10 @@ final class AgendaItem {
     this.allDay = false,
     this.requiresRsvp = false,
     this.authorizationReference,
+    this.timeZoneId = 'America/Sao_Paulo',
+    this.responseMode = AgendaResponseMode.none,
+    this.guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
+    this.history = const [],
   });
   factory AgendaItem.fixture({
     required String id,
@@ -127,6 +202,10 @@ final class AgendaItem {
     bool allDay = false,
     bool requiresRsvp = false,
     String? authorizationReference,
+    String timeZoneId = 'America/Sao_Paulo',
+    AgendaResponseMode responseMode = AgendaResponseMode.none,
+    GuardianResponsePolicy guardianResponsePolicy = GuardianResponsePolicy.oneIsEnough,
+    List<AgendaHistoryEntry> history = const [],
   }) => AgendaItem(
     id: id,
     title: title,
@@ -143,6 +222,10 @@ final class AgendaItem {
     allDay: allDay,
     requiresRsvp: requiresRsvp,
     authorizationReference: authorizationReference,
+    timeZoneId: timeZoneId,
+    responseMode: responseMode,
+    guardianResponsePolicy: guardianResponsePolicy,
+    history: List.unmodifiable(history),
   );
   final String id, title, location, description;
   final AgendaItemType type;
@@ -154,6 +237,10 @@ final class AgendaItem {
   final AgendaRecurrence? recurrence;
   final bool allDay, requiresRsvp;
   final String? authorizationReference;
+  final String timeZoneId;
+  final AgendaResponseMode responseMode;
+  final GuardianResponsePolicy guardianResponsePolicy;
+  final List<AgendaHistoryEntry> history;
   Duration get duration => endsAt.difference(startsAt);
   AgendaVisualProminence get prominence => deriveAgendaProminence(audience: audience, type: type);
   AgendaItem copyWith({
@@ -172,6 +259,10 @@ final class AgendaItem {
     bool? allDay,
     bool? requiresRsvp,
     String? authorizationReference,
+    String? timeZoneId,
+    AgendaResponseMode? responseMode,
+    GuardianResponsePolicy? guardianResponsePolicy,
+    List<AgendaHistoryEntry>? history,
   }) => AgendaItem(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -188,7 +279,29 @@ final class AgendaItem {
     allDay: allDay ?? this.allDay,
     requiresRsvp: requiresRsvp ?? this.requiresRsvp,
     authorizationReference: authorizationReference ?? this.authorizationReference,
+    timeZoneId: timeZoneId ?? this.timeZoneId,
+    responseMode: responseMode ?? this.responseMode,
+    guardianResponsePolicy: guardianResponsePolicy ?? this.guardianResponsePolicy,
+    history: history ?? this.history,
   );
+}
+
+final class AgendaBirthday {
+  const AgendaBirthday({
+    required this.personId,
+    required this.firstName,
+    required this.institutionId,
+    required this.contextId,
+    required this.month,
+    required this.day,
+    this.authorizedPhotoUrl,
+  });
+  final String personId, firstName, institutionId, contextId;
+  final int month, day;
+  final String? authorizedPhotoUrl;
+
+  @override
+  String toString() => 'AgendaBirthday($firstName, $contextId, $month/$day)';
 }
 
 final class AgendaOccurrence {

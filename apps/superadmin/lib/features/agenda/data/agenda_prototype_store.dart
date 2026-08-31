@@ -7,11 +7,13 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     _contexts = _seedContexts();
     _items = _seedItems();
     _requests = _seedRequests();
+    _birthdays = _seedBirthdays();
   }
   final DateTime Function() _clock;
   late List<AgendaItem> _items;
   late List<AgendaContext> _contexts;
   late List<GuardianBirthdayRequest> _requests;
+  late List<AgendaBirthday> _birthdays;
   DateTime get referenceDate => DateTime(2026, 8, 3);
   List<AgendaItem> get items => List.unmodifiable(_items);
   List<AgendaContext> get contexts => List.unmodifiable(_contexts);
@@ -19,6 +21,151 @@ final class AgendaPrototypeStore extends ChangeNotifier {
   AgendaItem? itemById(String id) => _firstOrNull(_items.where((e) => e.id == id));
   GuardianBirthdayRequest? requestById(String id) =>
       _firstOrNull(_requests.where((e) => e.id == id));
+
+  AgendaMutationResult cancelItem(String id, {required String actorName}) {
+    final item = itemById(id);
+    if (item == null) return AgendaMutationResult.notFound;
+    if (item.status == AgendaItemStatus.canceled || item.status == AgendaItemStatus.draft) {
+      return AgendaMutationResult.invalidLifecycle;
+    }
+    upsertItem(
+      item.copyWith(
+        status: AgendaItemStatus.canceled,
+        history: [
+          ...item.history,
+          AgendaHistoryEntry(
+            action: AgendaHistoryAction.canceled,
+            actorName: actorName,
+            occurredAt: _clock(),
+            previousStatus: item.status,
+          ),
+        ],
+      ),
+    );
+    return AgendaMutationResult.success;
+  }
+
+  AgendaMutationResult restoreItem(String id, {required String actorName}) {
+    final item = itemById(id);
+    if (item == null) return AgendaMutationResult.notFound;
+    if (item.status != AgendaItemStatus.canceled) return AgendaMutationResult.invalidLifecycle;
+    final previous = item.history.reversed
+        .where((entry) => entry.action == AgendaHistoryAction.canceled)
+        .firstOrNull
+        ?.previousStatus;
+    upsertItem(
+      item.copyWith(
+        status: previous == AgendaItemStatus.scheduled
+            ? AgendaItemStatus.scheduled
+            : AgendaItemStatus.published,
+        history: [
+          ...item.history,
+          AgendaHistoryEntry(
+            action: AgendaHistoryAction.restored,
+            actorName: actorName,
+            occurredAt: _clock(),
+          ),
+        ],
+      ),
+    );
+    return AgendaMutationResult.success;
+  }
+
+  AgendaMutationResult deleteDraft(String id) {
+    final index = _items.indexWhere((item) => item.id == id);
+    if (index < 0) return AgendaMutationResult.notFound;
+    if (_items[index].status != AgendaItemStatus.draft) {
+      return AgendaMutationResult.invalidLifecycle;
+    }
+    _items = [..._items]..removeAt(index);
+    notifyListeners();
+    return AgendaMutationResult.success;
+  }
+
+  AgendaMutationResult recordOccurrenceEdit({
+    required String itemId,
+    required DateTime occurrenceStartsAt,
+    required AgendaOccurrenceEditScope scope,
+    required String actorName,
+  }) {
+    final item = itemById(itemId);
+    if (item == null) return AgendaMutationResult.notFound;
+    if (item.recurrence == null) return AgendaMutationResult.invalidLifecycle;
+    upsertItem(
+      item.copyWith(
+        history: [
+          ...item.history,
+          AgendaHistoryEntry(
+            action: AgendaHistoryAction.occurrenceEdited,
+            actorName: actorName,
+            occurredAt: _clock(),
+            occurrenceStartsAt: occurrenceStartsAt,
+            occurrenceEditScope: scope,
+          ),
+        ],
+      ),
+    );
+    return AgendaMutationResult.success;
+  }
+
+  AgendaMutationResult saveItem(
+    AgendaItem item, {
+    required String actorContextId,
+    String actorName = '',
+    bool overrideConflict = false,
+    String? reason,
+  }) {
+    final hasReservationConflict =
+        item.type == AgendaItemType.resourceReservation &&
+        item.location.trim().isNotEmpty &&
+        _items.any(
+          (other) =>
+              other.id != item.id &&
+              other.type == AgendaItemType.resourceReservation &&
+              other.audience.institutionId == item.audience.institutionId &&
+              other.location.trim().toLowerCase() == item.location.trim().toLowerCase() &&
+              item.startsAt.isBefore(other.endsAt) &&
+              item.endsAt.isAfter(other.startsAt),
+        );
+    if (!hasReservationConflict) {
+      upsertItem(item);
+      return AgendaMutationResult.success;
+    }
+    if (!overrideConflict) return AgendaMutationResult.reservationConflict;
+    if (!resolveCapability(
+      actorContextId,
+      AgendaCapability.overrideReservationConflict,
+    ).isAllowed) {
+      return AgendaMutationResult.notAuthorized;
+    }
+    if (reason == null || reason.trim().isEmpty) return AgendaMutationResult.reasonRequired;
+    upsertItem(
+      item.copyWith(
+        history: [
+          ...item.history,
+          AgendaHistoryEntry(
+            action: AgendaHistoryAction.reservationConflictOverridden,
+            actorName: actorName,
+            occurredAt: _clock(),
+            reason: reason.trim(),
+          ),
+        ],
+      ),
+    );
+    return AgendaMutationResult.success;
+  }
+
+  List<AgendaBirthday> birthdaysForContext(String contextId) {
+    final context = _context(contextId);
+    if (context == null) return const [];
+    return List.unmodifiable(
+      _birthdays.where(
+        (birthday) =>
+            birthday.institutionId == context.institutionId &&
+            _isAncestorOrSelf(contextId, birthday.contextId),
+      ),
+    );
+  }
 
   void upsertItem(AgendaItem item) {
     final index = _items.indexWhere((e) => e.id == item.id);
@@ -66,14 +213,18 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         continue;
       }
       var occurrence = item.startsAt;
+      var occurrenceIndex = 0;
       final duration = item.duration;
-      while (!occurrence.isAfter(recurrence.until) && occurrence.isBefore(end)) {
+      while ((recurrence.until == null || !occurrence.isAfter(recurrence.until!)) &&
+          (recurrence.occurrenceCount == null || occurrenceIndex < recurrence.occurrenceCount!) &&
+          occurrence.isBefore(end)) {
         if (!occurrence.isBefore(start.subtract(duration)) && !recurrence.isException(occurrence)) {
           result.add(
             AgendaOccurrence(item: item, startsAt: occurrence, endsAt: occurrence.add(duration)),
           );
         }
-        occurrence = occurrence.add(Duration(days: 7 * recurrence.interval));
+        occurrenceIndex++;
+        occurrence = _nextOccurrence(occurrence, recurrence);
       }
     }
     return List.unmodifiable(result..sort(AgendaOccurrence.compareChronologically));
@@ -214,6 +365,28 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return iterator.moveNext() ? iterator.current : null;
   }
 
+  static DateTime _nextOccurrence(DateTime value, AgendaRecurrence recurrence) {
+    switch (recurrence.frequency) {
+      case AgendaRecurrenceFrequency.daily:
+        return value.add(Duration(days: recurrence.interval));
+      case AgendaRecurrenceFrequency.weekly:
+        return value.add(Duration(days: 7 * recurrence.interval));
+      case AgendaRecurrenceFrequency.monthly:
+        final targetMonth = value.month + recurrence.interval;
+        final lastDay = DateTime(value.year, targetMonth + 1, 0).day;
+        return DateTime(
+          value.year,
+          targetMonth,
+          value.day > lastDay ? lastDay : value.day,
+          value.hour,
+          value.minute,
+          value.second,
+          value.millisecond,
+          value.microsecond,
+        );
+    }
+  }
+
   static List<AgendaContext> _seedContexts() => const [
     AgendaContext(
       id: 'inst-horizonte',
@@ -223,6 +396,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       grantedCapabilities: {
         AgendaCapability.publishAgendaItems,
         AgendaCapability.approveGuardianBirthdayRequest,
+        AgendaCapability.overrideReservationConflict,
       },
     ),
     AgendaContext(
@@ -302,7 +476,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
     return [
       item(
         'event-parents',
-        'Dia dos Pais',
+        'Feira cultural 2026',
         AgendaItemType.event,
         h,
         9,
@@ -313,7 +487,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       ),
       item(
         'event-pajama',
-        'Festa do Pijama',
+        'Reunião de responsáveis',
         AgendaItemType.event,
         u,
         7,
@@ -323,7 +497,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       ),
       item(
         'event-paint',
-        'Pintando o 7',
+        'Passeio pedagógico',
         AgendaItemType.event,
         g,
         5,
@@ -333,7 +507,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       ),
       item(
         'activity-yellow',
-        'Aprendendo a Cor Amarela',
+        'Festival de esportes',
         AgendaItemType.event,
         a,
         5,
@@ -357,7 +531,7 @@ final class AgendaPrototypeStore extends ChangeNotifier {
       ),
       item(
         'routine-school',
-        'Permanência na escola',
+        'Mostra de projetos',
         AgendaItemType.recurringRoutine,
         g,
         3,
@@ -488,6 +662,17 @@ final class AgendaPrototypeStore extends ChangeNotifier {
         decidedAt: DateTime(2026, 8, 1, 10),
         reason: 'A unidade estará em recesso.',
       ),
+    ),
+  ];
+
+  static List<AgendaBirthday> _seedBirthdays() => const [
+    AgendaBirthday(
+      personId: 'child-lia',
+      firstName: 'Lia',
+      institutionId: 'inst-horizonte',
+      contextId: 'group-girassol',
+      month: 8,
+      day: 5,
     ),
   ];
 }
