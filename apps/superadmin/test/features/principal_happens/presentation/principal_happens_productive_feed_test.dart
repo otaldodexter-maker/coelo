@@ -26,7 +26,9 @@ void main() {
     await pumpFeed(tester, _FeedRepository(() => completer.future));
     await tester.pump();
 
-    expect(find.text('Agora'), findsOneWidget);
+    expect(find.text('Agora'), findsWidgets);
+    expect(find.byKey(const Key('principal-happens-now-card')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-publish-now-label')), findsOneWidget);
     expect(find.text('Carregando publicações'), findsOneWidget);
 
     completer.complete(const []);

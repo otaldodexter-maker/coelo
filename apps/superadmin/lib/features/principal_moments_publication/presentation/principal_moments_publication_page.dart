@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
-import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../principal_shared/presentation/principal_publication_frame.dart';
+import '../../principal_shared/presentation/principal_preview_app_bar.dart';
 import '../application/moments_publication_controller.dart';
 import '../domain/moments_publication.dart';
 
@@ -15,8 +13,8 @@ part 'principal_moments_publication_components.dart';
 
 class PrincipalMomentsPublicationPage extends StatefulWidget {
   const PrincipalMomentsPublicationPage({
+    required this.controller,
     super.key,
-    this.controller,
     this.onAddMedia,
     this.onEditCover,
     this.onSelectContext,
@@ -24,9 +22,24 @@ class PrincipalMomentsPublicationPage extends StatefulWidget {
     this.onDraftSaved,
     this.onPublished,
     this.onClose,
-  });
+    this.embedded = false,
+  }) : demo = false;
+
+  const PrincipalMomentsPublicationPage.demo({
+    super.key,
+    this.onAddMedia,
+    this.onEditCover,
+    this.onSelectContext,
+    this.onOpenSchedule,
+    this.onDraftSaved,
+    this.onPublished,
+    this.onClose,
+    this.embedded = false,
+  }) : controller = null,
+       demo = true;
 
   final MomentsPublicationController? controller;
+  final bool demo;
   final VoidCallback? onAddMedia;
   final VoidCallback? onEditCover;
   final VoidCallback? onSelectContext;
@@ -34,6 +47,7 @@ class PrincipalMomentsPublicationPage extends StatefulWidget {
   final ValueChanged<MomentsDraft>? onDraftSaved;
   final ValueChanged<MomentsPublication>? onPublished;
   final VoidCallback? onClose;
+  final bool embedded;
 
   @override
   State<PrincipalMomentsPublicationPage> createState() => _PrincipalMomentsPublicationPageState();
@@ -49,8 +63,8 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   @override
   void initState() {
     super.initState();
-    _ownsController = widget.controller == null;
-    _controller = widget.controller ?? _createDemoController();
+    _ownsController = widget.demo;
+    _controller = widget.demo ? _createDemoController() : widget.controller!;
     _captionController = TextEditingController();
     _controller.addListener(_syncCaption);
     unawaited(_load());
@@ -59,7 +73,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   MomentsPublicationController _createDemoController() {
     final draft = MomentsDraft(
       caption:
-          'Aprender juntos é crescer juntos. 🌱\n\n'
+          'Aprender juntos é crescer juntos.\n\n'
           'Momentos que fortalecem laços, despertam curiosidade e constroem o futuro.\n\n'
           '#coelomomentos',
       audiences: const {MomentsAudienceKind.families},
@@ -96,9 +110,17 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      child: AnimatedBuilder(
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: widget.embedded
+          ? null
+          : PrincipalPreviewAppBar(
+              keyPrefix: 'principal-moments-publication',
+              onReportBug: () => _unavailable('Reporte de bug'),
+              onOpenNotifications: () => _unavailable('Notificações'),
+              onOpenContext: () => _unavailable('Troca de contexto'),
+            ),
+      body: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
           if (_controller.state.phase == MomentsPublicationPhase.loading) {
@@ -106,9 +128,44 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
               child: CircularProgressIndicator(key: Key('moments-publication-loading')),
             );
           }
+          if (_controller.state.phase == MomentsPublicationPhase.unauthorized) {
+            return KeyedSubtree(
+              key: const Key('moments-publication-unauthorized'),
+              child: CoeloStatePanel(
+                title: 'Publicação indisponível',
+                message: _controller.state.message ?? 'Você não pode publicar neste contexto.',
+                icon: Icons.lock_outline_rounded,
+              ),
+            );
+          }
+          if (_controller.state.phase == MomentsPublicationPhase.conflict) {
+            return KeyedSubtree(
+              key: const Key('moments-publication-conflict'),
+              child: CoeloStatePanel(
+                title: 'Rascunho desatualizado',
+                message: _controller.state.message ?? 'Recarregue antes de continuar.',
+                icon: Icons.sync_problem_rounded,
+                actionLabel: 'Recarregar rascunho',
+                onAction: _retry,
+              ),
+            );
+          }
+          if (_controller.state.phase == MomentsPublicationPhase.failure) {
+            return KeyedSubtree(
+              key: const Key('moments-publication-failure'),
+              child: CoeloStatePanel(
+                title: _controller.state.message == 'Não foi possível carregar o rascunho.'
+                    ? 'Não foi possível carregar'
+                    : 'Não foi possível concluir',
+                message: _controller.state.message ?? 'Tente novamente.',
+                icon: Icons.cloud_off_outlined,
+                actionLabel: 'Tentar novamente',
+                onAction: _retry,
+              ),
+            );
+          }
           final publishing = _controller.state.phase == MomentsPublicationPhase.publishing;
-          return SuperadminFormFrame(
-            viewportWidth: MediaQuery.sizeOf(context).width,
+          return PrincipalPublicationFrame(
             scrollKey: const Key('moments-publication-scroll'),
             navigation: ExcludeFocus(
               key: const Key('moments-publication-navigation-focus-lock'),
@@ -139,20 +196,31 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     );
   }
 
-  Widget _stepNavigation() => SuperadminFormStepNavigation(
+  void _unavailable(String label) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
+
+  Future<void> _retry() async {
+    final publication = await _controller.retry();
+    if (!mounted || publication == null) return;
+    widget.onPublished?.call(publication);
+    widget.onClose?.call();
+  }
+
+  Widget _stepNavigation() => PrincipalPublicationStepNavigation(
     currentIndex: _currentStep,
     onStepSelected: (index) => setState(() => _currentStep = index),
     steps: [
       for (var index = 0; index < 3; index++)
-        SuperadminFormStep(
+        PrincipalPublicationStep(
           key: Key('moments-publication-step-$index'),
           label: const ['Conteúdo', 'Público', 'Revisão'][index],
           enabled: index <= _currentStep,
           status: index < _currentStep
-              ? SuperadminFormStepStatus.complete
+              ? PrincipalPublicationStepStatus.complete
               : index == _currentStep
-              ? SuperadminFormStepStatus.current
-              : SuperadminFormStepStatus.incomplete,
+              ? PrincipalPublicationStepStatus.current
+              : PrincipalPublicationStepStatus.incomplete,
         ),
     ],
   );
@@ -161,20 +229,12 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Text(
-        const [
-          'Conteúdo do momento',
-          'Público e publicação',
-          'Revise antes de publicar',
-        ][_currentStep],
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+        'Sua publicação',
+        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
       ),
       const SizedBox(height: CoeloSpacing.space2),
       Text(
-        const [
-          'Escolha a mídia e escreva a legenda.',
-          'Defina quem verá o momento e quando ele será publicado.',
-          'Confira a prévia e as configurações antes de publicar.',
-        ][_currentStep],
+        'Publicar em Momentos · ${const ['Conteúdo', 'Público', 'Revisão'][_currentStep]}',
         style: Theme.of(
           context,
         ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -182,12 +242,26 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       const SizedBox(height: CoeloSpacing.space5),
       LayoutBuilder(
         builder: (context, constraints) {
-          final useColumns = constraints.maxWidth >= 700;
-          return switch (_currentStep) {
+          final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+          final useColumns = constraints.maxWidth >= 700 && !enlargedText;
+          final content = switch (_currentStep) {
             0 => _contentStep(useColumns),
             1 => _audienceStep(useColumns),
-            _ => _reviewStep(useColumns),
+            _ => _reviewStep(useColumns, showPreview: constraints.maxWidth < 840 || enlargedText),
           };
+          if (constraints.maxWidth < 840 || enlargedText) return content;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: content),
+              const SizedBox(width: CoeloSpacing.space5),
+              SizedBox(
+                key: const Key('moments-publication-desktop-preview'),
+                width: 320,
+                child: _previewPanel(),
+              ),
+            ],
+          );
         },
       ),
     ],
@@ -240,7 +314,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     );
   }
 
-  Widget _reviewStep(bool useColumns) {
+  Widget _reviewStep(bool useColumns, {required bool showPreview}) {
     final settings = Column(
       children: [
         _audienceCard(),
@@ -250,6 +324,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
         _optionsCard(),
       ],
     );
+    if (!showPreview) return settings;
     if (!useColumns) {
       return Column(
         children: [
@@ -271,8 +346,17 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
 
   Widget _mediaPanel() {
     final media = _controller.state.draft.media;
+    if (media.isEmpty) {
+      return _SectionCard(
+        label: 'Mídia',
+        child: AspectRatio(
+          aspectRatio: 9 / 16,
+          child: _EmptyMomentMedia(onPressed: _addMedia),
+        ),
+      );
+    }
     final selectedIndex = media.isEmpty ? 0 : _selectedMediaIndex.clamp(0, media.length - 1);
-    final selected = media.isEmpty ? MomentsMediaDraft.demo(0) : media[selectedIndex];
+    final selected = media[selectedIndex];
     return _SectionCard(
       label: 'Mídia',
       child: Column(
@@ -287,9 +371,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
                 Positioned(
                   right: CoeloSpacing.space2,
                   top: CoeloSpacing.space2,
-                  child: _MediaBadge(
-                    label: '${selectedIndex + 1}/${media.isEmpty ? 1 : media.length}',
-                  ),
+                  child: _MediaBadge(label: '${selectedIndex + 1}/${media.length}'),
                 ),
                 Positioned(
                   left: CoeloSpacing.space2,
@@ -435,6 +517,10 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       callback();
       return;
     }
+    if (!widget.demo) {
+      _showMessage('Adicionar mídia está indisponível sem a integração autorizada.');
+      return;
+    }
     _controller.addMedia(MomentsMediaDraft.demo(_controller.state.draft.media.length));
     if (_controller.state.draft.media.isNotEmpty) {
       setState(() => _selectedMediaIndex = _controller.state.draft.media.length - 1);
@@ -447,7 +533,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       callback();
       return;
     }
-    _showMessage('A capa será ajustada no fluxo de mídia.');
+    _showMessage('Ajustar capa está indisponível sem a integração de mídia autorizada.');
   }
 
   void _selectContext() {
@@ -455,7 +541,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       callback();
       return;
     }
-    _showMessage('A seleção de contexto será aberta no fluxo de publicação.');
+    _showMessage('Selecionar contexto está indisponível sem a integração autorizada.');
   }
 
   void _openSchedule() {
@@ -463,12 +549,19 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
       callback();
       return;
     }
-    _showMessage('O agendamento permanece em “Publicar agora” nesta versão.');
+    _showMessage('Agendamento está indisponível sem a integração autorizada.');
   }
 
   Future<void> _saveDraft() async {
     await _controller.saveDraft();
     if (!mounted) return;
+    if ({
+      MomentsPublicationPhase.failure,
+      MomentsPublicationPhase.conflict,
+      MomentsPublicationPhase.unauthorized,
+    }.contains(_controller.state.phase)) {
+      return;
+    }
     _showMessage(_controller.state.message ?? 'Rascunho salvo.');
     if (_controller.state.phase == MomentsPublicationPhase.saved) {
       widget.onDraftSaved?.call(_controller.state.draft);
@@ -480,6 +573,13 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
     FocusManager.instance.primaryFocus?.unfocus();
     final publication = await _controller.publish();
     if (!mounted) return;
+    if ({
+      MomentsPublicationPhase.failure,
+      MomentsPublicationPhase.conflict,
+      MomentsPublicationPhase.unauthorized,
+    }.contains(_controller.state.phase)) {
+      return;
+    }
     _showMessage(
       publication == null
           ? (_controller.state.message ?? 'Revise os dados antes de publicar.')
@@ -492,7 +592,6 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   }
 
   void _showMessage(String message) {
-    if (Scaffold.maybeOf(context) == null) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(

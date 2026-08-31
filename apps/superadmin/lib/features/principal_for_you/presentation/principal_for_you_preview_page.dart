@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../../principal_shared/presentation/principal_global_navigation.dart';
 import '../domain/principal_for_you_preview_data.dart';
 import 'widgets/coelo_principal_action_card.dart';
 
@@ -13,6 +14,14 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
     this.onOpenMoments,
     this.onOpenAgenda,
     this.onOpenProfile,
+    this.onOpenMenu,
+    this.onOpenNotifications,
+    this.onReportProblem,
+    this.onOpenHome,
+    this.onOpenForYou,
+    this.onPublishNow,
+    this.onOpenSearch,
+    this.onOpenMessages,
     super.key,
   });
 
@@ -23,6 +32,14 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenMoments;
   final VoidCallback? onOpenAgenda;
   final VoidCallback? onOpenProfile;
+  final VoidCallback? onOpenMenu;
+  final VoidCallback? onOpenNotifications;
+  final VoidCallback? onReportProblem;
+  final VoidCallback? onOpenHome;
+  final VoidCallback? onOpenForYou;
+  final VoidCallback? onPublishNow;
+  final VoidCallback? onOpenSearch;
+  final VoidCallback? onOpenMessages;
 
   @override
   State<PrincipalForYouPreviewPage> createState() => _PrincipalForYouPreviewPageState();
@@ -110,110 +127,42 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-      final expanded = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
-      final large = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: widget.embedded
             ? null
-            : _ForYouAppBar(onProfile: () => _invoke(widget.onOpenProfile, 'Perfil')),
-        bottomNavigationBar: compact && !widget.embedded
-            ? _MobileNavigation(
-                onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
-                onNow: () => _invoke(widget.onOpenNow, 'Agora'),
-                onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
-                onAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
-              )
-            : null,
-        body: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+            : PrincipalGlobalHeader(
+                keyPrefix: 'principal-for-you',
+                onOpenMenu: () => _invoke(widget.onOpenMenu, 'Menu'),
+                onOpenNotifications: () => _invoke(widget.onOpenNotifications, 'Notificações'),
+                onReportProblem: () => _invoke(widget.onReportProblem, 'Reportar problema'),
+                onOpenProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
+              ),
+        body: Stack(
           children: [
-            if (expanded && !widget.embedded)
-              _DesktopRail(
-                onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
-                onNow: () => _invoke(widget.onOpenNow, 'Agora'),
-                onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
-                onAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
-              ),
-            Expanded(
-              child: _ForYouScroll(
-                data: _data,
-                activeContext: _activeContext,
-                compact: compact,
-                large: large,
-                onContext: _showContextSelector,
-                onAction: _feedback,
-              ),
+            _ForYouScroll(
+              data: _data,
+              activeContext: _activeContext,
+              compact: compact,
+              navigationVisible: !widget.embedded,
+              onContext: _showContextSelector,
+              onAction: _feedback,
             ),
+            if (!widget.embedded)
+              PrincipalGlobalNavigation(
+                selected: PrincipalDestination.forYou,
+                onHome: () => _invoke(widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
+                onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
+                onPublishNow: () =>
+                    _invoke(widget.onPublishNow ?? widget.onOpenNow, 'Publicar no Agora'),
+                onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
+                onSearch: () => _invoke(widget.onOpenSearch, 'Pesquisar'),
+                onMessages: () => _invoke(widget.onOpenMessages, 'Mensagens'),
+              ),
           ],
         ),
       );
     },
-  );
-}
-
-final class _ForYouAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _ForYouAppBar({required this.onProfile});
-  final VoidCallback onProfile;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(64);
-
-  @override
-  Widget build(BuildContext context) => AppBar(
-    toolbarHeight: 64,
-    elevation: 0,
-    scrolledUnderElevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    titleSpacing: CoeloSpacing.space4,
-    shape: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    title: Text(
-      'coelo',
-      semanticsLabel: 'Coelo',
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-        color: Theme.of(context).colorScheme.primary,
-        fontWeight: FontWeight.w900,
-        letterSpacing: -1.4,
-      ),
-    ),
-    actions: [
-      Stack(
-        children: [
-          IconButton(
-            tooltip: 'Notificações',
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Notificações estarão disponíveis na experiência completa.'),
-              ),
-            ),
-            icon: const Icon(Icons.notifications_none_rounded),
-          ),
-          Positioned(
-            right: 8,
-            top: 8,
-            child: ExcludeSemantics(
-              child: CircleAvatar(
-                radius: 4,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-      Padding(
-        padding: const EdgeInsets.only(right: CoeloSpacing.space3),
-        child: IconButton(
-          tooltip: 'Abrir Perfil',
-          onPressed: onProfile,
-          icon: CircleAvatar(
-            radius: 17,
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            foregroundImage: const AssetImage('assets/principal_profile/institution-crest.png'),
-          ),
-        ),
-      ),
-    ],
   );
 }
 
@@ -222,7 +171,7 @@ final class _ForYouScroll extends StatelessWidget {
     required this.data,
     required this.activeContext,
     required this.compact,
-    required this.large,
+    required this.navigationVisible,
     required this.onContext,
     required this.onAction,
   });
@@ -230,7 +179,7 @@ final class _ForYouScroll extends StatelessWidget {
   final PrincipalForYouPreviewData data;
   final PrincipalForYouContext? activeContext;
   final bool compact;
-  final bool large;
+  final bool navigationVisible;
   final VoidCallback onContext;
   final ValueChanged<String> onAction;
 
@@ -243,7 +192,7 @@ final class _ForYouScroll extends StatelessWidget {
         horizontal,
         CoeloSpacing.space4,
         horizontal,
-        CoeloSpacing.space6,
+        navigationVisible ? 148 : CoeloSpacing.space6,
       ),
       child: Center(
         child: ConstrainedBox(
@@ -253,29 +202,12 @@ final class _ForYouScroll extends StatelessWidget {
             children: [
               _Greeting(contextData: activeContext, onContext: onContext),
               const SizedBox(height: CoeloSpacing.space4),
-              if (large)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _HeroCard(highlight: data.primaryHighlight, onAction: onAction),
-                    ),
-                    const SizedBox(width: CoeloSpacing.space4),
-                    SizedBox(
-                      key: const Key('principal-for-you-summary-aside'),
-                      width: 300,
-                      child: _DaySummary(items: data.dayItems, onAction: onAction),
-                    ),
-                  ],
-                )
-              else
-                _HeroCard(highlight: data.primaryHighlight, onAction: onAction),
+              _HeroCard(highlight: data.primaryHighlight, onAction: onAction),
               const SizedBox(height: CoeloSpacing.space5),
               _Shortcuts(items: data.shortcuts, compact: compact, onAction: onAction),
               const SizedBox(height: CoeloSpacing.space5),
               _EditorialGrid(items: data.editorialItems, compact: compact, onAction: onAction),
-              if (!large && data.dayItems.isNotEmpty) ...[
+              if (data.dayItems.isNotEmpty) ...[
                 const SizedBox(height: CoeloSpacing.space5),
                 _DaySummary(items: data.dayItems, onAction: onAction),
               ],
@@ -343,8 +275,15 @@ final class _HeroCard extends StatelessWidget {
       builder: (context, constraints) {
         final narrow = constraints.maxWidth < 520;
         final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+        final body = Text(
+          item.body,
+          maxLines: largeText ? null : (narrow ? 3 : 2),
+          overflow: largeText ? null : TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onPrimary),
+        );
         return Container(
-          height: largeText ? 380 : (narrow ? 240 : 270),
+          key: const Key('principal-for-you-hero'),
+          height: largeText ? (narrow ? 800 : 560) : (narrow ? 240 : 270),
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: scheme.primary,
@@ -357,7 +296,7 @@ final class _HeroCard extends StatelessWidget {
                 child: _SpriteImage(
                   assetPath: item.assetPath,
                   index: item.assetIndex,
-                  count: 5,
+                  count: _spriteCount(item.assetPath),
                   semanticLabel: 'Estudante participando de atividade escolar',
                 ),
               ),
@@ -366,7 +305,7 @@ final class _HeroCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [scheme.primary, scheme.primary, scheme.primary.withValues(alpha: 0)],
-                      stops: const [0, .43, .72],
+                      stops: largeText ? const [0, .78, 1] : const [0, .43, .72],
                     ),
                   ),
                 ),
@@ -374,7 +313,11 @@ final class _HeroCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(CoeloSpacing.space4),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: narrow ? 210 : 330),
+                  constraints: BoxConstraints(
+                    maxWidth: largeText
+                        ? constraints.maxWidth - CoeloSpacing.space5
+                        : (narrow ? 210 : 330),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -400,26 +343,18 @@ final class _HeroCard extends StatelessWidget {
                       const SizedBox(height: CoeloSpacing.space3),
                       Text(
                         item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        maxLines: largeText ? null : 2,
+                        overflow: largeText ? null : TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: scheme.onPrimary,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                       const SizedBox(height: CoeloSpacing.space2),
-                      Flexible(
-                        child: Text(
-                          item.body,
-                          maxLines: narrow ? 3 : 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(color: scheme.onPrimary),
-                        ),
-                      ),
+                      if (largeText) body else Flexible(child: body),
                       const Spacer(),
                       FilledButton.tonalIcon(
+                        key: const Key('principal-for-you-hero-action'),
                         onPressed: () => onAction(item.cta),
                         style: FilledButton.styleFrom(
                           backgroundColor: scheme.surface,
@@ -447,46 +382,49 @@ final class _Shortcuts extends StatelessWidget {
   final ValueChanged<String> onAction;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Atalhos essenciais',
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-      ),
-      const SizedBox(height: CoeloSpacing.space3),
-      GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: items.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: compact ? 3 : 6,
-          mainAxisSpacing: CoeloSpacing.space2,
-          crossAxisSpacing: CoeloSpacing.space2,
-          mainAxisExtent: MediaQuery.textScalerOf(context).scale(1) > 1.5 ? 196 : 104,
+  Widget build(BuildContext context) {
+    final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Atalhos essenciais',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return CoeloPrincipalActionCard(
-            key: index == 0 ? const Key('principal-for-you-shortcut-agenda') : null,
-            onPressed: () => onAction(item.label),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(_icon(item.iconName), color: Theme.of(context).colorScheme.primary),
-                const SizedBox(height: CoeloSpacing.space2),
-                Text(
-                  item.label,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    ],
-  );
+        const SizedBox(height: CoeloSpacing.space3),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: compact ? (largeText ? 2 : 3) : 6,
+            mainAxisSpacing: CoeloSpacing.space2,
+            crossAxisSpacing: CoeloSpacing.space2,
+            mainAxisExtent: largeText ? 196 : 104,
+          ),
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return CoeloPrincipalActionCard(
+              key: index == 0 ? const Key('principal-for-you-shortcut-agenda') : null,
+              onPressed: () => onAction(item.label),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(_icon(item.iconName), color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  Text(
+                    item.label,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
 }
 
 final class _EditorialGrid extends StatelessWidget {
@@ -579,7 +517,7 @@ final class _EditorialCard extends StatelessWidget {
                 _SpriteImage(
                   assetPath: item.assetPath,
                   index: item.assetIndex,
-                  count: 5,
+                  count: _spriteCount(item.assetPath),
                   semanticLabel: item.title,
                 ),
                 DecoratedBox(
@@ -876,154 +814,6 @@ final class _ContextOption extends StatelessWidget {
   );
 }
 
-final class _DesktopRail extends StatelessWidget {
-  const _DesktopRail({
-    required this.onHappens,
-    required this.onNow,
-    required this.onMoments,
-    required this.onAgenda,
-  });
-  final VoidCallback onHappens;
-  final VoidCallback onNow;
-  final VoidCallback onMoments;
-  final VoidCallback onAgenda;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    key: const Key('principal-for-you-desktop-rail'),
-    width: 142,
-    padding: const EdgeInsets.all(CoeloSpacing.space2),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      border: Border(right: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Column(
-      children: [
-        const _NavItem('Para você', Icons.favorite_border_rounded, selected: true),
-        _NavItem('Acontece', Icons.dynamic_feed_outlined, onPressed: onHappens),
-        _NavItem('Agora', Icons.notifications_none_rounded, onPressed: onNow),
-        _NavItem('Momentos', Icons.play_circle_outline_rounded, onPressed: onMoments),
-        _NavItem('Agenda', Icons.calendar_today_outlined, onPressed: onAgenda),
-        const Spacer(),
-        const _NavItem('Ajuda', Icons.help_outline_rounded),
-      ],
-    ),
-  );
-}
-
-final class _MobileNavigation extends StatelessWidget {
-  const _MobileNavigation({
-    required this.onHappens,
-    required this.onNow,
-    required this.onMoments,
-    required this.onAgenda,
-  });
-  final VoidCallback onHappens;
-  final VoidCallback onNow;
-  final VoidCallback onMoments;
-  final VoidCallback onAgenda;
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    top: false,
-    child: Container(
-      key: const Key('principal-for-you-mobile-nav'),
-      height: 70,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(
-            child: _BottomItem('Acontece', Icons.dynamic_feed_outlined, onPressed: onHappens),
-          ),
-          const Expanded(child: _BottomItem('Para você', Icons.favorite_rounded, selected: true)),
-          Expanded(child: _BottomItem('Agora', Icons.notifications_none_rounded, onPressed: onNow)),
-          Expanded(
-            child: _BottomItem('Momentos', Icons.play_circle_outline_rounded, onPressed: onMoments),
-          ),
-          Expanded(
-            child: _BottomItem('Agenda', Icons.calendar_today_outlined, onPressed: onAgenda),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-final class _NavItem extends StatelessWidget {
-  const _NavItem(this.label, this.icon, {this.onPressed, this.selected = false});
-  final String label;
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-    child: TextButton.icon(
-      onPressed: selected ? null : onPressed,
-      style:
-          TextButton.styleFrom(
-            alignment: Alignment.centerLeft,
-            minimumSize: const Size.fromHeight(48),
-            backgroundColor: selected
-                ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .35)
-                : Colors.transparent,
-          ).copyWith(
-            foregroundColor: WidgetStatePropertyAll(
-              selected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-      icon: Icon(icon, size: CoeloSize.iconSm),
-      label: Text(label, style: Theme.of(context).textTheme.labelSmall),
-    ),
-  );
-}
-
-final class _BottomItem extends StatelessWidget {
-  const _BottomItem(this.label, this.icon, {this.onPressed, this.selected = false});
-  final String label;
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final showLabel = MediaQuery.textScalerOf(context).scale(1) <= 1.5;
-    return Semantics(
-      selected: selected,
-      button: true,
-      label: label,
-      child: TextButton(
-        onPressed: selected ? null : onPressed,
-        style: TextButton.styleFrom(minimumSize: const Size(64, 64), padding: EdgeInsets.zero)
-            .copyWith(
-              foregroundColor: WidgetStatePropertyAll(
-                selected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: CoeloSize.iconSm),
-            if (showLabel) ...[
-              const SizedBox(height: CoeloSpacing.space1),
-              Text(label, style: Theme.of(context).textTheme.labelSmall),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 final class _SpriteImage extends StatelessWidget {
   const _SpriteImage({
     required this.assetPath,
@@ -1038,32 +828,48 @@ final class _SpriteImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => ClipRect(
-      child: OverflowBox(
-        alignment: Alignment.centerLeft,
-        minWidth: constraints.maxWidth * count,
-        maxWidth: constraints.maxWidth * count,
-        minHeight: constraints.maxHeight,
-        maxHeight: constraints.maxHeight,
-        child: Transform.translate(
-          offset: Offset(-constraints.maxWidth * index, 0),
-          child: SizedBox(
-            width: constraints.maxWidth * count,
-            height: constraints.maxHeight,
-            child: Image.asset(
-              assetPath,
-              fit: BoxFit.fill,
-              semanticLabel: semanticLabel,
-              errorBuilder: (_, _, _) => ColoredBox(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+    builder: (context, constraints) {
+      final panelAspect = _spritePanelAspect(assetPath, count);
+      final tileWidth = constraints.maxWidth > constraints.maxHeight * panelAspect
+          ? constraints.maxWidth
+          : constraints.maxHeight * panelAspect;
+      final imageHeight = tileWidth / panelAspect;
+      final horizontalCrop = (tileWidth - constraints.maxWidth) / 2;
+      final verticalCrop = (imageHeight - constraints.maxHeight) * .18;
+      return ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minWidth: tileWidth * count,
+          maxWidth: tileWidth * count,
+          minHeight: imageHeight,
+          maxHeight: imageHeight,
+          child: Transform.translate(
+            offset: Offset(-tileWidth * index - horizontalCrop, -verticalCrop),
+            child: SizedBox(
+              width: tileWidth * count,
+              height: imageHeight,
+              child: Image.asset(
+                assetPath,
+                fit: BoxFit.cover,
+                semanticLabel: semanticLabel,
+                errorBuilder: (_, _, _) => ColoredBox(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+                ),
               ),
             ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
+}
+
+int _spriteCount(String assetPath) => assetPath.endsWith('feed-strip.png') ? 4 : 5;
+
+double _spritePanelAspect(String assetPath, int count) {
+  final fullAspect = assetPath.endsWith('highlights-strip.png') ? 1774 / 887 : 1983 / 793;
+  return fullAspect / count;
 }
 
 IconData _icon(String name) => switch (name) {

@@ -19,7 +19,8 @@ void main() {
     await pumpPage(tester, const Size(375, 900));
 
     expect(find.byKey(const Key('principal-for-you-scroll')), findsOneWidget);
-    expect(find.byKey(const Key('principal-for-you-mobile-nav')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
+    expect(find.byKey(const Key('principal-for-you-mobile-nav')), findsNothing);
     expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsNothing);
     expect(find.text('Bom dia, Fernanda!'), findsOneWidget);
     expect(find.text('Feira Cultural hoje!'), findsOneWidget);
@@ -29,16 +30,65 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('preserves editorial media without stretching', (tester) async {
+    await pumpPage(tester, const Size(768, 1024));
+
+    final fixtureImages = tester
+        .widgetList<Image>(find.byType(Image))
+        .where((image) => image.image is AssetImage);
+    expect(fixtureImages, isNotEmpty);
+    expect(fixtureImages.every((image) => image.fit == BoxFit.cover), isTrue);
+  });
+
+  testWidgets('keeps protagonist copy complete at 200 percent text', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: const PrincipalForYouPreviewPage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Text>(find.text('Feira Cultural hoje!')).maxLines, isNull);
+    expect(
+      tester
+          .widget<Text>(
+            find.text('A partir das 16h, no pátio da unidade. Participe com sua família!'),
+          )
+          .maxLines,
+      isNull,
+    );
+    expect(
+      tester
+          .getSize(find.text('A partir das 16h, no pátio da unidade. Participe com sua família!'))
+          .height,
+      greaterThanOrEqualTo(140),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('adapts tablet and desktop without overflow', (tester) async {
     await pumpPage(tester, const Size(768, 1024));
+    expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
     expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsNothing);
     expect(find.byKey(const Key('principal-for-you-summary-aside')), findsNothing);
     expect(tester.takeException(), isNull);
 
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsOneWidget);
-    expect(find.byKey(const Key('principal-for-you-summary-aside')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
+    expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsNothing);
+    expect(find.byKey(const Key('principal-for-you-summary-aside')), findsNothing);
+    expect(
+      tester.getTopLeft(find.text('Resumo do dia')).dy,
+      greaterThan(tester.getTopLeft(find.text('Para você').first).dy),
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -53,7 +103,7 @@ void main() {
     expect(find.byKey(const Key('principal-for-you-desktop-rail')), findsNothing);
     expect(find.byKey(const Key('principal-for-you-mobile-nav')), findsNothing);
     expect(find.byType(AppBar), findsNothing);
-    expect(find.byKey(const Key('principal-for-you-summary-aside')), findsOneWidget);
+    expect(find.byKey(const Key('principal-for-you-summary-aside')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -174,6 +224,106 @@ void main() {
 
     expect(find.byKey(const Key('principal-for-you-scroll')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the hero action above the floating dock at 200 percent text', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: const PrincipalForYouPreviewPage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final action = find.byKey(const Key('principal-for-you-hero-action'));
+    final dock = find.byKey(const Key('principal-global-dock'));
+    expect(action, findsOneWidget);
+    await tester.drag(find.byKey(const Key('principal-for-you-scroll')), const Offset(0, -600));
+    await tester.pumpAndSettle();
+    expect(tester.getRect(action).bottom, lessThan(tester.getRect(dock).top));
+    expect(action.hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the reading order linear at 200 percent on desktop', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.dark,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2), disableAnimations: true),
+          child: child!,
+        ),
+        home: const PrincipalForYouPreviewPage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-for-you-summary-aside')), findsNothing);
+    expect(find.text('Resumo do dia'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('exposes every global destination callback', (tester) async {
+    final invoked = <String>[];
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouPreviewPage(
+          onOpenMenu: () => invoked.add('menu'),
+          onOpenNotifications: () => invoked.add('notifications'),
+          onOpenHome: () => invoked.add('home'),
+          onOpenForYou: () => invoked.add('for-you'),
+          onPublishNow: () => invoked.add('publish-now'),
+          onOpenMoments: () => invoked.add('moments'),
+          onOpenSearch: () => invoked.add('search'),
+          onOpenMessages: () => invoked.add('messages'),
+          onOpenProfile: () => invoked.add('profile'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final tooltip in [
+      'Abrir menu',
+      'Notificações',
+      'Home',
+      'Para você',
+      'Publicar no Agora',
+      'Momentos',
+      'Pesquisar',
+      'Mensagens',
+      'Abrir perfil',
+    ]) {
+      await tester.tap(find.byTooltip(tooltip));
+      await tester.pump();
+    }
+
+    expect(
+      invoked,
+      containsAll(<String>[
+        'menu',
+        'notifications',
+        'home',
+        'for-you',
+        'publish-now',
+        'moments',
+        'search',
+        'messages',
+        'profile',
+      ]),
+    );
   });
 }
 

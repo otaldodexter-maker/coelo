@@ -79,7 +79,7 @@ void main() {
         context: MomentsPublicationContext.demo,
       );
       controller
-        ..setCaption('Aprender juntos é crescer juntos. 🌱')
+        ..setCaption('Aprender juntos é crescer juntos.')
         ..setSaveAsDraft(true)
         ..toggleAudience(MomentsAudienceKind.families);
 

@@ -30,6 +30,13 @@ void main() {
         ),
       );
 
+      expect(find.text('Sua publicação'), findsOneWidget);
+      if (width >= 980) {
+        expect(find.byKey(const Key('circular-publication-preview')), findsOneWidget);
+      } else {
+        expect(find.byKey(const Key('circular-publication-preview')), findsNothing);
+      }
+
       await tester.enterText(find.byKey(const Key('circular-title')), 'Renovação 2027');
       await tester.enterText(find.byKey(const Key('circular-body')), 'Queridos responsáveis');
       await tester.tap(find.byKey(const Key('circular-add-question')));
@@ -67,6 +74,37 @@ void main() {
 
     expect(repository.published, isTrue);
     expect(find.text('Circular publicada'), findsOneWidget);
+  });
+
+  testWidgets('compact composer keeps preview contextual and all footer actions', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var canceled = false;
+    final controller = CircularComposerController(
+      repository: _Repository(),
+      scope: const CircularScope(institutionId: 'institution-1'),
+    );
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalCircularComposerPage(
+          controller: controller,
+          onCancel: () => canceled = true,
+          onPickFiles: () async {},
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('circular-publication-preview')), findsNothing);
+    await tester.tap(find.byKey(const Key('circular-toggle-preview')));
+    await tester.pump();
+    expect(find.byKey(const Key('circular-publication-preview')), findsOneWidget);
+
+    expect(find.byKey(const Key('circular-publish')), findsOneWidget);
+    expect(find.byKey(const Key('circular-save-draft')), findsOneWidget);
+    expect(find.byKey(const Key('circular-cancel')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('circular-cancel')));
+    expect(canceled, isTrue);
   });
 }
 

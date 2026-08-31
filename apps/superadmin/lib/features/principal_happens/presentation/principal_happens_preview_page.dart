@@ -1,11 +1,13 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../domain/principal_happens_feed_repository.dart';
 import '../domain/principal_happens_preview_data.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
+import '../../principal_shared/presentation/principal_global_navigation.dart';
 
 const _principalHappensNowCardKey = Key('principal-happens-now-card');
 
@@ -19,6 +21,13 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.onPublishNow,
+    this.onShareMedia,
+    this.onSaveMedia,
+    this.onOpenMenu,
+    this.onOpenNotifications,
+    this.onOpenSearch,
+    this.onOpenMessages,
     this.embedded = false,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
@@ -38,6 +47,13 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.onPublishNow,
+    this.onShareMedia,
+    this.onSaveMedia,
+    this.onOpenMenu,
+    this.onOpenNotifications,
+    this.onOpenSearch,
+    this.onOpenMessages,
     this.embedded = false,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
@@ -51,6 +67,13 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
     this.onOpenNow,
     this.onOpenForYou,
     this.onCreatePost,
+    this.onPublishNow,
+    this.onShareMedia,
+    this.onSaveMedia,
+    this.onOpenMenu,
+    this.onOpenNotifications,
+    this.onOpenSearch,
+    this.onOpenMessages,
     this.embedded = false,
     this.data = PrincipalHappensPreviewData.demo,
     super.key,
@@ -67,6 +90,13 @@ final class PrincipalHappensPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenNow;
   final VoidCallback? onOpenForYou;
   final VoidCallback? onCreatePost;
+  final VoidCallback? onPublishNow;
+  final VoidCallback? onShareMedia;
+  final VoidCallback? onSaveMedia;
+  final VoidCallback? onOpenMenu;
+  final VoidCallback? onOpenNotifications;
+  final VoidCallback? onOpenSearch;
+  final VoidCallback? onOpenMessages;
   final bool embedded;
   final PrincipalHappensFeedRepository? feedRepository;
   final PrincipalHappensFeedScope? feedScope;
@@ -174,52 +204,93 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
     }
   }
 
+  Future<void> _openGallery(PrincipalPostPreviewItem post) async {
+    final originFocus = FocusManager.instance.primaryFocus;
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: .72),
+      builder: (context) => _HappensGallery(
+        post: post,
+        repository: widget.mediaRepository ?? widget.feedRepository,
+        onReload: _loadFeed,
+        onShare: widget.onShareMedia,
+        onSave: widget.onSaveMedia,
+      ),
+    );
+    if (originFocus?.canRequestFocus ?? false) originFocus!.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
       final large = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
-      return ColoredBox(
-        color: Theme.of(context).colorScheme.surface,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: PrincipalGlobalHeader(
+          onOpenMenu: () => _invoke(widget.onOpenMenu, 'Menu'),
+          onOpenNotifications: () => _invoke(widget.onOpenNotifications, 'Notificações'),
+          onOpenProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
+        ),
+        body: Stack(
           children: [
-            Expanded(
-              child: _Feed(
-                data: widget.data,
-                mediaRepository: widget.mediaRepository ?? widget.feedRepository,
-                posts: widget.feedRepository == null
-                    ? widget.data.posts
-                    : (_remotePosts ?? const []),
-                mixedItems: _mixedItems,
-                onOpenCircular: widget.onOpenCircular,
-                loading: _feedLoading,
-                error: _feedError,
-                onRetry: _loadFeed,
-                compact: compact,
-                onCreatePost: () => _invoke(widget.onCreatePost, 'Criar publicação'),
-                onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
-                onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-                onViewAllNow: () => _invoke(widget.onOpenNow, 'Todos os conteúdos de Agora'),
-                onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
-                likedPosts: _likedPosts,
-                savedPosts: _savedPosts,
-                onLike: (index) => setState(() {
-                  _likedPosts.contains(index) ? _likedPosts.remove(index) : _likedPosts.add(index);
-                }),
-                onSave: (index) => setState(() {
-                  _savedPosts.contains(index) ? _savedPosts.remove(index) : _savedPosts.add(index);
-                }),
-                onPrototypeAction: _prototypeMessage,
-                embedded: widget.embedded,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _Feed(
+                    data: widget.data,
+                    mediaRepository: widget.mediaRepository ?? widget.feedRepository,
+                    posts: widget.feedRepository == null
+                        ? widget.data.posts
+                        : (_remotePosts ?? const []),
+                    mixedItems: _mixedItems,
+                    onOpenCircular: widget.onOpenCircular,
+                    loading: _feedLoading,
+                    error: _feedError,
+                    onRetry: _loadFeed,
+                    compact: compact,
+                    onCreatePost: () =>
+                        _invoke(widget.onPublishNow ?? widget.onCreatePost, 'Publicar no Agora'),
+                    onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
+                    onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
+                    onOpenNow: () => _invoke(widget.onOpenNow, 'Agora'),
+                    onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
+                    likedPosts: _likedPosts,
+                    savedPosts: _savedPosts,
+                    onLike: (index) => setState(() {
+                      _likedPosts.contains(index)
+                          ? _likedPosts.remove(index)
+                          : _likedPosts.add(index);
+                    }),
+                    onSave: (index) => setState(() {
+                      _savedPosts.contains(index)
+                          ? _savedPosts.remove(index)
+                          : _savedPosts.add(index);
+                    }),
+                    onPrototypeAction: _prototypeMessage,
+                    onOpenGallery: _openGallery,
+                    embedded: widget.embedded,
+                  ),
+                ),
+                if (large)
+                  _ContextColumn(
+                    data: widget.data,
+                    onOpenAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
+                    onAction: _prototypeMessage,
+                  ),
+              ],
             ),
-            if (large)
-              _ContextColumn(
-                data: widget.data,
-                onOpenAgenda: () => _invoke(widget.onOpenAgenda, 'Agenda'),
-                onAction: _prototypeMessage,
-              ),
+            PrincipalGlobalNavigation(
+              selected: PrincipalDestination.home,
+              onHome: () {},
+              onForYou: () => _invoke(widget.onOpenForYou, 'Para você'),
+              onPublishNow: () =>
+                  _invoke(widget.onPublishNow ?? widget.onCreatePost, 'Publicar no Agora'),
+              onMoments: () => _invoke(widget.onOpenMoments, 'Momentos'),
+              onSearch: () => _invoke(widget.onOpenSearch, 'Pesquisar'),
+              onMessages: () => _invoke(widget.onOpenMessages, 'Mensagens'),
+            ),
           ],
         ),
       );
@@ -241,13 +312,14 @@ final class _Feed extends StatelessWidget {
     required this.onCreatePost,
     required this.onMoments,
     required this.onProfile,
-    required this.onViewAllNow,
+    required this.onOpenNow,
     required this.onForYou,
     required this.likedPosts,
     required this.savedPosts,
     required this.onLike,
     required this.onSave,
     required this.onPrototypeAction,
+    required this.onOpenGallery,
     required this.embedded,
   });
 
@@ -263,13 +335,14 @@ final class _Feed extends StatelessWidget {
   final VoidCallback onCreatePost;
   final VoidCallback onMoments;
   final VoidCallback onProfile;
-  final VoidCallback onViewAllNow;
+  final VoidCallback onOpenNow;
   final VoidCallback onForYou;
   final Set<int> likedPosts;
   final Set<int> savedPosts;
   final ValueChanged<int> onLike;
   final ValueChanged<int> onSave;
   final ValueChanged<String> onPrototypeAction;
+  final ValueChanged<PrincipalPostPreviewItem> onOpenGallery;
   final bool embedded;
 
   @override
@@ -278,47 +351,6 @@ final class _Feed extends StatelessWidget {
     return CustomScrollView(
       key: const Key('principal-happens-feed'),
       slivers: [
-        SliverPadding(
-          padding: EdgeInsets.fromLTRB(horizontal, CoeloSpacing.space3, horizontal, 0),
-          sliver: SliverToBoxAdapter(
-            child: Row(
-              children: [
-                if (!embedded)
-                  Expanded(
-                    child: Text(
-                      'Acontece',
-                      key: const Key('principal-happens-local-title'),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                  )
-                else
-                  const Spacer(),
-                if (compact || MediaQuery.textScalerOf(context).scale(1) > 1.5)
-                  IconButton.filled(
-                    key: const Key('principal-happens-create'),
-                    tooltip: 'Publicar no Acontece',
-                    onPressed: onCreatePost,
-                    icon: const Icon(Icons.add_rounded),
-                  )
-                else
-                  FilledButton.icon(
-                    key: const Key('principal-happens-create'),
-                    onPressed: onCreatePost,
-                    icon: const Icon(Icons.add_rounded),
-                    label: const Text('Publicar no Acontece'),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: horizontal),
-          sliver: SliverToBoxAdapter(
-            child: _TopTabs(onForYou: onForYou, onMoments: onMoments, onProfile: onProfile),
-          ),
-        ),
         SliverPadding(
           padding: EdgeInsets.fromLTRB(
             horizontal,
@@ -330,8 +362,18 @@ final class _Feed extends StatelessWidget {
             child: _NowSection(
               items: data.nowItems,
               compact: compact,
-              onViewAll: onViewAllNow,
-              onOpenItem: onViewAllNow,
+              onPublish: onCreatePost,
+              onOpenItem: onOpenNow,
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, CoeloSpacing.space3),
+          sliver: SliverToBoxAdapter(
+            child: Text(
+              'Acontece',
+              key: const Key('principal-happens-local-title'),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
           ),
         ),
@@ -364,7 +406,7 @@ final class _Feed extends StatelessWidget {
               child: _feedItem(index),
             ),
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: CoeloSpacing.space6)),
+        const SliverToBoxAdapter(child: SizedBox(height: 150)),
       ],
     );
   }
@@ -394,6 +436,7 @@ final class _Feed extends StatelessWidget {
     onLike: () => onLike(index),
     onSave: () => onSave(index),
     onAction: onPrototypeAction,
+    onOpenGallery: () => onOpenGallery(post),
   );
 }
 
@@ -420,61 +463,6 @@ String _relativeTime(DateTime value) {
   if (difference.inHours < 1) return '${difference.inMinutes} min';
   if (difference.inDays < 1) return '${difference.inHours} h';
   return '${difference.inDays} d';
-}
-
-final class _TopTabs extends StatelessWidget {
-  const _TopTabs({required this.onForYou, required this.onMoments, required this.onProfile});
-  final VoidCallback onForYou;
-  final VoidCallback onMoments;
-  final VoidCallback onProfile;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final equalWidth = constraints.maxWidth / 4;
-      final tabWidth = equalWidth < 112 ? 112.0 : equalWidth;
-      return Container(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              SizedBox(
-                width: tabWidth,
-                child: const _Tab(label: 'Acontece', selected: true),
-              ),
-              SizedBox(
-                width: tabWidth,
-                child: _Tab(
-                  tabKey: const Key('principal-happens-tab-for-you'),
-                  label: 'Para você',
-                  onPressed: onForYou,
-                ),
-              ),
-              SizedBox(
-                width: tabWidth,
-                child: _Tab(
-                  tabKey: const Key('principal-happens-tab-momentos'),
-                  label: 'Momentos',
-                  onPressed: onMoments,
-                ),
-              ),
-              SizedBox(
-                width: tabWidth,
-                child: _Tab(
-                  tabKey: const Key('principal-happens-tab-perfil'),
-                  label: 'Perfil',
-                  onPressed: onProfile,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
 }
 
 final class _FeedStatePanel extends StatelessWidget {
@@ -558,105 +546,100 @@ final class _FeedStatePanel extends StatelessWidget {
   );
 }
 
-final class _Tab extends StatelessWidget {
-  const _Tab({this.tabKey, required this.label, this.selected = false, this.onPressed});
-  final Key? tabKey;
-  final String label;
-  final bool selected;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final button = TextButton(
-      key: tabKey,
-      onPressed: selected ? null : onPressed,
-      style: ButtonStyle(
-        minimumSize: const WidgetStatePropertyAll(Size(88, CoeloSize.touchMin)),
-        foregroundColor: WidgetStatePropertyAll(
-          selected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurface,
-        ),
-        overlayColor: WidgetStatePropertyAll(
-          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .35),
-        ),
-        shape: const WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        ),
-        side: WidgetStatePropertyAll(
-          BorderSide(
-            color: selected ? Theme.of(context).colorScheme.primary : Colors.transparent,
-            width: 0,
-          ),
-        ),
-      ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: selected
-              ? Border(bottom: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2))
-              : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
-          child: Text(
-            label,
-            style: TextStyle(fontWeight: selected ? FontWeight.w800 : FontWeight.w400),
-          ),
-        ),
-      ),
-    );
-    return Semantics(
-      selected: selected,
-      button: !selected,
-      label: selected ? label : null,
-      child: selected ? ExcludeSemantics(child: button) : button,
-    );
-  }
-}
-
 final class _NowSection extends StatelessWidget {
   const _NowSection({
     required this.items,
     required this.compact,
-    required this.onViewAll,
+    required this.onPublish,
     required this.onOpenItem,
   });
   final List<PrincipalNowPreviewItem> items;
   final bool compact;
-  final VoidCallback onViewAll;
+  final VoidCallback onPublish;
   final VoidCallback onOpenItem;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Row(
-        children: [
-          Expanded(
-            child: Text(
-              'Agora',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-          ),
-          TextButton(onPressed: onViewAll, child: const Text('Ver tudo')),
-        ],
-      ),
-      const SizedBox(height: CoeloSpacing.space2),
-      SizedBox(
-        height: compact ? 204 : 218,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: items.length,
-          separatorBuilder: (_, _) => const SizedBox(width: CoeloSpacing.space2),
-          itemBuilder: (context, index) => _NowCard(
-            key: index == 0 ? _principalHappensNowCardKey : null,
-            item: items[index],
-            width: compact ? 106 : 120,
-            onPressed: onOpenItem,
+  Widget build(BuildContext context) {
+    final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Agora',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+        SizedBox(
+          height: enlargedText
+              ? 240
+              : compact
+              ? 142
+              : 156,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length + 1,
+            separatorBuilder: (_, _) => const SizedBox(width: CoeloSpacing.space2),
+            itemBuilder: (context, index) => index == 0
+                ? _PublishNowCard(
+                    width: enlargedText
+                        ? 132
+                        : compact
+                        ? 88
+                        : 104,
+                    onPressed: onPublish,
+                  )
+                : _NowCard(
+                    key: index == 1 ? _principalHappensNowCardKey : null,
+                    item: items[index - 1],
+                    width: enlargedText
+                        ? 132
+                        : compact
+                        ? 88
+                        : 104,
+                    onPressed: onOpenItem,
+                  ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+final class _PublishNowCard extends StatelessWidget {
+  const _PublishNowCard({required this.width, required this.onPressed});
+
+  final double width;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: width,
+    child: OutlinedButton(
+      key: const Key('principal-happens-publish-now-card'),
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(CoeloSpacing.space2),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
       ),
-    ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            child: const Icon(Icons.add_rounded),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(
+            'Publicar\nagora',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+        ],
+      ),
+    ),
   );
 }
 
@@ -765,6 +748,7 @@ final class _PostCard extends StatelessWidget {
     required this.onLike,
     required this.onSave,
     required this.onAction,
+    required this.onOpenGallery,
     super.key,
   });
   final int index;
@@ -777,6 +761,7 @@ final class _PostCard extends StatelessWidget {
   final VoidCallback onLike;
   final VoidCallback onSave;
   final ValueChanged<String> onAction;
+  final VoidCallback onOpenGallery;
 
   @override
   Widget build(BuildContext context) {
@@ -829,16 +814,16 @@ final class _PostCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: CoeloSpacing.space3),
-            Text(post.body, style: Theme.of(context).textTheme.bodyMedium),
             if (post.media.isNotEmpty || post.mediaIndices.isNotEmpty) ...[
               const SizedBox(height: CoeloSpacing.space3),
               _PostMedia(
+                mediaKey: Key('principal-happens-media-post-$index'),
                 media: post.media,
                 demoIndices: post.mediaIndices,
                 repository: mediaRepository,
                 onReload: onReloadMedia,
                 compact: compact,
+                onOpen: onOpenGallery,
               ),
             ],
             const SizedBox(height: CoeloSpacing.space2),
@@ -885,6 +870,19 @@ final class _PostCard extends StatelessWidget {
                 ],
               ),
             ],
+            const SizedBox(height: CoeloSpacing.space2),
+            Wrap(
+              spacing: CoeloSpacing.space1,
+              children: [
+                Text(
+                  post.author,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                ),
+                Text(post.body, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
           ],
         ),
       ),
@@ -894,100 +892,352 @@ final class _PostCard extends StatelessWidget {
 
 final class _PostMedia extends StatelessWidget {
   const _PostMedia({
+    required this.mediaKey,
     required this.media,
     required this.demoIndices,
     required this.repository,
     required this.onReload,
     required this.compact,
+    required this.onOpen,
   });
 
+  final Key mediaKey;
   final List<PrincipalHappensMediaDescriptor> media;
   final List<int> demoIndices;
   final PrincipalHappensFeedRepository? repository;
   final VoidCallback onReload;
   final bool compact;
+  final VoidCallback onOpen;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    height: compact ? 260 : 300,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(CoeloRadius.md),
-      child: Stack(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: media.isNotEmpty
-                    ? _AuthorizedMedia(
-                        media: media.first,
-                        repository: repository,
-                        onReload: onReload,
-                      )
-                    : _SpriteImage(
-                        asset: 'assets/principal_happens/feed-strip.png',
-                        index: demoIndices.first,
-                        count: 4,
-                      ),
-              ),
-              if (media.isEmpty && !compact) ...[
-                const SizedBox(width: 3),
-                Expanded(
-                  child: Column(
-                    children: [
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: 'Abrir galeria da publicação',
+    child: FocusableActionDetector(
+      key: mediaKey,
+      mouseCursor: SystemMouseCursors.click,
+      actions: {
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            onOpen();
+            return null;
+          },
+        ),
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onOpen,
+        child: SizedBox(
+          height: compact ? 320 : 460,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            child: Stack(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: media.isNotEmpty
+                          ? _AuthorizedMedia(
+                              media: media.first,
+                              repository: repository,
+                              onReload: onReload,
+                            )
+                          : _SpriteImage(
+                              asset: 'assets/principal_happens/feed-strip.png',
+                              index: demoIndices.first,
+                              count: 4,
+                            ),
+                    ),
+                    if (media.isEmpty && !compact) ...[
+                      const SizedBox(width: 3),
                       Expanded(
-                        child: _SpriteImage(
-                          asset: 'assets/principal_happens/feed-strip.png',
-                          index: demoIndices[1],
-                          count: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Expanded(
-                        child: _SpriteImage(
-                          asset: 'assets/principal_happens/feed-strip.png',
-                          index: demoIndices[2],
-                          count: 4,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: _SpriteImage(
+                                asset: 'assets/principal_happens/feed-strip.png',
+                                index: demoIndices[1],
+                                count: 4,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Expanded(
+                              child: _SpriteImage(
+                                asset: 'assets/principal_happens/feed-strip.png',
+                                index: demoIndices[2],
+                                count: 4,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
+                  ],
+                ),
+                Positioned(
+                  right: CoeloSpacing.space2,
+                  top: CoeloSpacing.space2,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.inverseSurface.withValues(alpha: .88),
+                      borderRadius: BorderRadius.circular(CoeloRadius.full),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: Text(
+                        '1/${media.isNotEmpty ? media.length : demoIndices.length}',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
-            ],
-          ),
-          Positioned(
-            right: CoeloSpacing.space2,
-            top: CoeloSpacing.space2,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.inverseSurface.withValues(alpha: .88),
-                borderRadius: BorderRadius.circular(CoeloRadius.full),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text(
-                  '1/${media.isNotEmpty ? media.length : demoIndices.length}',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
             ),
           ),
-        ],
+        ),
       ),
     ),
   );
 }
 
+final class _HappensGallery extends StatefulWidget {
+  const _HappensGallery({
+    required this.post,
+    required this.repository,
+    required this.onReload,
+    required this.onShare,
+    required this.onSave,
+  });
+
+  final PrincipalPostPreviewItem post;
+  final PrincipalHappensFeedRepository? repository;
+  final VoidCallback onReload;
+  final VoidCallback? onShare;
+  final VoidCallback? onSave;
+
+  @override
+  State<_HappensGallery> createState() => _HappensGalleryState();
+}
+
+final class _HappensGalleryState extends State<_HappensGallery> {
+  final _focusNode = FocusNode();
+  var _index = 0;
+
+  int get _count =>
+      widget.post.media.isNotEmpty ? widget.post.media.length : widget.post.mediaIndices.length;
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _move(int delta) => setState(() => _index = (_index + delta + _count) % _count);
+
+  void _invokeOrExplain(VoidCallback? callback, String action) {
+    if (callback != null) {
+      callback();
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$action indisponível nesta prévia.')));
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      final content = KeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: (event) {
+          if (event is! KeyDownEvent) return;
+          if (event.logicalKey == LogicalKeyboardKey.escape) Navigator.of(context).pop();
+          if (event.logicalKey == LogicalKeyboardKey.arrowLeft) _move(-1);
+          if (event.logicalKey == LogicalKeyboardKey.arrowRight) _move(1);
+        },
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Center(
+                  child: FractionallySizedBox(
+                    widthFactor: .86,
+                    heightFactor: .82,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1120, maxHeight: 820),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                        child: widget.post.media.isNotEmpty
+                            ? _AuthorizedMedia(
+                                media: widget.post.media[_index],
+                                repository: widget.repository,
+                                onReload: widget.onReload,
+                                onVideoUnavailable: () => Navigator.of(context).pop(),
+                                fit: BoxFit.contain,
+                              )
+                            : Center(
+                                child: AspectRatio(
+                                  aspectRatio: 4 / 3,
+                                  child: _SpriteImage(
+                                    asset: 'assets/principal_happens/feed-strip.png',
+                                    index: widget.post.mediaIndices[_index],
+                                    count: 4,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (compact)
+                Positioned(
+                  left: CoeloSpacing.space2,
+                  top: CoeloSpacing.space2,
+                  child: TextButton.icon(
+                    key: const Key('principal-happens-gallery-compact-return'),
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    icon: const Icon(Icons.chevron_left_rounded),
+                    label: const Text('Acontece'),
+                  ),
+                )
+              else
+                Positioned(
+                  left: CoeloSpacing.space4,
+                  top: CoeloSpacing.space3,
+                  child: Text(
+                    'coelo',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              if (!compact)
+                Positioned(
+                  right: CoeloSpacing.space3,
+                  top: CoeloSpacing.space2,
+                  child: IconButton(
+                    key: const Key('principal-happens-gallery-wide-close'),
+                    tooltip: 'Fechar galeria',
+                    onPressed: () => Navigator.of(context).pop(),
+                    color: Colors.white,
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ),
+              if (_count > 1) ...[
+                Positioned(
+                  left: CoeloSpacing.space3,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: IconButton.filledTonal(
+                      tooltip: 'Mídia anterior',
+                      onPressed: () => _move(-1),
+                      icon: const Icon(Icons.chevron_left_rounded),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: CoeloSpacing.space3,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: IconButton.filledTonal(
+                      tooltip: 'Próxima mídia',
+                      onPressed: () => _move(1),
+                      icon: const Icon(Icons.chevron_right_rounded),
+                    ),
+                  ),
+                ),
+              ],
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: CoeloSpacing.space4,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: .64),
+                        borderRadius: BorderRadius.circular(CoeloRadius.full),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: CoeloSpacing.space3,
+                          vertical: CoeloSpacing.space2,
+                        ),
+                        child: Text(
+                          '${_index + 1} de $_count',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: CoeloSpacing.space2),
+                    IconButton(
+                      tooltip: 'Compartilhar mídia',
+                      onPressed: () => _invokeOrExplain(widget.onShare, 'Compartilhamento'),
+                      color: Colors.white,
+                      icon: const Icon(Icons.ios_share_rounded),
+                    ),
+                    IconButton(
+                      tooltip: 'Salvar mídia',
+                      onPressed: () => _invokeOrExplain(widget.onSave, 'Salvar mídia'),
+                      color: Colors.white,
+                      icon: const Icon(Icons.bookmark_border_rounded),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (compact) {
+        return Dialog.fullscreen(
+          key: const Key('principal-happens-gallery'),
+          backgroundColor: Colors.black,
+          child: content,
+        );
+      }
+      return Dialog(
+        key: const Key('principal-happens-gallery'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(CoeloSpacing.space6),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1120, maxHeight: 820),
+          child: ColoredBox(color: Colors.black, child: content),
+        ),
+      );
+    },
+  );
+}
+
 final class _AuthorizedMedia extends StatefulWidget {
-  const _AuthorizedMedia({required this.media, required this.repository, required this.onReload});
+  const _AuthorizedMedia({
+    required this.media,
+    required this.repository,
+    required this.onReload,
+    this.onVideoUnavailable,
+    this.fit = BoxFit.cover,
+  });
 
   final PrincipalHappensMediaDescriptor media;
   final PrincipalHappensFeedRepository? repository;
   final VoidCallback onReload;
+  final VoidCallback? onVideoUnavailable;
+  final BoxFit fit;
 
   @override
   State<_AuthorizedMedia> createState() => _AuthorizedMediaState();
@@ -1039,13 +1289,47 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> {
       if (read.mimeType.startsWith('video/')) {
         return ColoredBox(
           color: Theme.of(context).colorScheme.surfaceContainerLow,
-          child: const Center(child: Icon(Icons.play_circle_outline_rounded, size: 56)),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.videocam_off_outlined,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  const Text(
+                    'Reprodução de vídeo indisponível nesta prévia.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space3),
+                  OutlinedButton.icon(
+                    key: const Key('principal-happens-video-unavailable-action'),
+                    onPressed: widget.onVideoUnavailable ?? widget.onReload,
+                    icon: Icon(
+                      widget.onVideoUnavailable == null
+                          ? Icons.refresh_rounded
+                          : Icons.chevron_left_rounded,
+                    ),
+                    label: Text(
+                      widget.onVideoUnavailable == null
+                          ? 'Atualizar publicação'
+                          : 'Voltar ao Acontece',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       }
       return Image.network(
         read.signedUrl,
         key: ValueKey(widget.media.readTicket),
-        fit: BoxFit.cover,
+        fit: widget.fit,
         semanticLabel: 'Registro da comunidade escolar',
         errorBuilder: (_, _, _) => ColoredBox(
           color: Theme.of(context).colorScheme.surfaceContainerLow,

@@ -266,7 +266,9 @@ void main() {
     }
   });
 
-  testWidgets('keeps Principal previews inside the shell content surface', (tester) async {
+  testWidgets('keeps non-immersive Principal previews inside the shell content surface', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
@@ -280,7 +282,6 @@ void main() {
       SuperadminRoutes.devPrincipalHappens,
       SuperadminRoutes.devPrincipalForYou,
       SuperadminRoutes.devPrincipalMoments,
-      SuperadminRoutes.devPrincipalNow,
       SuperadminRoutes.devPrincipalProfile,
       SuperadminRoutes.devPrincipalHappensPublish,
       SuperadminRoutes.devPrincipalMomentsPublish,
@@ -314,7 +315,6 @@ void main() {
       (path: SuperadminRoutes.devPrincipalHappens, contentKey: Key('principal-happens-feed')),
       (path: SuperadminRoutes.devPrincipalForYou, contentKey: Key('principal-for-you-scroll')),
       (path: SuperadminRoutes.devPrincipalMoments, contentKey: Key('principal-moments-page-view')),
-      (path: SuperadminRoutes.devPrincipalNow, contentKey: Key('principal-now-story')),
       (path: SuperadminRoutes.devPrincipalProfile, contentKey: Key('principal-profile-scroll')),
       (
         path: SuperadminRoutes.devPrincipalHappensPublish,

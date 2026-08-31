@@ -160,6 +160,9 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
     _leaf('conversations', 'Conversas', Icons.chat_bubble_outline),
     _screen('invites', 'Convites', Icons.mail_outline, const []),
     _screen('notices', 'Comunicações', Icons.campaign_outlined, const []),
+    _screen('circulars', 'Circulares', Icons.description_outlined, [
+      _leaf('circular-create', 'Publicar Circular', Icons.note_add_outlined),
+    ]),
   ]),
   _screen('governance', 'Governança', Icons.verified_user_outlined, [
     _leaf('support', 'Suporte e implantação', Icons.support_agent_outlined),

@@ -8,20 +8,59 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/application/happens_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/domain/happens_publication.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/presentation/principal_happens_publication_page.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_superadmin/features/principal_shared/presentation/principal_publication_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 
 void main() {
+  testWidgets('demo é explícito e mantém o cabeçalho Principal', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalHappensPublicationPage.demo(
+          repository: InMemoryHappensPublicationRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-publication-logo')), findsOneWidget);
+  });
+
+  testWidgets('mídia persistida usa URL assinada com cover sem distorção', (tester) async {
+    final repository = InMemoryHappensPublicationRepository()
+      ..savedDraft = HappensPostDraft(
+        media: [
+          HappensMediaDraft(
+            localId: 'asset-1',
+            name: 'acontece.png',
+            mimeType: 'image/png',
+            bytes: Uint8List(0),
+            assetId: 'asset-1',
+            objectKey: 'private/acontece.png',
+            remoteUrl: 'https://signed.test/acontece.png',
+          ),
+        ],
+      );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalHappensPublicationPage.demo(repository: repository),
+      ),
+    );
+    await tester.pump();
+
+    final image = tester.widget<Image>(find.byKey(const Key('happens-media-image')).first);
+    expect(image.image, isA<NetworkImage>());
+    expect(image.fit, BoxFit.cover);
+  });
+
   testWidgets('embedded publication uses only the canonical form surface', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           embedded: true,
           repository: InMemoryHappensPublicationRepository(),
         ),
@@ -30,29 +69,33 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsNothing);
-    expect(find.byType(SuperadminFormFrame), findsOneWidget);
-    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
-    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('usa frame, etapas e rodape canonicos do wizard', (tester) async {
-    tester.view.physicalSize = const Size(1024, 900);
+    tester.view.physicalSize = const Size(1440, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
+        home: PrincipalHappensPublicationPage.demo(
+          repository: InMemoryHappensPublicationRepository(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(SuperadminFormFrame), findsOneWidget);
-    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
-    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(find.textContaining('Etapa 1 de 4'), findsOneWidget);
     expect(find.text('Continuar'), findsOneWidget);
+    expect(find.text('Sua publicação'), findsOneWidget);
+    expect(find.byKey(const Key('happens-publication-desktop-preview')), findsOneWidget);
   });
 
   testWidgets('mantém composer e prévia no fluxo compacto', (tester) async {
@@ -61,12 +104,16 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
+        home: PrincipalHappensPublicationPage.demo(
+          repository: InMemoryHappensPublicationRepository(),
+        ),
       ),
     );
     await tester.pump();
     expect(find.text('Publicar no Acontece'), findsWidgets);
     expect(find.text('Mídia'), findsWidgets);
+    expect(find.text('Sua publicação'), findsOneWidget);
+    expect(find.byKey(const Key('happens-publication-desktop-preview')), findsNothing);
     await _continue(tester);
     expect(find.text('Legenda'), findsWidgets);
     await _continue(tester);
@@ -78,7 +125,7 @@ void main() {
   testWidgets('publica com audiência selecionada', (tester) async {
     final repository = InMemoryHappensPublicationRepository();
     await tester.pumpWidget(
-      MaterialApp(home: PrincipalHappensPublicationPage(repository: repository)),
+      MaterialApp(home: PrincipalHappensPublicationPage.demo(repository: repository)),
     );
     await tester.pump();
     await _continue(tester);
@@ -98,7 +145,9 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
+        home: PrincipalHappensPublicationPage.demo(
+          repository: InMemoryHappensPublicationRepository(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -118,7 +167,7 @@ void main() {
             data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
             child: child!,
           ),
-          home: PrincipalHappensPublicationPage(
+          home: PrincipalHappensPublicationPage.demo(
             key: ValueKey(width),
             repository: InMemoryHappensPublicationRepository(),
           ),
@@ -133,7 +182,7 @@ void main() {
       await _continue(tester);
 
       expect(tester.takeException(), isNull, reason: 'largura $width, etapa revisão');
-      expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+      expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     }
   });
 
@@ -141,7 +190,9 @@ void main() {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
+        home: PrincipalHappensPublicationPage.demo(
+          repository: InMemoryHappensPublicationRepository(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -179,14 +230,16 @@ void main() {
   testWidgets('autosave reutiliza o toggle canônico e seu hover', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(repository: InMemoryHappensPublicationRepository()),
+        home: PrincipalHappensPublicationPage.demo(
+          repository: InMemoryHappensPublicationRepository(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
     await _continue(tester);
     await tester.ensureVisible(find.byKey(const Key('happens-autosave-toggle')));
     await tester.pumpAndSettle();
-    expect(find.byType(CoeloAdminToggleField), findsOneWidget);
+    expect(find.byType(PrincipalPublicationToggleField), findsOneWidget);
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
@@ -202,7 +255,7 @@ void main() {
   testWidgets('seleciona múltiplas mídias e expõe trilha reordenável', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           repository: InMemoryHappensPublicationRepository(),
           mediaPicker: () async => [_media('a'), _media('b')],
         ),
@@ -221,11 +274,13 @@ void main() {
 
   testWidgets('mantém ações bloqueadas quando o contexto é negado', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(home: PrincipalHappensPublicationPage(repository: _UnauthorizedRepository())),
+      MaterialApp(
+        home: PrincipalHappensPublicationPage.demo(repository: _UnauthorizedRepository()),
+      ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(SuperadminFormFrame), findsNothing);
+    expect(find.byType(PrincipalPublicationFrame), findsNothing);
     expect(find.text('Publicação indisponível'), findsOneWidget);
   });
 
@@ -236,7 +291,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           repository: repositoryA,
           publicationContext: HappensPublicationContext.demo,
         ),
@@ -247,7 +302,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           repository: repositoryB,
           publicationContext: const HappensPublicationContext(
             institutionId: 'institution-b',
@@ -262,12 +317,12 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _continue(tester);
-    expect(find.text('Conteúdo B'), findsOneWidget);
+    expect(find.text('Conteúdo B'), findsWidgets);
 
     repositoryA.loaded.complete(HappensPostDraft(caption: 'Conteúdo A'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Conteúdo B'), findsOneWidget);
+    expect(find.text('Conteúdo B'), findsWidgets);
     expect(find.text('Conteúdo A'), findsNothing);
     expect(tester.takeException(), isNull);
   });
@@ -278,7 +333,7 @@ void main() {
     final repositoryB = InMemoryHappensPublicationRepository();
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           repository: repositoryA,
           mediaPicker: () => pickerA.future,
         ),
@@ -294,7 +349,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           repository: repositoryB,
           publicationContext: const HappensPublicationContext(
             institutionId: 'institution-b',
@@ -321,7 +376,7 @@ void main() {
     var completed = 0;
     await tester.pumpWidget(
       MaterialApp(
-        home: PrincipalHappensPublicationPage(
+        home: PrincipalHappensPublicationPage.demo(
           repository: repository,
           onCompleted: (_) => completed++,
         ),
@@ -353,7 +408,7 @@ void main() {
   testWidgets('mantém o wizard para retry de save vazio', (tester) async {
     final repository = _FailOnceSaveRepository();
     await tester.pumpWidget(
-      MaterialApp(home: PrincipalHappensPublicationPage(repository: repository)),
+      MaterialApp(home: PrincipalHappensPublicationPage.demo(repository: repository)),
     );
     await tester.pumpAndSettle();
     await _continue(tester);
@@ -362,7 +417,7 @@ void main() {
 
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
-    expect(find.byType(SuperadminFormFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
     expect(find.text('Não foi possível salvar o rascunho.'), findsOneWidget);
     expect(
       tester
@@ -376,10 +431,37 @@ void main() {
     expect(repository.saveCalls, 2);
   });
 
+  testWidgets('recarrega honestamente o rascunho depois de conflito', (tester) async {
+    final repository = _ConflictThenReloadRepository();
+    await tester.pumpWidget(
+      MaterialApp(home: PrincipalHappensPublicationPage.demo(repository: repository)),
+    );
+    await tester.pumpAndSettle();
+    await _continue(tester);
+    await _continue(tester);
+    await _continue(tester);
+
+    await tester.tap(find.text('Salvar rascunho'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrincipalPublicationFrame), findsNothing);
+    expect(find.text('Rascunho alterado'), findsOneWidget);
+    expect(find.text('Recarregar rascunho'), findsOneWidget);
+
+    await tester.tap(find.text('Recarregar rascunho'));
+    await tester.pumpAndSettle();
+    expect(repository.loadCalls, 2);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    await tester.tap(find.text('Anterior'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Anterior'));
+    await tester.pumpAndSettle();
+    expect(find.text('Versão atualizada no servidor'), findsWidgets);
+  });
+
   testWidgets('mantém corpo e foco bloqueados durante save', (tester) async {
     final repository = _DeferredRepository()..loaded.complete(null);
     await tester.pumpWidget(
-      MaterialApp(home: PrincipalHappensPublicationPage(repository: repository)),
+      MaterialApp(home: PrincipalHappensPublicationPage.demo(repository: repository)),
     );
     await tester.pumpAndSettle();
     await _continue(tester);
@@ -555,6 +637,45 @@ final class _FailOnceSaveRepository implements HappensPublicationRepository {
     if (saveCalls == 1) throw Exception('transient');
     return draft.copyWith(id: 'draft-1', version: 1);
   }
+
+  @override
+  Future<HappensUploadIntent> prepareMedia(
+    HappensPublicationContext context,
+    String postId,
+    HappensMediaDraft media,
+    int displayOrder,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media) async {}
+
+  @override
+  Future<HappensPublication> publish(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw UnimplementedError();
+}
+
+final class _ConflictThenReloadRepository implements HappensPublicationRepository {
+  var loadCalls = 0;
+
+  @override
+  Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async {
+    loadCalls++;
+    return loadCalls == 1
+        ? null
+        : HappensPostDraft(
+            id: 'draft-current',
+            version: 4,
+            caption: 'Versão atualizada no servidor',
+          );
+  }
+
+  @override
+  Future<HappensPostDraft> saveDraft(HappensPublicationContext context, HappensPostDraft draft) =>
+      throw HappensPublicationConflict();
 
   @override
   Future<HappensUploadIntent> prepareMedia(

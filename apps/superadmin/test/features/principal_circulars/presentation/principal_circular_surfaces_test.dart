@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/principal_circulars/domain/circular.da
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_surfaces.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -67,6 +68,55 @@ void main() {
     expect(find.text('Circular'), findsOneWidget);
     expect(find.text('Resposta parcial'), findsOneWidget);
     expect(find.text('Ler circular'), findsOneWidget);
+  });
+
+  testWidgets('web feed preview starts hidden and opens in an accessible dialog', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.reset);
+    var opened = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PrincipalCircularFeedCard(item: _summary, onOpen: () => opened = true),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsNothing);
+    await tester.tap(find.text('Ler circular'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsOneWidget);
+    expect(opened, isFalse);
+
+    await tester.tap(find.byKey(const Key('principal-circular-preview-read')));
+    await tester.pumpAndSettle();
+    expect(opened, isTrue);
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsNothing);
+  });
+
+  testWidgets('web preview returns keyboard focus to its trigger when closed', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1440, 900);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PrincipalCircularFeedCard(item: _summary, onOpen: () {}),
+        ),
+      ),
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('principal-circular-preview-close')));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-circular-preview-dialog')), findsOneWidget);
   });
 
   testWidgets('profile tab keeps unauthorized distinct from empty', (tester) async {

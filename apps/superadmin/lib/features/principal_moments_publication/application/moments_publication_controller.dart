@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 
 import '../domain/moments_publication.dart';
 
+enum _MomentsRetryAction { load, save, publish }
+
 @immutable
 final class MomentsPublicationState {
   const MomentsPublicationState({
@@ -42,6 +44,7 @@ final class MomentsPublicationController extends ChangeNotifier {
   var _loadInFlight = false;
   var _commandInFlight = false;
   var _disposed = false;
+  _MomentsRetryAction? _retryAction;
 
   MomentsPublicationState get state => _state;
 
@@ -56,8 +59,19 @@ final class MomentsPublicationController extends ChangeNotifier {
       _emit(
         _state.copyWith(draft: draft ?? MomentsDraft(), phase: MomentsPublicationPhase.editing),
       );
+      _retryAction = null;
+    } on MomentsPublicationUnauthorized {
+      if (!_isCurrentLoad(generation)) return;
+      _retryAction = null;
+      _emit(
+        _state.copyWith(
+          phase: MomentsPublicationPhase.unauthorized,
+          message: 'Você não pode publicar neste contexto.',
+        ),
+      );
     } on Exception {
       if (!_isCurrentLoad(generation)) return;
+      _retryAction = _MomentsRetryAction.load;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.failure,
@@ -123,8 +137,10 @@ final class MomentsPublicationController extends ChangeNotifier {
         return;
       }
       _emit(_state.copyWith(draft: saved, phase: MomentsPublicationPhase.saved));
+      _retryAction = null;
     } on MomentsPublicationConflict {
       if (_disposed) return;
+      _retryAction = _MomentsRetryAction.load;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.conflict,
@@ -133,6 +149,7 @@ final class MomentsPublicationController extends ChangeNotifier {
       );
     } on MomentsPublicationUnauthorized {
       if (_disposed) return;
+      _retryAction = null;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.unauthorized,
@@ -141,6 +158,7 @@ final class MomentsPublicationController extends ChangeNotifier {
       );
     } on Exception {
       if (_disposed) return;
+      _retryAction = _MomentsRetryAction.save;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.failure,
@@ -169,9 +187,11 @@ final class MomentsPublicationController extends ChangeNotifier {
       final publication = await repository.publish(context, draft);
       if (_disposed) return null;
       _emit(_state.copyWith(phase: MomentsPublicationPhase.success));
+      _retryAction = null;
       return publication;
     } on MomentsPublicationConflict {
       if (_disposed) return null;
+      _retryAction = _MomentsRetryAction.load;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.conflict,
@@ -180,6 +200,7 @@ final class MomentsPublicationController extends ChangeNotifier {
       );
     } on MomentsPublicationUnauthorized {
       if (_disposed) return null;
+      _retryAction = null;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.unauthorized,
@@ -188,6 +209,7 @@ final class MomentsPublicationController extends ChangeNotifier {
       );
     } on Exception {
       if (_disposed) return null;
+      _retryAction = _MomentsRetryAction.publish;
       _emit(
         _state.copyWith(
           phase: MomentsPublicationPhase.failure,
@@ -200,12 +222,28 @@ final class MomentsPublicationController extends ChangeNotifier {
     return null;
   }
 
+  Future<MomentsPublication?> retry() async {
+    switch (_retryAction) {
+      case _MomentsRetryAction.load:
+        await load();
+        return null;
+      case _MomentsRetryAction.save:
+        await saveDraft();
+        return null;
+      case _MomentsRetryAction.publish:
+        return publish();
+      case null:
+        return null;
+    }
+  }
+
   void _edit(MomentsDraft draft) {
     if (_disposed || _loadInFlight || _state.phase == MomentsPublicationPhase.publishing) {
       return;
     }
     _editGeneration += 1;
     _loadGeneration += 1;
+    _retryAction = null;
     final phase = _commandInFlight ? _state.phase : MomentsPublicationPhase.editing;
     _emit(_state.copyWith(draft: draft, phase: phase, clearMessage: true));
   }

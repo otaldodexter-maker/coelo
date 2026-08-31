@@ -1,6 +1,9 @@
 import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
+import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
+import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_preview_data.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,6 +16,7 @@ void main() {
     VoidCallback? onOpenNow,
     VoidCallback? onOpenForYou,
     VoidCallback? onCreatePost,
+    VoidCallback? onPublishNow,
   }) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -26,6 +30,7 @@ void main() {
           onOpenNow: onOpenNow,
           onOpenForYou: onOpenForYou,
           onCreatePost: onCreatePost,
+          onPublishNow: onPublishNow,
         ),
       ),
     );
@@ -35,14 +40,16 @@ void main() {
   testWidgets('renders as framed shell content without duplicate chrome', (tester) async {
     await pumpHappens(tester, size: const Size(375, 900));
 
-    expect(find.byKey(const Key('principal-happens-logo')), findsNothing);
     expect(find.byKey(const Key('principal-happens-bug')), findsNothing);
-    expect(find.byKey(const Key('principal-happens-notifications')), findsNothing);
-    expect(find.byKey(const Key('principal-happens-context-avatar')), findsNothing);
-    expect(find.text('Acontece'), findsWidgets);
-    expect(find.text('Agora'), findsOneWidget);
-    expect(find.text('Ver tudo'), findsOneWidget);
-    expect(find.byKey(const Key('principal-happens-mobile-nav')), findsNothing);
+    expect(find.byKey(const Key('principal-happens-logo')), findsOneWidget);
+    expect(find.byTooltip('Abrir menu'), findsOneWidget);
+    expect(find.byTooltip('Notificações'), findsOneWidget);
+    expect(find.byTooltip('Abrir perfil'), findsOneWidget);
+    expect(find.text('Acontece'), findsOneWidget);
+    expect(find.text('Agora'), findsWidgets);
+    expect(find.text('Ver tudo'), findsNothing);
+    expect(find.byKey(const Key('principal-happens-publish-now-card')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
     expect(find.byKey(const Key('principal-happens-desktop-rail')), findsNothing);
     expect(find.byKey(const Key('principal-happens-context-column')), findsNothing);
 
@@ -74,15 +81,11 @@ void main() {
       onOpenNow: () => nowOpened = true,
     );
 
-    await tester.tap(find.byKey(const Key('principal-happens-tab-momentos')));
-    await tester.tap(find.byKey(const Key('principal-happens-tab-perfil')));
+    await tester.tap(find.byTooltip('Momentos'));
+    await tester.tap(find.byTooltip('Abrir perfil'));
     expect(momentsOpened, isTrue);
     expect(profileOpened, isTrue);
 
-    await tester.tap(find.text('Ver tudo'));
-    expect(nowOpened, isTrue);
-
-    nowOpened = false;
     await tester.tap(find.text('Beatriz L.'));
     expect(nowOpened, isTrue);
 
@@ -108,17 +111,189 @@ void main() {
     var forYouOpened = false;
     await pumpHappens(tester, size: const Size(768, 1024), onOpenForYou: () => forYouOpened = true);
 
-    await tester.tap(find.byKey(const Key('principal-happens-tab-for-you')));
+    await tester.tap(find.byTooltip('Para você'));
     expect(forYouOpened, isTrue);
   });
 
   testWidgets('uses the publication CTA inside the framed content', (tester) async {
-    var created = false;
-    await pumpHappens(tester, size: const Size(375, 900), onCreatePost: () => created = true);
+    var nowCreated = false;
+    var happensCreated = false;
+    await pumpHappens(
+      tester,
+      size: const Size(375, 900),
+      onCreatePost: () => happensCreated = true,
+      onPublishNow: () => nowCreated = true,
+    );
 
-    await tester.tap(find.byKey(const Key('principal-happens-create')));
-    expect(created, isTrue);
+    await tester.tap(find.byKey(const Key('principal-happens-publish-now-card')));
+    expect(nowCreated, isTrue);
+    expect(happensCreated, isFalse);
+    await tester.tap(find.byKey(const Key('principal-global-publish-now')));
+    expect(nowCreated, isTrue);
+    expect(happensCreated, isFalse);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('opens post media in an accessible gallery and navigates between items', (
+    tester,
+  ) async {
+    await pumpHappens(tester, size: const Size(375, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-happens-gallery')), findsOneWidget);
+    expect(find.text('1 de 3'), findsOneWidget);
+    expect(find.byTooltip('Próxima mídia'), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-gallery-compact-return')), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Próxima mídia'));
+    await tester.pump();
+    expect(find.text('2 de 3'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
+  });
+
+  testWidgets('opens post media gallery from the keyboard', (tester) async {
+    await pumpHappens(tester, size: const Size(375, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+
+    final media = find.byKey(const Key('principal-happens-media-post-0'));
+    final gesture = find.descendant(of: media, matching: find.byType(GestureDetector));
+    Focus.of(tester.element(gesture)).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-gallery')), findsOneWidget);
+    expect(find.text('1 de 3'), findsOneWidget);
+  });
+
+  testWidgets('gallery supports arrow keys and restores focus after Escape', (tester) async {
+    await pumpHappens(tester, size: const Size(375, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+
+    final media = find.byKey(const Key('principal-happens-media-post-0'));
+    final gesture = find.descendant(of: media, matching: find.byType(GestureDetector));
+    Focus.of(tester.element(gesture)).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(find.text('2 de 3'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.pump();
+    expect(find.text('1 de 3'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
+    expect(Focus.of(tester.element(gesture)).hasPrimaryFocus, isTrue);
+  });
+
+  testWidgets('gallery is contextual fullscreen on compact and modal on wide layouts', (
+    tester,
+  ) async {
+    await pumpHappens(tester, size: const Size(375, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-gallery-compact-return')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-gallery-wide-close')), findsNothing);
+    await tester.tap(find.byKey(const Key('principal-happens-gallery-compact-return')));
+    await tester.pumpAndSettle();
+
+    await pumpHappens(tester, size: const Size(1024, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-gallery-wide-close')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-gallery-compact-return')), findsNothing);
+    final dialog = tester.widget<Dialog>(find.byKey(const Key('principal-happens-gallery')));
+    expect(dialog.insetPadding, isNot(EdgeInsets.zero));
+  });
+
+  testWidgets('gallery responds to a 375 to 768 resize while it remains open', (tester) async {
+    await pumpHappens(tester, size: const Size(375, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-gallery-compact-return')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-gallery-wide-close')), findsNothing);
+
+    await tester.binding.setSurfaceSize(const Size(768, 900));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-happens-gallery-wide-close')), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-gallery-compact-return')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('gallery explains unavailable video playback and offers a safe return', (
+    tester,
+  ) async {
+    final repository = _VideoRepository();
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalHappensPreviewPage(
+          feedRepository: repository,
+          feedScope: const PrincipalHappensFeedScope(institutionId: 'institution-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
+    await tester.pumpAndSettle();
+
+    final gallery = find.byKey(const Key('principal-happens-gallery'));
+    expect(
+      find.descendant(
+        of: gallery,
+        matching: find.text('Reprodução de vídeo indisponível nesta prévia.'),
+      ),
+      findsOneWidget,
+    );
+    final retry = find.descendant(
+      of: gallery,
+      matching: find.byKey(const Key('principal-happens-video-unavailable-action')),
+    );
+    expect(retry, findsOneWidget);
+    expect(find.byTooltip('Mídia anterior'), findsNothing);
+    expect(find.byTooltip('Próxima mídia'), findsNothing);
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
+    expect(repository.listCalls, 1);
+  });
+
+  testWidgets('reports unavailable gallery actions instead of simulating success', (tester) async {
+    await pumpHappens(tester, size: const Size(375, 900));
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -430));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-happens-media-post-0')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Compartilhar mídia'));
+    await tester.pump();
+    expect(find.text('Compartilhamento indisponível nesta prévia.'), findsOneWidget);
   });
 
   testWidgets('keeps tablet anatomy without desktop side columns', (tester) async {
@@ -169,6 +344,54 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('principal-happens-feed')), findsOneWidget);
+    final dockLabels = <Finder>[
+      for (final label in const ['Home', 'Para você', 'Momentos', 'Pesquisar'])
+        find.descendant(of: find.byTooltip(label), matching: find.text(label)),
+      find.byKey(const Key('principal-global-publish-now-label')),
+    ];
+    for (var index = 0; index < dockLabels.length; index += 1) {
+      expect(dockLabels[index], findsOneWidget);
+      for (var other = index + 1; other < dockLabels.length; other += 1) {
+        expect(
+          tester.getRect(dockLabels[index]).overlaps(tester.getRect(dockLabels[other])),
+          isFalse,
+          reason: 'Rótulos do dock não podem colidir a 375 px com texto a 200%.',
+        );
+      }
+    }
     expect(tester.takeException(), isNull);
   });
+}
+
+final class _VideoRepository implements PrincipalHappensFeedRepository {
+  var listCalls = 0;
+
+  @override
+  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(PrincipalHappensFeedScope scope) async {
+    listCalls++;
+    return const [
+      PrincipalPostPreviewItem(
+        author: 'Equipe Coelo',
+        context: 'Instituição',
+        time: 'Agora',
+        initials: 'EC',
+        body: 'Registro em vídeo',
+        media: [
+          PrincipalHappensMediaDescriptor(
+            readTicket: 'video-ticket',
+            mimeType: 'video/mp4',
+            displayOrder: 0,
+          ),
+        ],
+      ),
+    ];
+  }
+
+  @override
+  Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) async =>
+      const PrincipalHappensMediaRead(
+        signedUrl: 'https://example.test/video.mp4',
+        mimeType: 'video/mp4',
+        expiresIn: Duration(minutes: 2),
+      );
 }

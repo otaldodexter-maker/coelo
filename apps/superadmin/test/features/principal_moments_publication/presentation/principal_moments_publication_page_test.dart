@@ -3,11 +3,8 @@ import 'dart:async';
 import 'package:coelo_superadmin/features/principal_moments_publication/application/moments_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/domain/moments_publication.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_superadmin/features/principal_shared/presentation/principal_publication_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,7 +33,7 @@ void main() {
           repository ??
           InMemoryMomentsPublicationRepository(
             draft: MomentsDraft(
-              caption: 'Aprender juntos é crescer juntos. 🌱',
+              caption: 'Aprender juntos é crescer juntos.',
               audiences: const {MomentsAudienceKind.families},
               media: List.generate(5, MomentsMediaDraft.demo),
             ),
@@ -72,10 +69,10 @@ void main() {
   testWidgets('renders the approved composer anatomy on mobile', (tester) async {
     await pumpPage(tester, size: const Size(375, 900));
 
-    expect(find.byType(SuperadminFormFrame), findsOneWidget);
-    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
-    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-form-step-summary')), findsOneWidget);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
+    expect(find.byKey(const Key('principal-publication-step-summary')), findsOneWidget);
     expect(find.text('Mídia'), findsOneWidget);
     expect(find.text('Legenda'), findsWidgets);
     expect(find.text('Salvar rascunho'), findsOneWidget);
@@ -89,6 +86,43 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('renders video media as an honest unavailable preview, never as an image', (
+    tester,
+  ) async {
+    final video = MomentsMediaDraft.local(
+      localId: 'video-1',
+      name: 'apresentacao.mp4',
+      mimeType: 'video/mp4',
+      bytes: Uint8List.fromList([1, 2, 3]),
+      durationMilliseconds: 12000,
+    );
+    await pumpPage(
+      tester,
+      size: const Size(375, 900),
+      repository: InMemoryMomentsPublicationRepository(draft: MomentsDraft(media: [video])),
+    );
+
+    expect(find.byKey(const Key('moments-media-video-unavailable')), findsWidgets);
+    expect(find.byKey(const Key('moments-media-image')), findsNothing);
+    expect(find.text('Prévia de vídeo indisponível'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('demo caption avoids unsupported emoji glyphs', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(theme: CoeloTheme.light, home: const PrincipalMomentsPublicationPage.demo()),
+    );
+    await tester.pumpAndSettle();
+
+    final field = tester.widget<EditableText>(
+      find.descendant(
+        of: find.byKey(const Key('moments-publication-caption')),
+        matching: find.byType(EditableText),
+      ),
+    );
+    expect(field.controller.text, isNot(contains('🌱')));
+  });
+
   testWidgets('uses the canonical wizard navigation and footer hierarchy', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000));
 
@@ -99,6 +133,8 @@ void main() {
     expect(find.byKey(const Key('moments-publication-save')), findsOneWidget);
     expect(find.byKey(const Key('moments-publication-continue')), findsOneWidget);
     expect(find.byKey(const Key('moments-publication-publish')), findsNothing);
+    expect(find.text('Sua publicação'), findsOneWidget);
+    expect(find.byKey(const Key('moments-publication-desktop-preview')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
@@ -194,7 +230,7 @@ void main() {
     await tester.tap(find.byKey(const Key('moments-publication-continue')));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('moments-publication-save-toggle')));
-    expect(find.byType(CoeloAdminToggleField), findsOneWidget);
+    expect(find.byType(PrincipalPublicationToggleField), findsOneWidget);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('moments-publication-save-toggle')));
     await tester.pump();
@@ -202,6 +238,21 @@ void main() {
     expect(addCalls, 1);
     expect(coverCalls, 1);
     expect(controller.state.draft.saveAsDraft, isTrue);
+  });
+
+  testWidgets('fails closed when productive media integration is absent', (tester) async {
+    final controller = await pumpPage(tester, size: const Size(768, 1024));
+    final originalMedia = controller.state.draft.media;
+
+    await tester.ensureVisible(find.byKey(const Key('moments-publication-add-media')));
+    await tester.tap(find.byKey(const Key('moments-publication-add-media')));
+    await tester.pumpAndSettle();
+
+    expect(controller.state.draft.media, originalMedia);
+    expect(
+      find.text('Adicionar mídia está indisponível sem a integração autorizada.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('selects media and reports successful completion to the host flow', (tester) async {
@@ -352,10 +403,144 @@ void main() {
   testWidgets('renders the canonical wizard in dark theme', (tester) async {
     await pumpPage(tester, size: const Size(1440, 1000), theme: CoeloTheme.dark);
 
-    expect(find.byType(SuperadminFormFrame), findsOneWidget);
-    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
-    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('shell completo usa o cabeçalho compartilhado do Principal', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(theme: CoeloTheme.light, home: const PrincipalMomentsPublicationPage.demo()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-moments-publication-logo')), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-publication-notifications')), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-publication-context-avatar')), findsOneWidget);
+  });
+
+  testWidgets('mídia persistida usa URL assinada com cover sem distorção', (tester) async {
+    final controller = MomentsPublicationController(
+      repository: InMemoryMomentsPublicationRepository(
+        draft: MomentsDraft(
+          media: [
+            MomentsMediaDraft(
+              localId: 'asset-1',
+              name: 'momento.png',
+              remoteAssetId: 'asset-1',
+              remoteUrl: 'https://signed.test/momento.png',
+            ),
+          ],
+        ),
+      ),
+      context: MomentsPublicationContext.demo,
+    );
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalMomentsPublicationPage(controller: controller),
+      ),
+    );
+    await tester.pump();
+
+    final image = tester.widget<Image>(find.byKey(const Key('moments-media-image')).first);
+    expect(image.image, isA<NetworkImage>());
+    expect(image.fit, BoxFit.cover);
+  });
+
+  testWidgets('rascunho produtivo vazio não injeta mídia de demonstração', (tester) async {
+    await pumpPage(
+      tester,
+      size: const Size(1440, 1000),
+      repository: InMemoryMomentsPublicationRepository(draft: MomentsDraft()),
+    );
+
+    expect(find.byKey(const Key('moments-publication-empty-media')), findsWidgets);
+    expect(find.text('Adicione uma mídia para começar.'), findsWidgets);
+    expect(find.text('1/1'), findsNothing);
+    expect(find.byKey(const Key('moments-media-image')), findsNothing);
+  });
+
+  testWidgets('falha de carregamento mostra painel e retry preserva o fluxo', (tester) async {
+    final repository = _RetryingMomentsRepository(loadFailures: 1);
+    await pumpPage(tester, size: const Size(768, 1024), repository: repository);
+
+    expect(find.byKey(const Key('moments-publication-failure')), findsOneWidget);
+    expect(find.text('Não foi possível carregar'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(repository.loadCalls, 2);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+  });
+
+  testWidgets('falha ao salvar oferece retry da operação sem descartar o rascunho', (tester) async {
+    final repository = _RetryingMomentsRepository(saveFailures: 1);
+    await pumpPage(tester, size: const Size(768, 1024), repository: repository);
+
+    await tester.tap(find.byKey(const Key('moments-publication-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('moments-publication-failure')), findsOneWidget);
+    expect(find.text('Não foi possível salvar o rascunho.'), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(repository.saveCalls, 2);
+    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+  });
+
+  testWidgets('retry de publicação conclui o fluxo hospedeiro', (tester) async {
+    final repository = _RetryingMomentsRepository(publishFailures: 1);
+    MomentsPublication? completed;
+    var closeCalls = 0;
+    await pumpPage(
+      tester,
+      size: const Size(768, 1024),
+      repository: repository,
+      onPublished: (value) => completed = value,
+      onClose: () => closeCalls += 1,
+    );
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('moments-publication-publish')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('moments-publication-failure')), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+
+    expect(repository.publishCalls, 2);
+    expect(completed, isNotNull);
+    expect(closeCalls, 1);
+  });
+
+  testWidgets('conflito exige recarregar o rascunho', (tester) async {
+    final conflictRepository = _RetryingMomentsRepository(conflictOnSave: true);
+    await pumpPage(tester, size: const Size(768, 1024), repository: conflictRepository);
+    await tester.tap(find.byKey(const Key('moments-publication-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('moments-publication-conflict')), findsOneWidget);
+    expect(find.text('Rascunho desatualizado'), findsOneWidget);
+    expect(find.text('Recarregar rascunho'), findsOneWidget);
+  });
+
+  testWidgets('unauthorized bloqueia o publisher sem oferecer retry', (tester) async {
+    final unauthorizedRepository = _RetryingMomentsRepository(unauthorizedOnSave: true);
+    await pumpPage(tester, size: const Size(768, 1024), repository: unauthorizedRepository);
+    await tester.tap(find.byKey(const Key('moments-publication-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('moments-publication-unauthorized')), findsOneWidget);
+    expect(find.text('Publicação indisponível'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
   });
 
   for (final width in [375.0, 600.0, 768.0, 839.0, 840.0, 1024.0, 1440.0]) {
@@ -382,7 +567,7 @@ final class _DeferredSaveMomentsRepository implements MomentsPublicationReposito
 
   @override
   Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) async => MomentsDraft(
-    caption: 'Aprender juntos é crescer juntos. 🌱',
+    caption: 'Aprender juntos é crescer juntos.',
     audiences: const {MomentsAudienceKind.families},
     media: List.generate(5, MomentsMediaDraft.demo),
   );
@@ -435,4 +620,50 @@ final class _DeferredPagePublishMomentsRepository implements MomentsPublicationR
   @override
   Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) async =>
       draft;
+}
+
+final class _RetryingMomentsRepository implements MomentsPublicationRepository {
+  _RetryingMomentsRepository({
+    this.loadFailures = 0,
+    this.saveFailures = 0,
+    this.publishFailures = 0,
+    this.conflictOnSave = false,
+    this.unauthorizedOnSave = false,
+  });
+
+  final int loadFailures;
+  final int saveFailures;
+  final int publishFailures;
+  final bool conflictOnSave;
+  final bool unauthorizedOnSave;
+  var loadCalls = 0;
+  var saveCalls = 0;
+  var publishCalls = 0;
+
+  @override
+  Future<MomentsDraft?> loadDraft(MomentsPublicationContext context) async {
+    loadCalls += 1;
+    if (loadCalls <= loadFailures) throw Exception('load failed');
+    return MomentsDraft(
+      caption: 'Rascunho preservado',
+      audiences: const {MomentsAudienceKind.families},
+      media: [MomentsMediaDraft.demo(0)],
+    );
+  }
+
+  @override
+  Future<MomentsDraft> saveDraft(MomentsPublicationContext context, MomentsDraft draft) async {
+    saveCalls += 1;
+    if (unauthorizedOnSave) throw MomentsPublicationUnauthorized();
+    if (conflictOnSave) throw MomentsPublicationConflict();
+    if (saveCalls <= saveFailures) throw Exception('save failed');
+    return draft.copyWith(id: 'moment-draft', version: saveCalls);
+  }
+
+  @override
+  Future<MomentsPublication> publish(MomentsPublicationContext context, MomentsDraft draft) async {
+    publishCalls += 1;
+    if (publishCalls <= publishFailures) throw Exception('publish failed');
+    return const MomentsPublication(id: 'moment', status: MomentsStatus.published);
+  }
 }

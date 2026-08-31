@@ -2,7 +2,9 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_domain/profile_about.dart';
 import 'package:flutter/material.dart';
 
-import '../../principal_shared/presentation/principal_preview_app_bar.dart';
+import '../../principal_happens/domain/principal_happens_preview_data.dart';
+import '../../principal_moments/domain/principal_moments_preview_data.dart';
+import '../../principal_shared/presentation/principal_global_navigation.dart';
 import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 import '../domain/principal_profile_preview_data.dart';
@@ -22,6 +24,12 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.onOpenBio,
     this.onOpenLinks,
     this.onOpenAboutMap,
+    this.onOpenMenu,
+    this.onOpenHome,
+    this.onOpenForYou,
+    this.onPublishNow,
+    this.onOpenSearch,
+    this.onOpenMessages,
     this.circularRepository,
     this.circularScope,
     this.onOpenCircular,
@@ -41,6 +49,12 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final VoidCallback? onOpenBio;
   final VoidCallback? onOpenLinks;
   final VoidCallback? onOpenAboutMap;
+  final VoidCallback? onOpenMenu;
+  final VoidCallback? onOpenHome;
+  final VoidCallback? onOpenForYou;
+  final VoidCallback? onPublishNow;
+  final VoidCallback? onOpenSearch;
+  final VoidCallback? onOpenMessages;
   final PrincipalProfilePreviewData data;
   final ProfileAboutPage? aboutPage;
   final CircularRepository? circularRepository;
@@ -62,92 +76,133 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       backgroundColor: scheme.surface,
       appBar: widget.embedded
           ? null
-          : PrincipalPreviewAppBar(
+          : PrincipalGlobalHeader(
               keyPrefix: 'principal-profile',
-              onReportBug: () => _runOrPreview(context, widget.onReportBug, 'Reporte de bug'),
+              onOpenMenu: () => _runOrPreview(context, widget.onOpenMenu, 'Menu'),
               onOpenNotifications: () =>
                   _runOrPreview(context, widget.onOpenNotifications, 'Notificações'),
-              onOpenContext: () =>
+              onReportProblem: () =>
+                  _runOrPreview(context, widget.onReportBug, 'Reportar problema'),
+              onOpenProfile: () =>
                   _runOrPreview(context, widget.onOpenContext, 'Troca de contexto'),
             ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-          final wide = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
-          final inset = compact ? CoeloSpacing.space3 : CoeloSpacing.space5;
-          return SingleChildScrollView(
-            key: const Key('principal-profile-scroll'),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1240),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space6),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _ProfileHero(data: widget.data, compact: compact, wide: wide),
-                      SizedBox(height: compact ? CoeloSpacing.space3 : CoeloSpacing.space4),
-                      _IdentitySection(
-                        data: widget.data,
-                        wide: wide,
-                        following: _following,
-                        onFollow: () => setState(() => _following = !_following),
-                        onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
-                        onOpenBio: () =>
-                            _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+              final wide = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+              final inset = compact ? CoeloSpacing.space3 : CoeloSpacing.space5;
+              return SingleChildScrollView(
+                key: const Key('principal-profile-scroll'),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1240),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        inset,
+                        0,
+                        inset,
+                        widget.embedded ? CoeloSpacing.space6 : 148,
                       ),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      _MetricsPanel(metrics: widget.data.metrics, compact: compact),
-                      const SizedBox(height: CoeloSpacing.space5),
-                      _HighlightsSection(items: widget.data.highlights, compact: compact),
-                      const SizedBox(height: CoeloSpacing.space5),
-                      _LinksSection(
-                        links: widget.data.links,
-                        onOpenAll: () =>
-                            _runOrPreview(context, widget.onOpenLinks, 'Todos os vínculos'),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _ProfileHero(data: widget.data, compact: compact, wide: wide),
+                          SizedBox(height: compact ? CoeloSpacing.space3 : CoeloSpacing.space4),
+                          if (wide)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: _buildMainContent(context, compact: compact)),
+                                const SizedBox(width: CoeloSpacing.space4),
+                                SizedBox(
+                                  width: 280,
+                                  child: _ProfileContextAside(
+                                    data: widget.data,
+                                    onOpenAgenda: widget.onOpenAgenda,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            _buildMainContent(context, compact: compact),
+                        ],
                       ),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      _AgendaSummary(
-                        event: widget.data.nextEvent,
-                        onOpenAgenda: widget.onOpenAgenda,
-                      ),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      _ProfileTabs(
-                        selected: _selectedTab,
-                        onSelected: (tab) {
-                          final destination = switch (tab) {
-                            _ProfileTab.happens => widget.onOpenHappens,
-                            _ProfileTab.moments => widget.onOpenMoments,
-                            _ProfileTab.circulars => null,
-                            _ProfileTab.about => null,
-                          };
-                          if (destination != null) {
-                            destination();
-                            return;
-                          }
-                          setState(() => _selectedTab = tab);
-                        },
-                      ),
-                      const SizedBox(height: CoeloSpacing.space4),
-                      _TabContent(
-                        tab: _selectedTab,
-                        aboutPage: widget.aboutPage,
-                        onOpenAboutMap: widget.onOpenAboutMap,
-                        circularRepository: widget.circularRepository,
-                        circularScope: widget.circularScope,
-                        onOpenCircular: widget.onOpenCircular,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              );
+            },
+          ),
+          if (!widget.embedded)
+            PrincipalGlobalNavigation(
+              selected: PrincipalDestination.home,
+              onHome: () =>
+                  _runOrPreview(context, widget.onOpenHome ?? widget.onOpenHappens, 'Home'),
+              onForYou: () => _runOrPreview(context, widget.onOpenForYou, 'Para você'),
+              onPublishNow: () => _runOrPreview(context, widget.onPublishNow, 'Publicar no Agora'),
+              onMoments: () => _runOrPreview(context, widget.onOpenMoments, 'Momentos'),
+              onSearch: () => _runOrPreview(context, widget.onOpenSearch, 'Pesquisar'),
+              onMessages: () => _runOrPreview(context, widget.onOpenMessages, 'Mensagens'),
             ),
-          );
-        },
+        ],
       ),
     );
   }
+
+  Widget _buildMainContent(BuildContext context, {required bool compact}) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      _IdentitySection(
+        data: widget.data,
+        wide: !compact,
+        following: _following,
+        onFollow: () => setState(() => _following = !_following),
+        onMessage: () => _runOrPreview(context, widget.onMessage, 'Mensagem'),
+        onOpenBio: () => _runOrPreview(context, widget.onOpenBio, 'Biografia completa'),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      _MetricsPanel(metrics: widget.data.metrics, compact: compact),
+      const SizedBox(height: CoeloSpacing.space5),
+      _HighlightsSection(items: widget.data.highlights, compact: compact),
+      const SizedBox(height: CoeloSpacing.space5),
+      _LinksSection(
+        links: widget.data.links,
+        onOpenAll: () => _runOrPreview(context, widget.onOpenLinks, 'Todos os vínculos'),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      _AgendaSummary(event: widget.data.nextEvent, onOpenAgenda: widget.onOpenAgenda),
+      const SizedBox(height: CoeloSpacing.space4),
+      _ProfileTabs(
+        selected: _selectedTab,
+        onSelected: (tab) {
+          final destination = switch (tab) {
+            _ProfileTab.happens => widget.onOpenHappens,
+            _ProfileTab.moments => widget.onOpenMoments,
+            _ProfileTab.circulars => null,
+            _ProfileTab.about => null,
+          };
+          if (destination != null) {
+            destination();
+            return;
+          }
+          setState(() => _selectedTab = tab);
+        },
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      _TabContent(
+        tab: _selectedTab,
+        aboutPage: widget.aboutPage,
+        onOpenAboutMap: widget.onOpenAboutMap,
+        circularRepository: widget.circularRepository,
+        circularScope: widget.circularScope,
+        onOpenCircular: widget.onOpenCircular,
+      ),
+    ],
+  );
 }
 
 void _showPrototypeMessage(BuildContext context, String label) {
@@ -162,6 +217,68 @@ void _runOrPreview(BuildContext context, VoidCallback? action, String fallbackLa
     return;
   }
   _showPrototypeMessage(context, fallbackLabel);
+}
+
+final class _ProfileContextAside extends StatelessWidget {
+  const _ProfileContextAside({required this.data, required this.onOpenAgenda});
+
+  final PrincipalProfilePreviewData data;
+  final VoidCallback onOpenAgenda;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    key: const Key('principal-profile-context-aside'),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Contexto atual',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(data.name, style: Theme.of(context).textTheme.labelLarge),
+          Text(data.typeLabel, style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: CoeloSpacing.space4),
+          const _ProfileContextFact(Icons.location_on_outlined, 'São Paulo, SP'),
+          const SizedBox(height: CoeloSpacing.space2),
+          const _ProfileContextFact(Icons.groups_outlined, 'Comunidade escolar'),
+          const SizedBox(height: CoeloSpacing.space4),
+          Text('Próximo evento', style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(data.nextEvent.title, style: Theme.of(context).textTheme.bodyMedium),
+          Text('${data.nextEvent.day} ${data.nextEvent.month} · ${data.nextEvent.context}'),
+          const SizedBox(height: CoeloSpacing.space3),
+          TextButton.icon(
+            onPressed: onOpenAgenda,
+            icon: const Icon(Icons.calendar_today_outlined),
+            label: const Text('Abrir agenda'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+final class _ProfileContextFact extends StatelessWidget {
+  const _ProfileContextFact(this.icon, this.label);
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Icon(icon, size: CoeloSize.iconSm),
+      const SizedBox(width: CoeloSpacing.space2),
+      Expanded(child: Text(label)),
+    ],
+  );
 }
 
 final class _ProfileHero extends StatelessWidget {
@@ -224,12 +341,9 @@ final class _ProfileHero extends StatelessWidget {
                   ],
                 ),
                 child: ClipOval(
-                  child: Transform.scale(
-                    scale: 1.22,
-                    child: Image.asset(
-                      'assets/principal_profile/institution-crest.png',
-                      fit: BoxFit.cover,
-                    ),
+                  child: Image.asset(
+                    'assets/principal_profile/institution-crest.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
@@ -388,7 +502,14 @@ final class _MetricsPanel extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final columns = compact ? 3 : metrics.length;
+          final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+          final columns = largeText
+              ? compact
+                    ? 1
+                    : 3
+              : compact
+              ? 3
+              : metrics.length;
           final itemWidth = constraints.maxWidth / columns;
           return Wrap(
             children: [
@@ -411,16 +532,17 @@ final class _MetricsPanel extends StatelessWidget {
                               children: [
                                 Text(
                                   metric.value,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: largeText ? null : 1,
+                                  overflow: largeText ? null : TextOverflow.ellipsis,
                                   style: Theme.of(
                                     context,
                                   ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
                                 ),
                                 Text(
+                                  key: Key('principal-profile-metric-${metric.label}'),
                                   metric.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: largeText ? null : 1,
+                                  overflow: largeText ? null : TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -661,51 +783,57 @@ final class _ProfileTabs extends StatelessWidget {
   final ValueChanged<_ProfileTab> onSelected;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    ),
-    child: Row(
-      children: [
-        Expanded(
-          child: _ProfileTabButton(
-            tabKey: const Key('principal-profile-tab-acontece'),
-            label: 'Acontece',
-            icon: Icons.dynamic_feed_outlined,
-            selected: selected == _ProfileTab.happens,
-            onPressed: () => onSelected(_ProfileTab.happens),
-          ),
-        ),
-        Expanded(
-          child: _ProfileTabButton(
-            tabKey: const Key('principal-profile-tab-momentos'),
-            label: 'Momentos',
-            icon: Icons.play_circle_outline_rounded,
-            selected: selected == _ProfileTab.moments,
-            onPressed: () => onSelected(_ProfileTab.moments),
-          ),
-        ),
-        Expanded(
-          child: _ProfileTabButton(
-            tabKey: const Key('principal-profile-tab-circulares'),
-            label: 'Circulares',
-            icon: Icons.description_outlined,
-            selected: selected == _ProfileTab.circulars,
-            onPressed: () => onSelected(_ProfileTab.circulars),
-          ),
-        ),
-        Expanded(
-          child: _ProfileTabButton(
-            tabKey: const Key('principal-profile-tab-sobre'),
-            label: 'Sobre',
-            icon: Icons.info_outline_rounded,
-            selected: selected == _ProfileTab.about,
-            onPressed: () => onSelected(_ProfileTab.about),
-          ),
-        ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final tabs = <Widget>[
+      _ProfileTabButton(
+        tabKey: const Key('principal-profile-tab-acontece'),
+        label: 'Acontece',
+        icon: Icons.dynamic_feed_outlined,
+        selected: selected == _ProfileTab.happens,
+        onPressed: () => onSelected(_ProfileTab.happens),
+      ),
+      _ProfileTabButton(
+        tabKey: const Key('principal-profile-tab-momentos'),
+        label: 'Momentos',
+        icon: Icons.play_circle_outline_rounded,
+        selected: selected == _ProfileTab.moments,
+        onPressed: () => onSelected(_ProfileTab.moments),
+      ),
+      _ProfileTabButton(
+        tabKey: const Key('principal-profile-tab-circulares'),
+        label: 'Circulares',
+        icon: Icons.description_outlined,
+        selected: selected == _ProfileTab.circulars,
+        onPressed: () => onSelected(_ProfileTab.circulars),
+      ),
+      _ProfileTabButton(
+        tabKey: const Key('principal-profile-tab-sobre'),
+        label: 'Sobre',
+        icon: Icons.info_outline_rounded,
+        selected: selected == _ProfileTab.about,
+        onPressed: () => onSelected(_ProfileTab.about),
+      ),
+    ];
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final expanded =
+              constraints.maxWidth >= 680 && MediaQuery.textScalerOf(context).scale(1) <= 1.5;
+          if (expanded) {
+            return Row(children: [for (final tab in tabs) Expanded(child: tab)]);
+          }
+          return SingleChildScrollView(
+            key: const Key('principal-profile-tabs-scroll'),
+            scrollDirection: Axis.horizontal,
+            child: Row(children: [for (final tab in tabs) SizedBox(width: 176, child: tab)]),
+          );
+        },
+      ),
+    );
+  }
 }
 
 final class _ProfileTabButton extends StatelessWidget {
@@ -772,16 +900,8 @@ final class _TabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (tab) {
-    _ProfileTab.happens => const _PlaceholderContent(
-      icon: Icons.dynamic_feed_outlined,
-      title: 'Acontece no Colégio Horizonte',
-      message: 'Comunicados e histórias da comunidade aparecerão aqui.',
-    ),
-    _ProfileTab.moments => const _PlaceholderContent(
-      icon: Icons.play_circle_outline_rounded,
-      title: 'Momentos da comunidade',
-      message: 'Registros em vídeo serão reunidos nesta área.',
-    ),
+    _ProfileTab.happens => const _ProfileHappensFeed(),
+    _ProfileTab.moments => const _ProfileMomentsFeed(),
     _ProfileTab.circulars =>
       circularRepository == null || circularScope == null
           ? const _PlaceholderContent(
@@ -797,6 +917,217 @@ final class _TabContent extends StatelessWidget {
             ),
     _ProfileTab.about => _AboutContent(page: aboutPage, onOpenMap: onOpenAboutMap),
   };
+}
+
+final class _ProfileHappensFeed extends StatelessWidget {
+  const _ProfileHappensFeed();
+
+  @override
+  Widget build(BuildContext context) {
+    final posts = PrincipalHappensPreviewData.demo.posts;
+    return _ProfileEditorialGrid(
+      children: [for (final post in posts) _ProfileHappensCard(post: post)],
+    );
+  }
+}
+
+final class _ProfileHappensCard extends StatelessWidget {
+  const _ProfileHappensCard({required this.post});
+  final PrincipalPostPreviewItem post;
+
+  @override
+  Widget build(BuildContext context) => _ProfileEditorialCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+          leading: CircleAvatar(child: Text(post.initials)),
+          title: Text(post.author, style: const TextStyle(fontWeight: FontWeight.w800)),
+          subtitle: Text('${post.context} · ${post.time}'),
+        ),
+        if (post.mediaIndices.isNotEmpty)
+          SizedBox(
+            height: 220,
+            child: _ProfileSpriteMedia(
+              assetPath: 'assets/principal_happens/feed-strip.png',
+              index: post.mediaIndices.first,
+              count: 4,
+            ),
+          ),
+        Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(post.body, maxLines: 4, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: CoeloSpacing.space2),
+              Wrap(
+                spacing: CoeloSpacing.space3,
+                children: [
+                  if (post.likes case final value?)
+                    _ProfileMetric(icon: Icons.favorite_border_rounded, value: value),
+                  if (post.comments case final value?)
+                    _ProfileMetric(icon: Icons.chat_bubble_outline_rounded, value: value),
+                  if (post.shares case final value?)
+                    _ProfileMetric(icon: Icons.share_outlined, value: value),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+final class _ProfileMomentsFeed extends StatelessWidget {
+  const _ProfileMomentsFeed();
+
+  @override
+  Widget build(BuildContext context) {
+    final moments = PrincipalMomentsPreviewData.demo.moments.take(4);
+    return _ProfileEditorialGrid(
+      children: [for (final moment in moments) _ProfileMomentCard(moment: moment)],
+    );
+  }
+}
+
+final class _ProfileMomentCard extends StatelessWidget {
+  const _ProfileMomentCard({required this.moment});
+  final PrincipalMomentPreviewItem moment;
+
+  @override
+  Widget build(BuildContext context) => _ProfileEditorialCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          height: 260,
+          child: _ProfileSpriteMedia(
+            assetPath: 'assets/principal_moments/moments-strip.png',
+            index: moment.imageIndex,
+            count: 5,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(moment.caption, maxLines: 3, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: CoeloSpacing.space2),
+              Text('${moment.author} · ${moment.context} · ${moment.time}'),
+              const SizedBox(height: CoeloSpacing.space2),
+              Wrap(
+                spacing: CoeloSpacing.space3,
+                children: [
+                  _ProfileMetric(icon: Icons.favorite_border_rounded, value: moment.likes),
+                  _ProfileMetric(icon: Icons.chat_bubble_outline_rounded, value: moment.comments),
+                  _ProfileMetric(icon: Icons.share_outlined, value: moment.shares),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+final class _ProfileEditorialGrid extends StatelessWidget {
+  const _ProfileEditorialGrid({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space4),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 720 ? 2 : 1;
+        final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space3) / columns;
+        return Wrap(
+          spacing: CoeloSpacing.space3,
+          runSpacing: CoeloSpacing.space3,
+          children: [for (final child in children) SizedBox(width: width, child: child)],
+        );
+      },
+    ),
+  );
+}
+
+final class _ProfileEditorialCard extends StatelessWidget {
+  const _ProfileEditorialCard({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: ClipRRect(borderRadius: BorderRadius.circular(CoeloRadius.lg), child: child),
+  );
+}
+
+final class _ProfileSpriteMedia extends StatelessWidget {
+  const _ProfileSpriteMedia({required this.assetPath, required this.index, required this.count});
+
+  final String assetPath;
+  final int index;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final fullAspect = assetPath.endsWith('moments-strip.png') ? 1672 / 941 : 1983 / 793;
+      final panelAspect = fullAspect / count;
+      final tileWidth = constraints.maxWidth > constraints.maxHeight * panelAspect
+          ? constraints.maxWidth
+          : constraints.maxHeight * panelAspect;
+      final imageHeight = tileWidth / panelAspect;
+      final horizontalCrop = (tileWidth - constraints.maxWidth) / 2;
+      final verticalCrop = (imageHeight - constraints.maxHeight) * .12;
+      return ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minWidth: tileWidth * count,
+          maxWidth: tileWidth * count,
+          minHeight: imageHeight,
+          maxHeight: imageHeight,
+          child: Transform.translate(
+            offset: Offset(-tileWidth * index - horizontalCrop, -verticalCrop),
+            child: SizedBox(
+              width: tileWidth * count,
+              height: imageHeight,
+              child: Image.asset(assetPath, fit: BoxFit.cover, excludeFromSemantics: true),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+final class _ProfileMetric extends StatelessWidget {
+  const _ProfileMetric({required this.icon, required this.value});
+
+  final IconData icon;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: '$value',
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: CoeloSize.iconSm),
+        const SizedBox(width: CoeloSpacing.space1),
+        Text('$value'),
+      ],
+    ),
+  );
 }
 
 final class _PlaceholderContent extends StatelessWidget {

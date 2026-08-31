@@ -51,6 +51,27 @@ void main() {
       expect(tester.getSize(find.byKey(key)).height, greaterThanOrEqualTo(CoeloSize.touchMin));
     }
     expect(find.byKey(const Key('principal-profile-open-agenda')), findsOneWidget);
+    final metricLabels = [
+      for (final label in const [
+        'Seguidores',
+        'Seguindo',
+        'Publicações',
+        'Localização',
+        'Fundação',
+        'Colaboradores',
+      ])
+        find.byKey(Key('principal-profile-metric-$label')),
+    ];
+    for (final label in metricLabels) {
+      expect(label, findsOneWidget);
+      expect(tester.widget<Text>(label).overflow, isNot(TextOverflow.ellipsis));
+    }
+    for (var index = 1; index < metricLabels.length; index++) {
+      expect(
+        tester.getTopLeft(metricLabels[index]).dy,
+        greaterThan(tester.getTopLeft(metricLabels[index - 1]).dy),
+      );
+    }
   });
 
   testWidgets('supports 200 percent text at 1440x900 dark', (tester) async {
@@ -91,9 +112,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('principal-profile-logo')), findsOneWidget);
-    expect(find.byKey(const Key('principal-profile-bug')), findsOneWidget);
+    expect(find.byKey(const Key('principal-profile-bug')), findsNothing);
     expect(find.byKey(const Key('principal-profile-notifications')), findsOneWidget);
     expect(find.byKey(const Key('principal-profile-context-avatar')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
     expect(find.text('Colégio Horizonte'), findsOneWidget);
     expect(find.text('Instituição de Ensino'), findsOneWidget);
     expect(find.text('Acompanhar'), findsOneWidget);
@@ -101,7 +123,7 @@ void main() {
     expect(find.text('Destaques'), findsOneWidget);
     expect(find.text('Vínculos'), findsOneWidget);
     expect(find.text('Acontece'), findsOneWidget);
-    expect(find.text('Momentos'), findsOneWidget);
+    expect(find.text('Momentos'), findsWidgets);
     expect(find.text('Sobre'), findsOneWidget);
 
     await tester.ensureVisible(find.byKey(const Key('principal-profile-open-agenda')));
@@ -109,6 +131,71 @@ void main() {
     await tester.pump();
     expect(agendaOpened, isTrue);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the complete crest visible and renders editorial fixtures', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfilePreviewPage(onOpenAgenda: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final crest = tester.widget<Image>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName.endsWith('institution-crest.png'),
+      ),
+    );
+    expect(crest.fit, BoxFit.contain);
+    expect(find.textContaining('Aula prática sobre civilizações antigas!'), findsOneWidget);
+    expect(find.byIcon(Icons.favorite_border_rounded), findsWidgets);
+    expect(find.byIcon(Icons.chat_bubble_outline_rounded), findsWidgets);
+
+    await tester.ensureVisible(find.byKey(const Key('principal-profile-tab-momentos')));
+    await tester.tap(find.byKey(const Key('principal-profile-tab-momentos')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Música que inspira'), findsOneWidget);
+    expect(find.byIcon(Icons.share_outlined), findsWidgets);
+  });
+
+  testWidgets('keeps tabs horizontally reachable at 200 percent', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: PrincipalProfilePreviewPage(onOpenAgenda: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-profile-tabs-scroll')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('shows compact auxiliary context on desktop', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfilePreviewPage(onOpenAgenda: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-profile-context-aside')), findsOneWidget);
+    expect(find.text('Contexto atual'), findsOneWidget);
   });
 
   testWidgets('changes tabs without losing the profile context', (tester) async {
@@ -197,7 +284,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Acontece'), findsOneWidget);
-    expect(find.text('Momentos'), findsOneWidget);
+    expect(find.text('Momentos'), findsWidgets);
     expect(find.text('Circulares'), findsOneWidget);
     expect(find.text('Sobre'), findsOneWidget);
 
@@ -244,7 +331,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('delegates header and profile actions when integrations are provided', (
+  testWidgets('delegates global and profile actions when integrations are provided', (
     tester,
   ) async {
     final invoked = <String>[];
@@ -256,9 +343,15 @@ void main() {
         theme: CoeloTheme.light,
         home: PrincipalProfilePreviewPage(
           onOpenAgenda: () {},
-          onReportBug: () => invoked.add('bug'),
+          onOpenMenu: () => invoked.add('menu'),
           onOpenNotifications: () => invoked.add('notifications'),
-          onOpenContext: () => invoked.add('context'),
+          onOpenHome: () => invoked.add('home'),
+          onOpenForYou: () => invoked.add('for-you'),
+          onPublishNow: () => invoked.add('publish-now'),
+          onOpenMoments: () => invoked.add('moments'),
+          onOpenSearch: () => invoked.add('search'),
+          onOpenMessages: () => invoked.add('messages'),
+          onOpenContext: () => invoked.add('profile'),
           onMessage: () => invoked.add('message'),
           onOpenBio: () => invoked.add('bio'),
           onOpenLinks: () => invoked.add('links'),
@@ -267,12 +360,18 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    for (final key in const [
-      Key('principal-profile-bug'),
-      Key('principal-profile-notifications'),
-      Key('principal-profile-context-avatar'),
+    for (final tooltip in [
+      'Abrir menu',
+      'Notificações',
+      'Home',
+      'Para você',
+      'Publicar no Agora',
+      'Momentos',
+      'Pesquisar',
+      'Mensagens',
+      'Abrir perfil',
     ]) {
-      await tester.tap(find.byKey(key));
+      await tester.tap(find.byTooltip(tooltip));
     }
     await tester.tap(find.text('Mensagem'));
     await tester.tap(find.text('Ver mais'));
@@ -280,7 +379,23 @@ void main() {
     await tester.tap(find.text('Ver todos'));
     await tester.pump();
 
-    expect(invoked, ['bug', 'notifications', 'context', 'message', 'bio', 'links']);
+    expect(
+      invoked,
+      containsAll([
+        'menu',
+        'notifications',
+        'home',
+        'for-you',
+        'publish-now',
+        'moments',
+        'search',
+        'messages',
+        'profile',
+        'message',
+        'bio',
+        'links',
+      ]),
+    );
     expect(find.byType(SnackBar), findsNothing);
   });
 }

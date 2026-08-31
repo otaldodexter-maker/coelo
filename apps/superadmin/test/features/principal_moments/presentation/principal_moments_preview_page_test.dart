@@ -56,12 +56,11 @@ void main() {
   testWidgets('renders the canonical immersive mobile anatomy and social states', (tester) async {
     await pumpMoments(tester, size: const Size(375, 900));
 
-    expect(find.byKey(const Key('principal-moments-logo')), findsOneWidget);
-    expect(find.byKey(const Key('principal-moments-bug')), findsOneWidget);
-    expect(find.byKey(const Key('principal-moments-notifications')), findsOneWidget);
-    expect(find.byKey(const Key('principal-moments-context-avatar')), findsOneWidget);
-    expect(find.text('Momentos'), findsWidgets);
-    expect(find.byKey(const Key('principal-moments-mobile-nav')), findsOneWidget);
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.byKey(const Key('principal-moments-back')), findsOneWidget);
+    expect(find.text('Momentos'), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
     expect(find.byKey(const Key('principal-moments-desktop-aside')), findsNothing);
 
     await tester.tap(find.byKey(const Key('principal-moments-like')));
@@ -75,21 +74,48 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('uses callbacks for Acontece and Perfil', (tester) async {
+  testWidgets('preserves the media aspect ratio instead of stretching it', (tester) async {
+    await pumpMoments(tester, size: const Size(1024, 1000));
+
+    final frame = tester.getRect(find.byKey(const Key('principal-moments-page-view')));
+    expect(frame.width / frame.height, closeTo((1672 / 5) / 941, .01));
+    final media = tester.widget<Image>(find.byType(Image).first);
+    expect(media.fit, BoxFit.cover);
+    expect(media.alignment, Alignment.topCenter);
+    final renderedSize = tester.getSize(find.byType(Image).first);
+    expect(renderedSize.width / renderedSize.height, closeTo(1672 / 941, .001));
+    expect(PrincipalMomentsPreviewData.demo.moments.first.caption, endsWith('.'));
+  });
+
+  testWidgets('returns to the Acontece origin from the visible back action', (tester) async {
     var happensOpened = false;
-    var profileOpened = false;
     await pumpMoments(
       tester,
       size: const Size(768, 1024),
       onOpenHappens: () => happensOpened = true,
-      onOpenProfile: () => profileOpened = true,
     );
 
-    await tester.tap(find.byKey(const Key('principal-moments-nav-acontece')));
-    await tester.tap(find.byKey(const Key('principal-moments-nav-perfil')));
+    await tester.tap(find.byKey(const Key('principal-moments-back')));
 
     expect(happensOpened, isTrue);
-    expect(profileOpened, isTrue);
+  });
+
+  testWidgets('returns to the Acontece origin with Escape', (tester) async {
+    final invoked = <String>[];
+    await tester.binding.setSurfaceSize(const Size(375, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalMomentsPreviewPage(onOpenHappens: () => invoked.add('happens')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+
+    expect(invoked, ['happens']);
   });
 
   testWidgets('opens the Momentos publication contract from the desktop CTA', (tester) async {
@@ -108,14 +134,11 @@ void main() {
   testWidgets('pages vertically through moments', (tester) async {
     await pumpMoments(tester, size: const Size(375, 900));
 
-    expect(find.text('Música que inspira, conexão que transforma. 🎻✨'), findsOneWidget);
+    expect(find.text('Música que inspira, conexão que transforma.'), findsOneWidget);
     await tester.drag(find.byKey(const Key('principal-moments-page-view')), const Offset(0, -700));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Ciência na prática é descoberta que fica para a vida toda. 🔬✨'),
-      findsOneWidget,
-    );
+    expect(find.text('Ciência na prática é descoberta que fica para a vida toda.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -125,10 +148,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Ciência na prática é descoberta que fica para a vida toda. 🔬✨'),
-      findsOneWidget,
-    );
+    expect(find.text('Ciência na prática é descoberta que fica para a vida toda.'), findsOneWidget);
   });
 
   testWidgets('pages through moments with the mouse wheel', (tester) async {
@@ -140,30 +160,23 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Ciência na prática é descoberta que fica para a vida toda. 🔬✨'),
-      findsOneWidget,
-    );
+    expect(find.text('Ciência na prática é descoberta que fica para a vida toda.'), findsOneWidget);
   });
 
-  testWidgets('uses Coelo orange hover and focus states for discrete navigation', (tester) async {
+  testWidgets('suspends the global navigation while Momentos is open', (tester) async {
     await pumpMoments(tester, size: const Size(1440, 1000));
 
-    final context = tester.element(find.byType(PrincipalMomentsPreviewPage));
-    final colors = Theme.of(context).colorScheme;
-    final button = tester.widget<TextButton>(
-      find.byKey(const Key('principal-moments-nav-acontece')),
-    );
-
-    expect(button.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
-    expect(button.style?.foregroundColor?.resolve({WidgetState.focused}), colors.primary);
+    expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-back')), findsOneWidget);
+    expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
   });
 
   testWidgets('expands into the desktop media and contextual aside', (tester) async {
     await pumpMoments(tester, size: const Size(1440, 1000));
 
     expect(find.byKey(const Key('principal-moments-mobile-nav')), findsNothing);
-    expect(find.byKey(const Key('principal-moments-desktop-nav')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+    expect(find.byKey(const Key('principal-moments-desktop-nav')), findsNothing);
     expect(find.byKey(const Key('principal-moments-desktop-aside')), findsOneWidget);
     expect(find.text('Em alta na escola'), findsOneWidget);
     expect(find.text('Compartilhe momentos que inspiram'), findsOneWidget);

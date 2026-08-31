@@ -1,6 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../domain/circular.dart';
 import '../domain/circular_repository.dart';
@@ -232,7 +232,8 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
         return _PrincipalCircularCard(
           key: Key('profile-circular-${item.id}'),
           item: item,
-          onOpen: () => widget.onOpen(item.id),
+          onOpen: () =>
+              _openCircularPreview(context, item: item, onRead: () => widget.onOpen(item.id)),
         );
       },
     );
@@ -240,17 +241,25 @@ final class _PrincipalProfileCircularsTabState extends State<PrincipalProfileCir
 }
 
 final class PrincipalCircularFeedCard extends StatelessWidget {
-  const PrincipalCircularFeedCard({required this.item, required this.onOpen, super.key});
+  const PrincipalCircularFeedCard({
+    required this.item,
+    required this.onOpen,
+    this.contextualPreview = true,
+    super.key,
+  });
 
   final CircularSummary item;
   final VoidCallback onOpen;
+  final bool contextualPreview;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    void activate() =>
+        contextualPreview ? _openCircularPreview(context, item: item, onRead: onOpen) : onOpen();
     return _InteractiveSurface(
       semanticLabel: 'Circular ${item.title}',
-      onPressed: onOpen,
+      onPressed: activate,
       child: Padding(
         padding: const EdgeInsets.all(CoeloSpacing.space4),
         child: Column(
@@ -324,10 +333,19 @@ final class PrincipalCircularFeedCard extends StatelessWidget {
             const SizedBox(height: CoeloSpacing.space3),
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: onOpen,
-                icon: const Icon(Icons.arrow_forward_rounded),
-                label: const Text('Ler circular'),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.arrow_forward_rounded, color: theme.colorScheme.primary),
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Text(
+                    'Ler circular',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -403,7 +421,7 @@ final class _PrincipalCircularCard extends StatelessWidget {
   }
 }
 
-final class _InteractiveSurface extends StatelessWidget {
+final class _InteractiveSurface extends StatefulWidget {
   const _InteractiveSurface({
     required this.semanticLabel,
     required this.onPressed,
@@ -412,14 +430,144 @@ final class _InteractiveSurface extends StatelessWidget {
   final String semanticLabel;
   final VoidCallback onPressed;
   final Widget child;
+
+  @override
+  State<_InteractiveSurface> createState() => _InteractiveSurfaceState();
+}
+
+final class _InteractiveSurfaceState extends State<_InteractiveSurface> {
+  var _highlighted = false;
+
   @override
   Widget build(BuildContext context) {
-    return CoeloAdminInteractiveCard(
-      semanticLabel: semanticLabel,
-      onPressed: onPressed,
-      child: child,
+    final colors = Theme.of(context).colorScheme;
+    final duration = MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.standard;
+    return Semantics(
+      button: true,
+      label: widget.semanticLabel,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _highlighted = true),
+        onExit: (_) => setState(() => _highlighted = false),
+        child: FocusableActionDetector(
+          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
+          shortcuts: const {
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: {
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (_) {
+                widget.onPressed();
+                return null;
+              },
+            ),
+          },
+          child: AnimatedContainer(
+            duration: duration,
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              border: Border.all(
+                color: _highlighted ? colors.primary.withValues(alpha: .55) : colors.outlineVariant,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: (_highlighted ? colors.primary : colors.shadow).withValues(alpha: .10),
+                  blurRadius: _highlighted ? 12 : 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: widget.onPressed,
+              child: widget.child,
+            ),
+          ),
+        ),
+      ),
     );
   }
+}
+
+Future<void> _openCircularPreview(
+  BuildContext context, {
+  required CircularSummary item,
+  required VoidCallback onRead,
+}) async {
+  if (MediaQuery.sizeOf(context).width < CoeloBreakpoints.large.minWidth) {
+    onRead();
+    return;
+  }
+  await showDialog<void>(
+    context: context,
+    barrierColor: Colors.black54,
+    builder: (dialogContext) => Dialog(
+      key: const Key('principal-circular-preview-dialog'),
+      backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 640, maxHeight: 720),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                CoeloSpacing.space4,
+                CoeloSpacing.space3,
+                CoeloSpacing.space2,
+                CoeloSpacing.space2,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Prévia da Circular',
+                      style: Theme.of(dialogContext).textTheme.titleLarge,
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('principal-circular-preview-close'),
+                    tooltip: 'Fechar prévia',
+                    color: Theme.of(dialogContext).colorScheme.error,
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: Theme.of(dialogContext).colorScheme.outlineVariant),
+            Expanded(
+              child: SingleChildScrollView(
+                key: const Key('principal-circular-preview-scroll'),
+                padding: const EdgeInsets.all(CoeloSpacing.space4),
+                child: PrincipalCircularFeedCard(
+                  item: item,
+                  contextualPreview: false,
+                  onOpen: () {
+                    Navigator.of(dialogContext).pop();
+                    onRead();
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(CoeloSpacing.space4),
+              child: FilledButton(
+                key: const Key('principal-circular-preview-read'),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  onRead();
+                },
+                child: const Text('Ler circular'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 final class _Metadata extends StatelessWidget {

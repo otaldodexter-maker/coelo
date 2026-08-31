@@ -2,14 +2,12 @@ import 'dart:async';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 
-import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
-import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../principal_shared/presentation/principal_publication_frame.dart';
+import '../../principal_shared/presentation/principal_preview_app_bar.dart';
 import '../application/now_publication_controller.dart';
 import '../domain/now_publication.dart';
 import '../domain/now_media_metadata.dart';
@@ -31,8 +29,19 @@ bool _sameContext(NowPublicationContext left, NowPublicationContext right) =>
 final class PrincipalNowPublicationPage extends StatefulWidget {
   const PrincipalNowPublicationPage({
     required this.repository,
+    required this.publicationContext,
     this.embedded = false,
+    this.mediaPicker,
+    this.audioPicker,
+    this.onClose,
+    this.onCompleted,
+    super.key,
+  });
+
+  const PrincipalNowPublicationPage.demo({
+    required this.repository,
     this.publicationContext = NowPublicationContext.demo,
+    this.embedded = false,
     this.mediaPicker,
     this.audioPicker,
     this.onClose,
@@ -134,7 +143,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
       capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       backgroundColor: backgroundColor,
       showDragHandle: true,
-      isScrollControlled: false,
+      isScrollControlled: true,
     );
     final entry = (navigator, route as Route<dynamic>);
     _ownedOverlays.add(entry);
@@ -223,6 +232,36 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
           child: Center(child: CircularProgressIndicator(key: Key('now-publication-loading'))),
         );
       }
+      if (controller.state.phase == NowPublicationPhase.unauthorized) {
+        return _stateScaffold(
+          key: const Key('now-publication-unauthorized'),
+          title: 'Publicação indisponível',
+          message: controller.state.message ?? 'Você não pode publicar neste contexto.',
+          icon: Icons.lock_outline_rounded,
+        );
+      }
+      if (controller.state.phase == NowPublicationPhase.conflict) {
+        return _stateScaffold(
+          key: const Key('now-publication-conflict'),
+          title: 'Rascunho desatualizado',
+          message: controller.state.message ?? 'Recarregue antes de continuar.',
+          icon: Icons.sync_problem_rounded,
+          actionLabel: 'Recarregar rascunho',
+          onAction: _retry,
+        );
+      }
+      if (controller.state.phase == NowPublicationPhase.failure) {
+        return _stateScaffold(
+          key: const Key('now-publication-failure'),
+          title: controller.state.message == 'Não foi possível carregar o rascunho.'
+              ? 'Não foi possível carregar'
+              : 'Não foi possível concluir',
+          message: controller.state.message ?? 'Tente novamente.',
+          icon: Icons.cloud_off_outlined,
+          actionLabel: 'Tentar novamente',
+          onAction: _retry,
+        );
+      }
       final busy = {
         NowPublicationPhase.uploading,
         NowPublicationPhase.saving,
@@ -231,31 +270,38 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
       return LayoutBuilder(
         builder: (context, constraints) => Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: widget.embedded
+              ? null
+              : PrincipalPreviewAppBar(
+                  keyPrefix: 'principal-now-publication',
+                  onReportBug: () => _unavailable('Reporte de bug'),
+                  onOpenNotifications: () => _unavailable('Notificações'),
+                  onOpenContext: () => _unavailable('Troca de contexto'),
+                ),
           body: SafeArea(
             top: !widget.embedded,
             bottom: !widget.embedded,
             left: !widget.embedded,
             right: !widget.embedded,
-            child: SuperadminFormFrame(
-              viewportWidth: constraints.maxWidth,
+            child: PrincipalPublicationFrame(
               navigation: ExcludeFocus(
                 key: const Key('now-publication-navigation-focus-lock'),
                 excluding: busy,
                 child: AbsorbPointer(
                   absorbing: busy,
-                  child: SuperadminFormStepNavigation(
+                  child: PrincipalPublicationStepNavigation(
                     steps: [
-                      SuperadminFormStep(
+                      PrincipalPublicationStep(
                         label: 'Mídia',
                         status: _currentStep == 0
-                            ? SuperadminFormStepStatus.current
-                            : SuperadminFormStepStatus.complete,
+                            ? PrincipalPublicationStepStatus.current
+                            : PrincipalPublicationStepStatus.complete,
                       ),
-                      SuperadminFormStep(
+                      PrincipalPublicationStep(
                         label: 'Detalhes',
                         status: _currentStep == 1
-                            ? SuperadminFormStepStatus.current
-                            : SuperadminFormStepStatus.incomplete,
+                            ? PrincipalPublicationStepStatus.current
+                            : PrincipalPublicationStepStatus.incomplete,
                         enabled: _currentStep == 1,
                       ),
                     ],
@@ -291,10 +337,45 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     },
   );
 
+  Widget _stateScaffold({
+    required Key key,
+    required String title,
+    required String message,
+    required IconData icon,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) => Scaffold(
+    key: key,
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    appBar: widget.embedded
+        ? null
+        : PrincipalPreviewAppBar(
+            keyPrefix: 'principal-now-publication',
+            onReportBug: () => _unavailable('Reporte de bug'),
+            onOpenNotifications: () => _unavailable('Notificações'),
+            onOpenContext: () => _unavailable('Troca de contexto'),
+          ),
+    body: CoeloStatePanel(
+      title: title,
+      message: message,
+      icon: icon,
+      actionLabel: actionLabel,
+      onAction: onAction,
+    ),
+  );
+
+  Future<void> _retry() async {
+    final publication = await controller.retry();
+    if (!mounted || publication == null) return;
+    widget.onCompleted?.call(publication);
+  }
+
   Widget _stepBody() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text('Publicar no Agora', style: Theme.of(context).textTheme.headlineSmall),
+      Text('Sua publicação', style: Theme.of(context).textTheme.headlineSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      Text('Publicar no Agora', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space1),
       Text(
         _currentStep == 0 ? 'Escolha e prepare a mídia.' : 'Defina público e publicação.',
@@ -303,22 +384,41 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
         ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
       const SizedBox(height: CoeloSpacing.space5),
-      if (_currentStep == 0)
-        LayoutBuilder(
-          builder: (context, constraints) => _MediaAndTools(
-            controller: controller,
-            width: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth ? 300 : 220,
-            onPickMedia: _pickMedia,
-            onText: _showTextEditor,
-            onMusic: _pickAudio,
-            onCrop: _showCropEditor,
-            onCover: _showCoverEditor,
-          ),
-        )
-      else
-        _Details(controller: controller, captionController: captionController),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+          final editor = _currentStep == 0
+              ? _MediaAndTools(
+                  controller: controller,
+                  width: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth ? 300 : 220,
+                  onPickMedia: _pickMedia,
+                  onText: _showTextEditor,
+                  onMusic: _pickAudio,
+                  onCrop: _showCropEditor,
+                  onCover: _showCoverEditor,
+                )
+              : _Details(controller: controller, captionController: captionController);
+          if (constraints.maxWidth < 840 || enlargedText) return editor;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: editor),
+              const SizedBox(width: CoeloSpacing.space5),
+              SizedBox(
+                key: const Key('now-publication-desktop-preview'),
+                width: 320,
+                child: _NowPublicationPreview(controller: controller, onPick: _pickMedia),
+              ),
+            ],
+          );
+        },
+      ),
     ],
   );
+
+  void _unavailable(String label) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text('$label estará disponível na experiência completa.')));
 
   Future<void> _showTextEditor() async {
     final requestedController = controller;
@@ -354,7 +454,10 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     value: controller.state.draft.media?.cropScale ?? 1,
     min: 1,
     max: 2,
-    onChanged: (value) => controller.setCrop(scale: value, x: 0, y: 0),
+    onChanged: (value) {
+      final media = controller.state.draft.media;
+      controller.setCrop(scale: value, x: media?.cropX ?? 0, y: media?.cropY ?? 0);
+    },
   );
 
   Future<void> _showCoverEditor() => _showSliderSheet(
@@ -452,6 +555,50 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   }
 }
 
+final class _NowPublicationPreview extends StatelessWidget {
+  const _NowPublicationPreview({required this.controller, required this.onPick});
+
+  final NowPublicationController controller;
+  final VoidCallback onPick;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(CoeloSpacing.space4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Prévia do Agora',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          AspectRatio(
+            aspectRatio: 9 / 16,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(CoeloRadius.md),
+              child: _MediaPreview(controller: controller, onPick: onPick, readOnly: true),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(
+            'Disponível por 24 horas',
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 final class _MediaAndTools extends StatelessWidget {
   const _MediaAndTools({
     required this.controller,
@@ -521,14 +668,28 @@ final class _MediaAndTools extends StatelessWidget {
 }
 
 final class _MediaPreview extends StatelessWidget {
-  const _MediaPreview({required this.controller, required this.onPick});
+  const _MediaPreview({required this.controller, required this.onPick, this.readOnly = false});
   final NowPublicationController controller;
   final VoidCallback onPick;
+  final bool readOnly;
   @override
   Widget build(BuildContext context) {
     final media = controller.state.draft.media;
     if (media == null) {
       final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+      if (readOnly) {
+        return DecoratedBox(
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerLow),
+          child: Center(
+            child: Text(
+              'Prévia sem mídia',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        );
+      }
       return _PrincipalInteractiveSurface(
         semanticLabel: 'Adicionar mídia ao Agora',
         onPressed: onPick,
@@ -557,32 +718,35 @@ final class _MediaPreview extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (media.isVideo)
-          ColoredBox(
-            color: Theme.of(context).colorScheme.inverseSurface,
-            child: Center(
-              child: Icon(
-                Icons.play_circle_fill_rounded,
-                color: Theme.of(context).colorScheme.onInverseSurface,
-                size: 56,
-              ),
-            ),
-          )
+          const _NowVideoPreview()
         else
           Transform.scale(
+            key: const Key('now-media-crop'),
             scale: media.cropScale,
+            alignment: Alignment(media.cropX, media.cropY),
             child: media.bytes.isEmpty && media.remoteUrl != null
                 ? Image.network(
                     media.remoteUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) =>
-                        Image.asset('assets/principal_now/story-strip.png', fit: BoxFit.cover),
+                    errorBuilder: (_, _, _) => const _UnavailableNowMedia(),
                   )
                 : Image.memory(
                     media.bytes,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) =>
-                        Image.asset('assets/principal_now/story-strip.png', fit: BoxFit.cover),
+                    errorBuilder: (_, _, _) => const _UnavailableNowMedia(),
                   ),
+          ),
+        if (media.isVideo)
+          Align(
+            alignment: Alignment(0, (media.coverPosition * 2) - 1),
+            child: Semantics(
+              label: 'Capa selecionada em ${(media.coverPosition * 100).round()} por cento',
+              child: Container(
+                key: const Key('now-cover-position-indicator'),
+                height: 3,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
           ),
         if (controller.state.draft.overlayText.isNotEmpty)
           Center(
@@ -604,18 +768,73 @@ final class _MediaPreview extends StatelessWidget {
           left: CoeloSpacing.space3,
           child: _Duration(media: media),
         ),
-        Positioned(
-          bottom: CoeloSpacing.space3,
-          right: CoeloSpacing.space3,
-          child: IconButton.filledTonal(
-            tooltip: 'Trocar mídia',
-            onPressed: onPick,
-            icon: const Icon(Icons.refresh_rounded),
+        if (!readOnly)
+          Positioned(
+            bottom: CoeloSpacing.space3,
+            right: CoeloSpacing.space3,
+            child: IconButton.filledTonal(
+              tooltip: 'Trocar mídia',
+              onPressed: onPick,
+              icon: const Icon(Icons.refresh_rounded),
+            ),
           ),
-        ),
       ],
     );
   }
+}
+
+final class _NowVideoPreview extends StatelessWidget {
+  const _NowVideoPreview();
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+    key: const Key('now-video-preview'),
+    color: Theme.of(context).colorScheme.inverseSurface,
+    child: Center(
+      child: Icon(
+        Icons.play_circle_fill_rounded,
+        color: Theme.of(context).colorScheme.onInverseSurface,
+        size: 56,
+      ),
+    ),
+  );
+}
+
+final class _UnavailableNowMedia extends StatelessWidget {
+  const _UnavailableNowMedia();
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+    key: const Key('now-media-unavailable'),
+    color: Theme.of(context).colorScheme.surfaceContainerLow,
+    child: Semantics(
+      label: 'Mídia indisponível',
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.broken_image_outlined,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                size: CoeloSize.iconLg,
+              ),
+              const SizedBox(height: CoeloSpacing.space2),
+              Text(
+                'Mídia indisponível',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 final class _Duration extends StatelessWidget {
@@ -927,7 +1146,7 @@ final class _ScheduleCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CoeloAdminToggleField(
+        PrincipalPublicationToggleField(
           key: const Key('now-schedule-toggle'),
           label: 'Agendar publicação',
           description: 'Defina data e horário para publicar automaticamente.',
@@ -992,7 +1211,7 @@ final class _PublicationFooter extends StatelessWidget {
       onPressed: busy ? null : controller.saveDraft,
       child: const Text('Salvar rascunho'),
     );
-    return SuperadminFormActionFooter(
+    return PrincipalPublicationActionFooter(
       surfaceKey: const Key('now-publication-footer'),
       tertiaryAction: TextButton(onPressed: busy ? null : onCancel, child: const Text('Cancelar')),
       continuationActions: [

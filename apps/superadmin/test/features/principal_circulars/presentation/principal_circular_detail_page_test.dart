@@ -5,6 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('compact reader uses only the contextual Circular return', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 900);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PrincipalCircularDetailPage(
+          circularId: 'circular-1',
+          childContextId: 'child-1',
+          repository: _Repository(),
+          responseRepository: _ResponseRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('principal-circular-contextual-return')), findsOneWidget);
+    expect(find.byType(AppBar), findsNothing);
+    expect(find.text('Circular'), findsOneWidget);
+  });
+
   testWidgets('loads and updates the current versioned response', (tester) async {
     final responses = _ResponseRepository();
     await tester.pumpWidget(

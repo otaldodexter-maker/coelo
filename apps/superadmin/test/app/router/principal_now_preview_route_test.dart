@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/principal_happens/presentation/principal_happens_preview_page.dart';
+import 'package:coelo_superadmin/features/principal_for_you/presentation/principal_for_you_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_moments/presentation/principal_moments_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_now/presentation/principal_now_preview_page.dart';
 import 'package:coelo_superadmin/features/principal_now_publication/presentation/principal_now_publication_page.dart';
@@ -14,7 +15,6 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 
 void main() {
   test('keeps the Agora preview on a dedicated development route', () {
@@ -41,24 +41,12 @@ void main() {
     );
     addTearDown(sourceRouter.dispose);
     addTearDown(session.dispose);
-    final observer = _RecordingNavigatorObserver();
-    final sourceShell = sourceRouter.configuration.routes.whereType<ShellRoute>().single;
-    final observedShell = ShellRoute(
-      builder: sourceShell.builder,
-      routes: sourceShell.routes,
-      observers: [observer],
-    );
-    final router = GoRouter(
-      initialLocation: SuperadminRoutes.devPrincipalHappens,
-      routes: [observedShell],
-    );
-    addTearDown(router.dispose);
+    final router = sourceRouter;
+    router.go(SuperadminRoutes.devPrincipalHappens);
 
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
-    observer.reset();
-
     final originCard = find.byKey(const Key('principal-happens-now-card'));
     final origin = find.descendant(of: originCard, matching: find.byType(TextButton));
     expect(tester.widget<TextButton>(origin).onPressed, isNotNull);
@@ -68,24 +56,61 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await _pumpRouteTransition(tester);
     expect(find.byType(PrincipalNowPreviewPage), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-persistent-shell')).hitTestable(), findsNothing);
+    expect(find.byKey(const Key('superadmin-sidebar')).hitTestable(), findsNothing);
     expect(find.byType(Dialog), findsNothing);
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
     expect(Navigator.of(tester.element(find.byType(PrincipalNowPreviewPage))).canPop(), isTrue);
-    expect(observer.didPushCount, 1);
-    expect(observer.didPopCount, 0);
-    expect(observer.didRemoveCount, 0);
-    expect(observer.didReplaceCount, 0);
 
     await tester.tap(find.byKey(const Key('principal-now-close')));
     await _pumpUntilAbsent(tester, find.byType(PrincipalNowPreviewPage));
-    expect(observer.didPushCount, 1);
-    expect(observer.didPopCount, 1);
-    expect(observer.didRemoveCount, 0);
-    expect(observer.didReplaceCount, 0);
     expect(find.byType(PrincipalNowPreviewPage), findsNothing);
     expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
+    expect(focus.hasFocus, isTrue);
+  });
+
+  testWidgets('opens Agora from Para você without replacing its origin and restores focus', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(768, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.devPrincipalForYou);
+
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    final originPage = find.byType(PrincipalForYouPreviewPage);
+    expect(originPage, findsOneWidget);
+    final originControl = find.byWidgetPredicate(
+      (widget) =>
+          widget is OutlinedButton && widget.key == const Key('principal-for-you-context-trigger'),
+    );
+    final focus = await _tabTo(tester, originControl);
+    expect(_focusIsWithin(focus, originControl), isTrue);
+
+    tester.widget<PrincipalForYouPreviewPage>(originPage).onOpenNow!.call();
+    await _pumpRouteTransition(tester);
+
+    expect(find.byType(PrincipalNowPreviewPage), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalForYou);
+    expect(Navigator.of(tester.element(find.byType(PrincipalNowPreviewPage))).canPop(), isTrue);
+
+    await tester.tap(find.byKey(const Key('principal-now-close')));
+    await _pumpUntilAbsent(tester, find.byType(PrincipalNowPreviewPage));
+
+    expect(find.byType(PrincipalForYouPreviewPage), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalForYou);
     expect(focus.hasFocus, isTrue);
   });
 
@@ -108,7 +133,7 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    final origin = find.byKey(const Key('principal-happens-tab-momentos'));
+    final origin = find.byTooltip('Momentos');
     final focus = await _tabTo(tester, origin);
     expect(_focusIsWithin(focus, origin), isTrue);
 
@@ -157,7 +182,7 @@ void main() {
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
   });
 
-  testWidgets('keeps Agora inside one responsive shell at 200 percent text', (tester) async {
+  testWidgets('suspends the shell around Agora at 200 percent text', (tester) async {
     final session = SuperadminSession();
     final router = createSuperadminRouter(
       session: session,
@@ -187,22 +212,17 @@ void main() {
       );
       await _pumpRouteTransition(tester);
 
-      final content = find.byKey(const Key('superadmin-content-transition'));
-      expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
-      expect(content, findsOneWidget);
-      expect(
-        find.descendant(of: content, matching: find.byType(PrincipalNowPreviewPage)),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('superadmin-persistent-shell')), findsNothing);
+      expect(find.byKey(const Key('superadmin-content-transition')), findsNothing);
+      expect(find.byKey(const Key('superadmin-sidebar')), findsNothing);
+      expect(find.byType(PrincipalNowPreviewPage), findsOneWidget);
       expect(find.byType(Dialog), findsNothing);
+      expect(find.byType(AppBar), findsNothing);
+      expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+      expect(find.byKey(const Key('principal-now-back')), findsOneWidget);
+      expect(find.byTooltip('Voltar para Acontece'), findsOneWidget);
+      expect(find.text('Agora'), findsOneWidget);
       expect(tester.takeException(), isNull, reason: '$width');
-
-      if (width == 1440) {
-        final sidebar = find.byKey(const Key('superadmin-sidebar'));
-        expect(sidebar, findsOneWidget);
-        expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
-        expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
-      }
     }
   });
 
@@ -345,38 +365,4 @@ bool _focusIsWithin(FocusNode focus, Finder target) {
     return true;
   });
   return matched;
-}
-
-final class _RecordingNavigatorObserver extends NavigatorObserver {
-  int didPushCount = 0;
-  int didPopCount = 0;
-  int didRemoveCount = 0;
-  int didReplaceCount = 0;
-
-  void reset() {
-    didPushCount = 0;
-    didPopCount = 0;
-    didRemoveCount = 0;
-    didReplaceCount = 0;
-  }
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    didPushCount += 1;
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    didPopCount += 1;
-  }
-
-  @override
-  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    didRemoveCount += 1;
-  }
-
-  @override
-  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    didReplaceCount += 1;
-  }
 }

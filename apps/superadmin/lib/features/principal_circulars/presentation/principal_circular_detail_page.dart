@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../domain/circular_repository.dart';
 import 'principal_circular_reader.dart';
@@ -12,6 +13,7 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
     required this.repository,
     required this.responseRepository,
     this.childContextId,
+    this.onReturn,
     super.key,
   });
 
@@ -19,6 +21,7 @@ final class PrincipalCircularDetailPage extends StatefulWidget {
   final String? childContextId;
   final CircularRepository repository;
   final CircularResponseRepository responseRepository;
+  final VoidCallback? onReturn;
 
   @override
   State<PrincipalCircularDetailPage> createState() => _PrincipalCircularDetailPageState();
@@ -83,16 +86,61 @@ final class _PrincipalCircularDetailPageState extends State<PrincipalCircularDet
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    appBar: AppBar(
-      title: const Text('Circular'),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
+  Widget build(BuildContext context) => CallbackShortcuts(
+    bindings: {const SingleActivator(LogicalKeyboardKey.escape): _return},
+    child: Focus(
+      autofocus: true,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            appBar: compact
+                ? null
+                : AppBar(
+                    leading: IconButton(
+                      tooltip: 'Voltar para Circulares',
+                      onPressed: _return,
+                      icon: const Icon(Icons.chevron_left_rounded),
+                    ),
+                    title: const Text('Circular'),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    surfaceTintColor: Colors.transparent,
+                    scrolledUnderElevation: 0,
+                  ),
+            body: compact
+                ? SafeArea(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            key: const Key('principal-circular-contextual-return'),
+                            onPressed: _return,
+                            icon: const Icon(Icons.chevron_left_rounded),
+                            label: const Text('Circular'),
+                          ),
+                        ),
+                        Expanded(child: _body()),
+                      ],
+                    ),
+                  )
+                : _body(),
+          );
+        },
+      ),
     ),
-    body: _body(),
   );
+
+  void _return() {
+    final callback = widget.onReturn;
+    if (callback != null) {
+      callback();
+      return;
+    }
+    Navigator.of(context).maybePop();
+  }
 
   Widget _body() {
     if (_loading) {

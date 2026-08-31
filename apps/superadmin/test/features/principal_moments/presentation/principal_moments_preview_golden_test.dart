@@ -14,6 +14,10 @@ void main() {
     (name: 'light_1440', size: const Size(1440, 1000), theme: CoeloTheme.light),
     (name: 'light_375', size: const Size(375, 900), theme: CoeloTheme.light),
     (name: 'light_768', size: const Size(768, 1024), theme: CoeloTheme.light),
+    (name: 'light_1024', size: const Size(1024, 1000), theme: CoeloTheme.light),
+    (name: 'dark_375', size: const Size(375, 900), theme: CoeloTheme.dark),
+    (name: 'dark_768', size: const Size(768, 1024), theme: CoeloTheme.dark),
+    (name: 'dark_1024', size: const Size(1024, 1000), theme: CoeloTheme.dark),
     (name: 'dark_1440', size: const Size(1440, 1000), theme: CoeloTheme.dark),
   ];
 
@@ -39,7 +43,41 @@ void main() {
     });
   }
 
-  testWidgets('matches the approved Coelo discrete hover state', (tester) async {
+  for (final testCase in [
+    (name: 'text_200_light_375', size: const Size(375, 1100), theme: CoeloTheme.light),
+    (name: 'text_200_dark_1440', size: const Size(1440, 1200), theme: CoeloTheme.dark),
+  ]) {
+    testWidgets('matches approved Momentos composition ${testCase.name}', (tester) async {
+      await tester.binding.setSurfaceSize(testCase.size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: testCase.theme,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2), disableAnimations: true),
+            child: child!,
+          ),
+          home: const PrincipalMomentsPreviewPage(),
+        ),
+      );
+      await tester.runAsync(
+        () => precacheImage(
+          const AssetImage('assets/principal_moments/moments-strip.png'),
+          tester.element(find.byType(PrincipalMomentsPreviewPage)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(PrincipalMomentsPreviewPage),
+        matchesGoldenFile('goldens/principal_moments_${testCase.name}.png'),
+      );
+    });
+  }
+
+  testWidgets('matches the approved Coelo like hover state', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
@@ -55,12 +93,12 @@ void main() {
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer();
-    await mouse.moveTo(tester.getCenter(find.byKey(const Key('principal-moments-nav-acontece'))));
+    await mouse.moveTo(tester.getCenter(find.byTooltip('Curtir')));
     await tester.pump();
 
     await expectLater(
       find.byType(PrincipalMomentsPreviewPage),
-      matchesGoldenFile('goldens/principal_moments_nav_hover_light_1440.png'),
+      matchesGoldenFile('goldens/principal_moments_like_hover_light_1440.png'),
     );
   });
 }

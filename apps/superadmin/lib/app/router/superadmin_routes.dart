@@ -113,6 +113,12 @@ abstract final class SuperadminRoutes {
   static const noticeCreateName = 'notice-create';
   static const noticeEdit = '/notices/:noticeId/edit';
   static const noticeEditName = 'notice-edit';
+  static const circulars = '/circulars';
+  static const circularsName = 'circulars';
+  static const circularCreate = '/circulars/new';
+  static const circularCreateName = 'circular-create';
+  static const circularDetail = '/circulars/:circularId/read';
+  static const circularDetailName = 'circular-detail';
   static const safety = '/safety';
   static const safetyName = 'safety';
   static const safetyChild = '/safety/children/:childId';
@@ -319,6 +325,12 @@ abstract final class SuperadminRoutes {
   static const devNoticeCreateName = 'dev-notice-create';
   static const devNoticeEdit = '/dev/notices/:noticeId/edit';
   static const devNoticeEditName = 'dev-notice-edit';
+  static const devCirculars = '/dev/circulars';
+  static const devCircularsName = 'dev-circulars';
+  static const devCircularCreate = '/dev/circulars/new';
+  static const devCircularCreateName = 'dev-circular-create';
+  static const devCircularDetail = '/dev/circulars/:circularId/read';
+  static const devCircularDetailName = 'dev-circular-detail';
   static const devAudit = '/dev/audit';
   static const devAuditName = 'dev-audit';
   static const devInternalUsers = '/dev/internal-users';

@@ -114,6 +114,8 @@ void main() {
       'Conversas',
       'Convites',
       'Comunicações',
+      'Circulares',
+      'Publicar Circular',
       'Governança',
       'Suporte e implantação',
       'Auditoria',

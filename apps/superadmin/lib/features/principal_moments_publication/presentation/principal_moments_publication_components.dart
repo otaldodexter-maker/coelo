@@ -64,33 +64,94 @@ class _MomentAsset extends StatelessWidget {
   final double radius;
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(radius),
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final stripWidth = constraints.maxWidth * 5;
-        return OverflowBox(
-          alignment: Alignment(-1 + (media.cropIndex * 0.5), 0),
-          minWidth: stripWidth,
-          maxWidth: stripWidth,
-          minHeight: constraints.maxHeight,
-          maxHeight: constraints.maxHeight,
-          child: Image.asset(
-            media.assetPath,
-            width: stripWidth,
-            height: constraints.maxHeight,
-            fit: BoxFit.fill,
-            semanticLabel: 'Capa do momento selecionado',
-            errorBuilder: (context, _, _) => ColoredBox(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              child: const Center(child: Icon(Icons.broken_image_outlined)),
+  Widget build(BuildContext context) {
+    final Widget image;
+    final remoteUrl = media.remoteUrl;
+    final isVideo = media.mimeType.toLowerCase().startsWith('video/');
+    final isImage = media.mimeType.toLowerCase().startsWith('image/');
+    if (isVideo) {
+      image = _unavailableMomentVideo(context);
+    } else if (!isImage && media.assetPath.isEmpty) {
+      image = _unavailableMomentMedia(context);
+    } else if (media.bytes.isNotEmpty) {
+      image = Image.memory(
+        media.bytes,
+        key: const Key('moments-media-image'),
+        fit: BoxFit.cover,
+        semanticLabel: 'Capa do momento selecionado',
+      );
+    } else if (remoteUrl != null) {
+      image = Image.network(
+        remoteUrl,
+        key: const Key('moments-media-image'),
+        fit: BoxFit.cover,
+        semanticLabel: 'Capa do momento selecionado',
+        errorBuilder: (context, _, _) => _unavailableMomentMedia(context),
+      );
+    } else if (media.assetPath.isEmpty) {
+      image = _unavailableMomentMedia(context);
+    } else {
+      image = LayoutBuilder(
+        builder: (context, constraints) {
+          final stripWidth = constraints.maxWidth * 5;
+          return OverflowBox(
+            alignment: Alignment(-1 + (media.cropIndex * 0.5), 0),
+            minWidth: stripWidth,
+            maxWidth: stripWidth,
+            minHeight: constraints.maxHeight,
+            maxHeight: constraints.maxHeight,
+            child: Image.asset(
+              media.assetPath,
+              width: stripWidth,
+              height: constraints.maxHeight,
+              fit: BoxFit.fill,
+              semanticLabel: 'Capa do momento selecionado',
+              errorBuilder: (context, _, _) => ColoredBox(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                child: const Center(child: Icon(Icons.broken_image_outlined)),
+              ),
             ),
-          ),
-        );
-      },
-    ),
-  );
+          );
+        },
+      );
+    }
+    return ClipRRect(borderRadius: BorderRadius.circular(radius), child: image);
+  }
 }
+
+Widget _unavailableMomentMedia(BuildContext context) => ColoredBox(
+  color: Theme.of(context).colorScheme.surfaceContainer,
+  child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+);
+
+Widget _unavailableMomentVideo(BuildContext context) => ColoredBox(
+  key: const Key('moments-media-video-unavailable'),
+  color: Theme.of(context).colorScheme.surfaceContainer,
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      final icon = Icon(
+        Icons.videocam_outlined,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      );
+      if (constraints.maxWidth < 160 || constraints.maxHeight < 120) {
+        return Center(child: icon);
+      }
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space3),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              icon,
+              const SizedBox(height: CoeloSpacing.space2),
+              const Text('Prévia de vídeo indisponível', textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      );
+    },
+  ),
+);
 
 class _MediaBadge extends StatelessWidget {
   const _MediaBadge({required this.label});
@@ -358,7 +419,7 @@ class _MomentToggleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      CoeloAdminToggleField(label: label, value: value, onChanged: onChanged);
+      PrincipalPublicationToggleField(label: label, value: value, onChanged: onChanged);
 }
 
 ButtonStyle _discreteActionStyle(BuildContext context) {
@@ -405,7 +466,6 @@ class _MomentPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final media = draft.media.isEmpty ? MomentsMediaDraft.demo(0) : draft.media.first;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -438,17 +498,19 @@ class _MomentPreview extends StatelessWidget {
         const SizedBox(height: CoeloSpacing.space3),
         AspectRatio(
           aspectRatio: 9 / 16,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _MomentAsset(media: media, radius: CoeloRadius.md),
-              Positioned(
-                right: CoeloSpacing.space2,
-                top: CoeloSpacing.space2,
-                child: _MediaBadge(label: '1/${draft.media.isEmpty ? 1 : draft.media.length}'),
-              ),
-            ],
-          ),
+          child: draft.media.isEmpty
+              ? const _EmptyMomentMedia()
+              : Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _MomentAsset(media: draft.media.first, radius: CoeloRadius.md),
+                    Positioned(
+                      right: CoeloSpacing.space2,
+                      top: CoeloSpacing.space2,
+                      child: _MediaBadge(label: '1/${draft.media.length}'),
+                    ),
+                  ],
+                ),
         ),
         const SizedBox(height: CoeloSpacing.space2),
         Row(
@@ -478,6 +540,43 @@ class _MomentPreview extends StatelessWidget {
   }
 }
 
+class _EmptyMomentMedia extends StatelessWidget {
+  const _EmptyMomentMedia({this.onPressed});
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    key: const Key('moments-publication-empty-media'),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(CoeloRadius.md),
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+    ),
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.add_photo_alternate_outlined,
+              color: Theme.of(context).colorScheme.primary,
+              size: CoeloSize.iconLg,
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            const Text('Adicione uma mídia para começar.', textAlign: TextAlign.center),
+            if (onPressed != null) ...[
+              const SizedBox(height: CoeloSpacing.space3),
+              FilledButton.tonal(onPressed: onPressed, child: const Text('Adicionar mídia')),
+            ],
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 class _ActionFooter extends StatelessWidget {
   const _ActionFooter({
     required this.state,
@@ -503,7 +602,7 @@ class _ActionFooter extends StatelessWidget {
         state.phase == MomentsPublicationPhase.loading ||
         state.phase == MomentsPublicationPhase.saving ||
         state.phase == MomentsPublicationPhase.publishing;
-    return SuperadminFormActionFooter(
+    return PrincipalPublicationActionFooter(
       surfaceKey: const Key('moments-publication-footer-surface'),
       tertiaryAction: TextButton(
         key: const Key('moments-publication-cancel'),

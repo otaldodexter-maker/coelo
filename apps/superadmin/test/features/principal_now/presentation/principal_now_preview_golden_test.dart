@@ -13,7 +13,11 @@ void main() {
   final cases = <({String name, Size size, ThemeData theme})>[
     (name: 'mobile_light_375', size: const Size(375, 900), theme: CoeloTheme.light),
     (name: 'mobile_dark_375', size: const Size(375, 900), theme: CoeloTheme.dark),
+    (name: 'tablet_light_768', size: const Size(768, 1024), theme: CoeloTheme.light),
     (name: 'tablet_dark_768', size: const Size(768, 1024), theme: CoeloTheme.dark),
+    (name: 'tablet_light_1024', size: const Size(1024, 900), theme: CoeloTheme.light),
+    (name: 'tablet_dark_1024', size: const Size(1024, 900), theme: CoeloTheme.dark),
+    (name: 'desktop_light_1440', size: const Size(1440, 1000), theme: CoeloTheme.light),
     (name: 'desktop_dark_1440', size: const Size(1440, 1000), theme: CoeloTheme.dark),
   ];
 
@@ -26,6 +30,62 @@ void main() {
       );
       await _precacheStoryImage(tester);
       await tester.pump(const Duration(milliseconds: 900));
+
+      await expectLater(
+        find.byType(PrincipalNowPreviewPage),
+        matchesGoldenFile('goldens/principal_now_${testCase.name}.png'),
+      );
+    });
+  }
+
+  testWidgets('matches Agora at 200 percent text with reduced motion', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.dark,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2), disableAnimations: true),
+          child: child!,
+        ),
+        home: const PrincipalNowPreviewPage(),
+      ),
+    );
+    await _precacheStoryImage(tester);
+    await tester.pump();
+    await expectLater(
+      find.byType(PrincipalNowPreviewPage),
+      matchesGoldenFile('goldens/principal_now_mobile_dark_375_text_200.png'),
+    );
+  });
+
+  final enlargedCases = <({String name, Size size, ThemeData theme})>[
+    (name: 'mobile_light_375_text_200', size: const Size(375, 1000), theme: CoeloTheme.light),
+    (name: 'desktop_dark_1440_text_200', size: const Size(1440, 1100), theme: CoeloTheme.dark),
+  ];
+
+  for (final testCase in enlargedCases) {
+    testWidgets('matches canonical Agora enlarged text ${testCase.name}', (tester) async {
+      await tester.binding.setSurfaceSize(testCase.size);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: testCase.theme,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              size: testCase.size,
+              textScaler: const TextScaler.linear(2),
+              disableAnimations: true,
+            ),
+            child: child!,
+          ),
+          home: const PrincipalNowPreviewPage(),
+        ),
+      );
+      await _precacheStoryImage(tester);
+      await tester.pump();
 
       await expectLater(
         find.byType(PrincipalNowPreviewPage),

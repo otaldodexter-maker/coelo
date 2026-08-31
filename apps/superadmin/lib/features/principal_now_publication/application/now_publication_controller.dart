@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import '../domain/now_publication.dart';
 
+enum _NowRetryAction { load, save, publish }
+
 @immutable
 final class NowPublicationState {
   const NowPublicationState({
@@ -39,6 +41,7 @@ final class NowPublicationController extends ChangeNotifier {
   var _commandInFlight = false;
   var _publishingIntent = false;
   var _disposed = false;
+  _NowRetryAction? _retryAction;
 
   NowPublicationState get state => _state;
 
@@ -56,8 +59,10 @@ final class NowPublicationController extends ChangeNotifier {
           phase: NowPublicationPhase.editing,
         ),
       );
+      _retryAction = null;
     } on NowPublicationUnauthorized {
       if (!_isCurrentLoad(generation)) return;
+      _retryAction = null;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.unauthorized,
@@ -66,6 +71,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on Exception {
       if (!_isCurrentLoad(generation)) return;
+      _retryAction = _NowRetryAction.load;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.failure,
@@ -153,8 +159,10 @@ final class NowPublicationController extends ChangeNotifier {
           ),
         );
       }
+      _retryAction = null;
     } on NowPublicationConflict {
       if (_disposed) return;
+      _retryAction = _NowRetryAction.load;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.conflict,
@@ -163,6 +171,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on NowPublicationUnauthorized {
       if (_disposed) return;
+      _retryAction = null;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.unauthorized,
@@ -171,6 +180,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on Exception {
       if (_disposed) return;
+      _retryAction = _NowRetryAction.save;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.failure,
@@ -217,9 +227,11 @@ final class NowPublicationController extends ChangeNotifier {
       final result = await repository.publish(context, draft);
       if (_disposed) return null;
       _emit(NowPublicationState(draft: draft, phase: NowPublicationPhase.success));
+      _retryAction = null;
       return result;
     } on NowPublicationConflict {
       if (_disposed) return null;
+      _retryAction = _NowRetryAction.load;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.conflict,
@@ -228,6 +240,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on NowPublicationUnauthorized {
       if (_disposed) return null;
+      _retryAction = null;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.unauthorized,
@@ -236,6 +249,7 @@ final class NowPublicationController extends ChangeNotifier {
       );
     } on Exception {
       if (_disposed) return null;
+      _retryAction = _NowRetryAction.publish;
       _emit(
         _state.copyWith(
           phase: NowPublicationPhase.failure,
@@ -249,9 +263,25 @@ final class NowPublicationController extends ChangeNotifier {
     return null;
   }
 
+  Future<NowPublication?> retry() async {
+    switch (_retryAction) {
+      case _NowRetryAction.load:
+        await load();
+        return null;
+      case _NowRetryAction.save:
+        await saveDraft();
+        return null;
+      case _NowRetryAction.publish:
+        return publish();
+      case null:
+        return null;
+    }
+  }
+
   void _edit(NowPublicationDraft draft) {
     if (_disposed || _loadInFlight || _publishingIntent) return;
     _editGeneration += 1;
+    _retryAction = null;
     final phase = _commandInFlight ? _state.phase : NowPublicationPhase.editing;
     _emit(NowPublicationState(draft: draft, phase: phase));
   }

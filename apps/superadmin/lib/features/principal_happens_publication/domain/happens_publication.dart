@@ -56,6 +56,7 @@ final class HappensMediaDraft {
     required Uint8List bytes,
     this.assetId,
     this.objectKey,
+    this.remoteUrl,
   }) : bytes = Uint8List.fromList(bytes);
 
   final String localId;
@@ -64,6 +65,7 @@ final class HappensMediaDraft {
   final Uint8List bytes;
   final String? assetId;
   final String? objectKey;
+  final String? remoteUrl;
 
   bool get isVideo => mimeType.startsWith('video/');
 }
@@ -190,6 +192,7 @@ final class InMemoryHappensPublicationRepository implements HappensPublicationRe
     bytes: media.bytes,
     assetId: intent.assetId,
     objectKey: intent.objectKey,
+    remoteUrl: media.remoteUrl,
   );
 
   @override

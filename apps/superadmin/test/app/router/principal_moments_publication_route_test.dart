@@ -6,9 +6,7 @@ import 'package:coelo_superadmin/features/auth/domain/login_request.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/principal_moments_publication/presentation/principal_moments_publication_page.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_superadmin/features/principal_shared/presentation/principal_publication_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,9 +58,9 @@ void main() {
         reason: 'width $width',
       );
       for (final formComponent in [
-        SuperadminFormFrame,
-        SuperadminFormStepNavigation,
-        SuperadminFormActionFooter,
+        PrincipalPublicationFrame,
+        PrincipalPublicationStepNavigation,
+        PrincipalPublicationActionFooter,
       ]) {
         expect(
           find.descendant(of: shell, matching: find.byType(formComponent)),

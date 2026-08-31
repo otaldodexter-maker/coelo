@@ -12,6 +12,15 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
     this.onOpenHappens,
     this.onOpenProfile,
     this.onCreateMoment,
+    this.onOpenMenu,
+    this.onOpenNotifications,
+    this.onReportProblem,
+    this.onOpenHome,
+    this.onOpenForYou,
+    this.onPublishNow,
+    this.onOpenMoments,
+    this.onOpenSearch,
+    this.onOpenMessages,
     this.feedRepository,
     this.feedScope,
     this.refreshSignal,
@@ -23,6 +32,15 @@ final class PrincipalMomentsPreviewPage extends StatefulWidget {
   final VoidCallback? onOpenHappens;
   final VoidCallback? onOpenProfile;
   final VoidCallback? onCreateMoment;
+  final VoidCallback? onOpenMenu;
+  final VoidCallback? onOpenNotifications;
+  final VoidCallback? onReportProblem;
+  final VoidCallback? onOpenHome;
+  final VoidCallback? onOpenForYou;
+  final VoidCallback? onPublishNow;
+  final VoidCallback? onOpenMoments;
+  final VoidCallback? onOpenSearch;
+  final VoidCallback? onOpenMessages;
   final PrincipalMomentsFeedRepository? feedRepository;
   final PrincipalMomentsFeedScope? feedScope;
   final PrincipalMomentsFeedRefreshSignal? refreshSignal;
@@ -170,71 +188,35 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: widget.embedded
-            ? null
-            : _MomentsAppBar(
-                expandedIdentity: desktop,
-                onBug: () => _prototypeMessage('Reporte de bug'),
-                onNotifications: () => _prototypeMessage('Notificações'),
-                onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-              ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  desktop ? CoeloSpacing.space4 : 0,
-                  desktop ? CoeloSpacing.space3 : 0,
-                  desktop ? CoeloSpacing.space4 : 0,
-                  desktop ? CoeloSpacing.space3 : 0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: desktop ? 820 : double.infinity),
-                        child: _buildFeedSurface(desktop: desktop),
-                      ),
-                    ),
-                    if (desktop) ...[
-                      const SizedBox(width: CoeloSpacing.space4),
-                      SizedBox(
-                        width: 280,
-                        child: _DesktopAside(
-                          items: _usesRemoteFeed ? const [] : widget.data.trending,
-                          onSend: () => _invoke(widget.onCreateMoment, 'Publicação de Momentos'),
-                          onOpen: () => _prototypeMessage('Momento em alta'),
-                        ),
-                      ),
-                    ],
-                  ],
+        body: Padding(
+          padding: EdgeInsets.fromLTRB(
+            desktop ? CoeloSpacing.space4 : 0,
+            desktop ? CoeloSpacing.space3 : 0,
+            desktop ? CoeloSpacing.space4 : 0,
+            desktop ? CoeloSpacing.space3 : 0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: desktop ? 820 : double.infinity),
+                  child: _buildFeedSurface(desktop: desktop),
                 ),
               ),
-            ),
-            if (!widget.embedded && !desktop)
-              _MomentsNavigation(
-                key: const Key('principal-moments-mobile-nav'),
-                dark: true,
-                onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
-                onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-              )
-            else if (!widget.embedded)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CoeloSpacing.space4,
-                  0,
-                  CoeloSpacing.space4,
-                  CoeloSpacing.space3,
+              if (desktop) ...[
+                const SizedBox(width: CoeloSpacing.space4),
+                SizedBox(
+                  width: 280,
+                  child: _DesktopAside(
+                    items: _usesRemoteFeed ? const [] : widget.data.trending,
+                    onSend: () => _invoke(widget.onCreateMoment, 'Publicação de Momentos'),
+                    onOpen: () => _prototypeMessage('Momento em alta'),
+                  ),
                 ),
-                child: _MomentsNavigation(
-                  key: const Key('principal-moments-desktop-nav'),
-                  dark: false,
-                  onHappens: () => _invoke(widget.onOpenHappens, 'Acontece'),
-                  onProfile: () => _invoke(widget.onOpenProfile, 'Perfil'),
-                ),
-              ),
-          ],
+              ],
+            ],
+          ),
         ),
       );
     },
@@ -284,6 +266,7 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
       saved: _saved.contains(_currentIndex),
       muted: _muted,
       compact: !desktop,
+      onBack: () => _invoke(widget.onOpenHappens, 'Retorno ao Acontece'),
       onPageChanged: (value) => setState(() => _currentIndex = value),
       onMovePage: _movePage,
       onLike: () => setState(() {
@@ -341,101 +324,6 @@ final class _MomentsStateSurface extends StatelessWidget {
   );
 }
 
-final class _MomentsAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _MomentsAppBar({
-    required this.expandedIdentity,
-    required this.onBug,
-    required this.onNotifications,
-    required this.onProfile,
-  });
-
-  final bool expandedIdentity;
-  final VoidCallback onBug;
-  final VoidCallback onNotifications;
-  final VoidCallback onProfile;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(64);
-
-  @override
-  Widget build(BuildContext context) => AppBar(
-    toolbarHeight: 64,
-    elevation: 0,
-    scrolledUnderElevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    surfaceTintColor: Colors.transparent,
-    titleSpacing: CoeloSpacing.space4,
-    shape: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-    title: Text(
-      'coelo',
-      key: const Key('principal-moments-logo'),
-      semanticsLabel: 'Coelo',
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-        color: Theme.of(context).colorScheme.primary,
-        fontWeight: FontWeight.w900,
-        letterSpacing: -1.2,
-      ),
-    ),
-    actions: [
-      IconButton(
-        key: const Key('principal-moments-bug'),
-        tooltip: 'Reportar bug',
-        onPressed: onBug,
-        style: _discreteIconButtonStyle(context),
-        icon: const Icon(Icons.bug_report_outlined),
-      ),
-      IconButton(
-        key: const Key('principal-moments-notifications'),
-        tooltip: 'Notificações',
-        onPressed: onNotifications,
-        style: _discreteIconButtonStyle(context),
-        icon: const Icon(Icons.notifications_none_rounded),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: CoeloSpacing.space1, right: CoeloSpacing.space3),
-        child: TextButton(
-          key: const Key('principal-moments-context-avatar'),
-          onPressed: onProfile,
-          style: _discreteTextButtonStyle(context).copyWith(
-            minimumSize: const WidgetStatePropertyAll(Size(CoeloSize.touchMin, CoeloSize.touchMin)),
-            padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          ),
-          child: Row(
-            children: [
-              ClipOval(
-                child: Image.asset(
-                  'assets/principal_moments/moments-strip.png',
-                  width: 36,
-                  height: 36,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.centerRight,
-                  semanticLabel: 'Perfil de Camila Souza',
-                ),
-              ),
-              if (expandedIdentity) ...[
-                const SizedBox(width: CoeloSpacing.space2),
-                const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Camila Souza',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                    ),
-                    Text('Mãe do Lucas', style: TextStyle(fontSize: 10)),
-                  ],
-                ),
-                const SizedBox(width: CoeloSpacing.space1),
-                const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
-              ],
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 final class _MomentPager extends StatelessWidget {
   const _MomentPager({
     required this.controller,
@@ -446,6 +334,7 @@ final class _MomentPager extends StatelessWidget {
     required this.saved,
     required this.muted,
     required this.compact,
+    required this.onBack,
     required this.onPageChanged,
     required this.onMovePage,
     required this.onLike,
@@ -462,6 +351,7 @@ final class _MomentPager extends StatelessWidget {
   final bool saved;
   final bool muted;
   final bool compact;
+  final VoidCallback onBack;
   final ValueChanged<int> onPageChanged;
   final ValueChanged<int> onMovePage;
   final VoidCallback onLike;
@@ -470,40 +360,49 @@ final class _MomentPager extends StatelessWidget {
   final ValueChanged<String> onAction;
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: compact ? BorderRadius.zero : BorderRadius.circular(CoeloRadius.lg),
-    child: Focus(
-      autofocus: true,
-      focusNode: focusNode,
-      onKeyEvent: (_, event) {
-        if (event is! KeyDownEvent) return KeyEventResult.ignored;
-        if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
-            event.logicalKey == LogicalKeyboardKey.pageDown) {
-          onMovePage(1);
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
-            event.logicalKey == LogicalKeyboardKey.pageUp) {
-          onMovePage(-1);
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: PageView.builder(
-        key: const Key('principal-moments-page-view'),
-        controller: controller,
-        scrollDirection: Axis.vertical,
-        itemCount: moments.length,
-        onPageChanged: onPageChanged,
-        itemBuilder: (context, index) => _MomentFrame(
-          moment: moments[index],
-          liked: liked && index == currentIndex,
-          saved: saved && index == currentIndex,
-          muted: muted,
-          onLike: onLike,
-          onSave: onSave,
-          onMute: onMute,
-          onAction: onAction,
+  Widget build(BuildContext context) => ColoredBox(
+    color: Colors.black,
+    child: Center(
+      child: AspectRatio(
+        aspectRatio: (1672 / 5) / 941,
+        child: ClipRRect(
+          borderRadius: compact ? BorderRadius.zero : BorderRadius.circular(CoeloRadius.lg),
+          child: Focus(
+            autofocus: true,
+            focusNode: focusNode,
+            onKeyEvent: (_, event) {
+              if (event is! KeyDownEvent) return KeyEventResult.ignored;
+              if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
+                  event.logicalKey == LogicalKeyboardKey.pageDown) {
+                onMovePage(1);
+                return KeyEventResult.handled;
+              }
+              if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
+                  event.logicalKey == LogicalKeyboardKey.pageUp) {
+                onMovePage(-1);
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: PageView.builder(
+              key: const Key('principal-moments-page-view'),
+              controller: controller,
+              scrollDirection: Axis.vertical,
+              itemCount: moments.length,
+              onPageChanged: onPageChanged,
+              itemBuilder: (context, index) => _MomentFrame(
+                moment: moments[index],
+                liked: liked && index == currentIndex,
+                saved: saved && index == currentIndex,
+                muted: muted,
+                onBack: onBack,
+                onLike: onLike,
+                onSave: onSave,
+                onMute: onMute,
+                onAction: onAction,
+              ),
+            ),
+          ),
         ),
       ),
     ),
@@ -516,6 +415,7 @@ final class _MomentFrame extends StatelessWidget {
     required this.liked,
     required this.saved,
     required this.muted,
+    required this.onBack,
     required this.onLike,
     required this.onSave,
     required this.onMute,
@@ -526,6 +426,7 @@ final class _MomentFrame extends StatelessWidget {
   final bool liked;
   final bool saved;
   final bool muted;
+  final VoidCallback onBack;
   final VoidCallback onLike;
   final VoidCallback onSave;
   final VoidCallback onMute;
@@ -552,16 +453,15 @@ final class _MomentFrame extends StatelessWidget {
         Positioned(
           left: CoeloSpacing.space4,
           top: CoeloSpacing.space4,
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Momentos',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-              ),
-              SizedBox(height: CoeloSpacing.space1),
-              SizedBox(width: 26, child: Divider(color: Colors.white, thickness: 2, height: 2)),
-            ],
+          child: TextButton.icon(
+            key: const Key('principal-moments-back'),
+            onPressed: onBack,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
+            ),
+            icon: const Icon(Icons.chevron_left_rounded, size: 22),
+            label: const Text('Momentos'),
           ),
         ),
         Positioned(
@@ -622,6 +522,7 @@ final class _ActionRail extends StatelessWidget {
         actionKey: const Key('principal-moments-like'),
         icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
         label: liked ? 'Descurtir' : 'Curtir',
+        active: liked,
         count: moment.likes + (liked ? 1 : 0),
         onPressed: onLike,
       ),
@@ -641,6 +542,7 @@ final class _ActionRail extends StatelessWidget {
         actionKey: const Key('principal-moments-save'),
         icon: saved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
         label: saved ? 'Remover dos salvos' : 'Salvar',
+        active: saved,
         count: moment.saves,
         onPressed: onSave,
       ),
@@ -662,6 +564,7 @@ final class _OverlayIcon extends StatelessWidget {
     required this.onPressed,
     this.count,
     this.circularBackground = false,
+    this.active = false,
   });
 
   final Key? actionKey;
@@ -670,6 +573,7 @@ final class _OverlayIcon extends StatelessWidget {
   final VoidCallback onPressed;
   final int? count;
   final bool circularBackground;
+  final bool active;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -688,7 +592,9 @@ final class _OverlayIcon extends StatelessWidget {
                 foregroundColor: WidgetStateProperty.resolveWith((states) {
                   final highlighted =
                       states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-                  return highlighted ? Theme.of(context).colorScheme.primary : Colors.white;
+                  return highlighted || active
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.white;
                 }),
                 backgroundColor: WidgetStateProperty.resolveWith((states) {
                   final highlighted =
@@ -698,12 +604,12 @@ final class _OverlayIcon extends StatelessWidget {
                 }),
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
               ),
-          icon: Icon(icon, size: 28),
+          icon: Icon(icon, size: 24),
         ),
         if (count case final value?)
           Text(
             '$value',
-            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white),
           ),
       ],
     ),
@@ -748,104 +654,6 @@ final class _MomentContext extends StatelessWidget {
       ],
     ),
   );
-}
-
-final class _MomentsNavigation extends StatelessWidget {
-  const _MomentsNavigation({
-    required this.dark,
-    required this.onHappens,
-    required this.onProfile,
-    super.key,
-  });
-
-  final bool dark;
-  final VoidCallback onHappens;
-  final VoidCallback onProfile;
-
-  @override
-  Widget build(BuildContext context) {
-    final height = MediaQuery.textScalerOf(context).scale(64).clamp(64.0, 88.0);
-    return ColoredBox(
-      color: dark ? Colors.black : Theme.of(context).colorScheme.surface,
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: height,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                itemKey: const Key('principal-moments-nav-acontece'),
-                label: 'Acontece',
-                icon: Icons.dynamic_feed_outlined,
-                dark: dark,
-                onPressed: onHappens,
-              ),
-              _NavItem(
-                label: 'Momentos',
-                icon: Icons.play_circle_fill_rounded,
-                selected: true,
-                dark: dark,
-                onPressed: () {},
-              ),
-              _NavItem(
-                itemKey: const Key('principal-moments-nav-perfil'),
-                label: 'Perfil',
-                icon: Icons.person_outline_rounded,
-                dark: dark,
-                onPressed: onProfile,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-final class _NavItem extends StatelessWidget {
-  const _NavItem({
-    this.itemKey,
-    required this.label,
-    required this.icon,
-    required this.dark,
-    required this.onPressed,
-    this.selected = false,
-  });
-
-  final Key? itemKey;
-  final String label;
-  final IconData icon;
-  final bool dark;
-  final VoidCallback onPressed;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedColor = Theme.of(context).colorScheme.primary;
-    return Semantics(
-      selected: selected,
-      button: true,
-      child: TextButton(
-        key: itemKey,
-        onPressed: onPressed,
-        style: _discreteTextButtonStyle(
-          context,
-          restingForeground: selected
-              ? selectedColor
-              : (dark ? Colors.white : Theme.of(context).colorScheme.onSurface),
-        ).copyWith(minimumSize: const WidgetStatePropertyAll(Size(88, 56))),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 22),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 10)),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 final class _DesktopAside extends StatelessWidget {
@@ -971,26 +779,6 @@ ButtonStyle _discreteTextButtonStyle(BuildContext context, {Color? restingForegr
   );
 }
 
-ButtonStyle _discreteIconButtonStyle(BuildContext context) {
-  final colors = Theme.of(context).colorScheme;
-  return IconButton.styleFrom(
-    minimumSize: const Size.square(CoeloSize.touchMin),
-    shape: const CircleBorder(),
-  ).copyWith(
-    foregroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      return highlighted ? colors.primary : colors.onSurfaceVariant;
-    }),
-    backgroundColor: WidgetStateProperty.resolveWith((states) {
-      final highlighted =
-          states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-      return highlighted ? colors.primaryContainer : Colors.transparent;
-    }),
-    overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-  );
-}
-
 final class _AsideCard extends StatelessWidget {
   const _AsideCard({required this.child});
   final Widget child;
@@ -1013,26 +801,37 @@ final class _SpriteImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => ClipRect(
-      child: OverflowBox(
-        alignment: Alignment.centerLeft,
-        minWidth: constraints.maxWidth * count,
-        maxWidth: constraints.maxWidth * count,
-        minHeight: constraints.maxHeight,
-        maxHeight: constraints.maxHeight,
-        child: Transform.translate(
-          offset: Offset(-constraints.maxWidth * index, 0),
-          child: SizedBox(
-            width: constraints.maxWidth * count,
-            height: constraints.maxHeight,
-            child: Image.asset(
-              'assets/principal_moments/moments-strip.png',
-              fit: BoxFit.fill,
-              excludeFromSemantics: true,
+    builder: (context, constraints) {
+      const fullAspect = 1672 / 941;
+      final panelAspect = fullAspect / count;
+      final tileWidth = constraints.maxWidth > constraints.maxHeight * panelAspect
+          ? constraints.maxWidth
+          : constraints.maxHeight * panelAspect;
+      final imageHeight = tileWidth / panelAspect;
+      final horizontalCrop = (tileWidth - constraints.maxWidth) / 2;
+      final verticalCrop = (imageHeight - constraints.maxHeight) * .12;
+      return ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minWidth: tileWidth * count,
+          maxWidth: tileWidth * count,
+          minHeight: imageHeight,
+          maxHeight: imageHeight,
+          child: Transform.translate(
+            offset: Offset(-tileWidth * index - horizontalCrop, -verticalCrop),
+            child: SizedBox(
+              width: tileWidth * count,
+              height: imageHeight,
+              child: Image.asset(
+                'assets/principal_moments/moments-strip.png',
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                excludeFromSemantics: true,
+              ),
             ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }

@@ -18,7 +18,9 @@ void main() {
     expect(SuperadminRoutes.devPrincipalHappens, isNot(SuperadminRoutes.devPrincipalProfile));
   });
 
-  testWidgets('opens Acontece and its Perfil tab navigates to the profile preview', (tester) async {
+  testWidgets('opens Acontece and its header avatar navigates to the profile preview', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(768, 1024));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession();
@@ -42,8 +44,8 @@ void main() {
       tester.widget<PrincipalHappensPreviewPage>(find.byType(PrincipalHappensPreviewPage)).embedded,
       isTrue,
     );
-    expect(find.byKey(const Key('principal-happens-local-title')), findsNothing);
-    await tester.tap(find.byKey(const Key('principal-happens-tab-perfil')));
+    expect(find.byKey(const Key('principal-happens-local-title')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('principal-happens-context-avatar')));
     await tester.pumpAndSettle();
 
     expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalProfile);
@@ -92,7 +94,7 @@ void main() {
         find.descendant(of: content, matching: find.byType(PrincipalHappensPreviewPage)),
         findsOneWidget,
       );
-      expect(find.byKey(const Key('principal-happens-local-title')), findsNothing);
+      expect(find.byKey(const Key('principal-happens-local-title')), findsOneWidget);
       expect(tester.takeException(), isNull, reason: '$width');
 
       if (width == 1440) {
@@ -102,6 +104,31 @@ void main() {
         expect(tester.getTopLeft(content).dx, greaterThan(tester.getTopRight(sidebar).dx));
       }
     }
+  });
+
+  testWidgets('dock central opens the dedicated Publicar no Agora route', (tester) async {
+    final session = SuperadminSession();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.devPrincipalHappens);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-global-publish-now')));
+    await tester.pumpAndSettle();
+
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      SuperadminRoutes.devPrincipalNowPublication,
+    );
   });
 
   testWidgets('composes the Acontece publisher inside the persistent shell container', (

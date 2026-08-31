@@ -1,13 +1,10 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 
 import '../../principal_shared/presentation/principal_preview_app_bar.dart';
-import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
-import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../principal_shared/presentation/principal_publication_frame.dart';
 import '../application/happens_publication_controller.dart';
 import '../domain/happens_publication.dart';
 
@@ -16,8 +13,18 @@ typedef HappensMediaPicker = Future<List<HappensMediaDraft>> Function();
 class PrincipalHappensPublicationPage extends StatefulWidget {
   const PrincipalHappensPublicationPage({
     required this.repository,
+    required this.publicationContext,
     this.embedded = false,
+    this.onClose,
+    this.onCompleted,
+    this.mediaPicker,
+    super.key,
+  });
+
+  const PrincipalHappensPublicationPage.demo({
+    required this.repository,
     this.publicationContext = HappensPublicationContext.demo,
+    this.embedded = false,
     this.onClose,
     this.onCompleted,
     this.mediaPicker,
@@ -150,6 +157,17 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
           ),
         );
       }
+      if (state.phase == HappensPublicationPhase.conflict) {
+        return Scaffold(
+          body: CoeloStatePanel(
+            title: 'Rascunho alterado',
+            message: state.message ?? 'O rascunho mudou em outro lugar.',
+            icon: Icons.sync_problem_outlined,
+            actionLabel: 'Recarregar rascunho',
+            onAction: controller.load,
+          ),
+        );
+      }
       final actionsEnabled =
           !controller.operationInFlight &&
           !_pickerInFlight &&
@@ -169,23 +187,22 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
                 onOpenContext: () => _prototypeMessage('Troca de contexto'),
               ),
         body: LayoutBuilder(
-          builder: (context, constraints) => SuperadminFormFrame(
-            viewportWidth: constraints.maxWidth,
+          builder: (context, constraints) => PrincipalPublicationFrame(
             scrollKey: Key('happens-publication-step-$_step'),
             navigation: ExcludeFocus(
               excluding: surfaceLocked,
               child: AbsorbPointer(
                 absorbing: surfaceLocked,
-                child: SuperadminFormStepNavigation(
+                child: PrincipalPublicationStepNavigation(
                   steps: [
                     for (var index = 0; index < _publicationSteps.length; index++)
-                      SuperadminFormStep(
+                      PrincipalPublicationStep(
                         label: _publicationSteps[index],
                         status: index == _step
-                            ? SuperadminFormStepStatus.current
+                            ? PrincipalPublicationStepStatus.current
                             : index < _step
-                            ? SuperadminFormStepStatus.complete
-                            : SuperadminFormStepStatus.incomplete,
+                            ? PrincipalPublicationStepStatus.complete
+                            : PrincipalPublicationStepStatus.incomplete,
                         enabled: actionsEnabled && index <= _step,
                       ),
                   ],
@@ -210,7 +227,7 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
                 ),
               ),
             ),
-            footer: SuperadminFormActionFooter(
+            footer: PrincipalPublicationActionFooter(
               tertiaryAction: TextButton(
                 onPressed: actionsEnabled
                     ? widget.onClose ?? () => Navigator.maybePop(context)
@@ -296,10 +313,14 @@ class _WizardBody extends StatelessWidget {
     final state = controller.state;
     final draft = state.draft;
     final colors = Theme.of(context).colorScheme;
-    return Column(
+    final useDesktopPreview =
+        MediaQuery.sizeOf(context).width >= 840 && MediaQuery.textScalerOf(context).scale(1) <= 1.5;
+    final editor = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Publicar no Acontece', style: Theme.of(context).textTheme.headlineSmall),
+        Text('Sua publicação', style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text('Publicar no Acontece', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: CoeloSpacing.space1),
         Text(
           'Etapa ${step + 1} de ${_publicationSteps.length} · ${_publicationSteps[step]}',
@@ -360,10 +381,29 @@ class _WizardBody extends StatelessWidget {
           const Text('Agendamento', style: TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: CoeloSpacing.space2),
           _ScheduleField(value: draft.publishAt, onChanged: controller.setPublishAt),
-          const SizedBox(height: CoeloSpacing.space6),
-          _FeedPreview(state: state, publicationContext: publicationContext),
+          if (!useDesktopPreview) ...[
+            const SizedBox(height: CoeloSpacing.space6),
+            _FeedPreview(state: state, publicationContext: publicationContext),
+          ],
         ],
       ],
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!useDesktopPreview || constraints.maxWidth < 840) return editor;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: editor),
+            const SizedBox(width: CoeloSpacing.space5),
+            SizedBox(
+              key: const Key('happens-publication-desktop-preview'),
+              width: 320,
+              child: _FeedPreview(state: state, publicationContext: publicationContext),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -479,7 +519,7 @@ class _AutosaveToggle extends StatelessWidget {
   final ValueChanged<bool> onChanged;
 
   @override
-  Widget build(BuildContext context) => CoeloAdminToggleField(
+  Widget build(BuildContext context) => PrincipalPublicationToggleField(
     key: const Key('happens-autosave-toggle'),
     label: label,
     description: description,
@@ -653,22 +693,36 @@ class _MediaStage extends StatelessWidget {
 
 Widget _media(BuildContext context, HappensMediaDraft media) {
   final colors = Theme.of(context).colorScheme;
-  return media.isVideo
-      ? ColoredBox(
-          color: colors.inverseSurface,
-          child: Center(
-            child: Icon(Icons.play_circle_fill, color: colors.onInverseSurface, size: 48),
-          ),
-        )
-      : Image.memory(
-          media.bytes,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => ColoredBox(
-            color: colors.surfaceContainerLow,
-            child: const Icon(Icons.image_outlined),
-          ),
-        );
+  if (media.isVideo) {
+    return ColoredBox(
+      color: colors.inverseSurface,
+      child: Center(child: Icon(Icons.play_circle_fill, color: colors.onInverseSurface, size: 48)),
+    );
+  }
+  final remoteUrl = media.remoteUrl;
+  if (remoteUrl != null) {
+    return Image.network(
+      remoteUrl,
+      key: const Key('happens-media-image'),
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => _unavailableMedia(colors),
+    );
+  }
+  if (media.bytes.isNotEmpty) {
+    return Image.memory(
+      media.bytes,
+      key: const Key('happens-media-image'),
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => _unavailableMedia(colors),
+    );
+  }
+  return _unavailableMedia(colors);
 }
+
+Widget _unavailableMedia(ColorScheme colors) => ColoredBox(
+  color: colors.surfaceContainerLow,
+  child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+);
 
 class _ContextCard extends StatelessWidget {
   const _ContextCard({required this.contextData});

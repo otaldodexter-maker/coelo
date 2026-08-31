@@ -16,6 +16,9 @@ void main() {
     bool disableAnimations = false,
     double textScale = 1,
     ThemeData? theme,
+    ValueChanged<String>? onReply,
+    VoidCallback? onShare,
+    EdgeInsets padding = EdgeInsets.zero,
   }) async {
     await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -26,6 +29,8 @@ void main() {
           data: MediaQuery.of(context).copyWith(
             disableAnimations: disableAnimations,
             textScaler: TextScaler.linear(textScale),
+            padding: padding,
+            viewPadding: padding,
           ),
           child: child!,
         ),
@@ -33,6 +38,8 @@ void main() {
           onClose: onClose,
           onOpenHappens: onOpenHappens,
           onCreate: onCreate,
+          onReply: onReply,
+          onShare: onShare,
         ),
       ),
     );
@@ -49,6 +56,25 @@ void main() {
     expect(find.byKey(const Key('principal-now-close')), findsOneWidget);
     expect(find.byKey(const Key('principal-now-desktop-shell')), findsNothing);
     expect(find.byKey(const Key('principal-now-previous-preview')), findsNothing);
+    expect(find.byKey(const Key('principal-now-back')), findsOneWidget);
+    expect(find.byTooltip('Voltar para Acontece'), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-dock')), findsNothing);
+    expect(find.byType(AppBar), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps mobile media edge-to-edge while controls respect safe insets', (tester) async {
+    const safePadding = EdgeInsets.only(top: 32, bottom: 24);
+    await pumpNow(tester, padding: safePadding);
+
+    final storyRect = tester.getRect(find.byKey(const Key('principal-now-story')));
+    expect(storyRect.top, 0);
+    expect(storyRect.bottom, 900);
+    expect(tester.getTopLeft(find.byKey(const Key('principal-now-close'))).dy, greaterThan(32));
+    expect(
+      tester.getBottomRight(find.byKey(const Key('principal-now-reply-field'))).dy,
+      lessThan(900 - 24),
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -58,14 +84,20 @@ void main() {
     expect(find.bySemanticsLabel('Agora anterior'), findsOneWidget);
     expect(find.bySemanticsLabel('Próximo Agora'), findsOneWidget);
     expect(find.byTooltip('Opções do Agora'), findsOneWidget);
-    expect(find.byTooltip('Fechar Agora'), findsOneWidget);
+    expect(find.byTooltip('Voltar para Acontece'), findsOneWidget);
+    expect(find.byTooltip('Desativar áudio'), findsOneWidget);
     expect(find.byTooltip('Reagir a este Agora'), findsOneWidget);
+    expect(find.byTooltip('Compartilhar este Agora'), findsOneWidget);
     expect(find.byTooltip('Enviar resposta privada'), findsOneWidget);
+    final audience = find.byKey(const Key('principal-now-audience'));
+    expect(audience, findsOneWidget);
+    expect(tester.widget<Semantics>(audience).properties.label, 'Audiência do Agora');
 
     for (final key in const [
       Key('principal-now-options'),
       Key('principal-now-close'),
       Key('principal-now-like'),
+      Key('principal-now-share'),
       Key('principal-now-send-reply'),
     ]) {
       final size = tester.getSize(find.byKey(key));
@@ -98,8 +130,23 @@ void main() {
     expect(find.byKey(const Key('principal-now-desktop-shell')), findsOneWidget);
     expect(find.byKey(const Key('principal-now-previous-preview')), findsOneWidget);
     expect(find.byKey(const Key('principal-now-next-preview')), findsOneWidget);
-    expect(find.byKey(const Key('principal-now-brand-logo')), findsOneWidget);
-    expect(find.byKey(const Key('principal-now-reply-field')), findsNothing);
+    expect(find.byKey(const Key('principal-now-back')), findsOneWidget);
+    expect(find.byTooltip('Voltar para Acontece'), findsOneWidget);
+    expect(find.byKey(const Key('principal-now-reply-field')), findsOneWidget);
+    expect(find.byKey(const Key('principal-now-audience')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps 1024 tablet in a centered safe frame without web previews', (tester) async {
+    await pumpNow(tester, size: const Size(1024, 900));
+
+    expect(find.byKey(const Key('principal-now-desktop-shell')), findsNothing);
+    expect(find.byKey(const Key('principal-now-previous-preview')), findsNothing);
+    expect(find.byKey(const Key('principal-now-next-preview')), findsNothing);
+    expect(
+      tester.getSize(find.byKey(const Key('principal-now-story'))).width,
+      lessThanOrEqualTo(430),
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -180,8 +227,23 @@ void main() {
 
     await tester.tap(find.byKey(const Key('principal-now-send-reply')));
     await tester.pump();
-    expect(find.text('Resposta privada preparada.'), findsOneWidget);
-    expect(find.text('Obrigado pelo registro'), findsNothing);
+    expect(find.text('Resposta indisponível nesta prévia.'), findsOneWidget);
+    expect(find.text('Obrigado pelo registro'), findsOneWidget);
+  });
+
+  testWidgets('dispatches reply and share only through injected integrations', (tester) async {
+    String? reply;
+    var shares = 0;
+    await pumpNow(tester, onReply: (value) => reply = value, onShare: () => shares += 1);
+    await tester.enterText(find.byKey(const Key('principal-now-reply-field')), 'Mensagem privada');
+    await tester.tap(find.byKey(const Key('principal-now-send-reply')));
+    await tester.tap(find.byKey(const Key('principal-now-share')));
+    await tester.pump();
+
+    expect(reply, 'Mensagem privada');
+    expect(shares, 1);
+    expect(find.text('Mensagem privada'), findsNothing);
+    expect(find.textContaining('indisponível'), findsNothing);
   });
 
   testWidgets('toggles audio, reaction, options and close controls', (tester) async {

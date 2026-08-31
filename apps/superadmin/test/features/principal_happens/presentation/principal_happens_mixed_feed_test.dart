@@ -33,6 +33,8 @@ void main() {
     expect(repository.calls, 1);
     expect(find.text('Post preservado'), findsOneWidget);
     expect(find.byKey(const ValueKey('read-ticket-1')), findsOneWidget);
+    await tester.drag(find.byKey(const Key('principal-happens-feed')), const Offset(0, -420));
+    await tester.pumpAndSettle();
     expect(find.text('Circular no Acontece'), findsOneWidget);
     expect(find.text('Post preservado'), findsOneWidget);
 

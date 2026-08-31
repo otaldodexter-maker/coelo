@@ -85,6 +85,10 @@ void main() {
                 'name': 'foto.png',
                 'mime_type': 'image/png',
                 'duration_seconds': null,
+                'crop_scale': 1.45,
+                'crop_x': -0.3,
+                'crop_y': 0.25,
+                'cover_position': 0.7,
               },
               'audio': null,
             }),
@@ -117,5 +121,9 @@ void main() {
     expect(draft?.media?.remoteAssetId, 'asset-1');
     expect(draft?.media?.remoteUrl, 'https://signed.test/draft?token=short-lived');
     expect(draft?.media?.bytes, isEmpty);
+    expect(draft?.media?.cropScale, 1.45);
+    expect(draft?.media?.cropX, -0.3);
+    expect(draft?.media?.cropY, 0.25);
+    expect(draft?.media?.coverPosition, 0.7);
   });
 }

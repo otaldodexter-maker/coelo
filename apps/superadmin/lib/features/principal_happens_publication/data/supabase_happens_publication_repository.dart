@@ -39,6 +39,7 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
             bytes: Uint8List(0),
             assetId: media['asset_id'] as String,
             objectKey: media['object_key'] as String,
+            remoteUrl: media['signed_url'] as String?,
           );
         }),
         version: (json['version'] as num?)?.toInt() ?? 0,
@@ -145,6 +146,7 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
       bytes: media.bytes,
       assetId: json['asset_id'] as String,
       objectKey: json['object_key'] as String,
+      remoteUrl: media.remoteUrl,
     );
   }
 

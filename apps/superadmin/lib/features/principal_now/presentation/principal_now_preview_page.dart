@@ -4,7 +4,6 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../domain/principal_now_feed_repository.dart';
 import '../domain/principal_now_preview_data.dart';
@@ -14,6 +13,8 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.onClose,
     this.onOpenHappens,
     this.onCreate,
+    this.onReply,
+    this.onShare,
     this.feedRepository,
     this.feedScope,
     this.refreshSignal,
@@ -27,6 +28,8 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.onClose,
     this.onOpenHappens,
     this.onCreate,
+    this.onReply,
+    this.onShare,
     this.refreshSignal,
     super.key,
   }) : assert(feedRepository != null),
@@ -36,6 +39,8 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
   final VoidCallback? onClose;
   final VoidCallback? onOpenHappens;
   final VoidCallback? onCreate;
+  final ValueChanged<String>? onReply;
+  final VoidCallback? onShare;
   final PrincipalNowFeedRepository? feedRepository;
   final PrincipalNowFeedScope? feedScope;
   final PrincipalNowFeedRefreshSignal? refreshSignal;
@@ -85,6 +90,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                 author: item.author,
                 timeLabel: item.timeLabel,
                 caption: item.caption,
+                contextLabel: item.contextLabel,
                 assetPath: '',
                 remoteUrl: media?.signedUrl ?? '',
                 mimeType: media?.mimeType ?? item.media.mimeType,
@@ -272,14 +278,29 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   }
 
   void _sendReply() {
-    if (_replyController.text.trim().isEmpty) {
+    final reply = _replyController.text.trim();
+    if (reply.isEmpty) return;
+    final callback = widget.onReply;
+    if (callback == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Resposta indisponível nesta prévia.')));
       return;
     }
+    callback(reply);
     _replyController.clear();
     _replyFocusNode.unfocus();
+  }
+
+  void _share() {
+    final callback = widget.onShare;
+    if (callback != null) {
+      callback();
+      return;
+    }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Resposta privada preparada.')));
+    ).showSnackBar(const SnackBar(content: Text('Compartilhamento indisponível nesta prévia.')));
   }
 
   void _reloadAfterPublication() => _loadFeed();
@@ -394,15 +415,17 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
             ? _buildFeedState(context)
             : LayoutBuilder(
                 builder: (context, constraints) {
-                  final desktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+                  final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
                   final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
                   return Scaffold(
                     backgroundColor: CoeloPalette.neutral950,
-                    body: SafeArea(
-                      child: desktop
-                          ? _buildDesktop(context)
-                          : _buildCompact(context, compact: compact),
-                    ),
+                    body: compact
+                        ? _buildCompact(context, compact: true)
+                        : SafeArea(
+                            child: desktop
+                                ? _buildDesktop(context)
+                                : _buildCompact(context, compact: false),
+                          ),
                   );
                 },
               ),
@@ -466,14 +489,9 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
               ),
             ),
             Positioned(
-              right: CoeloSpacing.space3,
+              left: CoeloSpacing.space3,
               top: CoeloSpacing.space3,
-              child: _ViewerIconButton(
-                key: const Key('principal-now-close'),
-                tooltip: 'Fechar Agora',
-                icon: Icons.close_rounded,
-                onPressed: _close,
-              ),
+              child: _ViewerBackButton(key: const Key('principal-now-close'), onPressed: _close),
             ),
           ],
         ),
@@ -491,6 +509,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
         activeIndex: _index,
         progress: _progressController,
         showReply: true,
+        edgeToEdge: compact,
         showClose: true,
         liked: _liked,
         muted: _muted,
@@ -502,6 +521,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
         onOptions: _showOptions,
         onAudio: () => setState(() => _muted = !_muted),
         onLike: () => setState(() => _liked = !_liked),
+        onShare: _share,
         onSendReply: _sendReply,
         onHoldChanged: (holding) {
           _holding = holding;
@@ -516,30 +536,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     children: [
       Positioned(
         left: CoeloSpacing.space5,
-        top: CoeloSpacing.space4,
-        child: Semantics(
-          label: 'Coelo',
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                'assets/brand/logo-coelo-orange.svg',
-                key: const Key('principal-now-brand-logo'),
-                width: CoeloSize.iconSm,
-                height: CoeloSize.iconSm,
-                excludeFromSemantics: true,
-              ),
-              const SizedBox(width: CoeloSpacing.space2),
-              Text(
-                'COELO',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: .8,
-                ),
-              ),
-            ],
-          ),
-        ),
+        top: CoeloSpacing.space2,
+        child: _ViewerBackButton(key: const Key('principal-now-close'), onPressed: _close),
       ),
       Positioned(
         right: CoeloSpacing.space4,
@@ -551,12 +549,6 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
               tooltip: _muted ? 'Ativar áudio' : 'Desativar áudio',
               icon: _muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
               onPressed: () => setState(() => _muted = !_muted),
-            ),
-            _ViewerIconButton(
-              key: const Key('principal-now-close'),
-              tooltip: 'Fechar Agora',
-              icon: Icons.close_rounded,
-              onPressed: _close,
             ),
           ],
         ),
@@ -583,7 +575,8 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                 stories: _stories,
                 activeIndex: _index,
                 progress: _progressController,
-                showReply: false,
+                showReply: true,
+                edgeToEdge: false,
                 showClose: false,
                 liked: _liked,
                 muted: _muted,
@@ -595,6 +588,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                 onOptions: _showOptions,
                 onAudio: () => setState(() => _muted = !_muted),
                 onLike: () => setState(() => _liked = !_liked),
+                onShare: _share,
                 onSendReply: _sendReply,
                 onHoldChanged: (holding) {
                   _holding = holding;
@@ -625,6 +619,7 @@ final class _StoryCard extends StatelessWidget {
     required this.activeIndex,
     required this.progress,
     required this.showReply,
+    required this.edgeToEdge,
     required this.showClose,
     required this.liked,
     required this.muted,
@@ -636,6 +631,7 @@ final class _StoryCard extends StatelessWidget {
     required this.onOptions,
     required this.onAudio,
     required this.onLike,
+    required this.onShare,
     required this.onSendReply,
     required this.onHoldChanged,
     super.key,
@@ -646,6 +642,7 @@ final class _StoryCard extends StatelessWidget {
   final int activeIndex;
   final Animation<double> progress;
   final bool showReply;
+  final bool edgeToEdge;
   final bool showClose;
   final bool liked;
   final bool muted;
@@ -657,194 +654,261 @@ final class _StoryCard extends StatelessWidget {
   final VoidCallback onOptions;
   final VoidCallback onAudio;
   final VoidCallback onLike;
+  final VoidCallback onShare;
   final VoidCallback onSendReply;
   final ValueChanged<bool> onHoldChanged;
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(showReply ? 0 : CoeloRadius.lg),
-    child: DecoratedBox(
-      decoration: BoxDecoration(border: showReply ? null : Border.all(color: Colors.white38)),
-      child: Listener(
-        onPointerDown: (_) => onHoldChanged(true),
-        onPointerUp: (_) => onHoldChanged(false),
-        onPointerCancel: (_) => onHoldChanged(false),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _StoryImage(story: story),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black54, Colors.transparent, Colors.transparent, Colors.black87],
-                  stops: [0, .22, .58, 1],
+  Widget build(BuildContext context) {
+    final safePadding = edgeToEdge ? MediaQuery.paddingOf(context) : EdgeInsets.zero;
+    final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(edgeToEdge ? 0 : CoeloRadius.lg),
+      child: DecoratedBox(
+        decoration: BoxDecoration(border: edgeToEdge ? null : Border.all(color: Colors.white38)),
+        child: Listener(
+          onPointerDown: (_) => onHoldChanged(true),
+          onPointerUp: (_) => onHoldChanged(false),
+          onPointerCancel: (_) => onHoldChanged(false),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _StoryImage(story: story),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black54,
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black87,
+                    ],
+                    stops: [0, .22, .58, 1],
+                  ),
                 ),
               ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    label: 'Agora anterior',
-                    child: GestureDetector(
-                      key: const Key('principal-now-previous-zone'),
-                      behavior: HitTestBehavior.translucent,
-                      onTap: onPrevious,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    label: 'Próximo Agora',
-                    child: GestureDetector(
-                      key: const Key('principal-now-next-zone'),
-                      behavior: HitTestBehavior.translucent,
-                      onTap: onNext,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              left: CoeloSpacing.space3,
-              right: CoeloSpacing.space3,
-              top: CoeloSpacing.space3,
-              child: Column(
+              Row(
                 children: [
-                  AnimatedBuilder(
-                    key: const Key('principal-now-progress'),
-                    animation: progress,
-                    builder: (context, _) => Row(
-                      children: List.generate(stories.length, (index) {
-                        final value = index < activeIndex
-                            ? 1.0
-                            : index == activeIndex
-                            ? progress.value
-                            : 0.0;
-                        return Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(right: index == stories.length - 1 ? 0 : 4),
-                            child: LinearProgressIndicator(
-                              value: value,
-                              minHeight: 3,
-                              borderRadius: BorderRadius.circular(CoeloRadius.full),
-                              backgroundColor: Colors.white30,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      }),
+                  Expanded(
+                    child: Semantics(
+                      button: true,
+                      label: 'Agora anterior',
+                      child: GestureDetector(
+                        key: const Key('principal-now-previous-zone'),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: onPrevious,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: CoeloSpacing.space3),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 17,
-                        backgroundColor: CoeloStatusColors.light.warningContainer,
-                        child: Text(
-                          'COELO',
-                          style: TextStyle(
-                            fontSize: 7,
-                            color: CoeloStatusColors.light.onWarningContainer,
-                          ),
-                        ),
+                  Expanded(
+                    child: Semantics(
+                      button: true,
+                      label: 'Próximo Agora',
+                      child: GestureDetector(
+                        key: const Key('principal-now-next-zone'),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: onNext,
                       ),
-                      const SizedBox(width: CoeloSpacing.space2),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              story.author,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              story.timeLabel,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.labelSmall?.copyWith(color: Colors.white70),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _ViewerIconButton(
-                        key: const Key('principal-now-options'),
-                        tooltip: 'Opções do Agora',
-                        icon: Icons.more_horiz_rounded,
-                        onPressed: onOptions,
-                      ),
-                      if (showClose)
-                        _ViewerIconButton(
-                          key: const Key('principal-now-close'),
-                          tooltip: 'Fechar Agora',
-                          icon: Icons.close_rounded,
-                          onPressed: onClose,
-                        ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
-            Positioned(
-              left: CoeloSpacing.space6,
-              right: CoeloSpacing.space6,
-              bottom: showReply ? 116 : 74,
-              child: Text(
-                story.caption,
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  shadows: const [Shadow(color: Colors.black87, blurRadius: 10)],
-                ),
-              ),
-            ),
-            if (showReply)
               Positioned(
                 left: CoeloSpacing.space3,
                 right: CoeloSpacing.space3,
-                bottom: CoeloSpacing.space4,
-                child: Row(
+                top: CoeloSpacing.space3 + safePadding.top,
+                child: Column(
                   children: [
-                    Expanded(
-                      child: _PrivateReplyField(
-                        controller: replyController,
-                        focusNode: replyFocusNode,
-                        onSubmitted: onSendReply,
+                    AnimatedBuilder(
+                      key: const Key('principal-now-progress'),
+                      animation: progress,
+                      builder: (context, _) => Row(
+                        children: List.generate(stories.length, (index) {
+                          final value = index < activeIndex
+                              ? 1.0
+                              : index == activeIndex
+                              ? progress.value
+                              : 0.0;
+                          return Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(right: index == stories.length - 1 ? 0 : 4),
+                              child: LinearProgressIndicator(
+                                value: value,
+                                minHeight: 3,
+                                borderRadius: BorderRadius.circular(CoeloRadius.full),
+                                backgroundColor: Colors.white30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        }),
                       ),
                     ),
-                    _ViewerIconButton(
-                      key: const Key('principal-now-like'),
-                      tooltip: liked ? 'Remover reação' : 'Reagir a este Agora',
-                      icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      onPressed: onLike,
-                    ),
-                    _ViewerIconButton(
-                      key: const Key('principal-now-send-reply'),
-                      tooltip: 'Enviar resposta privada',
-                      icon: Icons.send_rounded,
-                      onPressed: onSendReply,
+                    const SizedBox(height: CoeloSpacing.space3),
+                    Row(
+                      children: [
+                        if (showClose) ...[
+                          _ViewerBackButton(
+                            key: const Key('principal-now-close'),
+                            onPressed: onClose,
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                        ],
+                        if (!enlargedText) ...[
+                          CircleAvatar(
+                            radius: 17,
+                            backgroundColor: CoeloStatusColors.light.warningContainer,
+                            child: Text(
+                              'COELO',
+                              style: TextStyle(
+                                fontSize: 7,
+                                color: CoeloStatusColors.light.onWarningContainer,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: CoeloSpacing.space2),
+                        ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                story.author,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                '${story.contextLabel} · ${story.timeLabel}',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelSmall?.copyWith(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (showClose && !enlargedText)
+                          _ViewerIconButton(
+                            key: const Key('principal-now-audio'),
+                            tooltip: muted ? 'Ativar áudio' : 'Desativar áudio',
+                            icon: muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                            onPressed: onAudio,
+                          ),
+                        _ViewerIconButton(
+                          key: const Key('principal-now-options'),
+                          tooltip: 'Opções do Agora',
+                          icon: Icons.more_horiz_rounded,
+                          onPressed: onOptions,
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-          ],
+              Positioned(
+                left: CoeloSpacing.space6,
+                right: CoeloSpacing.space6,
+                bottom: (showReply ? 120 : 74) + safePadding.bottom,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(CoeloRadius.full),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        child: Text(
+                          story.contextLabel.toUpperCase(),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space2),
+                    Text(
+                      story.caption,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        shadows: const [Shadow(color: Colors.black87, blurRadius: 10)],
+                      ),
+                    ),
+                    const SizedBox(height: CoeloSpacing.space2),
+                    Semantics(
+                      key: const Key('principal-now-audience'),
+                      label: 'Audiência do Agora',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.white70),
+                          const SizedBox(width: CoeloSpacing.space1),
+                          Expanded(
+                            child: Text(
+                              story.audienceLabel,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.labelSmall?.copyWith(color: Colors.white70),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (showReply)
+                Positioned(
+                  left: CoeloSpacing.space3,
+                  right: CoeloSpacing.space3,
+                  bottom: CoeloSpacing.space4 + safePadding.bottom,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _PrivateReplyField(
+                          controller: replyController,
+                          focusNode: replyFocusNode,
+                          onSubmitted: onSendReply,
+                        ),
+                      ),
+                      _ViewerIconButton(
+                        key: const Key('principal-now-like'),
+                        tooltip: liked ? 'Remover reação' : 'Reagir a este Agora',
+                        icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        onPressed: onLike,
+                      ),
+                      _ViewerIconButton(
+                        key: const Key('principal-now-share'),
+                        tooltip: 'Compartilhar este Agora',
+                        icon: Icons.ios_share_rounded,
+                        onPressed: onShare,
+                      ),
+                      _ViewerIconButton(
+                        key: const Key('principal-now-send-reply'),
+                        tooltip: 'Enviar resposta privada',
+                        icon: Icons.send_rounded,
+                        onPressed: onSendReply,
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 final class _PrivateReplyField extends StatefulWidget {
@@ -1046,6 +1110,30 @@ final class _StoryImage extends StatelessWidget {
       child: media,
     );
   }
+}
+
+final class _ViewerBackButton extends StatelessWidget {
+  const _ViewerBackButton({required this.onPressed, super.key});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+    message: 'Voltar para Acontece',
+    child: TextButton.icon(
+      key: const Key('principal-now-back'),
+      onPressed: onPressed,
+      icon: const Icon(Icons.chevron_left_rounded, size: 22),
+      label: const Text('Agora'),
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black26,
+        minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
+        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
+        textStyle: Theme.of(context).textTheme.labelLarge,
+      ),
+    ),
+  );
 }
 
 final class _ViewerIconButton extends StatelessWidget {

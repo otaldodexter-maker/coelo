@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/principal_circulars/application/circul
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_composer_page.dart';
+import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_reader.dart';
 import 'package:coelo_superadmin/features/principal_circulars/presentation/principal_circular_surfaces.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -15,10 +16,8 @@ void main() {
   setUpAll(_loadGoldenFonts);
 
   for (final configuration in <(double, Brightness)>[
-    (375, Brightness.light),
-    (768, Brightness.light),
-    (1024, Brightness.dark),
-    (1440, Brightness.dark),
+    for (final width in <double>[375, 768, 1024, 1440])
+      for (final brightness in Brightness.values) (width, brightness),
   ]) {
     final (width, brightness) = configuration;
     testWidgets('composer golden ${width.toInt()} ${brightness.name}', (tester) async {
@@ -42,6 +41,70 @@ void main() {
       await expectLater(
         find.byKey(const Key('circular-golden-root')),
         matchesGoldenFile('goldens/circular_composer_${brightness.name}_${width.toInt()}.png'),
+      );
+    });
+  }
+
+  for (final brightness in Brightness.values) {
+    testWidgets('compact contextual reader golden 375 ${brightness.name}', (tester) async {
+      await _pumpGolden(
+        tester,
+        size: const Size(375, 1000),
+        brightness: brightness,
+        child: PrincipalCircularDetailPage(
+          circularId: _detail.id,
+          repository: _Repository(),
+          responseRepository: _ResponseRepository(),
+        ),
+      );
+      await expectLater(
+        find.byKey(const Key('circular-golden-root')),
+        matchesGoldenFile('goldens/circular_reader_contextual_${brightness.name}_375.png'),
+      );
+    });
+  }
+
+  testWidgets('compact contextual reader golden 375 light 200 percent text', (tester) async {
+    await _pumpGolden(
+      tester,
+      size: const Size(375, 1200),
+      brightness: Brightness.light,
+      textScaler: const TextScaler.linear(2),
+      child: PrincipalCircularDetailPage(
+        circularId: _detail.id,
+        repository: _Repository(),
+        responseRepository: _ResponseRepository(),
+      ),
+    );
+    await expectLater(
+      find.byKey(const Key('circular-golden-root')),
+      matchesGoldenFile('goldens/circular_reader_contextual_light_375_text_200.png'),
+    );
+  });
+
+  for (final width in <double>[375, 1440]) {
+    testWidgets('composer golden ${width.toInt()} light 200 percent text', (tester) async {
+      final controller = CircularComposerController(
+        repository: _Repository(),
+        scope: const CircularScope(institutionId: 'institution-1'),
+        initialDraft: _draft,
+      );
+      addTearDown(controller.dispose);
+      await _pumpGolden(
+        tester,
+        size: Size(width, 1200),
+        brightness: Brightness.light,
+        textScaler: const TextScaler.linear(2),
+        child: PrincipalCircularComposerPage(
+          controller: controller,
+          onCancel: () {},
+          onPickFiles: () async {},
+          onChooseSchedule: () async => DateTime.utc(2026, 8, 25, 12),
+        ),
+      );
+      await expectLater(
+        find.byKey(const Key('circular-golden-root')),
+        matchesGoldenFile('goldens/circular_composer_light_${width.toInt()}_text_200.png'),
       );
     });
   }
@@ -106,6 +169,31 @@ void main() {
       );
     });
   }
+
+  for (final brightness in Brightness.values) {
+    testWidgets('feed preview dialog golden 1440 ${brightness.name}', (tester) async {
+      await _pumpGolden(
+        tester,
+        size: const Size(1440, 900),
+        brightness: brightness,
+        child: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 620,
+              child: PrincipalCircularFeedCard(item: _summary, onOpen: () {}),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Ler circular'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('principal-circular-preview-dialog')), findsOneWidget);
+      await expectLater(
+        find.byKey(const Key('circular-golden-root')),
+        matchesGoldenFile('goldens/circular_feed_preview_dialog_${brightness.name}_1440.png'),
+      );
+    });
+  }
 }
 
 Future<void> _pumpGolden(
@@ -113,6 +201,7 @@ Future<void> _pumpGolden(
   required Size size,
   required Brightness brightness,
   required Widget child,
+  TextScaler textScaler = TextScaler.noScaling,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
@@ -128,9 +217,7 @@ Future<void> _pumpGolden(
       builder: (context, appChild) => RepaintBoundary(
         key: const Key('circular-golden-root'),
         child: MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(disableAnimations: true, textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(context).copyWith(disableAnimations: true, textScaler: textScaler),
           child: appChild!,
         ),
       ),
@@ -212,13 +299,30 @@ final class _Repository implements CircularRepository {
     required int expectedVersion,
   }) => throw UnimplementedError();
   @override
-  Future<CircularDetail> getVisible(String circularId, {String? childContextId}) =>
-      throw UnimplementedError();
+  Future<CircularDetail> getVisible(String circularId, {String? childContextId}) async => _detail;
   @override
   Future<PrincipalCursorPage<CircularSummary>> listProfile(
     CircularScope scope, {
     CircularCursor? cursor,
     int limit = 20,
+  }) => throw UnimplementedError();
+}
+
+final class _ResponseRepository implements CircularResponseRepository {
+  @override
+  Future<CircularResponseSaveResult> saveDraft({
+    required String requestId,
+    required String revisionId,
+    required String? childContextId,
+    required Map<String, List<String>> answers,
+    required int expectedVersion,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<CircularResponseSaveResult> submit({
+    required String requestId,
+    required String sessionId,
+    required int expectedVersion,
   }) => throw UnimplementedError();
 }
 

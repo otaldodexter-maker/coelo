@@ -54,6 +54,8 @@ final class PrincipalNowPreviewStory {
     required this.timeLabel,
     required this.caption,
     required this.assetPath,
+    this.contextLabel = '4º ano A',
+    this.audienceLabel = 'Somente famílias e responsáveis deste contexto',
     this.remoteUrl,
     this.mimeType = 'image/png',
     this.audioUrl,
@@ -69,6 +71,8 @@ final class PrincipalNowPreviewStory {
   final String author;
   final String timeLabel;
   final String caption;
+  final String contextLabel;
+  final String audienceLabel;
   final String assetPath;
   final String? remoteUrl;
   final String mimeType;

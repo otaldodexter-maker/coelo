@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../application/circular_composer_controller.dart';
 import '../domain/circular.dart';
+import '../../principal_shared/presentation/principal_publication_frame.dart';
 
 final class PrincipalCircularComposerPage extends StatefulWidget {
   const PrincipalCircularComposerPage({
@@ -58,7 +59,6 @@ final class _PrincipalCircularComposerPageState extends State<PrincipalCircularC
     animation: widget.controller,
     builder: (context, _) => LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final twoPane = constraints.maxWidth >= 980;
         final editor = _CircularEditor(
           controller: widget.controller,
@@ -78,7 +78,7 @@ final class _PrincipalCircularComposerPageState extends State<PrincipalCircularC
               onPressed: widget.controller.busy ? null : widget.onCancel,
               icon: const Icon(Icons.close_rounded),
             ),
-            title: const Text('Publicar circular'),
+            title: const Text('Sua publicação'),
             actions: [
               if (!twoPane)
                 TextButton.icon(
@@ -112,13 +112,29 @@ final class _PrincipalCircularComposerPageState extends State<PrincipalCircularC
                   state: widget.controller.state,
                   errorCode: widget.controller.errorCode,
                 ),
-                _ComposerFooter(
-                  compact: compact,
-                  busy: widget.controller.busy,
-                  scheduled: _publishAt?.isAfter(DateTime.now()) ?? false,
-                  onCancel: widget.onCancel,
-                  onSave: _save,
-                  onPublish: _publish,
+                PrincipalPublicationActionFooter(
+                  surfaceKey: const Key('circular-publication-footer'),
+                  tertiaryAction: TextButton(
+                    key: const Key('circular-cancel'),
+                    onPressed: widget.controller.busy ? null : widget.onCancel,
+                    child: const Text('Cancelar'),
+                  ),
+                  continuationActions: [
+                    OutlinedButton(
+                      key: const Key('circular-save-draft'),
+                      onPressed: widget.controller.busy ? null : _save,
+                      child: const Text('Salvar rascunho'),
+                    ),
+                    FilledButton(
+                      key: const Key('circular-publish'),
+                      onPressed: widget.controller.busy ? null : _publish,
+                      child: Text(
+                        _publishAt?.isAfter(DateTime.now()) ?? false
+                            ? 'Agendar circular'
+                            : 'Publicar circular',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -456,6 +472,7 @@ final class _CircularPreview extends StatelessWidget {
     final theme = Theme.of(context);
     final body = draft.blocks.whereType<CircularTextBlock>().firstOrNull?.text ?? '';
     return ColoredBox(
+      key: const Key('circular-publication-preview'),
       color: theme.colorScheme.surface,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(CoeloSpacing.space4),
@@ -694,62 +711,5 @@ final class _ComposerFeedback extends StatelessWidget {
               child: Text(message, textAlign: TextAlign.center),
             ),
           );
-  }
-}
-
-final class _ComposerFooter extends StatelessWidget {
-  const _ComposerFooter({
-    required this.compact,
-    required this.busy,
-    required this.scheduled,
-    required this.onCancel,
-    required this.onSave,
-    required this.onPublish,
-  });
-  final bool compact;
-  final bool busy;
-  final bool scheduled;
-  final VoidCallback onCancel;
-  final VoidCallback onSave;
-  final VoidCallback onPublish;
-  @override
-  Widget build(BuildContext context) {
-    final actions = [
-      OutlinedButton(
-        key: const Key('circular-save-draft'),
-        onPressed: busy ? null : onSave,
-        child: const Text('Salvar rascunho'),
-      ),
-      FilledButton(
-        key: const Key('circular-publish'),
-        onPressed: busy ? null : onPublish,
-        child: Text(scheduled ? 'Agendar circular' : 'Publicar circular'),
-      ),
-    ];
-    return Container(
-      padding: const EdgeInsets.all(CoeloSpacing.space3),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-      ),
-      child: compact
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: CoeloSize.touchMin, child: actions.last),
-                const SizedBox(height: CoeloSpacing.space2),
-                SizedBox(height: CoeloSize.touchMin, child: actions.first),
-              ],
-            )
-          : Row(
-              children: [
-                TextButton(onPressed: busy ? null : onCancel, child: const Text('Cancelar')),
-                const Spacer(),
-                actions.first,
-                const SizedBox(width: CoeloSpacing.space2),
-                actions.last,
-              ],
-            ),
-    );
   }
 }

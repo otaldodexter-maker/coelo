@@ -12,6 +12,7 @@ import '../../core/platform/open_download.dart';
 import '../dev_menu/development_assessment_repository.dart';
 import '../dev_menu/development_activity_fixture_repository.dart';
 import '../dev_menu/development_attendance_repository.dart';
+import '../dev_menu/development_circular_reader_repository.dart';
 import '../dev_menu/development_invite_repository.dart';
 import '../dev_menu/development_routine_repository.dart';
 import '../dev_menu/development_student_tracking_repository.dart';
@@ -74,6 +75,7 @@ import '../../features/daily_routine/daily_routine.dart';
 import '../../features/daily_routine/daily_routine_pages.dart';
 import '../../features/catalog/presentation/catalog_host_page.dart';
 import '../../features/chat/presentation/screens/superadmin_chat_page.dart';
+import '../../features/circulars/presentation/circular_directory_page.dart';
 import '../../features/errors/presentation/screens/superadmin_error_screen.dart';
 import '../../features/forms/presentation/editor/forms_editor_page.dart';
 import '../../features/groups/data/fake_group_directory_repository.dart';
@@ -112,6 +114,11 @@ import '../../features/notices/domain/notice_repository.dart'
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
+import '../../features/principal_circulars/application/circular_composer_controller.dart';
+import '../../features/principal_circulars/domain/circular.dart';
+import '../../features/principal_circulars/domain/circular_repository.dart';
+import '../../features/principal_circulars/presentation/principal_circular_composer_page.dart';
+import '../../features/principal_circulars/presentation/principal_circular_detail_page.dart';
 import '../../features/plans/data/fake_plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
 import '../../features/plans/presentation/plan_form_page.dart';
@@ -543,6 +550,39 @@ GoRouter createSuperadminRouter({
       GoRoute(
         path: _productionMutationUnavailablePath,
         builder: (context, state) => blockedProductionMutationPage(context),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devPrincipalNow,
+        name: SuperadminRoutes.devPrincipalNowName,
+        builder: (context, state) => PrincipalNowPreviewPage(
+          onClose: () => _closePrincipalViewer(context),
+          onOpenHappens: () => _closePrincipalViewer(context),
+          onCreate: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.circularDetail,
+        name: SuperadminRoutes.circularDetailName,
+        builder: (context, state) => PrincipalCircularDetailPage(
+          circularId: state.pathParameters['circularId']!,
+          repository: const UnavailableCircularRepository(),
+          responseRepository: const UnavailableCircularResponseRepository(),
+          onReturn: () =>
+              _returnFromCircularReader(context, fallbackRouteName: SuperadminRoutes.circularsName),
+        ),
+      ),
+      GoRoute(
+        path: SuperadminRoutes.devCircularDetail,
+        name: SuperadminRoutes.devCircularDetailName,
+        builder: (context, state) => PrincipalCircularDetailPage(
+          circularId: state.pathParameters['circularId']!,
+          repository: const DevelopmentCircularReaderRepository(),
+          responseRepository: const UnavailableCircularResponseRepository(),
+          onReturn: () => _returnFromCircularReader(
+            context,
+            fallbackRouteName: SuperadminRoutes.devCircularsName,
+          ),
+        ),
       ),
       ShellRoute(
         builder: (context, state, child) {
@@ -3215,6 +3255,74 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
+            path: SuperadminRoutes.circulars,
+            name: SuperadminRoutes.circularsName,
+            builder: (context, state) => CircularDirectoryPage(
+              items: const [],
+              viewState: CircularDirectoryViewState.forbidden,
+              onOpen: (id) => context.pushNamed(
+                SuperadminRoutes.circularDetailName,
+                pathParameters: {'circularId': id},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.circularCreate,
+            name: SuperadminRoutes.circularCreateName,
+            builder: (context, state) => blockedProductionMutationPage(context),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCirculars,
+            name: SuperadminRoutes.devCircularsName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Circulares',
+              subtitle: 'Prévia local do diretório aprovado de Circulares.',
+              destination: 'circulars',
+              child: CircularDirectoryPage(
+                items: _developmentCircularDirectoryItems,
+                onCreate: () => context.goNamed(SuperadminRoutes.devCircularCreateName),
+                onOpen: (id) {
+                  final item = _developmentCircularDirectoryItems.firstWhere(
+                    (candidate) => candidate.id == id,
+                  );
+                  if (item.status == CircularStatus.published) {
+                    context.pushNamed(
+                      SuperadminRoutes.devCircularDetailName,
+                      pathParameters: {'circularId': id},
+                    );
+                    return;
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Somente Circulares publicadas podem ser lidas.')),
+                  );
+                },
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devCircularCreate,
+            name: SuperadminRoutes.devCircularCreateName,
+            builder: (context, state) => operationalPage(
+              context,
+              title: 'Publicar Circular',
+              subtitle: 'Prévia local; persistência e publicação permanecem indisponíveis.',
+              destination: 'circular-create',
+              child: PrincipalCircularComposerPage(
+                controller: CircularComposerController(
+                  repository: const UnavailableCircularRepository(),
+                  scope: const CircularScope(institutionId: 'development-preview'),
+                ),
+                onCancel: () => context.goNamed(SuperadminRoutes.devCircularsName),
+                onPickFiles: () async {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Arquivos indisponíveis nesta prévia local.')),
+                  );
+                },
+              ),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.devAudit,
             name: SuperadminRoutes.devAuditName,
             builder: (context, state) => AuditDirectoryPage(
@@ -3291,6 +3399,8 @@ GoRouter createSuperadminRouter({
                 onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
                 onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
                 onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
+                onPublishNow: () =>
+                    context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
                 onCreatePost: () =>
                     context.goNamed(SuperadminRoutes.devPrincipalHappensPublishName),
               ),
@@ -3307,8 +3417,8 @@ GoRouter createSuperadminRouter({
               child: PrincipalForYouPreviewPage(
                 embedded: true,
                 onOpenHappens: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
-                onOpenNow: () => context.goNamed(SuperadminRoutes.devPrincipalNowName),
-                onOpenMoments: () => context.goNamed(SuperadminRoutes.devPrincipalMomentsName),
+                onOpenNow: () => context.pushNamed(SuperadminRoutes.devPrincipalNowName),
+                onOpenMoments: () => context.pushNamed(SuperadminRoutes.devPrincipalMomentsName),
                 onOpenAgenda: () => context.goNamed(SuperadminRoutes.devAgendaName),
                 onOpenProfile: () => context.goNamed(SuperadminRoutes.devPrincipalProfileName),
               ),
@@ -3322,7 +3432,7 @@ GoRouter createSuperadminRouter({
               title: 'Publicar no Acontece',
               subtitle: 'Prepare o conteúdo e revise o público antes de publicar.',
               destination: 'principal-happens-publish',
-              child: PrincipalHappensPublicationPage(
+              child: PrincipalHappensPublicationPage.demo(
                 embedded: true,
                 repository: InMemoryHappensPublicationRepository(),
                 onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
@@ -3355,23 +3465,8 @@ GoRouter createSuperadminRouter({
               title: 'Publicar momento',
               subtitle: 'Prepare a mídia e revise o público antes de publicar.',
               destination: 'principal-moments-publish',
-              child: PrincipalMomentsPublicationPage(
+              child: PrincipalMomentsPublicationPage.demo(
                 onClose: () => context.goNamed(SuperadminRoutes.devPrincipalMomentsName),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: SuperadminRoutes.devPrincipalNow,
-            name: SuperadminRoutes.devPrincipalNowName,
-            builder: (context, state) => operationalPage(
-              context,
-              title: 'Agora',
-              subtitle: 'Prévia da experiência do app Principal.',
-              destination: 'principal-now',
-              child: PrincipalNowPreviewPage(
-                onClose: () => _closePrincipalViewer(context),
-                onOpenHappens: () => _closePrincipalViewer(context),
-                onCreate: () => context.goNamed(SuperadminRoutes.devPrincipalNowPublicationName),
               ),
             ),
           ),
@@ -3383,7 +3478,7 @@ GoRouter createSuperadminRouter({
               title: 'Publicar no Agora',
               subtitle: 'Prepare a sequência e revise o público antes de publicar.',
               destination: 'principal-now-publish',
-              child: PrincipalNowPublicationPage(
+              child: PrincipalNowPublicationPage.demo(
                 embedded: true,
                 repository: InMemoryNowPublicationRepository(),
                 onClose: () => context.goNamed(SuperadminRoutes.devPrincipalHappensName),
@@ -3714,6 +3809,14 @@ void _closePrincipalViewer(BuildContext context) {
   context.goNamed(SuperadminRoutes.devPrincipalHappensName);
 }
 
+void _returnFromCircularReader(BuildContext context, {required String fallbackRouteName}) {
+  if (context.canPop()) {
+    context.pop();
+    return;
+  }
+  context.goNamed(fallbackRouteName);
+}
+
 String _destinationForLocation(String location) {
   if (location.startsWith('/dev/')) {
     return _destinationForLocation(location.substring('/dev'.length));
@@ -3841,6 +3944,12 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/notices')) {
     return 'notices';
   }
+  if (location.startsWith('/circulars/new')) {
+    return 'circular-create';
+  }
+  if (location.startsWith('/circulars')) {
+    return 'circulars';
+  }
   if (location.startsWith('/audit')) {
     return 'audit';
   }
@@ -3944,6 +4053,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.invitesName);
     case 'notices':
       context.goNamed(SuperadminRoutes.noticesName);
+    case 'circulars':
+      context.goNamed(SuperadminRoutes.circularsName);
+    case 'circular-create':
+      context.goNamed(SuperadminRoutes.circularCreateName);
     case 'audit':
       context.goNamed(SuperadminRoutes.auditName);
     case 'conversations':
@@ -4029,6 +4142,10 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devInvitesName);
     case 'notices':
       context.goNamed(SuperadminRoutes.devNoticesName);
+    case 'circulars':
+      context.goNamed(SuperadminRoutes.devCircularsName);
+    case 'circular-create':
+      context.goNamed(SuperadminRoutes.devCircularCreateName);
     case 'audit':
       context.goNamed(SuperadminRoutes.devAuditName);
     case 'catalog':
@@ -4117,6 +4234,45 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devPrincipalProfileName);
   }
 }
+
+final _developmentCircularDirectoryItems = <CircularDirectoryItem>[
+  CircularDirectoryItem(
+    id: 'circular-published',
+    title: 'Renovação de matrícula',
+    excerpt: 'Confirme a renovação para o próximo ano.',
+    authorName: 'Ana Souza',
+    contextLabel: 'Ensino Fundamental',
+    status: CircularStatus.published,
+    effectiveAt: DateTime.utc(2026, 8, 21),
+    attachmentCount: 2,
+    questionCount: 1,
+    responseCount: 84,
+  ),
+  CircularDirectoryItem(
+    id: 'circular-scheduled',
+    title: 'Reunião de responsáveis',
+    excerpt: 'Agenda e orientações para o encontro.',
+    authorName: 'Bruno Lima',
+    contextLabel: 'Educação Infantil',
+    status: CircularStatus.scheduled,
+    effectiveAt: DateTime.utc(2026, 9, 2),
+    attachmentCount: 1,
+    questionCount: 0,
+    responseCount: 0,
+  ),
+  CircularDirectoryItem(
+    id: 'circular-draft',
+    title: 'Circular em elaboração',
+    excerpt: 'Conteúdo ainda não publicado.',
+    authorName: 'Carla Melo',
+    contextLabel: 'Ensino Médio',
+    status: CircularStatus.draft,
+    effectiveAt: DateTime.utc(2026, 8, 30),
+    attachmentCount: 0,
+    questionCount: 2,
+    responseCount: 0,
+  ),
+];
 
 RoutineEntryKind _routineEntryKind(String? value) {
   for (final kind in RoutineEntryKind.values) {

@@ -136,6 +136,49 @@ abstract interface class CircularRepository {
   });
 }
 
+/// Honest composition fallback used when no Circular backend capability is
+/// available. It never persists, publishes, or returns tenant data locally.
+final class UnavailableCircularRepository implements CircularRepository {
+  const UnavailableCircularRepository();
+
+  Future<T> _unavailable<T>() => Future<T>.error(const CircularUnavailable());
+
+  @override
+  Future<CircularDetail> getVisible(String circularId, {String? childContextId}) => _unavailable();
+
+  @override
+  Future<CircularDraft?> loadDraft(CircularScope scope) => _unavailable();
+
+  @override
+  Future<PrincipalCursorPage<CircularSummary>> listProfile(
+    CircularScope scope, {
+    CircularCursor? cursor,
+    int limit = 20,
+  }) => _unavailable();
+
+  @override
+  Future<CircularSaveResult> publish({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+    DateTime? publishAt,
+  }) => _unavailable();
+
+  @override
+  Future<CircularSaveResult> saveDraft({
+    required String requestId,
+    required CircularScope scope,
+    required CircularDraft draft,
+  }) => _unavailable();
+
+  @override
+  Future<CircularSaveResult> closeResponses({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+  }) => _unavailable();
+}
+
 abstract interface class CircularResponseRepository {
   Future<CircularResponseSaveResult> saveDraft({
     required String requestId,
@@ -150,6 +193,29 @@ abstract interface class CircularResponseRepository {
     required String sessionId,
     required int expectedVersion,
   });
+}
+
+/// Honest fallback used when the response capability is not available.
+final class UnavailableCircularResponseRepository implements CircularResponseRepository {
+  const UnavailableCircularResponseRepository();
+
+  Future<T> _unavailable<T>() => Future<T>.error(const CircularUnavailable());
+
+  @override
+  Future<CircularResponseSaveResult> saveDraft({
+    required String requestId,
+    required String revisionId,
+    required String? childContextId,
+    required Map<String, List<String>> answers,
+    required int expectedVersion,
+  }) => _unavailable();
+
+  @override
+  Future<CircularResponseSaveResult> submit({
+    required String requestId,
+    required String sessionId,
+    required int expectedVersion,
+  }) => _unavailable();
 }
 
 @immutable

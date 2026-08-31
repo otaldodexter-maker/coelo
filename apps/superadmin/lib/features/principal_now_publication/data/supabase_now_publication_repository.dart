@@ -53,6 +53,10 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
                       ),
                 remoteAssetId: mediaAssetId,
                 remoteUrl: await _assetUrl(context, mediaAssetId),
+                cropScale: (mediaJson['crop_scale'] as num?)?.toDouble() ?? 1,
+                cropX: (mediaJson['crop_x'] as num?)?.toDouble() ?? 0,
+                cropY: (mediaJson['crop_y'] as num?)?.toDouble() ?? 0,
+                coverPosition: (mediaJson['cover_position'] as num?)?.toDouble() ?? 0,
               ),
         audio: audioJson == null
             ? null
