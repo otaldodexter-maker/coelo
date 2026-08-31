@@ -20,6 +20,33 @@ generated_at: "2026-08-31"
 - V4.19/V4.20, router, navegação, shell compartilhado, overlays e tracker ficam
   congelados até o handoff focado da frente concorrente.
 
+## Estado de handoff e consolidação — 2026-08-31
+
+- Base registrada: `f1aeacf67c218e7e889005ab98391f3d63096f11`.
+- Branch/worktree: `codex/forms-agenda-ui-completion` em
+  `C:\Users\adrie\Documents\Coelo-worktrees\forms-agenda-ui-completion`.
+- O handoff visual de V4.19/V4.20 foi incorporado no commit `c5de6b4b`; ele
+  trouxe diretório/editor de Forms, testes/goldens e ajustes compartilhados.
+- Commits desta frente, em ordem, até o último checkpoint de código:
+  `9020be56`, `ff75b1c2`, `c5de6b4b`, `cda7cd0f`, `7f04a8af`, `1ce0a23d`,
+  `02619c70`, `56dedf84`, `dac6405b`, `2f616367`, `81264bbb`, `48de2f18`,
+  `e0529081`, `6a06619e`, `54f311cb`, `9d4ab0d6`, `877d9cb5`, `2f98e6c8`,
+  `4a9e851c`, `3d92f1d9`, `e697ac17`, `df2efdcd`, `118edba5` e `83a73890`.
+- O estado continua `in-progress`: wiring de mídia, correção do contrato visual,
+  testes de rota e goldens ainda possuem resíduos não commitados na worktree.
+- `forms.monitor`, `forms.respond`, `forms.responses`, `forms.response-detail`,
+  `forms.export`, `forms.upload`, `forms.resolve-file`, `forms.download`,
+  `forms.expire-file` e `forms.delete-file` ficam `in-progress` enquanto os
+  fixes funcionais locais e seus gates ainda estão em andamento.
+- O total local sustentado neste checkpoint é 90/207 (43,48%). O valor
+  100/207 (48,31%) somente será válido depois que essas dez ações passarem
+  pelos testes funcionais e gates correspondentes.
+- O handoff `c5de6b4b` também contém mudanças em `SupabaseFormsApi` e no contrato
+  de `packages/coelo_api`; elas não estão autorizadas por este recorte e devem
+  ser extraídas ou receber aprovação explícita antes da integração final.
+- Estado máximo permanece `local-green` Flutter/visual. Supabase, backend,
+  autorização real, remoto e E2E permanecem bloqueados/fora de escopo.
+
 ## Fase 1 — Agenda independente
 
 1. Escrever REDs do contrato visual atual: Calendário/Lista, ausência de hero e
@@ -39,11 +66,14 @@ generated_at: "2026-08-31"
 
 ## Fase 2 — Incorporar handoff Forms
 
-1. Receber base, hashes e lista de arquivos de V4.19/V4.20.
-2. Auditar `git show --name-status`, incorporar os commits na worktree e repetir
-   testes de Forms, overlays e shell.
-3. Resolver apenas conflitos desta frente; não copiar hunks do checkout principal.
-4. Atualizar o plano com os caminhos efetivamente herdados.
+1. Concluído: base e handoff V4.19/V4.20 identificados; o commit incorporado é
+   `c5de6b4b`.
+2. Concluído parcialmente: arquivos de Forms, overlays e shell foram auditados;
+   os testes focados foram repetidos ao longo dos commits da frente.
+3. Pendente para o consolidador: separar os hunks de Supabase/API fora do recorte
+   e reconciliar apenas os resíduos explicitamente listados no checkpoint final.
+4. Pendente: repetir a suíte combinada, analyzer, goldens inspecionados e gates
+   globais no estado já limpo/commitado.
 
 ## Fase 3 — Formulários
 
