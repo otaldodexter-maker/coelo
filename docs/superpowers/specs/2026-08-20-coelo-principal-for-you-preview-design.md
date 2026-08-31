@@ -28,6 +28,15 @@ identidade paralela. Em 375 px a composição é vertical com navegação inferi
 cards editoriais horizontais. Em 768 px ganha respiro e distribuição em grade.
 Em 1440 px usa rail, conteúdo central e resumo lateral sem virar dashboard.
 
+A revisão visual aprovada em 2026-08-31 congela a ordem saudação/contexto,
+destaque protagonista, atalhos, conteúdo editorial, resumo do dia e contexto
+atual. Na implementação web, shell, contêiner direito, largura útil, insets,
+raios e gaps devem reproduzir a geometria canônica já aprovada. A navegação usa
+o dock flutuante global do Principal em mobile, tablet e web, com Home, Para
+você, ação central de publicar no Agora, Momentos e Pesquisar. A ação central
+laranja fica entre 10% e 25% maior que a proposta visual e cruza exatamente em
+50/50 o limite superior do dock, respeitando safe areas e constraints.
+
 ## Dados e contexto
 
 A apresentação recebe destaques já ordenados e renderiza o primeiro elegível.

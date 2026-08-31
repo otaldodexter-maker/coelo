@@ -89,7 +89,10 @@ O contrato visual dessas duas projeções foi aprovado em 2026-08-31. No web, a
 prévia de como a Circular aparece no Acontece não ocupa coluna lateral nem nasce
 aberta: uma ação explícita abre a prévia em popup contextual, devolvendo a
 largura principal ao Perfil. O popup usa superfície neutra, barreira, corpo
-rolável e fechamento acessível conforme o contrato Coelo de overlays. Esta regra
+rolável e fechamento acessível conforme o contrato Coelo de overlays. Em
+compacto, o detalhe usa viewer fullscreen sem cabeçalho ou dock global, com
+retorno contextual `‹ Circular`. Fechar ou usar Escape devolve foco ao gatilho
+e preserva o ponto de origem. Esta regra
 não altera o preview lateral aprovado dos composers de publicação.
 
 O editor pertence ao fluxo de publicação do Principal, ao lado de Publicar no

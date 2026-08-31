@@ -32,6 +32,9 @@ No web, a prévia da projeção no Acontece fica oculta por padrão e abre em po
 somente por ação explícita. Ela não reserva uma coluna lateral permanente nem
 comprime o conteúdo do Perfil. Essa decisão é específica da consulta da Circular
 no Perfil e não remove o preview lateral dos fluxos de publicação aprovados.
+Em compacto, o detalhe abre fullscreen sem cabeçalho ou dock global e apresenta
+retorno contextual `‹ Circular`; fechar ou usar Escape restaura foco e posição
+de origem.
 
 Publicar Circular usa a mesma família de composição do Principal que Publicar no
 Acontece, Agora e Momentos, adaptada para título, texto, anexos e perguntas. Não

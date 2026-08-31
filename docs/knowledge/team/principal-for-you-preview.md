@@ -4,6 +4,7 @@ knowledge_id: "principal-for-you-preview"
 source: "docs/superpowers/specs/2026-08-20-coelo-principal-for-you-preview-design.md"
 status: "validated"
 generated_at: "2026-08-20"
+updated_at: "2026-08-31"
 audience: "team"
 surfaces: [principal, para-voce, superadmin-preview, context]
 visibility: "internal"
@@ -28,6 +29,13 @@ status, vigência, prioridade e elegibilidade; `popup` permanece Aviso e é
 excluído antes da apresentação. Comportamento obrigatório, tamanho e inset de
 popup não fazem parte do modelo de leitura de `Para você`.
 
+A composição visual aprovada segue a ordem saudação/contexto, destaque
+protagonista, atalhos, conteúdo editorial, resumo do dia e contexto atual. O web
+deve preservar literalmente shell, contêiner direito, largura útil, insets,
+raios e gaps canônicos. Mobile, tablet e web usam o dock flutuante global do
+Principal; a ação laranja central de publicar no Agora é entre 10% e 25% maior
+que a proposta e cruza exatamente em 50/50 o limite superior do dock.
+
 O container de rota consulta `NoticeRepository` pelos tipos produtivos e status
 ativo, aplica a projeção e trata carregamento, ausência de comunicações e falha
 com retry. A ausência de conteúdo editorial não remove os atalhos e o contexto
@@ -38,3 +46,8 @@ anterior e só aceita a geração nova. O seletor mantém um contexto apenas qua
 seu ID ainda existe nos dados recebidos, fecha sheets pertencentes ao contexto
 anterior e nunca aplica uma seleção tardia em outro contexto. Acesso negado é
 fail-closed, sem conteúdo anterior e sem ação de retry.
+
+Agora e Momentos são abertos por navegação empilhada a partir do hub. Fechar o
+viewer devolve à mesma origem e restaura o foco do gatilho. O conteúdo e o CTA
+do protagonista permanecem alcançáveis acima do dock em texto a 200% por scroll
+seguro, sem reduzir artificialmente a escala tipográfica.

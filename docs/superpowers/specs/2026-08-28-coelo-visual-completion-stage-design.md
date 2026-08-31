@@ -225,9 +225,11 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     insets e rodapé reproduzem a geometria aprovada de Criar/Editar Instituição.
     O card de Perfil e a projeção no Acontece foram aprovados visualmente em
     2026-08-31. Mobile preserva a lista compacta no Perfil e tablet apresenta a
-    Circular como item editorial do feed. No web, a prévia no Acontece não ocupa
-    coluna lateral permanente: nasce oculta e abre em popup por ação explícita,
-    mantendo a largura principal do Perfil. Não é necessária nova imagem para
+    Circular como item editorial do feed. Em compacto, a leitura abre fullscreen
+    sem cabeçalho ou dock global e usa retorno contextual `‹ Circular`. No web,
+    a prévia no Acontece não ocupa coluna lateral permanente: nasce oculta e abre
+    em popup por ação explícita, mantendo a largura principal do Perfil. Fechar
+    ou usar Escape devolve foco ao gatilho. Não é necessária nova imagem para
     esse ajuste; o item permanece `visual-contract-approved` até implementação e
     golden real aprovados.
 
@@ -235,7 +237,10 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
 
 24. **Acontece — estrutura:** remover o botão superior `Publicar no Acontece` e
     a barra interna redundante Acontece/Para você/Momentos/Perfil. O cabeçalho
-    Principal usa marca Coelo com chevron de menu e avatar, sem hambúrguer. A
+    Principal usa marca Coelo com chevron de menu e avatar, sem hambúrguer. Em
+    2026-08-31, o Owner exigiu superfície própria no cabeçalho, ação acessível
+    de reportar problema e ícones com o mesmo peso óptico, sem fallback de fonte.
+    A
     seção `Agora` abre a tela, sem `Ver tudo`, em carrossel horizontal cujo
     primeiro card retangular publica um Agora. Abaixo, um título discreto
     `Acontece` introduz o feed unificado de Acontece e Circulares em contêineres
@@ -244,8 +249,10 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     gaps devem reproduzir a geometria canônica já aprovada, sem aproximações.
     O menu inferior contém Home, Para você, ação central laranja `+` para
     publicar no Agora, Momentos e Pesquisar; Mensagens permanece flutuante e
-    Perfil permanece no cabeçalho. A ação central atravessa o limite superior do
-    menu, aproximadamente metade dentro e metade fora da barra. O menu existe em
+    Perfil permanece no cabeçalho. Todos os destinos exibem rótulo, e ícone e
+    texto do destino ativo usam o laranja de marca. A sombra é curta e sutil; os
+    ícones mantêm tamanho óptico uniforme. A ação central fica 10%–25% maior e
+    atravessa exatamente em 50/50 o limite superior do menu. O menu existe em
     mobile, tablet e web; tablet preserva safe areas e largura útil, enquanto no
     web ele vira um dock compacto e contido, sem ocupar toda a largura da tela.
     O item permanece `visual-contract-approved` até implementação e golden real
@@ -257,14 +264,21 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     quadro vertical seguro e centralizado; web mantém o story central com
     prévias laterais discretas e navegação por setas. Progresso, autoria,
     contexto, som, mais opções, fechamento, audiência, resposta, curtir e
-    compartilhar permanecem acessíveis sem competir com a mídia. Enquanto o
+    compartilhar permanecem acessíveis sem competir com a mídia. O fechamento
+    usa retorno contextual discreto `‹ Agora`, restaurando foco e ponto de
+    origem. Enquanto o
     viewer está aberto, ele suspende temporariamente o shell e a navegação
     global por ser uma superfície imersiva. O item permanece
     `visual-contract-approved` até implementação e golden real aprovados.
 26. **Galeria do Acontece:** mídia do post abre e permite navegar entre itens com
     contagem e ações acessíveis. Contrato visual aprovado pelo Owner em
-    2026-08-28; não repetir a mesma solicitação de aceite. O entregável só muda
-    para `accepted` após implementação/golden real visualmente aprovado.
+    2026-08-28 e refinado em 2026-08-31: compacto usa viewer fullscreen com
+    retorno contextual; tablet amplo e desktop usam popup modal com mídia
+    protagonista, navegação, contagem e fechamento acessível, seguindo apenas a
+    dinâmica de visualização do Instagram, nunca sua identidade. Fechar ou usar
+    Escape restaura foco e ponto de origem. Não repetir a mesma solicitação de
+    aceite. O entregável só muda para `accepted` após implementação/golden real
+    visualmente aprovado.
 27. **Publicar no Acontece:** alinhar composer responsivo de 375/768/1440 à
     referência, preservando identidade e contratos Coelo. Em web, manter shell,
     contêiner direito e espaçamento canônico; a superfície Principal também deve
@@ -279,17 +293,71 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     implementação e golden real aprovados.
 28. **Para você:** corrigir composição, imagens, respiro e responsividade dentro
     do contêiner amplo pela anatomia responsiva 375/768/1440 aprovada, sem
-    alterar os textos editoriais aprovados.
-29. **Momentos:** viewer imersivo em tela cheia inspirado em Reels, com ações,
-    navegação e comentários em composição própria do Coelo.
+    alterar os textos editoriais aprovados. A proposta recebeu aprovação visual
+    do Owner em 2026-08-31 com a hierarquia saudação/contexto, destaque
+    protagonista, atalhos, conteúdo editorial, resumo do dia e contexto atual.
+    Na execução web, shell, contêiner direito, largura útil, insets, raios e gaps
+    devem reproduzir literalmente a geometria canônica. O dock flutuante da
+    proposta web passa a ser o padrão global do Principal também em mobile e
+    tablet: Home, Para você, ação central de publicar no Agora, Momentos e
+    Pesquisar. A ação laranja central deve ficar entre 10% e 25% maior que a
+    proposta aprovada e atravessar exatamente em 50/50 o limite superior do
+    dock, respeitando safe areas e constraints. O item permanece
+    `visual-contract-approved` até implementação e golden real aprovados.
+29. **Momentos:** viewer imersivo inspirado em Reels, com ações, navegação e
+    comentários em composição própria do Coelo. A proposta recebeu aprovação
+    visual do Owner em 2026-08-31: mídia dominante, autoria, contexto, legenda,
+    prova social, ações laterais e contexto auxiliar compacto no desktop. A
+    decisão final substitui a navegação anterior dentro do viewer: ao abrir,
+    Momentos ocupa a tela toda e suspende cabeçalho, shell e dock em todas as
+    larguras. Um retorno discreto `‹ Momentos` devolve foco e posição à origem.
+    Ícones de curtir, comentar, compartilhar, salvar e demais controles usam uma
+    única família e peso óptico, com glyph proporcional, alvo mínimo de toque e
+    estado ativo laranja, sem falso negrito ou caracteres textuais de fallback.
+    O item permanece
+    `visual-contract-approved` até implementação e golden real aprovados.
 30. **Perfil do Principal:** enriquecer fixture e composição com capa, avatar
     maior totalmente visível, capa de largura integral, cabeçalho Principal
-    canônico, Acontece, Momentos, Circulares e Sobre.
+    canônico, Acontece, Momentos, Circulares e Sobre. A proposta recebeu
+    aprovação visual do Owner em 2026-08-31: capa panorâmica, avatar integral,
+    identidade e estatísticas, tabs lineares, feed editorial e contexto auxiliar
+    no desktop. Na execução web, shell, contêiner direito, largura útil, insets,
+    raios e gaps devem reproduzir literalmente a geometria canônica. O item
+    permanece `visual-contract-approved` até implementação e golden real
+    aprovados.
 31. **Publicar Momentos e Agora:** alinhar os dois composers responsivos às
     referências de Publicar no Acontece, adaptando mídia, texto, audiência,
     agendamento e ações a cada contexto, sem compartilhar domínio, repository ou
     ownership. Shell, contêiner direito, insets e rodapé seguem o padrão comum de
-    publicação aprovado em 2026-08-31.
+    publicação aprovado em 2026-08-31. A revisão de Publicar em Momentos foi
+    aprovada visualmente pelo Owner em 2026-08-31: reproduz literalmente o
+    cabeçalho, `Sua publicação`, ordem das seções, largura útil, preview e rodapé
+    de Publicar no Acontece; apenas mídia vertical, ferramentas, capa e CTA
+    variam. Na execução web, shell, contêiner direito, insets, raios e gaps devem
+    reproduzir a geometria canônica sem aproximações. Publicar no Agora também
+    foi aprovado visualmente pelo Owner em 2026-08-31: preserva literalmente a
+    anatomia comum de Acontece/Momentos, com mídia temporária vertical, texto
+    curto, ferramentas próprias, público/contexto, aviso de 24 horas e preview
+    lateral no desktop. A aprovação mantém como correção obrigatória de execução
+    o shell, o contêiner direito e seus espaçamentos canônicos no web.
+
+### Estado de implementação local V4.19–V5.31 — 2026-08-31
+
+As unidades V4.19–V5.31 foram materializadas como Flutter visual local no host
+de preview previsto por esta stage, com testes comportamentais, matrizes golden,
+inspeção responsiva e rastreio factual em
+`docs/reviews/coelo-flutter-pendencias.md`. As correções finais incluem ação de
+criação local preservada nos estados autorizados dos diretórios, unauthorized isolado,
+retorno e foco por Escape, viewers fullscreen, dock sem clamp a 200%, iconografia
+óptica uniforme, estados honestos de publicação e ausência de fixture demo em
+fluxo produtivo vazio.
+
+Esse registro não altera automaticamente `visual-contract-approved` para
+`accepted` ou `verified` e não declara integração, backend, autorização, mídia
+remota, E2E ou produção pronta. A futura materialização executável em
+`apps/principal` permanece sob ownership separado, atribuído à branch
+`codex/operations-completion`, sem importação de `coelo_ui_admin` e sem duplicar
+os previews desta stage.
 
 ## Mapeamento dos anexos
 

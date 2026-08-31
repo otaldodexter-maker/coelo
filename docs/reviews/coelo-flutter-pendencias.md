@@ -3,7 +3,7 @@ title: "Pendências Coelo — Flutter por tela e ação"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD 6dedcb79c02fd997eae0f0c5727bf63acb51be3d"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-28"
+updated_at: "2026-08-31"
 action_count: 207
 family_count: 37
 visual_program_count: 31
@@ -335,16 +335,16 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 16.5 | Chat / Anexar arquivo | `chat.attach` | Mídia, upload e falha parcial continuam abertos. | `audited` | B | I | A | C | Avançada | 3 h | Escolher/validar/enviar/cancelar/falhar e foco. |
 | 16.6 | Chat / Recibos | `chat.receipts` | Leitura/entrega e semântica não revalidadas. | `audited` | B | I | A | C | Avançada | 2 h | Estados textualizados, teclado e sem depender só de cor. |
 | 16.7 | Chat / Revogar-remover | `chat.revoke` | Ação negativa, membership e reload abertos. | `audited` | B | I | A | C | Avançada | 2.5 h | Confirmar/cancelar/negar/falhar, foco e desaparecimento correto. |
-| 17.1 | Avisos / Diretório | `notices.list` | Revisão funcional/visual atual inexistente. | `audited` | B | I | A | C | Avançada | 2 h | Lista/estados/filtros, 375–1440, 200% e reload. |
+| 17.1 | Avisos / Diretório | `notices.list` | Diretório visual e funcional local cobre responsividade automática, criação canônica, tabela 56/64, tipos/status, preview desktop, estados, 375–1440, light/dark e 200%; composição produtiva, reload remoto e E2E seguem abertos. | `local-green` | B | I | A | C | Completa | 2 h | Evidência local em `notice_directory_page_test.dart` e `notice_directory_golden_test.dart`; ainda exigir repository produtivo, autorização, remoto e E2E para `verified`. |
 | 17.2 | Criar Aviso | `notices.create` | Formulário e command não revalidados. | `audited` | B | I | A | C | Avançada | 2 h | Criar/validar/falhar e baseline administrativa. |
 | 17.3 | Editar Aviso | `notices.edit` | Carga, dirty state e erro abertos. | `audited` | B | I | A | C | Avançada | 1.5 h | Editar/salvar/falhar/abandonar e 200%. |
 | 17.4 | Avisos / Agendar | `notices.schedule` | Calendário, timezone e erro precisam prova. | `audited` | B | I | A | C | Avançada | 1.5 h | Agendar/alterar/cancelar/falhar com picker canônico. |
 | 17.5 | Avisos / Publicar | `notices.publish` | Confirmação e duplo envio não comprovados. | `audited` | B | I | A | C | Avançada | 1.5 h | Publicar/cancelar/falhar e estado após reload. |
 | 17.6 | Avisos / Arquivar | `notices.archive` | Ação negativa e recuperação não comprovadas. | `audited` | B | I | A | C | Avançada | 1.5 h | Arquivar/cancelar/falhar, foco e filtros atualizados. |
-| 18.1 | Formulários / Diretório | `forms.list` | Fail-closed; estados e regressão precisam rerun. | `local-green` | B | I | A | C | Completa | 2 h | Diretório/estados/filtros, 375–1440 e 200%. |
+| 18.1 | Formulários / Diretório | `forms.list` | Diretório, criação visual, tabela, flyout e agendamento têm testes e goldens Flutter reais em 375–1440, light/dark e 200%; a rota produtiva alcança o popup de agendamento em fail-closed explícito, mas criação/edição, persistência do agendamento, estados remotos e E2E continuam fora desta unidade visual. | `local-green` | B | I | A | C | Completa | 2 h | Evidência local em `forms_directory_golden_test.dart`, `forms_schedule_dialog_test.dart` e `forms_fail_closed_routes_test.dart`; ainda exigir capability, vínculo de aplicação, autorização, persistência remota e E2E para `verified`. |
 | 18.2 | Criar Formulário | `forms.create` | Fluxo real e arquivos ainda parciais. | `audited` | B | I | A | C | Completa | 3 h | Criar/validar/falhar e navegação segura ao editor. |
 | 18.3 | Formulário / Visão geral | `forms.overview` | Visão local não prova ações reais. | `local-green` | B | I | A | C | Completa | 2 h | Abrir/estados/ações indisponíveis claras e 200%. |
-| 18.4 | Formulário / Editar | `forms.edit` | Componente local/catalogado recompila e tem testes de autosave, erro, 375 px e teclado; rota produtiva, autorização real, 150%/200% e E2E continuam bloqueados. | `local-green` | B | I | A | C | Completa após decisão integrada | 3–4 h + decisão | Componente local já provado; ainda exigir rota/capability aprovadas, sanitização, escalas 150%/200%, regressão visual e E2E. |
+| 18.4 | Formulário / Editar | `forms.edit` | Editor modular visual cobre seções, 11 tipos, catálogo rolável categorizado, ordenação, duplicação, exclusão confirmada, movimento entre seções, obrigatoriedade, mídia, ramificação, quatro regras de Data, preview sob demanda e rodapé canônico; rota produtiva, autorização real e E2E continuam bloqueados. | `local-green` | B | I | A | C | Completa após decisão integrada | 3–4 h + decisão | Componente visual provado em 375–1440, light/dark e 200%; ainda exigir composition root/capability, persistência remota, conflito/versionamento, sanitização e E2E. |
 | 18.5 | Formulário / Publicar | `forms.publish` | Contrato/capability não fechados. | `blocked-decision` | B | I | A | C | Completa após decisão | 3 h + decisão | Publicar/cancelar/negar/falhar e reload. |
 | 18.6 | Formulário / Testar | `forms.test` | Preview/teste e isolamento não aprovados. | `blocked-decision` | B | I | A | C | Completa após decisão | 2 h + decisão | Testar sem persistir, erros, teclado e responsividade. |
 | 19.1 | Respostas / Monitor | `forms.monitor` | Estados e atualização não revalidados. | `audited` | B | I | A | C | Completa | 2 h | Loading/empty/error/reload, 375–1440 e 200%. |
@@ -362,20 +362,20 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 
 | Ordem | Tela/subtela | Ação | Pendência Flutter | Estado atual | Básica | Intermediária | Avançada | Completa | Nível aconselhado | Estimativa | Evidência para conclusão |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | --- |
-| 21.1 | Acontece / Feed | `acontece.feed` | Preview local; origem real e goldens abertos. | `local-green` | B | I | A | C | Avançada | 2 h | Feed/empty/error/reload, 375–1440 e 200%. |
+| 21.1 | Acontece / Feed | `acontece.feed` | Feed visual local cobre cabeçalho Principal, Agora no topo, criação, carrossel, feed misto, dock global, contexto desktop, estados e galeria; origem produtiva, autorização, remoto e E2E seguem abertos. | `local-green` | B | I | A | C | Completa | 2 h | Evidência local em testes/goldens 375–1440, light/dark, 200%, hover, foco e galeria; ainda exigir composição produtiva e E2E para `verified`. |
 | 21.2 | Acontece / Criar | `acontece.create` | Audiência, mídia e contrato produtivo não aprovados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Criar/validar/falhar, audiência clara e mídia protegida. |
 | 21.3 | Acontece / Publicar | `acontece.publish` | Publicação/R2 e confirmação não fechadas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Publicar/cancelar/negar/falhar e resultado após reload. |
 | 21.4 | Acontece / Remover | `acontece.remove` | Regra negativa e retenção não decididas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Remover/cancelar/negar/falhar, foco e feed atualizado. |
-| 22.1 | Agora / Visualizar | `agora.view` | Entrada real, origem e goldens precisam rerun. | `local-green` | B | I | A | C | Avançada | 2 h | Card/deep link, fechar/voltar, foco, 375–1440 e 200%. |
+| 22.1 | Agora / Visualizar | `agora.view` | Viewer visual local cobre fullscreen, shell suspenso, quadro responsivo, progresso, autoria, audiência, resposta, ações e retorno; entrada/origem produtiva, autorização, mídia remota e E2E seguem abertos. | `local-green` | B | I | A | C | Completa | 2 h | Evidência local em 375/768/1024/1440, light/dark, 200%, foco, hover, teclado e callbacks honestos; ainda exigir deep link/remoto/E2E para `verified`. |
 | 22.2 | Agora / Criar | `agora.create` | Lifecycle e mídia não aprovados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Criar/validar/falhar e mídia protegida. |
 | 22.3 | Agora / Publicar | `agora.publish` | Publicação real e audiência permanecem abertas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Publicar/cancelar/negar/falhar e reload. |
 | 22.4 | Agora / Expirar | `agora.expire` | Regra de expiração e feedback não decididos. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Expirar/cancelar/falhar e ausência após reload. |
-| 23.1 | Momentos / Visualizar | `momentos.view` | Origem/tab real e goldens precisam rerun. | `local-green` | B | I | A | C | Avançada | 2 h | Abrir/fechar/deep link, foco, 375–1440 e 200%. |
+| 23.1 | Momentos / Visualizar | `momentos.view` | Viewer visual local cobre fullscreen sem shell/dock, retorno contextual e foco, matriz 375–1440, texto 200%, hover e mídia honesta; origem produtiva, autorização, remoto e E2E seguem abertos. | `local-green` | B | I | A | C | Avançada | 2 h | Abrir/fechar/deep link, foco, 375–1440 e 200%; ainda exigir composição produtiva e E2E para `verified`. |
 | 23.2 | Momentos / Criar | `momentos.create` | Lifecycle/mídia não aprovados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Criar/validar/falhar com mídia protegida. |
 | 23.3 | Momentos / Publicar | `momentos.publish` | Publicação e audiência não fechadas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Publicar/cancelar/negar/falhar e reload. |
 | 23.4 | Momentos / Remover | `momentos.remove` | Regra negativa e retenção não decididas. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Remover/cancelar/falhar, foco e retorno correto. |
-| 24.1 | Principal / Para Você | `principal.for-you` | Preview estático; responsive/goldens precisam revisão. | `local-green` | B | I | A | C | Avançada | 2 h | Conteúdo/empty/error, 375–1440, 200% e pacote Principal. |
-| 24.2 | Principal / Perfil-circulares | `principal.profile-view` | Hospedagem e separação de pacote estão abertas. | `local-green` | B | I | A | C | Avançada | 3 h | Tabs/conteúdo/erro, sem `coelo_ui_admin`, teclado e visual. |
+| 24.1 | Principal / Para Você | `principal.for-you` | Preview visual local cobre repository states, hierarquia, 375–1440, 200%, dock e abertura empilhada de Agora/Momentos com retorno e foco; pacote executável, dados produtivos e E2E seguem abertos. | `local-green` | B | I | A | C | Avançada | 2 h | Conteúdo/empty/error, 375–1440, 200% e materialização futura no pacote Principal. |
+| 24.2 | Principal / Perfil-circulares | `principal.profile-view` | Preview visual local cobre capa, avatar, estatísticas, tabs Acontece/Momentos/Circulares/Sobre, feed e contexto desktop; hospedagem executável, repositories produtivos, autorização e E2E seguem abertos. | `local-green` | B | I | A | C | Avançada | 3 h | Tabs/conteúdo/erro, sem `coelo_ui_admin`, teclado e visual no app executável. |
 | 24.3 | Principal / Editar perfil | `principal.profile-edit` | Campos, ownership e superfície final não decididos. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Editar/validar/falhar e persistir no pacote correto. |
 | 25.1 | Segurança infantil / Lista | `child-safety.list` | Lifecycle e autorização ainda sem prova atual. | `local-green` | B | I | A | C | Completa | 2 h | Lista/empty/error/unauthorized, 375–1440 e 200%. |
 | 25.2 | Segurança infantil / Criança | `child-safety.child` | Detalhe, acesso direto e estados abertos. | `local-green` | B | I | A | C | Completa | 2 h | Abrir/not-found/unauthorized e sem dado de outra criança. |
@@ -391,7 +391,7 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 27.3 | Medicação / Detalhe | `medication.detail` | Superfície e acesso permanecem bloqueados. | `blocked-decision` | B | I | A | C | Completa após decisão | 2 h + decisão | Abrir/not-found/unauthorized sem vazamento sensível. |
 | 27.4 | Medicação / Editar | `medication.edit` | Correção, retenção e autoridade não aprovadas. | `blocked-decision` | B | I | A | C | Completa após decisão | 2 h + decisão | Editar/validar/negar/falhar e trilha clara. |
 | 27.5 | Medicação / Evidência | `medication.evidence` | Upload/download/expiração jurídicos não aprovados. | `blocked-decision` | B | I | A | C | Completa após decisão | 3 h + decisão | Enviar/ver/baixar/negar/expirar sem expor caminho. |
-| 28.1 | Importações / Hub | `imports.list` | Estados, provenance e regressão precisam revisão. | `audited` | B | I | A | C | Avançada | 2 h | Lista/empty/error/filtros, 375–1440 e 200%. |
+| 28.1 | Importações / Hub | `imports.list` | Diretório/tabela/paginação, empty/error e 375–1440 foram fechados visualmente; autorização, provenance e remoto seguem abertos. | `local-green` | B | I | A | C | Avançada | 2 h | Lista/empty/error/filtros, 375–1440 e 200%. |
 | 28.2 | Importações / Nova | `imports.create` | Dialog verde não fecha fluxo amplo nem golden. | `local-green` | B | I | A | C | Avançada | 2 h | Abrir/fechar/Cancelar/`Esc`/foco e golden aprovado. |
 | 28.3 | Importações / Upload | `imports.upload` | Arquivo, validação e falha parcial abertos. | `audited` | B | I | A | C | Avançada | 2.5 h | Escolher/validar/enviar/cancelar/falhar. |
 | 28.4 | Importações / Preview | `imports.preview` | Proveniência, erros de linha e 200% não comprovados. | `audited` | B | I | A | C | Avançada | 2 h | Preview/erros/sem resultados, teclado e responsividade. |
@@ -1087,8 +1087,8 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 14 | `daily_routine` — Lista, criar, editar, aplicar, publicar | `daily-routine.list` `local-green`; `daily-routine.create` `local-green`; `daily-routine.edit` `local-green`; `daily-routine.apply` `local-green`; `daily-routine.publish` `local-green` | Produção unavailable e DEV local; executar smoke visual 375–1440, 200%, comandos/erro/reload; 8 h. |
 | 15 | `agenda` — Calendário, criar, detalhe, editar, solicitações/permissões | `agenda.view` `blocked-decision`; `agenda.create` `blocked-decision`; `agenda.detail` `blocked-decision`; `agenda.edit` `blocked-decision`; `agenda.request` `blocked-decision`; `agenda.permissions` `blocked-decision` | Spec/draft e permissões não permitem inferir comportamento; decidir contrato canônico e então revisar calendário; 16 h após decisão. |
 | 16 | `chat` — Conversas, conversa, mensagens, edição, anexos, recibos/revogação | `chat.list` `audited`; `chat.open` `audited`; `chat.send` `audited`; `chat.edit` `audited`; `chat.attach` `audited`; `chat.receipts` `audited`; `chat.revoke` `audited` | Revisar grupos/mídia, shell/chat PNGs, erros, foco, semântica e lifecycle; 16 h. |
-| 17 | `notices` — Lista, criar, editar, agendar, publicar, arquivar | `notices.list` `audited`; `notices.create` `audited`; `notices.edit` `audited`; `notices.schedule` `audited`; `notices.publish` `audited`; `notices.archive` `audited` | Somente composição de rota conhecida; executar revisão funcional/visual completa e erros/reload; 10 h. |
-| 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | `forms.list` `local-green`; `forms.create` `audited`; `forms.overview` `local-green`; `forms.edit` `local-green`; `forms.publish` `blocked-decision`; `forms.test` `blocked-decision` | Editor está verde apenas como componente catalogado; composição produtiva segue fail-closed. Resolver rota/capability, escalas e E2E antes de habilitar; 16 h. |
+| 17 | `notices` — Lista, criar, editar, agendar, publicar, arquivar | `notices.list` `local-green` com V4.22; `notices.create` `audited`; `notices.edit` `audited`; `notices.schedule` `audited`; `notices.publish` `audited`; `notices.archive` `audited` | V4.22 fecha o diretório Flutter visual local; criação/edição/lifecycle produtivos, autorização, reload remoto e E2E continuam abertos. |
+| 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | `forms.list` `local-green` com V4.19; `forms.edit` `local-green` com V4.20 visual; `forms.create` `audited`; `forms.overview` `local-green`; `forms.publish`/`forms.test` `blocked-decision` | V4.19/V4.20 estão verdes como unidades Flutter visuais; criação e edição produtivas continuam fail-closed, sem capability/persistência remota. Resolver composition root, estados remotos e E2E antes de `verified`; 16 h. |
 | 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | `forms.monitor` `audited`; `forms.respond` `local-green`; `forms.responses` `audited`; `forms.response-detail` `audited`; `forms.export` `audited` | Fail-closed recompilado e testado; `superadmin.forms-response` permanece diagnóstico deliberado. Resposta real, autorização e export continuam abertos; 12 h + decisão. |
 | 20 | `forms_files` — Upload, resolver, baixar, expirar, excluir | `forms.upload` `audited`; `forms.resolve-file` `local-green`; `forms.download` `local-green`; `forms.expire-file` `audited`; `forms.delete-file` `audited` | Resolver F6 transitive closure, sem `storage_path` direto, rotas prod/DEV e lifecycle protegido; 12 h. |
 | 21 | `acontece` — Feed, criar/publicar, remover | `acontece.feed` `local-green`; `acontece.create` `blocked-decision`; `acontece.publish` `blocked-decision`; `acontece.remove` `blocked-decision` | Preview enquadrado está verde; produção, mídia R2, publicação/remover e goldens exigem contrato/E2E; 10 h. |
@@ -1098,7 +1098,7 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 25 | `child_safety` — Lista, criança, criar/editar autorização, suspender | `child-safety.list` `local-green`; `child-safety.child` `local-green`; `child-safety.create` `local-green`; `child-safety.edit` `local-green`; `child-safety.suspend` `audited` | Correção mecânica não prova lifecycle; executar suspensão/revogação, erro/permissão, 200% e visual; 10 h. |
 | 26 | `health_care` — Perfis, criar, detalhe, editar | `health-care.list` `local-green`; `health-care.create` `local-green`; `health-care.detail` `blocked-decision`; `health-care.edit` `local-green` | Detail legado foi removido conforme spec; 12 PNGs M estão bloqueados e produção está fail-closed; 12 h. |
 | 27 | `medication` — Lista, criar, detalhe, editar, evidência | `medication.list` `blocked-decision`; `medication.create` `blocked-decision`; `medication.detail` `blocked-decision`; `medication.edit` `blocked-decision`; `medication.evidence` `blocked-decision` | OQ-003/OQ-040 mantêm planos indisponíveis, zero wiring Supabase; decidir contrato antes da UI; 12 h após decisão. |
-| 28 | `imports` — Hub, criar, upload, preview, confirmar, status, download | `imports.list` `audited`; `imports.create` `local-green`; `imports.upload` `audited`; `imports.preview` `audited`; `imports.confirm` `audited`; `imports.status` `audited`; `imports.download` `audited` | Dialog funcional não fecha provenance/golden; Imports A exige backend amplo e pacotes parciais não são equivalentes; 16 h após prerequisite. |
+| 28 | `imports` — Hub, criar, upload, preview, confirmar, status, download | `imports.list` e `imports.create` `local-green`; `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status` e `imports.download` `audited` | V4.21 fecha diretório e wizard visual local, mas não fecha provenance, arquivo remoto, autorização ou job produtivo; Imports A exige backend amplo e pacotes parciais não são equivalentes. |
 | 29 | `profile_files` — Importar, preview, confirmar, status, exportar/baixar | `profile-files.import` `audited`; `profile-files.preview` `audited`; `profile-files.confirm` `audited`; `profile-files.status` `audited`; `profile-files.export` `audited`; `profile-files.download` `audited` | Mapear callbacks/repositories e provar lifecycle, erros, reload e autorização; 12 h. |
 | 30 | `audit` — Lista, filtros, detalhe, exportar | `audit.list` `audited`; `audit.filter` `audited`; `audit.detail` `audited`; `audit.export` `audited` | Apenas rota/inventário; revisar dados sanitizados, filtros, detalhe, export e responsividade; 8 h. |
 | 31 | `support` — Criar, tabela, kanban, detalhe, responder, encerrar | `support.create` `local-green`; `support.table` `local-green`; `support.kanban` `local-green`; `support.detail` `audited`; `support.reply` `audited`; `support.close` `audited` | Support7 fechou scroll/paginação/200%; revisar detalhe, reply/close negativo, backend e goldens; 8 h. |
@@ -1165,7 +1165,7 @@ crosswalk; esta atividade não inventa RPC, tabela, policy ou operação backend
 | `daily_routine` | todos os 5 action_ids `local-green` fail-closed | `blocked-supabase` |
 | `agenda` | todos os 6 action_ids `blocked-decision` | `blocked-decision` |
 | `chat` | todos os 7 action_ids `audited` | `not-reviewed` |
-| `notices` | todos os 6 action_ids `audited` | `not-reviewed` |
+| `notices` | list `local-green`; create/edit/schedule/publish/archive `audited` | `blocked-supabase` |
 | `forms_authoring` | list/overview/edit `local-green`; create `audited`; publish/test `blocked-decision` | `blocked-supabase` |
 | `forms_responses` | respond `local-green`; monitor/responses/detail/export `audited` | `blocked-supabase` |
 | `forms_files` | resolve/download `local-green`; upload/expire/delete `audited` | `blocked-supabase` |
@@ -1650,8 +1650,8 @@ RLS, migrations, mídia remota e goldens permaneceram intocados.
 
 **Programa visual — Aceito visualmente:** 0,00% (0/31 entregáveis).
 
-**Flutter local — `local-green`:** 40,58% (84/207 ações). Esse número registra
-evidência local e não significa que 84 ações estejam concluídas ponta a ponta.
+**Flutter local — `local-green`:** 41,55% (86/207 ações). Esse número registra
+evidência local e não significa que 86 ações estejam concluídas ponta a ponta.
 
 **Flutter `verified`:** 0,00% (0/207 ações). O estado exige todos os gates
 Flutter da seção 2, inclusive inspeção visual e regressões aplicáveis.
@@ -1664,7 +1664,7 @@ métrica não deve mais ser apresentada como “progresso Flutter”.
 
 **Projeto estrito ponta a ponta:** 0,00% (0/229 unidades estritas), conforme o
 rastreador integrado. Esse percentual mede somente conclusão integral; ele não
-apaga os 84 itens Flutter e três famílias Supabase já verdes localmente.
+apaga os 86 itens Flutter e três famílias Supabase já verdes localmente.
 
 | Campo | Registro factual |
 |---|---|
@@ -2856,10 +2856,317 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Próximo gate | Prosseguir para o Item 28, Para você. |
 | Conhecimento capturado | Fonte canônica e `docs/knowledge/team/happens-publication-mvp.md` atualizados. |
 
+## 16.82. V5.28 — Para você aprovado visualmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Para você em 375, 768 e 1440 px. |
+| Decisão do Owner | Proposta aprovada com correção obrigatória do shell, contêiner direito e espaçamentos no web. |
+| Hierarquia congelada | Saudação/contexto → destaque protagonista → atalhos → conteúdo editorial → resumo do dia → contexto atual. |
+| Navegação global | O dock flutuante web passa a ser padrão em mobile, tablet e web. A ação central laranja fica entre 10% e 25% maior e atravessa exatamente em 50/50 o limite superior do dock. |
+| Evidência | `exec-32a1d29d-e68b-47e9-bd44-774745216334.png`, fora do repositório em `.codex/generated_images/01a05881-1dac-78d0-afb2-f30c33149c1c`. |
+| Produção | Nenhum código produtivo foi alterado por esta aprovação. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para o Item 29, Visualizador de Momentos. |
+| Conhecimento capturado | Fonte canônica e projeções `principal-for-you-preview`, `principal-happens-feed` e `principal-global-navigation` atualizadas. |
+
+## 16.83. V5.29 — Visualizador de Momentos aprovado — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Visualizador de Momentos em 375, 768 e 1440 px. |
+| Decisão do Owner | Proposta aprovada com correções obrigatórias do shell, contêiner direito e espaçamentos no web. |
+| Hierarquia congelada | Mídia dominante → autoria/contexto → legenda → prova social → ações; desktop acrescenta contexto auxiliar compacto. |
+| Dock global | Deve flutuar em mobile, tablet e web, com respiro tokenizado da borda inferior. A ação central preserva tamanho ampliado e interseção exata 50/50. |
+| Evidência | `exec-ea57ded2-3e82-4ba5-ad21-bed472e766a5.png`, fora do repositório em `.codex/generated_images/01a05881-1dac-78d0-afb2-f30c33149c1c`. |
+| Produção | Nenhum código produtivo foi alterado por esta aprovação. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para o Item 30, Perfil completo do Principal. |
+| Conhecimento capturado | Fonte canônica e projeções `principal-global-navigation` e `principal-moments-viewer` atualizadas. |
+
+## 16.84. V5.30 — Perfil completo do Principal aprovado — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Perfil completo do Principal em 375, 768 e 1440 px. |
+| Decisão do Owner | Proposta aprovada com correção obrigatória do shell, contêiner direito e espaçamentos no web. |
+| Hierarquia congelada | Capa panorâmica → avatar integral → identidade/contexto/estatísticas → tabs Acontece, Momentos, Circulares e Sobre → conteúdo editorial. |
+| Desktop | Feed principal e contexto auxiliar compacto dentro do contêiner direito canônico; sem aproximações de largura, inset, raio ou gap. |
+| Evidência | `exec-34a4cec5-734a-42a9-b231-f23e368df64e.png`, fora do repositório em `.codex/generated_images/01a05881-1dac-78d0-afb2-f30c33149c1c`. |
+| Produção | Nenhum código produtivo foi alterado por esta aprovação. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para Publicar em Momentos. |
+| Conhecimento capturado | Fonte canônica e projeção `principal-profile` atualizadas. |
+
+## 16.85. V5.31A — Publicar em Momentos em revisão visual — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Primeira proposta | A prancha `exec-3d04c826-02e9-421b-81c3-e2f5adc1118e.png` foi considerada funcional, mas divergente da anatomia comum já aprovada para todos os fluxos `Publicar`. |
+| Correção solicitada | Reproduzir literalmente Publicar no Acontece em cabeçalho, título `Sua publicação`, ordem das seções, largura útil, shell, contêiner, preview e rodapé; variar somente as ferramentas próprias de Momentos. |
+| Referências do Owner | `codex-clipboard-3844bf32-6274-45a9-878c-93bb5823f43e.png`, `codex-clipboard-927a08eb-055d-4d49-a1e2-da548d9fd812.png` e `codex-clipboard-17064514-e319-42e3-bebc-56ab5b3e5299.png`. |
+| Produção | Nenhum código produtivo foi alterado. |
+| Status correto | `revision-requested`; ainda não é `visual-contract-approved`, `accepted`, implementação ou conclusão. |
+| Próximo gate | Apresentar a revisão do Publicar em Momentos antes de seguir para Publicar no Agora. |
+| Conhecimento capturado | `no-op`: o padrão comum já estava aprovado; esta rodada corrige a fidelidade da proposta. |
+
+## 16.86. V5.31A — Publicar em Momentos aprovado — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | A revisão de Publicar em Momentos foi aprovada com correção obrigatória da geometria do shell, contêiner e espaçamentos web. |
+| Anatomia congelada | Reproduz literalmente Publicar no Acontece em cabeçalho, `Sua publicação`, ordem das seções, largura útil, preview e rodapé; somente mídia vertical, ferramentas, capa e CTA variam. |
+| Evidência | `exec-c0319a7b-45bd-4665-ba18-f5b436e41b6b.png`, fora do repositório em `.codex/generated_images/01a05881-1dac-78d0-afb2-f30c33149c1c`. |
+| Produção | Nenhum código produtivo foi alterado. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para Publicar no Agora. |
+| Conhecimento capturado | Fonte canônica e projeção `moments-publication-preview` atualizadas. |
+
+## 16.87. V5.31B — Publicar no Agora aprovado — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Decisão do Owner | A proposta de Publicar no Agora foi aprovada com correção obrigatória do shell, contêiner direito e espaçamentos web. |
+| Anatomia congelada | Reproduz literalmente o contrato comum de Publicar no Acontece/Momentos: cabeçalho, `Sua publicação`, ordem das seções, largura útil, preview e rodapé; varia somente para mídia temporária vertical, texto curto, ferramentas, aviso de 24 horas e CTA do Agora. |
+| Responsividade | Mobile usa fluxo linear e ações empilhadas; tablet preserva editor linear; desktop mantém shell, editor central, preview lateral e rodapé dentro do contêiner direito canônico. |
+| Evidência | `exec-59c8c015-634c-4451-8390-f8652f75190e.png`, fora do repositório em `.codex/generated_images/01a05881-1dac-78d0-afb2-f30c33149c1c`. |
+| Produção | Nenhum código produtivo foi alterado. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Encerrar a aprovação visual do conjunto e iniciar a implementação tela a tela somente no novo ciclo autorizado pelo Owner. |
+| Conhecimento capturado | Fonte canônica e projeção `now-publication-mvp` atualizadas. |
+
+## 16.88. V4.19 — Diretório de Formulários e agendamento implementados localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V4.19 — Diretório de Formulários e agendamentos. |
+| `action_id` afetado | `forms.list` permanece `local-green`. O popup subordinado agora é alcançável pelo caller da rota produtiva sem conceder as mutações de lifecycle; como faltam capability, vínculo de aplicação e persistência aprovados, `Salvar` permanece fail-closed e nenhum novo `action_id` produtivo foi criado. |
+| Implementação | Diretório passou a abrir em tabela, reutiliza criação, toolbar, tabela, paginação, badges e shell canônicos de Instituições; projeções opcionais mostram Contexto, Público, Respostas, Agendamentos e Criado em sem inventar dados ausentes. |
+| Flyout | Ações de editar, duplicar, copiar, mover, agendamentos, arquivar e excluir usam `CoeloAdminFlyout`; o componente compartilhado agora preserva gap externo/safe area, alinhamento final, `outlineVariant` translúcido e zero halo de elevação. |
+| Agendamento | `FormsScheduleDialog` responsivo com ativo, nome, início/fim, frequência, dias e audiência somente leitura; superfície acompanha o conteúdo e preserva ações 50/50. A rota real abre o popup, informa a indisponibilidade da integração e mantém `Salvar` desabilitado. Término anterior ao início e recorrência semanal sem dia são rejeitados antes do callback. Persistência remota não foi simulada. |
+| Estados e criação | Vazio, sem resultados e erro preservam a criação canônica quando autorizada; unauthorized omite toolbar e criação. A ação permanece visual/fail-closed e não concede capability. |
+| TDD e testes | RED→GREEN para tabela padrão/criação/responsividade, ações de lifecycle, alcançabilidade pela rota real, estados, fail-closed, término >= início, recorrência semanal com dia, altura do diálogo e margem do flyout. O commit focado V4.19/V4.20 foi verificado isoladamente com 72/72 testes Forms/rotas e 13/13 testes de overlays. |
+| Goldens Flutter reais | Quinze arquivos em `apps/superadmin/test/features/forms/presentation/directory/goldens/`: matriz light/dark em 375, 768, 1024 e 1440 px, flyout, agendamento integrado/indisponível e estados vazio, sem resultados, erro e unauthorized a 200%. |
+| Inspeção visual | Os quinze goldens foram abertos ao longo da unidade; verificados shell, Nunito Sans, superfície, tabela, scroll horizontal, paginação, estados, margem/contorno suave do flyout, motivo de indisponibilidade, altura e rodapé 50/50 do diálogo; nenhuma imagem quebrada ou overflow visível. |
+| Analyzer e formatter | `flutter analyze` integral do Superadmin, `dart analyze` de `coelo_api` e `coelo_ui_admin`: zero erros. `dart format` aplicado somente aos 15 arquivos Dart da unidade. |
+| Validador | `apps/catalog/tool/validate_admin_visual_contracts.dart` passou sem ampliar allowlist; `git diff --check` passou. |
+| Limite honesto | Flutter visual local concluído para V4.19. Criar/editar/agendar em rota produtiva, autorização, estados remotos, backend/Supabase e E2E não foram promovidos nem declarados concluídos. |
+| Conhecimento capturado | `no-op`: a implementação materializa o contrato já aprovado em 16.61 e não cria regra durável nova de produto, permissão ou domínio. |
+| Próximo item | V4.20 — Editor modular de Formulários, começando por consulta ao índice Coelo UI e baseline real de Criar/Editar Instituição. |
+
+## 16.89. V4.20 — Editor modular de Formulários implementado localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V4.20 — Editor modular de Formulários. |
+| `action_id` afetado | `forms.edit` permanece `local-green` com evidência visual ampliada. `forms.create` permanece `audited`, pois a rota produtiva de criação continua indisponível e não foi promovida por um fixture local. |
+| Implementação | O preview raso de três campos foi substituído por editor modular em `colorScheme.surface`, com rail de seções sem marcador numerado preto/laranja, cards de perguntas, título/contexto/recorrência e rodapé literal de Criar/Editar Instituição. |
+| Catálogo | Catálogo fechado com rolagem própria e grupos verticais `Texto e números`, `Escolhas`, `Mídias` e `Estrutura`; contém os onze tipos aprovados e busca local. |
+| Operações | Criar, selecionar, reordenar, duplicar e excluir seção com confirmação; reordenar, duplicar, excluir e mover pergunta entre seções; obrigatoriedade, opções, mídia e ramo por resposta com pergunta subordinada. |
+| Data | Quatro modos visuais e comportamentais: Livre, A partir de, Até e Intervalo permitido, usando os campos de data Coelo. |
+| Preview e footer | Preview nasce ausente. Em amplo, aparece lateralmente só após ação explícita; em compacto, abre em diálogo acessível. Salvar/Preview não existem no cabeçalho; Cancelar, Salvar rascunho e Salvar formulário ficam no `SuperadminFormActionFooter`. |
+| Proteção de dados | Cancelar, excluir seção e excluir pergunta exigem confirmação. A prévia local informa explicitamente que não envia dados; backend, autosave remoto e publicação não são simulados. |
+| TDD e testes | RED→GREEN para preview oculto, catálogo vertical/rolável, 11 tipos, quatro modos de Data, operações de seção/pergunta, ramo, 375–1440 e texto 100/200%. O header compacto foi refeito sem ellipsis e a navegação de seções ganhou scroll próprio após RED reproduzir perda do título/subtítulo e overflow; o commit focado V4.19/V4.20 passou isolado com 72/72. |
+| Goldens Flutter reais | Quatorze arquivos em `apps/superadmin/test/features/forms/presentation/editor/goldens/`: oito combinações 375/768/1024/1440 light/dark; catálogo no topo e grupos inferiores; Data em intervalo; preview explícito; 375 light e 1440 dark a 200%. |
+| Inspeção visual | Os quatorze goldens foram abertos individualmente. Foram verificados shell, rail, superfície, perguntas, rodapé responsivo, catálogo, grupos, Data, preview lateral, dark mode, texto ampliado e ausência de overflow visível. |
+| Analyzer e validador | `flutter analyze` integral do Superadmin: zero erros/warnings. Validador administrativo passou sem ampliar allowlist; `git diff --check` passou. |
+| Componente compartilhado | `SuperadminFormFrame` ganhou `bodyMaxWidth` opcional com default preservado em 880; o editor usa 1180 somente quando o contêiner real permite editor + preview. |
+| Limite honesto | Atividade e componente Flutter visual concluídos localmente. Rota produtiva continua fail-closed; capability, autorização, autosave, conflito/versionamento, persistência, backend/Supabase e E2E seguem pendentes. |
+| Conhecimento capturado | `no-op`: nenhuma regra durável nova foi criada; a implementação materializa o contrato aprovado em 16.63 e a spec canônica de Formulários. |
+| Próximo item | V4.21 — Diretório de Importações e wizard. |
+
+## 16.90. V4.21 — Importações e wizard implementados localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V4.21 — Diretório de Importações e wizard. |
+| `action_id` afetado | `imports.list` passa de `audited` para `local-green`; `imports.create` permanece `local-green`. `imports.upload`, `imports.preview`, `imports.confirm`, `imports.status` e `imports.download` permanecem `audited`, porque a evidência visual local não comprova arquivo remoto, autorização, idempotência, job, download ou reload produtivo. |
+| Diretório | Reutiliza `CoeloAdminListingToolbar`, `CoeloAdminResizableTable`, `CoeloAdminPagination` e `SuperadminListingPaginationFooter` com as alturas 56/64 e os alinhamentos de Instituições. A tabela mostra Arquivo, Entidade, Destino, Registros, Status, Criado em e Responsável, com scroll horizontal responsivo. |
+| Wizard | Reutiliza `SuperadminFormFrame`, `SuperadminFormStepNavigation` e `SuperadminFormActionFooter`; o corpo ocupa largura útil estável e reseta o scroll por etapa, sem mover ou encolher confirmação/status. |
+| Entidades | Catálogo responsivo expõe literalmente Instituições, Unidades, Pessoas, Grupos e turmas, Atividades, Planos de medicação, Cardápios e Formulários. Somente Unidades mantém execução disponível; as demais ficam selecionáveis para leitura do contrato, mas Continuar permanece desabilitado com indisponibilidade explícita e zero chamada ao repository. |
+| Mapeamento e segurança | Resumo de arquivo, chave, pares coluna→campo e aviso honesto deixam claro que a prévia não aplicou alterações e depende do serviço autorizado. Upload/persistência remotos não foram simulados. |
+| Estados | Evidência cobre histórico populado, vazio, sem resultados, unauthorized, indisponível/retry, criação/fechamento/foco, seleção disponível e indisponível, arquivo/mapeamento, prévia com conflito, confirmação e status concluído. `42501`, `PGRST301` e `PGRST302` são mapeados para unauthorized; outros erros continuam indisponíveis sem inventar autorização. |
+| Busca e criação | Busca usa debounce de 350 ms e submissão por teclado, sem botão divergente. Vazio, sem resultados e erro preservam criação; unauthorized não expõe criação. |
+| TDD e testes | RED→GREEN para oito entidades, unauthorized distinto, busca, criação persistente, bloqueio fail-closed sem repository, paginador canônico e geometria estável. O gate final conjunto Forms/Imports/Notices terminou 183/183. |
+| Goldens Flutter reais | Vinte e sete goldens referenciados: diretório e wizard light/dark em 375, 768, 1024 e 1440; texto 200% em 375 e 1440; vazio, sem resultados, unauthorized, indisponível, diálogo, mapeamento, prévia, confirmação e concluído. |
+| Inspeção visual | Os 27 goldens referenciados foram abertos e inspecionados após a última geração. Verificados Nunito Sans, surface, tabela/paginação, estados honestos, rail, footer, scroll, dark mode, texto 200%, avisos e ausência de overflow ou imagem quebrada. Nove variantes iterativas não referenciadas permanecem fora dos commits/evidências. |
+| Analyzer e validador | `flutter analyze` integral do Superadmin sem issues; validador administrativo verde sem ampliar allowlist; formatter e `git diff --check` verdes. |
+| Limite honesto | Atividade e tela Flutter visual local concluídas para V4.21. Supabase, capability, tenant, provenance, upload/Storage, job remoto, idempotência, falha parcial, download, reload e E2E continuam fora deste recorte e não foram promovidos. |
+| Conhecimento capturado | `no-op`: a implementação materializa 16.64/16.65 e as baselines já projetadas; nenhuma regra durável nova de produto, domínio ou permissão foi criada. |
+| Próximo item | V4.22 — Comunicações do app, começando pelo índice Coelo UI e pelas baselines reais de Instituições/preview. |
+
+## 16.91. V4.22 — Comunicações do app implementadas localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V4.22 — Diretório de Comunicações do app. |
+| `action_id` afetado | `notices.list` passa de `audited` para `local-green`. `notices.create`, `notices.edit`, `notices.schedule`, `notices.publish` e `notices.archive` permanecem `audited`, porque o diretório visual não comprova commands, autorização, persistência ou reload produtivos. |
+| Responsividade | Mobile usa tile de criação e cards compactos automaticamente; tablet e desktop usam faixa de criação e tabela, sem seletor Cards/Tabela. O preview auxiliar aparece somente no breakpoint desktop de 1200 px ou mais, sem comprimir a tabela em 1024 px. |
+| Baseline literal | Reutiliza toolbar, tabs, `CoeloAdminCreateAction`, `CoeloAdminResizableTable`, `CoeloAdminPagination` e footer de Instituições. Cabeçalho/linhas usam 56/64 px, com criação seguida por `space4`. |
+| Tipos e preview | Badges de Tipo possuem largura uniforme e semântica própria. Aviso usa o simulador de popup; Conteúdo, Destaque e Para você usam o card administrativo neutro, inclusive no dark, dentro de um único contêiner auxiliar. |
+| Acessibilidade | Texto a 200% mantém a altura tabular canônica sem overflow; o resumo visual da célula principal é reduzido nesse modo, mas título e mensagem completos permanecem no rótulo semântico. Reduced motion está fixado nos goldens; teclado, foco, hover, popup, retorno de foco, unauthorized e retry permanecem cobertos pela suíte focada. |
+| Estados | Vazio, sem resultados e erro usam tile de criação em 375 px e faixa de criação em 768 px ou mais; unauthorized permanece isolado sem criação. |
+| TDD e testes | RED confirmou linha divergente de 72 px, overflow de 8 px a 200% e card indevido em estados amplos; GREEN corrigiu as causas. O gate final conjunto Forms/Imports/Notices terminou 183/183. |
+| Goldens Flutter reais | Quatorze goldens referenciados: light/dark em 375, 768, 1024 e 1440 px, texto a 200% em 375/1440 e estados vazio, sem resultados, erro e unauthorized. Todos foram abertos e inspecionados. |
+| Inspeção visual | Verificados Nunito Sans, surface, criação responsiva, tabela/paginação, badges uniformes, preview neutro no dark, densidade em 1024, texto 200% e ausência de overflow ou imagem quebrada. |
+| Analyzer e validador | Analyzer focado sem issues; validador administrativo verde sem ampliar allowlist; formatter e `git diff --check` verdes. |
+| Limite honesto | Atividade e tela Flutter visual local concluídas para V4.22. Supabase, capability, tenant, publicação, audience freeze, receipts, cron/worker, remoto e E2E permanecem fora deste recorte e não foram promovidos. |
+| Conhecimento capturado | `no-op`: a implementação materializa a spec canônica e `docs/knowledge/team/superadmin-notices-mvp.md`; nenhuma regra durável nova de produto, domínio ou permissão foi criada. |
+| Próximo item | V4.23 — Circulares: diretório, composer e projeções, começando pelo índice Coelo UI e pelas baselines reais de Instituições/família Publicar/popup. |
+
+## 16.92. V4.23 — Circulares implementadas localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V4.23 — Diretório, publicação e projeções de Circulares. |
+| `action_id` afetado | Nenhum novo ID foi promovido. A taxonomia atual de 207 ações não possui ID próprio para o diretório administrativo ou o composer de Circulares; `principal.profile-view` permanece `local-green`. O total Flutter local permanece 86/207 para não inventar cobertura numérica. |
+| Diretório | Nova superfície administrativa fail-closed com busca, contexto, tabs, loading, vazio, sem resultados, erro/retry e unauthorized. Mobile usa tile de criação, cards e paginação `[11, 20, 50, 100]`; 768/1024/1440 usam faixa de criação, `CoeloAdminResizableTable`, linhas 56/64 e paginação `[8, 20, 50, 100]`, literalmente como Instituições e sem toggle manual. |
+| Publicar Circular | O composer usa `Sua publicação`, editor linear em compacto, preview explícito abaixo de 980 px e editor + preview lateral a partir de 980 px. O rodapé agora reutiliza `PrincipalPublicationActionFooter`: mantém Cancelar à esquerda, Salvar rascunho secundário e Publicar como única ação primária; em compacto, as três ações ficam em largura total e altura adaptativa. |
+| Alcançabilidade | O menu de desenvolvimento expõe Circulares; `/dev/circulars` abre o diretório no shell persistente, sua faixa/tile de criação navega para `/dev/circulars/new`, e Cancelar devolve ao diretório. O composer usa `UnavailableCircularRepository`: salvar/publicar falham de forma explícita e seleção de arquivos informa indisponibilidade, sem simular persistência, mídia ou sucesso remoto. |
+| Projeções | Perfil e feed mantêm a prévia ausente até ação explícita no web. O popup usa barreira, superfície neutra, corpo rolável, fechamento acessível, CTA e devolução comprovada do foco ao gatilho. Em compacto, o detalhe abre fullscreen sem AppBar/dock global e apresenta retorno contextual `‹ Circular`. O Principal não importa `coelo_ui_admin`. |
+| Acessibilidade | Superfície interativa especializada cobre mouse, hover, foco, Enter e Espaço sem `InkWell` cru. Texto a 200% não corta mais os rótulos do rodapé; reduced motion é exercitado na matriz visual. |
+| TDD e testes | RED→GREEN para diretório responsivo, estados, preview oculto, popup, foco, paginação por breakpoint e reachability real. A revisão independente adicionou Escape com retorno/foco no leitor, resize vivo da galeria, vídeo honestamente indisponível e remoção de setas em `1 de 1`; o gate final terminou 76/76. |
+| Goldens Flutter reais | Diretório: dez goldens light/dark em 375/768/1024/1440 e texto 200% em 375/1440. Circulares Principal: dez goldens do composer na mesma matriz, três do leitor contextual compacto (light, dark e texto 200%), dois de perfil/feed e dois do popup web. |
+| Inspeção visual | Todos os goldens novos e alterados foram abertos. Verificados surface, criação responsiva, tabela/paginação, composer, preview lateral, popup, dark mode, texto 200%, mídia/fixtures estáveis e ausência de overflow visível. A inspeção detectou e corrigiu o corte de texto no footer compacto antes do gate final. |
+| Analyzer e validador | Analyzer focado sem issues; `validate_admin_visual_contracts.dart` verde com a allowlist canônica inalterada; formatter e `git diff --check` verdes. |
+| Limite honesto | Atividade e superfícies Flutter visuais locais concluídas para V4.23. Repository produtivo, capability, autorização, tenant, Storage/R2, publicação remota, respostas, Supabase e E2E permanecem fora deste recorte e não foram simulados nem promovidos. |
+| Conhecimento capturado | `no-op`: a implementação materializa `specs/037-principal-circulars.md`, a spec visual e o conhecimento já aprovado; nenhuma regra durável nova foi criada. |
+| Próximo item | V5.24 — Acontece, em consolidação paralela com V5.25/V5.26 e o componente global de navegação Principal. |
+
+## 16.93. V5.24 — Acontece implementado localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V5.24 — Acontece. |
+| `action_id` afetado | `acontece.feed` permanece `local-green` com evidência visual e comportamental ampliada. `acontece.create`, `acontece.publish` e `acontece.remove` permanecem `blocked-decision`; esta unidade não promove commands nem backend. |
+| Anatomia | Cabeçalho Principal com marca Coelo, chevron, notificações e avatar; Agora vem primeiro, sem “Ver tudo”, com tile Publicar agora e carrossel horizontal. O título discreto Acontece antecede o feed misto de publicações e Circulares, sem texto editorial antes da mídia. |
+| Navegação global | `PrincipalGlobalNavigation` implementa Home, Para você, ação central Publicar no Agora, Momentos e Pesquisar; Mensagens permanece flutuante e Perfil no cabeçalho. O dock é compacto em 375–1440, afastado da viewport, com ação central 25% maior e centro exatamente sobre a borda superior 50/50. |
+| Responsividade e estados | Mobile usa mídia dominante; tablet preserva densidade; desktop acrescenta somente o contexto auxiliar compacto. Loading, vazio, erro/retry e unauthorized permanecem distintos e sem fallback para dados demo quando um repository real falha. |
+| TDD e testes | A suíte consolidada da onda V5.24–V5.26, incluindo router, terminou com 94/94 testes verdes após a correção de integração do dock. |
+| Goldens Flutter reais | Dez evidências próprias do Acontece: light/dark em 375/768/1024/1440, 375 dark a 200% e hover do Agora. A matriz separada da Galeria pertence a V5.26 e não é contada novamente aqui. |
+| Inspeção visual | Os dez arquivos foram abertos individualmente. Verificados surface, Nunito Sans, ordem Agora→Acontece, mídia real, dock 50/50, contexto desktop, dark mode, texto 200% e ausência de overflow visível. |
+| Analyzer e gates | Analyzer focado sem issues; formatter e `git diff --check` verdes. O router liga explicitamente `onPublishNow` à rota de desenvolvimento dedicada, separada de Publicar no Acontece. |
+| Limite honesto | Atividade e tela Flutter visual local concluídas. Feed/repositories produtivos, autorização, R2/Storage, comandos, remoto e E2E não foram simulados nem promovidos. |
+| Conhecimento capturado | `no-op`: a tela materializa a spec visual e as projeções já aprovadas; nenhuma regra durável nova foi decidida nesta correção. |
+| Próximo item | V5.25 — Visualizador do Agora. |
+
+## 16.94. V5.25 — Visualizador do Agora implementado localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V5.25 — Visualizador do Agora. |
+| `action_id` afetado | `agora.view` permanece `local-green` com evidência visual e comportamental ampliada. Criar/publicar/expirar permanecem `blocked-decision`. |
+| Imersão | O viewer suspende shell, rail e dock. Mobile usa mídia edge-to-edge; 768 e 1024 usam quadro vertical seguro centralizado; 1440 usa mídia central com prévias laterais discretas. O breakpoint 1024 foi corrigido após inspeção visual para não antecipar o layout web. |
+| Controles | Barras de progresso, autoria, tempo, contexto, som, opções e fechar permanecem sobre a mídia sem competir com ela. Audiência, resposta privada, curtir e compartilhar possuem alvos e semântica próprios; teclado cobre setas, espaço e Escape. |
+| Honestidade | Responder/compartilhar usam callbacks injetados; quando ausentes, informam indisponibilidade sem declarar envio ou compartilhamento. Mídia remota indisponível não recebe fixture demo. |
+| Retorno | O controle contextual visível `‹ Agora` prioriza `onClose`, depois retorno ao Acontece e só então `Navigator.maybePop`, preservando origem e foco quando o composition root fornece o callback. |
+| Evidências | Treze goldens: mobile light/dark 375, tablet light/dark 768/1024, desktop light/dark 1440, texto 200% em 375/1440, resposta focada e preview hover. Todos foram abertos; os dois de 1024 foram regenerados e reinspecionados após a correção do breakpoint, e os estados finais confirmam ausência de header/dock. |
+| Testes e analyzer | Suíte combinada inicial: 94/94 verde; o gate ampliado final de viewer + publishers + rotas terminou 223/223. Testes específicos comprovam 1024 sem shell/previews web, quadro de até 430 px, retorno contextual e restauração de foco. Analyzer focado sem issues. |
+| Limite honesto | Viewer Flutter local concluído. Origem/deep link produtivos, tickets de mídia, autorização real, áudio/vídeo remoto, backend e E2E permanecem abertos. |
+| Conhecimento capturado | `no-op`: nenhuma regra durável nova; implementação alinhada à spec e ao conhecimento já registrado. |
+| Próximo item | V5.26 — Galeria do Acontece. |
+
+## 16.95. V5.26 — Galeria do Acontece implementada localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V5.26 — Galeria do Acontece. |
+| `action_id` afetado | Não existe ID separado para a Galeria na taxonomia atual; sua evidência integra `acontece.feed`, que permanece `local-green`. O total permanece 86/207. |
+| Visualizador | Galeria fullscreen abre pela mídia, preserva proporção, permite anterior/próxima por botões e teclado, mostra contagem e fechamento acessível. |
+| Ações | Compartilhar e salvar usam callbacks quando fornecidos; sem integração, apresentam indisponibilidade honesta e não simulam sucesso. |
+| Evidência | Nove goldens Flutter reais: light/dark em 375/768/1024/1440 e 375 dark a 200%. Compacto usa fullscreen contextual; 768/1024/1440 usam popup modal com mídia protagonista, contagem, navegação e ações. Os nove foram abertos individualmente, sem imagem quebrada, overflow ou distorção. |
+| Gates | Além da consolidação anterior de 94/94, o gate final Acontece/Galeria terminou 36/36; ArrowLeft/ArrowRight, Escape, fechamento e restauração de foco estão cobertos. Analyzer focado, formatter, validador administrativo e diff check verdes. |
+| Limite honesto | Atividade e visualizador Flutter local concluídos. Download/compartilhamento/salvamento reais, mídia remota, autorização e E2E permanecem fora do recorte visual. |
+| Conhecimento capturado | `no-op`: contrato já aprovado, sem decisão nova. |
+| Próximo item | V5.27 — Publicar no Acontece, em consolidação na família Publicar Principal. |
+
+## 16.96. V5.27/V5.31 — família Publicar implementada e P1 corrigidos localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Unidade | V5.27 — Publicar no Acontece; V5.31A — Publicar em Momentos; V5.31B — Publicar no Agora. |
+| `action_id` afetado | Nenhum ID foi promovido. `acontece.publish`, `momentos.publish` e `agora.publish` permanecem `blocked-decision`. A evidência Flutter local não comprova autorização, persistência, Storage/R2 ou resultado após reload. |
+| Contexto seguro | Construtores produtivos de Acontece e Agora agora exigem contexto explícito. Fixtures são acessíveis somente por `.demo`, eliminando fallback silencioso para tenant/instituição de demonstração; trocas continuam isoladas e fail-closed. |
+| Mídia persistida | Acontece renderiza bytes ou URL assinada opcional; Momentos produtivo vazio não injeta fixture demo e distingue vídeo de imagem/fonte indisponível. Imagens usam `BoxFit.cover` e preservam proporção. No Agora, vídeo válido possui representação própria; bytes inválidos e URL quebrada mostram `Mídia indisponível`, sem asset demo. Nenhum endpoint ou backend foi inventado. |
+| Crop e capa do Agora | O repository hidrata `crop_scale`, `crop_x`, `crop_y` e `cover_position`. O preview aplica escala e alinhamento persistidos; alterar escala preserva deslocamentos; vídeo apresenta indicação visual da posição da capa. A extração remota de frame continua fora do recorte. |
+| Anatomia compartilhada | Acontece, Momentos e Agora usam `PrincipalPublicationFrame`, navegação, footer e cabeçalho Principal compartilhados, sem importar `coelo_ui_admin` ou widgets administrativos. O viewer Agora permanece fullscreen fora do shell; somente o composer permanece no shell persistente. |
+| Estados e retry | Acontece trata `conflict` com recarga explícita; Momentos e Agora distinguem failure, unauthorized e conflict e repetem a operação original sem manter wizard travado. |
+| TDD e testes | RED→GREEN comprovou construtores `.demo`, estados honestos/retry, URL/bytes/vídeo persistidos, indisponibilidade, hidratação de crop/capa e preservação de deslocamento. Publishers terminaram 119/119; o gate combinado com Para Você e rotas terminou 172/172; a revisão V5 final encerrou 107/107 focados. |
+| Goldens e inspeção | Quarenta goldens referenciados cobrem light/dark, 375/768/1024/1440, texto 200%, hover, vazio/failure, mídia persistida/indisponível e crop/capa: 11 Acontece, 14 Momentos e 15 Agora. Os estados críticos foram abertos em resolução original; não há tofu, demo produtiva, distorção ou overflow visível. |
+| Analyzer e validador | Analyzer focado sem issues. `validate_admin_visual_contracts.dart` passou com a allowlist canônica inalterada; formatter aplicado aos arquivos do recorte. |
+| Limite honesto | Atividade e três composers Flutter visuais concluídos localmente. Integração remota, autorização/RLS, upload/Storage/R2, processamento de vídeo/capa, publicação real, reload e E2E continuam pendentes e não foram promovidos. |
+| Conhecimento capturado | Projeções internas de Acontece, Momentos e Agora sincronizadas com os invariantes de contexto explícito, mídia persistida e edição local; fontes canônicas permanecem as specs registradas no frontmatter. |
+| Próximo item | V5.28–V5.30 seguem sob a frente paralela responsável; esta correção não alterou essas superfícies. |
+
+## 16.97. V5.28 — Para Você implementado localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| `action_id` afetado | `principal.for-you` permanece `local-green`; pacote Principal executável, dados produtivos, autorização e E2E não foram promovidos. |
+| Implementação | Hierarquia aprovada de saudação/contexto, protagonista, atalhos, editorial, resumo do dia e contexto atual; surface, insets e dock global canônicos. |
+| Retorno e foco | Agora e Momentos abrem por navegação empilhada; fechar devolve à origem e restaura o foco. O hero permanece integralmente alcançável acima do dock após scroll seguro. |
+| Responsividade | 375/768/1024/1440, light/dark e texto 200%; o RED de 72 px no hero 768/200 foi corrigido por geometria responsiva. |
+| Evidência | Treze goldens referenciados e inspecionados; a revisão final V5 terminou 107/107 testes focados, analyzer/validador/diff verdes. |
+| Limite honesto | Preview Flutter visual local no host previsto pela stage spec. `apps/principal` executável é ownership separado e não foi declarado concluído aqui. |
+
+## 16.98. V5.29 — Visualizador de Momentos implementado localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| `action_id` afetado | `momentos.view` permanece `local-green`; criar/publicar/remover permanecem nos estados anteriores. |
+| Implementação | Fullscreen sem cabeçalho, shell ou dock; retorno `‹ Momentos`, foco restaurado, mídia dominante, autoria/contexto, legenda, prova social e ações. |
+| Iconografia e mídia | Glyphs proporcionais com peso óptico uniforme, estados ativos laranja e alvos mínimos. Vídeo e imagem são distinguidos; ausência de player real gera indisponibilidade honesta. |
+| Evidência | Onze goldens referenciados e inspecionados na matriz responsiva, dark/light, 200% e hover; revisão final V5 sem P0/P1 residual no estágio local. |
+| Limite honesto | Mídia/autorização produtivas, app Principal executável e E2E continuam fora desta promoção. |
+
+## 16.99. V5.30 — Perfil completo do Principal implementado localmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| `action_id` afetado | `principal.profile-view` permanece `local-green`; `principal.profile-edit` continua `blocked-decision`. |
+| Implementação | Capa panorâmica, avatar integral, identidade, contexto, estatísticas, tabs Acontece/Momentos/Circulares/Sobre, feed editorial e contexto auxiliar desktop. |
+| Responsividade | 375/768/1024/1440, light/dark e texto 200%; métricas refluem em uma coluna no compacto e sem ellipsis. |
+| Evidência | Doze goldens referenciados e inspecionados; Nunito Sans, surface, mídia sem tofu e dock responsivo confirmados. |
+| Limite honesto | Repositories, autorização, perfil produtivo, pacote executável e E2E não foram promovidos. |
+
+## 16.100. Revisão corretiva V5.24–V5.31 — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Navegação global | Labels respeitam 200% sem clamp; a caixa central foi reconciliada aos 68 px canônicos, CTA 54 px (12,5% maior) e cruzamento 50/50. Header usa `surface`, sombra do dock é sutil e o ativo usa laranja. |
+| Correções | Retorno/foco de Agora e Momentos; CTA do hero alcançável; conflict Acontece com recarga; estados failure/unauthorized/conflict/retry; vazio produtivo sem demo; vídeo válido separado de mídia indisponível; overflow do composer Momentos incluído no scroll correto. |
+| Evidência | Gates intermediários 119/119 publishers, 172/172 combinado e 107/107 revisão final. Três goldens 375/200 finais de Acontece, Para Você e Perfil foram atualizados seletivamente e inspecionados; analyzer integral, validador visual e diff check verdes. |
+| Estado | Nenhum ID promovido além do máximo registrado. `acontece.publish`, `momentos.publish` e `agora.publish` permanecem `blocked-decision`; total Flutter local permanece 86/207. |
+| Limite de pacote | A stage spec autoriza preview local no Superadmin. A futura materialização executável em `apps/principal` permanece sob ownership separado, atribuído sem sobreposição à branch `codex/operations-completion`; este recorte não declara produto Principal concluído. |
+
+## 16.101. Gate final do recorte V4.19–V5.31 — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte | As 14 unidades V4.19–V5.31 estão implementadas e revisadas como superfícies Flutter visuais locais no host autorizado pela stage spec. Isso não promove app Principal executável, backend, integração remota ou E2E. |
+| Testes consolidados | 688/688 testes focados de Forms, Imports, Comunicações, Circulares e todas as superfícies Principal do recorte passaram no último gate consolidado. `coelo_ui_admin` passou 110/110; `coelo_api` passou 14/14. |
+| Goldens finais | Cinco divergências residuais foram reproduzidas e inspecionadas antes da atualização seletiva: dois Para Você e um Perfil refletiam o dock final aprovado em texto a 200%; dois Publicar no Agora divergiam em 40 pixels de antialias da borda/crop. Somente esses cinco masters foram atualizados, reabertos e reexecutados; Para Você 2/2, Perfil 1/1 e a suíte golden Publicar no Agora 15/15 passaram. |
+| Análise estática | `flutter analyze` integral de `apps/superadmin`, `dart analyze` de `packages/coelo_ui_admin` e `packages/coelo_api`: sem issues. |
+| Validador visual | `apps/catalog/tool/validate_admin_visual_contracts.dart` passou com a allowlist canônica inalterada. |
+| Conhecimento | Os dois gates de `coelo-knowledge` passaram; fontes canônicas foram atualizadas antes das projeções duráveis. |
+| Revisão independente | Revisões separadas encerraram os P1 de estados/autorização/criação V4.19–V4.22, foco/Escape/galeria V4.23 e dock/retorno/conflito/mídia/200% V5.24–V5.31. Nenhum P0/P1 conhecido permanece dentro do estágio visual local. |
+| Regressão externa | A suíte global havia exposto overflow de 181 px em `/dev/conversations` a 375 px/200% no teste de shell persistente. A família Conversas não pertence a V4.19–V5.31 e não foi alterada para mascarar o problema; permanece registrada para a frente operacional. Goldens de Auth, Help Center e Support modificados como artefatos de falha também não integram esta entrega. |
+| Status honesto | Atividade do recorte e Flutter visual local concluídos. `accepted`, `verified`, app Principal executável, Supabase/RLS/R2, autorização produtiva, persistência, reload remoto e E2E continuam dependentes de seus próprios contratos e evidências. |
+
 ## 17. Histórico
 
 | Data | Mudança |
 |---|---|
+| 2026-08-31 | Gate final V4.19–V5.31: 688/688 testes focados, 110/110 `coelo_ui_admin`, 14/14 `coelo_api`, analyzers e validador visual verdes; cinco goldens finais atualizados seletivamente após inspeção. A regressão externa de Conversas e os limites de app Principal/backend/E2E foram preservados sem promoção indevida. |
+| 2026-08-31 | Revisões independentes V4/V5 corrigiram criação/unauthorized/estados e evidências V4.19–22, Escape/foco/1-de-1 em V4.23 e dock/retorno/conflito/vídeo/200% em V5.24–31. Commits focados: `057aad8f`, `08c7e31c`, `c4c984e1`, `50bf7b0c`; backend/E2E e app Principal executável não promovidos. |
+| 2026-08-31 | Família Publicar V5.27/V5.31 fechada visualmente no Flutter local: contexto produtivo explícito, mídia persistida sem distorção, crop/capa Agora com round-trip, frame/cabeçalho Principal compartilhados, 159 testes da família e 36 goldens verdes/inspecionados; remoto, backend e E2E não promovidos. |
+| 2026-08-31 | P1 visual/reachability de V4.23 fechado: Circulares ganhou rotas e menu de desenvolvimento reais, fluxo diretório→composer→cancelar e repository explicitamente indisponível; paginação de Circulares e Comunicações foi alinhada a Instituições (`11` cards/`8` tabela + `20/50/100`), o composer passou a reutilizar o footer da família Publicar e as células tabulares ficaram em linha única a 200%. Gates: 64/64 Circulares+rotas, 150/150 ampliado, 30 goldens afetados inspecionados, analyzer e validador verdes; backend/E2E não promovidos. |
+| 2026-08-31 | V5.24–V5.26 implementados localmente: Acontece, dock global, Agora fullscreen e Galeria; 94 testes consolidados e 22 goldens inspecionados. O breakpoint 1024 do Agora foi corrigido para tablet; total permanece 86/207 e backend/remoto/E2E seguem abertos. |
+| 2026-08-31 | V4.23 implementado como unidade Flutter visual local: diretório canônico, composer da família Publicar, preview lateral e popup com foco, 59 testes e 26 goldens referenciados; a taxonomia não possui ID próprio, então o total permanece 86/207 e backend/remoto/E2E seguem abertos. |
+| 2026-08-31 | V4.22 implementado como unidade Flutter visual `local-green`: layout automático cards/tabela, criação canônica, linha 64 px, badges uniformes, preview tipado no desktop, 88 testes e 10 goldens inspecionados; commands/backend/remoto/E2E permanecem abertos. |
+| 2026-08-31 | V4.21 implementado como unidade Flutter visual local: diretório/tabela/paginação canônicos, catálogo de oito entidades com indisponibilidade honesta, wizard completo, 24 testes e 24 goldens inspecionados; somente `imports.list` foi promovido, enquanto backend/remoto/E2E permanecem abertos. |
+| 2026-08-31 | V4.20 implementado como unidade Flutter visual `local-green`: editor modular, operações protegidas, catálogo categorizado, Data, preview explícito, footer canônico, 29 testes e 14 goldens inspecionados; produção, remoto e E2E permanecem fail-closed. |
+| 2026-08-31 | V4.19 implementado como unidade Flutter visual `local-green`: diretório canônico, flyout seguro, diálogo de agendamento, 38 testes focados, 10 goldens inspecionados, analyzers/validador/diff check verdes; composição produtiva, remoto e E2E permanecem abertos. |
 | 2026-08-28 | Registrado o programa visual aprovado de 31 entregáveis em cinco ondas. Separadas as métricas de programa visual, Flutter local, Flutter verified e integração E2E; `0/207 E2E` deixa de representar o progresso Flutter. Nenhum código/backend foi alterado. |
 | 2026-08-26 | `groups.import`/`groups.export`: removidos do formulário os dois botões e SnackBars que simulavam sucesso sem arquivo, gateway ou job. RED→GREEN focado 1/1 e suíte `group_form_page_test.dart` 8/8; analyzer focado e global sem erros/warnings. Estado máximo `audited`/fail-closed; fluxos reais de import/export, autorização, Storage, remoto e E2E continuam pendentes. |
 | 2026-08-26 | `units.people-export`: removido o botão produtivo que apenas mostrava SnackBar sem gerar job, arquivo ou URL. RED focado reproduziu a ação falsa; GREEN focado 1/1 e suíte `unit_form_page_test.dart` 24/24. Estado máximo fail-closed/`blocked-decision`; funcional real exige capability e snapshot próprios de Pessoas escopados à unidade, backend/Storage, tenant A/B, revogação, cleanup, remoto e E2E. |

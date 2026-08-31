@@ -27,6 +27,11 @@ Autorização é server-side, deny-by-default, com versão otimista e capabiliti
 
 O feed consome uma projeção mínima autorizada por `happens.posts.read`, sem fabricar contagens ou rótulos ausentes. Mídias chegam como tickets opacos ordenados e são trocadas sob demanda por URL assinada curta; como o ticket é descartável, retry de mídia recarrega o feed para obter um novo ticket.
 
+Na composição Flutter, contexto produtivo é obrigatório e fixtures só entram por
+uma criação `.demo` explícita. Uma mídia já persistida pode ser exibida por bytes
+locais ou URL assinada curta, sempre preservando proporção; ausência de ambas é
+indisponibilidade, nunca autorização para substituir a mídia por fixture demo.
+
 Carregamento não expõe campos nem ações do composer. Picker, remoção,
 autosalvamento, save e publish são mutuamente exclusivos e bloqueiam ponteiro,
 foco e navegação enquanto pendentes. Trocar repository ou contexto descarta
