@@ -5,7 +5,6 @@ import 'package:coelo_superadmin/features/agenda/domain/agenda_models.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_event_form_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_events_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_permissions_page.dart';
-import 'package:coelo_superadmin/features/agenda/presentation/agenda_requests_page.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -268,67 +267,28 @@ void main() {
     }
   });
 
-  testWidgets('aprovação decide uma vez e cria rascunho', (tester) async {
-    final prototype = store();
-    await tester.pumpWidget(app(AgendaRequestsPage(store: prototype)));
-    await tester.tap(find.byKey(const Key('agenda-request-approve-request-pending')));
-    await tester.pump();
-    expect(find.text('Aprovada e convertida em rascunho.'), findsOneWidget);
-    expect(
-      prototype.items.any(
-        (item) =>
-            item.origin == AgendaItemOrigin.guardianRequest &&
-            item.status == AgendaItemStatus.draft,
-      ),
-      isTrue,
-    );
-    expect(prototype.requestById('request-pending')!.decision, isNotNull);
-  });
-
-  testWidgets('responsável envia somente solicitação de aniversário', (tester) async {
-    final prototype = store();
-    final requestCount = prototype.requests.length;
-    final itemCount = prototype.items.length;
-    await tester.pumpWidget(app(AgendaRequestsPage(store: prototype)));
-    await tester.tap(find.byKey(const Key('agenda-request-create')));
-    await tester.pump();
-    expect(find.text('1. Criança e contexto'), findsOneWidget);
-    expect(find.text('Tipo'), findsNothing);
-    await tester.tap(find.byKey(const Key('agenda-request-continue')));
-    await tester.pump();
-    expect(find.byType(CoeloDateTimeField), findsNWidgets(2));
-    await tester.tap(find.byKey(const Key('agenda-request-continue')));
-    await tester.pump();
-    await tester.tap(find.byKey(const Key('agenda-request-submit')));
-    await tester.pump();
-    expect(prototype.requests, hasLength(requestCount + 1));
-    expect(prototype.requests.last.status, GuardianRequestStatus.sent);
-    expect(prototype.items, hasLength(itemCount));
-  });
-
-  testWidgets('permissão bloqueada no ancestral não pode ser ampliada', (tester) async {
+  testWidgets('permissão bloqueada no ancestral expõe origem sem permitir mutação', (tester) async {
     final prototype = store();
     prototype.setCapabilityRestricted('inst-horizonte', AgendaCapability.publishAgendaItems, true);
     await tester.pumpWidget(app(AgendaPermissionsPage(store: prototype)));
     expect(find.byType(CoeloAdminResizableTable<AgendaContext>), findsOneWidget);
     expect(find.byType(DataTable), findsNothing);
-    final control = find.byKey(const Key('agenda-permission-group-girassol-publishAgendaItems'));
-    final toggle = tester.widget<CoeloAdminToggleField>(control);
-    expect(toggle.onChanged, isNull);
+    expect(find.byType(CoeloAdminToggleField), findsNothing);
     expect(find.textContaining('Bloqueado por'), findsWidgets);
     final semanticsFinder = find.byKey(
       const Key('agenda-permission-semantics-group-girassol-publishAgendaItems'),
     );
     final semantics = tester.getSemantics(semanticsFinder).getSemanticsData();
     expect(
-      find.bySemanticsLabel('Publicar itens em Turma Girassol. Bloqueado por Centro Horizonte'),
+      find.bySemanticsLabel(
+        'Publicar eventos em Turma Girassol. Bloqueado por Centro Horizonte. Somente leitura.',
+      ),
       findsOneWidget,
     );
-    expect(semantics.flagsCollection.isToggled, Tristate.isFalse);
     expect(semantics.hasAction(SemanticsAction.tap), isFalse);
   });
 
-  testWidgets('permissão disponível expõe um único toggle acionável', (tester) async {
+  testWidgets('permissão disponível permanece somente leitura', (tester) async {
     await tester.pumpWidget(app(AgendaPermissionsPage(store: store())));
     final semanticsFinder = find.byKey(
       const Key('agenda-permission-semantics-inst-horizonte-publishAgendaItems'),
@@ -336,11 +296,13 @@ void main() {
     final semantics = tester.getSemantics(semanticsFinder).getSemanticsData();
 
     expect(
-      find.bySemanticsLabel('Publicar itens em Centro Horizonte. Permitido neste nível'),
+      find.bySemanticsLabel(
+        'Publicar eventos em Centro Horizonte. Permitido neste nível. Somente leitura.',
+      ),
       findsOneWidget,
     );
-    expect(semantics.flagsCollection.isToggled, Tristate.isTrue);
-    expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+    expect(semantics.hasAction(SemanticsAction.tap), isFalse);
+    expect(find.byType(CoeloAdminToggleField), findsNothing);
   });
 
   testWidgets('permissões preservam tabela Coelo com densidade responsiva', (tester) async {
@@ -374,7 +336,7 @@ void main() {
           final table = tester.widget<CoeloAdminResizableTable<AgendaContext>>(
             find.byKey(const Key('agenda-permissions-table')),
           );
-          expect(table.rowHeight, 88);
+          expect(table.rowHeight, 104);
         }
       }
     }

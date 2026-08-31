@@ -4,6 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final now = DateTime(2026, 8, 3, 9);
+  test('expõe exatamente as sete capacidades efetivas da Agenda', () {
+    expect(AgendaCapability.values, [
+      AgendaCapability.createAgendaItems,
+      AgendaCapability.editOwnAgendaItems,
+      AgendaCapability.editAllAgendaItems,
+      AgendaCapability.publishAgendaItems,
+      AgendaCapability.cancelOrRestoreAgendaItems,
+      AgendaCapability.manageResponsesAndAuthorizations,
+      AgendaCapability.overrideReservationConflict,
+    ]);
+  });
+
   test('taxonomia e alcance são independentes da prioridade', () {
     expect(AgendaItemType.values, hasLength(9));
     expect(AgendaItemType.values.map((e) => e.label), [

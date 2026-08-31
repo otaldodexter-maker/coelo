@@ -35,9 +35,15 @@ enum AgendaVisualProminence { institutional, unit, group, activity, personal }
 enum AgendaContextLevel { institution, unit, group, activity }
 
 enum AgendaCapability {
+  createAgendaItems,
+  editOwnAgendaItems,
+  editAllAgendaItems,
   publishAgendaItems,
-  approveGuardianBirthdayRequest,
-  overrideReservationConflict,
+  cancelOrRestoreAgendaItems,
+  manageResponsesAndAuthorizations,
+  overrideReservationConflict;
+
+  static const approveGuardianBirthdayRequest = manageResponsesAndAuthorizations;
 }
 
 enum AgendaMutationResult {
