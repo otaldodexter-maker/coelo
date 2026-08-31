@@ -113,7 +113,7 @@ Supabase CLI 2.116.0 validado neste historico. Exemplo:
 
 Quando o objetivo for somente a fundacao interna aprovada, use
 `-FoundationOnly`. Esse perfil usa o manifesto fechado e verificado por hash
-`replay/foundation-migrations.sha256`: 51 migrations canônicas aprovadas e dois
+`replay/foundation-migrations.sha256`: 52 migrations canônicas aprovadas e dois
 preflights locais. Migrations de Activity/Chat/Import/Notice fora do recorte e
 qualquer migration futura não entram automaticamente. O alvo deve ser a última
 versão do manifesto, impedindo teardown com o bridge de replay ainda ativo.
@@ -127,9 +127,23 @@ SQL continua alterando o hash e bloqueando o replay.
 
 ```powershell
 & packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
-  -TargetVersion 20260831134407 `
+  -TargetVersion 20260831164937 `
   -FoundationOnly `
   -TestPath packages/coelo_database/supabase/tests/superadmin_internal_auth_context_test.sql
+```
+
+Use `-RunAuthLifecycle` somente quando for necessário provar o ciclo real do
+Supabase Auth. Esse modo mantém GoTrue, PostgREST e Kong na stack isolada,
+executa cadastro sintético, login por senha, bootstrap do contexto interno,
+refresh, logout e rejeição imediata da sessão revogada. E-mail, senha e tokens
+existem apenas em memória; a fixture fica confinada ao volume descartável e o
+wrapper confirma zero recurso Docker residual no teardown:
+
+```powershell
+& packages/coelo_database/scripts/Invoke-SafeLocalMigrationReplay.ps1 `
+  -TargetVersion 20260831164937 `
+  -FoundationOnly `
+  -RunAuthLifecycle
 ```
 
 Adicione `-RunLint` para executar `supabase db lint --local` no mesmo banco
