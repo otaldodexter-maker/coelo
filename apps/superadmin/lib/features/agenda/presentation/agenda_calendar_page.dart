@@ -609,11 +609,6 @@ final class _AgendaTimelineEntry extends StatelessWidget {
           if (occurrence.item.location.isNotEmpty) Text(occurrence.item.location),
           _prominenceChip(context),
           Text(_statusLabel(occurrence.item.status)),
-          IconButton(
-            tooltip: 'Mais ações de ${occurrence.item.title}',
-            onPressed: () {},
-            icon: const Icon(Icons.more_horiz_rounded),
-          ),
         ],
       ),
     ],
@@ -643,11 +638,6 @@ final class _AgendaTimelineEntry extends StatelessWidget {
           _prominenceChip(context),
           const SizedBox(height: CoeloSpacing.space2),
           Text(_statusLabel(occurrence.item.status)),
-          IconButton(
-            tooltip: 'Mais ações de ${occurrence.item.title}',
-            onPressed: () {},
-            icon: const Icon(Icons.more_horiz_rounded),
-          ),
         ],
       ),
     ],
