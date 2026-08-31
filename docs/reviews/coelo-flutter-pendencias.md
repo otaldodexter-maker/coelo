@@ -1,9 +1,9 @@
 ---
 title: "Pendências Coelo — Flutter por tela e ação"
-source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git HEAD 6dedcb79c02fd997eae0f0c5727bf63acb51be3d"
+source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-ui/SKILL.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; docs/design/design-system.md; specs/013-ui-packages-componentization.md; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; decisions/0022-superadmin-activities-and-identity-storage.md; docs/open-questions.md; docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md; apps/superadmin/lib/app/router/superadmin_routes.dart; Git base f1aeacf67c218e7e889005ab98391f3d63096f11; codex/forms-agenda-ui-completion through 83a73890"
 status: "open"
 generated_at: "2026-08-26"
-updated_at: "2026-08-28"
+updated_at: "2026-08-31"
 action_count: 207
 family_count: 37
 visual_program_count: 31
@@ -322,12 +322,12 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 14.3 | Editar Rotina | `daily-routine.edit` | Dirty state, seções e erro abertos. | `local-green` | B | I | A | C | Avançada | 1.5 h | Editar/salvar/falhar/abandonar e 200%. |
 | 14.4 | Rotina / Aplicar | `daily-routine.apply` | Escopo, confirmação e feedback precisam prova. | `local-green` | B | I | A | C | Avançada | 1.5 h | Aplicar/cancelar/falhar e resultado após reload. |
 | 14.5 | Rotina / Publicar | `daily-routine.publish` | Duplo envio, erro e estado final não comprovados. | `local-green` | B | I | A | C | Avançada | 2 h | Publicar/cancelar/falhar/repetir e reload. |
-| 15.1 | Agenda / Calendário | `agenda.view` | Spec/draft e comportamento ainda não fechados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Calendário canônico, teclado, 375–1440, 200% e estados. |
-| 15.2 | Agenda / Criar evento | `agenda.create` | Campos, audiência e permissões não aprovados. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Criar/validar/falhar com date picker canônico. |
-| 15.3 | Agenda / Detalhe | `agenda.detail` | Conteúdo e acesso direto não decididos. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Abrir/not-found/unauthorized e responsividade. |
-| 15.4 | Agenda / Editar | `agenda.edit` | Autoridade, recorrência e conflitos não definidos. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Editar/conflito/erro/reload conforme contrato. |
-| 15.5 | Agenda / Solicitar | `agenda.request` | Fluxo de solicitação não aprovado. | `blocked-decision` | B | I | A | C | Avançada após decisão | 2 h + decisão | Solicitar/cancelar/falhar e feedback acessível. |
-| 15.6 | Agenda / Permissões | `agenda.permissions` | Modelo de capacidade permanece aberto. | `blocked-decision` | B | I | A | C | Avançada após decisão | 3 h + decisão | Permitido/negado, sem esconder dado após autorização tardia. |
+| 15.1 | Agenda / Calendário | `agenda.view` | Contrato aprovado; calendário/lista e detalhe diário funcionam com fixture apenas em `/dev`; produção preserva composição fail-closed. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Goldens reais e testes 375–1440/200%; fonte autorizada e E2E pendentes. |
+| 15.2 | Agenda / Criar evento | `agenda.create` | Wizard cobre nove tipos, audiência, fuso, recorrência, respostas e lembretes; produção mantém ações desabilitadas. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Validação, conflito e solicitação local testados; capability/persistência remota pendentes. |
+| 15.3 | Agenda / Detalhe | `agenda.detail` | Calendário/lista navega ao detalhe; estados local, not-found e indisponível preservam hierarquia responsiva. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Lifecycle visual coberto; autorização real/E2E pendentes. |
+| 15.4 | Agenda / Editar | `agenda.edit` | Edição local preserva recorrência, audiência e lembretes e bloqueia conflito; produção não recebe fixtures. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Override autoritativo, auditoria remota e reload produtivo pendentes. |
+| 15.5 | Agenda / Solicitar | `agenda.request` | RSVP, ciência e autorização cobrem um/todos os responsáveis, Talvez e perda de elegibilidade. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Notificações/push e persistência remota pendentes. |
+| 15.6 | Agenda / Permissões | `agenda.permissions` | Sete capabilities efetivas, herança, restrição, bloqueio e origem possuem leitura local e estado produtivo indisponível. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Backend/RLS/cross-tenant continuam obrigatórios. |
 | 16.1 | Chat / Conversas | `chat.list` | Wiring, paginação, erros e PNGs precisam revisão. | `audited` | B | I | A | C | Avançada | 2 h | Loading/empty/error, paginação, 375–1440 e 200%. |
 | 16.2 | Chat / Abrir conversa | `chat.open` | Membership revogada e acesso direto não comprovados. | `audited` | B | I | A | C | Avançada | 2 h | Abrir/link direto/not-found/revogada e foco. |
 | 16.3 | Chat / Enviar mensagem | `chat.send` | Duplo envio, erro e recuperação abertos. | `audited` | B | I | A | C | Avançada | 2.5 h | Enviar/falhar/retry, teclado, 200% e sem duplicação. |
@@ -341,22 +341,22 @@ duplicada. A soma preliminar por família continua na tabela anterior.
 | 17.4 | Avisos / Agendar | `notices.schedule` | Calendário, timezone e erro precisam prova. | `audited` | B | I | A | C | Avançada | 1.5 h | Agendar/alterar/cancelar/falhar com picker canônico. |
 | 17.5 | Avisos / Publicar | `notices.publish` | Confirmação e duplo envio não comprovados. | `audited` | B | I | A | C | Avançada | 1.5 h | Publicar/cancelar/falhar e estado após reload. |
 | 17.6 | Avisos / Arquivar | `notices.archive` | Ação negativa e recuperação não comprovadas. | `audited` | B | I | A | C | Avançada | 1.5 h | Arquivar/cancelar/falhar, foco e filtros atualizados. |
-| 18.1 | Formulários / Diretório | `forms.list` | Fail-closed; estados e regressão precisam rerun. | `local-green` | B | I | A | C | Completa | 2 h | Diretório/estados/filtros, 375–1440 e 200%. |
-| 18.2 | Criar Formulário | `forms.create` | Fluxo real e arquivos ainda parciais. | `audited` | B | I | A | C | Completa | 3 h | Criar/validar/falhar e navegação segura ao editor. |
-| 18.3 | Formulário / Visão geral | `forms.overview` | Visão local não prova ações reais. | `local-green` | B | I | A | C | Completa | 2 h | Abrir/estados/ações indisponíveis claras e 200%. |
-| 18.4 | Formulário / Editar | `forms.edit` | Componente local/catalogado recompila e tem testes de autosave, erro, 375 px e teclado; rota produtiva, autorização real, 150%/200% e E2E continuam bloqueados. | `local-green` | B | I | A | C | Completa após decisão integrada | 3–4 h + decisão | Componente local já provado; ainda exigir rota/capability aprovadas, sanitização, escalas 150%/200%, regressão visual e E2E. |
-| 18.5 | Formulário / Publicar | `forms.publish` | Contrato/capability não fechados. | `blocked-decision` | B | I | A | C | Completa após decisão | 3 h + decisão | Publicar/cancelar/negar/falhar e reload. |
-| 18.6 | Formulário / Testar | `forms.test` | Preview/teste e isolamento não aprovados. | `blocked-decision` | B | I | A | C | Completa após decisão | 2 h + decisão | Testar sem persistir, erros, teclado e responsividade. |
-| 19.1 | Respostas / Monitor | `forms.monitor` | Estados e atualização não revalidados. | `audited` | B | I | A | C | Completa | 2 h | Loading/empty/error/reload, 375–1440 e 200%. |
-| 19.2 | Responder Formulário | `forms.respond` | Contrato canônico fail-closed voltou a compilar e o teste local passou; resposta real, autosave, retomada, mídia e autorização continuam bloqueados por decisão integrada. | `local-green` | B | I | A | C | Completa após decisão integrada | 3 h + decisão | Fail-closed local já provado; ainda exigir contrato aprovado e preencher/validar/autosalvar/falhar/retomar, acessibilidade e E2E. |
-| 19.3 | Respostas / Lista | `forms.responses` | Autorização e estados ainda parciais. | `audited` | B | I | A | C | Completa | 2 h | Lista/filtros/empty/error/unauthorized e reload. |
-| 19.4 | Resposta / Detalhe | `forms.response-detail` | Correlação, acesso e mídia não comprovados. | `audited` | B | I | A | C | Completa | 3 h | Abrir/not-found/unauthorized, mídia protegida e 200%. |
-| 19.5 | Respostas / Exportar | `forms.export` | Export protegido e erro continuam abertos. | `audited` | B | I | A | C | Completa | 2 h | Solicitar/progresso/falhar/retry/download sem correlação indevida. |
-| 20.1 | Arquivos de Formulários / Upload | `forms.upload` | Lifecycle protegido e erro parcial abertos. | `audited` | B | I | A | C | Completa | 3 h | Escolher/validar/enviar/cancelar/falhar e reload. |
-| 20.2 | Arquivos de Formulários / Resolver | `forms.resolve-file` | Closure F6 e rotas precisam rerun. | `local-green` | B | I | A | C | Completa | 2 h | Resolver permitido/negado/expirado sem expor caminho. |
-| 20.3 | Arquivos de Formulários / Baixar | `forms.download` | Download protegido não tem prova integrada atual. | `local-green` | B | I | A | C | Completa | 2 h | Baixar permitido/negado/expirado e erro acessível. |
-| 20.4 | Arquivos de Formulários / Expirar | `forms.expire-file` | Ação e atualização visual não comprovadas. | `audited` | B | I | A | C | Completa | 2.5 h | Expirar/cancelar/falhar, foco e reload. |
-| 20.5 | Arquivos de Formulários / Excluir | `forms.delete-file` | Confirmação negativa e falha parcial abertas. | `audited` | B | I | A | C | Completa | 2.5 h | Excluir/cancelar/negar/falhar e ausência após reload. |
+| 18.1 | Formulários / Diretório | `forms.list` | `/dev` usa 30 fixtures determinísticas, filtros, Cards/Tabela e cursor opaco; produção mantém API autorizada/fail-closed. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Diretório e matriz 375–1440/200% testados; E2E pendente. |
+| 18.2 | Criar Formulário | `forms.create` | Editor/wizard funciona no `/dev`; produção mantém a mesma moldura com valores neutros e ações desabilitadas. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Matriz 375–1440/200%; persistência remota pendente. |
+| 18.3 | Formulário / Visão geral | `forms.overview` | Métricas, distribuição, audiência, agenda, versões e atalhos operacionais funcionam localmente; produção explicita indisponibilidade. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Ações navegam às superfícies fail-closed; dados remotos pendentes. |
+| 18.4 | Formulário / Editar | `forms.edit` | Editor modular cobre autosave, seções, perguntas, mídia e estados responsivos; produção preserva moldura neutra bloqueada. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Persistência, autorização e E2E pendentes. |
+| 18.5 | Formulário / Publicar | `forms.publish` | Publicar agora/agendar funciona somente no `/dev`, com data/hora canônica e feedback sem persistência remota; produção não oferece sucesso falso. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Capability, command e reload produtivos pendentes. |
+| 18.6 | Formulário / Testar | `forms.test` | Fluxo local identificado/anônimo cobre validação, revisão, retorno e reinício; produção preserva composição fail-closed. | `local-green` | B | I | A | C | Completa visual/Flutter | bloqueado no backend | Autorização e E2E produtivos pendentes. |
+| 19.1 | Respostas / Monitor | `forms.monitor` | Hierarquia, elegíveis, responderam, pendentes e perda de elegibilidade têm composição responsiva; o drill-down local ainda usa callback vazio. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar drill-down local e testar navegação/estado antes de promover. |
+| 19.2 | Responder Formulário | `forms.respond` | Retomada, revisão e anonimato estão representados; autosave real e cancelamento do upload local estão em correção e gates ainda não fecharam. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Repetir testes de preservação/falha e gates antes de restaurar `local-green`. |
+| 19.3 | Respostas / Lista | `forms.responses` | Lista identificada/anônima e estados operacionais estão representados no `/dev`; o avanço por cursor ainda não altera a coleção local. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar paginação local real e testar ida/volta antes de promover. |
+| 19.4 | Resposta / Detalhe | `forms.response-detail` | Detalhe identificado/anônimo e segredo perdido estão representados; seleção/cursor e mídia local estão em correção e gates ainda não fecharam. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Repetir fluxo selecionado, mídia e estados antes de promover. |
+| 19.5 | Respostas / Exportar | `forms.export` | CSV/XLSX/ZIP e estados de jobs estão renderizados, mas solicitar e baixar ainda usam callbacks locais vazios. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar job/download local determinístico e testar falha/retry antes de promover. |
+| 20.1 | Arquivos de Formulários / Upload | `forms.upload` | Progresso, falha e indisponibilidade estão renderizados; cancelar ainda usa callback vazio e não preserva um estado local verificável. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Implementar cancelamento/falha local e teste de preservação antes de promover. |
+| 20.2 | Arquivos de Formulários / Resolver | `forms.resolve-file` | A rota dedicada e estados seguros existem, mas wiring por `assetId`/`formId` e feedback local estão em correção e gates ainda não fecharam. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Repetir rota direta, not-found e unavailable antes de promover. |
+| 20.3 | Arquivos de Formulários / Baixar | `forms.download` | Nenhum endereço permanente é renderizado; preparação/download local e seus feedbacks estão em correção. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Testar permitido/expirado/falha após o GREEN funcional. |
+| 20.4 | Arquivos de Formulários / Expirar | `forms.expire-file` | Estado expirado está representado; feedback e preservação local estão em correção e ainda sem gates finais. | `in-progress` | B | I | A | C | Completa visual/Flutter | fix local em andamento + backend bloqueado | Testar expirar/cancelar/falhar e reconstrução antes de promover. |
+| 20.5 | Arquivos de Formulários / Excluir | `forms.delete-file` | Confirmação negativa remove o card no estado atual, mas uma reconstrução reinicializa a fixture e o teste existente não executa reload real. | `in-progress` | B | I | A | C | Completa visual/Flutter | 1–2 h local + backend bloqueado | Persistir a exclusão no store dev e testar reconstrução/reload antes de promover. |
 
 ### 5.3 Principal, cuidado e operações de plataforma
 
@@ -1060,7 +1060,7 @@ foram reexecutadas nesta consolidação e não provam ações não cobertas pelo
 | FLU-GEN-009 | `audited` | Erros, retry/reload, duplo envio, conflito, confirmação e feedback não estão uniformemente provados. | Testes RED/GREEN por comando e estado. | 32 h |
 | FLU-GEN-010 | `audited` | Analyzer global fresco após reconciliar Forms, Access e Units tem zero erros, mas ainda reporta 47 issues (2 warnings e 45 infos). | Tratar warnings/infos por grupo e repetir analyzer, suítes non-golden, validadores e diff-check sem confundir zero erro com gate verde. | 3–6 h |
 | FLU-GEN-011 | `regressed` | Catálogo HEAD está `catalogStale` com 8 fingerprints; fontes preparadas e não commitadas reduzem a 2. | Revalidar os 6 mecânicos e decidir Forms editor/response antes de regenerar relatório final. | 6 h |
-| FLU-GEN-012 | `blocked-decision` | Tours, Agenda draft, Access Extended, Imports parciais, Medication, Plans e usuários internos ainda dependem de contratos/decisões. | Decisão canônica antes de habilitar UI produtiva. | externo |
+| FLU-GEN-012 | `blocked-decision` | Tours, Access Extended, Imports parciais, Medication, Plans e usuários internos ainda dependem de contratos/decisões; Agenda saiu deste bloqueio após aprovação da spec 006 para UI Flutter. | Decisão canônica antes de habilitar as demais UIs produtivas. | externo |
 
 ## 9. Ledger compacto retomável das 37 famílias e ações
 
@@ -1085,12 +1085,12 @@ backend, ambiente remoto e inspeção humana de cada PNG.
 | 12 | `students` — Lista, gerenciar, transferir, editar, revogar | `students.list` `local-green`; `students.link` `blocked-decision`; `students.transfer` `blocked-decision`; `students.edit` `blocked-decision`; `students.revoke` `blocked-decision` | Produção somente leitura e sem Gerenciar/Justificar; provar unavailable/offline a 200% e aguardar contrato de commands; 8 h. |
 | 13 | `attendance` — Dashboard, nova chamada, presença, correção, conclusão, export | `attendance.dashboard` `local-green`; `attendance.create` `local-green`; `attendance.mark` `local-green`; `attendance.correct` `local-green`; `attendance.finish` `local-green`; `attendance.export` `audited` | Revalidar relógio determinístico, guards/erros/reload, dois goldens e worker de export separado; 12 h. |
 | 14 | `daily_routine` — Lista, criar, editar, aplicar, publicar | `daily-routine.list` `local-green`; `daily-routine.create` `local-green`; `daily-routine.edit` `local-green`; `daily-routine.apply` `local-green`; `daily-routine.publish` `local-green` | Produção unavailable e DEV local; executar smoke visual 375–1440, 200%, comandos/erro/reload; 8 h. |
-| 15 | `agenda` — Calendário, criar, detalhe, editar, solicitações/permissões | `agenda.view` `blocked-decision`; `agenda.create` `blocked-decision`; `agenda.detail` `blocked-decision`; `agenda.edit` `blocked-decision`; `agenda.request` `blocked-decision`; `agenda.permissions` `blocked-decision` | Spec/draft e permissões não permitem inferir comportamento; decidir contrato canônico e então revisar calendário; 16 h após decisão. |
+| 15 | `agenda` — Calendário, criar, detalhe, editar, solicitações/permissões | todos os 6 action_ids `local-green` visual/Flutter | Contrato aprovado e fixtures `/dev` cobrem calendário/lista, wizard, lifecycle, respostas, aprovações e capabilities; produção preserva composição fail-closed. Backend, RLS, notificações e E2E pendentes. |
 | 16 | `chat` — Conversas, conversa, mensagens, edição, anexos, recibos/revogação | `chat.list` `audited`; `chat.open` `audited`; `chat.send` `audited`; `chat.edit` `audited`; `chat.attach` `audited`; `chat.receipts` `audited`; `chat.revoke` `audited` | Revisar grupos/mídia, shell/chat PNGs, erros, foco, semântica e lifecycle; 16 h. |
 | 17 | `notices` — Lista, criar, editar, agendar, publicar, arquivar | `notices.list` `audited`; `notices.create` `audited`; `notices.edit` `audited`; `notices.schedule` `audited`; `notices.publish` `audited`; `notices.archive` `audited` | Somente composição de rota conhecida; executar revisão funcional/visual completa e erros/reload; 10 h. |
-| 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | `forms.list` `local-green`; `forms.create` `audited`; `forms.overview` `local-green`; `forms.edit` `local-green`; `forms.publish` `blocked-decision`; `forms.test` `blocked-decision` | Editor está verde apenas como componente catalogado; composição produtiva segue fail-closed. Resolver rota/capability, escalas e E2E antes de habilitar; 16 h. |
-| 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | `forms.monitor` `audited`; `forms.respond` `local-green`; `forms.responses` `audited`; `forms.response-detail` `audited`; `forms.export` `audited` | Fail-closed recompilado e testado; `superadmin.forms-response` permanece diagnóstico deliberado. Resposta real, autorização e export continuam abertos; 12 h + decisão. |
-| 20 | `forms_files` — Upload, resolver, baixar, expirar, excluir | `forms.upload` `audited`; `forms.resolve-file` `local-green`; `forms.download` `local-green`; `forms.expire-file` `audited`; `forms.delete-file` `audited` | Resolver F6 transitive closure, sem `storage_path` direto, rotas prod/DEV e lifecycle protegido; 12 h. |
+| 18 | `forms_authoring` — Lista, criar, overview, editar, publicar, testar | todos os 6 action_ids `local-green` visual/Flutter | `/dev` funcional e produção com composição equivalente fail-closed; persistência, capability e E2E pendentes. |
+| 19 | `forms_responses` — Monitor, responder, respostas, detalhe, exportar | todos os 5 action_ids `in-progress` | Fixes funcionais locais de drill-down, autosave/upload, cursor/seleção e exportação estão em andamento; fonte autorizada, worker e E2E pendentes. |
+| 20 | `forms_files` — Upload, resolver, baixar, expirar, excluir | todos os 5 action_ids `in-progress` | Fixes de cancelamento, mídia por rota, feedback, expiração e persistência da exclusão estão em andamento; Storage/backend/E2E pendentes. |
 | 21 | `acontece` — Feed, criar/publicar, remover | `acontece.feed` `local-green`; `acontece.create` `blocked-decision`; `acontece.publish` `blocked-decision`; `acontece.remove` `blocked-decision` | Preview enquadrado está verde; produção, mídia R2, publicação/remover e goldens exigem contrato/E2E; 10 h. |
 | 22 | `agora` — Viewer, criar/publicar, expirar | `agora.view` `local-green`; `agora.create` `blocked-decision`; `agora.publish` `blocked-decision`; `agora.expire` `blocked-decision` | Viewer/foco coberto no lote; provar entrada por card/deep link e lifecycle real sem alterar baseline; 8 h. |
 | 23 | `momentos` — Viewer, criar/publicar, remover | `momentos.view` `local-green`; `momentos.create` `blocked-decision`; `momentos.publish` `blocked-decision`; `momentos.remove` `blocked-decision` | `Esc`/foco cobertos; publicação/remover, origem real, R2 e goldens continuam abertos; 8 h. |
@@ -1126,7 +1126,7 @@ prova necessária.
 | `failures/` | `audited` | 1.564 arquivos são feedback transitório; nunca baseline, staging ou aprovação. |
 | Rotas `/dev` | `local-green` | Manter repositories/cache Development locais e provar tripwire zero em produção. |
 | Fail-closed produtivo | `local-green` | É fechamento de segurança, não conclusão da tela; habilitar somente com contrato real. |
-| Agenda/Tours | `blocked-decision` | Não inventar conteúdo, permissões ou ações; exigir fonte aprovada. |
+| Agenda/Tours | Agenda `local-green` visual/Flutter; Tours `blocked-decision` | Agenda segue a spec 006 aprovada e produção fail-closed; Tours ainda exige fonte aprovada. |
 | Saúde/Medicação | `blocked-decision` | Health detail removido; medication plans continuam 503/Unavailable e adapter desconectado. |
 | Assiduidade | `local-green` | Tratar clock/goldens/export separadamente; preservar U1 e guards de comando. |
 | Pessoas | `audited` | Oito goldens de diretório e status/card continuam fora do closure de identidade/rewire. |
@@ -1163,12 +1163,12 @@ crosswalk; esta atividade não inventa RPC, tabela, policy ou operação backend
 | `students` | list `local-green`; link/transfer/edit/revoke `blocked-decision` | `blocked-supabase` |
 | `attendance` | dashboard/create/mark/correct/finish `local-green`; export `audited` | `ready-for-e2e` somente para ações com backend cedido |
 | `daily_routine` | todos os 5 action_ids `local-green` fail-closed | `blocked-supabase` |
-| `agenda` | todos os 6 action_ids `blocked-decision` | `blocked-decision` |
+| `agenda` | todos os 6 action_ids `local-green` visual/Flutter | `blocked-supabase` |
 | `chat` | todos os 7 action_ids `audited` | `not-reviewed` |
 | `notices` | todos os 6 action_ids `audited` | `not-reviewed` |
-| `forms_authoring` | list/overview/edit `local-green`; create `audited`; publish/test `blocked-decision` | `blocked-supabase` |
-| `forms_responses` | respond `local-green`; monitor/responses/detail/export `audited` | `blocked-supabase` |
-| `forms_files` | resolve/download `local-green`; upload/expire/delete `audited` | `blocked-supabase` |
+| `forms_authoring` | todos os 6 action_ids `local-green` visual/Flutter | `blocked-supabase` |
+| `forms_responses` | todos os 5 action_ids `in-progress` | `blocked-supabase` |
+| `forms_files` | todos os 5 action_ids `in-progress` | `blocked-supabase` |
 | `acontece` | feed `local-green`; create/publish/remove `blocked-decision` | `blocked-decision` |
 | `agora` | view `local-green`; create/publish/expire `blocked-decision` | `blocked-decision` |
 | `momentos` | view `local-green`; create/publish/remove `blocked-decision` | `blocked-decision` |
@@ -2856,10 +2856,39 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Próximo gate | Prosseguir para o Item 28, Para você. |
 | Conhecimento capturado | Fonte canônica e `docs/knowledge/team/happens-publication-mvp.md` atualizados. |
 
+## 16.82. Formulários e Agenda — checkpoint documental honesto — 2026-08-31
+
+**Flutter local — `local-green`:** 43,48% (90/207 ações).
+**Restante local:** 56,52% (117/207 ações).
+**Flutter `verified`:** 0,00% (0/207).
+**Integração E2E:** 0,00% (0/202).
+
+**Recorte Formulários + Agenda:** 54,55% (12/22 ações `local-green`) e
+45,45% (10/22 ações `in-progress`). O valor 100/207 (48,31%) não é usado neste
+checkpoint: ele pressuporia promover as dez ações ainda sem evidência
+funcional proporcional.
+
+| Campo | Estado factual |
+|---|---|
+| Base e worktree | Base `f1aeacf67c218e7e889005ab98391f3d63096f11`; branch `codex/forms-agenda-ui-completion`; worktree `C:\Users\adrie\Documents\Coelo-worktrees\forms-agenda-ui-completion`. |
+| Handoff V4.19/V4.20 | Incorporado como `c5de6b4b`, com diretório/editor de Forms, testes/goldens e ajustes compartilhados. O commit também contém hunks de `SupabaseFormsApi` e `packages/coelo_api` fora da autorização desta frente; o consolidador deve extraí-los ou obter aprovação explícita. |
+| Commits do recorte | Em ordem: `9020be56`, `ff75b1c2`, `c5de6b4b`, `cda7cd0f`, `7f04a8af`, `1ce0a23d`, `02619c70`, `56dedf84`, `dac6405b`, `2f616367`, `81264bbb`, `48de2f18`, `e0529081`, `6a06619e`, `54f311cb`, `9d4ab0d6`, `877d9cb5`, `2f98e6c8`, `4a9e851c`, `3d92f1d9`, `e697ac17`, `df2efdcd`, `118edba5`, `83a73890`. |
+| Agenda | Os seis `action_id` estão `local-green` visual/Flutter sob a spec 006 aprovada. Produção preserva composição fail-closed; backend, autorização, notificações reais e E2E seguem bloqueados. |
+| Forms autoral | Os seis `action_id` estão `local-green` visual/Flutter. Persistência, capability autoritativa, Supabase e E2E não foram promovidos. |
+| Forms respostas | Os cinco `action_id` ficam `in-progress` enquanto os fixes funcionais locais de drill-down, autosave/upload, cursor/seleção e exportação não concluírem testes e gates. |
+| Forms arquivos | Os cinco `action_id` ficam `in-progress` enquanto cancelamento, wiring de mídia, feedback, expiração e persistência da exclusão não concluírem testes e gates. |
+| Produção/Supabase | Nenhum estado `verified`, `done`, `remote-green` ou `verified-e2e` foi concedido. Supabase, Postgres, Auth, RLS, RPC, migration, Edge Function, Storage, deploy, remoto e `packages/coelo_database` continuam fora de escopo. |
+| Resíduos de integração | Wiring de mídia, testes de rota, correção do contrato visual e goldens permaneciam não commitados no momento deste checkpoint. Não integrar apenas o commit documental sem reconciliar esses resíduos e repetir os gates. |
+| Gates observados | `git diff --check` documental, índice Coelo UI e os dois gates de conhecimento passam. `118edba5` removeu o import não usado e commitou a correção do contrato visual de Agenda; analyzer, validador visual e suítes globais ainda precisam de repetição no estado consolidado, pois há fixes funcionais concorrentes não commitados. |
+| Evidência visual pendente | A matriz não possui prova explícita de texto a 150% para o recorte completo; goldens regenerados precisam ser inspecionados e commitados apenas quando comparados à baseline aprovada. Isso impede `verified`, mas não apaga as evidências `local-green` já registradas. |
+| Revisão independente | P0=0. P1 documentais corrigidos neste checkpoint; P1 funcionais e de integração permanecem explicitamente abertos nas linhas `in-progress` acima. |
+| Tempo | Não calculável com confiabilidade a partir do ledger disponível; nenhuma duração foi inferida pelo percentual. |
+
 ## 17. Histórico
 
 | Data | Mudança |
 |---|---|
+| 2026-08-31 | Formulários e Agenda registrados em checkpoint próprio: 90/207 `local-green` (43,48%), 12/22 ações do recorte verdes localmente e dez `in-progress`; backend/Supabase/E2E permanecem sem promoção. Handoff, resíduos, gates e P1 funcionais foram explicitados sem reescrever checkpoints anteriores. |
 | 2026-08-28 | Registrado o programa visual aprovado de 31 entregáveis em cinco ondas. Separadas as métricas de programa visual, Flutter local, Flutter verified e integração E2E; `0/207 E2E` deixa de representar o progresso Flutter. Nenhum código/backend foi alterado. |
 | 2026-08-26 | `groups.import`/`groups.export`: removidos do formulário os dois botões e SnackBars que simulavam sucesso sem arquivo, gateway ou job. RED→GREEN focado 1/1 e suíte `group_form_page_test.dart` 8/8; analyzer focado e global sem erros/warnings. Estado máximo `audited`/fail-closed; fluxos reais de import/export, autorização, Storage, remoto e E2E continuam pendentes. |
 | 2026-08-26 | `units.people-export`: removido o botão produtivo que apenas mostrava SnackBar sem gerar job, arquivo ou URL. RED focado reproduziu a ação falsa; GREEN focado 1/1 e suíte `unit_form_page_test.dart` 24/24. Estado máximo fail-closed/`blocked-decision`; funcional real exige capability e snapshot próprios de Pessoas escopados à unidade, backend/Storage, tenant A/B, revogação, cleanup, remoto e E2E. |
