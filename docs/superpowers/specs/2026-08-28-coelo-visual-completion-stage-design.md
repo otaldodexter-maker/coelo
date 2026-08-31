@@ -239,9 +239,17 @@ componentes e linguagem do Coelo. Nenhuma marca externa aparece no produto.
     seção `Agora` abre a tela, sem `Ver tudo`, em carrossel horizontal cujo
     primeiro card retangular publica um Agora. Abaixo, um título discreto
     `Acontece` introduz o feed unificado de Acontece e Circulares em contêineres
-    limpos. No mobile, o rodapé contém Home, Para você, Momentos, ação central
-    laranja `+` e Pesquisar; Mensagens permanece flutuante e Perfil permanece no
-    cabeçalho.
+    limpos. A proposta recebeu aprovação visual do Owner em 2026-08-31, com
+    correção obrigatória de execução: shell, contêiner direito, insets, raios e
+    gaps devem reproduzir a geometria canônica já aprovada, sem aproximações.
+    O menu inferior contém Home, Para você, ação central laranja `+` para
+    publicar no Agora, Momentos e Pesquisar; Mensagens permanece flutuante e
+    Perfil permanece no cabeçalho. A ação central atravessa o limite superior do
+    menu, aproximadamente metade dentro e metade fora da barra. O menu existe em
+    mobile, tablet e web; tablet preserva safe areas e largura útil, enquanto no
+    web ele vira um dock compacto e contido, sem ocupar toda a largura da tela.
+    O item permanece `visual-contract-approved` até implementação e golden real
+    aprovados.
 25. **Agora no Acontece:** primeiro card vazio publica no Agora; remover `Ver
     tudo`; permitir arraste horizontal; abrir viewer em tela cheia escura, com
     leve transparência e logo Coelo branca.

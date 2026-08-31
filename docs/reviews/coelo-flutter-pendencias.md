@@ -2497,7 +2497,7 @@ os GREENs locais.
 | 21 Importações | Diretório simples em tabela, como Instituições, com criar/importar no topo. Wizard dentro do shell + contêiner direito e catálogo visível de instituições, unidades, pessoas, turmas/grupos, atividades e demais entidades pertinentes, ainda que a execução permaneça `Indisponível nesta etapa`. |
 | 22 Comunicações | Proposta rejeitada. Refazer pela anatomia responsiva do anexo 27: busca, filtros aplicados, categorias com contagem, tabela/lista, paginação e prévia rica lateral. |
 | 23 Circulares | Card de Perfil aprovado com pedido de refinamento visual. Composer atual é boa base, mas deve depender primeiro do builder de Formulários e reutilizar seções/perguntas modulares. |
-| 24 Acontece | Refazer. Agora fica no topo como carrossel horizontal sem `Ver tudo`; primeiro card retangular publica Agora. Abaixo, título discreto Acontece e feed conjunto de publicações Acontece + Circulares. Cabeçalho Principal usa marca Coelo + chevron para menu e avatar; sem hambúrguer. Rodapé móvel: Home, Para você, Momentos, ação central `+`, Pesquisar; Mensagens permanece flutuante; Perfil não entra no rodapé. |
+| 24 Acontece | `visual-contract-approved`. Agora no topo como carrossel horizontal sem `Ver tudo`; primeiro card retangular publica Agora. Abaixo, título discreto Acontece e feed conjunto de publicações Acontece + Circulares. Cabeçalho Principal usa marca Coelo + chevron para menu e avatar; sem hambúrguer. Shell, contêiner direito e espaçamentos canônicos são correções obrigatórias de execução. Menu inferior em mobile/tablet/web: Home, Para você, ação central `+` de publicar Agora, Momentos e Pesquisar; o `+` atravessa o topo da barra em 50/50 e o web usa dock compacto, não largura total. Mensagens permanece flutuante; Perfil não entra no rodapé. |
 | 25/29 Agora e Momentos | Refazer viewers para ocupar a tela inteira; preservar ações e navegação Coelo. |
 | 26 Galeria | Contrato visual aprovado pelo Owner. Não solicitar novamente o mesmo aceite; implementação/golden real ainda serão necessários antes do status final `accepted`. |
 | 27/31 Composers | Refazer pela anatomia dos anexos 34/36, mantendo no web shell, contêiner direito e espaçamento Coelo. O mesmo contrato adapta Acontece, Momentos e Agora aos respectivos contextos. |
@@ -2810,6 +2810,22 @@ E2E ou conclusão estrita sem suas próprias evidências.
 | Estado | Flutter `verified` permanece 0,00% (0/207); ações local-green e denominadores anteriores não são promovidos por esta consolidação. |
 | Conhecimento | `no-op`: o ajuste implementa contratos visuais já aprovados, sem regra durável nova. |
 | Próximo comando exato | Recalcular `rtk git cherry dev codex/flutter-ui-10h`; na worktree final, aplicar em ordem somente as linhas `+`, resolver documentos de forma append-only e repetir os gates backend/Flutter. |
+
+## 16.78. V5.24 — estrutura do Acontece aprovada visualmente — 2026-08-31
+
+| Campo | Estado |
+|---|---|
+| Recorte visual | Estrutura responsiva do feed Acontece em 375, 768 e 1440 px, incluindo Agora, publicação, ações sociais, navegação e contexto lateral. |
+| Decisão do Owner | Proposta aprovada com correções obrigatórias de fidelidade na execução. |
+| Hierarquia congelada | Cabeçalho Principal → Agora com primeiro card de publicação → título discreto Acontece → autor → mídia dominante → ações → prova social/legenda → próxima publicação. Não existe texto editorial antes da mídia nem barra interna redundante. |
+| Shell e contêiner | Shell, contêiner direito, largura útil, insets, raios e gaps devem reproduzir os contratos canônicos aprovados em todos os breakpoints. Fundo-base claro permanece `surface`, sem cinza estrutural. |
+| Navegação inferior | Presente em mobile, tablet e web com Home, Para você, ação central `+` de publicar Agora, Momentos e Pesquisar. A ação central atravessa o topo do menu, aproximadamente metade dentro e metade fora. Tablet respeita safe areas/constraints; web usa dock compacto e contido, sem ocupar toda a largura. |
+| Complementos | Mensagens permanece flutuante; Perfil permanece no cabeçalho; o desktop preserva contexto auxiliar à direita dentro da mesma composição. |
+| Evidências | `pilot-24-happens-v4-mobile.png`, `pilot-24-happens-v4-tablet.png` e `pilot-24-happens-v4-desktop.png`, fora do repositório em `.codex/visualizations/.../01a048b4-b90b-70c0-94f7-f7e43bcf5a6e`, acrescidas das correções textuais aprovadas pelo Owner. |
+| Produção | Nenhum código produtivo foi alterado por esta aprovação. |
+| Status correto | `visual-contract-approved`; ainda não é `accepted`, implementação, integração ou conclusão. |
+| Próximo gate | Prosseguir para o Item 25, viewer fullscreen do Agora. Implementação continua bloqueada até o `okay` final do conjunto. |
+| Conhecimento capturado | Fonte canônica atualizada e projeção interna criada em `docs/knowledge/team/principal-happens-feed.md`. |
 
 ## 17. Histórico
 
