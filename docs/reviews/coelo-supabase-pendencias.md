@@ -3914,6 +3914,11 @@ da simples soma das 207 ações.
 - **Próximo passo:** revisar e commit-ar o pacote replay/labels, classificar os
   achados de lint relevantes à fundação e repetir pgTAP+lint. Flutter, UI,
   Import/Export funcional, mídia, Edge e remoto continuam fora.
+- **Reconsulta remota pós-GREEN:** plugin oficial, somente leitura, confirmou
+  ledger ainda em 103 migrations até `20260821200000`; Security Advisor ainda
+  207 (50 RLS sem policy, 156 SECURITY DEFINER executáveis por authenticated e
+  1 proteção de senha vazada) e Performance Advisor ainda 505 (128 FKs sem
+  índice e 377 índices não usados). O delta local não existe no remoto.
 - **Gate de conhecimento:** `no-op`; a mudança é infraestrutura de replay e
   reconciliação de schema, documentada nas fontes técnicas e OQ-042, sem novo
   comportamento de produto para `docs/knowledge`.

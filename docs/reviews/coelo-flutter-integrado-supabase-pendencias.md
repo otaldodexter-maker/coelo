@@ -1184,3 +1184,5 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   Backend local focado não promove ação integrada, `remote-green` ou `done`.
 - Consolidação em `dev` continua aguardando commit/review backend, regressão
   final e checkpoint seguro da frente visual. Zero push e zero remoto mutável.
+- Reconsulta oficial read-only confirmou remoto e Advisors inalterados; a
+  frente visual continua ativa, portanto nenhum cherry-pick/merge foi iniciado.
