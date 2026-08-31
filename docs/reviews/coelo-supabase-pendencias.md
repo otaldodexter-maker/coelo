@@ -3986,3 +3986,30 @@ da simples soma das 207 ações.
 - **Próximo passo:** executar fechamento do Dia 4: mirror/hash, secret scan,
   documentação final, revisão do novo delta e ledger de consolidação; aguardar
   checkpoint visual antes de avançar `dev`.
+
+### Checkpoint seguro 55 - gateways, sibling scope e cleanup junction-safe
+
+- **Review RED:** a primeira revisão pós-GREEN provou três falhas: wrappers
+  `SECURITY INVOKER` perderam acesso aos helpers privados; overrides de sibling
+  units eram agregados sem escopo exato; e `Clean` aceitava mirror em junction.
+  O estado Dia 3 foi tratado como em correção até nova evidência.
+- **GREEN comportamental:** os dois gateways públicos nominais agora são
+  `SECURITY DEFINER`, owner `postgres`, `search_path=''`, EXECUTE somente para
+  `authenticated` e alcançam a autorização backend; os helpers continuam sem
+  EXECUTE cliente. O reducer privado usa membership + permission + scope kind +
+  unit/group com `IS NOT DISTINCT FROM`. Fixture rollback-only com efeitos
+  opostos em duas unidades provou isolamento. Teste focal 13/13; total do gate
+  passa a 278 asserts em dez arquivos.
+- **Unicidade:** o UUID zero usado somente como sentinel do índice foi proibido
+  por constraint, eliminando colisão com escopo real; duplicatas allow+deny no
+  mesmo escopo continuam fail-closed antes do DDL.
+- **Filesystem:** o sync rejeita reparse point no mirror ou ancestrais antes de
+  enumerar/deletar. Contraprova com junction externo foi rejeitada, preservou o
+  `must-survive.sql`, restaurou os 17 mirrors rastreados e deixou zero dirty.
+- **Remoto read-only:** ledger permanece 103 até `20260821200000`; Advisors
+  permanecem segurança 207 (50/156/1) e desempenho 505 (128/377). Nenhuma
+  migration local foi aplicada e o ambiente continua `blocked-environment`.
+- **Estado:** Dia 3 volta a local-green somente após estas provas; macrotema
+  75,00% (3/4), restante 25,00% (1/4). `done`, Flutter e E2E inalterados.
+  Próximo passo: regressão completa, review final e consolidação após worktree
+  visual limpa.

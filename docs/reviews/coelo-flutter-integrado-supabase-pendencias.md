@@ -1206,3 +1206,11 @@ deixe os três Markdown atualizados para retomada sem depender desta conversa.
   Nenhuma tela, repository, rota ou worktree visual foi alterada.
 - Importação/arquivo, lint histórico e remoto continuam fora ou bloqueados;
   não há promoção de `done`, `remote-green` ou integração.
+
+### Checkpoint integrado 55 - gateway backend corrigido sem promocao E2E
+
+- Review adversarial corrigiu ACL efetiva dos gateways e isolamento entre
+  sibling units; pgTAP focal passou 13/13 e o gate backend soma 278 asserts.
+- Cleanup de mirror rejeitou junction externo sem apagar o arquivo-prova.
+- Flutter `verified` segue 0,00% (0/207), E2E 0,00% (0/202), remoto read-only e
+  nenhuma worktree visual foi tocada por esta correção.
