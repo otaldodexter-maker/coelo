@@ -128,3 +128,18 @@ Por isso `9179a9aa` é classificado como **substituído por conteúdo integrado 
 superset**, não como commit órfão. O estado continua sem promoção: aprovação do
 contrato visual do Acontece não equivale a implementação, golden aceito,
 Flutter `verified` ou E2E.
+
+## Clone residual `forms-catalog-fix-clone`
+
+A varredura física de `.worktrees` encontrou um clone independente, não
+registrado por `git worktree`. O reflog prova que ele foi clonado do checkout
+principal em 2026-08-20, criou `codex/forms-catalog-registration` a partir de
+`604f7880` e recebeu um único commit próprio: `cdf89d4b`.
+
+O patch-id estável de `cdf89d4b` e do commit já presente em `dev` `2e7db439` é
+o mesmo (`c4b2a320fbfcf0e8b41e468ae5374a960dfb4213`). Portanto o único commit
+exclusivo do clone é patch-equivalente e já está integrado. O arquivo dirty
+`apps/catalog/assets/catalog-sync-report.json` é saída gerada sobre a árvore
+antiga: contém caminhos absolutos do clone e diagnósticos obsoletos; não é fonte
+canônica nem alteração correta a incorporar. Sua não integração é deliberada e
+não descarta código ou decisão de produto.
