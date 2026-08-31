@@ -20,7 +20,7 @@ void main() {
     await tester.pump();
     expect(repository.queries, hasLength(1));
     expect(repository.queries.single.cursor, isNull);
-    await tester.tap(find.byTooltip('Próxima página'));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Próxima'));
     await tester.pump();
     await tester.pump();
     expect(repository.queries.last.cursor, 'next-page');

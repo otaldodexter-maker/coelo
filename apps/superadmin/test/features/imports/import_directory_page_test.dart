@@ -2,6 +2,7 @@ import '../../support/import_repository_stub.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_job.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_repository.dart';
 import 'package:coelo_superadmin/features/imports/presentation/import_directory_page.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,65 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Importações indisponíveis'), findsOneWidget);
+    expect(find.text('Nova importação'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+  });
+
+  testWidgets('renders unauthorized alone without toolbar or creation', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: ImportDirectoryPage(
+            repository: const _UnauthorizedImportRepository(),
+            onNewImport: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byType(CoeloAdminListingToolbar), findsNothing);
+    expect(find.text('Nova importação'), findsNothing);
+  });
+
+  testWidgets('search reloads canonically after debounce without a separate action', (
+    tester,
+  ) async {
+    final repository = _QueryImportRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: ImportDirectoryPage(repository: repository, onNewImport: (_) {}),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(EditableText).first, 'unidades agosto');
+    await tester.pump(const Duration(milliseconds: 349));
+    expect(repository.queries.last.search, isNull);
+    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pumpAndSettle();
+
+    expect(repository.queries.last.search, 'unidades agosto');
+    expect(find.widgetWithText(TextButton, 'Buscar'), findsNothing);
+  });
+
+  testWidgets('uses the canonical Institutions pagination footer', (tester) async {
+    final repository = InMemoryImportRepository();
+    final draft = await repository.createDraft(
+      entity: ImportEntity.units,
+      strategy: ImportStrategy.createOnly,
+    );
+    await repository.save(draft);
+    await _pumpDirectory(tester, repository: repository);
+
+    expect(find.byType(SuperadminListingPaginationFooter), findsOneWidget);
+    expect(find.byKey(const Key('imports-directory-pagination-footer')), findsOneWidget);
+    expect(find.byType(CoeloAdminPagination), findsOneWidget);
   });
 
   testWidgets('renders the seven presets with one negative cancel action', (tester) async {
@@ -88,12 +148,15 @@ void main() {
   });
 }
 
-Future<void> _pumpDirectory(WidgetTester tester) async {
+Future<void> _pumpDirectory(WidgetTester tester, {InMemoryImportRepository? repository}) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: CoeloTheme.light,
       home: Scaffold(
-        body: ImportDirectoryPage(repository: InMemoryImportRepository(), onNewImport: (_) {}),
+        body: ImportDirectoryPage(
+          repository: repository ?? InMemoryImportRepository(),
+          onNewImport: (_) {},
+        ),
       ),
     ),
   );
@@ -105,4 +168,28 @@ void _expectFocusInside(Finder ancestor) {
   expect(focusedContext, isNotNull);
   final focusedElement = find.byElementPredicate((element) => identical(element, focusedContext));
   expect(find.descendant(of: ancestor, matching: focusedElement), findsOneWidget);
+}
+
+final class _UnauthorizedImportRepository implements ImportRepository {
+  const _UnauthorizedImportRepository();
+
+  @override
+  Future<ImportJobPage> fetchPage(ImportJobQuery query) =>
+      Future.error(const ImportRepositoryUnauthorizedException());
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _QueryImportRepository implements ImportRepository {
+  final queries = <ImportJobQuery>[];
+
+  @override
+  Future<ImportJobPage> fetchPage(ImportJobQuery query) async {
+    queries.add(query);
+    return const ImportJobPage(items: []);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

@@ -248,7 +248,10 @@ String? _encodeCursor(Object? value) {
   return jsonEncode(<String, String>{'created_at': createdAt, 'job_id': jobId});
 }
 
-Exception _mapError(PostgrestException error) => const ImportRepositoryUnavailableException();
+Exception _mapError(PostgrestException error) => switch (error.code) {
+  '42501' || 'PGRST301' || 'PGRST302' => const ImportRepositoryUnauthorizedException(),
+  _ => const ImportRepositoryUnavailableException(),
+};
 
 String _mime(ImportFileFixture value) => switch (value) {
   ImportFileFixture.csv => 'text/csv',

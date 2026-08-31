@@ -110,6 +110,32 @@ void main() {
     );
   });
 
+  test('maps permission denied responses to unauthorized', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode(<String, Object?>{
+            'code': '42501',
+            'message': 'permission denied',
+            'details': null,
+            'hint': null,
+          }),
+          403,
+          headers: <String, String>{'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseImportRepository(client).fetchPage(const ImportJobQuery()),
+      throwsA(isA<ImportRepositoryUnauthorizedException>()),
+    );
+  });
+
   test('reuses create idempotency key after an ambiguous failure', () async {
     final bodies = <Map<String, dynamic>>[];
     final client = SupabaseClient(

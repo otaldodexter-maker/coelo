@@ -9,6 +9,57 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/import_repository_stub.dart';
 
 void main() {
+  testWidgets('shows the eight approved import entities in a responsive catalog', (tester) async {
+    final controller = ImportWizardController(repository: InMemoryImportRepository());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ImportWizardPage(controller: controller, onFinished: () {}),
+      ),
+    );
+    await tester.pump();
+
+    for (final label in const [
+      'Instituições',
+      'Unidades',
+      'Pessoas',
+      'Grupos e turmas',
+      'Atividades',
+      'Planos de medicação',
+      'Cardápios',
+      'Formulários',
+    ]) {
+      await tester.ensureVisible(find.text(label));
+      expect(find.text(label), findsOneWidget);
+    }
+  });
+
+  testWidgets('reports unavailable entities honestly without invoking persistence', (tester) async {
+    final repository = _TrackingImportRepository();
+    final controller = ImportWizardController(repository: repository);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: ImportWizardPage(controller: controller, onFinished: () {}),
+      ),
+    );
+    await tester.pump();
+
+    await tester.ensureVisible(find.text('Formulários'));
+    await tester.tap(find.text('Formulários'));
+    await tester.pump();
+
+    expect(controller.entity, ImportEntity.forms);
+    expect(find.textContaining('Execução indisponível nesta etapa'), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('import-wizard-primary'))).onPressed,
+      isNull,
+    );
+    expect(repository.createDraftCalls, 0);
+  });
+
   testWidgets('rendering and invalid advance never create a remote draft', (tester) async {
     final repository = _TrackingImportRepository();
     final controller = ImportWizardController(repository: repository);

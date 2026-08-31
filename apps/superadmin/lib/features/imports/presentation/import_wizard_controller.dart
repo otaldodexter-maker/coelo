@@ -8,6 +8,16 @@ import '../domain/import_repository.dart';
 
 final class ImportWizardController extends ChangeNotifier {
   static const supportedEntities = <ImportEntity>{ImportEntity.units};
+  static const catalogEntities = <ImportEntity>[
+    ImportEntity.institutions,
+    ImportEntity.units,
+    ImportEntity.people,
+    ImportEntity.groups,
+    ImportEntity.activities,
+    ImportEntity.medicationPlans,
+    ImportEntity.mealPlans,
+    ImportEntity.forms,
+  ];
 
   ImportWizardController({
     required this.repository,
@@ -15,10 +25,10 @@ final class ImportWizardController extends ChangeNotifier {
     String? initialContext,
     ImportStrategy? initialStrategy,
     this.stepInterval = const Duration(seconds: 2),
-  }) : entity = supportedEntities.contains(initialEntity) ? initialEntity! : ImportEntity.units,
+  }) : entity = catalogEntities.contains(initialEntity) ? initialEntity! : ImportEntity.units,
        strategy = initialStrategy ?? ImportStrategy.createOnly,
        file = ImportFileFixture.csv,
-       context = initialContext ?? 'Unidades';
+       context = initialContext ?? (initialEntity?.label ?? 'Unidades');
 
   final ImportRepository repository;
   final Duration stepInterval;
@@ -40,8 +50,8 @@ final class ImportWizardController extends ChangeNotifier {
   var _generation = 0;
 
   Map<String, String> get mapping => job?.mapping ?? const {};
-  bool get canConfirm =>
-      entity == ImportEntity.units && sourceFile != null && !selectingFile && !_confirming;
+  bool get executionAvailable => supportedEntities.contains(entity);
+  bool get canConfirm => executionAvailable && sourceFile != null && !selectingFile && !_confirming;
 
   Future<ImportJob>? get preparedDraft => _draft;
 
@@ -85,9 +95,10 @@ final class ImportWizardController extends ChangeNotifier {
   }
 
   void selectEntity(ImportEntity value) {
-    if (!supportedEntities.contains(value)) return;
+    if (!catalogEntities.contains(value)) return;
     if (entity == value) return;
     entity = value;
+    context = value.label;
     _invalidateDraft();
     notifyListeners();
   }
@@ -160,6 +171,7 @@ final class ImportWizardController extends ChangeNotifier {
 
   Future<void> next() async {
     if (currentStep >= 5 || _preparingDraft) return;
+    if (currentStep == 0 && !executionAvailable) return;
     if (currentStep == 1 && sourceFile == null) {
       sourceFileError = 'Selecione um arquivo CSV ou XLSX antes de continuar.';
       notifyListeners();

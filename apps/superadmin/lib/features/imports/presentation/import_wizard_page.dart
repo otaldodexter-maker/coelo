@@ -49,6 +49,7 @@ final class _ImportWizardPageState extends State<ImportWizardPage> {
             : 'Continuar';
         return SuperadminFormFrame(
           viewportWidth: constraints.maxWidth,
+          scrollKey: ValueKey('import-wizard-scroll-$currentStep'),
           navigation: SuperadminFormStepNavigation(
             currentIndex: currentStep,
             onStepSelected: controller.goToStep,
@@ -65,13 +66,16 @@ final class _ImportWizardPageState extends State<ImportWizardPage> {
                 ),
             ],
           ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Nova importação', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: CoeloSpacing.space4),
-              _StepBody(controller: controller),
-            ],
+          body: SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Nova importação', style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: CoeloSpacing.space4),
+                _StepBody(controller: controller),
+              ],
+            ),
           ),
           footer: SuperadminFormActionFooter(
             tertiaryAction: TextButton(onPressed: widget.onFinished, child: const Text('Cancelar')),
@@ -82,7 +86,9 @@ final class _ImportWizardPageState extends State<ImportWizardPage> {
               ),
               FilledButton(
                 key: const Key('import-wizard-primary'),
-                onPressed: isComplete
+                onPressed: currentStep == 0 && !controller.executionAvailable
+                    ? null
+                    : isComplete
                     ? widget.onFinished
                     : isConfirmation
                     ? (controller.canConfirm ? controller.confirm : null)
@@ -116,7 +122,7 @@ final class _StepBody extends StatelessWidget {
         }
         final resolvedDraft = snapshot.data!;
         return switch (controller.currentStep) {
-          2 => _MappingStep(draft: resolvedDraft),
+          2 => _MappingStep(controller: controller, draft: resolvedDraft),
           4 => _PreviewStep(draft: resolvedDraft),
           _ => _ConfirmationStep(controller: controller, draft: resolvedDraft),
         };
@@ -157,13 +163,15 @@ final class _EntityStep extends StatelessWidget {
           return Wrap(
             spacing: CoeloSpacing.space3,
             runSpacing: CoeloSpacing.space3,
-            children: ImportWizardController.supportedEntities
+            children: ImportWizardController.catalogEntities
                 .map(
                   (entity) => SizedBox(
                     width: optionWidth,
                     child: _ImportWizardOptionTile(
                       label: entity.label,
-                      subtitle: entity.matchingKey,
+                      subtitle: controller.executionAvailable || controller.entity != entity
+                          ? entity.matchingKey
+                          : '${entity.matchingKey} · Indisponível nesta etapa',
                       selected: controller.entity == entity,
                       onTap: () => controller.selectEntity(entity),
                     ),
@@ -175,6 +183,32 @@ final class _EntityStep extends StatelessWidget {
       ),
       const SizedBox(height: CoeloSpacing.space4),
       Text('Destino: ${controller.context}'),
+      if (!controller.executionAvailable) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        DecoratedBox(
+          key: const Key('import-entity-unavailable'),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.tertiaryContainer,
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline_rounded),
+                const SizedBox(width: CoeloSpacing.space2),
+                Expanded(
+                  child: Text(
+                    'Execução indisponível nesta etapa para ${controller.entity.label}. '
+                    'Nenhum arquivo será enviado e nenhuma alteração será aplicada.',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     ],
   );
 }
@@ -240,22 +274,138 @@ final class _FileStep extends StatelessWidget {
 }
 
 final class _MappingStep extends StatelessWidget {
-  const _MappingStep({required this.draft});
+  const _MappingStep({required this.controller, required this.draft});
+  final ImportWizardController controller;
   final ImportJob draft;
+
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text('Chave de correspondência: ${draft.entity.matchingKey}'),
-      const SizedBox(height: CoeloSpacing.space4),
-      ...draft.mapping.entries.map(
-        (entry) => ListTile(
-          leading: const Icon(Icons.arrow_forward_rounded),
-          title: Text(entry.key),
-          trailing: Text(entry.value),
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final source = controller.sourceFile;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Mapeamento das colunas', style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(
+          'Confirme como cada coluna do arquivo corresponde aos campos do Coelo.',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-      ),
-    ],
+        const SizedBox(height: CoeloSpacing.space4),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            border: Border.all(color: colors.outlineVariant),
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            child: Row(
+              children: [
+                Icon(Icons.description_outlined, color: colors.primary),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(source?.name ?? draft.file.fileName),
+                      Text(
+                        'Chave de correspondência: ${draft.entity.matchingKey}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        for (final entry in draft.mapping.entries) _MappingRow(entry: entry),
+        const SizedBox(height: CoeloSpacing.space4),
+        DecoratedBox(
+          key: const Key('import-mapping-honest-notice'),
+          decoration: BoxDecoration(
+            color: colors.tertiaryContainer,
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline_rounded),
+                const SizedBox(width: CoeloSpacing.space2),
+                const Expanded(
+                  child: Text(
+                    'Esta é uma prévia de validação. Nenhuma alteração foi aplicada; '
+                    'a execução depende da confirmação e do serviço autorizado.',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+final class _MappingRow extends StatelessWidget {
+  const _MappingRow({required this.entry});
+  final MapEntry<String, String> entry;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      final source = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(entry.key, style: Theme.of(context).textTheme.titleSmall),
+          Text('Coluna do arquivo', style: Theme.of(context).textTheme.bodySmall),
+        ],
+      );
+      final target = DecoratedBox(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          borderRadius: BorderRadius.circular(CoeloRadius.md),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space3),
+          child: Row(
+            children: [
+              const Icon(Icons.link_rounded),
+              const SizedBox(width: CoeloSpacing.space2),
+              Expanded(child: Text(entry.value)),
+            ],
+          ),
+        ),
+      );
+      return Padding(
+        padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+        child: compact
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  source,
+                  const SizedBox(height: CoeloSpacing.space2),
+                  target,
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: source),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+                    child: Icon(Icons.arrow_forward_rounded),
+                  ),
+                  Expanded(flex: 2, child: target),
+                ],
+              ),
+      );
+    },
   );
 }
 

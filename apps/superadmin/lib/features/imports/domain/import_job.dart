@@ -1,6 +1,16 @@
 import 'package:flutter/foundation.dart';
 
-enum ImportEntity { institutions, units, groups, activities, people, internalUsers }
+enum ImportEntity {
+  institutions,
+  units,
+  people,
+  groups,
+  activities,
+  medicationPlans,
+  mealPlans,
+  forms,
+  internalUsers,
+}
 
 enum ImportStrategy { createOnly, createAndUpdate }
 
@@ -60,9 +70,12 @@ extension ImportEntityLabels on ImportEntity {
   String get label => switch (this) {
     ImportEntity.institutions => 'Instituições',
     ImportEntity.units => 'Unidades',
-    ImportEntity.groups => 'Turmas',
+    ImportEntity.groups => 'Grupos e turmas',
     ImportEntity.activities => 'Atividades',
     ImportEntity.people => 'Pessoas',
+    ImportEntity.medicationPlans => 'Planos de medicação',
+    ImportEntity.mealPlans => 'Cardápios',
+    ImportEntity.forms => 'Formulários',
     ImportEntity.internalUsers => 'Usuários internos',
   };
 
@@ -72,6 +85,9 @@ extension ImportEntityLabels on ImportEntity {
     ImportEntity.groups => 'Código da turma',
     ImportEntity.activities => '@ da atividade',
     ImportEntity.people => 'Documento interno',
+    ImportEntity.medicationPlans => 'Identificador do plano',
+    ImportEntity.mealPlans => 'Data e contexto',
+    ImportEntity.forms => 'Identificador do formulário',
     ImportEntity.internalUsers => 'ID do usuário',
   };
 }

@@ -12,18 +12,27 @@ void main() {
     controller.dispose();
   });
 
-  test('rejects unsupported presets before any repository call', () {
-    final repository = InMemoryImportRepository();
-    final controller = ImportWizardController(
-      repository: repository,
-      initialEntity: ImportEntity.activities,
-    );
+  test(
+    'keeps unavailable presets visible but blocks execution before any repository call',
+    () async {
+      final repository = InMemoryImportRepository();
+      final controller = ImportWizardController(
+        repository: repository,
+        initialEntity: ImportEntity.activities,
+      );
 
-    expect(controller.entity, ImportEntity.units);
-    controller.selectEntity(ImportEntity.people);
-    expect(controller.entity, ImportEntity.units);
-    controller.dispose();
-  });
+      expect(controller.entity, ImportEntity.activities);
+      expect(controller.executionAvailable, isFalse);
+      controller.selectEntity(ImportEntity.people);
+      expect(controller.entity, ImportEntity.people);
+
+      await controller.next();
+
+      expect(controller.currentStep, 0);
+      expect(controller.preparedDraft, isNull);
+      controller.dispose();
+    },
+  );
 
   test('does not confirm without an authenticated source file', () {
     final controller = ImportWizardController(repository: InMemoryImportRepository());

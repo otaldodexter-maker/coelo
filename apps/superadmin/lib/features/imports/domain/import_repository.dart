@@ -20,6 +20,10 @@ final class ImportRepositoryUnavailableException implements Exception {
   const ImportRepositoryUnavailableException();
 }
 
+final class ImportRepositoryUnauthorizedException implements Exception {
+  const ImportRepositoryUnauthorizedException();
+}
+
 final class UnavailableImportRepository implements ImportRepository {
   const UnavailableImportRepository();
   Future<T> _unavailable<T>() => Future<T>.error(const ImportRepositoryUnavailableException());
