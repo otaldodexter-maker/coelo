@@ -180,3 +180,25 @@ arquivos pertencem à outra frente e permanecem intocados. Quando `dev` estiver
 limpa, o gate seguro é recalcular `git cherry`, integrar os dois commits na
 ordem, repetir replay/mirror/pgTAP/secret scan e somente então remover a
 worktree/branch backend. Não fazer push.
+
+## Continuação backend — Auth full-stack e estado atual
+
+O inventário anterior foi superado por três commits backend adicionais. Em
+2026-08-31, após persistir este ledger, `git cherry dev codex/supabase-cross-app-foundation` retorna seis
+linhas `+`, todas alcançáveis pela branch e na seguinte ordem:
+
+| Commit | Classificação contra `dev` | Evidência |
+| --- | --- | --- |
+| `04da0141` | exclusivo correto, pendente | guard forward-only de proveniência da hierarquia |
+| `0f3b6ebf` | exclusivo correto, pendente | pgTAP 7/7 da divergência de hierarquia |
+| `5160e799` | exclusivo documental, pendente | handoff de consolidação sem alterar estado funcional |
+| `ed9d3b12` | exclusivo correto, pendente | Auth real: signup/login/bootstrap/refresh/logout/revogação e cleanup Docker zero |
+| `9980c681` | exclusivo documental, pendente | checkpoint Auth e bloqueio canônico OQ-043 de Activities interno |
+| este commit de ledger | exclusivo documental, pendente | reconcilia a lista final sem depender do próprio hash |
+
+O replay database-only voltou a passar 7/7 após a correção do identificador
+Docker, o manifesto passou 52/52, o mirror 115/115 e o secret scan não encontrou
+JWT literal. A checkout principal `dev` continua dirty na frente visual/Forms;
+nenhum arquivo dela foi tocado. Portanto os seis commits permanecem
+preservados nesta worktree e ainda não devem ser cherry-picked, mesclados ou
+removidos. Não fazer push.

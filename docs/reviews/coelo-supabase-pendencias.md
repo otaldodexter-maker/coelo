@@ -4146,3 +4146,20 @@ da simples soma das 207 ações.
   revalidar apenas famílias legadas separadamente e nunca chamá-las de CRUD do
   Superadmin interno. Gate de conhecimento: `no-op`, pois o comportamento de
   produto não mudou; apenas a prova técnica e o conflito foram persistidos.
+
+### Checkpoint seguro 61 - commits Auth preservados para consolidação
+
+- **Commits exclusivos:** após persistir este checkpoint,
+  `git cherry dev codex/supabase-cross-app-foundation` retorna seis linhas `+`:
+  `04da0141`, `0f3b6ebf`, `5160e799`, `ed9d3b12`, `9980c681` e este commit
+  documental. Todos estão alcançáveis pela branch; a worktree backend estava
+  limpa antes deste checkpoint.
+- **Regressão do wrapper:** modo database-only passou novamente 7/7 e terminou
+  com zero recurso `coelo_safe_*`; modo Auth full-stack também terminou exit 0
+  e cleanup zero. Manifesto 52/52, mirror 115/115, `git diff --check` e secret
+  scan permanecem verdes.
+- **Consolidação bloqueada com segurança:** `dev@f1aeacf6` mantém alterações
+  dirty de Forms/UI/docs/knowledge da outra frente. Nenhum desses arquivos foi
+  alterado ou staged pelo backend. Os seis commits ficam preservados na branch
+  até `dev` estar limpa; não houve push, merge, cherry-pick ou remoção de
+  worktree/branch.
