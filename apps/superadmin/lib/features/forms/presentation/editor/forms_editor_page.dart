@@ -123,6 +123,16 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   Widget _editorBody() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      Align(
+        alignment: Alignment.centerRight,
+        child: OutlinedButton.icon(
+          key: const Key('forms-editor-publish'),
+          onPressed: _openPublishDialog,
+          icon: const Icon(Icons.publish_outlined),
+          label: const Text('Publicar ou agendar'),
+        ),
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
       _metadata(),
       const SizedBox(height: CoeloSpacing.space6),
       LayoutBuilder(
@@ -638,43 +648,65 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       setState(() => _feedback = 'Rascunho mantido somente nesta sessão; nenhum dado foi enviado.');
 
   void _validateLocally() {
-    final definition = FormDefinition(
-      id: 'local-preview',
-      institutionId: 'local-preview',
-      kind: FormKind.form,
-      identityMode: FormIdentityMode.identified,
-      responseUnit: FormResponseUnit.person,
-      title: _title.text.trim(),
-      sections: [
-        for (var sectionIndex = 0; sectionIndex < _sections.length; sectionIndex++)
-          FormSection(
-            id: _sections[sectionIndex].id,
-            title: _sections[sectionIndex].title,
-            description: _sections[sectionIndex].description,
-            position: sectionIndex,
-            items: [
-              for (
-                var questionIndex = 0;
-                questionIndex < _sections[sectionIndex].questions.length;
-                questionIndex++
-              )
-                FormItem(
-                  id: _sections[sectionIndex].questions[questionIndex].id,
-                  kind: _sections[sectionIndex].questions[questionIndex].kind,
-                  label: _sections[sectionIndex].questions[questionIndex].label.text.trim(),
-                  position: questionIndex,
-                  isRequired: _sections[sectionIndex].questions[questionIndex].required,
-                ),
-            ],
-          ),
-      ],
-    );
-    final issues = const FormDefinitionValidator().validate(definition);
+    final issues = const FormDefinitionValidator().validate(_localDefinition());
     setState(
       () => _feedback = issues.isEmpty
           ? 'Validação local concluída; a gravação remota continua indisponível.'
           : 'Revise o título, a ordem e os campos obrigatórios antes de salvar.',
     );
+  }
+
+  FormDefinition _localDefinition() => FormDefinition(
+    id: 'local-preview',
+    institutionId: 'local-preview',
+    kind: FormKind.form,
+    identityMode: FormIdentityMode.identified,
+    responseUnit: FormResponseUnit.person,
+    title: _title.text.trim(),
+    sections: [
+      for (var sectionIndex = 0; sectionIndex < _sections.length; sectionIndex++)
+        FormSection(
+          id: _sections[sectionIndex].id,
+          title: _sections[sectionIndex].title,
+          description: _sections[sectionIndex].description,
+          position: sectionIndex,
+          items: [
+            for (
+              var questionIndex = 0;
+              questionIndex < _sections[sectionIndex].questions.length;
+              questionIndex++
+            )
+              FormItem(
+                id: _sections[sectionIndex].questions[questionIndex].id,
+                kind: _sections[sectionIndex].questions[questionIndex].kind,
+                label: _sections[sectionIndex].questions[questionIndex].label.text.trim(),
+                position: questionIndex,
+                isRequired: _sections[sectionIndex].questions[questionIndex].required,
+              ),
+          ],
+        ),
+    ],
+  );
+
+  Future<void> _openPublishDialog() async {
+    final issues = const FormDefinitionValidator().validate(_localDefinition());
+    if (issues.isNotEmpty) {
+      setState(
+        () => _feedback = 'Revise o título, a ordem e os campos obrigatórios antes de publicar.',
+      );
+      return;
+    }
+    final intent = await showDialog<_FormsPublishIntent>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (_) => const _FormsPublishDialog(),
+    );
+    if (intent == null || !mounted) return;
+    setState(() {
+      _feedback = intent.scheduledAt == null
+          ? 'Publicação concluída somente nesta fixture local; nenhuma persistência remota foi realizada.'
+          : 'Publicação agendada localmente para ${_publishDateTime(intent.scheduledAt!)}; nenhuma persistência remota foi realizada.';
+    });
   }
 
   Future<void> _confirmCancel() async {
@@ -777,6 +809,91 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     ),
   ];
 }
+
+final class _FormsPublishIntent {
+  const _FormsPublishIntent({this.scheduledAt});
+
+  final DateTime? scheduledAt;
+}
+
+final class _FormsPublishDialog extends StatefulWidget {
+  const _FormsPublishDialog();
+
+  @override
+  State<_FormsPublishDialog> createState() => _FormsPublishDialogState();
+}
+
+final class _FormsPublishDialogState extends State<_FormsPublishDialog> {
+  bool _scheduled = false;
+  DateTime? _scheduledAt;
+
+  @override
+  Widget build(BuildContext context) => CoeloAdminDialogShell(
+    title: 'Publicar formulário',
+    body: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Esta ação altera somente a fixture local do /dev. Nenhuma publicação ou notificação remota será executada.',
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            ChoiceChip(
+              key: const Key('forms-editor-publish-now'),
+              label: const Text('Publicar agora'),
+              selected: !_scheduled,
+              onSelected: (_) => setState(() => _scheduled = false),
+            ),
+            ChoiceChip(
+              key: const Key('forms-editor-publish-scheduled'),
+              label: const Text('Agendar publicação'),
+              selected: _scheduled,
+              onSelected: (_) => setState(() => _scheduled = true),
+            ),
+          ],
+        ),
+        if (_scheduled) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloDateTimeField(
+            value: _scheduledAt,
+            currentDate: DateTime(2026, 8, 31),
+            firstDate: DateTime(2026, 8, 31),
+            lastDate: DateTime(2028, 12, 31),
+            labelText: 'Data e hora da publicação',
+            onChanged: (value) => setState(() => _scheduledAt = value),
+          ),
+          if (_scheduledAt == null) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(
+              'Escolha a data e a hora para confirmar o agendamento.',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ],
+        ],
+      ],
+    ),
+    secondaryAction: OutlinedButton(
+      onPressed: () => Navigator.of(context).pop(),
+      child: const Text('Cancelar'),
+    ),
+    primaryAction: FilledButton(
+      key: const Key('forms-editor-confirm-publish'),
+      onPressed: _scheduled && _scheduledAt == null
+          ? null
+          : () => Navigator.of(
+              context,
+            ).pop(_FormsPublishIntent(scheduledAt: _scheduled ? _scheduledAt : null)),
+      child: Text(_scheduled ? 'Agendar publicação' : 'Publicar agora'),
+    ),
+  );
+}
+
+String _publishDateTime(DateTime value) =>
+    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year} às ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
 enum _DateRule { free, from, until, range }
 

@@ -2,6 +2,7 @@ import 'package:coelo_superadmin/features/forms/presentation/editor/forms_editor
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -124,6 +125,45 @@ void main() {
     await tester.pump();
     expect(find.textContaining('cópia'), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('publishes now or schedules only inside the development fixture', (tester) async {
+    await tester.pumpWidget(_app(const FormsEditorPage.development()));
+
+    expect(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'), findsOneWidget);
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Publicar formulário'), findsOneWidget);
+    expect(find.text('Publicar agora'), findsWidgets);
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Publicação concluída somente nesta fixture local'), findsOneWidget);
+    expect(find.textContaining('nenhuma persistência remota'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Publicar ou agendar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-editor-publish-scheduled')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('forms-editor-confirm-publish'))).onPressed,
+      isNull,
+    );
+    expect(find.textContaining('Escolha a data e a hora'), findsOneWidget);
+    final dateField = tester.widget<CoeloDateTimeField>(find.byType(CoeloDateTimeField));
+    dateField.onChanged(DateTime(2026, 9, 12, 8, 30));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('forms-editor-confirm-publish')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('12/09/2026 às 08:30'), findsOneWidget);
+    expect(find.textContaining('nenhuma persistência remota'), findsOneWidget);
+  });
+
+  testWidgets('production does not expose local publication affordances', (tester) async {
+    await tester.pumpWidget(_app(const FormsEditorPage()));
+
+    expect(find.text('Publicar ou agendar'), findsNothing);
+    expect(find.text('Publicar agora'), findsNothing);
+    expect(find.textContaining('Publicação concluída'), findsNothing);
   });
 
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
