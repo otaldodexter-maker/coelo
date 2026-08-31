@@ -1,23 +1,236 @@
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-/// Dormant response surface kept only for source compatibility.
-///
-/// Routed response flows remain fail-closed until the server-owned
-/// authorization and persistence composition is available.
-final class FormResponsePage extends StatelessWidget {
-  const FormResponsePage({super.key});
+final class FormResponsePage extends StatefulWidget {
+  const FormResponsePage({super.key})
+    : development = false,
+      anonymous = false,
+      secretLost = false,
+      failSubmission = false;
+
+  const FormResponsePage.development({
+    this.anonymous = false,
+    this.secretLost = false,
+    this.failSubmission = false,
+    super.key,
+  }) : development = true;
+
+  final bool development;
+  final bool anonymous;
+  final bool secretLost;
+  final bool failSubmission;
 
   @override
-  Widget build(BuildContext context) => const Scaffold(
-    body: SafeArea(
-      child: Center(
-        child: CoeloStatePanel(
-          title: 'Resposta de formulário indisponível',
-          message: 'O envio de respostas está temporariamente indisponível.',
-          icon: Icons.lock_outline_rounded,
+  State<FormResponsePage> createState() => _FormResponsePageState();
+}
+
+final class _FormResponsePageState extends State<FormResponsePage> {
+  final _answer = TextEditingController();
+  bool _review = false;
+  bool _submitted = false;
+  bool _failed = false;
+
+  @override
+  void dispose() {
+    _answer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.development) {
+      return const Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: CoeloStatePanel(
+              title: 'Resposta de formulário indisponível',
+              message: 'O envio de respostas está temporariamente indisponível.',
+              icon: Icons.lock_outline_rounded,
+            ),
+          ),
+        ),
+      );
+    }
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final inset = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              ? CoeloSpacing.space6
+              : CoeloSpacing.space4;
+          return ListView(
+            padding: EdgeInsets.fromLTRB(inset, CoeloSpacing.space5, inset, CoeloSpacing.space8),
+            children: [
+              Text('Pesquisa das famílias', style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: CoeloSpacing.space1),
+              Text(widget.anonymous ? 'Resposta anônima' : 'Resposta identificada'),
+              const SizedBox(height: CoeloSpacing.space4),
+              if (widget.anonymous && widget.secretLost)
+                const CoeloStatePanel(
+                  icon: Icons.key_off_outlined,
+                  title: 'Edição irrecuperável',
+                  message:
+                      'O segredo anônimo foi perdido. A identidade e a edição desta resposta não podem ser recuperadas.',
+                )
+              else if (_submitted)
+                const CoeloStatePanel(
+                  icon: Icons.task_alt_rounded,
+                  title: 'Resposta enviada nesta demonstração',
+                  message:
+                      'Este sucesso existe apenas na fixture local. Nenhuma persistência remota foi realizada.',
+                )
+              else if (_review)
+                _buildReview(context)
+              else
+                _buildForm(context),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(
+        children: [
+          const Icon(Icons.history_rounded),
+          const SizedBox(width: CoeloSpacing.space2),
+          Text('Rascunho retomado', style: Theme.of(context).textTheme.titleSmall),
+        ],
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      TextFormField(
+        controller: _answer,
+        minLines: 4,
+        maxLines: 8,
+        decoration: const InputDecoration(
+          labelText: 'Sua resposta',
+          hintText: 'Escreva sua contribuição',
+          border: OutlineInputBorder(),
         ),
       ),
-    ),
+      const SizedBox(height: CoeloSpacing.space3),
+      const _AutosaveStates(),
+      const SizedBox(height: CoeloSpacing.space5),
+      const _ResponseUploads(),
+      const SizedBox(height: CoeloSpacing.space5),
+      Align(
+        alignment: Alignment.centerRight,
+        child: FilledButton.icon(
+          onPressed: () => setState(() {
+            _review = true;
+            _failed = false;
+          }),
+          icon: const Icon(Icons.fact_check_outlined),
+          label: const Text('Revisar resposta'),
+        ),
+      ),
+    ],
+  );
+
+  Widget _buildReview(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text('Revisão da resposta', style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloAdminInteractiveCard(
+        semanticLabel: 'Resposta: ${_answer.text}',
+        child: Padding(
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          child: Text(_answer.text.isEmpty ? 'Sem resposta informada' : _answer.text),
+        ),
+      ),
+      if (_failed) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        const CoeloStatePanel(
+          icon: Icons.error_outline_rounded,
+          title: 'A resposta não foi enviada',
+          message: 'Os dados locais foram preservados. Revise e tente novamente.',
+        ),
+      ],
+      const SizedBox(height: CoeloSpacing.space4),
+      Wrap(
+        alignment: WrapAlignment.end,
+        spacing: CoeloSpacing.space2,
+        runSpacing: CoeloSpacing.space2,
+        children: [
+          OutlinedButton(
+            onPressed: () => setState(() => _review = false),
+            child: const Text('Voltar e editar'),
+          ),
+          FilledButton(
+            onPressed: () => setState(() {
+              if (widget.failSubmission) {
+                _failed = true;
+              } else {
+                _submitted = true;
+              }
+            }),
+            child: const Text('Enviar resposta'),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+final class _AutosaveStates extends StatelessWidget {
+  const _AutosaveStates();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text('Estados da sincronização local', style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: CoeloSpacing.space2),
+      Wrap(
+        spacing: CoeloSpacing.space2,
+        runSpacing: CoeloSpacing.space2,
+        children: const [
+          Chip(label: Text('Alterado')),
+          Chip(label: Text('Salvando')),
+          Chip(label: Text('Salvo')),
+          Chip(label: Text('Conflito')),
+          Chip(label: Text('Falha')),
+        ],
+      ),
+    ],
+  );
+}
+
+final class _ResponseUploads extends StatelessWidget {
+  const _ResponseUploads();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text('Anexos protegidos', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: CoeloSpacing.space2),
+      const LinearProgressIndicator(
+        key: Key('form-response-upload-progress'),
+        value: .58,
+        semanticsLabel: 'Upload protegido em andamento',
+        semanticsValue: '58',
+      ),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton(onPressed: () {}, child: const Text('Cancelar upload')),
+      ),
+      const ListTile(
+        leading: Icon(Icons.error_outline_rounded),
+        title: Text('Falha no envio de imagem'),
+        subtitle: Text('Tente novamente sem perder as demais respostas.'),
+      ),
+      const ListTile(
+        leading: Icon(Icons.lock_outline_rounded),
+        title: Text('Mídia protegida indisponível'),
+        subtitle: Text('O arquivo será resolvido somente por acesso temporário autorizado.'),
+      ),
+    ],
   );
 }
