@@ -10,6 +10,7 @@ import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
+import 'forms_lifecycle_actions.dart';
 
 enum FormsDirectoryDisplay { table, cards }
 
@@ -23,6 +24,8 @@ final class FormsDirectoryPage extends StatefulWidget {
     this.canTransferCrossInstitution = false,
     this.onCreate,
     this.onOpen,
+    this.onEdit,
+    this.onManageSchedules,
     this.onLifecycleCompleted,
     super.key,
   });
@@ -33,6 +36,8 @@ final class FormsDirectoryPage extends StatefulWidget {
   final bool canTransferCrossInstitution;
   final VoidCallback? onCreate;
   final ValueChanged<FormDirectoryItem>? onOpen;
+  final ValueChanged<FormDirectoryItem>? onEdit;
+  final ValueChanged<FormDirectoryItem>? onManageSchedules;
   final VoidCallback? onLifecycleCompleted;
 
   @override
@@ -44,7 +49,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   final _cursors = <String?>[null];
   Set<FormOperationalStatus> _operationalStatuses = {};
   DateTimeRange? _period;
-  FormsDirectoryDisplay _display = FormsDirectoryDisplay.cards;
+  FormsDirectoryDisplay _display = FormsDirectoryDisplay.table;
   FormsDirectoryLoadStatus _status = FormsDirectoryLoadStatus.loading;
   FormCursorPage<FormDirectoryItem>? _page;
   String? _message;
@@ -265,36 +270,42 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       message: 'Aguarde enquanto os dados autorizados são carregados.',
       loading: true,
     ),
-    FormsDirectoryLoadStatus.empty => const CoeloStatePanel(
-      title: 'Nenhum formulário disponível',
-      message: 'Não há formulários para consultar neste escopo.',
-      icon: Icons.dynamic_form_outlined,
+    FormsDirectoryLoadStatus.empty => _stateWithCreate(
+      const CoeloStatePanel(
+        title: 'Nenhum formulário disponível',
+        message: 'Não há formulários para consultar neste escopo.',
+        icon: Icons.dynamic_form_outlined,
+      ),
     ),
-    FormsDirectoryLoadStatus.noResults => CoeloStatePanel(
-      title: 'Nenhum resultado',
-      message: 'Ajuste a busca, o status ou o período.',
-      icon: Icons.search_off_rounded,
-      actionLabel: 'Limpar filtros',
-      onAction: () {
-        _search.clear();
-        setState(() {
-          _operationalStatuses = {};
-          _period = null;
-        });
-        _resetAndLoad();
-      },
+    FormsDirectoryLoadStatus.noResults => _stateWithCreate(
+      CoeloStatePanel(
+        title: 'Nenhum resultado',
+        message: 'Ajuste a busca, o status ou o período.',
+        icon: Icons.search_off_rounded,
+        actionLabel: 'Limpar filtros',
+        onAction: () {
+          _search.clear();
+          setState(() {
+            _operationalStatuses = {};
+            _period = null;
+          });
+          _resetAndLoad();
+        },
+      ),
     ),
     FormsDirectoryLoadStatus.unauthorized => const CoeloStatePanel(
       title: 'Acesso não autorizado',
       message: 'Seu perfil não possui forms.read neste escopo.',
       icon: Icons.lock_outline_rounded,
     ),
-    FormsDirectoryLoadStatus.failure => CoeloStatePanel(
-      title: 'Não foi possível carregar os formulários',
-      message: _message ?? 'Tente novamente.',
-      icon: Icons.error_outline_rounded,
-      actionLabel: 'Tentar novamente',
-      onAction: _load,
+    FormsDirectoryLoadStatus.failure => _stateWithCreate(
+      CoeloStatePanel(
+        title: 'Não foi possível carregar os formulários',
+        message: _message ?? 'Tente novamente.',
+        icon: Icons.error_outline_rounded,
+        actionLabel: 'Tentar novamente',
+        onAction: _load,
+      ),
     ),
     FormsDirectoryLoadStatus.data => FormsDirectoryResults(
       page: _page!,
@@ -309,9 +320,28 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
       includePagination: includePagination,
       onCreate: widget.onCreate,
       onOpen: widget.onOpen,
+      onEdit: widget.onEdit,
+      onManageSchedules: widget.onManageSchedules,
       onLifecycleCompleted: _resetAndLoad,
     ),
   };
+
+  Widget _stateWithCreate(Widget state) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (widget.canManage && widget.onCreate != null) ...[
+        CoeloAdminCreateAction(
+          key: const Key('forms-directory-create'),
+          label: 'Novo formulário',
+          description: 'Criar e configurar um formulário.',
+          variant: CoeloAdminCreateActionVariant.banner,
+          onPressed: widget.onCreate,
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+      ],
+      state,
+    ],
+  );
 }
 
 final class FormsDirectoryResults extends StatelessWidget {
@@ -327,6 +357,8 @@ final class FormsDirectoryResults extends StatelessWidget {
     this.onNext,
     this.onCreate,
     this.onOpen,
+    this.onEdit,
+    this.onManageSchedules,
     this.onLifecycleCompleted,
     this.includePagination = true,
     super.key,
@@ -343,6 +375,8 @@ final class FormsDirectoryResults extends StatelessWidget {
   final VoidCallback? onNext;
   final VoidCallback? onCreate;
   final ValueChanged<FormDirectoryItem>? onOpen;
+  final ValueChanged<FormDirectoryItem>? onEdit;
+  final ValueChanged<FormDirectoryItem>? onManageSchedules;
   final VoidCallback? onLifecycleCompleted;
   final bool includePagination;
 
@@ -350,7 +384,21 @@ final class FormsDirectoryResults extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      if (display == FormsDirectoryDisplay.cards) _cards(context) else _table(context),
+      if (display == FormsDirectoryDisplay.cards)
+        _cards(context)
+      else ...[
+        if (canManage) ...[
+          CoeloAdminCreateAction(
+            key: const Key('forms-directory-create'),
+            label: 'Novo formulário',
+            description: 'Criar e configurar um formulário.',
+            variant: CoeloAdminCreateActionVariant.banner,
+            onPressed: onCreate,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
+        _table(context),
+      ],
       if (includePagination && (onPrevious != null || onNext != null))
         Padding(
           padding: const EdgeInsets.only(top: CoeloSpacing.space5),
@@ -377,6 +425,17 @@ final class FormsDirectoryResults extends StatelessWidget {
         spacing: CoeloSpacing.space6,
         runSpacing: CoeloSpacing.space6,
         children: [
+          if (canManage)
+            SizedBox(
+              width: width,
+              height: 216,
+              child: CoeloAdminCreateAction(
+                key: const Key('forms-directory-create'),
+                label: 'Novo formulário',
+                variant: CoeloAdminCreateActionVariant.tile,
+                onPressed: onCreate,
+              ),
+            ),
           for (final item in page.items)
             SizedBox(
               width: width,
@@ -407,6 +466,10 @@ final class FormsDirectoryResults extends StatelessWidget {
                       Text(_kindLabel(item.kind)),
                       const SizedBox(height: CoeloSpacing.space4),
                       Text('Atualizado em ${_shortDate(item.updatedAt)}'),
+                      if (canManageLifecycle || onManageSchedules != null) ...[
+                        const SizedBox(height: CoeloSpacing.space2),
+                        Align(alignment: Alignment.centerRight, child: _actions(item)),
+                      ],
                     ],
                   ),
                 ),
@@ -423,49 +486,85 @@ final class FormsDirectoryResults extends StatelessWidget {
     pinnedColumn: CoeloAdminTableColumn(
       id: 'title',
       label: 'Nome',
-      initialWidth: 320,
+      initialWidth: 228,
       minWidth: 200,
-      maxWidth: 480,
+      maxWidth: 360,
       cellBuilder: (_, item) => Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis),
     ),
     columns: [
       CoeloAdminTableColumn(
-        id: 'kind',
-        label: 'Tipo',
-        initialWidth: 150,
-        minWidth: 120,
-        maxWidth: 220,
-        cellBuilder: (_, item) => Text(_kindLabel(item.kind)),
-      ),
-      CoeloAdminTableColumn(
         id: 'status',
         label: 'Situação',
-        initialWidth: 140,
+        initialWidth: 132,
         minWidth: 110,
         maxWidth: 180,
         cellBuilder: (_, item) => _FormOperationalStatusChip(status: item.operationalStatus),
       ),
       CoeloAdminTableColumn(
-        id: 'identity',
-        label: 'Identificação',
+        id: 'context',
+        label: 'Contexto',
         initialWidth: 160,
-        minWidth: 130,
-        maxWidth: 220,
-        cellBuilder: (_, item) =>
-            Text(item.identityMode == FormIdentityMode.anonymous ? 'Anônimo' : 'Identificado'),
+        minWidth: 150,
+        maxWidth: 280,
+        cellBuilder: (_, item) => Text(item.contextLabel ?? '—'),
       ),
       CoeloAdminTableColumn(
-        id: 'updated',
-        label: 'Atualização',
-        initialWidth: 150,
-        minWidth: 120,
-        maxWidth: 210,
-        cellBuilder: (_, item) => Text(_shortDate(item.updatedAt)),
+        id: 'audience',
+        label: 'Público',
+        initialWidth: 140,
+        minWidth: 140,
+        maxWidth: 240,
+        cellBuilder: (_, item) => Text(item.audienceLabel ?? '—'),
       ),
+      CoeloAdminTableColumn(
+        id: 'responses',
+        label: 'Respostas',
+        initialWidth: 104,
+        minWidth: 104,
+        maxWidth: 160,
+        cellBuilder: (_, item) => Text(item.responseCount?.toString() ?? '—'),
+      ),
+      CoeloAdminTableColumn(
+        id: 'schedules',
+        label: 'Agendamentos',
+        initialWidth: 130,
+        minWidth: 130,
+        maxWidth: 190,
+        cellBuilder: (_, item) => Text(item.scheduleCount?.toString() ?? '—'),
+      ),
+      CoeloAdminTableColumn(
+        id: 'created',
+        label: 'Criado em',
+        initialWidth: 128,
+        minWidth: 128,
+        maxWidth: 190,
+        cellBuilder: (_, item) => Text(item.createdAt == null ? '—' : _shortDate(item.createdAt!)),
+      ),
+      if (canManageLifecycle || onManageSchedules != null)
+        CoeloAdminTableColumn(
+          id: 'actions',
+          label: 'Ações',
+          initialWidth: 72,
+          minWidth: 72,
+          maxWidth: 72,
+          cellBuilder: (_, item) => Align(alignment: Alignment.center, child: _actions(item)),
+        ),
     ],
     headerHeight: 56,
-    rowHeight: 68,
+    rowHeight: 64,
     onRowPressed: onOpen,
+  );
+
+  Widget _actions(FormDirectoryItem item) => FormsLifecycleActions(
+    api: api,
+    formId: item.id,
+    formTitle: item.title,
+    managementVersion: item.managementVersion,
+    canManage: canManageLifecycle,
+    canTransferCrossInstitution: canTransferCrossInstitution,
+    onEdit: onEdit == null ? null : () => onEdit!(item),
+    onManageSchedules: onManageSchedules == null ? null : () => onManageSchedules!(item),
+    onCompleted: onLifecycleCompleted,
   );
 }
 
@@ -572,6 +671,11 @@ final _previewForms = [
     status: FormStatus.published,
     operationalStatus: FormOperationalStatus.scheduled,
     identityMode: FormIdentityMode.identified,
+    contextLabel: 'Todas as unidades',
+    audienceLabel: 'Professores',
+    responseCount: 42,
+    scheduleCount: 1,
+    createdAt: DateTime(2026, 8, 8),
     updatedAt: DateTime(2026, 8, 13),
     managementVersion: 4,
   ),
@@ -582,6 +686,11 @@ final _previewForms = [
     status: FormStatus.draft,
     operationalStatus: FormOperationalStatus.draft,
     identityMode: FormIdentityMode.anonymous,
+    contextLabel: 'Unidade Centro',
+    audienceLabel: 'Famílias',
+    responseCount: 18,
+    scheduleCount: 2,
+    createdAt: DateTime(2026, 8, 12),
     updatedAt: DateTime(2026, 8, 12),
     managementVersion: 2,
   ),

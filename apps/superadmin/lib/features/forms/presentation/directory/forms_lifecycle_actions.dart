@@ -6,7 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
-enum _LifecycleAction { duplicate, copy, move, archive, delete }
+enum _LifecycleAction { edit, duplicate, copy, move, schedules, archive, delete }
 
 final class FormsLifecycleActions extends StatefulWidget {
   const FormsLifecycleActions({
@@ -18,6 +18,8 @@ final class FormsLifecycleActions extends StatefulWidget {
     this.canTransferCrossInstitution = false,
     this.requestIdFactory,
     this.onCompleted,
+    this.onEdit,
+    this.onManageSchedules,
     super.key,
   });
 
@@ -29,6 +31,8 @@ final class FormsLifecycleActions extends StatefulWidget {
   final bool canTransferCrossInstitution;
   final String Function()? requestIdFactory;
   final VoidCallback? onCompleted;
+  final VoidCallback? onEdit;
+  final VoidCallback? onManageSchedules;
 
   @override
   State<FormsLifecycleActions> createState() => _FormsLifecycleActionsState();
@@ -39,15 +43,29 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.canManage || widget.api == null) return const SizedBox.shrink();
+    final canMutate = widget.canManage && widget.api != null;
+    if (!canMutate && widget.onManageSchedules == null) return const SizedBox.shrink();
     return CoeloAdminFlyout<_LifecycleAction>(
+      alignmentOffset: const Offset(0, CoeloSpacing.space1),
+      viewportGap: CoeloSpacing.space3,
+      elevation: CoeloElevation.level0,
+      alignPanelToViewportEnd: true,
+      crossAxisUnconstrained: true,
+      outlineOpacity: 0.38,
       items: [
-        const CoeloAdminFlyoutItem(
-          value: _LifecycleAction.duplicate,
-          label: 'Duplicar',
-          icon: Icons.content_copy_rounded,
-        ),
-        if (widget.canTransferCrossInstitution) ...const [
+        if (canMutate && widget.onEdit != null)
+          const CoeloAdminFlyoutItem(
+            value: _LifecycleAction.edit,
+            label: 'Editar',
+            icon: Icons.edit_outlined,
+          ),
+        if (canMutate)
+          const CoeloAdminFlyoutItem(
+            value: _LifecycleAction.duplicate,
+            label: 'Duplicar',
+            icon: Icons.content_copy_rounded,
+          ),
+        if (canMutate && widget.canTransferCrossInstitution) ...const [
           CoeloAdminFlyoutItem(
             value: _LifecycleAction.copy,
             label: 'Copiar para instituição',
@@ -59,19 +77,27 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
             icon: Icons.drive_file_move_outline,
           ),
         ],
-        const CoeloAdminFlyoutItem(
-          value: _LifecycleAction.archive,
-          label: 'Arquivar',
-          icon: Icons.archive_outlined,
-          startsGroup: true,
-          tone: CoeloAdminFlyoutTone.negative,
-        ),
-        const CoeloAdminFlyoutItem(
-          value: _LifecycleAction.delete,
-          label: 'Excluir',
-          icon: Icons.delete_outline_rounded,
-          tone: CoeloAdminFlyoutTone.negative,
-        ),
+        if (widget.onManageSchedules != null)
+          const CoeloAdminFlyoutItem(
+            value: _LifecycleAction.schedules,
+            label: 'Agendamentos',
+            icon: Icons.event_repeat_outlined,
+          ),
+        if (canMutate) ...const [
+          CoeloAdminFlyoutItem(
+            value: _LifecycleAction.archive,
+            label: 'Arquivar',
+            icon: Icons.archive_outlined,
+            startsGroup: true,
+            tone: CoeloAdminFlyoutTone.negative,
+          ),
+          CoeloAdminFlyoutItem(
+            value: _LifecycleAction.delete,
+            label: 'Excluir',
+            icon: Icons.delete_outline_rounded,
+            tone: CoeloAdminFlyoutTone.negative,
+          ),
+        ],
       ],
       onSelected: _loading ? (_) {} : _select,
       builder: (context, controller) => IconButton(
@@ -90,6 +116,8 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
 
   Future<void> _select(_LifecycleAction action) async {
     switch (action) {
+      case _LifecycleAction.edit:
+        widget.onEdit?.call();
       case _LifecycleAction.duplicate:
         if (await _confirm(
           title: 'Duplicar formulário?',
@@ -132,6 +160,8 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
           ),
           mode == FormCopyOrMoveMode.copy ? 'Formulário copiado.' : 'Formulário movido.',
         );
+      case _LifecycleAction.schedules:
+        widget.onManageSchedules?.call();
       case _LifecycleAction.archive:
       case _LifecycleAction.delete:
         final deleting = action == _LifecycleAction.delete;

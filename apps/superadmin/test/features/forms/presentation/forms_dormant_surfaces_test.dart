@@ -25,8 +25,9 @@ void main() {
     });
   }
 
-  testWidgets('directory stays read-only even when legacy callbacks are supplied', (tester) async {
+  testWidgets('directory exposes only the explicitly authorized callback surface', (tester) async {
     final api = _ReadOnlyFormsApi();
+    var createRequested = false;
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
@@ -35,15 +36,17 @@ void main() {
             api: api,
             canManage: true,
             canManageLifecycle: true,
-            onCreate: () => fail('create callback must not be exposed'),
+            onCreate: () => createRequested = true,
           ),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Novo formulário'), findsNothing);
-    expect(find.byTooltip('Ações do formulário Pesquisa'), findsNothing);
+    expect(find.text('Novo formulário'), findsOneWidget);
+    expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
+    await tester.tap(find.text('Novo formulário'));
+    expect(createRequested, isTrue);
     expect(api.calls, ['listDirectory']);
   });
 

@@ -8,6 +8,7 @@ final class SuperadminFormFrame extends StatelessWidget {
     required this.body,
     required this.footer,
     required this.viewportWidth,
+    this.bodyMaxWidth = 880,
     this.scrollKey,
     super.key,
   });
@@ -16,6 +17,7 @@ final class SuperadminFormFrame extends StatelessWidget {
   final Widget body;
   final Widget footer;
   final double viewportWidth;
+  final double bodyMaxWidth;
   final Key? scrollKey;
 
   @override
@@ -40,7 +42,7 @@ final class SuperadminFormFrame extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: CoeloSpacing.space6),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 880),
+                      constraints: BoxConstraints(maxWidth: bodyMaxWidth),
                       child: body,
                     ),
                   ),

@@ -2,6 +2,7 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/presentation/directory/forms_lifecycle_actions.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,6 +11,56 @@ void main() {
     await _pump(tester, api: _LifecycleApi(), canManage: false);
 
     expect(find.byTooltip('Ações do formulário Pesquisa das famílias'), findsNothing);
+  });
+
+  testWidgets('exposes schedules without granting lifecycle mutations', (tester) async {
+    var schedules = 0;
+    await _pump(tester, api: null, canManage: false, onManageSchedules: () => schedules++);
+
+    await tester.tap(find.byTooltip('Ações do formulário Pesquisa das famílias'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Agendamentos'), findsOneWidget);
+    expect(find.text('Duplicar'), findsNothing);
+    expect(find.text('Arquivar'), findsNothing);
+    await tester.tap(find.text('Agendamentos'));
+    await tester.pumpAndSettle();
+    expect(schedules, 1);
+  });
+
+  testWidgets('uses the approved inset zero-halo flyout variant', (tester) async {
+    await _pump(tester, api: _LifecycleApi());
+
+    final flyout =
+        tester.widget(find.byWidgetPredicate((widget) => widget is CoeloAdminFlyout))
+            as CoeloAdminFlyout;
+    expect(flyout.viewportGap, CoeloSpacing.space3);
+    expect(flyout.elevation, CoeloElevation.level0);
+    expect(flyout.alignPanelToViewportEnd, isTrue);
+    expect(flyout.crossAxisUnconstrained, isTrue);
+    expect(flyout.outlineOpacity, 0.38);
+  });
+
+  testWidgets('offers edit and scheduling through explicit navigation callbacks', (tester) async {
+    final api = _LifecycleApi();
+    var edits = 0;
+    var schedules = 0;
+    await _pump(tester, api: api, onEdit: () => edits++, onManageSchedules: () => schedules++);
+
+    await tester.tap(find.byTooltip('Ações do formulário Pesquisa das famílias'));
+    await tester.pumpAndSettle();
+    expect(find.text('Editar'), findsOneWidget);
+    expect(find.text('Agendamentos'), findsOneWidget);
+
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
+    expect(edits, 1);
+
+    await tester.tap(find.byTooltip('Ações do formulário Pesquisa das famílias'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Agendamentos'));
+    await tester.pumpAndSettle();
+    expect(schedules, 1);
   });
 
   testWidgets('duplicates only after explicit confirmation and reports success', (tester) async {
@@ -85,10 +136,12 @@ void main() {
 
 Future<void> _pump(
   WidgetTester tester, {
-  required _LifecycleApi api,
+  required FormsApi? api,
   bool canManage = true,
   bool canTransferCrossInstitution = false,
   VoidCallback? onCompleted,
+  VoidCallback? onEdit,
+  VoidCallback? onManageSchedules,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -104,6 +157,8 @@ Future<void> _pump(
             canTransferCrossInstitution: canTransferCrossInstitution,
             requestIdFactory: () => '11111111-1111-4111-8111-111111111111',
             onCompleted: onCompleted,
+            onEdit: onEdit,
+            onManageSchedules: onManageSchedules,
           ),
         ),
       ),

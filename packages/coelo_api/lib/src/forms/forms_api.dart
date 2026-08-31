@@ -92,6 +92,11 @@ final class FormDirectoryItem {
     required this.status,
     required this.operationalStatus,
     required this.identityMode,
+    this.contextLabel,
+    this.audienceLabel,
+    this.responseCount,
+    this.scheduleCount,
+    this.createdAt,
     required this.updatedAt,
     required this.managementVersion,
   });
@@ -102,6 +107,11 @@ final class FormDirectoryItem {
   final FormStatus status;
   final FormOperationalStatus operationalStatus;
   final FormIdentityMode identityMode;
+  final String? contextLabel;
+  final String? audienceLabel;
+  final int? responseCount;
+  final int? scheduleCount;
+  final DateTime? createdAt;
   final DateTime updatedAt;
   final int managementVersion;
 }

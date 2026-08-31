@@ -45,6 +45,11 @@ void main() {
       (anchor.style!.shape!.resolve({})! as RoundedRectangleBorder).borderRadius,
       BorderRadius.circular(CoeloRadius.lg),
     );
+    expect(
+      (anchor.style!.shape!.resolve({})! as RoundedRectangleBorder).side.color,
+      colors.outlineVariant,
+    );
+    expect(anchor.style!.elevation!.resolve({}), CoeloElevation.level2);
 
     final items = tester.widgetList<MenuItemButton>(find.byType(MenuItemButton)).toList();
     expect(
@@ -148,9 +153,40 @@ void main() {
     expect(anchor.style!.minimumSize!.resolve({})!.width, expectedPanelWidth);
     expect(anchor.style!.maximumSize!.resolve({})!.width, expectedPanelWidth);
     expect(itemRect.width, expectedItemWidth);
-    expect(itemRect.left, greaterThanOrEqualTo(12 + CoeloSpacing.space2 * 2));
-    expect(itemRect.right, lessThanOrEqualTo(200 - 12 - CoeloSpacing.space2 * 2));
+    expect(itemRect.left, greaterThanOrEqualTo(12 + CoeloSpacing.space2 + CoeloSpacing.space2));
+    expect(itemRect.right, lessThanOrEqualTo(200 - 12 - CoeloSpacing.space2 - CoeloSpacing.space2));
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('keeps the approved external gap at the right viewport edge', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topRight,
+            child: CoeloAdminFlyout<String>(
+              items: const [
+                CoeloAdminFlyoutItem(value: 'edit', label: 'Editar'),
+                CoeloAdminFlyoutItem(value: 'delete', label: 'Excluir'),
+              ],
+              onSelected: (_) {},
+              builder: (context, controller) =>
+                  IconButton(onPressed: controller.open, icon: const Icon(Icons.more_vert)),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+
+    final itemRect = tester.getRect(find.byType(MenuItemButton).first);
+    expect(itemRect.right, lessThanOrEqualTo(1440 - CoeloSpacing.space2));
   });
 
   testWidgets('Escape closes the flyout and restores trigger focus', (tester) async {

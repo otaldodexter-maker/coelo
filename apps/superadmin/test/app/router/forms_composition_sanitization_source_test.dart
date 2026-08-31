@@ -33,12 +33,12 @@ void main() {
     }
   });
 
-  test('fourteen dormant route builders stay declared and statically unavailable', () {
+  test('remaining dormant route builders stay declared and statically unavailable', () {
     expect(
       RegExp(
         r'builder:\s*\(context, state\) => _unavailableFormsRoute\(context\)',
       ).allMatches(router),
-      hasLength(14),
+      hasLength(12),
     );
     expect(router, isNot(contains('FormsRouteCapabilities')));
     expect(router, isNot(contains('formsCapabilities')));

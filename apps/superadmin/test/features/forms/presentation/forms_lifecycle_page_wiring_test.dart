@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('directory never exposes lifecycle mutations from local capability flags', (
+  testWidgets('directory exposes lifecycle requests while backend remains the authority', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -24,10 +24,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Ações do formulário Pesquisa'), findsNothing);
+    expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
     await tester.tap(find.byKey(const Key('forms-directory-view-cards')));
     await tester.pumpAndSettle();
-    expect(find.byTooltip('Ações do formulário Pesquisa'), findsNothing);
+    expect(find.byTooltip('Ações do formulário Pesquisa'), findsOneWidget);
   });
 
   testWidgets('overview never exposes lifecycle mutations from local capability flags', (

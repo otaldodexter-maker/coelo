@@ -107,7 +107,7 @@ final class CoeloAdminDialogShell extends StatelessWidget {
                 children: [
                   header,
                   divider,
-                  Expanded(child: normalBody),
+                  Flexible(fit: FlexFit.loose, child: normalBody),
                   footer,
                 ],
               ),
