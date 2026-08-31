@@ -1,15 +1,14 @@
 ---
 source: "docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md"
-status: "approved"
+status: "implemented"
 generated_at: "2026-08-28"
 ---
 
 # Seletor de hora Coelo
 
-Contrato visual e API mínima aprovados explicitamente pelo Owner em 2026-08-28,
-com base na prévia mobile light/375 e desktop dark/1440. A implementação e os
-goldens ainda precisam passar pelos gates locais antes de o padrão ser marcado
-como `implemented`.
+Contrato visual, API mínima e goldens reais aprovados explicitamente pelo Owner
+em 2026-08-28. A implementação vive em `coelo_ui_core`, com exemplo executável
+no catálogo e evidência light/375 e dark/1440.
 
 ## Problema e consumidores
 
@@ -97,5 +96,5 @@ Future<TimeOfDay?> showCoeloTimePicker({
 ## Decisão registrada
 
 O Owner aprovou explicitamente a extração para `coelo_ui_core`, a API mínima e
-os dois goldens propostos. A aprovação desbloqueia RED→GREEN, catálogo e
-migração; não concede `local-green` nem `accepted` sem as evidências previstas.
+os goldens reais. O padrão foi implementado com RED→GREEN, catálogo e migração;
+o aceite do padrão não amplia autorização, persistência ou escopo de domínio.

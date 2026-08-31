@@ -84,28 +84,11 @@ final class CoeloMedicationTimeField extends StatelessWidget {
   final ValueChanged<TimeOfDay> onChanged;
 
   @override
-  Widget build(BuildContext context) => CoeloAdminInteractiveCard(
-    semanticLabel: 'Horário: ${value == null ? 'Não informado' : _timeLabel(value!)}',
-    minHeight: CoeloSize.touchMin,
-    onPressed: () async {
-      final selected = await showTimePicker(
-        context: context,
-        initialTime: value ?? const TimeOfDay(hour: 8, minute: 0),
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        ),
-      );
+  Widget build(BuildContext context) => CoeloTimeField(
+    value: value,
+    onChanged: (selected) {
       if (selected != null) onChanged(selected);
     },
-    child: InputDecorator(
-      decoration: const InputDecoration(
-        labelText: 'Horário',
-        prefixIcon: Icon(Icons.schedule_outlined),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-      child: Text(value == null ? 'Selecionar hora' : _timeLabel(value!)),
-    ),
   );
 }
 
@@ -237,7 +220,5 @@ final class _UnavailableField extends StatelessWidget {
 
 String _dateLabel(DateTime value) =>
     '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
-String _timeLabel(TimeOfDay value) =>
-    '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 String _weekdayLabel(int value) =>
     const ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'][value - 1];

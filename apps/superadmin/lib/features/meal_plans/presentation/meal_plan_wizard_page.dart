@@ -607,32 +607,37 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             value: meal.hasTime,
             onChanged: (value) => setState(() => meal.hasTime = value),
           ),
-          if (meal.hasTime) ...[
-            const SizedBox(height: CoeloSpacing.space3),
-            _responsivePair(
-              CoeloFormTextField(
-                controller: meal.startTime,
-                labelText: 'Horário inicial (HH:mm)',
-                prefixIcon: Icons.schedule_outlined,
-              ),
-              CoeloFormTextField(
-                controller: meal.endTime,
-                labelText: 'Horário final (HH:mm)',
-                prefixIcon: Icons.schedule_outlined,
-              ),
-            ),
-          ],
           const SizedBox(height: CoeloSpacing.space3),
           CoeloFormTextField(
             controller: meal.dishName,
             labelText: 'Nome da refeição ou prato',
             prefixIcon: Icons.ramen_dining_outlined,
           ),
+          if (meal.hasTime) ...[
+            const SizedBox(height: CoeloSpacing.space3),
+            _responsivePair(
+              CoeloTimeField(
+                value: _timeValue(meal.startTime.text),
+                labelText: 'Horário inicial',
+                onChanged: (value) {
+                  if (value != null) setState(() => meal.startTime.text = formatCoeloTime(value));
+                },
+              ),
+              CoeloTimeField(
+                value: _timeValue(meal.endTime.text),
+                labelText: 'Horário final',
+                onChanged: (value) {
+                  if (value != null) setState(() => meal.endTime.text = formatCoeloTime(value));
+                },
+              ),
+            ),
+          ],
           const SizedBox(height: CoeloSpacing.space3),
           CoeloFormTextField(
             controller: meal.details,
             labelText: 'Detalhes do prato',
             prefixIcon: Icons.description_outlined,
+            maxLines: 3,
           ),
           const SizedBox(height: CoeloSpacing.space3),
           CoeloAdminToggleField(
@@ -1269,6 +1274,15 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         startMinutes < 1440 &&
         endMinutes > startMinutes &&
         endMinutes < 1440;
+  }
+
+  TimeOfDay? _timeValue(String value) {
+    final match = RegExp(r'^(\d{2}):(\d{2})$').firstMatch(value.trim());
+    if (match == null) return null;
+    final hour = int.parse(match.group(1)!);
+    final minute = int.parse(match.group(2)!);
+    if (hour > 23 || minute > 59) return null;
+    return TimeOfDay(hour: hour, minute: minute);
   }
 
   Future<void> _persist({required bool publish}) async {

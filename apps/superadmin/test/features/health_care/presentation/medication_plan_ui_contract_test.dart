@@ -130,6 +130,7 @@ void main() {
     await tester.tap(find.text('Horários e responsáveis'));
     await tester.pumpAndSettle();
     expect(find.byType(CoeloMedicationTimeField), findsOneWidget);
+    expect(find.byType(CoeloTimeField), findsOneWidget);
     expect(find.byType(CoeloMedicationWeekdaySelector), findsOneWidget);
     expect(find.byType(CoeloMedicationResponsibleSelector), findsOneWidget);
   });

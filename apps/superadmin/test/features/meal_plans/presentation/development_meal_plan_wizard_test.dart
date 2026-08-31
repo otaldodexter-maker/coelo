@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/meal_plans/presentation/meal_plan_wiza
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -101,6 +102,53 @@ void main() {
     )).items.singleWhere((item) => item.name == 'Cardápio da primavera');
     expect(created.status, MealPlanStatus.published);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('meal time picker follows dish name and details are multiline', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: MealPlanWizardPage(
+            repository: DevelopmentMealPlanRepository(),
+            imageRepository: const UnavailableMealPlanImageRepository(),
+            tenantId: 'dev-tenant',
+            imageSelectionEnabled: false,
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).first, 'Cardápio com horário');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilterChip, 'Colégio Coelo'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await tester.tap(find.text('Definir horário de início e fim'));
+    await tester.pump();
+
+    expect(find.byType(CoeloTimeField), findsNWidgets(2));
+    expect(
+      tester.getTopLeft(find.byType(CoeloTimeField).first).dy,
+      greaterThan(tester.getTopLeft(find.byType(TextFormField).first).dy),
+    );
+    final details = tester.widget<CoeloFormTextField>(
+      find.byWidgetPredicate(
+        (widget) => widget is CoeloFormTextField && widget.labelText == 'Detalhes do prato',
+      ),
+    );
+    expect(details.maxLines, greaterThan(1));
+
+    await tester.tap(find.text('Selecionar hora').first);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('coelo-time-picker-dialog')), findsOneWidget);
   });
 
   testWidgets('route A cannot overwrite route B when meal plans load out of order', (tester) async {

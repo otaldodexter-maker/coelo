@@ -15,6 +15,7 @@ const catalogRegistryManifestJson = r'''
   "core.date-range-picker": ["open", "compact", "field", "dark", "error", "disabled"],
   "core.date-range-field": ["field", "disabled", "error"],
   "core.date-time-field": ["field", "disabled"],
+  "pattern.coelo-time-picker": ["field"],
   "core.calendar-month": ["default", "compact", "marked"],
   "core.brazilian-phone-input-formatter": ["landline", "mobile"],
   "core.status-chip": [],
@@ -66,6 +67,7 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'core.date-range-picker': (_) => const _DateRangePickerExample(),
     'core.date-range-field': (_) => const _DateRangePickerExample(),
     'core.date-time-field': (_) => const _DateTimeFieldExample(),
+    'pattern.coelo-time-picker': (_) => const _TimeFieldExample(),
     'core.calendar-month': (_) => const _CalendarMonthExample(),
     'core.brazilian-phone-input-formatter': (_) => const _BrazilianPhoneFormatterExample(),
     'core.status-chip': (_) => const _StatusChipExample(),
@@ -146,6 +148,21 @@ final class _DateTimeFieldExampleState extends State<_DateTimeFieldExample> {
     currentDate: DateTime(2026, 8, 13),
     labelText: 'Prazo de lançamento',
   );
+}
+
+final class _TimeFieldExample extends StatefulWidget {
+  const _TimeFieldExample();
+
+  @override
+  State<_TimeFieldExample> createState() => _TimeFieldExampleState();
+}
+
+final class _TimeFieldExampleState extends State<_TimeFieldExample> {
+  TimeOfDay? _value = const TimeOfDay(hour: 11, minute: 30);
+
+  @override
+  Widget build(BuildContext context) =>
+      CoeloTimeField(value: _value, onChanged: (value) => setState(() => _value = value));
 }
 
 final class _CalendarMonthExample extends StatefulWidget {

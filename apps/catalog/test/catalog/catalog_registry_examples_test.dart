@@ -61,6 +61,16 @@ void main() {
     expect(example.approvedVariants, containsAll(['open', 'compact', 'field']));
   });
 
+  testWidgets('time picker example uses the public Coelo field and dialog', (tester) async {
+    final example = buildCatalogRegistry()['pattern.coelo-time-picker']!;
+
+    await _pumpExample(tester, example);
+    expect(find.byType(CoeloTimeField), findsOneWidget);
+    await tester.tap(find.text('11:30'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('coelo-time-picker-dialog')), findsOneWidget);
+  });
+
   testWidgets('new package examples use the canonical public components', (tester) async {
     final registry = buildCatalogRegistry();
 
