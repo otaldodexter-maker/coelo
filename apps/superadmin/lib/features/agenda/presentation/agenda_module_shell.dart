@@ -1,8 +1,6 @@
-import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
-import '../../../shared/presentation/widgets/superadmin_underline_tabs.dart';
 import '../../auth/domain/logout_action.dart';
 
 enum AgendaModuleArea { calendar, events, requests, permissions }
@@ -16,7 +14,9 @@ extension AgendaModuleAreaLabel on AgendaModuleArea {
   };
 }
 
-/// App-local shell for the development-only Agenda prototype.
+/// App-local composition that keeps every Agenda surface inside the canonical
+/// Superadmin shell. Navigation between Agenda routes lives in the app router;
+/// this widget deliberately does not add a second tab hierarchy.
 final class AgendaModuleShell extends StatelessWidget {
   const AgendaModuleShell({
     required this.logout,
@@ -39,38 +39,13 @@ final class AgendaModuleShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
-    title: 'Agenda',
-    subtitle: 'Acompanhe calendários, eventos, solicitações e permissões.',
+    title: 'Agenda institucional',
+    subtitle: 'Acompanhe o calendário, eventos e respostas por contexto.',
     logout: logout,
     currentDestination: 'agenda',
     actions: actions,
     compactActions: compactActions,
     onDestinationSelected: onDestinationSelected,
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final inset = constraints.maxWidth >= CoeloBreakpoints.large.minWidth
-            ? CoeloSpacing.space10
-            : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
-            ? CoeloSpacing.space6
-            : CoeloSpacing.space4;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space3),
-              child: SuperadminUnderlineTabs<AgendaModuleArea>(
-                tabs: [
-                  for (final area in AgendaModuleArea.values)
-                    SuperadminUnderlineTab(value: area, label: area.label),
-                ],
-                selected: selectedArea,
-                onSelected: onAreaSelected,
-              ),
-            ),
-            Expanded(child: child),
-          ],
-        );
-      },
-    ),
+    child: child,
   );
 }

@@ -184,6 +184,7 @@ final class _PermissionControl extends StatelessWidget {
     final capabilityLabel = switch (capability) {
       AgendaCapability.publishAgendaItems => 'Publicar itens',
       AgendaCapability.approveGuardianBirthdayRequest => 'Aprovar solicitação de aniversário',
+      AgendaCapability.overrideReservationConflict => 'Sobrescrever conflito de reserva',
     };
     final detail = switch (resolution.state) {
       PermissionState.allowed => 'Permitido neste nível',

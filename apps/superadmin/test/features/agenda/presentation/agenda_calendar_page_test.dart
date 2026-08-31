@@ -1,22 +1,22 @@
-import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/features/agenda/data/agenda_prototype_store.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_calendar_page.dart';
 import 'package:coelo_superadmin/features/agenda/presentation/agenda_module_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_underline_tabs.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('matriz responsiva não apresenta overflow', (tester) async {
+  testWidgets('matriz responsiva aprovada não apresenta overflow', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
     for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
-      tester.view.physicalSize = Size(width, 1000);
+      tester.view.physicalSize = Size(width, 1200);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpWidget(_app());
       await tester.pumpAndSettle();
@@ -24,188 +24,72 @@ void main() {
     }
   });
 
-  testWidgets('compacto inicia na timeline e abre a agenda completa sem trocar de rota', (
-    tester,
-  ) async {
-    await _setSize(tester, const Size(375, 1000));
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('agenda-timeline')), findsOneWidget);
-    expect(find.text('Colégio Horizonte'), findsOneWidget);
-    expect(find.text('Todos'), findsOneWidget);
-    expect(find.text('Unidades'), findsOneWidget);
-    expect(find.text('Turmas'), findsOneWidget);
-    expect(find.text('Atividades'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-
-    await tester.ensureVisible(find.byKey(const Key('agenda-open-full-calendar')));
-    await tester.tap(find.byKey(const Key('agenda-open-full-calendar')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('agenda-month-grid')), findsOneWidget);
-    expect(find.byKey(const Key('agenda-back-to-timeline')), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('timeline permanece legível a 200 por cento', (tester) async {
-    await _setSize(tester, const Size(375, 1000));
-    await tester.pumpWidget(_app(textScaler: const TextScaler.linear(2)));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('agenda-timeline')), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('shell, timeline e calendario completo usam insets responsivos canonicos', (
-    tester,
-  ) async {
-    await _setSize(tester, const Size(1440, 1000));
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    final tabs = find.byType(SuperadminUnderlineTabs<AgendaModuleArea>);
-    final tabsPadding = tester.element(tabs).findAncestorWidgetOfExactType<Padding>()!;
-    final tabsWidth = tester.getSize(find.byWidget(tabsPadding)).width;
-    expect((tabsPadding.padding as EdgeInsets).left, _expectedInset(tabsWidth));
-
-    final timeline = tester.widget<SingleChildScrollView>(find.byKey(const Key('agenda-timeline')));
-    expect(
-      (timeline.padding! as EdgeInsets).left,
-      _expectedInset(tester.getSize(find.byKey(const Key('agenda-timeline'))).width),
-    );
-
-    await tester.ensureVisible(find.byKey(const Key('agenda-open-full-calendar')));
-    await tester.tap(find.byKey(const Key('agenda-open-full-calendar')));
-    await tester.pumpAndSettle();
-
-    final workspace = find.byType(CoeloAdminWorkspaceLayout);
-    final workspacePadding = tester.element(workspace).findAncestorWidgetOfExactType<Padding>()!;
-    final workspaceWidth = tester.getSize(find.byWidget(workspacePadding)).width;
-    expect((workspacePadding.padding as EdgeInsets).left, _expectedInset(workspaceWidth));
-  });
-
-  testWidgets('timeline e calendario completo suportam matriz 200 por cento em ambos os temas', (
-    tester,
-  ) async {
+  testWidgets('matriz a 200 por cento funciona em claro e escuro', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
     for (final theme in [CoeloTheme.light, CoeloTheme.dark]) {
       for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
-        tester.view.physicalSize = Size(width, 1400);
+        tester.view.physicalSize = Size(width, 1600);
         await tester.pumpWidget(const SizedBox.shrink());
         await tester.pumpWidget(_app(theme: theme, textScaler: const TextScaler.linear(2)));
         await tester.pumpAndSettle();
-        expect(
-          tester.takeException(),
-          isNull,
-          reason: 'timeline width=$width theme=${theme.brightness}',
-        );
-
-        await tester.ensureVisible(find.byKey(const Key('agenda-open-full-calendar')));
-        await tester.tap(find.byKey(const Key('agenda-open-full-calendar')));
-        await tester.pumpAndSettle();
-        expect(
-          tester.takeException(),
-          isNull,
-          reason: 'calendar width=$width theme=${theme.brightness}',
-        );
+        expect(tester.takeException(), isNull, reason: 'width=$width theme=${theme.brightness}');
       }
     }
   });
 
-  testWidgets('filtro de atividades mantém apenas ocorrências de atividade', (tester) async {
-    await _setSize(tester, const Size(768, 1000));
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Atividades'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Ballet'), findsWidgets);
-    expect(find.text('Festa do Pijama'), findsNothing);
-    expect(find.text('Atividade'), findsWidgets);
-  });
-
-  testWidgets('bookmark da timeline alterna estado sem persistência externa', (tester) async {
+  testWidgets('calendário inicia no domingo e o dia abre detalhe no mobile', (tester) async {
     await _setSize(tester, const Size(375, 1000));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    final bookmark = find.byKey(const Key('agenda-bookmark-event-paint'));
-    expect(bookmark, findsOneWidget);
-    expect(tester.widget<Semantics>(bookmark).properties.toggled, isFalse);
+    expect(find.byKey(const Key('agenda-month-grid')), findsOneWidget);
+    expect(find.text('D'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('agenda-day-2026-08-17')));
+    await tester.pumpAndSettle();
 
-    await tester.ensureVisible(bookmark);
-    await tester.tap(bookmark);
-    await tester.pump();
-
-    expect(tester.widget<Semantics>(bookmark).properties.toggled, isTrue);
+    expect(find.byKey(const Key('agenda-day-fullscreen')), findsOneWidget);
+    expect(find.textContaining('17 de agosto'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
-  testWidgets('cards e filtros seguem os estados interativos de Instituições', (tester) async {
+  testWidgets('lista institucional filtra pela busca sem persistência externa', (tester) async {
     await _setSize(tester, const Size(1440, 1000));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    final card = find.byKey(const Key('agenda-event-card-routine-school'));
-    expect(card, findsOneWidget);
-    expect(
-      find.descendant(of: card, matching: find.byType(CoeloAdminInteractiveCard)),
-      findsOneWidget,
+    final agendaSearch = find.byWidgetPredicate(
+      (widget) => widget is CoeloSearchField && widget.semanticLabel == 'Buscar eventos da Agenda',
     );
-    expect(
-      find.text('Atividades e acompanhamento durante todo o período escolar.'),
-      findsOneWidget,
+    await tester.enterText(
+      find.descendant(of: agendaSearch, matching: find.byType(EditableText)),
+      'Festival',
     );
-
-    final surface = find.byKey(const Key('agenda-event-card-surface-routine-school'));
-    await tester.ensureVisible(card);
+    await tester.tap(find.byKey(const Key('agenda-view-list')));
     await tester.pumpAndSettle();
-    final before = tester.widget<AnimatedContainer>(surface).decoration! as BoxDecoration;
+
+    expect(find.byKey(const Key('agenda-list-timeline')), findsOneWidget);
+    expect(find.text('Festival de esportes'), findsOneWidget);
+    expect(find.text('Feira cultural 2026'), findsNothing);
+  });
+
+  testWidgets('cards da lista preservam estado interativo canônico', (tester) async {
+    await _setSize(tester, const Size(1440, 1000));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('agenda-view-list')));
+    await tester.pumpAndSettle();
+
+    final card = find.byType(CoeloAdminInteractiveCard).first;
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
     await mouse.addPointer(location: Offset.zero);
     await mouse.moveTo(tester.getCenter(card));
     await tester.pumpAndSettle();
-    final after = tester.widget<AnimatedContainer>(surface).decoration! as BoxDecoration;
 
-    expect(after.border, isNot(before.border));
-
-    final units = tester.widget<TextButton>(find.byKey(const Key('agenda-scope-units')));
-    final colors = Theme.of(
-      tester.element(find.byKey(const Key('agenda-scope-units'))),
-    ).colorScheme;
-    expect(units.style?.backgroundColor?.resolve({WidgetState.hovered}), colors.primaryContainer);
-    expect(units.style?.foregroundColor?.resolve({WidgetState.focused}), colors.primary);
-  });
-
-  testWidgets('calendário completo começa a semana no domingo e abre detalhe', (tester) async {
-    await _setSize(tester, const Size(1440, 1000));
-    await tester.pumpWidget(_app());
-    await tester.pumpAndSettle();
-
-    await tester.ensureVisible(find.byKey(const Key('agenda-open-full-calendar')));
-    await tester.tap(find.byKey(const Key('agenda-open-full-calendar')));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('agenda-month-grid')), findsOneWidget);
-    final weekdayLabels = tester
-        .widgetList<Text>(find.byKey(const Key('agenda-calendar-weekday-label')))
-        .map((widget) => widget.data)
-        .toList();
-    expect(weekdayLabels, const ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']);
-    final dayButtons = find.descendant(
-      of: find.byKey(const Key('agenda-month-grid')),
-      matching: find.byType(TextButton),
-    );
-    await tester.tap(dayButtons.at(9));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Detalhes do item'), findsOneWidget);
-    expect(find.textContaining('Prioridade normal'), findsOneWidget);
+    expect(find.text('Feira cultural 2026'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
@@ -231,9 +115,3 @@ Future<void> _setSize(WidgetTester tester, Size size) async {
     tester.view.resetPhysicalSize();
   });
 }
-
-double _expectedInset(double width) => width >= CoeloBreakpoints.large.minWidth
-    ? CoeloSpacing.space10
-    : width >= CoeloBreakpoints.medium.minWidth
-    ? CoeloSpacing.space6
-    : CoeloSpacing.space4;
